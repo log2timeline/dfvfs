@@ -14,14 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This file contains classes to handle the transmission protobuf.
-
-The classes are designed to create and process the transmission protobuf.
-This involves opening up files and returning filehandles and creating
-protobufs that can accurately describe files and their locations so they
-can be successfully opened by Plaso.
-
-"""
+"""An implementation of a filesystem cache."""
 import bz2
 import gzip
 import logging
@@ -41,8 +34,6 @@ import pytsk3
 import pyvshadow
 
 
-# TODO: Add support for "carving" embedded files
-# out using the embedded portion of the proto.
 class FilesystemContainer(object):
   """A container for the filesystem and image."""
 

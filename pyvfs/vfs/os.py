@@ -14,34 +14,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This file contains classes to handle the transmission protobuf.
-
-The classes are designed to create and process the transmission protobuf.
-This involves opening up files and returning filehandles and creating
-protobufs that can accurately describe files and their locations so they
-can be successfully opened by Plaso.
-
-"""
-import bz2
-import gzip
+"""An implementation of a pyVFS file using regular OS access to the file."""
 import logging
 import os
-import tarfile
-import zipfile
 
-from plaso.lib import errors
-from plaso.lib import event
-from plaso.lib import registry
-from plaso.lib import sleuthkit
-from plaso.lib import timelib
-from plaso.lib import vss
-from plaso.proto import transmission_pb2
-
-import pytsk3
-import pyvshadow
+from pyvfs.lib import errors
+from pyvfs.lib import interface
+from pyvfs.proto import transmission_pb2
 
 
-class OsFile(PlasoFile):
+class OsFile(interface.PyVFSFile):
   """Class to provide a file-like object to a file stored on a filesystem."""
 
   TYPE = 'OS'

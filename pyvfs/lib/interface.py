@@ -17,17 +17,12 @@
 """This file contains the interface for VFS."""
 import logging
 
-from plaso.lib import errors
-from plaso.lib import event
-from plaso.lib import registry
-from plaso.lib import vss
-from plaso.proto import transmission_pb2
-
-import pytsk3
-import pyvshadow
+from pyvfs.lib import errors
+from pyvfs.lib import registry
+from pyvfs.proto import transmission_pb2
 
 
-class PlasoFile(object):
+class PyVFSFile(object):
   """Base class for a file like object."""
   __metaclass__ = registry.MetaclassRegistry
   __abstract = True
@@ -142,7 +137,7 @@ class PlasoFile(object):
     be opened is within another file.
 
     Args:
-      filehandle: A PlasoFile object that the file is contained within.
+      filehandle: A PyVFSFile object that the file is contained within.
     """
     raise NotImplementedError
 
@@ -206,14 +201,14 @@ class Stats(object):
 PFILE_HANDLERS = {}
 
 
-def InitPFile():
-  """Creates a dict object with all PFile handlers."""
-  for cl in PlasoFile.classes:
-    PFILE_HANDLERS[PlasoFile.classes[cl].TYPE] = PlasoFile.classes[cl]
+def InitPyVFSFile():
+  """Creates a dict object with all PyVFSFile handlers."""
+  for cl in PyVFSFile.classes:
+    PFILE_HANDLERS[PyVFSFile.classes[cl].TYPE] = PyVFSFile.classes[cl]
 
 
-def OpenPFile(spec, fh=None, orig=None, fscache=None):
-  """Open up a PlasoFile object.
+def OpenPyVFSFile(spec, fh=None, orig=None, fscache=None):
+  """Open up a PyVFSFile object.
 
   The location and how to open the file is described in the PathSpec protobuf
   that includes location and information about which driver to use to open it.
@@ -246,26 +241,26 @@ def OpenPFile(spec, fh=None, orig=None, fscache=None):
 
   Args:
     spec: A PathSpec protobuf that describes the file that needs to be opened.
-    fh: A PFile object that is used as base for extracting the needed file out.
+    fh: A PyVFSFile object that is used as base for extracting the needed file out.
     orig: A PathSpec protobuf that describes the root pathspec of the file.
     fscache: A FilesystemCache object.
 
   Returns:
-    A PFile object, that is a file like object.
+    A PyVFSFile object, that is a file like object.
 
   Raises:
     IOError: If the method is unable to open the file.
   """
   if not PFILE_HANDLERS:
-    InitPFile()
+    InitPyVFSFile()
 
   if isinstance(spec, (str, unicode)):
     spec_str = spec
-    spec = event.EventPathSpec()
+    spec = PyPathSpec()
     spec.FromProtoString(spec_str)
   elif isinstance(spec, transmission_pb2.PathSpec):
     spec_proto = spec
-    spec = event.EventPathSpec()
+    spec = PyPathSpec()
     spec.FromProto(spec_proto)
 
   handler_class = PFILE_HANDLERS.get(spec.type, 'UNSET')
@@ -286,9 +281,220 @@ def OpenPFile(spec, fh=None, orig=None, fscache=None):
       orig_proto = orig
     else:
       orig_proto = spec
-    return OpenPFile(spec.nested_pathspec, handler, orig_proto, fscache)
+    return OpenPyVFSFile(spec.nested_pathspec, handler, orig_proto, fscache)
   else:
     logging.debug(u'Opening file: %s [%s]', handler.name, spec.type)
     return handler
 
   raise IOError('Unable to open the file.')
+
+
+class PyPathBundle(object):
+  """A native Python object for the PathBundle protobuf."""
+
+  def __init__(self, pattern=''):
+    """Initialize a PyPathBundle object.
+
+    Args:
+      pattern: A string containing the pattern used by the collector
+      to find all the PathSpecs contained in this bundle. This is used
+      by parsers to match if the bundle is the correct one for the parser.
+    """
+    self._pathspecs = []
+    self.pattern = pattern
+
+  def ToProto(self):
+    """Serialize an PyPathBundle to PathBundle protobuf."""
+    proto = transmission_pb2.PathBundle()
+
+    for pathspec in self._pathspecs:
+      proto_pathspec = proto.pathspecs.add()
+      proto_pathspec.MergeFrom(pathspec.ToProto())
+
+    proto.pattern = self.pattern
+
+    return proto
+
+  def ToProtoString(self):
+    """Serialize the object into a string."""
+    proto = self.ToProto()
+
+    # TODO: Remove this "ugly" hack in favor of something more elegant
+    # and one that makes more sense.
+    return u'B' + proto.SerializeToString()
+
+  def FromProto(self, proto):
+    """Unserializes the EventPathBundle from a PathBundle protobuf."""
+    self._pathspecs = []
+    if not hasattr(proto, 'pattern'):
+      raise RuntimeError('Unsupported proto')
+    if not hasattr(proto, 'pathspecs'):
+      raise RuntimeError('Unsupported proto')
+
+    self.pattern = proto.pattern
+
+    for pathspec in proto.pathspecs:
+      pathspec_object = PyPathSpec()
+      pathspec_object.FromProto(pathspec)
+      self._pathspecs.append(pathspec_object)
+
+  def FromProtoString(self, proto_string):
+    """Unserializes the EventPathBundle from a serialized PathBundle."""
+    if not proto_string.startswith('B'):
+      raise errors.WrongProtobufEntry(
+          u'Wrong protobuf type, unable to unserialize')
+    proto = transmission_pb2.PathBundle()
+    proto.ParseFromString(proto_string[1:])
+    self.FromProto(proto)
+
+  def Append(self, pathspec):
+    """Append a pathspec to the bundle."""
+    self._pathspecs.append(pathspec)
+
+  def _GetHash(self, pathspec):
+    """Return a calculated "hash" value from a pathspec based on attributes."""
+    if hasattr(pathspec, 'nested_pathspec'):
+      extra = self._GetHash(pathspec.nested_pathspec)
+    else:
+      extra = u''
+
+    return u'{}:{}'.format(u':'.join([
+        GetUnicodeString(getattr(pathspec, 'container_path', u'-')),
+        GetUnicodeString(getattr(pathspec, 'image_offset', u'-')),
+        GetUnicodeString(getattr(pathspec, 'vss_store_number', u'-')),
+        GetUnicodeString(getattr(pathspec, 'image_inode', u'-')),
+        GetUnicodeString(getattr(pathspec, 'file_path', u'-'))]), extra)
+
+  def ListFiles(self):
+    """Return a list of available files inside the pathbundle."""
+    for pathspec in self._pathspecs:
+      yield self._GetHash(pathspec)
+
+  def GetPathspecFromHash(self, file_hash):
+    """Return a PathSpec based on a "hash" value from bundle.
+
+    Args:
+      file_hash: A calculated hash value (from self.ListFiles()).
+
+    Returns:
+      An EventPathspec object that matches the hash, if one is found.
+    """
+    for pathspec in self._pathspecs:
+      if file_hash == self._GetHash(pathspec):
+        return pathspec
+
+  def __str__(self):
+    """Return a string representation of the bundle."""
+    out_write = []
+    out_write.append(u'+-' * 40)
+
+    out_write.append(u'{:>10s} : {}'.format(
+        'Pattern', self.pattern))
+
+    out_write.append('')
+
+    for pathspec in self._pathspecs:
+      out_write.append(u'{:>10s} : {}'.format(
+          'Hash', self._GetHash(pathspec), 10))
+      out_write.append(unicode(pathspec))
+
+    return u'\n'.join(out_write)
+
+  def __iter__(self):
+    """A generator that returns all pathspecs from object."""
+    for pathspec in self._pathspecs:
+      yield pathspec
+
+
+class PyPathSpec(object):
+  """A native Python object for the pathspec definition."""
+
+  _TYPE_FROM_PROTO_MAP = {}
+  _TYPE_TO_PROTO_MAP = {}
+  for value in transmission_pb2.PathSpec.DESCRIPTOR.enum_types_by_name[
+      'FileType'].values:
+    _TYPE_FROM_PROTO_MAP[value.number] = value.name
+    _TYPE_TO_PROTO_MAP[value.name] = value.number
+  _TYPE_FROM_PROTO_MAP.setdefault(-1)
+
+  def __setattr__(self, attr, value):
+    """Overwrite the set attribute function to limit it to right attributes."""
+    if attr in ('type', 'file_path', 'container_path', 'image_offset',
+                'image_offset', 'image_inode', 'nested_pathspec', 'file_offset',
+                'file_size', 'transmit_options', 'ntfs_type', 'ntfs_id',
+                'vss_store_number'):
+      object.__setattr__(self, attr, value)
+    else:
+      raise AttributeError(u'Not allowed attribute: {}'.format(attr))
+
+  def ToProto(self):
+    """Serialize an PyPathSpec to PathSpec protobuf."""
+    proto = transmission_pb2.PathSpec()
+
+    for attr in self.__dict__:
+      if attr == 'type':
+        proto.type = self._TYPE_TO_PROTO_MAP.get(self.type, -1)
+      elif attr == 'nested_pathspec':
+        evt_nested = getattr(self, attr)
+        proto_nested = evt_nested.ToProto()
+        proto.nested_pathspec.MergeFrom(proto_nested)
+      else:
+        attribute_value = getattr(self, attr, None)
+        if attribute_value != None:
+          setattr(proto, attr, attribute_value)
+
+    return proto
+
+  def FromProto(self, proto):
+    """Unserializes the EventObject from a PathSpec protobuf.
+
+    Args:
+      proto: The protobuf (transmission_pb2.PathSpec).
+
+    Raises:
+      RuntimeError: when the protobuf is not of type:
+                    transmission_pb2.PathSpec or when an unsupported
+                    attribute value type is encountered
+    """
+    if not isinstance(proto, transmission_pb2.PathSpec):
+      raise RuntimeError('Unsupported proto')
+
+    for proto_attribute, value in proto.ListFields():
+      if proto_attribute.name == 'type':
+        self.type = self._TYPE_FROM_PROTO_MAP[value]
+
+      elif proto_attribute.name == 'nested_pathspec':
+        nested_evt = PyPathSpec()
+        nested_evt.FromProto(proto.nested_pathspec)
+        setattr(self, proto_attribute.name, nested_evt)
+      else:
+        setattr(self, proto_attribute.name, value)
+
+  def FromProtoString(self, proto_string):
+    """Unserializes the EventObject from a serialized PathSpec."""
+    if not proto_string.startswith('P'):
+      raise errors.WrongProtobufEntry(
+          u'Unable to unserialize, illegal type field.')
+
+    proto = transmission_pb2.PathSpec()
+    proto.ParseFromString(proto_string[1:])
+    self.FromProto(proto)
+
+  def ToProtoString(self):
+    """Serialize the object into a string."""
+    proto = self.ToProto()
+
+    # TODO: Remove this "ugly" hack in favor of something more elegant
+    # and one that makes more sense.
+    return 'P' + proto.SerializeToString()
+
+  def __str__(self):
+    """Return a string representation of the pathspec."""
+    return unicode(self.ToProto())
+
+
+def GetUnicodeString(string):
+  """Converts the string to Unicode if necessary."""
+  if type(string) != unicode:
+    return str(string).decode('utf8', 'ignore')
+  return string

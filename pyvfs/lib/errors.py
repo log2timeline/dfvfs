@@ -14,9 +14,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyvfs.vfs import bz2_compress
-from pyvfs.vfs import gz_compress
-from pyvfs.vfs import os
-from pyvfs.vfs import sleuthkit
-from pyvfs.vfs import tar_compress
-from pyvfs.vfs import zip_compress
+"""This file contains all the error classes used by pyvfs."""
+
+
+class Error(Exception):
+  """Base error class."""
+
+
+class UnableToOpenFile(Error):
+  """Raised when a PlasoFile class attempts to open a file it cannot open."""
+
+
+class UnableToOpenFilesystem(Error):
+  """Raised when unable to open filesystem."""
