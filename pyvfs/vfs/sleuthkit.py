@@ -14,28 +14,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This file contains a class to provide a read only fileobject from TSK.
-
-This class provides a method to create a filehandle from an image file
-that is readable by TSK (Sleuthkit) and use like an ordinary file in Python.
-"""
+"""This file contains the class to get a pyVFS file from an image using TSK."""
 import logging
 import pytsk3
 
-
-def Open(fs, inode, name):
-  """Shorthand for TSKFile(fs, inode, path).
-
-  Args:
-    fs: An FS_Info object from PyTSK3
-    inode: The inode number of the file needed to be read.
-    name: The full path to the file inside the image.
-  Returns:
-    A filehandle that can be used by Python.
-  """
-  return TSKFile(fs, inode, name)
+from pyvfs.lib import interface
 
 
+# TODO: MERGE CLASSES INTO A SINGLE ONE!!!!
 class TSKFile(object):
   """Class that simulates most of the methods of a read-only file object."""
   MIN_READSIZE = 1024 * 1024
@@ -233,5 +219,118 @@ class TSKFile(object):
   def __enter__(self):
     """Make usable with "with" statement."""
     return self
+
+
+class TskFile(interface.PyVFSFile):
+  """Class to open up files using TSK."""
+
+  TYPE = 'TSK'
+
+  def _OpenFileSystem(self, path, offset):
+    """Open the filesystem object and store a copy of it for caching.
+
+    Args:
+      path: Path to the image file.
+      offset: If this is a disk partition an offset to the filesystem
+      is needed.
+
+    Raises:
+      IOError: If no pfile.FilesystemCache object is provided.
+    """
+    if not hasattr(self, '_fscache'):
+      raise IOError('No FS cache provided, unable to open a file.')
+
+    fs_obj = self._fscache.Open(path, offset)
+
+    self._fs = fs_obj.fs
+
+  def Stat(self):
+    """Return a Stats object that contains stats like information."""
+    if hasattr(self, '_stat'):
+      return self._stat
+
+    ret = Stats()
+    if not self.fh:
+      return ret
+
+    try:
+      info = self.fh.fileobj.info
+      meta = info.meta
+    except IOError:
+      return ret
+
+    if not meta:
+      return ret
+
+    fs_type = ''
+    ret.mode = getattr(meta, 'mode', None)
+    ret.ino = getattr(meta, 'addr', None)
+    ret.nlink = getattr(meta, 'nlink', None)
+    ret.uid = getattr(meta, 'uid', None)
+    ret.gid = getattr(meta, 'gid', None)
+    ret.size = getattr(meta, 'size', None)
+    ret.atime = getattr(meta, 'atime', None)
+    ret.atime_nano = getattr(meta, 'atime_nano', None)
+    ret.crtime = getattr(meta, 'crtime', None)
+    ret.crtime_nano = getattr(meta, 'crtime_nano', None)
+    ret.mtime = getattr(meta, 'mtime', None)
+    ret.mtime_nano = getattr(meta, 'mtime_nano', None)
+    ret.ctime = getattr(meta, 'ctime', None)
+    ret.ctime_nano = getattr(meta, 'ctime_nano', None)
+    ret.dtime = getattr(meta, 'dtime', None)
+    ret.dtime_nano = getattr(meta, 'dtime_nano', None)
+    ret.bkup_time = getattr(meta, 'bktime', None)
+    ret.bkup_time_nano = getattr(meta, 'bktime_nano', None)
+    fs_type = str(self._fs.info.ftype)
+
+    check_allocated = getattr(self.fh.fileobj, 'IsAllocated', None)
+    if check_allocated:
+      ret.allocated = check_allocated()
+    else:
+      ret.allocated = True
+
+    if fs_type.startswith('TSK_FS_TYPE'):
+      ret.fs_type = fs_type[12:]
+    else:
+      ret.fs_type = fs_type
+
+    self._stat = ret
+    return ret
+
+  def Open(self, filehandle=None):
+    """Open the file as it is described in the PathSpec protobuf.
+
+    This method reads the content of the PathSpec protobuf and opens
+    the filehandle using the Sleuthkit (TSK).
+
+    Args:
+      filehandle: A PlasoFile object that the file is contained within.
+    """
+    if filehandle:
+      path = filehandle
+    else:
+      path = self.pathspec.container_path
+
+    if hasattr(self.pathspec, 'image_offset'):
+      self._OpenFileSystem(path, self.pathspec.image_offset)
+    else:
+      self._OpenFileSystem(path, 0)
+
+    inode = 0
+    if hasattr(self.pathspec, 'image_inode'):
+      inode = self.pathspec.image_inode
+
+    if not hasattr(self.pathspec, 'file_path'):
+      self.pathspec.file_path = 'NA_NotProvided'
+
+    self.fh = sleuthkit.Open(
+        self._fs, inode, self.pathspec.file_path)
+
+    self.name = self.pathspec.file_path
+    self.size = self.fh.size
+    self.display_name = u'%s:%s' % (self.pathspec.container_path,
+                                    self.pathspec.file_path)
+    if filehandle:
+      self.display_name = u'%s:%s' % (filehandle.name, self.display_name)
 
 

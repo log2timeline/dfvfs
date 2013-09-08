@@ -15,13 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Implements a TAR container pyVFS implementation."""
-import logging
 import os
 import tarfile
 
-from pyvfs.lib import errors
 from pyvfs.lib import interface
-from pyvfs.proto import transmission_pb2
 
 
 class TarFile(interface.PyVFSFile):
@@ -30,7 +27,7 @@ class TarFile(interface.PyVFSFile):
 
   def Stat(self):
     """Return a Stats object that contains stats like information."""
-    ret = Stats()
+    ret = interface.Stats()
     if not self.fh:
       return ret
 
@@ -140,5 +137,3 @@ class TarFile(interface.PyVFSFile):
       return 0
 
     return self.fh.tell() - len(self.buffer)
-
-

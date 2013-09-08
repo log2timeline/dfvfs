@@ -134,5 +134,3 @@ class FilesystemCache(object):
 
     self.cached_filesystems[fs_hash] = fs
     return fs
-
-

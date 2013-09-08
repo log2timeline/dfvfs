@@ -15,11 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This file contains BZ2 compressed file support in pyvfs."""
+import os
 import bz2
-import logging
 
 from pyvfs.lib import interface
-from pyvfs.proto import transmission_pb2
 
 
 class Bz2File(interface.PyVFSFile):
@@ -28,7 +27,7 @@ class Bz2File(interface.PyVFSFile):
 
   def Stat(self):
     """Return a Stats object that contains stats like information."""
-    ret = Stats()
+    ret = interface.Stats()
     if not self.fh:
       return ret
 

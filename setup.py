@@ -24,7 +24,7 @@ import glob
 import os
 import sys
 
-import run_tests
+#import run_tests
 
 try:
   from setuptools import find_packages, setup, Command
@@ -62,7 +62,8 @@ class TestCommand(Command):
     pass
 
   def run(self):
-    results = run_tests.RunTests()
+    pass
+    #results = run_tests.RunTests()
 
 
 setup(name='pyvfs',
@@ -73,7 +74,7 @@ setup(name='pyvfs',
       license='Apache License, Version 2.0',
       url='https://code.google.com/p/pyvfs',
       package_dir={'pyvfs': 'pyvfs'},
-      cmdclass = {'test': TestCommand},
+      #cmdclass = {'test': TestCommand},
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',

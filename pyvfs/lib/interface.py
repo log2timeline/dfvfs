@@ -30,6 +30,10 @@ class PyVFSFile(object):
   TYPE = 'UNSET'
   fh = None
 
+  @property
+  def handler_name(self):
+    return self.__class__.__name__
+
   def __init__(self, proto, root=None, fscache=None):
     """Constructor.
 
@@ -196,97 +200,6 @@ class Stats(object):
       raise AttributeError('%s', e)
 
     raise AttributeError('Attribute not defined')
-
-
-PFILE_HANDLERS = {}
-
-
-def InitPyVFSFile():
-  """Creates a dict object with all PyVFSFile handlers."""
-  for cl in PyVFSFile.classes:
-    PFILE_HANDLERS[PyVFSFile.classes[cl].TYPE] = PyVFSFile.classes[cl]
-
-
-def OpenPyVFSFile(spec, fh=None, orig=None, fscache=None):
-  """Open up a PyVFSFile object.
-
-  The location and how to open the file is described in the PathSpec protobuf
-  that includes location and information about which driver to use to open it.
-
-  Each PathSpec can also define a nested PathSpec, if that file is stored
-  within another file, or even an embedded one.
-
-  An example PathSpec describing an image file that contains a GZIP compressed
-  TAR file, that contains a GZIP compressed syslog file, providing multiple
-  level of nested paths.
-
-  type: TSK
-  file_path: "/logs/sys.tgz"
-  container_path: "test_data/syslog_image.dd"
-  image_offset: 0
-  image_inode: 12
-  nested_pathspec {
-    type: GZIP
-    file_path: "/logs/sys.tgz"
-    nested_pathspec {
-      type: TAR
-      file_path: "syslog.gz"
-      container_path: "/logs/sys.tgz"
-      nested_pathspec {
-        type: GZIP
-        file_path: "syslog.gz"
-      }
-    }
-  }
-
-  Args:
-    spec: A PathSpec protobuf that describes the file that needs to be opened.
-    fh: A PyVFSFile object that is used as base for extracting the needed file out.
-    orig: A PathSpec protobuf that describes the root pathspec of the file.
-    fscache: A FilesystemCache object.
-
-  Returns:
-    A PyVFSFile object, that is a file like object.
-
-  Raises:
-    IOError: If the method is unable to open the file.
-  """
-  if not PFILE_HANDLERS:
-    InitPyVFSFile()
-
-  if isinstance(spec, (str, unicode)):
-    spec_str = spec
-    spec = PyPathSpec()
-    spec.FromProtoString(spec_str)
-  elif isinstance(spec, transmission_pb2.PathSpec):
-    spec_proto = spec
-    spec = PyPathSpec()
-    spec.FromProto(spec_proto)
-
-  handler_class = PFILE_HANDLERS.get(spec.type, 'UNSET')
-  try:
-    handler = handler_class(spec, orig, fscache)
-  except errors.UnableToOpenFile:
-    raise IOError(u'Unable to open the file: %s using %s' % (
-        spec.file_path, spec.type))
-
-  try:
-    handler.Open(fh)
-  except IOError as e:
-    raise IOError(u'[%s] Unable to open the file: %s, error: %s' % (
-        handler.__class__.__name__, spec.file_path, e))
-
-  if hasattr(spec, 'nested_pathspec'):
-    if orig:
-      orig_proto = orig
-    else:
-      orig_proto = spec
-    return OpenPyVFSFile(spec.nested_pathspec, handler, orig_proto, fscache)
-  else:
-    logging.debug(u'Opening file: %s [%s]', handler.name, spec.type)
-    return handler
-
-  raise IOError('Unable to open the file.')
 
 
 class PyPathBundle(object):

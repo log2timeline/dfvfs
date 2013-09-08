@@ -1,0 +1,12 @@
+# Don't want compiled files being displayed.
+*.pyc
+
+# Don't include build related files.
+/dist/
+/build/
+
+# And don't care about the 'egg'.
+/pyvfs.egg-info
+
+# And don't care about the temporary code review file if it exists.
+._code_review_number
