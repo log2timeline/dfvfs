@@ -162,6 +162,9 @@ class TSKFile(object):
     if self.next_read_offset < 0:
       raise IOError('Offset cannot be less than zero.')
 
+    # TODO: Complete redesign of buffering, remove from this layer and have
+    # it somewhere else, more universal. This really affects code/parsers that
+    # do a lot of seek operations, effectively nulling the buffer for each seek.
     self.readahead = ''
 
   def readline(self, size=None):
