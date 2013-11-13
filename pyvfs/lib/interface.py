@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 # Copyright 2013 The PyVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
@@ -15,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This file contains the interface for VFS."""
-import logging
 
 from pyvfs.lib import errors
 from pyvfs.lib import registry
@@ -74,7 +74,6 @@ class PyVFSFile(object):
   def __str__(self):
     """Return a string representation of the file object, the display name."""
     if hasattr(self, 'display_name'):
-      __pychecker__ = 'missingattrs=display_name'
       return self.display_name
     else:
       return 'Unknown File'

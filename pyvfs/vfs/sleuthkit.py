@@ -249,56 +249,57 @@ class TskFile(interface.PyVFSFile):
 
   def Stat(self):
     """Return a Stats object that contains stats like information."""
-    if hasattr(self, '_stat'):
-      return self._stat
+    raise RuntimeError('Not implemented yet.')
+    # if hasattr(self, '_stat'):
+    #   return self._stat
 
-    ret = Stats()
-    if not self.fh:
-      return ret
+    # ret = Stats()
+    # if not self.fh:
+    #   return ret
 
-    try:
-      info = self.fh.fileobj.info
-      meta = info.meta
-    except IOError:
-      return ret
+    # try:
+    #   info = self.fh.fileobj.info
+    #   meta = info.meta
+    # except IOError:
+    #   return ret
 
-    if not meta:
-      return ret
+    # if not meta:
+    #   return ret
 
-    fs_type = ''
-    ret.mode = getattr(meta, 'mode', None)
-    ret.ino = getattr(meta, 'addr', None)
-    ret.nlink = getattr(meta, 'nlink', None)
-    ret.uid = getattr(meta, 'uid', None)
-    ret.gid = getattr(meta, 'gid', None)
-    ret.size = getattr(meta, 'size', None)
-    ret.atime = getattr(meta, 'atime', None)
-    ret.atime_nano = getattr(meta, 'atime_nano', None)
-    ret.crtime = getattr(meta, 'crtime', None)
-    ret.crtime_nano = getattr(meta, 'crtime_nano', None)
-    ret.mtime = getattr(meta, 'mtime', None)
-    ret.mtime_nano = getattr(meta, 'mtime_nano', None)
-    ret.ctime = getattr(meta, 'ctime', None)
-    ret.ctime_nano = getattr(meta, 'ctime_nano', None)
-    ret.dtime = getattr(meta, 'dtime', None)
-    ret.dtime_nano = getattr(meta, 'dtime_nano', None)
-    ret.bkup_time = getattr(meta, 'bktime', None)
-    ret.bkup_time_nano = getattr(meta, 'bktime_nano', None)
-    fs_type = str(self._fs.info.ftype)
+    # fs_type = ''
+    # ret.mode = getattr(meta, 'mode', None)
+    # ret.ino = getattr(meta, 'addr', None)
+    # ret.nlink = getattr(meta, 'nlink', None)
+    # ret.uid = getattr(meta, 'uid', None)
+    # ret.gid = getattr(meta, 'gid', None)
+    # ret.size = getattr(meta, 'size', None)
+    # ret.atime = getattr(meta, 'atime', None)
+    # ret.atime_nano = getattr(meta, 'atime_nano', None)
+    # ret.crtime = getattr(meta, 'crtime', None)
+    # ret.crtime_nano = getattr(meta, 'crtime_nano', None)
+    # ret.mtime = getattr(meta, 'mtime', None)
+    # ret.mtime_nano = getattr(meta, 'mtime_nano', None)
+    # ret.ctime = getattr(meta, 'ctime', None)
+    # ret.ctime_nano = getattr(meta, 'ctime_nano', None)
+    # ret.dtime = getattr(meta, 'dtime', None)
+    # ret.dtime_nano = getattr(meta, 'dtime_nano', None)
+    # ret.bkup_time = getattr(meta, 'bktime', None)
+    # ret.bkup_time_nano = getattr(meta, 'bktime_nano', None)
+    # fs_type = str(self._fs.info.ftype)
 
-    check_allocated = getattr(self.fh.fileobj, 'IsAllocated', None)
-    if check_allocated:
-      ret.allocated = check_allocated()
-    else:
-      ret.allocated = True
+    # check_allocated = getattr(self.fh.fileobj, 'IsAllocated', None)
+    # if check_allocated:
+    #   ret.allocated = check_allocated()
+    # else:
+    #   ret.allocated = True
 
-    if fs_type.startswith('TSK_FS_TYPE'):
-      ret.fs_type = fs_type[12:]
-    else:
-      ret.fs_type = fs_type
+    # if fs_type.startswith('TSK_FS_TYPE'):
+    #   ret.fs_type = fs_type[12:]
+    # else:
+    #   ret.fs_type = fs_type
 
-    self._stat = ret
-    return ret
+    # self._stat = ret
+    # return ret
 
   def Open(self, filehandle=None):
     """Open the file as it is described in the PathSpec protobuf.
@@ -319,15 +320,17 @@ class TskFile(interface.PyVFSFile):
     else:
       self._OpenFileSystem(path, 0)
 
-    inode = 0
-    if hasattr(self.pathspec, 'image_inode'):
-      inode = self.pathspec.image_inode
+    # inode = 0
+    # if hasattr(self.pathspec, 'image_inode'):
+    #   inode = self.pathspec.image_inode
 
     if not hasattr(self.pathspec, 'file_path'):
       self.pathspec.file_path = 'NA_NotProvided'
 
-    self.fh = sleuthkit.Open(
-        self._fs, inode, self.pathspec.file_path)
+    # TODO: needs rewriting.
+    # self.fh = sleuthkit.Open(
+    #    self._fs, inode, self.pathspec.file_path)
+    self.fh = None
 
     self.name = self.pathspec.file_path
     self.size = self.fh.size
@@ -335,5 +338,3 @@ class TskFile(interface.PyVFSFile):
                                     self.pathspec.file_path)
     if filehandle:
       self.display_name = u'%s:%s' % (filehandle.name, self.display_name)
-
-

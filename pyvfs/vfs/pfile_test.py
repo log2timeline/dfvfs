@@ -22,9 +22,6 @@ from plaso.lib import errors
 from plaso.lib import event
 from plaso.lib import pfile
 
-# Don't complain about lack of doc strings for functions.
-__pychecker__ = 'no-funcdoc'
-
 
 class PlasoPFileTest(unittest.TestCase):
   """The unit test for PFile implementation."""

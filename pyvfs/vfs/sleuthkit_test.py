@@ -20,13 +20,11 @@ import os
 import pytsk3
 import unittest
 
-from plaso.lib import sleuthkit
-
-__pychecker__ = 'no-funcdoc'
+from pyvfs.vfs import sleuthkit
 
 
 class SleuthkitUnitTest(unittest.TestCase):
-  """The unit test for TSK integration into plaso."""
+  """The unit test for TSK integration into pyvfs."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
