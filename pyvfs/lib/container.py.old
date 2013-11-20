@@ -22,13 +22,13 @@ import os
 import tarfile
 import zipfile
 
-from plaso.lib import errors
-from plaso.lib import event
-from plaso.lib import registry
-from plaso.lib import sleuthkit
-from plaso.lib import timelib
-from plaso.lib import vss
-from plaso.proto import transmission_pb2
+from pyvfs.lib import errors
+from pyvfs.lib import event
+from pyvfs.lib import registry
+from pyvfs.lib import sleuthkit
+from pyvfs.lib import timelib
+from pyvfs.lib import vss
+from pyvfs.proto import transmission_pb2
 
 import pytsk3
 import pyvshadow

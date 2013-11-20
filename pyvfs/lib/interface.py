@@ -352,7 +352,7 @@ class PyPathSpec(object):
         proto.nested_pathspec.MergeFrom(proto_nested)
       else:
         attribute_value = getattr(self, attr, None)
-        if attribute_value != None:
+        if attribute_value is not None:
           setattr(proto, attr, attribute_value)
 
     return proto

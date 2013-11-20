@@ -19,10 +19,10 @@
 
 import os
 
-from pyvfs.io import fileio
+from pyvfs.io import file_io
 
 
-class DataRange(fileio.FileIO):
+class DataRange(file_io.FileIO):
   """File-like object that maps a specific data range within a file.
 
      The data range object allows to expose a single partition within
@@ -85,7 +85,7 @@ class DataRange(fileio.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: The VFS path specification (instance of TODO).
+      path_spec: The VFS path specification (instance of PathSpec).
 
     Raises:
       IOError: if the open file-like object could not be opened.
@@ -96,6 +96,7 @@ class DataRange(fileio.FileIO):
         raise IOError('Already open.')
 
       # TODO: add VFS support.
+      # TODO: set range based on VFS.
       self._file_object = open(path_spec, mode)
 
   def close(self):
