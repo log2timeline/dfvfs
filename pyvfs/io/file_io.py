@@ -21,9 +21,13 @@ import abc
 import os
 
 
+# Since this class implements the file-like object interface
+# the names of the interface functions are in lower case as an exception
+# to the normal naming convention.
+
+
 class FileIO(object):
   """The VFS file-like object interface."""
-  __abstract = True
 
   # Note: that the following function do not follow the style guide
   # because they are part of the file-like object interface.
@@ -33,7 +37,7 @@ class FileIO(object):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: The VFS path specification (instance of TODO).
+      path_spec: The VFS path specification (instance of PathSpec).
       mode: The file access mode. Default is 'rb' read-only binary.
 
     Raises:
@@ -42,11 +46,7 @@ class FileIO(object):
 
   @abc.abstractmethod
   def close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
 
   @abc.abstractmethod
   def read(self, size=None):
@@ -79,6 +79,7 @@ class FileIO(object):
       IOError: if the seek failed.
     """
 
+  # get_offset() is preferred above tell() by the libbfio layer used in libyal.
   @abc.abstractmethod
   def get_offset(self):
     """Returns the current offset into the file-like object."""

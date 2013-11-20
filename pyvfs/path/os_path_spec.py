@@ -1,5 +1,5 @@
-#!/bin/bash
-# A small script that runs all tests
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2013 The PyVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
@@ -15,31 +15,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""The operating system path specification implementation."""
 
-EXIT_FAILURE=1;
-EXIT_SUCCESS=0;
+from pyvfs.path import path_spec
 
-# Run the tests in a specific order.
-for SUBDIR in lib io vfs;
-do
-  TEST_FILES=`find "pyvfs/${SUBDIR}" -name "*_test.py" | grep -v "\/build\/"`;
 
-  for TEST_FILE in ${TEST_FILES};
-  do
-    echo "---+ ${TEST_FILE} +---"
-    PYTHONPATH=. /usr/bin/python ${TEST_FILE}
+class OSPathSpec(path_spec.PathSpec):
+  """The operating system path specification implementation."""
 
-    if [ $? -ne 0 ]
-    then
-      echo "TEST FAILED: ${TEST_FILE}.";
-      echo "";
-      echo "Stopping further testing.";
-      echo "";
-      exit ${EXIT_FAILURE};
-    fi
-    echo "";
-  done
-done
+  def __init__(self, location, parent=None):
+    """Initializes the operating system path specification object.
 
-exit ${EXIT_SUCCESS};
-
+    Args:
+      location: the operating specific location string e.g. /usr/lib/pyvfs.
+      parent: optional parent path specification (instance of PathSpec),
+              default is None.
+    """
+    super(OSPathSpec, self).__init__(parent=parent)
+    self.location = location

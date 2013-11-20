@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 # Copyright 2013 The PyVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
@@ -14,16 +15,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This file contains the unit tests for the PFile implementation in Plaso."""
+"""This file contains the unit tests for the PFile implementation."""
 import os
 import unittest
 
-from plaso.lib import errors
-from plaso.lib import event
-from plaso.lib import pfile
+from pyvfs.lib import errors
+from pyvfs.lib import event
+from pyvfs.lib import pfile
 
 
-class PlasoPFileTest(unittest.TestCase):
+class PyVFSPFileTest(unittest.TestCase):
   """The unit test for PFile implementation."""
 
   def setUp(self):

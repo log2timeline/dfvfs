@@ -42,7 +42,7 @@ load-plugins=
 # C0302: Too many lines in module (N)
 #
 # F0401: Unable to import 'module'
-# pylint acting strangely: plaso/lib/event.py: F0401: 26,0: Unable to import 'google.protobuf'
+# pylint acting strangely: pyvfs/lib/event.py: F0401: 26,0: Unable to import 'google.protobuf'
 #
 # I0010: Unable to consider inline option ''
 # I0011: Locally disabling WNNNN

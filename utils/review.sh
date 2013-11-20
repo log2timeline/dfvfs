@@ -92,7 +92,7 @@ fi
 
 echo -n "Short description of code review request: ";
 read DESCRIPTION
-TEMP_FILE=`mktemp .tmp_plaso_code_review.XXXXXX`;
+TEMP_FILE=`mktemp .tmp_pyvfs_code_review.XXXXXX`;
 
 if test "x${BROWSER_PARAM}" != "x";
 then
