@@ -49,20 +49,20 @@ class TSKVolume(volume_system.Volume):
 class TSKVolumeSystem(volume_system.VolumeSystem):
   """Class that implements a volume system object using the SleuthKit."""
 
-  def __init__(self, tsk_img):
+  def __init__(self, tsk_image):
     """Initializes the SleuthKit volume system object.
 
     Args:
-      img_info: a SleuthKit image object (pytsk3.Img_Info).
+      tsk_image: a SleuthKit image object (pytsk3.Img_Info).
 
     Raises:
       VolumeSystemError: if the volume system could not be accessed.
     """
     super(TSKVolumeSystem, self).__init__()
-    self._tsk_img = tsk_img
+    self._tsk_image = tsk_image
 
     try:
-      self._tsk_volume = pytsk3.Volume_Info(tsk_img)
+      self._tsk_volume = pytsk3.Volume_Info(tsk_image)
     except IOError as exception:
       raise errors.VolumeSystemError(
           u'Unable to access volume system with error: %s.' % exception)
