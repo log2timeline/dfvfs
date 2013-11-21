@@ -25,5 +25,5 @@ class UnableToOpenFile(Error):
   """Raised when a PlasoFile class attempts to open a file it cannot open."""
 
 
-class UnableToOpenFilesystem(Error):
-  """Raised when unable to open filesystem."""
+class VolumeSystemError(Error):
+  """Raised when unable to access a volume system."""
