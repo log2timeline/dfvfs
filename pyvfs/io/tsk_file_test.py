@@ -25,7 +25,7 @@ from pyvfs.io import tsk_file
 from pyvfs.path import tsk_path_spec
 
 
-class TSKUnitTest(unittest.TestCase):
+class TSKFileTest(unittest.TestCase):
   """The unit test for the SleuthKit (TSK) file-like object."""
 
   def setUp(self):
