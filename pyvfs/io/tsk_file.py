@@ -49,7 +49,7 @@ class TSKFile(file_io.FileIO):
     """Retrieves the file system metadata.
 
     Returns:
-      The SleuthKit file system metadat object (instance of
+      The SleuthKit file system metadata object (instance of
       pytsk3.TSK_FS_META).
     """
     if self._tsk_file and self._tsk_file.info:

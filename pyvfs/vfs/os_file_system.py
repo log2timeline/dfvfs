@@ -17,19 +17,29 @@
 # limitations under the License.
 """The operating system file system implementation."""
 
+import platform
+
+from pyvfs.path import os_path_spec
 from pyvfs.vfs import file_system
+from pyvfs.vfs import os_file_entry
 
 
 class OSFileSystem(file_system.FileSystem):
   """Class that implements a file system object using os."""
 
-  def __init__(self, file_object):
+  def __init__(self, drive_letter=None):
     """Initializes the file system object.
 
     Args:
-      file_object: The file-like object (instance of io.FileIO).
+      drive_letter: optional drive letter for Windows volumes,
+                    the default is None.
     """
-    super(OSFileSystem, self).__init__(file_object)
+    super(OSFileSystem, self).__init__()
+
+    if drive_letter:
+      self._drive_letter = drive_letter
+    else:
+      self._drive_letter = 'C'
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -37,8 +47,12 @@ class OSFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry).
     """
-    # TODO: implement.
-    pass
+    if platform.system() == 'Windows':
+      location = '{0:s}:\\'.format(self._drive_letter)
+    else:
+      location = '/'
+    path_spec = os_path_spec.OSPathSpec(location)
+    return os_file_entry.OSFileEntry(self, path_spec)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -48,10 +62,5 @@ class OSFileSystem(file_system.FileSystem):
 
     Returns:
       A file entry (instance of vfs.FileEntry).
-
-    Raises:
-      IOError: if the open file entry could not be opened.
-      ValueError: if the path specification is incorrect.
     """
-    # TODO: implement.
-    pass
+    return os_file_entry.OSFileEntry(self, path_spec)

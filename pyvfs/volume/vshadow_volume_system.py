@@ -45,7 +45,7 @@ class VShadowVolumeSystem(volume_system.VolumeSystem):
     """Initializes the VSS volume system object.
 
     Args:
-      file_object: A file-like object containing the VSS volume.
+      file_object: a file-like object containing the VSS volume.
 
     Raises:
       VolumeSystemError: if the volume system could not be accessed.

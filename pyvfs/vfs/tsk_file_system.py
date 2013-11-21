@@ -32,7 +32,7 @@ class _TSKFileSystemImage(pytsk3.Img_Info):
     """Initializes the image object.
 
     Args:
-      file_object: The file-like object (instance of io.FileIO).
+      file_object: the file-like object (instance of io.FileIO).
     """
     self._file_object = file_object
     super(_TSKFileSystemImage, self).__init__()
@@ -74,13 +74,23 @@ class TSKFileSystem(file_system.FileSystem):
     """Initializes the file system object.
 
     Args:
-      file_object: The file-like object (instance of io.FileIO).
+      file_object: the file-like object (instance of io.FileIO).
       offset: option offset, in bytes, of the start of the file system,
               the default is 0.
     """
-    super(TSKFileSystem, self).__init__(file_object)
+    super(TSKFileSystem, self).__init__()
+    self._file_object = file_object
     self._tsk_image = _TSKFileSystemImage(file_object)
     self._tsk_file_system = pytsk3.FS_Info(self._tsk_image, offset=offset)
+
+  def GetFsInfo(self):
+    """Retrieves the file system info object.
+
+    Returns:
+      The SleuthKit file system info object (instance of
+      pytsk3.FS_Info).
+    """
+    return self._tsk_file_system
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -125,4 +135,4 @@ class TSKFileSystem(file_system.FileSystem):
         self._tsk_file_system, tsk_file=tsk_file_object)
 
     return tsk_file_entry.TSKFileEntry(
-        self._tsk_file_system, path_spec, file_object=file_object)
+        self, path_spec, file_object=file_object)

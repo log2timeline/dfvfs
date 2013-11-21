@@ -15,29 +15,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The Virtual File System (VFS) file system object interface."""
+"""Tests for the file system implementation using the SleuthKit (TSK)."""
 
-import abc
+import unittest
+
+from pyvfs.vfs import os_file_system
 
 
-class FileSystem(object):
-  """The VFS file system object interface."""
+class OSFileSystemTest(unittest.TestCase):
+  """The unit test for the operating system file system object."""
 
-  @abc.abstractmethod
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
+  def testIntialize(self):
+    """Test the open and close functionality."""
+    file_system = os_file_system.OSFileSystem()
 
-    Returns:
-      A file entry (instance of vfs.FileEntry).
-    """
+    self.assertNotEquals(file_system, None)
+    # TODO: add tests.
 
-  @abc.abstractmethod
-  def GetFileEntryByPathSpec(self, path_spec):
-    """Retrieves a file entry for a path specification.
 
-    Args:
-      path_spec: a path specification (instance of path.PathSpec).
-
-    Returns:
-      A file entry (instance of vfs.FileEntry).
-    """
+if __name__ == '__main__':
+  unittest.main()

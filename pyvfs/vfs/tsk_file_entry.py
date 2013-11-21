@@ -40,9 +40,28 @@ class TSKFileEntry(file_entry.FileEntry):
   def _GetFile(self):
     """Retrieves the file-like object (instance of io.TSKFile)."""
     if self._file_object is None:
-      self._file_object = tsk_file.TSKFile(self._file_system)
+      tsk_file_system = self._file_system.GetFsInfo()
+      self._file_object = tsk_file.TSKFile(tsk_file_system)
       self._file_object.open(self.path_spec)
     return self._file_object
+
+  @property
+  def name(self):
+    """The name."""
+    # TODO: implement.
+    pass
+
+  @property
+  def number_of_sub_file_entries(self):
+    """The number of sub file entries."""
+    # TODO: implement.
+    pass
+
+  @property
+  def sub_file_entries(self):
+    """The sub file entries."""
+    # TODO: implement.
+    pass
 
   def GetData(self):
     """Retrieves the file-like object (instance of io.FileIO) of the data."""
