@@ -15,24 +15,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The Virtual File System (VFS) file-like object interface."""
+"""The operating system file-like object implementation."""
 
-import abc
 import os
 
-
-# Since this class implements the file-like object interface
-# the names of the interface functions are in lower case as an exception
-# to the normal naming convention.
+from pyvfs.io import file_io
 
 
-class FileIO(object):
-  """The VFS file-like object interface."""
+class OSFile(file_io.FileIO):
+  """Class that implements a file-like object using os."""
+
+  def __init__(self):
+    """Initializes the operating system file-like object."""
+    super(OSFile, self).__init__()
+    self._file_object = None
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  @abc.abstractmethod
   def open(self, path_spec, mode='rb'):
     """Opens the file-like object defined by path specification.
 
@@ -42,13 +42,26 @@ class FileIO(object):
 
     Raises:
       IOError: if the open file-like object could not be opened.
+      ValueError: if the path specification is incorrect.
     """
+    if self._file_object:
+      raise IOError('Already open.')
 
-  @abc.abstractmethod
+    location = getattr(path_spec, 'location', None)
+
+    if location is not None:
+      self._file_object = open(location, mode=mode)
+    else:
+      raise ValueError('Path specification missing location.')
+
+    stat_info = os.stat(location)
+    self._size = stat_info.st_size
+
   def close(self):
     """Closes the file-like object."""
+    self._file_object.close()
+    self._file_object = None
 
-  @abc.abstractmethod
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
 
@@ -65,8 +78,8 @@ class FileIO(object):
     Raises:
       IOError: if the read failed.
     """
+    return self._file_object.read(size)
 
-  @abc.abstractmethod
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks an offset within the file-like object.
 
@@ -78,16 +91,12 @@ class FileIO(object):
     Raises:
       IOError: if the seek failed.
     """
+    return self._file_object.seek(offset, whence)
 
-  # get_offset() is preferred above tell() by the libbfio layer used in libyal.
-  @abc.abstractmethod
   def get_offset(self):
     """Returns the current offset into the file-like object."""
+    return self._file_object.tell()
 
-  def tell(self):
-    """Returns the current offset into the file-like object."""
-    return self.get_offset()
-
-  @abc.abstractmethod
   def get_size(self):
     """Returns the size of the file-like object."""
+    return self._size

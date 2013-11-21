@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Read-only file-like object implementation using the SleuthKit (TSK)."""
+"""The SleuthKit (TSK) file-like object implementation."""
 
 import os
 import pytsk3
@@ -24,48 +24,76 @@ from pyvfs.io import file_io
 
 
 class TSKFile(file_io.FileIO):
-  """Class that implements a read-only file-like object using SleuthKit."""
+  """Class that implements a file-like object using pytsk3."""
 
-  def __init__(self, tsk_file_system):
+  def __init__(self, tsk_file_system, tsk_file=None):
     """Initializes the SleuthKit file-like object.
 
     Args:
-      tsk_file_system: A SleuthKit file system (pytsk3.FS_Info) object.
+      tsk_file_system: SleuthKit file system object (instance of
+                       pytsk3.FS_Info).
+      tsk_file: optional SleuthKit file object (instance of pytsk3.FS_Info),
+                the default is None.
     """
     super(TSKFile, self).__init__()
     self._tsk_file_system = tsk_file_system
-    self._tsk_file = None
+    self._tsk_file = tsk_file
     self._current_offset = 0
+
+    if tsk_file:
+      self._tsk_file_set_in_init = True
+    else:
+      self._tsk_file_set_in_init = False
+
+  def GetFsMeta(self):
+    """Retrieves the file system metadata.
+
+    Returns:
+      The SleuthKit file system metadat object (instance of
+      pytsk3.TSK_FS_META).
+    """
+    if self._tsk_file and self._tsk_file.info:
+      return self._tsk_file.info.meta
+    return None
+
+  # Note: that the following functions do not follow the style guide
+  # because they are part of the file-like object interface.
 
   def open(self, path_spec, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: The VFS path specification (instance of PathSpec).
+      path_spec: the path specification (instance of PathSpec).
+      mode: the file access mode, the default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.
       ValueError: if the path specification is incorrect.
     """
-    # Opening a file by inode number is faster than opening a file by location.
-    inode = getattr(path_spec, 'inode', None)
-    location = getattr(path_spec, 'location', None)
+    if not self._tsk_file_set_in_init:
+      if self._tsk_file:
+        raise IOError('Already open.')
 
-    if inode is not None:
-      self._tsk_file = self._tsk_file_system.open_meta(inode=inode)
-    elif location is not None:
-      self._tsk_file = self._tsk_file_system.open(location)
-    else:
-      raise ValueError('Path specification missing inode and location.')
+      # Opening a file by inode number is faster than opening a file
+      # by location.
+      inode = getattr(path_spec, 'inode', None)
+      location = getattr(path_spec, 'location', None)
 
-    if not self._tsk_file.info.meta:
-      raise IOError('Missing file metadata.')
+      if inode is not None:
+        self._tsk_file = self._tsk_file_system.open_meta(inode=inode)
+      elif location is not None:
+        self._tsk_file = self._tsk_file_system.open(location)
+      else:
+        raise ValueError('Path specification missing inode and location.')
 
-    if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
-      raise IOError('Not a regular file.')
+      if not self._tsk_file.info or not self._tsk_file.info.meta:
+        raise IOError('Missing file metadata.')
 
-    self._current_offset = 0
-    self._size = self._tsk_file.info.meta.size
+      if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
+        raise IOError('Not a regular file.')
+
+      self._current_offset = 0
+      self._size = self._tsk_file.info.meta.size
 
   def close(self):
     """Closes the file-like object."""

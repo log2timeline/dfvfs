@@ -30,14 +30,16 @@ class TSKFileTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    self._test_file = os.path.join('test_data', 'image.dd')
-    self._tsk_img = pytsk3.Img_Info(self._test_file)
-    self._tsk_fs = pytsk3.FS_Info(self._tsk_img, offset=0)
+    test_file = os.path.join('test_data', 'image.dd')
+    # Need to keep the pytsk3.Img_Info around due to issue
+    # with reference counting.
+    self._tsk_image = pytsk3.Img_Info(test_file)
+    self._tsk_file_system = pytsk3.FS_Info(self._tsk_image, offset=0)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15)
-    file_object = tsk_file.TSKFile(self._tsk_fs)
+    file_object = tsk_file.TSKFile(self._tsk_file_system)
 
     file_object.open(path_spec)
     self.assertEquals(file_object.get_size(), 116)
@@ -48,7 +50,7 @@ class TSKFileTest(unittest.TestCase):
   def testOpenCloseLocation(self):
     """Test the open and close functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(location='/passwords.txt')
-    file_object = tsk_file.TSKFile(self._tsk_fs)
+    file_object = tsk_file.TSKFile(self._tsk_file_system)
 
     file_object.open(path_spec)
     self.assertEquals(file_object.get_size(), 116)
@@ -60,7 +62,7 @@ class TSKFileTest(unittest.TestCase):
     """Test the seek functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location='/a_directory/another_file')
-    file_object = tsk_file.TSKFile(self._tsk_fs)
+    file_object = tsk_file.TSKFile(self._tsk_file_system)
 
     file_object.open(path_spec)
     self.assertEquals(file_object.get_size(), 22)
@@ -98,7 +100,7 @@ class TSKFileTest(unittest.TestCase):
   def testRead(self):
     """Test the read functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, location='/passwords.txt')
-    file_object = tsk_file.TSKFile(self._tsk_fs)
+    file_object = tsk_file.TSKFile(self._tsk_file_system)
 
     file_object.open(path_spec)
     read_buffer = file_object.read()

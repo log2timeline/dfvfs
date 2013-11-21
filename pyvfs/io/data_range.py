@@ -78,7 +78,7 @@ class DataRange(file_io.FileIO):
     self._range_size = range_size
     self._current_offset = 0
 
-  # Note: that the following function do not follow the style guide
+  # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
   def open(self, path_spec, mode='rb'):

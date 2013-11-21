@@ -15,3 +15,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""The Virtual File System (VFS) stat object interface."""
+
+# TODO: add protobuf/serialization support.
+
+
+class Stat(object):
+  """The VFS stat object interface."""
+
+  def __init__(self):
+    """Initializes the stat object."""
+    super(Stat, self).__init__()
+
+    # File data stat information.
+    self.size = None
+
+    # Date and time stat information.
+    self.atime = None
+    self.ctime = None
+    self.mtime = None
+
+    # Ownership and permissions stat information.
+    self.uid = None
+    self.gid = None
+
+    # Other stat information.
+    self.mode = None
+    self.ino = None
+    self.dev = None
+    self.nlink = None
+    self.fs_type = None
+    self.allocated = None

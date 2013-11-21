@@ -51,28 +51,3 @@ class OsFile(interface.PyVFSFile):
       return self.fh.readline(size)
     else:
       return ''
-
-  def Stat(self):
-    """Return a Stats object that contains stats like information."""
-    ret = Stats()
-    if not self.fh:
-      return ret
-
-    stat = os.stat(self.name)
-    ret.mode = stat.st_mode
-    ret.ino = stat.st_ino
-    ret.dev = stat.st_dev
-    ret.nlink = stat.st_nlink
-    ret.uid = stat.st_uid
-    ret.gid = stat.st_gid
-    ret.size = stat.st_size
-    if stat.st_atime > 0:
-      ret.atime = stat.st_atime
-    if stat.st_mtime > 0:
-      ret.mtime = stat.st_mtime
-    if stat.st_ctime > 0:
-      ret.ctime = stat.st_ctime
-    ret.fs_type = 'Unknown'
-    ret.allocated = True
-
-    return ret

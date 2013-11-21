@@ -55,8 +55,8 @@ class TSKFile(object):
     else:
       self.fileobj = self.fs.open(path)
 
-    self.size = self.fileobj.info.meta.size
     self.name = path
+    self.size = self.fileobj.info.meta.size
     self.ctime = self.fileobj.info.meta.ctime
 
     if not self.fileobj.info.meta:
@@ -246,60 +246,6 @@ class TskFile(interface.PyVFSFile):
     fs_obj = self._fscache.Open(path, offset)
 
     self._fs = fs_obj.fs
-
-  def Stat(self):
-    """Return a Stats object that contains stats like information."""
-    raise RuntimeError('Not implemented yet.')
-    # if hasattr(self, '_stat'):
-    #   return self._stat
-
-    # ret = Stats()
-    # if not self.fh:
-    #   return ret
-
-    # try:
-    #   info = self.fh.fileobj.info
-    #   meta = info.meta
-    # except IOError:
-    #   return ret
-
-    # if not meta:
-    #   return ret
-
-    # fs_type = ''
-    # ret.mode = getattr(meta, 'mode', None)
-    # ret.ino = getattr(meta, 'addr', None)
-    # ret.nlink = getattr(meta, 'nlink', None)
-    # ret.uid = getattr(meta, 'uid', None)
-    # ret.gid = getattr(meta, 'gid', None)
-    # ret.size = getattr(meta, 'size', None)
-    # ret.atime = getattr(meta, 'atime', None)
-    # ret.atime_nano = getattr(meta, 'atime_nano', None)
-    # ret.crtime = getattr(meta, 'crtime', None)
-    # ret.crtime_nano = getattr(meta, 'crtime_nano', None)
-    # ret.mtime = getattr(meta, 'mtime', None)
-    # ret.mtime_nano = getattr(meta, 'mtime_nano', None)
-    # ret.ctime = getattr(meta, 'ctime', None)
-    # ret.ctime_nano = getattr(meta, 'ctime_nano', None)
-    # ret.dtime = getattr(meta, 'dtime', None)
-    # ret.dtime_nano = getattr(meta, 'dtime_nano', None)
-    # ret.bkup_time = getattr(meta, 'bktime', None)
-    # ret.bkup_time_nano = getattr(meta, 'bktime_nano', None)
-    # fs_type = str(self._fs.info.ftype)
-
-    # check_allocated = getattr(self.fh.fileobj, 'IsAllocated', None)
-    # if check_allocated:
-    #   ret.allocated = check_allocated()
-    # else:
-    #   ret.allocated = True
-
-    # if fs_type.startswith('TSK_FS_TYPE'):
-    #   ret.fs_type = fs_type[12:]
-    # else:
-    #   ret.fs_type = fs_type
-
-    # self._stat = ret
-    # return ret
 
   def Open(self, filehandle=None):
     """Open the file as it is described in the PathSpec protobuf.

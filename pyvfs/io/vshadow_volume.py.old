@@ -15,32 +15,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Sleuthkit (TSK) image object for Volume Shadow Snapshots (VSS)."""
+"""Volume Shadow Snapshots (VSS) file-like object implementation."""
 
-import pytsk3
+from pyvfs.io import file_io
 
 
-class VShadowImgInfo(pytsk3.Img_Info):
-  """SleuthKit image object (pytsk3.Img_Info) to read VSS volumes."""
+class VShadowVolume(file_io.FileIO):
+  """Class that implements a file-like object using pyvshadow."""
 
   def __init__(self, store):
-    """Initializes the VSS image object (pytsk3.Img_Info).
+    """Initializes the file-like object.
 
     Args:
       store: The store object (pyvshadow.store) that exposes a Volume
              Shadow Snapshot.
     """
+    super(VShadowVolume, self).__init__()
     self._store = store
-    super(VShadowImgInfo, self).__init__()
 
   def close(self):
-    """Closes the image object."""
-    # TODO: This previously broke pytsk, change if this has been fixed.
-    # self._store = None
-    pass
+    """Closes the file-like object."""
+    self._store = None
 
   def read(self, offset, size):
-    """Reads a byte string from the image object at the specified offset.
+    """Reads a byte string from the file-like object at the specified offset.
 
     Args:
       offset: The offset where to start reading.
