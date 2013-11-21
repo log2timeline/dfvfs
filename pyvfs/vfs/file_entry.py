@@ -38,6 +38,18 @@ class FileEntry(object):
     self.file_system = file_system
     self.path_spec = path_spec
 
+  @abc.abstractproperty
+  def name(self):
+    """The name."""
+
+  @abc.abstractproperty
+  def number_of_sub_file_entries(self):
+    """The number of sub file entries."""
+
+  @abc.abstractproperty
+  def sub_file_entries(self):
+    """The sub file entries."""
+
   @abc.abstractmethod
   def GetData(self):
     """Retrieves the file-like object (instance of io.FileIO) of the data."""

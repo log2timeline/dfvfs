@@ -23,6 +23,13 @@
 class Stat(object):
   """The VFS stat object interface."""
 
+  TYPE_DEVICE = 1
+  TYPE_DIRECTORY = 2
+  TYPE_FILE = 3
+  TYPE_LINK = 4
+  TYPE_SOCKET = 5
+  TYPE_PIPE = 6
+
   def __init__(self):
     """Initializes the stat object."""
     super(Stat, self).__init__()
@@ -36,13 +43,16 @@ class Stat(object):
     self.mtime = None
 
     # Ownership and permissions stat information.
+    self.mode = None
     self.uid = None
     self.gid = None
 
+    # File entry type stat information.
+    self.type = None
+
     # Other stat information.
-    self.mode = None
-    self.ino = None
-    self.dev = None
-    self.nlink = None
+    # self.ino = None
+    # self.dev = None
+    # self.nlink = None
     self.fs_type = None
     self.allocated = None
