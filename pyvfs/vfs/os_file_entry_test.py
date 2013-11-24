@@ -29,17 +29,35 @@ class OSFileEntryTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    self.file_system = os_file_system.OSFileSystem()
+    self._file_system = os_file_system.OSFileSystem()
+    self._test_file = os.path.join('test_data', 'testdir')
 
   def testGetFileEntryByPathSpec(self):
-    """Test the open and close functionality."""
-    test_file = os.path.join('test_data', 'image.dd')
-    path_spec = os_path_spec.OSPathSpec(test_file)
+    """Test the get a file entry by path specification functionality."""
+    path_spec = os_path_spec.OSPathSpec(self._test_file)
 
-    file_entry = self.file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
-    # TODO: add tests.
+
+  def testSubFileEntries(self):
+    """Test the sub file entries iteration functionality."""
+    path_spec = os_path_spec.OSPathSpec(self._test_file)
+
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+    self.assertEquals(file_entry.number_of_sub_file_entries, 5)
+
+    expected_sub_file_entry_names = [
+        'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', 'file5.txt']
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEquals(
+        sorted(sub_file_entry_names), expected_sub_file_entry_names)
 
 
 if __name__ == '__main__':
