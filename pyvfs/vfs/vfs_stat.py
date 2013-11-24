@@ -17,10 +17,17 @@
 # limitations under the License.
 """The Virtual File System (VFS) stat object interface."""
 
+# Note that if this file is name stat.py it will cause naming conflicts
+# if used in combination with 'import stat'.
+
+# Note that the stat object is currently kept around for backwards
+# compatibility. Having a file (entry) attribute object might be more
+# flexible in dealing with e.g. NTFS attributes.
+
 # TODO: add protobuf/serialization support.
 
 
-class Stat(object):
+class VFSStat(object):
   """The VFS stat object interface."""
 
   TYPE_DEVICE = 1
@@ -32,7 +39,7 @@ class Stat(object):
 
   def __init__(self):
     """Initializes the stat object."""
-    super(Stat, self).__init__()
+    super(VFSStat, self).__init__()
 
     # File data stat information.
     self.size = None

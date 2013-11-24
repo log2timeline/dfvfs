@@ -54,7 +54,7 @@ class TSKFile(file_io.FileIO):
     """
     if self._tsk_file and self._tsk_file.info:
       return self._tsk_file.info.meta
-    return None
+    return
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.

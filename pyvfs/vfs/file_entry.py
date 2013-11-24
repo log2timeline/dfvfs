@@ -35,7 +35,7 @@ class FileEntry(object):
       path_spec: the path specification object (instance of path.PathSpec).
     """
     super(FileEntry, self).__init__()
-    self.file_system = file_system
+    self._file_system = file_system
     self.path_spec = path_spec
 
   @abc.abstractproperty

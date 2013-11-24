@@ -19,7 +19,7 @@
 
 from pyvfs.io import tsk_file
 from pyvfs.vfs import file_entry
-from pyvfs.vfs import stat
+from pyvfs.vfs import vfs_stat
 
 
 class TSKFileEntry(file_entry.FileEntry):
@@ -69,7 +69,7 @@ class TSKFileEntry(file_entry.FileEntry):
     pass
 
   def GetStat(self):
-    """Retrieves the stat object (instance of vfs.Stat)."""
+    """Retrieves the stat object (instance of vfs.VFSStat)."""
     # TODO validate path spec.
 
     if self._stat_object is None:
@@ -77,9 +77,9 @@ class TSKFileEntry(file_entry.FileEntry):
       tsk_fs_meta = file_object.GetFsMeta()
 
       if not tsk_fs_meta:
-        return None
+        return
 
-      self._stat_object = stat.Stat()
+      self._stat_object = vfs_stat.VFSStat()
 
       # File data stat information.
       self._stat_object.size = getattr(tsk_fs_meta, 'size', None)
