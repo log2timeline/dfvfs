@@ -115,7 +115,17 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-# Check if the local repo is in sync with the origin
+# Check if we're on the master branch.
+BRANCH=`git branch | grep -e "^[*]" | sed "s/^[*] //"`;
+
+if test "${BRANCH}" != "master";
+then
+  echo "Sumbit aborted - current branch is not master";
+
+  exit ${EXIT_FAILURE};
+fi
+
+# Check if the local repo is in sync with the origin.
 git fetch
 
 if test $? -ne 0;
