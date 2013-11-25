@@ -23,33 +23,50 @@ EXIT_SUCCESS=0;
 SCRIPTNAME=`basename $0`;
 
 BROWSER_PARAM="";
-if test "$1" == "--nobrowser";
+CL_NUMBER=0;
+USE_CL_FILE=0;
+
+while test $# -gt 0;
+do
+  case $1 in
+  --nobrowser | --no-browser | --no_browser )
+    BROWSER_PARAM="--no_oauth2_webbrowser";
+    shift;
+    ;;
+
+  *)
+    CL_NUMBER=$1;
+    shift
+    ;;
+  esac
+done
+
+if test -z $CL_NUMBER;
 then
-  BROWSER_PARAM="--no_oauth2_webbrowser";
-  shift
+  if test -f ._code_review_number;
+  then
+    CL_NUMBER=`cat ._code_review_number`
+
+    if test "x`echo $CL_NUMBER | sed -e 's/[0-9]//g'`" != "x";
+    then
+      echo "File ._code_review_number exists but contains an invalid CL number.";
+      exit ${EXIT_FAILURE};
+    fi
+
+    USE_CL_FILE=1;
+  fi
 fi
 
-if test -f ._code_review_number;
+if test -z $CL_NUMBER;
 then
-  CL_NUMBER=`cat ._code_review_number`
-  if test "x`echo $CL_NUMBER | sed -e 's/[0-9]//g'`" != "x";
-  then
-    echo "File ._code_review_number exists but contains wrong CL number.";
-    exit 1;
-  fi
-else
-  # Check usage
-  if test $# -ne 1;
-  then
-    echo "Usage: ./${SCRIPTNAME} CL#";
-    echo "";
-    echo "       CL#: the change list number that is to be submitted.";
-    echo "";
+  echo "Usage: ./${SCRIPTNAME} [--nobrowser] CL_NUMBER";
+  echo "";
+  echo "  CL_NUMBER: optional change list (CL) number that is to be submitted.";
+  echo "             If no CL number is provided the value is read from:";
+  echo "             ._code_review_number";
+  echo "";
 
-    exit ${EXIT_MISSING_ARGS};
-  fi
-
-  CL_NUMBER=$1;
+  exit ${EXIT_MISSING_ARGS};
 fi
 
 if ! test -f "utils/common.sh";
@@ -137,7 +154,7 @@ else
   echo "manually close the ticket on the code review site."
 fi
 
-if test -f "._code_review_number";
+if ! test -z ${USE_CL_FILE} && test -f "._code_review_number";
 then
   rm -f ._code_review_number
 fi

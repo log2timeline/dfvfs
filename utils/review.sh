@@ -17,29 +17,44 @@
 # limitations under the License.
 
 EXIT_SUCCESS=0;
-EXIT_FAILURE=1;
+EXIT_MISSING_ARGS=2;
+EXIT_SUCCESS=0;
 
-# Check usage
-if test $# -lt 1;
-then
-  echo "Wrong USAGE: `basename $0` [--nobrowser] REVIEWER";
-  exit ${EXIT_FAILURE};
-fi
+SCRIPTNAME=`basename $0`;
 
 BROWSER_PARAM="";
-while `test $# -gt 0`;
+USE_CL_FILE=1;
+
+while test $# -gt 0;
 do
   case $1 in
-  --nobrowser)
+  --nobrowser | --no-browser | --no_browser )
     BROWSER_PARAM="--no_oauth2_webbrowser";
     shift;
     ;;
+
+  --noclfile | --no-clfile | --no_clfile )
+    USE_CL_FILE=0;
+    shift;
+    ;;
+
   *)
     REVIEWER=$1;
     shift
     ;;
   esac
 done
+
+if test -z $REVIEWER;
+then
+  echo "Usage: ./${SCRIPTNAME} [--nobrowser] [--noclfile] REVIEWER";
+  echo "";
+  echo "  REVIEWER: the email address of the reviewer that is registered with:"
+  echo "            https://codereview.appspot.com";
+  echo "";
+
+  exit ${EXIT_MISSING_ARGS};
+fi
 
 if ! test -f "utils/common.sh";
 then
@@ -115,7 +130,9 @@ if test -z ${CL};
 then
   echo "Unable to upload code change for review.";
   exit ${EXIT_FAILURE};
-else
+
+elif ! test -z ${USE_CL_FILE};
+then
   echo ${CL} > ._code_review_number;
   echo "Code review number: ${CL} is saved, so no need to include that in future updates/submits.";
 fi
