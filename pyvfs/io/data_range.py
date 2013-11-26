@@ -15,15 +15,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""File-like object that maps a specific data range within a file."""
+"""The data range file-like object."""
 
 import os
 
+from pyvfs.lib import errors
 from pyvfs.io import file_io
+from pyvfs.resolver import resolver
 
 
 class DataRange(file_io.FileIO):
-  """File-like object that maps a specific data range within a file.
+  """Class that implements a file-like object that maps an in-file data range.
 
      The data range object allows to expose a single partition within
      a full disk image as a separate file-like object by mapping
@@ -31,25 +33,27 @@ class DataRange(file_io.FileIO):
      image.
   """
   def __init__(self, file_object=None):
-    """Initialize the data range file-like object.
+    """Initialize the file-like object.
 
        If the file-like object is chained do not separately use the parent
        file-like object.
 
     Args:
-      file_object: The chained file-like object can be None if open is used.
-                   Default is None.
+      file_object: optional parent file-like object. The default is None.
     """
     super(DataRange, self).__init__()
     self._file_object = file_object
     self._current_offset = 0
-    self._range_offset = -1
-    self._range_size = -1
 
     if file_object:
       self._file_object_set_in_init = True
+      self._range_offset = 0
+      self._range_size = file_object.get_size()
     else:
       self._file_object_set_in_init = False
+      self._range_offset = -1
+      self._range_size = -1
+    self._is_open = False
 
   def SetRange(self, range_offset, range_size):
     """Sets the data range (offset and size).
@@ -58,12 +62,16 @@ class DataRange(file_io.FileIO):
     (e.g. a single partition within a full disk image) as a file-like object.
 
     Args:
-      range_offset: The start offset of the data range.
-      range_size: The size of the data range.
+      range_offset: the start offset of the data range.
+      range_size: the size of the data range.
 
     Raises:
+      IOError: if the file-like object is already open.
       ValueError: if either the range offset or size is invalid.
     """
+    if self._is_open:
+      raise IOError('Already open.')
+
     if range_offset < 0:
       raise ValueError(
           'Invalid range offset: {0:d} value out of bounds.'.format(
@@ -85,35 +93,53 @@ class DataRange(file_io.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: The VFS path specification (instance of PathSpec).
+      path_spec: the VFS path specification (instance of path.PathSpec).
 
     Raises:
       IOError: if the open file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
     """
-    if not self._file_object_set_in_init:
-      if self._file_object:
-        # TODO: add more info to the error string.
-        raise IOError('Already open.')
+    if self._is_open:
+      raise IOError('Already open.')
 
-      # TODO: add VFS support.
-      # TODO: set range based on VFS.
-      self._file_object = open(path_spec, mode)
+    if not self._file_object_set_in_init:
+      if not path_spec.HasParent():
+        raise errors.PathSpecError(
+            'Unsupported path specification without parent.')
+ 
+      self._file_object = resolver.Resolver.OpenPathSpec(path_spec.parent)
+
+      range_offset = getattr(path_spec, 'range_offset', None)
+      range_size = getattr(path_spec, 'range_size', None)
+  
+      if range_offset is None or range_size is None:
+        raise errors.PathSpecError(
+            'Path specification missing range offset and range size.')
+
+      self.SetRange(range_offset, range_size)
+
+    self._is_open = True
 
   def close(self):
     """Closes the file-like object.
 
        If the file-like object was passed in the init function
-       the data range object does not control the file-like object
+       the data range file-like object does not control the file-like object
        and should not actually close the file-like object.
 
     Raises:
       IOError: if the close failed.
     """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     if not self._file_object_set_in_init:
-      if not self._file_object:
-        raise IOError('Already closed.')
       self._file_object.close()
       self._file_object = None
+      self._range_offset = -1
+      self._range_size = -1
+
+    self._is_open = False
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -122,7 +148,7 @@ class DataRange(file_io.FileIO):
        all of the remaining data if no size was specified.
 
     Args:
-      size: Optional integer value containing the number of bytes to read.
+      size: optional integer value containing the number of bytes to read.
             Default is all remaining data (None).
 
     Returns:
@@ -131,6 +157,9 @@ class DataRange(file_io.FileIO):
     Raises:
       IOError: if the read failed.
     """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     if self._range_offset < 0 or self._range_size < 0:
       raise IOError('Invalid data range.')
 
@@ -160,13 +189,21 @@ class DataRange(file_io.FileIO):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: The offset to seek.
-      whence: Optional value that indicates whether offset is an absolute
+      offset: the offset to seek.
+      whence: optional value that indicates whether offset is an absolute
               or relative position within the file. Default is SEEK_SET.
 
     Raises:
       IOError: if the seek failed.
     """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
+    if self._current_offset < 0:
+      raise IOError(
+          'Invalid current offset: {0:d} value less than zero.'.format(
+              self._current_offset))
+
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
@@ -178,9 +215,23 @@ class DataRange(file_io.FileIO):
     self._current_offset = offset
 
   def get_offset(self):
-    """Returns the current offset into the file-like object."""
+    """Returns the current offset into the file-like object.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     return self._current_offset
 
   def get_size(self):
-    """Returns the size of the file-like object."""
+    """Returns the size of the file-like object.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     return self._range_size

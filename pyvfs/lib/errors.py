@@ -25,5 +25,9 @@ class UnableToOpenFile(Error):
   """Raised when a PlasoFile class attempts to open a file it cannot open."""
 
 
+class PathSpecError(Error):
+  """Raised for path specification errors."""
+
+
 class VolumeSystemError(Error):
   """Raised when unable to access a volume system."""

@@ -20,6 +20,7 @@
 import os
 import pytsk3
 
+from pyvfs.lib import errors
 from pyvfs.io import file_io
 
 
@@ -27,7 +28,7 @@ class TSKFile(file_io.FileIO):
   """Class that implements a file-like object using pytsk3."""
 
   def __init__(self, tsk_file_system, tsk_file=None):
-    """Initializes the SleuthKit file-like object.
+    """Initializes the file-like object.
 
     Args:
       tsk_file_system: SleuthKit file system object (instance of
@@ -44,6 +45,7 @@ class TSKFile(file_io.FileIO):
       self._tsk_file_set_in_init = True
     else:
       self._tsk_file_set_in_init = False
+    self._is_open = False
 
   def GetFile(self):
     """Retrieves the file object.
@@ -65,58 +67,76 @@ class TSKFile(file_io.FileIO):
 
     Raises:
       IOError: if the open file-like object could not be opened.
-      ValueError: if the path specification is incorrect.
+      PathSpecError: if the path specification is incorrect.
     """
-    if not self._tsk_file_set_in_init:
-      if self._tsk_file:
-        raise IOError('Already open.')
+    if self._is_open:
+      raise IOError('Already open.')
 
+    if not self._tsk_file_set_in_init:
+      # TODO: implement parent support.
+      if path_spec.HasParent():
+        raise errors.PathSpecError(
+            'Unsupported path specification with parent.')
+  
       # Opening a file by inode number is faster than opening a file
       # by location.
       inode = getattr(path_spec, 'inode', None)
       location = getattr(path_spec, 'location', None)
-
+  
       if inode is not None:
         self._tsk_file = self._tsk_file_system.open_meta(inode=inode)
       elif location is not None:
         self._tsk_file = self._tsk_file_system.open(location)
       else:
-        raise ValueError('Path specification missing inode and location.')
-
+        raise errors.PathSpecError(
+            'Path specification missing inode and location.')
+  
       # Note that because pytsk3.File does not explicitly defines info
       # we need to check if the attribute exists and has a value other
       # than None.
       if getattr(self._tsk_file, 'info', None) is None:
         raise IOError('Missing attribute info in file (pytsk3.File).')
-
+  
       # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
       # we need to check if the attribute exists and has a value other
       # than None.
       if getattr(self._tsk_file.info, 'meta', None) is None:
         raise IOError(
             'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
-
+  
       # Note that because pytsk3.TSK_FS_META does not explicitly defines size
       # we need to check if the attribute exists.
       if not hasattr(self._tsk_file.info.meta, 'size'):
         raise IOError(
             'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
-
+  
       # Note that because pytsk3.TSK_FS_META does not explicitly defines type
       # we need to check if the attribute exists.
       if not hasattr(self._tsk_file.info.meta, 'type'):
         raise IOError(
             'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
-
+  
       if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
         raise IOError('Not a regular file.')
-
+  
       self._current_offset = 0
       self._size = self._tsk_file.info.meta.size
 
+    self._is_open = True
+
   def close(self):
-    """Closes the file-like object."""
-    self._tsk_file = None
+    """Closes the file-like object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
+    if not self._tsk_file_set_in_init:
+      self._tsk_file = None
+
+    self._is_open = False
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -134,6 +154,9 @@ class TSKFile(file_io.FileIO):
     Raises:
       IOError: if the read failed.
     """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     if self._current_offset < 0:
       raise IOError('Invalid current offset value less than zero.')
 
@@ -163,6 +186,9 @@ class TSKFile(file_io.FileIO):
     Raises:
       IOError: if the seek failed.
     """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
@@ -176,9 +202,23 @@ class TSKFile(file_io.FileIO):
     self._current_offset = offset
 
   def get_offset(self):
-    """Returns the current offset into the file-like object."""
+    """Returns the current offset into the file-like object.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     return self._current_offset
 
   def get_size(self):
-    """Returns the size of the file-like object."""
+    """Returns the size of the file-like object.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
     return self._size

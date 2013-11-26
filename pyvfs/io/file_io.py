@@ -27,7 +27,7 @@ import os
 
 
 class FileIO(object):
-  """The VFS file-like object interface."""
+  """Class that implements the VFS file-like object interface."""
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -46,7 +46,11 @@ class FileIO(object):
 
   @abc.abstractmethod
   def close(self):
-    """Closes the file-like object."""
+    """Closes the file-like object.
+
+    Raises:
+      IOError: if the close failed.
+    """
 
   @abc.abstractmethod
   def read(self, size=None):
@@ -82,12 +86,21 @@ class FileIO(object):
   # get_offset() is preferred above tell() by the libbfio layer used in libyal.
   @abc.abstractmethod
   def get_offset(self):
-    """Returns the current offset into the file-like object."""
+    """Returns the current offset into the file-like object.
 
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+
+  # Pythonesque alias for get_offset().
   def tell(self):
     """Returns the current offset into the file-like object."""
     return self.get_offset()
 
   @abc.abstractmethod
   def get_size(self):
-    """Returns the size of the file-like object."""
+    """Returns the size of the file-like object.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """

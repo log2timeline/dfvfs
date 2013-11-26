@@ -15,21 +15,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The operating system path specification implementation."""
+"""The data range path specification implementation."""
 
 from pyvfs.path import path_spec
 
 
-class OSPathSpec(path_spec.PathSpec):
-  """Class that implements the operating system path specification."""
+class DataRangePathSpec(path_spec.PathSpec):
+  """Class that implements the data range path specification."""
 
-  def __init__(self, location, parent=None):
-    """Initializes the operating system path specification object.
+  def __init__(self, range_offset, range_size, parent):
+    """Initializes the data range path specification object.
+
+       Note that the data range path specification must have a parent.
 
     Args:
-      location: the operating specific location string e.g. /usr/lib/pyvfs.
-      parent: optional parent path specification (instance of PathSpec),
-              default is None.
+      range_offset: the start offset of the data range.
+      range_size: the size of the data range.
+      parent: parent path specification (instance of PathSpec).
     """
-    super(OSPathSpec, self).__init__(parent=parent)
-    self.location = location
+    super(DataRangePathSpec, self).__init__(parent=parent)
+    self.range_offset = range_offset
+    self.range_size = range_size

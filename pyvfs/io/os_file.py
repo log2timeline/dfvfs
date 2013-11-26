@@ -19,6 +19,7 @@
 
 import os
 
+from pyvfs.lib import errors
 from pyvfs.io import file_io
 
 
@@ -26,7 +27,7 @@ class OSFile(file_io.FileIO):
   """Class that implements a file-like object using os."""
 
   def __init__(self):
-    """Initializes the operating system file-like object."""
+    """Initializes the file-like object."""
     super(OSFile, self).__init__()
     self._file_object = None
 
@@ -42,23 +43,33 @@ class OSFile(file_io.FileIO):
 
     Raises:
       IOError: if the open file-like object could not be opened.
-      ValueError: if the path specification is incorrect.
+      PathSpecError: if the path specification is incorrect.
     """
     if self._file_object:
       raise IOError('Already open.')
+
+    if path_spec.HasParent():
+      raise errors.PathSpecError('Unsupported path specification with parent.')
 
     location = getattr(path_spec, 'location', None)
 
     if location is not None:
       self._file_object = open(location, mode=mode)
     else:
-      raise ValueError('Path specification missing location.')
+      raise errors.PathSpecError('Path specification missing location.')
 
     stat_info = os.stat(location)
     self._size = stat_info.st_size
 
   def close(self):
-    """Closes the file-like object."""
+    """Closes the file-like object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    if not self._file_object:
+      raise IOError('Not opened.')
+
     self._file_object.close()
     self._file_object = None
 
@@ -78,6 +89,12 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the read failed.
     """
+    if not self._file_object:
+      raise IOError('Not opened.')
+
+    if size is None:
+      size = self._size - self._file_object.tell()
+
     return self._file_object.read(size)
 
   def seek(self, offset, whence=os.SEEK_SET):
@@ -91,12 +108,29 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the seek failed.
     """
+    if not self._file_object:
+      raise IOError('Not opened.')
+
     return self._file_object.seek(offset, whence)
 
   def get_offset(self):
-    """Returns the current offset into the file-like object."""
+    """Returns the current offset into the file-like object.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+    if not self._file_object:
+      raise IOError('Not opened.')
+
     return self._file_object.tell()
 
   def get_size(self):
-    """Returns the size of the file-like object."""
+    """Returns the size of the file-like object.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+    if not self._file_object:
+      raise IOError('Not opened.')
+
     return self._size

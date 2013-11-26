@@ -28,7 +28,7 @@
 
 
 class VFSStat(object):
-  """The VFS stat object interface."""
+  """Class that implements the VFS stat object interface."""
 
   TYPE_DEVICE = 1
   TYPE_DIRECTORY = 2

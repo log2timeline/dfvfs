@@ -21,6 +21,9 @@ import os
 import unittest
 
 from pyvfs.io import data_range
+from pyvfs.io import os_file
+from pyvfs.path import data_range_path_spec
+from pyvfs.path import os_path_spec
 
 
 class DataRange(unittest.TestCase):
@@ -28,22 +31,42 @@ class DataRange(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    self._test_file = os.path.join('test_data', 'syslog_copy')
+    location = os.path.join('test_data', 'syslog_copy')
+    self._os_path_spec = os_path_spec.OSPathSpec(location=location)
+    self._data_range_path_spec = data_range_path_spec.DataRangePathSpec(
+        167, 1080, parent=self._os_path_spec)
 
-  def testOpenClose(self):
-    """Test the open and close functionality."""
-    file_object = data_range.DataRange()
+  def testOpenCloseFileObject(self):
+    """Test the open and close functionality using a file-like object."""
+    os_file_object = os_file.OSFile()
+    os_file_object.open(self._os_path_spec)
+    file_object = data_range.DataRange(os_file_object)
+    file_object.open(None)
 
-    file_object.open(self._test_file)
+    self.assertEquals(file_object.get_size(), 1247)
 
     file_object.close()
+    os_file_object.close()
 
   def testSetRange(self):
-    """Test the read functionality."""
-    file_object = data_range.DataRange()
-
-    file_object.open(self._test_file)
+    """Test the set data range functionality."""
+    os_file_object = os_file.OSFile()
+    os_file_object.open(self._os_path_spec)
+    file_object = data_range.DataRange(os_file_object)
     file_object.SetRange(167, 1080)
+    file_object.open(None)
+
+    self.assertEquals(file_object.get_size(), 1080)
+
+    file_object.close()
+    os_file_object.close()
+
+    # TODO: add some edge case tesing here.
+
+  def testOpenClosePathSpec(self):
+    """Test the open and close functionality using a path specification."""
+    file_object = data_range.DataRange()
+    file_object.open(self._data_range_path_spec)
 
     self.assertEquals(file_object.get_size(), 1080)
 
@@ -52,9 +75,7 @@ class DataRange(unittest.TestCase):
   def testRead(self):
     """Test the read functionality."""
     file_object = data_range.DataRange()
-
-    file_object.open(self._test_file)
-    file_object.SetRange(167, 1080)
+    file_object.open(self._data_range_path_spec)
 
     expected_buffer = (
         'Jan 22 07:53:01 myhostname.myhost.com CRON[31051]: (root) CMD '
