@@ -20,7 +20,7 @@ EXIT_FAILURE=1;
 EXIT_SUCCESS=0;
 
 # Run the tests in a specific order.
-for SUBDIR in lib io path vfs volume;
+for SUBDIR in lib io path vfs volume helpers;
 do
   TEST_FILES=`find "pyvfs/${SUBDIR}" -name "*_test.py" | grep -v "\/build\/"`;
 

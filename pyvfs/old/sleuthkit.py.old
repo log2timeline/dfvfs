@@ -167,62 +167,6 @@ class TSKFile(object):
     # do a lot of seek operations, effectively nulling the buffer for each seek.
     self.readahead = ''
 
-  def readline(self, size=None):
-    """Read a line from the file.
-
-    Args:
-      size: Defines the maximum byte count (including the new line trail)
-      and if defined may get the function to return an incomplete line.
-
-    Returns:
-      A string containing a single line read from the file.
-    """
-    read_size = size or self.MIN_READSIZE
-
-    # check if we need to read more into the buffer
-    if '\n' not in self.readahead and read_size >= len(self.readahead):
-      self.readahead = self.read(read_size)
-
-    result, sep, self.readahead = self.readahead.partition('\n')
-
-    return result + sep
-
-  def readlines(self, sizehint=None):
-    """Read until EOF using readline() unless sizehint is provided.
-
-    Args:
-      sizehint: Read whole lines until either EOF or number of bytes
-      as defined in sizehint are reached.
-
-    Yields:
-      A list of lines.
-    """
-    if sizehint is None or sizehint <= 0:
-      sizehint = self.MIN_READSIZE
-
-    while sizehint > 0:
-      line = self.readline(sizehint)
-      if not line:
-        break
-      yield line
-      sizehint -= len(line)
-
-  def __iter__(self):
-    """Return a generator that returns all the lines in the file."""
-    while 1:
-      line = self.readline()
-      if not line:
-        break
-      yield line
-
-  def __exit__(self, unused_type, unused_value, unused_traceback):
-    """Make usable with "with" statement."""
-    self.close()
-
-  def __enter__(self):
-    """Make usable with "with" statement."""
-    return self
-
 
 class TskFile(interface.PyVFSFile):
   """Class to open up files using TSK."""

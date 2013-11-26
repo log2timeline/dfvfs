@@ -84,37 +84,6 @@ class TarFile(interface.PyVFSFile):
 
     return ret
 
-  def readline(self, size=-1):
-    """Read a line from the file.
-
-    Args:
-      size: Defines the maximum byte count (including the new line trail)
-      and if defined may get the function to return an incomplete line.
-
-    Returns:
-      A string containing a single line read from the file.
-    """
-    if not self.fh:
-      return ''
-
-    if '\n' not in self.buffer:
-      self.buffer += self.fh.readline(size)
-
-    # TODO: Make this more resiliant/optimized. For now this
-    # code only checks the size in two places, better to always fill
-    # the buffer, make sure it is of certain size before moving on.
-    if size > 0 and len(self.buffer) > size:
-      ret = self.buffer[:size]
-      self.buffer = self.buffer[size:]
-    else:
-      ret = self.buffer
-      self.buffer = ''
-
-    result, sep, ret = ret.partition('\n')
-    self.buffer = ret + self.buffer
-
-    return result + sep
-
   def seek(self, offset, whence=0):
     """Seek into the filehandle."""
     if not self.fh:

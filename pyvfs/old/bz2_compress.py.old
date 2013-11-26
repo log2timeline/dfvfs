@@ -35,21 +35,6 @@ class Bz2File(interface.PyVFSFile):
     ret.fs_type = 'BZ2 container'
     return ret
 
-  def readline(self, size=-1):
-    """Read a line from the file.
-
-    Args:
-      size: Defines the maximum byte count (including the new line trail)
-      and if defined may get the function to return an incomplete line.
-
-    Returns:
-      A string containing a single line read from the file.
-    """
-    if self.fh:
-      return self.fh.readline(size)
-    else:
-      return ''
-
   def Open(self, filehandle=None):
     """Open the file as it is described in the PathSpec protobuf."""
     if filehandle:
@@ -66,4 +51,3 @@ class Bz2File(interface.PyVFSFile):
       self.inode = os.stat(self.pathspec.file_path).st_ino
 
     self.name = self.pathspec.file_path
-
