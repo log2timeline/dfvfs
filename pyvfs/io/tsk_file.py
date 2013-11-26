@@ -32,7 +32,7 @@ class TSKFile(file_io.FileIO):
     Args:
       tsk_file_system: SleuthKit file system object (instance of
                        pytsk3.FS_Info).
-      tsk_file: optional SleuthKit file object (instance of pytsk3.FS_Info),
+      tsk_file: optional SleuthKit file object (instance of pytsk3.File),
                 the default is None.
     """
     super(TSKFile, self).__init__()
@@ -45,16 +45,13 @@ class TSKFile(file_io.FileIO):
     else:
       self._tsk_file_set_in_init = False
 
-  def GetFsMeta(self):
-    """Retrieves the file system metadata.
+  def GetFile(self):
+    """Retrieves the file object.
 
     Returns:
-      The SleuthKit file system metadata object (instance of
-      pytsk3.TSK_FS_META).
+      The SleuthKit file object (instance of pytsk3.File).
     """
-    if self._tsk_file and self._tsk_file.info:
-      return self._tsk_file.info.meta
-    return
+    return self._tsk_file
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -86,8 +83,30 @@ class TSKFile(file_io.FileIO):
       else:
         raise ValueError('Path specification missing inode and location.')
 
-      if not self._tsk_file.info or not self._tsk_file.info.meta:
-        raise IOError('Missing file metadata.')
+      # Note that because pytsk3.File does not explicitly defines info
+      # we need to check if the attribute exists and has a value other
+      # than None.
+      if getattr(self._tsk_file, 'info', None) is None:
+        raise IOError('Missing attribute info in file (pytsk3.File).')
+
+      # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
+      # we need to check if the attribute exists and has a value other
+      # than None.
+      if getattr(self._tsk_file.info, 'meta', None) is None:
+        raise IOError(
+            'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
+
+      # Note that because pytsk3.TSK_FS_META does not explicitly defines size
+      # we need to check if the attribute exists.
+      if not hasattr(self._tsk_file.info.meta, 'size'):
+        raise IOError(
+            'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
+
+      # Note that because pytsk3.TSK_FS_META does not explicitly defines type
+      # we need to check if the attribute exists.
+      if not hasattr(self._tsk_file.info.meta, 'type'):
+        raise IOError(
+            'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
       if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
         raise IOError('Not a regular file.')

@@ -20,6 +20,9 @@
 from pyvfs.path import path_spec
 
 
+PATH_SEPARATOR = u'/'
+
+
 class TSKPathSpec(path_spec.PathSpec):
   """The SleuthKit path specification implementation."""
 

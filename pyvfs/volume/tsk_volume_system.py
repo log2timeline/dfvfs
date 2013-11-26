@@ -30,7 +30,8 @@ class TSKVolume(volume_system.Volume):
     """Initializes the volume object.
 
     Args:
-      tsk_vs_part: a SleuthKit volume systme part object (TSK_VS_PART_INFO).
+      tsk_vs_part: a SleuthKit volume systme part object (instance of
+      pytsk3.TSK_VS_PART_INFO).
     """
     super(TSKVolume, self).__init__()
     self._tsk_vs_part = tsk_vs_part
@@ -38,12 +39,12 @@ class TSKVolume(volume_system.Volume):
   @property
   def address(self):
     """The address (volume system part index)."""
-    return self._tsk_vs_part.addr
+    return getattr(self._tsk_vs_part, 'addr', None)
 
   @property
   def description(self):
     """The description."""
-    return self._tsk_vs_part.desc
+    return getattr(self._tsk_vs_part, 'desc', None)
 
 
 class TSKVolumeSystem(volume_system.VolumeSystem):
@@ -67,21 +68,37 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
       raise errors.VolumeSystemError(
           u'Unable to access volume system with error: %s.' % exception)
 
-    self.block_size = getattr(self._tsk_volume.info, 'block_size', 512)
+    # Note that because pytsk3.Volume_Info does not explicitly defines info
+    # we need to check if the attribute exists and has a value other
+    # than None. Default to 512 otherwise.
+    if (hasattr(self._tsk_volume, 'info') and
+        self._tsk_volume.info is not None):
+      self.block_size = getattr(self._tsk_volume.info, 'block_size', 512)
+    else:
+      self.block_size = 512
 
   def _Parse(self):
     """Extracts sections and volumes from the volume system."""
-    # Sticking with the SleuthKit naming convention here, ts_vs_part is
+    # Sticking with the SleuthKit naming convention here, tsk_vs_part is
     # a volume system section (part) and tsk_volume is the volume system.
-    for ts_vs_part in self._tsk_volume:
+    for tsk_vs_part in self._tsk_volume:
+      # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
+      # start and len we need to check if the attribute exists.
+      if (not hasattr(tsk_vs_part, 'start') or not hasattr(tsk_vs_part, 'len')):
+        continue
+
       volume_extent = volume_system.VolumeExtent(
-          ts_vs_part.start * self.block_size,
-          ts_vs_part.len * self.block_size)
+          tsk_vs_part.start * self.block_size,
+          tsk_vs_part.len * self.block_size)
 
       self._sections.append(volume_extent)
 
-      if ts_vs_part.flags == pytsk3.TSK_VS_PART_FLAG_ALLOC:
-        volume = TSKVolume(ts_vs_part)
+      # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
+      # flags need to check if the attribute exists.
+      # The flags are an instance of TSK_VS_PART_FLAG_ENUM.
+      if (hasattr(tsk_vs_part, 'flags') and 
+          tsk_vs_part.flags == pytsk3.TSK_VS_PART_FLAG_ALLOC):
+        volume = TSKVolume(tsk_vs_part)
         volume.AddExtent(volume_extent)
 
         self._volumes.append(volume)

@@ -43,8 +43,29 @@ class TSKFileEntryTest(unittest.TestCase):
     file_entry = self.file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
-    # TODO: add tests.
 
+  def testSubFileEntries(self):
+    """Test the sub file entries iteration functionality."""
+    path_spec = tsk_path_spec.TSKPathSpec(location=u'/')
+    file_entry = self.file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+    self.assertEquals(file_entry.number_of_sub_file_entries, 4)
+
+    # Note that passwords.txt~ is currently ignored by pyvfs, since
+    # its directory entry has no pytsk3.TSK_FS_META object.
+    expected_sub_file_entry_name = [
+        u'a_directory',
+        u'lost+found',
+        u'passwords.txt',
+        u'$OrphanFiles' ]
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEquals(
+        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_name))
 
 if __name__ == '__main__':
   unittest.main()
