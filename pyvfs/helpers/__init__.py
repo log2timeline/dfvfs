@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 # Copyright 2013 The PyVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
@@ -14,20 +15,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""An implementation of a pyVFS file using regular OS access to the file."""
-from pyvfs.lib import interface
-
-
-class OsFile(interface.PyVFSFile):
-  """Class to provide a file-like object to a file stored on a filesystem."""
-
-  TYPE = 'OS'
-
-  def Open(self, filehandle=None):
-    """Open the file as it is described in the PathSpec protobuf."""
-    self.fh = open(self.pathspec.file_path, 'rb')
-    self.name = self.pathspec.file_path
-    if filehandle:
-      self.display_name = u'%s:%s' % (filehandle.name, self.name)
-    else:
-      self.display_name = self.name
