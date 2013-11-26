@@ -17,6 +17,8 @@
 # limitations under the License.
 """The Virtual File System (VFS) path specification object interface."""
 
+import abc
+
 # TODO: add serialization support.
 
 
@@ -32,6 +34,23 @@ class PathSpec(object):
     """
     super(PathSpec, self).__init__()
     self.parent = parent
+
+  @abc.abstractproperty
+  def comparable(self):
+    """Comparable representation of the path specification.""" 
+
+  @property
+  def type_identifier(self):
+    """The type identifier."""
+    return self.__class__.__name__
+
+  def __eq__(self, other):
+    """Determines if the path specification is equal to the other."""
+    return self.comparable == other.comparable
+
+  def __hash__(self):
+    """Returns the hash of a path specification."""
+    return hash(self.comparable)
 
   def HasParent(self):
     """Determines if the path specfication has a parent."""

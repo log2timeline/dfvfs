@@ -24,7 +24,7 @@ from pyvfs.io import os_file
 from pyvfs.path import os_path_spec
 
 
-class TSKFileTest(unittest.TestCase):
+class OSFileTest(unittest.TestCase):
   """The unit test for the operating systesm file-like object."""
 
   def setUp(self):
@@ -35,8 +35,8 @@ class TSKFileTest(unittest.TestCase):
     location = os.path.join('test_data', 'another_file')
     self._path_spec2 = os_path_spec.OSPathSpec(location=location)
 
-  def testOpenCloseLocation(self):
-    """Test the open and close functionality."""
+  def testOpenClosePathSpec(self):
+    """Test the open and close functionality using a path specification."""
     file_object = os_file.OSFile()
     file_object.open(self._path_spec1)
 

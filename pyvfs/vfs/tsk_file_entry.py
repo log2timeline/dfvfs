@@ -19,7 +19,9 @@
 
 import pytsk3
 
-from pyvfs.io import tsk_file
+# This is necessary to prevent a circular import.
+import pyvfs.io.tsk_file
+
 from pyvfs.path import tsk_path_spec
 from pyvfs.vfs import file_entry
 from pyvfs.vfs import vfs_stat
@@ -290,7 +292,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the file-like object (instance of io.FileIO) of the data."""
     if self._file_object is None:
       tsk_file_system = self._file_system.GetFsInfo()
-      self._file_object = tsk_file.TSKFile(
+      self._file_object = pyvfs.io.tsk_file.TSKFile(
           tsk_file_system, tsk_file=self._tsk_file)
       self._file_object.open(self.path_spec)
     return self._file_object

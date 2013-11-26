@@ -69,8 +69,8 @@ class Resolver(object):
       path_spec: the VFS path specification (instance of path.PathSpec).
 
     Returns:
-      The file-like object or None if the path specification could not
-      be resolved.
+      The file-like object (instance of file.FileIO) or None if the path
+      specification could not be resolved.
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding

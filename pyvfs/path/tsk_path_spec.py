@@ -51,3 +51,14 @@ class TSKPathSpec(path_spec.PathSpec):
 
     self.inode = inode
     self.location = location
+
+  @property
+  def comparable(self):
+    """Comparable representation of the path specification."""
+    if self.parent:
+      parent_comparable = self.parent.comparable
+    else:
+      parent_comparable = u''
+
+    return u'type: {0:s}, inode: {1:d}, location: {2:s}\n'.format(
+        parent_comparable, self.type_identifier, self.inode, self.location)

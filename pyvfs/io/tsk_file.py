@@ -22,20 +22,29 @@ import pytsk3
 
 from pyvfs.lib import errors
 from pyvfs.io import file_io
+from pyvfs.vfs import tsk_file_system_manager
 
 
 class TSKFile(file_io.FileIO):
   """Class that implements a file-like object using pytsk3."""
 
-  def __init__(self, tsk_file_system, tsk_file=None):
+  def __init__(self, tsk_file_system=None, tsk_file=None):
     """Initializes the file-like object.
 
     Args:
-      tsk_file_system: SleuthKit file system object (instance of
-                       pytsk3.FS_Info).
+      tsk_file_system: optional SleuthKit file system object (instance of
+                       pytsk3.FS_Info), the default is None.
       tsk_file: optional SleuthKit file object (instance of pytsk3.File),
                 the default is None.
+
+    Raises:
+      ValueError: if tsk_file provided but tsk_file_system is not.
     """
+    if tsk_file_system is None and tsk_file is not None:
+      raise ValueError(
+          'pytsk3.File object provided without corresponding pytsk3.FS_Info '
+          'object')
+
     super(TSKFile, self).__init__()
     self._tsk_file_system = tsk_file_system
     self._tsk_file = tsk_file
@@ -73,11 +82,15 @@ class TSKFile(file_io.FileIO):
       raise IOError('Already open.')
 
     if not self._tsk_file_set_in_init:
-      # TODO: implement parent support.
-      if path_spec.HasParent():
-        raise errors.PathSpecError(
-            'Unsupported path specification with parent.')
-  
+      if self._tsk_file_system is None:
+        if not path_spec.HasParent():
+          raise errors.PathSpecError(
+              'Unsupported path specification without parent.')
+
+        self._tsk_file_system = (
+            tsk_file_system_manager.TSKFileSystemManager.OpenPathSpec(
+                path_spec.parent))
+
       # Opening a file by inode number is faster than opening a file
       # by location.
       inode = getattr(path_spec, 'inode', None)

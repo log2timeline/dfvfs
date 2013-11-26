@@ -33,3 +33,14 @@ class OSPathSpec(path_spec.PathSpec):
     """
     super(OSPathSpec, self).__init__(parent=parent)
     self.location = location
+
+  @property
+  def comparable(self):
+    """Comparable representation of the path specification."""
+    if self.parent:
+      parent_comparable = self.parent.comparable
+    else:
+      parent_comparable = u''
+
+    return u'{0:s}type: {1:s}, location: {2:s}\n'.format(
+        parent_comparable, self.type_identifier, self.location)
