@@ -15,29 +15,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The Virtual File System (VFS) file system object interface."""
+"""The Virtual File System (VFS) resolver helper object interface."""
 
 import abc
 
 
-class FileSystem(object):
-  """Class that implements the VFS file system object interface."""
+class ResolverHelper(object):
+  """Class that implements the resolver helper object interface."""
 
-  @abc.abstractmethod
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
-
-    Returns:
-      A file entry (instance of vfs.FileEntry).
-    """
-
-  @abc.abstractmethod
-  def GetFileEntryByPathSpec(self, path_spec):
-    """Retrieves a file entry for a path specification.
+  def __init__(self, class_name):
+    """Initializes the resolver helper object.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      class_name: the path specification class name.
+    """
+    super(ResolverHelper, self).__init__()
+    self.class_name = class_name
+
+  @abc.abstractmethod
+  def OpenPathSpec(self, path_spec):
+    """Opens a file-like object defined by path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      The file-like object (instance of io.FileIO) or None if the path
+      specification could not be resolved.
     """

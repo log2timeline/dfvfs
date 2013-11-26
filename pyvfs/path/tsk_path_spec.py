@@ -24,7 +24,7 @@ PATH_SEPARATOR = u'/'
 
 
 class TSKPathSpec(path_spec.PathSpec):
-  """The SleuthKit path specification implementation."""
+  """Class that implements the SleuthKit path specification."""
 
   def __init__(self, inode=None, location=None, parent=None):
     """Initializes the SleuthKit path specification object.

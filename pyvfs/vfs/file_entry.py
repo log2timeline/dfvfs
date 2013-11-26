@@ -25,7 +25,7 @@ import abc
 
 
 class Directory(object):
-  """The internal VFS directory object interface."""
+  """Class that implements the VFS directory object interface."""
 
   def __init__(self, path_spec):
     """Initializes the directory object.
@@ -61,7 +61,7 @@ class Directory(object):
 
 
 class FileEntry(object):
-  """The VFS file entry object interface."""
+  """Class that implements the VFS file entry object interface."""
 
   def __init__(self, file_system, path_spec):
     """Initializes the file entry object.

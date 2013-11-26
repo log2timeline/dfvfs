@@ -21,7 +21,7 @@
 
 
 class PathSpec(object):
-  """The path specification object interface."""
+  """Class that implements the path specification object interface."""
 
   def __init__(self, parent=None):
     """Initializes the path specification object.
