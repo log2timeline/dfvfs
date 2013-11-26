@@ -23,11 +23,17 @@ EXIT_SUCCESS=0;
 SCRIPTNAME=`basename $0`;
 
 BROWSER_PARAM="";
+CACHE_PARAM="";
 USE_CL_FILE=1;
 
 while test $# -gt 0;
 do
   case $1 in
+  --cache )
+    CACHE_PARAM="--cache";
+    shift;
+    ;;
+
   --nobrowser | --no-browser | --no_browser )
     BROWSER_PARAM="--no_oauth2_webbrowser";
     shift;
@@ -118,7 +124,7 @@ fi
 python utils/upload.py \
     --oauth2 ${BROWSER_PARAM} -y --cc log2timeline-dev@googlegroups.com \
     -r ${REVIEWER} -m "${MISSING_TEST_FILES}" -t "${DESCRIPTION}" \
-    --send_mail | tee ${TEMP_FILE};
+    --send_mail ${CACHE_PARAM} | tee ${TEMP_FILE};
 
 CL=`cat ${TEMP_FILE} | grep codereview.appspot.com | awk -F '/' '/created/ {print $NF}'`;
 cat ${TEMP_FILE};
@@ -131,7 +137,7 @@ then
   echo "Unable to upload code change for review.";
   exit ${EXIT_FAILURE};
 
-elif ! test -z ${USE_CL_FILE};
+elif test ${USE_CL_FILE} -ne 0;
 then
   echo ${CL} > ._code_review_number;
   echo "Code review number: ${CL} is saved, so no need to include that in future updates/submits.";
