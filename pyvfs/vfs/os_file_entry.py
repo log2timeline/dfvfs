@@ -26,18 +26,11 @@ from pyvfs.vfs import file_entry
 from pyvfs.vfs import vfs_stat
 
 
-class _OSDirectory(object):
-  """The operating system directory object implementation."""
+class OSDirectory(file_entry.Directory):
+  """Class that implements a directory object using os."""
 
-  def __init__(self, path_spec):
-    """Initializes the directory object.
-
-    Args:
-      path_spec: the path specification object (instance of path.PathSpec).
-    """
-    super(_OSDirectory, self).__init__()
-    self.path_spec = path_spec
-    self._entries = None
+  # TODO: add a generator for the entries which might
+  # be more memory efficient.
 
   def _GetEntries(self):
     """Retrieves the entries.
@@ -56,23 +49,9 @@ class _OSDirectory(object):
           os.path.join(location, directory_entry)))
     return entries
 
-  @property
-  def number_of_entries(self):
-    """The number of entries."""
-    if self._entries is None:
-      self._entries = self._GetEntries()
-    return len(self._entries)
-
-  @property
-  def entries(self):
-    """The entries (list of instance of path.OSPathSpec)."""
-    if self._entries is None:
-      self._entries = self._GetEntries()
-    return self._entries
-
 
 class OSFileEntry(file_entry.FileEntry):
-  """The operating system file entry implementation."""
+  """Class that implements a file entry object using os."""
 
   def __init__(self, file_system, path_spec):
     """Initializes the file entry object.
@@ -86,13 +65,13 @@ class OSFileEntry(file_entry.FileEntry):
     self._stat_object = None
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of _OSDirectory)."""
+    """Retrieves the directory object (instance of OSDirectory)."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 
     if (self._stat_object and
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
-      return _OSDirectory(self.path_spec)
+      return OSDirectory(self.path_spec)
     return
 
   def _GetStat(self):
@@ -119,15 +98,15 @@ class OSFileEntry(file_entry.FileEntry):
     stat_object.gid = stat_info.st_gid
 
     # File entry type stat information.
-    if stat.S_ISDIR(stat_info.st_mode):
+    if stat.S_ISREG(stat_info.st_mode):
+      stat_object.type = stat_object.TYPE_FILE
+    elif stat.S_ISDIR(stat_info.st_mode):
       stat_object.type = stat_object.TYPE_DIRECTORY
     elif stat.S_ISLNK(stat_info.st_mode):
       stat_object.type = stat_object.TYPE_LINK
     elif (stat.S_ISCHR(stat_info.st_mode) or
           stat.S_ISBLK(stat_info.st_mode)):
       stat_object.type = stat_object.TYPE_DEVICE
-    elif stat.S_ISREG(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_FILE
     elif stat.S_ISFIFO(stat_info.st_mode):
       stat_object.type = stat_object.TYPE_PIPE
     elif stat.S_ISSOCK(stat_info.st_mode):
@@ -137,14 +116,14 @@ class OSFileEntry(file_entry.FileEntry):
     # stat_object.ino = stat_info.st_ino
     # stat_object.dev = stat_info.st_dev
     # stat_object.nlink = stat_info.st_nlink
-    stat_object.fs_type = 'Unknown'
+    # stat_object.fs_type = 'Unknown'
     stat_object.allocated = True
 
     return stat_object
 
   @property
   def name(self):
-    """The name."""
+    """The name of the file entry, which does not include the full path."""
     location = getattr(self.path_spec, 'location', '')
     return os.path.basename(location)
 

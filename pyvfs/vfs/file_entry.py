@@ -24,6 +24,42 @@ a directory or file system metadata.
 import abc
 
 
+class Directory(object):
+  """The internal VFS directory object interface."""
+
+  def __init__(self, path_spec):
+    """Initializes the directory object.
+
+    Args:
+      path_spec: the path specification object (instance of path.PathSpec).
+    """
+    super(Directory, self).__init__()
+    self.path_spec = path_spec
+    self._entries = None
+
+  @abc.abstractmethod
+  def _GetEntries(self):
+    """Retrieves the entries.
+
+    Returns:
+      A list of path specifications (instance of path.OSPathSpec).
+    """
+
+  @property
+  def number_of_entries(self):
+    """The number of entries."""
+    if self._entries is None:
+      self._entries = self._GetEntries()
+    return len(self._entries)
+
+  @property
+  def entries(self):
+    """The entries (list of instance of path.OSPathSpec)."""
+    if self._entries is None:
+      self._entries = self._GetEntries()
+    return self._entries
+
+
 class FileEntry(object):
   """The VFS file entry object interface."""
 
@@ -40,7 +76,7 @@ class FileEntry(object):
 
   @abc.abstractproperty
   def name(self):
-    """The name."""
+    """The name of the file entry, which does not include the full path."""
 
   @abc.abstractproperty
   def number_of_sub_file_entries(self):
@@ -50,6 +86,7 @@ class FileEntry(object):
   def sub_file_entries(self):
     """The sub file entries."""
 
+  # TODO: maybe rename this to GetFileIO, GetDataStream or equiv.
   @abc.abstractmethod
   def GetData(self):
     """Retrieves the file-like object (instance of io.FileIO) of the data."""
