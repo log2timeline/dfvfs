@@ -31,13 +31,13 @@ class TSKFileTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'image.dd')
-    # Need to keep the pytsk3.Img_Info around due to issue
-    # with reference counting.
+    # We need to keep the pytsk3.Img_Info around due to an issue with
+    # reference counting.
     self._tsk_image = pytsk3.Img_Info(test_file)
     self._tsk_file_system = pytsk3.FS_Info(self._tsk_image, offset=0)
 
   def testOpenCloseInode(self):
-    """Test the open and close functionality."""
+    """Test the open and close functionality using an inode."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15)
     file_object = tsk_file.TSKFile(self._tsk_file_system)
 
@@ -48,7 +48,7 @@ class TSKFileTest(unittest.TestCase):
     # TODO: add a failing scenario.
 
   def testOpenCloseLocation(self):
-    """Test the open and close functionality."""
+    """Test the open and close functionality using a location."""
     path_spec = tsk_path_spec.TSKPathSpec(location='/passwords.txt')
     file_object = tsk_file.TSKFile(self._tsk_file_system)
 

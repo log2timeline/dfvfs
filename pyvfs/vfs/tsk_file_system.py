@@ -19,7 +19,9 @@
 
 import pytsk3
 
-from pyvfs.io import tsk_file
+# This is necessary to prevent a circular import.
+import pyvfs.io.tsk_file
+
 from pyvfs.path import tsk_path_spec
 from pyvfs.vfs import tsk_file_entry
 from pyvfs.vfs import file_system
@@ -80,6 +82,9 @@ class TSKFileSystem(file_system.FileSystem):
     """
     super(TSKFileSystem, self).__init__()
     self._file_object = file_object
+
+    # We need to keep the pytsk3.Img_Info around due to an issue with
+    # reference counting.
     self._tsk_image = _TSKFileSystemImage(file_object)
     self._tsk_file_system = pytsk3.FS_Info(self._tsk_image, offset=offset)
 
@@ -102,7 +107,7 @@ class TSKFileSystem(file_system.FileSystem):
 
     path_spec = tsk_path_spec.TSKPathSpec(location=self._LOCATION_ROOT)
 
-    file_object = tsk_file.TSKFile(
+    file_object = pyvfs.io.tsk_file.TSKFile(
         self._tsk_file_system, tsk_file=tsk_file_object)
 
     return tsk_file_entry.TSKFileEntry(path_spec, file_object=file_object)
@@ -131,7 +136,7 @@ class TSKFileSystem(file_system.FileSystem):
     else:
       raise ValueError('Path specification missing inode and location.')
 
-    file_object = tsk_file.TSKFile(
+    file_object = pyvfs.io.tsk_file.TSKFile(
         self._tsk_file_system, tsk_file=tsk_file_object)
 
     return tsk_file_entry.TSKFileEntry(
