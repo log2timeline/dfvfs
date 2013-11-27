@@ -77,15 +77,19 @@ class TSKFile(file_io.FileIO):
     Raises:
       IOError: if the open file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
+      ValueError: if the mode is invalid.
     """
+    if mode != 'rb':
+      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+
     if self._is_open:
-      raise IOError('Already open.')
+      raise IOError(u'Already open.')
 
     if not self._tsk_file_set_in_init:
       if self._tsk_file_system is None:
         if not path_spec.HasParent():
           raise errors.PathSpecError(
-              'Unsupported path specification without parent.')
+              u'Unsupported path specification without parent.')
 
         self._tsk_file_system = (
             tsk_file_system_manager.TSKFileSystemManager.OpenPathSpec(
@@ -102,35 +106,35 @@ class TSKFile(file_io.FileIO):
         self._tsk_file = self._tsk_file_system.open(location)
       else:
         raise errors.PathSpecError(
-            'Path specification missing inode and location.')
+            u'Path specification missing inode and location.')
   
       # Note that because pytsk3.File does not explicitly defines info
       # we need to check if the attribute exists and has a value other
       # than None.
       if getattr(self._tsk_file, 'info', None) is None:
-        raise IOError('Missing attribute info in file (pytsk3.File).')
+        raise IOError(u'Missing attribute info in file (pytsk3.File).')
   
       # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
       # we need to check if the attribute exists and has a value other
       # than None.
       if getattr(self._tsk_file.info, 'meta', None) is None:
         raise IOError(
-            'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
+            u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
   
       # Note that because pytsk3.TSK_FS_META does not explicitly defines size
       # we need to check if the attribute exists.
       if not hasattr(self._tsk_file.info.meta, 'size'):
         raise IOError(
-            'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
+            u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
   
       # Note that because pytsk3.TSK_FS_META does not explicitly defines type
       # we need to check if the attribute exists.
       if not hasattr(self._tsk_file.info.meta, 'type'):
         raise IOError(
-            'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
+            u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
   
       if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
-        raise IOError('Not a regular file.')
+        raise IOError(u'Not a regular file.')
   
       self._current_offset = 0
       self._size = self._tsk_file.info.meta.size
@@ -144,7 +148,7 @@ class TSKFile(file_io.FileIO):
       IOError: if the close failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     if not self._tsk_file_set_in_init:
       self._tsk_file = None
@@ -168,10 +172,10 @@ class TSKFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     if self._current_offset < 0:
-      raise IOError('Invalid current offset value less than zero.')
+      raise IOError(u'Invalid current offset value less than zero.')
 
     if self._current_offset > self._size:
       return ''
@@ -200,17 +204,17 @@ class TSKFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise IOError(u'Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise IOError(u'Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -221,7 +225,7 @@ class TSKFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     return self._current_offset
 
@@ -232,6 +236,6 @@ class TSKFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     return self._size

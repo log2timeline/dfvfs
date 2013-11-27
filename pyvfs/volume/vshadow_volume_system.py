@@ -58,7 +58,8 @@ class VShadowVolumeSystem(volume_system.VolumeSystem):
       self._vshadow_volume.open_file_object(file_object)
     except IOError as exception:
       raise errors.VolumeSystemError(
-          u'Unable to access volume system with error: %s.' % exception)
+          u'Unable to access volume system with error: {0:s}.'.format(
+              exception))
 
   def _Parse(self):
     """Extracts sections and volumes from the volume system."""

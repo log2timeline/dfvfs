@@ -23,12 +23,18 @@ EXIT_SUCCESS=0;
 SCRIPTNAME=`basename $0`;
 
 BROWSER_PARAM="";
+CACHE_PARAM="";
 CL_NUMBER=0;
 USE_CL_FILE=0;
 
 while test $# -gt 0;
 do
   case $1 in
+  --cache )
+    CACHE_PARAM="--cache";
+    shift;
+    ;;
+
   --nobrowser | --no-browser | --no_browser )
     BROWSER_PARAM="--no_oauth2_webbrowser";
     shift;
@@ -151,7 +157,9 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-python utils/upload.py --oauth2 $BROWSER_PARAM -y -i ${CL_NUMBER} -t "Submitted." -m "Code Submitted." --send_mail
+python utils/upload.py \
+    --oauth2 $BROWSER_PARAM -y -i ${CL_NUMBER} ${CACHE_PARAM} \
+    -t "Submitted." -m "Code Submitted." --send_mail
 
 git commit -a -m "Code review: ${CL_NUMBER}: ${DESCRIPTION}";
 git push

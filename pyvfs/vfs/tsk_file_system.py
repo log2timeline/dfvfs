@@ -134,7 +134,7 @@ class TSKFileSystem(file_system.FileSystem):
     elif location is not None:
       tsk_file_object = self._tsk_file_system.open(location)
     else:
-      raise ValueError('Path specification missing inode and location.')
+      raise ValueError(u'Path specification missing inode and location.')
 
     file_object = pyvfs.io.tsk_file.TSKFile(
         self._tsk_file_system, tsk_file=tsk_file_object)

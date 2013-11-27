@@ -87,11 +87,11 @@ class TextFile(object):
                   maximum (as defined by _MAXIMUM_READ_BUFFER_SIZE).
     """
     if maximum_size is not None and maximum_size < 0:
-      raise ValueError('Invalid maximum size value smaller than zero.')
+      raise ValueError(u'Invalid maximum size value smaller than zero.')
 
     if (maximum_size is not None and
         maximum_size > self._MAXIMUM_READ_BUFFER_SIZE):
-      raise ValueError('Invalid maximum size value exceeds maximum.')
+      raise ValueError(u'Invalid maximum size value exceeds maximum.')
 
     if self._lines_buffer_offset >= self._file_object_size:
       return ''

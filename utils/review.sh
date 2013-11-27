@@ -122,9 +122,10 @@ then
 fi
 
 python utils/upload.py \
-    --oauth2 ${BROWSER_PARAM} -y --cc log2timeline-dev@googlegroups.com \
-    -r ${REVIEWER} -m "${MISSING_TEST_FILES}" -t "${DESCRIPTION}" \
-    --send_mail ${CACHE_PARAM} | tee ${TEMP_FILE};
+    --oauth2 ${BROWSER_PARAM} -y ${CACHE_PARAM} \
+    -r ${REVIEWER} --cc log2timeline-dev@googlegroups.com \
+    -m "${MISSING_TEST_FILES}" -t "${DESCRIPTION}" \
+    --send_mail | tee ${TEMP_FILE};
 
 CL=`cat ${TEMP_FILE} | grep codereview.appspot.com | awk -F '/' '/created/ {print $NF}'`;
 cat ${TEMP_FILE};

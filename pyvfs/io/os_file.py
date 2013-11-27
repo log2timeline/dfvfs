@@ -44,19 +44,23 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the open file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
+      ValueError: if the mode is invalid.
     """
+    if mode != 'rb':
+      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+
     if self._file_object:
-      raise IOError('Already open.')
+      raise IOError(u'Already open.')
 
     if path_spec.HasParent():
-      raise errors.PathSpecError('Unsupported path specification with parent.')
+      raise errors.PathSpecError(u'Unsupported path specification with parent.')
 
     location = getattr(path_spec, 'location', None)
 
     if location is not None:
       self._file_object = open(location, mode=mode)
     else:
-      raise errors.PathSpecError('Path specification missing location.')
+      raise errors.PathSpecError(u'Path specification missing location.')
 
     stat_info = os.stat(location)
     self._size = stat_info.st_size
@@ -68,7 +72,7 @@ class OSFile(file_io.FileIO):
       IOError: if the close failed.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     self._file_object.close()
     self._file_object = None
@@ -90,7 +94,7 @@ class OSFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     if size is None:
       size = self._size - self._file_object.tell()
@@ -109,7 +113,7 @@ class OSFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     return self._file_object.seek(offset, whence)
 
@@ -120,7 +124,7 @@ class OSFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     return self._file_object.tell()
 
@@ -131,6 +135,6 @@ class OSFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     return self._size

@@ -39,7 +39,7 @@ class OSFileSystem(file_system.FileSystem):
     if drive_letter:
       self._drive_letter = drive_letter
     else:
-      self._drive_letter = 'C'
+      self._drive_letter = u'C'
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -48,9 +48,9 @@ class OSFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.FileEntry).
     """
     if platform.system() == 'Windows':
-      location = '{0:s}:\\'.format(self._drive_letter)
+      location = u'{0:s}:\\'.format(self._drive_letter)
     else:
-      location = '/'
+      location = u'/'
     path_spec = os_path_spec.OSPathSpec(location)
     return os_file_entry.OSFileEntry(self, path_spec)
 

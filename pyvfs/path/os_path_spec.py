@@ -30,17 +30,18 @@ class OSPathSpec(path_spec.PathSpec):
       location: the operating specific location string e.g. /usr/lib/pyvfs.
       parent: optional parent path specification (instance of PathSpec),
               default is None.
+
+    Raises:
+      ValueError: when location is not set.
     """
+    if not location:
+      raise ValueError(u'Missing location value.')
+
     super(OSPathSpec, self).__init__(parent=parent)
     self.location = location
 
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
-    if self.parent:
-      parent_comparable = self.parent.comparable
-    else:
-      parent_comparable = u''
-
-    return u'{0:s}type: {1:s}, location: {2:s}\n'.format(
-        parent_comparable, self.type_identifier, self.location)
+    return self._GetComparable(
+        u'location: {0:s}\n'.format(self.location))
