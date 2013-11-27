@@ -76,11 +76,11 @@ class Resolver(object):
       KeyError: if resolver helper object is not set for the corresponding
                 path specification class.
     """
-    if path_spec.__class__.__name__ not in cls._resolver_helpers:
+    if path_spec.type_identifier not in cls._resolver_helpers:
       raise KeyError((
           u'Resolver object not set for path specification class: '
-          u'{0:s}').format(path_spec.__class__.__name__))
+          u'{0:s}').format(path_spec.type_identifier))
 
-    resolver_helper = cls._resolver_helpers[path_spec.__class__.__name__]
+    resolver_helper = cls._resolver_helpers[path_spec.type_identifier]
 
     return resolver_helper.OpenPathSpec(path_spec)

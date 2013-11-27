@@ -32,7 +32,20 @@ class DataRangePathSpec(path_spec.PathSpec):
       range_offset: the start offset of the data range.
       range_size: the size of the data range.
       parent: parent path specification (instance of PathSpec).
+
+    Raises:
+      ValueError: when range offset, range offset or parent are not set.
     """
+    if not range_offset or not range_size or not parent:
+      raise ValueError(u'Missing range offset, range size or parent value.')
+
     super(DataRangePathSpec, self).__init__(parent=parent)
     self.range_offset = range_offset
     self.range_size = range_size
+
+  @property
+  def comparable(self):
+    """Comparable representation of the path specification."""
+    return self._GetComparable(
+        u'range_offset: 0x{1:08x}, range_size: 0x{1:08x}\n'.format(
+            self.range_offset, self.range_size))

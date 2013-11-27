@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 # Copyright 2013 The PyVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
@@ -14,20 +15,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This file contains all the error classes used by pyvfs."""
+"""The Virtual File System (VFS) error classes."""
 
 
 class Error(Exception):
-  """Base error class."""
-
-
-class UnableToOpenFile(Error):
-  """Raised when a PlasoFile class attempts to open a file it cannot open."""
+  """Class that defines a generic error."""
 
 
 class PathSpecError(Error):
-  """Raised for path specification errors."""
+  """Class that defines path specification errors."""
 
 
 class VolumeSystemError(Error):
-  """Raised when unable to access a volume system."""
+  """Class that defines volume system errors."""

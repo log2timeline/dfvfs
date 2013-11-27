@@ -32,6 +32,7 @@ class DataRange(file_io.FileIO):
      the data range (offset and size) fo the volume on top of the full disk
      image.
   """
+
   def __init__(self, file_object=None):
     """Initialize the file-like object.
 
@@ -67,19 +68,19 @@ class DataRange(file_io.FileIO):
 
     Raises:
       IOError: if the file-like object is already open.
-      ValueError: if either the range offset or size is invalid.
+      ValueError: if the range offset or range size is invalid.
     """
     if self._is_open:
-      raise IOError('Already open.')
+      raise IOError(u'Already open.')
 
     if range_offset < 0:
       raise ValueError(
-          'Invalid range offset: {0:d} value out of bounds.'.format(
+          u'Invalid range offset: {0:d} value out of bounds.'.format(
               range_offset))
 
     if range_size < 0:
       raise ValueError(
-          'Invalid range size: {0:d} value out of bounds.'.format(
+          u'Invalid range size: {0:d} value out of bounds.'.format(
               range_size))
 
     self._range_offset = range_offset
@@ -98,14 +99,18 @@ class DataRange(file_io.FileIO):
     Raises:
       IOError: if the open file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
+      ValueError: if the mode is invalid.
     """
+    if mode != 'rb':
+      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+
     if self._is_open:
-      raise IOError('Already open.')
+      raise IOError(u'Already open.')
 
     if not self._file_object_set_in_init:
       if not path_spec.HasParent():
         raise errors.PathSpecError(
-            'Unsupported path specification without parent.')
+            u'Unsupported path specification without parent.')
  
       self._file_object = resolver.Resolver.OpenPathSpec(path_spec.parent)
 
@@ -114,7 +119,7 @@ class DataRange(file_io.FileIO):
   
       if range_offset is None or range_size is None:
         raise errors.PathSpecError(
-            'Path specification missing range offset and range size.')
+            u'Path specification missing range offset and range size.')
 
       self.SetRange(range_offset, range_size)
 
@@ -131,7 +136,7 @@ class DataRange(file_io.FileIO):
       IOError: if the close failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     if not self._file_object_set_in_init:
       self._file_object.close()
@@ -158,14 +163,14 @@ class DataRange(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     if self._range_offset < 0 or self._range_size < 0:
-      raise IOError('Invalid data range.')
+      raise IOError(u'Invalid data range.')
 
     if self._current_offset < 0:
       raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
+          u'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if self._current_offset >= self._range_size:
@@ -197,11 +202,11 @@ class DataRange(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
+          u'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if whence == os.SEEK_CUR:
@@ -209,9 +214,9 @@ class DataRange(file_io.FileIO):
     elif whence == os.SEEK_END:
       offset += self.self_range_size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise IOError(u'Unsupported whence.')
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise IOError(u'Invalid offset value less than zero.')
     self._current_offset = offset
 
   def get_offset(self):
@@ -221,7 +226,7 @@ class DataRange(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     return self._current_offset
 
@@ -232,6 +237,6 @@ class DataRange(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise IOError(u'Not opened.')
 
     return self._range_size

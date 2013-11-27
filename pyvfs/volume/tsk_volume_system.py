@@ -66,7 +66,8 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
       self._tsk_volume = pytsk3.Volume_Info(tsk_image)
     except IOError as exception:
       raise errors.VolumeSystemError(
-          u'Unable to access volume system with error: %s.' % exception)
+          u'Unable to access volume system with error: {0:s}.'.format(
+              exception))
 
     # Note that because pytsk3.Volume_Info does not explicitly defines info
     # we need to check if the attribute exists and has a value other

@@ -42,23 +42,17 @@ class TSKPathSpec(path_spec.PathSpec):
               default is None.
 
     Raises:
-      ValueError: when neither inode or path is set.
+      ValueError: when inode and location are both not set.
     """
-    super(TSKPathSpec, self).__init__(parent=parent)
-
     if not inode and not location:
-      raise ValueError('Neither inode or location specified.')
+      raise ValueError(u'Missing inode and location value.')
 
+    super(TSKPathSpec, self).__init__(parent=parent)
     self.inode = inode
     self.location = location
 
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
-    if self.parent:
-      parent_comparable = self.parent.comparable
-    else:
-      parent_comparable = u''
-
-    return u'type: {0:s}, inode: {1:d}, location: {2:s}\n'.format(
-        parent_comparable, self.type_identifier, self.inode, self.location)
+    return self._GetComparable(
+        u'inode: {0:d}, location: {1:s}\n'.format(self.inode, self.location))

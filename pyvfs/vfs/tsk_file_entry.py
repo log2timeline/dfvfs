@@ -156,7 +156,7 @@ class TSKFileEntry(file_entry.FileEntry):
       elif location is not None:
         tsk_file_object = tsk_file_system.open(location)
       else:
-        raise RuntimeError('Path specification missing inode and location.')
+        raise RuntimeError(u'Path specification missing inode and location.')
 
     return tsk_file_object
 
