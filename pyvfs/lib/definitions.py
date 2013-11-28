@@ -15,8 +15,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""The Virtual File System (VFS) definitions."""
 
-from pyvfs.resolver import compressed_stream_resolver_helper
-from pyvfs.resolver import data_range_resolver_helper
-from pyvfs.resolver import os_resolver_helper
-from pyvfs.resolver import tsk_resolver_helper
+# The compression method definitions.
+COMPRESSION_METHOD_BZIP2 = 'bzip2'
+COMPRESSION_METHOD_ZLIB = 'zlib'
