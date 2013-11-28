@@ -19,8 +19,8 @@
 
 import os
 
-from pyvfs.lib import errors
 from pyvfs.io import file_io
+from pyvfs.lib import errors
 from pyvfs.resolver import resolver
 
 
@@ -34,7 +34,7 @@ class DataRange(file_io.FileIO):
   """
 
   def __init__(self, file_object=None):
-    """Initialize the file-like object.
+    """Initializes the file-like object.
 
        If the file-like object is chained do not separately use the parent
        file-like object.
@@ -90,17 +90,21 @@ class DataRange(file_io.FileIO):
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  def open(self, path_spec, mode='rb'):
-    """Opens the file-like object defined by path specification.
+  def open(self, path_spec=None, mode='rb'):
+    """Opens the file-like object.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: optional the path specification (instance of path.PathSpec),
+                 the default is None.
 
     Raises:
       IOError: if the open file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the mode is invalid.
+      ValueError: if the path specification or mode is invalid.
     """
+    if not self._file_object_set_in_init and not path_spec:
+      raise ValueError(u'Missing path specfication.')
+
     if mode != 'rb':
       raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
 
@@ -112,8 +116,6 @@ class DataRange(file_io.FileIO):
         raise errors.PathSpecError(
             u'Unsupported path specification without parent.')
  
-      self._file_object = resolver.Resolver.OpenPathSpec(path_spec.parent)
-
       range_offset = getattr(path_spec, 'range_offset', None)
       range_size = getattr(path_spec, 'range_size', None)
   
@@ -122,6 +124,7 @@ class DataRange(file_io.FileIO):
             u'Path specification missing range offset and range size.')
 
       self.SetRange(range_offset, range_size)
+      self._file_object = resolver.Resolver.OpenPathSpec(path_spec.parent)
 
     self._is_open = True
 
@@ -130,7 +133,7 @@ class DataRange(file_io.FileIO):
 
        If the file-like object was passed in the init function
        the data range file-like object does not control the file-like object
-       and should not actually close the file-like object.
+       and should not actually close it.
 
     Raises:
       IOError: if the close failed.
@@ -212,7 +215,7 @@ class DataRange(file_io.FileIO):
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
-      offset += self.self_range_size
+      offset += self._range_size
     elif whence != os.SEEK_SET:
       raise IOError(u'Unsupported whence.')
     if offset < 0:
