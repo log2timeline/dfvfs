@@ -24,7 +24,7 @@ SCRIPTNAME=`basename $0`;
 
 BROWSER_PARAM="";
 CACHE_PARAM="";
-CL_NUMBER=0;
+CL_NUMBER="";
 USE_CL_FILE=0;
 
 while test $# -gt 0;
