@@ -1,0 +1,17 @@
+Acknowledgements: pyvfs
+
+Copyright 2013 The PyVFS Project Authors.
+Please see the AUTHORS file for details on individual authors.
+
+PyVFS is a Python Virtual File System implementation that originates form
+the Plaso project: https://code.google.com/p/plaso/
+
+PyVFS is developed and maintained by:
+* Kristinn Gudjonsson
+* Joachim Metz
+
+PyVFS depends on various other projects. So thanks to the authors and
+others involved with these projects:
+* Python and modules
+* the SleuthKit
+* pytsk
