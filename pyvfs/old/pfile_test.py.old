@@ -148,15 +148,6 @@ class PyVFSPFileTest(unittest.TestCase):
 
     self.RunTest(pfile.ZipFile, path)
 
-  def testGzipFile(self):
-    test_file = os.path.join('test_data', 'syslog.gz')
-
-    path = event.EventPathSpec()
-    path.type = 'GZIP'
-    path.file_path = test_file
-
-    self.RunTest(pfile.GzipFile, path)
-
   def testTarFile(self):
     test_file = os.path.join('test_data', 'syslog.tar')
 
@@ -197,12 +188,6 @@ class PyVFSPFileTest(unittest.TestCase):
     path = event.EventPathSpec()
     path.type = 'OS'
     path.file_path = test_file
-
-    gzip = event.EventPathSpec()
-    gzip.type = 'GZIP'
-    gzip.file_path = test_file
-
-    path.nested_pathspec = gzip
 
     with pfile.OpenPFile(path) as fh:
       self.PerformSyslogTests(fh)

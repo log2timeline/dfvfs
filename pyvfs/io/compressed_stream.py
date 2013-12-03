@@ -45,7 +45,7 @@ class _Decompressor(object):
 
 
 class _Bzip2Decompressor(_Decompressor):
-  """Class that implements a decompressor using bz2."""
+  """Class that implements a BZIP2 decompressor using bz2."""
 
   def __init__(self):
     """Initializes the decompressor object."""
@@ -71,12 +71,19 @@ class _Bzip2Decompressor(_Decompressor):
 
 
 class _ZlibDecompressor(_Decompressor):
-  """Class that implements a decompressor using zlib."""
+  """Class that implements a "zlib DEFLATE" decompressor using zlib."""
 
-  def __init__(self):
-    """Initializes the decompressor object."""
+  def __init__(self, window_size=zlib.MAX_WBITS):
+    """Initializes the decompressor object.
+
+    Args:
+      window_size: optional base two logarithm of the size of the compression
+                   history buffer (aka window size). The default is
+                   zlib.MAX_WBITS. When the value is negative, the standard
+                   zlib data header is suppressed.
+    """
     super(_ZlibDecompressor, self).__init__()
-    self._zlib_decompressor = zlib.decompressobj()
+    self._zlib_decompressor = zlib.decompressobj(window_size)
 
   @abc.abstractmethod
   def Decompress(self, compressed_data):
@@ -94,6 +101,14 @@ class _ZlibDecompressor(_Decompressor):
         self._zlib_decompressor, 'unused_data', '')
 
     return (uncompressed_data, remaining_compressed_data)
+
+
+class _DeflateDecompressor(_ZlibDecompressor):
+  """Class that implements a "raw DEFLATE" decompressor using zlib."""
+
+  def __init__(self):
+    """Initializes the decompressor object."""
+    super(_DeflateDecompressor, self).__init__(window_size=-zlib.MAX_WBITS)
 
 
 class CompressedStream(file_io.FileIO):
@@ -134,6 +149,9 @@ class CompressedStream(file_io.FileIO):
     """Retrieves the decompressor."""
     if self._compression_method == definitions.COMPRESSION_METHOD_BZIP2:
       return _Bzip2Decompressor()
+
+    elif self._compression_method == definitions.COMPRESSION_METHOD_DEFLATE:
+      return _DeflateDecompressor()
 
     elif self._compression_method == definitions.COMPRESSION_METHOD_ZLIB:
       return _ZlibDecompressor()
@@ -205,6 +223,29 @@ class CompressedStream(file_io.FileIO):
     self._uncompressed_data_size = len(self._uncompressed_data)
 
     return read_count
+
+  def SetUncompressedStreamSize(self, uncompressed_stream_size):
+    """Sets the uncompressed stream size.
+
+       This function is used to set the uncompressed stream size if it can be
+       determined separately.
+
+    Args:
+      uncompressed_stream_size: the size of the uncompressed stream in bytes.
+
+    Raises:
+      IOError: if the file-like object is already open.
+      ValueError: if the uncompressed stream size is invalid.
+    """
+    if self._is_open:
+      raise IOError(u'Already open.')
+
+    if uncompressed_stream_size < 0:
+      raise ValueError((
+          u'Invalid uncompressed stream size: {0:d} value out of '
+          u'bounds.').format(uncompressed_stream_size))
+
+    self._uncompressed_stream_size = uncompressed_stream_size
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.

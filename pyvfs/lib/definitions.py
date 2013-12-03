@@ -19,4 +19,5 @@
 
 # The compression method definitions.
 COMPRESSION_METHOD_BZIP2 = 'bzip2'
+COMPRESSION_METHOD_DEFLATE = 'deflate'
 COMPRESSION_METHOD_ZLIB = 'zlib'

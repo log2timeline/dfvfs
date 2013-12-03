@@ -22,11 +22,12 @@ import unittest
 
 from pyvfs.io import data_range
 from pyvfs.io import os_file
+from pyvfs.io import test_lib
 from pyvfs.path import data_range_path_spec
 from pyvfs.path import os_path_spec
 
 
-class DataRangeTest(unittest.TestCase):
+class DataRangeTest(test_lib.SylogTestCase):
   """The unit test for the data range file-like object."""
 
   def setUp(self):
@@ -43,7 +44,7 @@ class DataRangeTest(unittest.TestCase):
     file_object = data_range.DataRange(file_object=os_file_object)
     file_object.open()
 
-    self.assertEquals(file_object.get_size(), 1247)
+    self._testGetSizeFileObject(file_object)
 
     file_object.close()
     os_file_object.close()
@@ -77,33 +78,7 @@ class DataRangeTest(unittest.TestCase):
     file_object = data_range.DataRange()
     file_object.open(self._data_range_path_spec)
 
-    file_object.seek(10)
-    self.assertEquals(file_object.read(5), '53:01')
-    self.assertEquals(file_object.get_offset(), 15)
-
-    file_object.seek(-10, os.SEEK_END)
-    self.assertEquals(file_object.read(5), 'times')
-
-    file_object.seek(2, os.SEEK_CUR)
-    self.assertEquals(file_object.read(2), '--')
-
-    # Conforming to the POSIX seek the offset can exceed the file size
-    # but reading will result in no data being returned.
-    file_object.seek(2000, os.SEEK_SET)
-    self.assertEquals(file_object.get_offset(), 2000)
-    self.assertEquals(file_object.read(2), '')
-
-    with self.assertRaises(IOError):
-      file_object.seek(-10, os.SEEK_SET)
-
-    # On error the offset should not change.
-    self.assertEquals(file_object.get_offset(), 2000)
-
-    with self.assertRaises(IOError):
-      file_object.seek(10, 5)
-
-    # On error the offset should not change.
-    self.assertEquals(file_object.get_offset(), 2000)
+    self._testSeekFileObject(file_object, base_offset=0)
 
     file_object.close()
 
@@ -112,13 +87,7 @@ class DataRangeTest(unittest.TestCase):
     file_object = data_range.DataRange()
     file_object.open(self._data_range_path_spec)
 
-    expected_buffer = (
-        'Jan 22 07:53:01 myhostname.myhost.com CRON[31051]: (root) CMD '
-        '(touch /var/run/crond.somecheck)\n')
-
-    read_buffer = file_object.read(95)
-
-    self.assertEquals(read_buffer, expected_buffer)
+    self._testReadFileObject(file_object, base_offset=0)
 
     file_object.close()
 
