@@ -22,6 +22,10 @@ class Error(Exception):
   """Class that defines a generic error."""
 
 
+class FileFormatError(Error):
+  """Class that defines file format errors."""
+
+
 class PathSpecError(Error):
   """Class that defines path specification errors."""
 
