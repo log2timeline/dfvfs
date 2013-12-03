@@ -20,6 +20,7 @@
 import abc
 import bz2
 import os
+import zlib
 
 from pyvfs.io import file_io
 from pyvfs.lib import definitions
@@ -75,7 +76,7 @@ class _ZlibDecompressor(_Decompressor):
   def __init__(self):
     """Initializes the decompressor object."""
     super(_ZlibDecompressor, self).__init__()
-    # TODO: implement.
+    self._zlib_decompressor = zlib.decompressobj()
 
   @abc.abstractmethod
   def Decompress(self, compressed_data):
@@ -88,8 +89,11 @@ class _ZlibDecompressor(_Decompressor):
       A tuple containing a byte string of the uncompressed data and
       the remaining compressed data.
     """
-    # TODO: implement.
-    pass
+    uncompressed_data = self._zlib_decompressor.decompress(compressed_data)
+    remaining_compressed_data = getattr(
+        self._zlib_decompressor, 'unused_data', '')
+
+    return (uncompressed_data, remaining_compressed_data)
 
 
 class CompressedStream(file_io.FileIO):

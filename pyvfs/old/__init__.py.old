@@ -21,7 +21,6 @@ from pyvfs.lib import interface
 from pyvfs.proto import transmission_pb2
 
 # Add all new PyVFS handles here.
-from pyvfs.vfs import bz2_compress
 from pyvfs.vfs import filesystem
 from pyvfs.vfs import gz_compress
 try:

@@ -25,55 +25,6 @@ from pyvfs.proto import transmission_pb2
 
 class GzipFile(interface.PyVFSFile):
   """Provide a file-like object to a file compressed using GZIP."""
-  TYPE = 'GZIP'
-
-  def Stat(self):
-    """Return a Stats object that contains stats like information."""
-    ret = Stats()
-    if not self.fh:
-      return ret
-
-    ret.size = self.size
-    ret.ino = self.inode
-    ret.fs_type = 'GZ File'
-
-    return ret
-
-  def seek(self, offset, whence=0):
-    """Seek into a specific location in a file.
-
-    This method implements a simple method to seek into a
-    compressed file from the end, which is not implemented by the
-    gzip library.
-
-    Args:
-      offset: An integer, indicating the number of bytes to seek in file,
-      how that value is interpreted depends on the 'whence' value.
-      whence: An integer; 0 means from beginning, 1 from last position
-      and 2 indicates we are about to seek from the end of the file.
-
-    Raises:
-      RuntimeError: If a seek is attempted to a closed file.
-    """
-    if not self.fh:
-      raise RuntimeError('Unable to seek into a file that is not open.')
-
-    if whence == 2:
-      ofs = self.size + offset
-      if ofs > self.tell():
-        self.fh.seek(ofs - self.fh.offset, 1)
-      else:
-        self.fh.rewind()
-        self.fh.seek(ofs)
-    else:
-      self.fh.seek(offset, whence)
-
-  def read(self, size=-1):
-    """Read size bytes from file and return them."""
-    if self.fh:
-      return self.fh.read(size)
-    else:
-      return ''
 
   def Open(self, filehandle=None):
     """Open the file as it is described in the PathSpec protobuf."""

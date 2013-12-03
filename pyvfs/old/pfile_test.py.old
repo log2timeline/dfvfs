@@ -176,24 +176,6 @@ class PyVFSPFileTest(unittest.TestCase):
 
     self.RunTest(pfile.OsFile, path)
 
-  def testBz2File(self):
-    test_file = os.path.join('test_data', 'syslog.bz2')
-
-    path = event.EventPathSpec()
-    path.type = 'BZ2'
-    path.file_path = test_file
-
-    self.RunTest(pfile.Bz2File, path)
-
-  def testFaultyFile(self):
-    test_file = os.path.join('test_data', 'syslog.bz2')
-
-    path = event.EventPathSpec()
-    path.type = 'TSK'
-    path.file_path = test_file
-
-    self.assertRaises(errors.UnableToOpenFile, pfile.Bz2File, path)
-
   def testNestedFile(self):
     test_file = os.path.join('test_data', 'syslog.tgz')
 
