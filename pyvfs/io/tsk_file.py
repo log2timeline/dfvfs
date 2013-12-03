@@ -77,8 +77,11 @@ class TSKFile(file_io.FileIO):
     Raises:
       IOError: if the open file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the mode is invalid.
+      ValueError: if the path specification or mode is invalid.
     """
+    if not path_spec:
+      raise ValueError(u'Missing path specfication.')
+
     if mode != 'rb':
       raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
 
