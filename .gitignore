@@ -1,12 +1,13 @@
-# Don't want compiled files being displayed.
+# Files to ignore by git
+
+# Generic auto-generated build files
 *.pyc
+*.pyo
 
-# Don't include build related files.
-/dist/
-/build/
-
-# And don't care about the 'egg'.
+# Specific auto-generated build files
+/build
+/dist
 /pyvfs.egg-info
 
-# And don't care about the temporary code review file if it exists.
+# Project specific files
 ._code_review_number

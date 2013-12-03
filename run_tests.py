@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A simple python file to run all of the automatic tests."""
+"""Script to run the tests."""
 
 import glob
 import os
@@ -23,19 +23,12 @@ import unittest
 import sys
 
 
-def FormatHeader(header, char='*'):
-  """Format and return a header for output."""
-  return ('\n{:%s^80}' % char).format(u' %s ' % header)
-
-
-def FindTestFiles():
-  """Return a list of all test files in the project."""
+def FindTestFiles(path):
+  """Find the test files (*_test.py) within the specified path."""
   file_list = []
-  pattern = '*_test.py'
-  test_root_dir = os.path.join('.', 'pyvfs')
 
-  for directory, _, _ in os.walk(test_root_dir):
-    directory_pattern = os.path.join(directory, pattern)
+  for directory, _, _ in os.walk(path):
+    directory_pattern = os.path.join(directory, '*_test.py')
 
     for pattern_match in glob.iglob(directory_pattern):
       if os.path.isfile(pattern_match):
@@ -44,17 +37,22 @@ def FindTestFiles():
   return file_list
 
 
-def RunTests():
-  """Runs all the tests and returns the results back."""
+def RunTests(path):
+  """Runs all the test for the test files found within the specified path."""
   test_classes = []
 
-  for test_file in FindTestFiles():
+  for test_file in FindTestFiles(path):
     library_name = test_file.rstrip('.py').replace('/', '.').lstrip('.')
     test_classes.append(library_name)
 
   tests = unittest.TestLoader().loadTestsFromNames(test_classes)
   test_run = unittest.TextTestRunner(verbosity=1)
   return test_run.run(tests)
+
+
+def FormatHeader(header, char='*'):
+  """Format and return a header for output."""
+  return ('\n{:%s^80}' % char).format(u' %s ' % header)
 
 
 def PrintResults(my_results):
@@ -82,7 +80,7 @@ if __name__ == '__main__':
   # Modify the system path to first search the CWD.
   sys.path.insert(0, '.')
 
-  results = RunTests()
+  results = RunTests(os.path.join('.', 'pyvfs'))
 
   PrintResults(results)
   if not results.wasSuccessful():

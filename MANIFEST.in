@@ -1,0 +1,6 @@
+include ACKNOWLEDGEMENTS
+exclude .gitignore
+exclude *.pyc
+recursive-include pyvfs *.proto
+recursive-exclude pyvfs *.pyc
+recursive-include test_data *

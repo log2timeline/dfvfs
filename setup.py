@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
 # Copyright 2013 The PyVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
@@ -14,17 +15,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-This is the setup file for the project. The standard setup rules apply:
+"""Installation and deployment script."""
 
-  python setup.py build
-  sudo python setup.py install
-"""
 import glob
 import os
 import sys
 
-#import run_tests
+import run_tests
 
 try:
   from setuptools import find_packages, setup, Command
@@ -32,23 +29,9 @@ except ImportError:
   from distutils.core import find_packages, setup, Command
 
 if sys.version < '2.7':
-  print ('Wrong Python Version, require version 2.7 or higher (and lower '
-         'than 3.X).\n%s') % sys.version
+  print 'Unsupported Python version: {0:s}.'.format(sys.version)
+  print 'Supported Python versions are 2.7 or a later 2.x version.'
   sys.exit(1)
-
-
-def GetFileList(path, patterns):
-  file_list = []
-
-  for directory, sub_directories, files in os.walk(path):
-    for pattern in patterns:
-      directory_pattern = os.path.join(directory, pattern)
-
-      for pattern_match in glob.iglob(directory_pattern):
-        if os.path.isfile(pattern_match):
-          file_list.append(pattern_match)
-
-  return file_list
 
 
 class TestCommand(Command):
@@ -62,27 +45,25 @@ class TestCommand(Command):
     pass
 
   def run(self):
-    pass
-    #results = run_tests.RunTests()
+    results = run_tests.RunTests()
 
 
-setup(name='pyvfs',
-      version='1.0.0',
-      description=(
-          'PyVFS libraries, used to allow read-only access to file like '
-          'objects, useable for various scripts and tools.'),
-      license='Apache License, Version 2.0',
-      url='https://code.google.com/p/pyvfs',
-      package_dir={'pyvfs': 'pyvfs'},
-      #cmdclass = {'test': TestCommand},
-      classifiers=[
-          'Development Status :: 4 - Beta',
-          'Environment :: Console',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-      ],
-      #include_package_data=True,
-      packages=find_packages('.'),
-      package_data={'pyvfs.test_data': GetFileList('test_data', ['*'])},
-     )
-
+setup(
+    name='pyvfs',
+    version='1.0.0',
+    description=(
+        'PyVFS is a Python module used to provide a read-only Virtual File '
+        'System (VFS) for various file system and file formats.'),
+    license='Apache License, Version 2.0',
+    url='https://code.google.com/p/pyvfs',
+    maintainer_email='log2timeline-dev@googlegroups.com',
+    cmdclass = {'test': TestCommand},
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+    ],
+    package_dir={'pyvfs': 'pyvfs'},
+    packages=find_packages('.'),
+)
