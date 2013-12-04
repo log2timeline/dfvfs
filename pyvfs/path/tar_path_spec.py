@@ -15,29 +15,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The operating system path specification implementation."""
-
-import platform
+"""The tar path specification implementation."""
 
 from pyvfs.path import location_path_spec
 
 
-if platform.system() == 'Windows':
-  PATH_SEPARATOR = u'\\'
-else:
-  PATH_SEPARATOR = u'/'
+PATH_SEPARATOR = u'/'
 
 
-class OSPathSpec(location_path_spec.LocationPathSpec):
-  """Class that implements the operating system path specification."""
+class TarPathSpec(location_path_spec.LocationPathSpec):
+  """Class that implements the tar file path specification."""
 
-  def __init__(self, location):
+  def __init__(self, location, parent):
     """Initializes the path specification object.
 
-       Note that the operating specific path specification cannot have a parent.
+       Note that the tar file path specification must have a parent.
 
     Args:
-      location: the operating specific location string e.g. /opt/pyvfs or
-                C:\\Opt\\pyvfs.
+      location: the tar file internal location string prefixed with a path
+                separator character.
+      parent: parent path specification (instance of PathSpec).
+
+    Raises:
+      ValueError: when parent is not set.
     """
-    super(OSPathSpec, self).__init__(location, parent=None)
+    if not parent:
+      raise ValueError(u'Missing parent value.')
+
+    super(TarPathSpec, self).__init__(location, parent=parent)

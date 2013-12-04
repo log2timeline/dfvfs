@@ -15,22 +15,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The SleuthKit (TSK) path specification resolver helper implementation."""
+"""The tar path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.tsk_file_io
+import pyvfs.io.tar_file_io
+import pyvfs.vfs.tar_file_system
 
-from pyvfs.path import tsk_path_spec
+from pyvfs.lib import errors
+from pyvfs.path import tar_path_spec
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
 
-class TSKResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the SleuthKit resolver helper."""
+class TarResolverHelper(resolver_helper.ResolverHelper):
+  """Class that implements the tar resolver helper."""
 
   def __init__(self):
     """Initializes the resolver helper object."""
-    super(TSKResolverHelper, self).__init__(tsk_path_spec.TSKPathSpec.__name__)
+    super(TarResolverHelper, self).__init__(
+        tar_path_spec.TarPathSpec.__name__)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.
@@ -42,10 +45,27 @@ class TSKResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.tsk_file_io.TSKFile()
+    file_object = pyvfs.io.tar_file_io.TarFile()
     file_object.open(path_spec)
     return file_object
 
+  def OpenFileSystem(self, path_spec):
+    """Opens a file system object defined by path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      The file system object (instance of vfs.TarFileSystem) or None if
+      the path specification could not be resolved.
+    """
+    if not path_spec.HasParent():
+      raise errors.PathSpecError(
+          u'Unsupported path specification without parent.')
+
+    file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
+    return pyvfs.vfs.tar_file_system.TarFileSystem(file_object, path_spec)
+
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(TSKResolverHelper())
+resolver.Resolver.RegisterHelper(TarResolverHelper())

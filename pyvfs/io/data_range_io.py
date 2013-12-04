@@ -94,8 +94,8 @@ class DataRange(file_io.FileIO):
     """Opens the file-like object.
 
     Args:
-      path_spec: optional the path specification (instance of path.PathSpec),
-                 the default is None.
+      path_spec: optional the path specification (instance of path.PathSpec).
+                 The default is None.
 
     Raises:
       IOError: if the open file-like object could not be opened.
@@ -115,16 +115,16 @@ class DataRange(file_io.FileIO):
       if not path_spec.HasParent():
         raise errors.PathSpecError(
             u'Unsupported path specification without parent.')
- 
+
       range_offset = getattr(path_spec, 'range_offset', None)
       range_size = getattr(path_spec, 'range_size', None)
-  
+
       if range_offset is None or range_size is None:
         raise errors.PathSpecError(
             u'Path specification missing range offset and range size.')
 
       self.SetRange(range_offset, range_size)
-      self._file_object = resolver.Resolver.OpenPathSpec(path_spec.parent)
+      self._file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
 
     self._is_open = True
 

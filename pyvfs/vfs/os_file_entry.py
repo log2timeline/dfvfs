@@ -20,7 +20,7 @@
 import os
 import stat
 
-from pyvfs.io import os_file
+from pyvfs.io import os_file_io
 from pyvfs.path import os_path_spec
 from pyvfs.vfs import file_entry
 from pyvfs.vfs import vfs_stat
@@ -29,25 +29,22 @@ from pyvfs.vfs import vfs_stat
 class OSDirectory(file_entry.Directory):
   """Class that implements a directory object using os."""
 
-  # TODO: add a generator for the entries which might
-  # be more memory efficient.
+  def _EntriesGenerator(self):
+    """Retrieves directory entries.
 
-  def _GetEntries(self):
-    """Retrieves the entries.
+       Since a directory can contain a vast number of entries using
+       a generator is more memory efficient.
 
-    Returns:
-      A list of path specifications (instance of path.OSPathSpec).
+    Yields:
+      A path specification (instance of path.OSPathSpec).
     """
     location = getattr(self.path_spec, 'location', None)
 
     if location is None:
       return
 
-    entries = []
     for directory_entry in os.listdir(location):
-      entries.append(os_path_spec.OSPathSpec(
-          os.path.join(location, directory_entry)))
-    return entries
+      yield os_path_spec.OSPathSpec(os.path.join(location, directory_entry))
 
 
 class OSFileEntry(file_entry.FileEntry):
@@ -62,6 +59,7 @@ class OSFileEntry(file_entry.FileEntry):
     """
     super(OSFileEntry, self).__init__(file_system, path_spec)
     self._directory = None
+    self._file_object = None
     self._stat_object = None
 
   def _GetDirectory(self):
@@ -128,16 +126,6 @@ class OSFileEntry(file_entry.FileEntry):
     return os.path.basename(location)
 
   @property
-  def number_of_sub_file_entries(self):
-    """The number of sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      return self._directory.number_of_entries
-    return 0
-
-  @property
   def sub_file_entries(self):
     """The sub file entries (list of instance of vfs.FileEntry)."""
     if self._directory is None:
@@ -150,11 +138,12 @@ class OSFileEntry(file_entry.FileEntry):
             OSFileEntry(self._file_system, path_spec))
     return sub_file_entries
 
-  def GetData(self):
+  def GetFileObject(self):
     """Retrieves the file-like object (instance of io.FileIO) of the data."""
-    file_object = os_file.OSFile()
-    file_object.open(self.path_spec)
-    return file_object
+    if not self._file_object:
+      self._file_object = os_file_io.OSFile()
+      self._file_object.open(self.path_spec)
+    return self._file_object
 
   def GetStat(self):
     """Retrieves the stat object (instance of vfs.Stat)."""

@@ -41,3 +41,15 @@ class FileSystem(object):
     Returns:
       A file entry (instance of vfs.FileEntry).
     """
+
+  def GetFileObjectByPathSpec(self, path_spec):
+    """Retrieves a file-like object for a path specification.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      A file-like object (instance of io.FileIO).
+    """
+    file_entry = self.GetFileEntryByPathSpec(path_spec)
+    return file_entry.GetFileObject()

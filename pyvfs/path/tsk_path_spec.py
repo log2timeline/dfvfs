@@ -27,7 +27,7 @@ class TSKPathSpec(path_spec.PathSpec):
   """Class that implements the SleuthKit path specification."""
 
   def __init__(self, inode=None, location=None, parent=None):
-    """Initializes the SleuthKit path specification object.
+    """Initializes the path specification object.
 
        The SleuthKit path specification object allows to specify a path
        interpreted by SleuthKit specific VFS classes. The path can be

@@ -15,44 +15,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the file-like object implementation using the SleuthKit (TSK)."""
+"""Tests for the file-like object implementation using the operating system."""
 
 import os
-import pytsk3
 import unittest
 
-from pyvfs.io import tsk_file
-from pyvfs.path import tsk_path_spec
+from pyvfs.io import os_file_io
+from pyvfs.path import os_path_spec
 
 
-class TSKFileTest(unittest.TestCase):
-  """The unit test for the SleuthKit (TSK) file-like object."""
+class OSFileTest(unittest.TestCase):
+  """The unit test for the operating systesm file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join('test_data', 'image.dd')
-    # We need to keep the pytsk3.Img_Info around due to an issue with
-    # reference counting.
-    self._tsk_image = pytsk3.Img_Info(test_file)
-    self._tsk_file_system = pytsk3.FS_Info(self._tsk_image, offset=0)
+    location = os.path.join('test_data', 'password.txt')
+    self._path_spec1 = os_path_spec.OSPathSpec(location)
 
-  def testOpenCloseInode(self):
-    """Test the open and close functionality using an inode."""
-    path_spec = tsk_path_spec.TSKPathSpec(inode=15)
-    file_object = tsk_file.TSKFile(self._tsk_file_system)
+    location = os.path.join('test_data', 'another_file')
+    self._path_spec2 = os_path_spec.OSPathSpec(location)
 
-    file_object.open(path_spec)
-    self.assertEquals(file_object.get_size(), 116)
-    file_object.close()
+  def testOpenClosePathSpec(self):
+    """Test the open and close functionality using a path specification."""
+    file_object = os_file_io.OSFile()
+    file_object.open(self._path_spec1)
 
-    # TODO: add a failing scenario.
-
-  def testOpenCloseLocation(self):
-    """Test the open and close functionality using a location."""
-    path_spec = tsk_path_spec.TSKPathSpec(location='/passwords.txt')
-    file_object = tsk_file.TSKFile(self._tsk_file_system)
-
-    file_object.open(path_spec)
     self.assertEquals(file_object.get_size(), 116)
     file_object.close()
 
@@ -60,11 +47,9 @@ class TSKFileTest(unittest.TestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location='/a_directory/another_file')
-    file_object = tsk_file.TSKFile(self._tsk_file_system)
+    file_object = os_file_io.OSFile()
+    file_object.open(self._path_spec2)
 
-    file_object.open(path_spec)
     self.assertEquals(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -99,10 +84,9 @@ class TSKFileTest(unittest.TestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(inode=15, location='/passwords.txt')
-    file_object = tsk_file.TSKFile(self._tsk_file_system)
+    file_object = os_file_io.OSFile()
+    file_object.open(self._path_spec1)
 
-    file_object.open(path_spec)
     read_buffer = file_object.read()
 
     expected_buffer = (

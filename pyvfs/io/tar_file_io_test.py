@@ -15,42 +15,40 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the gzip file-like object."""
+"""Tests for the tar extracted file-like object."""
 
 import os
 import unittest
 
-from pyvfs.io import gzip_file
+from pyvfs.io import tar_file_io
 from pyvfs.io import test_lib
 from pyvfs.path import os_path_spec
+from pyvfs.path import tar_path_spec
 
 
-class GzipFileTest(test_lib.SylogTestCase):
-  """The unit test for a gzip file-like object."""
+class TarFileTest(test_lib.SylogTestCase):
+  """The unit test for a tar extracted file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    location = os.path.join('test_data', 'syslog.gz')
-    self._os_path_spec = os_path_spec.OSPathSpec(location)
+    location = os.path.join('test_data', 'syslog.tar')
+    path_spec = os_path_spec.OSPathSpec(location)
+    self._tar_path_spec = tar_path_spec.TarPathSpec(
+        '/syslog', path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = gzip_file.GzipFile()
-    file_object.open(self._os_path_spec)
+    file_object = tar_file_io.TarFile()
+    file_object.open(self._tar_path_spec)
 
     self._testGetSizeFileObject(file_object)
-
-    self.assertEquals(file_object.modification_time, 0x501416d7)
-    self.assertEquals(file_object.operating_system, 0x03)
-    self.assertEquals(file_object.original_filename, 'syslog.1')
-    self.assertEquals(file_object.comment, None)
 
     file_object.close()
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = gzip_file.GzipFile()
-    file_object.open(self._os_path_spec)
+    file_object = tar_file_io.TarFile()
+    file_object.open(self._tar_path_spec)
 
     self._testSeekFileObject(file_object)
 
@@ -58,8 +56,8 @@ class GzipFileTest(test_lib.SylogTestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = gzip_file.GzipFile()
-    file_object.open(self._os_path_spec)
+    file_object = tar_file_io.TarFile()
+    file_object.open(self._tar_path_spec)
 
     self._testReadFileObject(file_object)
 

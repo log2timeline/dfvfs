@@ -52,7 +52,6 @@ class _Bzip2Decompressor(_Decompressor):
     super(_Bzip2Decompressor, self).__init__()
     self._bz2_decompressor = bz2.BZ2Decompressor()
 
-  @abc.abstractmethod
   def Decompress(self, compressed_data):
     """Decompresses the compressed data.
 
@@ -85,7 +84,6 @@ class _ZlibDecompressor(_Decompressor):
     super(_ZlibDecompressor, self).__init__()
     self._zlib_decompressor = zlib.decompressobj(window_size)
 
-  @abc.abstractmethod
   def Decompress(self, compressed_data):
     """Decompresses the compressed data.
 
@@ -276,14 +274,14 @@ class CompressedStream(file_io.FileIO):
       if not path_spec.HasParent():
         raise errors.PathSpecError(
             u'Unsupported path specification without parent.')
- 
+
       self._compression_method = getattr(path_spec, 'compression_method', None)
-  
+
       if self._compression_method is None:
         raise errors.PathSpecError(
             u'Path specification missing compression method.')
 
-      self._file_object = resolver.Resolver.OpenPathSpec(path_spec.parent)
+      self._file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
 
     self._is_open = True
 

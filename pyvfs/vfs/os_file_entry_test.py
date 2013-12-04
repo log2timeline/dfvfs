@@ -47,7 +47,6 @@ class OSFileEntryTest(unittest.TestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.number_of_sub_file_entries, 5)
 
     expected_sub_file_entry_names = [
         'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', 'file5.txt']
@@ -56,6 +55,8 @@ class OSFileEntryTest(unittest.TestCase):
     for sub_file_entry in file_entry.sub_file_entries:
       sub_file_entry_names.append(sub_file_entry.name)
 
+    self.assertEquals(
+        len(sub_file_entry_names), len(expected_sub_file_entry_names))
     self.assertEquals(
         sorted(sub_file_entry_names), expected_sub_file_entry_names)
 
