@@ -24,7 +24,7 @@ class DataRangePathSpec(path_spec.PathSpec):
   """Class that implements the data range path specification."""
 
   def __init__(self, range_offset, range_size, parent):
-    """Initializes the data range path specification object.
+    """Initializes the path specification object.
 
        Note that the data range path specification must have a parent.
 

@@ -17,7 +17,6 @@
 """An implementation of a filesystem cache."""
 import logging
 import os
-import tarfile
 import zipfile
 
 from pyvfs.lib import errors

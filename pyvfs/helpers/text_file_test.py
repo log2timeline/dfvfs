@@ -21,7 +21,7 @@ import os
 import unittest
 
 from pyvfs.helpers import text_file
-from pyvfs.io import os_file
+from pyvfs.io import os_file_io
 from pyvfs.path import os_path_spec
 
 
@@ -38,7 +38,7 @@ class TextFileTest(unittest.TestCase):
 
   def testReadline(self):
     """Test the readline() function."""
-    file_object = os_file.OSFile()
+    file_object = os_file_io.OSFile()
     file_object.open(self._path_spec1)
     text_file_object = text_file.TextFile(file_object)
 
@@ -50,7 +50,7 @@ class TextFileTest(unittest.TestCase):
 
   def testReadlines(self):
     """Test the readlines() function."""
-    file_object = os_file.OSFile()
+    file_object = os_file_io.OSFile()
     file_object.open(self._path_spec2)
     text_file_object = text_file.TextFile(file_object)
 
@@ -67,7 +67,7 @@ class TextFileTest(unittest.TestCase):
 
   def testReadlinesWithSizeHint(self):
     """Test the readlines() function."""
-    file_object = os_file.OSFile()
+    file_object = os_file_io.OSFile()
     file_object.open(self._path_spec2)
     text_file_object = text_file.TextFile(file_object)
 
@@ -82,7 +82,7 @@ class TextFileTest(unittest.TestCase):
 
   def testIterator(self):
     """Test the iterator functionality."""
-    file_object = os_file.OSFile()
+    file_object = os_file_io.OSFile()
     file_object.open(self._path_spec2)
     text_file_object = text_file.TextFile(file_object)
 

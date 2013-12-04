@@ -20,9 +20,11 @@
 import os
 import pytsk3
 
+# This is necessary to prevent a circular import.
+import pyvfs.vfs.manager
+
 from pyvfs.lib import errors
 from pyvfs.io import file_io
-from pyvfs.vfs import tsk_file_system_manager
 
 
 class TSKFile(file_io.FileIO):
@@ -42,27 +44,20 @@ class TSKFile(file_io.FileIO):
     """
     if tsk_file_system is None and tsk_file is not None:
       raise ValueError(
-          'pytsk3.File object provided without corresponding pytsk3.FS_Info '
-          'object')
+          u'pytsk3.File object provided without corresponding pytsk3.FS_Info '
+          u'object')
 
     super(TSKFile, self).__init__()
     self._tsk_file_system = tsk_file_system
     self._tsk_file = tsk_file
     self._current_offset = 0
+    self._size = 0
 
     if tsk_file:
       self._tsk_file_set_in_init = True
     else:
       self._tsk_file_set_in_init = False
     self._is_open = False
-
-  def GetFile(self):
-    """Retrieves the file object.
-
-    Returns:
-      The SleuthKit file object (instance of pytsk3.File).
-    """
-    return self._tsk_file
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -94,15 +89,15 @@ class TSKFile(file_io.FileIO):
           raise errors.PathSpecError(
               u'Unsupported path specification without parent.')
 
-        self._tsk_file_system = (
-            tsk_file_system_manager.TSKFileSystemManager.OpenPathSpec(
-                path_spec.parent))
+        file_system = pyvfs.vfs.manager.FileSystemManager.OpenFileSystem(
+                path_spec.parent)
+        self._tsk_file_system = file_system.GetFsInfo()
 
       # Opening a file by inode number is faster than opening a file
       # by location.
       inode = getattr(path_spec, 'inode', None)
       location = getattr(path_spec, 'location', None)
-  
+
       if inode is not None:
         self._tsk_file = self._tsk_file_system.open_meta(inode=inode)
       elif location is not None:
@@ -110,38 +105,37 @@ class TSKFile(file_io.FileIO):
       else:
         raise errors.PathSpecError(
             u'Path specification missing inode and location.')
-  
+
       # Note that because pytsk3.File does not explicitly defines info
       # we need to check if the attribute exists and has a value other
       # than None.
       if getattr(self._tsk_file, 'info', None) is None:
         raise IOError(u'Missing attribute info in file (pytsk3.File).')
-  
+
       # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
       # we need to check if the attribute exists and has a value other
       # than None.
       if getattr(self._tsk_file.info, 'meta', None) is None:
         raise IOError(
             u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
-  
+
       # Note that because pytsk3.TSK_FS_META does not explicitly defines size
       # we need to check if the attribute exists.
       if not hasattr(self._tsk_file.info.meta, 'size'):
         raise IOError(
             u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
-  
+
       # Note that because pytsk3.TSK_FS_META does not explicitly defines type
       # we need to check if the attribute exists.
       if not hasattr(self._tsk_file.info.meta, 'type'):
         raise IOError(
             u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
-  
+
       if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
         raise IOError(u'Not a regular file.')
-  
-      self._current_offset = 0
-      self._size = self._tsk_file.info.meta.size
 
+    self._current_offset = 0
+    self._size = self._tsk_file.info.meta.size
     self._is_open = True
 
   def close(self):

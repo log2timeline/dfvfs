@@ -20,7 +20,7 @@
 import pytsk3
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.tsk_file
+import pyvfs.io.tsk_file_io
 
 from pyvfs.path import tsk_path_spec
 from pyvfs.vfs import file_entry
@@ -41,11 +41,15 @@ class TSKDirectory(file_entry.Directory):
     super(TSKDirectory, self).__init__(path_spec)
     self._tsk_file_system = tsk_file_system
 
-  # TODO: add a generator for the entries which might
-  # be more memory efficient.
+  def _EntriesGenerator(self):
+    """Retrieves directory entries.
 
-  def _GetEntries(self):
-    """Retrieves the entries."""
+       Since a directory can contain a vast number of entries using
+       a generator is more memory efficient.
+
+    Yields:
+      A path specification (instance of path.TSKPathSpec).
+    """
     # Opening a file by inode number is faster than opening a file
     # by location.
     inode = getattr(self.path_spec, 'inode', None)
@@ -58,7 +62,6 @@ class TSKDirectory(file_entry.Directory):
     else:
       return
 
-    entries = []
     for tsk_directory_entry in tsk_directory:
       # Note that because pytsk3.Directory does not explicitly defines info
       # we need to check if the attribute exists and has a value other
@@ -104,28 +107,27 @@ class TSKDirectory(file_entry.Directory):
             directory_entry = tsk_path_spec.PATH_SEPARATOR.join([
                 location, directory_entry])
 
-      entries.append(tsk_path_spec.TSKPathSpec(
-          inode=directory_entry_inode, location=directory_entry))
-    return entries
+      yield tsk_path_spec.TSKPathSpec(
+          inode=directory_entry_inode, location=directory_entry)
 
 
 class TSKFileEntry(file_entry.FileEntry):
   """Class that implements a file entry object using pytsk3."""
 
-  def __init__(self, file_system, path_spec, file_object=None):
+  def __init__(self, file_system, path_spec, tsk_file=None):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
-      file_object: the file object (instance of io.TSKFile).
+      tsk_file: the file object (instance of pytsk3.File).
     """
     super(TSKFileEntry, self).__init__(file_system, path_spec)
-    self._file_object = file_object
+    self._tsk_file = tsk_file
     self._directory = None
+    self._file_object = None
     self._name = None
     self._stat_object = None
-    self._tsk_file = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of TSKDirectory)."""
@@ -138,10 +140,10 @@ class TSKFileEntry(file_entry.FileEntry):
       return TSKDirectory(tsk_file_system, self.path_spec)
     return
 
-  def _GetTSKFile(self):
-    """Retrieves the file-like object (instance of pytsk3.File)."""
+  def GetTSKFile(self):
+    """Retrieves the SleuthKit file object (instance of pytsk3.File)."""
     if self._file_object is not None:
-      tsk_file_object = self._file_object.GetFile()
+      tsk_file = self._file_object.GetTSKFile()
 
     else:
       tsk_file_system = self._file_system.GetFsInfo()
@@ -152,18 +154,18 @@ class TSKFileEntry(file_entry.FileEntry):
       location = getattr(self.path_spec, 'location', None)
 
       if inode is not None:
-        tsk_file_object = tsk_file_system.open_meta(inode=inode)
+        tsk_file = tsk_file_system.open_meta(inode=inode)
       elif location is not None:
-        tsk_file_object = tsk_file_system.open(location)
+        tsk_file = tsk_file_system.open(location)
       else:
         raise RuntimeError(u'Path specification missing inode and location.')
 
-    return tsk_file_object
+    return tsk_file
 
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat)."""
     if self._tsk_file is None:
-      self._tsk_file = self._GetTSKFile()
+      self._tsk_file = self.GetTSKFile()
 
     if not self._tsk_file.info or not self._tsk_file.info.meta:
       return
@@ -244,7 +246,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """"The name of the file entry, which does not include the full path."""
     if self._name is None:
       if self._tsk_file is None:
-        self._tsk_file = self._GetTSKFile()
+        self._tsk_file = self.GetTSKFile()
 
       # Note that because pytsk3.File does not explicitly defines info
       # we need to check if the attribute exists and has a value other
@@ -266,16 +268,6 @@ class TSKFileEntry(file_entry.FileEntry):
     return self._name
 
   @property
-  def number_of_sub_file_entries(self):
-    """The number of sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      return self._directory.number_of_entries
-    return 0
-
-  @property
   def sub_file_entries(self):
     """The sub file entries (list of instance of vfs.FileEntry)."""
     if self._directory is None:
@@ -288,13 +280,13 @@ class TSKFileEntry(file_entry.FileEntry):
             TSKFileEntry(self._file_system, path_spec))
     return sub_file_entries
 
-  def GetData(self):
+  def GetFileObject(self):
     """Retrieves the file-like object (instance of io.FileIO) of the data."""
     if self._file_object is None:
       tsk_file_system = self._file_system.GetFsInfo()
-      self._file_object = pyvfs.io.tsk_file.TSKFile(
+      self._file_object = pyvfs.io.tsk_file_io.TSKFile(
           tsk_file_system, tsk_file=self._tsk_file)
-      self._file_object.open(self.path_spec)
+      self._file_object.open()
     return self._file_object
 
   def GetStat(self):

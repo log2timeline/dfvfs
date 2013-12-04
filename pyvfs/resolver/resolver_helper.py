@@ -33,7 +33,7 @@ class ResolverHelper(object):
     self.class_name = class_name
 
   @abc.abstractmethod
-  def OpenPathSpec(self, path_spec):
+  def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.
 
     Args:
@@ -43,3 +43,20 @@ class ResolverHelper(object):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
+
+  def OpenFileSystem(self, dummy_path_spec):
+    """Opens a file system object defined by path specification.
+
+       This is the fall through implementation function that raises
+       a RuntimeError.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Raises:
+      RuntimeError: since this is the fall through implementation.
+    """
+    # Note: not using NotImplementedError here since pylint then will complain
+    # derived classes will need to implement the function, which should not
+    # be the the case.
+    raise RuntimeError('Missing implemention to open file system.')

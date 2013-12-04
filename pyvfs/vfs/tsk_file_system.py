@@ -20,10 +20,9 @@
 import pytsk3
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.tsk_file
+import pyvfs.vfs.tsk_file_entry
 
 from pyvfs.path import tsk_path_spec
-from pyvfs.vfs import tsk_file_entry
 from pyvfs.vfs import file_system
 
 
@@ -70,7 +69,7 @@ class _TSKFileSystemImage(pytsk3.Img_Info):
 class TSKFileSystem(file_system.FileSystem):
   """Class that implements a file system object using pytsk3."""
 
-  _LOCATION_ROOT = '/'
+  _LOCATION_ROOT = u'/'
 
   def __init__(self, file_object, offset=0):
     """Initializes the file system object.
@@ -103,14 +102,12 @@ class TSKFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry).
     """
-    tsk_file_object = self._tsk_file_system.open(self._LOCATION_ROOT)
+    tsk_file = self._tsk_file_system.open(self._LOCATION_ROOT)
 
     path_spec = tsk_path_spec.TSKPathSpec(location=self._LOCATION_ROOT)
 
-    file_object = pyvfs.io.tsk_file.TSKFile(
-        self._tsk_file_system, tsk_file=tsk_file_object)
-
-    return tsk_file_entry.TSKFileEntry(path_spec, file_object=file_object)
+    return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
+        self, path_spec, tsk_file=tsk_file)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -130,14 +127,11 @@ class TSKFileSystem(file_system.FileSystem):
     location = getattr(path_spec, 'location', None)
 
     if inode is not None:
-      tsk_file_object = self._tsk_file_system.open_meta(inode=inode)
+      tsk_file = self._tsk_file_system.open_meta(inode=inode)
     elif location is not None:
-      tsk_file_object = self._tsk_file_system.open(location)
+      tsk_file = self._tsk_file_system.open(location)
     else:
       raise ValueError(u'Path specification missing inode and location.')
 
-    file_object = pyvfs.io.tsk_file.TSKFile(
-        self._tsk_file_system, tsk_file=tsk_file_object)
-
-    return tsk_file_entry.TSKFileEntry(
-        self, path_spec, file_object=file_object)
+    return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
+        self, path_spec, tsk_file=tsk_file)

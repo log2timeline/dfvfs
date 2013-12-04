@@ -20,8 +20,8 @@
 import construct
 import os
 
-from pyvfs.io import compressed_stream
-from pyvfs.io import file_io
+from pyvfs.io import compressed_stream_io
+from pyvfs.io import file_object_io
 from pyvfs.lib import definitions
 from pyvfs.lib import errors
 from pyvfs.path import compressed_stream_path_spec
@@ -29,7 +29,7 @@ from pyvfs.path import data_range_path_spec
 from pyvfs.resolver import resolver
 
 
-class GzipFile(file_io.FileIO):
+class GzipFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object of a gzip file.
 
      The gzip file is a zlib compressed data stream with additional metadata.
@@ -58,10 +58,14 @@ class GzipFile(file_io.FileIO):
   _FLAG_FNAME = 0x08
   _FLAG_FCOMMENT = 0x10
 
-  def __init__(self):
-    """Initializes the file-like object."""
-    super(GzipFile, self).__init__()
-    self._file_object = None
+  def __init__(self, file_object=None):
+    """Initializes the file-like object.
+
+    Args:
+      file_object: optional file-like object. The default is None.
+    """
+    super(GzipFile, self).__init__(file_object=None)
+    self._gzip_file_object = file_object
     self._compressed_data_offset = -1
     self._compressed_data_size = -1
     self._uncompressed_data_size = -1
@@ -134,35 +138,26 @@ class GzipFile(file_io.FileIO):
 
     self._uncompressed_data_size = file_footer.uncompressed_data_size
 
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-
-  def open(self, path_spec, mode='rb'):
-    """Opens the file-like object.
+  def _OpenFileObject(self, path_spec):
+    """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: optional the path specification (instance of path.PathSpec).
+                 The default is None.
 
-    Raises:
-      IOError: if the open file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification or mode is invalid.
+    Returns:
+      A file-like object.
     """
-    if not path_spec:
-      raise ValueError(u'Missing path specfication.')
+    if not self._gzip_file_object:
+      gzip_file_object = resolver.Resolver.OpenFileObject(path_spec)
+    else:
+      gzip_file_object = self._gzip_file_object
 
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+    self._ReadFileHeader(gzip_file_object)
+    self._ReadFileFooter(gzip_file_object)
 
-    if self._file_object:
-      raise IOError(u'Already open.')
-
-    file_object = resolver.Resolver.OpenPathSpec(path_spec)
-
-    self._ReadFileHeader(file_object)
-    self._ReadFileFooter(file_object)
-
-    file_object.close()
+    if not self._gzip_file_object:
+      gzip_file_object.close()
 
     path_spec_data_range = data_range_path_spec.DataRangePathSpec(
         self._compressed_data_offset, self._compressed_data_size,
@@ -172,80 +167,8 @@ class GzipFile(file_io.FileIO):
             definitions.COMPRESSION_METHOD_DEFLATE,
             parent=path_spec_data_range))
 
-    self._file_object = compressed_stream.CompressedStream()
-    self._file_object.SetUncompressedStreamSize(self._uncompressed_data_size)
-    self._file_object.open(path_spec_compressed_stream)
+    file_object = compressed_stream_io.CompressedStream()
+    file_object.SetUncompressedStreamSize(self._uncompressed_data_size)
+    file_object.open(path_spec_compressed_stream)
 
-  def close(self):
-    """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
-
-    Raises:
-      IOError: if the close failed.
-    """
-    if not self._file_object:
-      raise IOError(u'Not opened.')
-
-    self._file_object.close()
-
-  def read(self, size=None):
-    """Reads a byte string from the file-like object at the current offset.
-
-       The function will read a byte string of the specified size or
-       all of the remaining data if no size was specified.
-
-    Args:
-      size: optional integer value containing the number of bytes to read.
-            Default is all remaining data (None).
-
-    Returns:
-      A byte string containing the data read.
-
-    Raises:
-      IOError: if the read failed.
-    """
-    if not self._file_object:
-      raise IOError(u'Not opened.')
-
-    return self._file_object.read(size)
-
-  def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks an offset within the file-like object.
-
-    Args:
-      offset: the offset to seek.
-      whence: optional value that indicates whether offset is an absolute
-              or relative position within the file. Default is SEEK_SET.
-
-    Raises:
-      IOError: if the seek failed.
-    """
-    if not self._file_object:
-      raise IOError(u'Not opened.')
-
-    return self._file_object.seek(offset, whence)
-
-  def get_offset(self):
-    """Returns the current offset into the file-like object.
-
-    Raises:
-      IOError: if the file-like object has not been opened.
-    """
-    if not self._file_object:
-      raise IOError(u'Not opened.')
-
-    return self._file_object.get_offset()
-
-  def get_size(self):
-    """Returns the size of the file-like object.
-
-    Raises:
-      IOError: if the file-like object has not been opened.
-    """
-    if not self._file_object:
-      raise IOError(u'Not opened.')
-
-    return self._file_object.get_size()
+    return file_object

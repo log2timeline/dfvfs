@@ -18,7 +18,7 @@
 """The operating system path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.os_file
+import pyvfs.io.os_file_io
 
 from pyvfs.path import os_path_spec
 from pyvfs.resolver import resolver
@@ -32,7 +32,7 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
     """Initializes the resolver helper object."""
     super(OSResolverHelper, self).__init__(os_path_spec.OSPathSpec.__name__)
 
-  def OpenPathSpec(self, path_spec):
+  def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.
 
     Args:
@@ -42,7 +42,7 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.os_file.OSFile()
+    file_object = pyvfs.io.os_file_io.OSFile()
     file_object.open(path_spec)
     return file_object
 

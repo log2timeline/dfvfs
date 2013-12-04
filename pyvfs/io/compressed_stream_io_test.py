@@ -20,8 +20,8 @@
 import os
 import unittest
 
-from pyvfs.io import compressed_stream
-from pyvfs.io import os_file
+from pyvfs.io import compressed_stream_io
+from pyvfs.io import os_file_io
 from pyvfs.io import test_lib
 from pyvfs.lib import definitions
 from pyvfs.path import compressed_stream_path_spec
@@ -34,16 +34,16 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     location = os.path.join('test_data', 'syslog.bz2')
-    self._os_path_spec = os_path_spec.OSPathSpec(location=location)
+    self._os_path_spec = os_path_spec.OSPathSpec(location)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
             definitions.COMPRESSION_METHOD_BZIP2, parent=self._os_path_spec))
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    os_file_object = os_file.OSFile()
+    os_file_object = os_file_io.OSFile()
     os_file_object.open(self._os_path_spec)
-    file_object = compressed_stream.CompressedStream(
+    file_object = compressed_stream_io.CompressedStream(
         definitions.COMPRESSION_METHOD_BZIP2, file_object=os_file_object)
     file_object.open()
 
@@ -54,7 +54,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = compressed_stream.CompressedStream()
+    file_object = compressed_stream_io.CompressedStream()
     file_object.open(self._compressed_stream_path_spec)
 
     self._testGetSizeFileObject(file_object)
@@ -63,7 +63,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = compressed_stream.CompressedStream()
+    file_object = compressed_stream_io.CompressedStream()
     file_object.open(self._compressed_stream_path_spec)
 
     self._testSeekFileObject(file_object)
@@ -72,7 +72,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = compressed_stream.CompressedStream()
+    file_object = compressed_stream_io.CompressedStream()
     file_object.open(self._compressed_stream_path_spec)
 
     self._testReadFileObject(file_object)
@@ -86,16 +86,16 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     location = os.path.join('test_data', 'syslog.zlib')
-    self._os_path_spec = os_path_spec.OSPathSpec(location=location)
+    self._os_path_spec = os_path_spec.OSPathSpec(location)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
             definitions.COMPRESSION_METHOD_ZLIB, parent=self._os_path_spec))
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    os_file_object = os_file.OSFile()
+    os_file_object = os_file_io.OSFile()
     os_file_object.open(self._os_path_spec)
-    file_object = compressed_stream.CompressedStream(
+    file_object = compressed_stream_io.CompressedStream(
         definitions.COMPRESSION_METHOD_ZLIB, file_object=os_file_object)
     file_object.open()
 
@@ -106,7 +106,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = compressed_stream.CompressedStream()
+    file_object = compressed_stream_io.CompressedStream()
     file_object.open(self._compressed_stream_path_spec)
 
     self._testGetSizeFileObject(file_object)
@@ -115,7 +115,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = compressed_stream.CompressedStream()
+    file_object = compressed_stream_io.CompressedStream()
     file_object.open(self._compressed_stream_path_spec)
 
     self._testSeekFileObject(file_object)
@@ -124,7 +124,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = compressed_stream.CompressedStream()
+    file_object = compressed_stream_io.CompressedStream()
     file_object.open(self._compressed_stream_path_spec)
 
     self._testReadFileObject(file_object)

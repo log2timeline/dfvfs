@@ -38,26 +38,21 @@ class Directory(object):
     self._entries = None
 
   @abc.abstractmethod
-  def _GetEntries(self):
-    """Retrieves the entries.
+  def _EntriesGenerator(self):
+    """Retrieves directory entries.
 
-    Returns:
-      A list of path specifications (instance of path.OSPathSpec).
+       Since a directory can contain a vast number of entries using
+       a generator is more memory efficient.
+
+    Yields:
+      A path specification (instance of path.PathSpec).
     """
 
   @property
-  def number_of_entries(self):
-    """The number of entries."""
-    if self._entries is None:
-      self._entries = self._GetEntries()
-    return len(self._entries)
-
-  @property
   def entries(self):
-    """The entries (list of instance of path.OSPathSpec)."""
-    if self._entries is None:
-      self._entries = self._GetEntries()
-    return self._entries
+    """The entries (generator of instance of path.OSPathSpec)."""
+    for entry in self._EntriesGenerator():
+      yield entry
 
 
 class FileEntry(object):
@@ -79,16 +74,11 @@ class FileEntry(object):
     """The name of the file entry, which does not include the full path."""
 
   @abc.abstractproperty
-  def number_of_sub_file_entries(self):
-    """The number of sub file entries."""
-
-  @abc.abstractproperty
   def sub_file_entries(self):
     """The sub file entries."""
 
-  # TODO: maybe rename this to GetFileIO, GetDataStream or equiv.
   @abc.abstractmethod
-  def GetData(self):
+  def GetFileObject(self):
     """Retrieves the file-like object (instance of io.FileIO) of the data."""
 
   @abc.abstractmethod

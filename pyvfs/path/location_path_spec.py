@@ -15,34 +15,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The compressed stream path specification implementation."""
+"""The location-based path specification implementation."""
 
 from pyvfs.path import path_spec
 
 
-class CompressedStreamPathSpec(path_spec.PathSpec):
-  """Class that implements the compressed stream path specification."""
+class LocationPathSpec(path_spec.PathSpec):
+  """Base class for location-based path specifications."""
 
-  def __init__(self, compression_method, parent):
+  def __init__(self, location, parent=None):
     """Initializes the path specification object.
 
-       Note that the compressed stream path specification must have a parent.
-
     Args:
-      compression_method: the method used to the compress the data.
-      parent: parent path specification (instance of PathSpec).
+      location: the location string.
+      parent: optional parent path specification (instance of PathSpec),
+              default is None.
 
     Raises:
-      ValueError: when compression method or parent are not set.
+      ValueError: when location is not set.
     """
-    if not compression_method or not parent:
-      raise ValueError(u'Missing compression method or parent value.')
+    if not location:
+      raise ValueError(u'Missing location value.')
 
-    super(CompressedStreamPathSpec, self).__init__(parent=parent)
-    self.compression_method = compression_method
+    super(LocationPathSpec, self).__init__(parent=parent)
+    self.location = location
 
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
-    return self._GetComparable(
-        u'compression_method: {0:s}\n'.format(self.compression_method))
+    return self._GetComparable(u'location: {0:s}\n'.format(self.location))

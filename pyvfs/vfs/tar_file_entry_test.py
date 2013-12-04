@@ -15,57 +15,45 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the file entry implementation using the SleuthKit (TSK)."""
+"""Tests for the file entry implementation using the tarfile."""
 
 import os
 import unittest
 
 from pyvfs.io import os_file_io
 from pyvfs.path import os_path_spec
-from pyvfs.path import tsk_path_spec
-from pyvfs.vfs import tsk_file_entry
-from pyvfs.vfs import tsk_file_system
+from pyvfs.path import tar_path_spec
+from pyvfs.vfs import tar_file_entry
+from pyvfs.vfs import tar_file_system
 
 
-class TSKFileEntryTest(unittest.TestCase):
-  """The unit test for the SleuthKit (TSK) file entry object."""
+class TarFileEntryTest(unittest.TestCase):
+  """The unit test for the tar extracted file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join('test_data', 'image.dd')
+    test_file = os.path.join('test_data', 'syslog.tar')
     self._os_path_spec = os_path_spec.OSPathSpec(test_file)
     self._os_file_object = os_file_io.OSFile()
     self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._tsk_file_system = tsk_file_system.TSKFileSystem(self._os_file_object)
+    self._tar_file_system = tar_file_system.TarFileSystem(
+        self._os_file_object, self._os_path_spec)
 
   def testIntialize(self):
     """Test the initialize functionality."""
-    file_entry = tsk_file_entry.TSKFileEntry(
+    file_entry = tar_file_entry.TarFileEntry(
         self._os_file_object, self._os_path_spec)
-
-    self.assertNotEquals(file_entry, None)
-
-  def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(inode=15)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(location=u'/')
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    path_spec = tar_path_spec.TarPathSpec(u'/', self._os_path_spec)
+    file_entry = self._tar_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
-    # Note that passwords.txt~ is currently ignored by pyvfs, since
-    # its directory entry has no pytsk3.TSK_FS_META object.
-    expected_sub_file_entry_names = [
-        u'a_directory',
-        u'lost+found',
-        u'passwords.txt',
-        u'$OrphanFiles' ]
+    expected_sub_file_entry_names = ['syslog']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
