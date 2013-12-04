@@ -15,24 +15,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The SleuthKit (TSK) path specification resolver helper implementation."""
+"""The QCOW image path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.tsk_file_io
-import pyvfs.vfs.tsk_file_system
+import pyvfs.io.qcow_file_io
 
-from pyvfs.lib import errors
-from pyvfs.path import tsk_path_spec
+from pyvfs.path import qcow_path_spec
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
 
-class TSKResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the SleuthKit resolver helper."""
+class QcowResolverHelper(resolver_helper.ResolverHelper):
+  """Class that implements the QCOW image resolver helper."""
 
   def __init__(self):
     """Initializes the resolver helper object."""
-    super(TSKResolverHelper, self).__init__(tsk_path_spec.TSKPathSpec.__name__)
+    super(QcowResolverHelper, self).__init__(
+        qcow_path_spec.QcowPathSpec.__name__)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.
@@ -44,26 +43,10 @@ class TSKResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.tsk_file_io.TSKFile()
+    file_object = pyvfs.io.qcow_file_io.QcowFile()
     file_object.open(path_spec)
     return file_object
 
-  def OpenFileSystem(self, path_spec):
-    """Opens a file system object defined by path specification.
-
-    Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
-
-    Returns:
-      The file system object (instance of vfs.TSKFileSystem) or None if
-      the path specification could not be resolved.
-    """
-    if not path_spec.HasParent():
-      raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
-
-    file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
-    return pyvfs.vfs.tsk_file_system.TSKFileSystem(file_object)
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(TSKResolverHelper())
+resolver.Resolver.RegisterHelper(QcowResolverHelper())

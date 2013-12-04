@@ -20,6 +20,113 @@
 import os
 import unittest
 
+from pyvfs.io import tsk_file_io
+from pyvfs.path import tsk_path_spec
+
+
+class ImageFileTestCase(unittest.TestCase):
+  """The unit test case for the syslog test data."""
+
+  def _testOpenCloseInode(self, parent_path_spec):
+    """Test the open and close functionality using an inode.
+
+    Args:
+      parent_path_spec: the parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile()
+
+    file_object.open(path_spec)
+    self.assertEquals(file_object.get_size(), 116)
+    file_object.close()
+
+    # TODO: add a failing scenario.
+
+  def _testOpenCloseLocation(self, parent_path_spec):
+    """Test the open and close functionality using a location.
+
+    Args:
+      parent_path_spec: the parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location='/passwords.txt', parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile()
+
+    file_object.open(path_spec)
+    self.assertEquals(file_object.get_size(), 116)
+    file_object.close()
+
+    # TODO: add a failing scenario.
+
+  def _testSeek(self, parent_path_spec):
+    """Test the seek functionality.
+
+    Args:
+      parent_path_spec: the parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location='/a_directory/another_file', parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile()
+
+    file_object.open(path_spec)
+    self.assertEquals(file_object.get_size(), 22)
+
+    file_object.seek(10)
+    self.assertEquals(file_object.read(5), 'other')
+    self.assertEquals(file_object.get_offset(), 15)
+
+    file_object.seek(-10, os.SEEK_END)
+    self.assertEquals(file_object.read(5), 'her f')
+
+    file_object.seek(2, os.SEEK_CUR)
+    self.assertEquals(file_object.read(2), 'e.')
+
+    # Conforming to the POSIX seek the offset can exceed the file size
+    # but reading will result in no data being returned.
+    file_object.seek(300, os.SEEK_SET)
+    self.assertEquals(file_object.get_offset(), 300)
+    self.assertEquals(file_object.read(2), '')
+
+    with self.assertRaises(IOError):
+      file_object.seek(-10, os.SEEK_SET)
+
+    # On error the offset should not change.
+    self.assertEquals(file_object.get_offset(), 300)
+
+    with self.assertRaises(IOError):
+      file_object.seek(10, 5)
+
+    # On error the offset should not change.
+    self.assertEquals(file_object.get_offset(), 300)
+
+    file_object.close()
+
+  def _testRead(self, parent_path_spec):
+    """Test the read functionality.
+
+    Args:
+      parent_path_spec: the parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=15, location='/passwords.txt', parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile()
+
+    file_object.open(path_spec)
+    read_buffer = file_object.read()
+
+    expected_buffer = (
+        'place,user,password\n'
+        'bank,joesmith,superrich\n'
+        'alarm system,-,1234\n'
+        'treasure chest,-,1111\n'
+        'uber secret laire,admin,admin\n')
+
+    self.assertEquals(read_buffer, expected_buffer)
+
+    file_object.close()
+
+    # TODO: add boundary scenarios.
+
 
 class SylogTestCase(unittest.TestCase):
   """The unit test case for the syslog test data."""

@@ -55,11 +55,11 @@ class TextFile(object):
     """Enters a with statement."""
     return self
 
-  def __exit__(self, unused_type, unused_value, unused_traceback):
+  def __exit__(self, dummy_type, dummy_value, dummy_traceback):
     """Exits a with statement."""
     # TODO: do we want to close the file_object here e.g. i.c.w. a flag value
     # to have TextFile manage the file_object?
-    pass
+    return
 
   def __iter__(self):
     """Returns a line of text.

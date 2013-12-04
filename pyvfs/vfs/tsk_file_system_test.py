@@ -44,12 +44,11 @@ class TSKFileSystemTest(unittest.TestCase):
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    # TODO: this segfaults pytsk3 figure out why.
-    #file_system = tsk_file_system.TSKFileSystem(self._os_file_object)
+    file_system = tsk_file_system.TSKFileSystem(self._os_file_object)
 
-    #file_entry = file_system.GetRootFileEntry()
+    file_entry = file_system.GetRootFileEntry()
 
-    #self.assertNotEquals(file_entry, None)
+    self.assertNotEquals(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""

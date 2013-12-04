@@ -35,40 +35,30 @@ class PathSpec(object):
     super(PathSpec, self).__init__()
     self.parent = parent
 
-  def _GetComparable(self, sub_comparable):
+  def _GetComparable(self, sub_comparable_string=u''):
     """Retrieves the comparable representation.
 
        This is a convenince function for constructing comparables.
 
     Args:
-      sub_comparable: 
+      sub_comparable_string: the sub comparable string. The default is
+                             an empty string.
 
     Returns:
       A string containing the comparable.
+    """
+    parent_comparable_string = getattr(self.parent, 'comparable', u'')
 
-    Raises:
-      ValueError: when sub comparable is not set.
-    """ 
-    if not sub_comparable:
-      raise ValueError(u'Missing sub comparable value.')
+    comparable_string = u'type: {0:s}'.format(self.type_identifier)
+    if sub_comparable_string:
+      comparable_string += u', {0:s}'.format(sub_comparable_string)
+    comparable_string += u'\n'
 
-    if self.parent:
-      parent_comparable = self.parent.comparable
-    else:
-      parent_comparable = u''
-
-    return u'type: {0:s}, {1:s}\n'.format(parent_comparable, sub_comparable)
+    return u''.join([parent_comparable_string, comparable_string])
 
   @abc.abstractproperty
   def comparable(self):
-    """Comparable representation of the path specification.""" 
-    if self.parent:
-      parent_comparable = self.parent.comparable
-    else:
-      parent_comparable = u''
-
-    return u'type: {0:s}, inode: {1:d}, location: {2:s}\n'.format(
-        parent_comparable, self.type_identifier, self.inode, self.location)
+    """Comparable representation of the path specification."""
 
   @property
   def type_identifier(self):

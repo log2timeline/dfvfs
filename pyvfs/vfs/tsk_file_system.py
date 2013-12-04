@@ -17,6 +17,7 @@
 # limitations under the License.
 """The SleuthKit (TSK) file system implementation."""
 
+import os
 import pytsk3
 
 # This is necessary to prevent a circular import.
@@ -34,19 +35,22 @@ class _TSKFileSystemImage(pytsk3.Img_Info):
 
     Args:
       file_object: the file-like object (instance of io.FileIO).
+
+    Raises:
+      ValueError: if the file-like object is invalid.
     """
+    if not file_object:
+      raise ValueError(u'Missing file-like object.')
+
     self._file_object = file_object
     super(_TSKFileSystemImage, self).__init__()
 
   # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
+  # because they are part of the pytsk3.Img_Info object interface.
 
   def close(self):
     """Closes the volume IO object."""
-    # TODO: This previously broke pytsk, change if this has been fixed.
-    # TODO: add test for this scenario.
-    # self._file_object = None
-    pass
+    self._file_object = None
 
   def read(self, offset, size):
     """Reads a byte string from the image object at the specified offset.
@@ -58,7 +62,7 @@ class _TSKFileSystemImage(pytsk3.Img_Info):
     Returns:
       A byte string containing the data read.
     """
-    self._file_object.seek(offset)
+    self._file_object.seek(offset, os.SEEK_SET)
     return self._file_object.read(size)
 
   def get_size(self):

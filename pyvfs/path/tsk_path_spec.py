@@ -54,5 +54,10 @@ class TSKPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
-    return self._GetComparable(
-        u'inode: {0:d}, location: {1:s}\n'.format(self.inode, self.location))
+    sub_comparable_string = u''
+    if self.inode is not None:
+      sub_comparable_string += u'inode: {0:d}'.format(self.inode)
+    if self.location is not None:
+      sub_comparable_string = u'location: {0:s}\n'.format(self.location)
+
+    return self._GetComparable(sub_comparable_string)
