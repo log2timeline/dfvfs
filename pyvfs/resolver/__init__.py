@@ -21,3 +21,4 @@ from pyvfs.resolver import data_range_resolver_helper
 from pyvfs.resolver import os_resolver_helper
 from pyvfs.resolver import tar_resolver_helper
 from pyvfs.resolver import tsk_resolver_helper
+from pyvfs.resolver import zip_resolver_helper

@@ -53,27 +53,29 @@ class TarDirectory(file_entry.Directory):
         not location.startswith(tar_path_spec.PATH_SEPARATOR)):
       return
 
-    for tar_file_member in self._tar_file.getmembers():
-      # Determine if the start of the tar file member is similar to
-      # the location string. If not the member is not in the same directory.
-      # Note that the tar file member name does not have the leading
-      # path separator as the location string does.
-      if (not tar_file_member.name or
-          not tar_file_member.name.startswith(location[1:])):
+    for tar_info in self._tar_file.getmembers():
+      path = tar_info.name
+
+      # Determine if the start of the tar info name is similar to
+      # the location string. If not the file tar info refers to is not in
+      # the same directory.  Note that the tar info name does not have the
+      # leading path separator as the location string does.
+      if (not path or not path.startswith(location[1:])):
         continue
 
-      name_index = len(location) - 2
-      _, _, suffix = tar_file_member.name[name_index:].partition(
-          tar_path_spec.PATH_SEPARATOR)
+      if path.endswith(tar_path_spec.PATH_SEPARATOR):
+        path = path[:-1]
+
+      path_index = len(location) - 2
+      _, _, suffix = path[path_index:].partition(tar_path_spec.PATH_SEPARATOR)
 
       # Ignore anything that is part of a sub directory.
       if suffix:
         continue
 
-      location = '{0:s}{1:s}'.format(
-          tar_path_spec.PATH_SEPARATOR, tar_file_member.name)
-
-      yield tar_path_spec.TarPathSpec(location, self.path_spec)
+      path_spec_location = '{0:s}{1:s}'.format(
+          tar_path_spec.PATH_SEPARATOR, path)
+      yield tar_path_spec.TarPathSpec(path_spec_location, self.path_spec)
 
 
 class TarFileEntry(file_entry.FileEntry):
@@ -157,6 +159,8 @@ class TarFileEntry(file_entry.FileEntry):
     # stat_object.gname = getattr(self._tar_info, 'gname', None)
 
     # File entry type stat information.
+
+    # The root file entry is virtual and should have type directory.
     if not self._tar_info or self._tar_info.isdir():
       stat_object.type = stat_object.TYPE_DIRECTORY
     elif self._tar_info.isfile():
@@ -187,8 +191,12 @@ class TarFileEntry(file_entry.FileEntry):
       if self._tar_info is None:
         self._tar_info = self.GetTarInfo()
 
-      self._name = getattr(self._tar_info, 'name', None).decode(
+      path = getattr(self._tar_info, 'name', None).decode(
           self._file_system.encoding)
+      if path.endswith(tar_path_spec.PATH_SEPARATOR):
+        path = path[:-1]
+
+      _, _, self._name = path.rpartition(tar_path_spec.PATH_SEPARATOR)
     return self._name
 
   @property

@@ -44,8 +44,8 @@ class TSKFile(file_io.FileIO):
     """
     if tsk_file_system is None and tsk_file is not None:
       raise ValueError(
-          u'pytsk3.File object provided without corresponding pytsk3.FS_Info '
-          u'object')
+          u'TSK file object provided without corresponding file system '
+          u'object.')
 
     super(TSKFile, self).__init__()
     self._tsk_file_system = tsk_file_system
