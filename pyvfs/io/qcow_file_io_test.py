@@ -15,38 +15,40 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the file-like object implementation using the SleuthKit (TSK)."""
+"""Tests for the file-like object implementation using pyqcow."""
 
 import os
 import unittest
 
 from pyvfs.io import test_lib
 from pyvfs.path import os_path_spec
+from pyvfs.path import qcow_path_spec
 
 
-class TSKFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the SleuthKit (TSK) file-like object."""
+class QcowFileTest(test_lib.ImageFileTestCase):
+  """The unit test for the QCOW image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join('test_data', 'image.dd')
-    self._os_path_spec = os_path_spec.OSPathSpec(test_file)
+    test_file = os.path.join('test_data', 'image.qcow2')
+    path_spec = os_path_spec.OSPathSpec(test_file)
+    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
-    self._testOpenCloseInode(self._os_path_spec)
+    self._testOpenCloseInode(self._qcow_path_spec)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    self._testOpenCloseLocation(self._os_path_spec)
+    self._testOpenCloseLocation(self._qcow_path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
-    self._testSeek(self._os_path_spec)
+    self._testSeek(self._qcow_path_spec)
 
   def testRead(self):
     """Test the read functionality."""
-    self._testRead(self._os_path_spec)
+    self._testRead(self._qcow_path_spec)
 
 
 if __name__ == '__main__':

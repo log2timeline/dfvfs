@@ -42,7 +42,7 @@ class TSKFile(file_io.FileIO):
     Raises:
       ValueError: if tsk_file provided but tsk_file_system is not.
     """
-    if tsk_file_system is None and tsk_file is not None:
+    if tsk_file is not None and tsk_file_system is None:
       raise ValueError(
           u'TSK file object provided without corresponding file system '
           u'object.')
@@ -84,14 +84,9 @@ class TSKFile(file_io.FileIO):
       raise IOError(u'Already open.')
 
     if not self._tsk_file_set_in_init:
-      if self._tsk_file_system is None:
-        if not path_spec.HasParent():
-          raise errors.PathSpecError(
-              u'Unsupported path specification without parent.')
-
-        file_system = pyvfs.vfs.manager.FileSystemManager.OpenFileSystem(
-                path_spec.parent)
-        self._tsk_file_system = file_system.GetFsInfo()
+      file_system = pyvfs.vfs.manager.FileSystemManager.OpenFileSystem(
+          path_spec)
+      self._tsk_file_system = file_system.GetFsInfo()
 
       # Opening a file by inode number is faster than opening a file
       # by location.

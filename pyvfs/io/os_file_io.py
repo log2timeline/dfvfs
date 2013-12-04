@@ -60,10 +60,10 @@ class OSFile(file_io.FileIO):
 
     location = getattr(path_spec, 'location', None)
 
-    if location is not None:
-      self._file_object = open(location, mode=mode)
-    else:
+    if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
+
+    self._file_object = open(location, mode=mode)
 
     stat_info = os.stat(location)
     self._size = stat_info.st_size
