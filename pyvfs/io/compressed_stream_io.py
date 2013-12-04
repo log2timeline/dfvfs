@@ -124,7 +124,15 @@ class CompressedStream(file_io.FileIO):
     Args:
       compression_method: optional method used to the compress the data.
       file_object: optional parent file-like object. The default is None.
+
+    Raises:
+      ValueError: if file_object provided but compression_method is not.
     """
+    if file_object is not None and compression_method is None:
+      raise ValueError(
+          u'File-like object provided without corresponding compression '
+          u'method.')
+
     super(CompressedStream, self).__init__()
     self._compression_method = compression_method
     self._file_object = file_object

@@ -15,10 +15,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The tar extracted file-like object implementation."""
+"""The zip extracted file-like object implementation."""
 
-# Note: that tarfile.ExFileObject is not POSIX compliant for seeking
-# beyond the file size, hence it is wrapped in an instance of io.FileIO.
+# Note: that zipfile.ZipExtFile is not seekable, hence it is wrapped in
+# an instance of io.FileIO.
 
 import os
 
@@ -28,37 +28,78 @@ import pyvfs.vfs.manager
 from pyvfs.io import file_io
 
 
-class TarFile(file_io.FileIO):
-  """Class that implements a file-like object using tarfile."""
+class ZipFile(file_io.FileIO):
+  """Class that implements a file-like object using zipfile."""
 
-  def __init__(self, tar_info=None, tar_file_object=None):
+  # The size of the uncompressed data buffer.
+  _UNCOMPRESSED_DATA_BUFFER_SIZE = 16 * 1024 * 1024
+
+  def __init__(self, zip_info=None, zip_file=None):
     """Initializes the file-like object.
 
     Args:
-      tar_info: optional tar info object (instance of tarfile.TarInfo).
+      zip_info: optional zip info object (instance of zipfile.ZipInfo).
                 The default is None.
-      tar_file_object: optional extracted file-like object (instance of
-                       tarfile.ExFileObject). The default is None.
+      zip_file: optional extracted file-like object (instance of
+                zipfile.ZipFile). The default is None.
 
     Raises:
-      ValueError: if tar_file_object provided but tar_info is not.
+      ValueError: if zip_file provided but zip_info is not.
     """
-    if tar_file_object is not None and tar_info is None:
+    if zip_file is not None and zip_info is None:
       raise ValueError(
-          u'Tar extracted file object provided without corresponding info '
+          u'Zip extracted file object provided without corresponding info '
           u'object.')
 
-    super(TarFile, self).__init__()
-    self._tar_info = tar_info
-    self._tar_file_object = tar_file_object
+    super(ZipFile, self).__init__()
+    self._zip_info = zip_info
+    self._zip_file = zip_file
+    self._compressed_data = ''
     self._current_offset = 0
-    self._size = 0
+    self._realign_offset = True
+    self._uncompressed_data = ''
+    self._uncompressed_data_offset = 0
+    self._uncompressed_data_size = 0
+    self._uncompressed_stream_size = None
+    self._zip_ext_file = None
 
-    if tar_file_object:
-      self._tar_file_object_set_in_init = True
+    if zip_file:
+      self._zip_file_set_in_init = True
     else:
-      self._tar_file_object_set_in_init = False
+      self._zip_file_set_in_init = False
     self._is_open = False
+
+  def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
+    """Aligns the compressed file with the uncompressed data offset.
+
+    Args:
+      uncompressed_data_offset: the uncompressed data offset.
+    """
+    if self._zip_ext_file:
+      self._zip_ext_file.close()
+      self._zip_ext_file = None
+
+    self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
+
+    self._uncompressed_data = ''
+
+    while uncompressed_data_offset > 0:
+      self._ReadCompressedData(self._UNCOMPRESSED_DATA_BUFFER_SIZE)
+
+      if uncompressed_data_offset < self._uncompressed_data_size:
+        self._uncompressed_data_offset = uncompressed_data_offset
+        break
+
+      uncompressed_data_offset -= self._uncompressed_data_size
+
+  def _ReadCompressedData(self, read_size):
+    """Reads compressed data from the file-like object.
+
+    Args:
+      read_size: the number of bytes of compressed data to read.
+    """
+    self._uncompressed_data = self._zip_ext_file.read(read_size)
+    self._uncompressed_data_size = len(self._uncompressed_data)
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -75,7 +116,7 @@ class TarFile(file_io.FileIO):
       IOError: if the open file-like object could not be opened.
       ValueError: if the path specification or mode is invalid.
     """
-    if not self._tar_file_object_set_in_init and not path_spec:
+    if not self._zip_file_set_in_init and not path_spec:
       raise ValueError(u'Missing path specfication.')
 
     if mode != 'rb':
@@ -84,17 +125,17 @@ class TarFile(file_io.FileIO):
     if self._is_open:
       raise IOError(u'Already open.')
 
-    if not self._tar_file_object_set_in_init:
+    if not self._zip_file_set_in_init:
       file_system = pyvfs.vfs.manager.FileSystemManager.OpenFileSystem(
           path_spec)
 
       file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-      self._tar_info = file_entry.GetTarInfo()
-      self._tar_file_object = file_entry.GetFileObject()
+      self._zip_info = file_entry.GetZipInfo()
+      self._zip_file = file_entry.GetZipFile()
 
     self._current_offset = 0
-    self._size = self._tar_info.size
+    self._uncompressed_stream_size = self._zip_info.file_size
     self._is_open = True
 
   def close(self):
@@ -110,10 +151,13 @@ class TarFile(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not self._tar_file_object_set_in_init:
-      self._tar_file_object.close()
-      self._tar_file_object = None
-      self._tar_info = None
+    if not self._zip_file_set_in_init:
+      if self._zip_ext_file:
+        self._zip_ext_file.close()
+        self._zip_ext_file = None
+
+      self._zip_file = None
+      self._zip_info = None
 
     self._is_open = False
 
@@ -139,22 +183,47 @@ class TarFile(file_io.FileIO):
     if self._current_offset < 0:
       raise IOError(u'Invalid current offset value less than zero.')
 
-    if self._current_offset > self._size:
+    if self._current_offset > self._uncompressed_stream_size:
       return ''
 
-    if size is None or self._current_offset + size > self._size:
-      size = self._size - self._current_offset
+    if (size is None or
+        self._current_offset + size > self._uncompressed_stream_size):
+      size = self._uncompressed_stream_size - self._current_offset
 
-    self._tar_file_object.seek(self._current_offset, os.SEEK_SET)
+    if self._realign_offset:
+      self._AlignUncompressedDataOffset(self._current_offset)
+      self._realign_offset = False
 
-    data = self._tar_file_object.read(size)
+    uncompressed_data = ''
 
-    # It is possible the that returned data size is not the same as the
-    # requested data size. At this layer we don't care and this discrepancy
-    # should be dealt with on a higher layer if necessary.
-    self._current_offset += len(data)
+    while self._uncompressed_data_offset + size > self._uncompressed_data_size:
+      uncompressed_data = ''.join([
+          uncompressed_data,
+          self._uncompressed_data[self._uncompressed_data_offset]])
 
-    return data
+      remaining_uncompressed_data_size = (
+          self._uncompressed_data_size - self._uncompressed_data_offset)
+
+      self._current_offset += remaining_uncompressed_data_size
+      size -= remaining_uncompressed_data_size
+
+      self._ReadCompressedData(self._UNCOMPRESSED_DATA_BUFFER_SIZE)
+
+      self._uncompressed_data_offset = 0
+
+    if (self > 0 and
+        self._uncompressed_data_offset + size <= self._uncompressed_data_size):
+      slice_start_offset = self._uncompressed_data_offset
+      slice_end_offset = slice_start_offset + size
+
+      uncompressed_data = ''.join([
+          uncompressed_data,
+          self._uncompressed_data[slice_start_offset:slice_end_offset]])
+
+      self._uncompressed_data_offset += size
+      self._current_offset += size
+
+    return uncompressed_data
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks an offset within the file-like object.
@@ -176,13 +245,16 @@ class TarFile(file_io.FileIO):
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
-      offset += self._size
+      offset += self._uncompressed_stream_size
     elif whence != os.SEEK_SET:
       raise IOError(u'Unsupported whence.')
 
     if offset < 0:
       raise IOError(u'Invalid offset value less than zero.')
-    self._current_offset = offset
+
+    if offset != self._current_offset:
+      self._current_offset = offset
+      self._realign_offset = True
 
   def get_offset(self):
     """Returns the current offset into the file-like object.
@@ -204,4 +276,4 @@ class TarFile(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._size
+    return self._uncompressed_stream_size
