@@ -48,25 +48,6 @@ class TarFileSystem(file_system.FileSystem):
     # handled by the file-like object.
     self._tar_file = tarfile.open(mode='r:', fileobj=file_object)
 
-  def GetTarFile(self):
-    """Retrieves the tar file object.
-
-    Returns:
-      The tar file object (instance of tarfile.TarFile).
-    """
-    return self._tar_file
-
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
-
-    Returns:
-      A file entry (instance of vfs.FileEntry).
-    """
-    path_spec = tar_path_spec.TarPathSpec(
-        self.LOCATION_ROOT, self._path_spec)
-
-    return pyvfs.vfs.tar_file_entry.TarFileEntry(self, path_spec)
-
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
@@ -77,7 +58,6 @@ class TarFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.TarFileEntry).
 
     Raises:
-      IOError: if the open file entry could not be opened.
       ValueError: if the path specification is incorrect.
     """
     location = getattr(path_spec, 'location', None)
@@ -95,3 +75,22 @@ class TarFileSystem(file_system.FileSystem):
 
     return pyvfs.vfs.tar_file_entry.TarFileEntry(
         self, path_spec, tar_info=tar_info)
+
+  def GetRootFileEntry(self):
+    """Retrieves the root file entry.
+
+    Returns:
+      A file entry (instance of vfs.FileEntry).
+    """
+    path_spec = tar_path_spec.TarPathSpec(
+        self.LOCATION_ROOT, self._path_spec)
+
+    return pyvfs.vfs.tar_file_entry.TarFileEntry(self, path_spec)
+
+  def GetTarFile(self):
+    """Retrieves the tar file object.
+
+    Returns:
+      The tar file object (instance of tarfile.TarFile).
+    """
+    return self._tar_file

@@ -44,28 +44,7 @@ class ZipFileSystem(file_system.FileSystem):
     self._path_spec = path_spec
     self.encoding = encoding
 
-    # Explicitly tell zipfile not to use compression. Compression should be
-    # handled by the file-like object.
     self._zip_file = zipfile.ZipFile(file_object, 'r')
-
-  def GetZipFile(self):
-    """Retrieves the zip file object.
-
-    Returns:
-      The zip file object (instance of zipfile.ZipFile).
-    """
-    return self._zip_file
-
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
-
-    Returns:
-      A file entry (instance of vfs.FileEntry).
-    """
-    path_spec = zip_path_spec.ZipPathSpec(
-        self.LOCATION_ROOT, self._path_spec)
-
-    return pyvfs.vfs.zip_file_entry.ZipFileEntry(self, path_spec)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -77,7 +56,6 @@ class ZipFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.ZipFileEntry).
 
     Raises:
-      IOError: if the open file entry could not be opened.
       ValueError: if the path specification is incorrect.
     """
     location = getattr(path_spec, 'location', None)
@@ -95,3 +73,22 @@ class ZipFileSystem(file_system.FileSystem):
 
     return pyvfs.vfs.zip_file_entry.ZipFileEntry(
         self, path_spec, zip_info=zip_info)
+
+  def GetRootFileEntry(self):
+    """Retrieves the root file entry.
+
+    Returns:
+      A file entry (instance of vfs.FileEntry).
+    """
+    path_spec = zip_path_spec.ZipPathSpec(
+        self.LOCATION_ROOT, self._path_spec)
+
+    return pyvfs.vfs.zip_file_entry.ZipFileEntry(self, path_spec)
+
+  def GetZipFile(self):
+    """Retrieves the zip file object.
+
+    Returns:
+      The zip file object (instance of zipfile.ZipFile).
+    """
+    return self._zip_file

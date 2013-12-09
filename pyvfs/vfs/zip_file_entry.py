@@ -71,7 +71,7 @@ class ZipDirectory(file_entry.Directory):
 
       path_spec_location = u'{0:s}{1:s}'.format(
           zip_path_spec.PATH_SEPARATOR, path)
-      yield zip_path_spec.ZipPathSpec(path_spec_location, self.path_spec)
+      yield zip_path_spec.ZipPathSpec(path_spec_location, self.path_spec.parent)
 
 
 class ZipFileEntry(file_entry.FileEntry):
@@ -113,30 +113,6 @@ class ZipFileEntry(file_entry.FileEntry):
       zip_file = self._file_system.GetZipFile()
       return ZipDirectory(zip_file, self.path_spec)
     return
-
-  def GetZipInfo(self):
-    """Retrieves the zip info object (instance of zipfile.ZipInfo)."""
-    location = getattr(self.path_spec, 'location', None)
-
-    if location is None:
-      raise ValueError(u'Path specification missing location.')
-
-    if not location.startswith(self._file_system.LOCATION_ROOT):
-      raise ValueError(u'Invalid location in path specification.')
-
-    if len(location) == 1:
-      return None
-
-    zip_file = self._file_system.GetZipFile()
-    return zip_file.getinfo(location[1:])
-
-  def GetZipFile(self):
-    """Retrieves the zip file object.
-
-    Returns:
-      The zip file object (instance of zipfile.ZipFile).
-    """
-    return self._file_system.GetZipFile()
 
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat)."""
@@ -229,3 +205,34 @@ class ZipFileEntry(file_entry.FileEntry):
     if self._stat_object is None:
       self.GetStat()
     return self._stat_object
+
+  def GetZipFile(self):
+    """Retrieves the zip file object.
+
+    Returns:
+      The zip file object (instance of zipfile.ZipFile).
+    """
+    return self._file_system.GetZipFile()
+
+  def GetZipInfo(self):
+    """Retrieves the zip info object.
+
+    Returns:
+      The zip info object (instance of zipfile.ZipInfo).
+
+    Raises:
+      ValueError: if the path specification is incorrect.
+    """
+    location = getattr(self.path_spec, 'location', None)
+
+    if location is None:
+      raise ValueError(u'Path specification missing location.')
+
+    if not location.startswith(self._file_system.LOCATION_ROOT):
+      raise ValueError(u'Invalid location in path specification.')
+
+    if len(location) == 1:
+      return None
+
+    zip_file = self._file_system.GetZipFile()
+    return zip_file.getinfo(location[1:])

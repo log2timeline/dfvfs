@@ -91,6 +91,32 @@ class TSKFileSystem(file_system.FileSystem):
     self._tsk_image = _TSKFileSystemImage(file_object)
     self._tsk_file_system = pytsk3.FS_Info(self._tsk_image, offset=offset)
 
+  def GetFileEntryByPathSpec(self, path_spec):
+    """Retrieves a file entry for a path specification.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      A file entry (instance of vfs.FileEntry).
+
+    Raises:
+      ValueError: if the path specification is incorrect.
+    """
+    # Opening a file by inode number is faster than opening a file by location.
+    inode = getattr(path_spec, 'inode', None)
+    location = getattr(path_spec, 'location', None)
+
+    if inode is not None:
+      tsk_file = self._tsk_file_system.open_meta(inode=inode)
+    elif location is not None:
+      tsk_file = self._tsk_file_system.open(location)
+    else:
+      raise ValueError(u'Path specification missing inode and location.')
+
+    return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
+        self, path_spec, tsk_file=tsk_file)
+
   def GetFsInfo(self):
     """Retrieves the file system info object.
 
@@ -109,33 +135,6 @@ class TSKFileSystem(file_system.FileSystem):
     tsk_file = self._tsk_file_system.open(self._LOCATION_ROOT)
 
     path_spec = tsk_path_spec.TSKPathSpec(location=self._LOCATION_ROOT)
-
-    return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
-        self, path_spec, tsk_file=tsk_file)
-
-  def GetFileEntryByPathSpec(self, path_spec):
-    """Retrieves a file entry for a path specification.
-
-    Args:
-      path_spec: a path specification (instance of path.PathSpec).
-
-    Returns:
-      A file entry (instance of vfs.FileEntry).
-
-    Raises:
-      IOError: if the open file entry could not be opened.
-      ValueError: if the path specification is incorrect.
-    """
-    # Opening a file by inode number is faster than opening a file by location.
-    inode = getattr(path_spec, 'inode', None)
-    location = getattr(path_spec, 'location', None)
-
-    if inode is not None:
-      tsk_file = self._tsk_file_system.open_meta(inode=inode)
-    elif location is not None:
-      tsk_file = self._tsk_file_system.open(location)
-    else:
-      raise ValueError(u'Path specification missing inode and location.')
 
     return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
         self, path_spec, tsk_file=tsk_file)

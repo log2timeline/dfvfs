@@ -41,6 +41,17 @@ class OSFileSystem(file_system.FileSystem):
     else:
       self._drive_letter = u'C'
 
+  def GetFileEntryByPathSpec(self, path_spec):
+    """Retrieves a file entry for a path specification.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      A file entry (instance of vfs.FileEntry).
+    """
+    return os_file_entry.OSFileEntry(self, path_spec)
+
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
 
@@ -52,15 +63,4 @@ class OSFileSystem(file_system.FileSystem):
     else:
       location = u'/'
     path_spec = os_path_spec.OSPathSpec(location)
-    return os_file_entry.OSFileEntry(self, path_spec)
-
-  def GetFileEntryByPathSpec(self, path_spec):
-    """Retrieves a file entry for a path specification.
-
-    Args:
-      path_spec: a path specification (instance of path.PathSpec).
-
-    Returns:
-      A file entry (instance of vfs.FileEntry).
-    """
     return os_file_entry.OSFileEntry(self, path_spec)

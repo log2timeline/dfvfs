@@ -20,6 +20,22 @@
 import abc
 
 
+class VolumeAttribute(object):
+  """The VFS volume attribute object."""
+
+  def __init__(self, identifier, value):
+    """Initializes the volume attribute object.
+
+    Args:
+      identifier: string that uniquely identifies the attribute within the
+                  volume.
+      value: the value of the attribute.
+    """
+    super(VolumeAttribute, self).__init__()
+    self.identifier = identifier
+    self.value = value
+
+
 class VolumeExtent(object):
   """The VFS volume extent object."""
 
@@ -44,18 +60,75 @@ class VolumeExtent(object):
 class Volume(object):
   """The VFS volume interface."""
 
-  def __init__(self):
-    """Initializes the volume extent object."""
-    super(Volume, self).__init__()
-    self.extents = []
-
-  def AddExtent(self, volume_extent):
-    """Adds an extent to the volume.
+  def __init__(self, identifier):
+    """Initializes the volume extent object.
 
     Args:
-      volume_extent: the volume extent object (VolumeExtent).
+      identifier: string that uniquely identifies the volume within the volume
+                  system.
     """
-    self.extents.append(volume_extent)
+    super(Volume, self).__init__()
+    self.identifier = identifier
+    self._attributes = {}
+    self._extents = []
+    self._is_parsed = False
+
+  @abc.abstractmethod
+  def _Parse(self):
+    """Extracts attributes and extents from the volume."""
+
+  @property
+  def number_of_attributes(self):
+    """The number of attributes."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return len(self._attributes)
+
+  @property
+  def attributes(self):
+    """The attributes."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return self._attributes.itervalues()
+
+  @property
+  def number_of_extents(self):
+    """The number of extents."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return len(self._extents)
+
+  @property
+  def extents(self):
+    """The extents."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return self._extents.itervalues()
+
+  def _AddAttribute(self, attribute):
+    """Adds an attribute.
+
+    Args:
+      attribute: the volume attribute object (instance of VolumeAttribute).
+
+    Raises:
+      KeyError: if volume attribute is already set for the corresponding volume
+                attribute identifier.
+    """
+    if attribute.identifier in self._attributes:
+      raise KeyError((
+          u'Volume attribute object already set for volume attribute '
+          u'identifier: {0:s}').format(attribute.identifier))
+
+    self._attributes[attribute.identifier] = attribute
 
 
 class VolumeSystem(object):
@@ -65,7 +138,8 @@ class VolumeSystem(object):
     """Initializes the volume system object."""
     super(VolumeSystem, self).__init__()
     self._sections = []
-    self._volumes = []
+    self._volumes = {}
+    self._volume_identifiers = []
     self._is_parsed = False
 
   @abc.abstractmethod
@@ -88,8 +162,7 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
-    for section in self._sections:
-      yield section
+    return self._sections.itervalues()
 
   def GetSectionIndex(self, section_index):
     """Retrieves a specific section based on the index.
@@ -119,17 +192,54 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
-    for volume in self._volumes:
-      yield volume
+    return self._volumes.itervalues()
+
+  def _AddVolume(self, volume):
+    """Adds a volume.
+
+    Args:
+      volume: the volume object (instance of Volume).
+
+    Raises:
+      KeyError: if volume is already set for the corresponding volume
+                identifier.
+    """
+    if volume.identifier in self._volumes:
+      raise KeyError(
+          u'Volume object already set for volume identifier: {0:s}'.format(
+             volume.identifier))
+
+    self._volumes[volume.identifier] = volume
+    self._volume_identifiers.append(volume.identifier)
 
   def GetVolumeByIndex(self, volume_index):
     """Retrieves a specific volume based on the index.
 
     Args:
       volume_index: the index of the volume.
+
+    Returns:
+      The volume object (instance of Volume).
     """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
 
-    return self._volumes[volume_index]
+    volume_identifier = self._volume_identifiers[volume_index]
+    return self._volumes[volume_identifier]
+
+  def GetVolumeByIdentifier(self, volume_identifier):
+    """Retrieves a specific volume based on the identifier.
+
+    Args:
+      volume_identifier: string that uniquely identifies the volume within the
+                         volume system.
+
+    Returns:
+      The volume object (instance of Volume).
+    """
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return self._volumes[volume_identifier]

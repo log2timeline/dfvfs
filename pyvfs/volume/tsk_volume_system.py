@@ -24,34 +24,42 @@ from pyvfs.volume import volume_system
 
 
 class TSKVolume(volume_system.Volume):
-  """Class that implements a volume object using the SleuthKit."""
+  """Class that implements a volume object using pytsk3."""
 
-  def __init__(self, tsk_vs_part):
+  def __init__(self, tsk_vs_part, volume_index, block_size):
     """Initializes the volume object.
 
     Args:
-      tsk_vs_part: a SleuthKit volume systme part object (instance of
-      pytsk3.TSK_VS_PART_INFO).
+      tsk_vs_part: a SleuthKit volume system part object (instance of
+                   pytsk3.TSK_VS_PART_INFO).
+      volume_index: the volume index number.
+      block_size: the block (or sector) size used by SleuthKit.
     """
-    super(TSKVolume, self).__init__()
+    identifier = u'p{0:d}'.format(volume_index + 1)
+    super(TSKVolume, self).__init__(identifier)
     self._tsk_vs_part = tsk_vs_part
+    self._block_size = block_size
 
-  @property
-  def address(self):
-    """The address (volume system part index)."""
-    return getattr(self._tsk_vs_part, 'addr', None)
+  def _Parse(self):
+    """Extracts attributes and extents from the volume."""
+    tsk_addr = getattr(self._tsk_vs_part, 'addr', None)
+    if tsk_addr is not None:
+      self._AddAttribute(volume_system.VolumeAttribute('address', tsk_addr))
 
-  @property
-  def description(self):
-    """The description."""
-    return getattr(self._tsk_vs_part, 'desc', None)
+    tsk_desc = getattr(self._tsk_vs_part, 'desc', None)
+    if tsk_desc is not None:
+      self._AddAttribute(volume_system.VolumeAttribute('description', tsk_desc))
+
+    self._extents.append(volume_system.VolumeExtent(
+        self._tsk_vs_part.start * self._block_size,
+        self._tsk_vs_part.len * self._block_size))
 
 
 class TSKVolumeSystem(volume_system.VolumeSystem):
-  """Class that implements a volume system object using the SleuthKit."""
+  """Class that implements a volume system object using pytsk3."""
 
   def __init__(self, tsk_image):
-    """Initializes the SleuthKit volume system object.
+    """Initializes the volume system object.
 
     Args:
       tsk_image: a SleuthKit image object (pytsk3.Img_Info).
@@ -80,6 +88,8 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
 
   def _Parse(self):
     """Extracts sections and volumes from the volume system."""
+    volume_index = 0
+
     # Sticking with the SleuthKit naming convention here, tsk_vs_part is
     # a volume system section (part) and tsk_volume is the volume system.
     for tsk_vs_part in self._tsk_volume:
@@ -97,9 +107,8 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
       # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
       # flags need to check if the attribute exists.
       # The flags are an instance of TSK_VS_PART_FLAG_ENUM.
-      if (hasattr(tsk_vs_part, 'flags') and 
+      if (hasattr(tsk_vs_part, 'flags') and
           tsk_vs_part.flags == pytsk3.TSK_VS_PART_FLAG_ALLOC):
-        volume = TSKVolume(tsk_vs_part)
-        volume.AddExtent(volume_extent)
-
-        self._volumes.append(volume)
+        volume = TSKVolume(tsk_vs_part, volume_index, self.block_size)
+        self._AddVolume(volume)
+        volume_index += 1
