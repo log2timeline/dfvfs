@@ -75,7 +75,7 @@ class TarDirectory(file_entry.Directory):
 
       path_spec_location = '{0:s}{1:s}'.format(
           tar_path_spec.PATH_SEPARATOR, path)
-      yield tar_path_spec.TarPathSpec(path_spec_location, self.path_spec)
+      yield tar_path_spec.TarPathSpec(path_spec_location, self.path_spec.parent)
 
 
 class TarFileEntry(file_entry.FileEntry):
@@ -107,34 +107,6 @@ class TarFileEntry(file_entry.FileEntry):
       tar_file = self._file_system.GetTarFile()
       return TarDirectory(tar_file, self.path_spec)
     return
-
-  def GetTarInfo(self):
-    """Retrieves the tar info object (instance of tarfile.TarInfo)."""
-    location = getattr(self.path_spec, 'location', None)
-
-    if location is None:
-      raise ValueError(u'Path specification missing location.')
-
-    if not location.startswith(self._file_system.LOCATION_ROOT):
-      raise ValueError(u'Invalid location in path specification.')
-
-    if len(location) == 1:
-      return None
-
-    tar_file = self._file_system.GetTarFile()
-    return tar_file.getmember(location[1:])
-
-  def GetTarExFileObject(self):
-    """Retrieves the tar extracted file-like object.
-
-    Returns:
-      The extracted file-like object (instance of tarfile.ExFileObject).
-    """
-    if self._tar_info is None:
-      self._tar_info = self.GetTarInfo()
-
-    tar_file = self._file_system.GetTarFile()
-    return tar_file.extractfile(self._tar_info)
 
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat)."""
@@ -229,3 +201,38 @@ class TarFileEntry(file_entry.FileEntry):
     if self._stat_object is None:
       self.GetStat()
     return self._stat_object
+
+  def GetTarExFileObject(self):
+    """Retrieves the tar extracted file-like object.
+
+    Returns:
+      The extracted file-like object (instance of tarfile.ExFileObject).
+    """
+    if self._tar_info is None:
+      self._tar_info = self.GetTarInfo()
+
+    tar_file = self._file_system.GetTarFile()
+    return tar_file.extractfile(self._tar_info)
+
+  def GetTarInfo(self):
+    """Retrieves the tar info object.
+
+    Returns:
+      The tar info object (instance of tarfile.TarInfo).
+
+    Raises:
+      ValueError: if the path specification is incorrect.
+    """
+    location = getattr(self.path_spec, 'location', None)
+
+    if location is None:
+      raise ValueError(u'Path specification missing location.')
+
+    if not location.startswith(self._file_system.LOCATION_ROOT):
+      raise ValueError(u'Invalid location in path specification.')
+
+    if len(location) == 1:
+      return None
+
+    tar_file = self._file_system.GetTarFile()
+    return tar_file.getmember(location[1:])

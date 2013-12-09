@@ -35,9 +35,9 @@ class TSKFile(file_io.FileIO):
 
     Args:
       tsk_file_system: optional SleuthKit file system object (instance of
-                       pytsk3.FS_Info), the default is None.
-      tsk_file: optional SleuthKit file object (instance of pytsk3.File),
-                the default is None.
+                       pytsk3.FS_Info). The default is None.
+      tsk_file: optional SleuthKit file object (instance of pytsk3.File).
+                The default is None.
 
     Raises:
       ValueError: if tsk_file provided but tsk_file_system is not.

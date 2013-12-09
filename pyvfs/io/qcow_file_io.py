@@ -35,8 +35,7 @@ class QcowFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
-                 The default is None.
+      path_spec: the path specification (instance of path.PathSpec).
 
     Returns:
       A file-like object.

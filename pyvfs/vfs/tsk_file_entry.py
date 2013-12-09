@@ -108,7 +108,8 @@ class TSKDirectory(file_entry.Directory):
                 location, directory_entry])
 
       yield tsk_path_spec.TSKPathSpec(
-          inode=directory_entry_inode, location=directory_entry)
+          inode=directory_entry_inode, location=directory_entry,
+          parent=self.path_spec.parent)
 
 
 class TSKFileEntry(file_entry.FileEntry):
@@ -139,28 +140,6 @@ class TSKFileEntry(file_entry.FileEntry):
       tsk_file_system = self._file_system.GetFsInfo()
       return TSKDirectory(tsk_file_system, self.path_spec)
     return
-
-  def GetTSKFile(self):
-    """Retrieves the SleuthKit file object (instance of pytsk3.File)."""
-    if self._file_object is not None:
-      tsk_file = self._file_object.GetTSKFile()
-
-    else:
-      tsk_file_system = self._file_system.GetFsInfo()
-
-      # Opening a file by inode number is faster than opening a file
-      # by location.
-      inode = getattr(self.path_spec, 'inode', None)
-      location = getattr(self.path_spec, 'location', None)
-
-      if inode is not None:
-        tsk_file = tsk_file_system.open_meta(inode=inode)
-      elif location is not None:
-        tsk_file = tsk_file_system.open(location)
-      else:
-        raise RuntimeError(u'Path specification missing inode and location.')
-
-    return tsk_file
 
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat)."""
@@ -294,3 +273,25 @@ class TSKFileEntry(file_entry.FileEntry):
     if self._stat_object is None:
       self.GetStat()
     return self._stat_object
+
+  def GetTSKFile(self):
+    """Retrieves the SleuthKit file object (instance of pytsk3.File)."""
+    if self._file_object is not None:
+      tsk_file = self._file_object.GetTSKFile()
+
+    else:
+      tsk_file_system = self._file_system.GetFsInfo()
+
+      # Opening a file by inode number is faster than opening a file
+      # by location.
+      inode = getattr(self.path_spec, 'inode', None)
+      location = getattr(self.path_spec, 'location', None)
+
+      if inode is not None:
+        tsk_file = tsk_file_system.open_meta(inode=inode)
+      elif location is not None:
+        tsk_file = tsk_file_system.open(location)
+      else:
+        raise RuntimeError(u'Path specification missing inode and location.')
+
+    return tsk_file
