@@ -37,4 +37,9 @@ try:
 except ImportError:
   pass
 
+try:
+  from pyvfs.resolver import vshadow_resolver_helper
+except ImportError:
+  pass
+
 from pyvfs.resolver import zip_resolver_helper
