@@ -32,4 +32,9 @@ try:
 except ImportError:
   pass
 
+try:
+  from pyvfs.resolver import vhdi_resolver_helper
+except ImportError:
+  pass
+
 from pyvfs.resolver import zip_resolver_helper
