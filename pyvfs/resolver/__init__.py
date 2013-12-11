@@ -18,6 +18,12 @@
 
 from pyvfs.resolver import compressed_stream_resolver_helper
 from pyvfs.resolver import data_range_resolver_helper
+
+try:
+  from pyvfs.resolver import ewf_resolver_helper
+except ImportError:
+  pass
+
 from pyvfs.resolver import os_resolver_helper
 
 try:
