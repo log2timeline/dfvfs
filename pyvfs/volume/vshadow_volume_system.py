@@ -24,7 +24,7 @@ from pyvfs.volume import volume_system
 
 
 class VShadowVolume(volume_system.Volume):
-  """Class that implements a volume object using VSS."""
+  """Class that implements a volume object using pyvshadow."""
 
   def __init__(self, vshadow_store, store_index):
     """Initializes the volume object.
@@ -33,16 +33,31 @@ class VShadowVolume(volume_system.Volume):
       vshadow_store: the VSS store object (pyvshadow.store).
       store_index: the VSS store index.
     """
-    super(VShadowVolume, self).__init__()
+    identifier = 'vss{0:d}'.format(store_index + 1)
+    super(VShadowVolume, self).__init__(identifier)
     self._vshadow_store = vshadow_store
     self._store_index = store_index
 
+  def _Parse(self):
+    """Extracts attributes and extents from the volume."""
+    self._AddAttribute(volume_system.VolumeAttribute(
+        'identifier', self._vshadow_store.identifier))
+    self._AddAttribute(volume_system.VolumeAttribute(
+        'copy_identifier', self._vshadow_store.copy_identifier))
+    self._AddAttribute(volume_system.VolumeAttribute(
+        'copy_set_identifier', self._vshadow_store.copy_set_identifier))
+    self._AddAttribute(volume_system.VolumeAttribute(
+        'creation_time', self._vshadow_store.get_creation_time_as_integer))
+
+    self._extents.append(volume_system.VolumeExtent(
+        0, self._vshadow_store.volume_size))
+
 
 class VShadowVolumeSystem(volume_system.VolumeSystem):
-  """Class that implements a volume system object using VSS."""
+  """Class that implements a volume system object using pyvshadow."""
 
   def __init__(self, file_object):
-    """Initializes the VSS volume system object.
+    """Initializes the volume system object.
 
     Args:
       file_object: a file-like object containing the VSS volume.
@@ -57,26 +72,16 @@ class VShadowVolumeSystem(volume_system.VolumeSystem):
     try:
       self._vshadow_volume.open_file_object(file_object)
     except IOError as exception:
+      # Note that the libvshadow exception string already contains
+      # a trailing dot.
       raise errors.VolumeSystemError(
-          u'Unable to access volume system with error: {0:s}.'.format(
+          u'Unable to access volume system with error: {0:s}'.format(
               exception))
 
   def _Parse(self):
     """Extracts sections and volumes from the volume system."""
     store_index = 0
     for vshadow_store in self._vshadow_volume.stores:
-      volume_extent = volume_system.VolumeExtent(
-          0, vshadow_store.volume_size)
       volume = VShadowVolume(vshadow_store, store_index)
-
-      volume.AddExtent(volume_extent)
-      self._volumes.append(volume)
-
+      self._AddVolume(volume)
       store_index += 1
-
-    volume = volume_system.Volume()
-    volume_extent = volume_system.VolumeExtent(
-        0, self._file_object.get_size())
-
-    volume.AddExtent(volume_extent)
-    self._volumes.append(volume)
