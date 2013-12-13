@@ -24,11 +24,14 @@ class FileSystem(object):
   """Class that implements the VFS file system object interface."""
 
   @abc.abstractmethod
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
+  def FileEntryExistsByPathSpec(self, path_spec):
+    """Determines if a file entry for a path specification exists.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      Boolean indicating if the file entry exists.
     """
 
   @abc.abstractmethod
@@ -39,7 +42,7 @@ class FileSystem(object):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      A file entry (instance of vfs.FileEntry) or None.
     """
 
   def GetFileObjectByPathSpec(self, path_spec):
@@ -49,7 +52,17 @@ class FileSystem(object):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file-like object (instance of io.FileIO).
+      A file-like object (instance of io.FileIO) or None.
     """
     file_entry = self.GetFileEntryByPathSpec(path_spec)
+    if file_entry is None:
+      return
     return file_entry.GetFileObject()
+
+  @abc.abstractmethod
+  def GetRootFileEntry(self):
+    """Retrieves the root file entry.
+
+    Returns:
+      A file entry (instance of vfs.FileEntry).
+    """

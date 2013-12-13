@@ -36,7 +36,8 @@ class ZipFileSystem(file_system.FileSystem):
 
     Args:
       file_object: the file-like object (instance of io.FileIO).
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of path.PathSpec) of
+                 the file-like object.
       encoding: optional file entry name encoding. The default is 'utf-8'.
     """
     super(ZipFileSystem, self).__init__()
@@ -46,6 +47,32 @@ class ZipFileSystem(file_system.FileSystem):
 
     self._zip_file = zipfile.ZipFile(file_object, 'r')
 
+  def FileEntryExistsByPathSpec(self, path_spec):
+    """Determines if a file entry for a path specification exists.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      Boolean indicating if the file entry exists.
+    """
+    zip_info = None
+    location = getattr(path_spec, 'location', None)
+
+    if (location is None or
+        not location.startswith(self.LOCATION_ROOT)):
+      return
+
+    if len(location) == 1:
+      return True
+
+    try:
+      zip_info = self._zip_file.getinfo(location[1:])
+    except KeyError:
+      pass
+
+    return zip_info is not None
+
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
@@ -53,24 +80,25 @@ class ZipFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.ZipFileEntry).
-
-    Raises:
-      ValueError: if the path specification is incorrect.
+      A file entry (instance of vfs.ZipFileEntry) or None.
     """
+    zip_info = None
     location = getattr(path_spec, 'location', None)
 
-    if location is None:
-      raise ValueError(u'Path specification missing location.')
-
-    if not location.startswith(self.LOCATION_ROOT):
-      raise ValueError(u'Invalid location in path specification.')
+    if (location is None or
+        not location.startswith(self.LOCATION_ROOT)):
+      return None
 
     if len(location) == 1:
       return self.GetRootFileEntry()
 
-    zip_info = self._zip_file.getinfo(location[1:])
+    try:
+      zip_info = self._zip_file.getinfo(location[1:])
+    except KeyError:
+      pass
 
+    if zip_info is None:
+      return
     return pyvfs.vfs.zip_file_entry.ZipFileEntry(
         self, path_spec, zip_info=zip_info)
 

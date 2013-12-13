@@ -17,6 +17,7 @@
 # limitations under the License.
 """The operating system file system implementation."""
 
+import os
 import platform
 
 from pyvfs.path import os_path_spec
@@ -27,19 +28,20 @@ from pyvfs.vfs import os_file_entry
 class OSFileSystem(file_system.FileSystem):
   """Class that implements a file system object using os."""
 
-  def __init__(self, drive_letter=None):
-    """Initializes the file system object.
+  def FileEntryExistsByPathSpec(self, path_spec):
+    """Determines if a file entry for a path specification exists.
 
     Args:
-      drive_letter: optional drive letter for Windows volumes,
-                    the default is None.
-    """
-    super(OSFileSystem, self).__init__()
+      path_spec: a path specification (instance of path.PathSpec).
 
-    if drive_letter:
-      self._drive_letter = drive_letter
-    else:
-      self._drive_letter = u'C'
+    Returns:
+      Boolean indicating if the file entry exists.
+    """
+    location = getattr(path_spec, 'location', None)
+
+    if location is None or not os.path.exists(location):
+      return False
+    return True
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -48,19 +50,29 @@ class OSFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      A file entry (instance of vfs.FileEntry) or None.
     """
+    if not self.FileEntryExistsByPathSpec(path_spec):
+      return
     return os_file_entry.OSFileEntry(self, path_spec)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      A file entry (instance of vfs.FileEntry) or None.
     """
     if platform.system() == 'Windows':
-      location = u'{0:s}:\\'.format(self._drive_letter)
+      # Return the root with the drive letter of the volume the current
+      # working directory is on.
+      location = os.getcwd()
+      location, _, _ = location.rpartition('\\')
+      location = u'{0:s}\\'.format(location)
     else:
       location = u'/'
+
+    if not os.path.exists(location):
+      return
+
     path_spec = os_path_spec.OSPathSpec(location)
     return os_file_entry.OSFileEntry(self, path_spec)

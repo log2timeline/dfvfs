@@ -33,7 +33,8 @@ class VShadowDirectory(file_entry.Directory):
 
     Args:
       vshadow_volume: the VSS volume file object (instance of pyvshadow.volume).
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of path.PathSpec) of
+                 the file-like object.
     """
     super(VShadowDirectory, self).__init__(path_spec)
     self._vshadow_volume = vshadow_volume

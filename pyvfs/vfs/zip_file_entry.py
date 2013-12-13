@@ -169,11 +169,14 @@ class ZipFileEntry(file_entry.FileEntry):
       if self._zip_info is None:
         self._zip_info = self.GetZipInfo()
 
-      path = self._zip_info.filename
-      if path.endswith(zip_path_spec.PATH_SEPARATOR):
-        path = path[:-1]
-
-      _, _, self._name = path.rpartition(zip_path_spec.PATH_SEPARATOR)
+      # Note that the root file entry is virtual and has no zip_info.
+      if self._zip_info is None:
+        self._name = u''
+      else:
+        path = self._zip_info.filename
+        if path.endswith(zip_path_spec.PATH_SEPARATOR):
+          path = path[:-1]
+        _, _, self._name = path.rpartition(zip_path_spec.PATH_SEPARATOR)
     return self._name
 
   @property

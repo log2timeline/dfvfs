@@ -163,12 +163,19 @@ class TarFileEntry(file_entry.FileEntry):
       if self._tar_info is None:
         self._tar_info = self.GetTarInfo()
 
-      path = getattr(self._tar_info, 'name', None).decode(
-          self._file_system.encoding)
-      if path.endswith(tar_path_spec.PATH_SEPARATOR):
-        path = path[:-1]
-
-      _, _, self._name = path.rpartition(tar_path_spec.PATH_SEPARATOR)
+      # Note that the root file entry is virtual and has no tar_info.
+      if self._tar_info is None:
+        self._name = u''
+      else:
+        path = getattr(self._tar_info, 'name', None)
+        if path is not None:
+          try:
+            path.decode(self._file_system.encoding)
+          except UnicodeDecodeError:
+            path = None
+        if path.endswith(tar_path_spec.PATH_SEPARATOR):
+          path = path[:-1]
+        _, _, self._name = path.rpartition(tar_path_spec.PATH_SEPARATOR)
     return self._name
 
   @property
