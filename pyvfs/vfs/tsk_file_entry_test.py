@@ -36,7 +36,8 @@ class TSKFileEntryTest(unittest.TestCase):
     self._os_path_spec = os_path_spec.OSPathSpec(test_file)
     self._os_file_object = os_file_io.OSFile()
     self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._tsk_file_system = tsk_file_system.TSKFileSystem(self._os_file_object)
+    self._tsk_file_system = tsk_file_system.TSKFileSystem(
+        self._os_file_object, self._os_path_spec)
 
   def testIntialize(self):
     """Test the initialize functionality."""
@@ -47,14 +48,15 @@ class TSKFileEntryTest(unittest.TestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(inode=15)
+    path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
     file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(location=u'/')
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location=u'/', parent=self._os_path_spec)
     file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)

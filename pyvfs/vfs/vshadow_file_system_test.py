@@ -49,6 +49,37 @@ class VShadowFileSystemTest(unittest.TestCase):
 
     self.assertNotEquals(file_system, None)
 
+  def testFileEntryExistsByPathSpec(self):
+    """Test the file entry exists by path specification functionality."""
+    vshadow_volume = pyvshadow.volume()
+    vshadow_volume.open_file_object(self._qcow_file_object)
+    file_system = vshadow_file_system.VShadowFileSystem(
+        vshadow_volume, self._qcow_path_spec)
+
+    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+
+    path_spec = vshadow_path_spec.VShadowPathSpec(9, self._qcow_path_spec)
+    self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
+
+  def testGetFileEntryByPathSpec(self):
+    """Test the get entry by path specification functionality."""
+    vshadow_volume = pyvshadow.volume()
+    vshadow_volume.open_file_object(self._qcow_file_object)
+    file_system = vshadow_file_system.VShadowFileSystem(
+        vshadow_volume, self._qcow_path_spec)
+
+    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+    self.assertEquals(file_entry.name, u'vss2')
+
+    path_spec = vshadow_path_spec.VShadowPathSpec(9, self._qcow_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertEquals(file_entry, None)
+
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     vshadow_volume = pyvshadow.volume()
@@ -59,19 +90,8 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertNotEquals(file_entry, None)
+    self.assertEquals(file_entry.name, u'')
 
-  def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
-    vshadow_volume = pyvshadow.volume()
-    vshadow_volume.open_file_object(self._qcow_file_object)
-    file_system = vshadow_file_system.VShadowFileSystem(
-        vshadow_volume, self._qcow_path_spec)
-    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
-
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.name, u'vss2')
 
 if __name__ == '__main__':
   unittest.main()

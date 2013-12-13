@@ -74,7 +74,7 @@ class VShadowResolverHelper(resolver_helper.ResolverHelper):
     vshadow_volume = pyvshadow.volume()
     vshadow_volume.open_file_object(file_object)
     return pyvfs.vfs.vshadow_file_system.VShadowFileSystem(
-        vshadow_volume, path_spec)
+        vshadow_volume, path_spec.parent)
 
 # Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(VShadowResolverHelper())

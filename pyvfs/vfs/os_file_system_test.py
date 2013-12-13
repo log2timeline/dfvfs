@@ -15,10 +15,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the file system implementation using the SleuthKit (TSK)."""
+"""Tests for the file system implementation using os."""
 
+import os
+import platform
 import unittest
 
+from pyvfs.path import os_path_spec
 from pyvfs.vfs import os_file_system
 
 
@@ -30,7 +33,53 @@ class OSFileSystemTest(unittest.TestCase):
     file_system = os_file_system.OSFileSystem()
 
     self.assertNotEquals(file_system, None)
-    # TODO: add tests.
+
+  def testFileEntryExistsByPathSpec(self):
+    """Test the file entry exists by path specification functionality."""
+    file_system = os_file_system.OSFileSystem()
+
+    path_spec = os_path_spec.OSPathSpec(
+      os.path.join('test_data', 'testdir', 'file1.txt'))
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+
+    path_spec = os_path_spec.OSPathSpec(
+      os.path.join('test_data', 'testdir', 'file6.txt'))
+    self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
+
+  def testGetFileEntryByPathSpec(self):
+    """Test the get entry by path specification functionality."""
+    file_system = os_file_system.OSFileSystem()
+
+    path_spec = os_path_spec.OSPathSpec(
+      os.path.join('test_data', 'testdir', 'file1.txt'))
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+    self.assertEquals(file_entry.name, u'file1.txt')
+
+    path_spec = os_path_spec.OSPathSpec(
+      os.path.join('test_data', 'testdir', 'file6.txt'))
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertEquals(file_entry, None)
+
+  def testGetRootFileEntry(self):
+    """Test the get root file entry functionality."""
+    file_system = os_file_system.OSFileSystem()
+
+    if platform.system() == 'Windows':
+      # Return the root with the drive letter of the volume the current
+      # working directory is on.
+      expected_location = os.getcwd()
+      expected_location, _, _ = expected_location.rpartition('\\')
+      expected_location = u'{0:s}\\'.format(expected_location)
+    else:
+      expected_location = u'/'
+
+    file_entry = file_system.GetRootFileEntry()
+
+    self.assertNotEquals(file_entry, None)
+    self.assertEquals(file_entry.name, u'')
 
 
 if __name__ == '__main__':

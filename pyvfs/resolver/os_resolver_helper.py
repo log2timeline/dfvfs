@@ -19,7 +19,9 @@
 
 # This is necessary to prevent a circular import.
 import pyvfs.io.os_file_io
+import pyvfs.vfs.os_file_system
 
+from pyvfs.lib import errors
 from pyvfs.path import os_path_spec
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
@@ -45,6 +47,22 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
     file_object = pyvfs.io.os_file_io.OSFile()
     file_object.open(path_spec)
     return file_object
+
+  def OpenFileSystem(self, path_spec):
+    """Opens a file system object defined by path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      The file system object (instance of vfs.OsFileSystem) or None if
+      the path specification could not be resolved.
+    """
+    if path_spec.HasParent():
+      raise errors.PathSpecError(
+          u'Unsupported path specification with parent.')
+
+    return pyvfs.vfs.os_file_system.OsFileSystem()
 
 
 # Register the resolver helpers with the resolver.

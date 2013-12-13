@@ -64,7 +64,8 @@ class ZipResolverHelper(resolver_helper.ResolverHelper):
           u'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
-    return pyvfs.vfs.zip_file_system.ZipFileSystem(file_object, path_spec)
+    return pyvfs.vfs.zip_file_system.ZipFileSystem(
+        file_object, path_spec.parent)
 
 
 # Register the resolver helpers with the resolver.

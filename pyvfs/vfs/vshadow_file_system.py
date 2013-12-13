@@ -32,11 +32,29 @@ class VShadowFileSystem(file_system.FileSystem):
 
     Args:
       vshadow_volume: the VSS volume object (instance of pyvshadow.volume).
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of path.PathSpec) of
+                 the file-like object.
     """
     super(VShadowFileSystem, self).__init__()
     self._vshadow_volume = vshadow_volume
     self._path_spec = path_spec
+
+  def FileEntryExistsByPathSpec(self, path_spec):
+    """Determines if a file entry for a path specification exists.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      Boolean indicating if the file entry exists.
+    """
+    store_index = getattr(path_spec, 'store_index', None)
+
+    if store_index is None:
+      return True
+
+    return (store_index > 0 and
+            store_index < self._vshadow_volume.number_of_stores)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -45,13 +63,15 @@ class VShadowFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.VShadowFileEntry).
+      A file entry (instance of vfs.VShadowFileEntry) or None.
     """
     store_index = getattr(path_spec, 'store_index', None)
 
     if store_index is None:
       return self.GetRootFileEntry()
 
+    if store_index < 0 or store_index >= self._vshadow_volume.number_of_stores:
+      return
     return pyvfs.vfs.vshadow_file_entry.VShadowFileEntry(self, path_spec)
 
   def GetRootFileEntry(self):

@@ -43,6 +43,33 @@ class ZipFileSystemTest(unittest.TestCase):
 
     self.assertNotEquals(file_system, None)
 
+  def testFileEntryExistsByPathSpec(self):
+    """Test the file entry exists by path specification functionality."""
+    file_system = zip_file_system.ZipFileSystem(
+        self._os_file_object, self._os_path_spec)
+
+    path_spec = zip_path_spec.ZipPathSpec(u'/syslog', self._os_path_spec)
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+
+    path_spec = zip_path_spec.ZipPathSpec(u'/bogus', self._os_path_spec)
+    self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
+
+  def testGetFileEntryByPathSpec(self):
+    """Test the get entry by path specification functionality."""
+    file_system = zip_file_system.ZipFileSystem(
+        self._os_file_object, self._os_path_spec)
+
+    path_spec = zip_path_spec.ZipPathSpec(u'/syslog', self._os_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+    self.assertEquals(file_entry.name, u'syslog')
+
+    path_spec = zip_path_spec.ZipPathSpec(u'/bogus', self._os_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertEquals(file_entry, None)
+
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = zip_file_system.ZipFileSystem(
@@ -51,18 +78,7 @@ class ZipFileSystemTest(unittest.TestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertNotEquals(file_entry, None)
-
-  def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
-    file_system = zip_file_system.ZipFileSystem(
-        self._os_file_object, self._os_path_spec)
-    path_spec = zip_path_spec.ZipPathSpec(u'/syslog', self._os_path_spec)
-
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.name, u'syslog')
-
+    self.assertEquals(file_entry.name, u'')
 
 if __name__ == '__main__':
   unittest.main()

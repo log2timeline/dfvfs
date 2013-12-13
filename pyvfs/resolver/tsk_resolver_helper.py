@@ -63,7 +63,8 @@ class TSKResolverHelper(resolver_helper.ResolverHelper):
           u'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
-    return pyvfs.vfs.tsk_file_system.TSKFileSystem(file_object)
+    return pyvfs.vfs.tsk_file_system.TSKFileSystem(
+        file_object, path_spec.parent)
 
 # Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(TSKResolverHelper())

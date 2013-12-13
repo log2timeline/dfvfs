@@ -36,7 +36,8 @@ class TarFileSystem(file_system.FileSystem):
 
     Args:
       file_object: the file-like object (instance of io.FileIO).
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of path.PathSpec) of
+                 the file-like object.
       encoding: optional file entry name encoding. The default is 'utf-8'.
     """
     super(TarFileSystem, self).__init__()
@@ -48,6 +49,32 @@ class TarFileSystem(file_system.FileSystem):
     # handled by the file-like object.
     self._tar_file = tarfile.open(mode='r:', fileobj=file_object)
 
+  def FileEntryExistsByPathSpec(self, path_spec):
+    """Determines if a file entry for a path specification exists.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      Boolean indicating if the file entry exists.
+    """
+    tar_info = None
+    location = getattr(path_spec, 'location', None)
+
+    if (location is None or
+        not location.startswith(self.LOCATION_ROOT)):
+      return
+
+    if len(location) == 1:
+      return True
+
+    try:
+      tar_info = self._tar_file.getmember(location[1:])
+    except KeyError:
+      pass
+
+    return tar_info is not None
+
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
@@ -55,24 +82,25 @@ class TarFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.TarFileEntry).
-
-    Raises:
-      ValueError: if the path specification is incorrect.
+      A file entry (instance of vfs.TarFileEntry) or None.
     """
+    tar_info = None
     location = getattr(path_spec, 'location', None)
 
-    if location is None:
-      raise ValueError(u'Path specification missing location.')
-
-    if not location.startswith(self.LOCATION_ROOT):
-      raise ValueError(u'Invalid location in path specification.')
+    if (location is None or
+        not location.startswith(self.LOCATION_ROOT)):
+      return
 
     if len(location) == 1:
       return self.GetRootFileEntry()
 
-    tar_info = self._tar_file.getmember(location[1:])
+    try:
+      tar_info = self._tar_file.getmember(location[1:])
+    except KeyError:
+      pass
 
+    if tar_info is None:
+      return
     return pyvfs.vfs.tar_file_entry.TarFileEntry(
         self, path_spec, tar_info=tar_info)
 

@@ -42,8 +42,12 @@ class _TSKFileSystemImage(pytsk3.Img_Info):
     if not file_object:
       raise ValueError(u'Missing file-like object.')
 
+    # pytsk3.Img_Info does not let you set attributes after initialization.
     self._file_object = file_object
-    super(_TSKFileSystemImage, self).__init__()
+    # Using the old parent class invocation style otherwise some versions
+    # of pylint complain also setting type to RAW to make sure Img_Info
+    # does not do detection.
+    pytsk3.Img_Info.__init__(self, '', pytsk3.TSK_IMG_TYPE_RAW)
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the pytsk3.Img_Info object interface.
@@ -75,21 +79,46 @@ class TSKFileSystem(file_system.FileSystem):
 
   _LOCATION_ROOT = u'/'
 
-  def __init__(self, file_object, offset=0):
+  def __init__(self, file_object, path_spec, offset=0):
     """Initializes the file system object.
 
     Args:
       file_object: the file-like object (instance of io.FileIO).
+      path_spec: the path specification (instance of path.PathSpec) of
+                 the file-like object.
       offset: option offset, in bytes, of the start of the file system,
               the default is 0.
     """
     super(TSKFileSystem, self).__init__()
     self._file_object = file_object
+    self._path_spec = path_spec
 
-    # We need to keep the pytsk3.Img_Info around due to an issue with
-    # reference counting.
-    self._tsk_image = _TSKFileSystemImage(file_object)
-    self._tsk_file_system = pytsk3.FS_Info(self._tsk_image, offset=offset)
+    tsk_image = _TSKFileSystemImage(file_object)
+    self._tsk_file_system = pytsk3.FS_Info(tsk_image, offset=offset)
+
+  def FileEntryExistsByPathSpec(self, path_spec):
+    """Determines if a file entry for a path specification exists.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      Boolean indicating if the file entry exists.
+    """
+    tsk_file = None
+    inode = getattr(path_spec, 'inode', None)
+    location = getattr(path_spec, 'location', None)
+
+    try:
+      if inode is not None:
+        tsk_file = self._tsk_file_system.open_meta(inode=inode)
+      elif location is not None:
+        tsk_file = self._tsk_file_system.open(location)
+
+    except IOError:
+      pass
+
+    return tsk_file is not None
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -98,22 +127,24 @@ class TSKFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
-
-    Raises:
-      ValueError: if the path specification is incorrect.
+      A file entry (instance of vfs.FileEntry) or None.
     """
     # Opening a file by inode number is faster than opening a file by location.
+    tsk_file = None
     inode = getattr(path_spec, 'inode', None)
     location = getattr(path_spec, 'location', None)
 
-    if inode is not None:
-      tsk_file = self._tsk_file_system.open_meta(inode=inode)
-    elif location is not None:
-      tsk_file = self._tsk_file_system.open(location)
-    else:
-      raise ValueError(u'Path specification missing inode and location.')
+    try:
+      if inode is not None:
+        tsk_file = self._tsk_file_system.open_meta(inode=inode)
+      elif location is not None:
+        tsk_file = self._tsk_file_system.open(location)
 
+    except IOError:
+      pass
+
+    if tsk_file is None:
+      return
     return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
         self, path_spec, tsk_file=tsk_file)
 
@@ -134,7 +165,8 @@ class TSKFileSystem(file_system.FileSystem):
     """
     tsk_file = self._tsk_file_system.open(self._LOCATION_ROOT)
 
-    path_spec = tsk_path_spec.TSKPathSpec(location=self._LOCATION_ROOT)
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location=self._LOCATION_ROOT, parent=self._path_spec)
 
     return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
         self, path_spec, tsk_file=tsk_file)

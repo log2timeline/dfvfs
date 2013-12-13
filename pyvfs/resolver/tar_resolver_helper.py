@@ -64,7 +64,8 @@ class TarResolverHelper(resolver_helper.ResolverHelper):
           u'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
-    return pyvfs.vfs.tar_file_system.TarFileSystem(file_object, path_spec)
+    return pyvfs.vfs.tar_file_system.TarFileSystem(
+        file_object, path_spec.parent)
 
 
 # Register the resolver helpers with the resolver.
