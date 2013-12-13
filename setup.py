@@ -45,7 +45,7 @@ class TestCommand(Command):
     pass
 
   def run(self):
-    results = run_tests.RunTests()
+    test_results = run_tests.RunTests(os.path.join('.', 'pyvfs'))
 
 
 setup(
