@@ -80,8 +80,8 @@ if __name__ == '__main__':
   # Modify the system path to first search the CWD.
   sys.path.insert(0, '.')
 
-  results = RunTests(os.path.join('.', 'pyvfs'))
+  test_results = RunTests(os.path.join('.', 'pyvfs'))
 
-  PrintResults(results)
-  if not results.wasSuccessful():
+  PrintResults(test_results)
+  if not test_results.wasSuccessful():
     sys.exit(1)
