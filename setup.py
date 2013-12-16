@@ -33,6 +33,11 @@ if sys.version < '2.7':
   print 'Supported Python versions are 2.7 or a later 2.x version.'
   sys.exit(1)
 
+# Change PYTHONPATH to include pyvfs so that we can get the version.
+sys.path.insert(0, os.path.join('pyvfs'))
+
+import pyvfs
+
 
 class TestCommand(Command):
   """Run tests, implementing an interface."""
@@ -48,16 +53,23 @@ class TestCommand(Command):
     test_results = run_tests.RunTests(os.path.join('.', 'pyvfs'))
 
 
+pyvfs_version = pyvfs.__version__
+
+# Command bdist_msi does not support the library version, neither a date
+# as a version but if we suffix it with .1 everything is fine.
+if 'build_msi' in sys.argv:
+  pyvfs_version += '.1'
+
 setup(
     name='pyvfs',
-    version='1.0.0',
+    version=pyvfs_version,
     description=(
         'PyVFS is a Python module used to provide a read-only Virtual File '
         'System (VFS) for various file system and file formats.'),
     license='Apache License, Version 2.0',
     url='https://code.google.com/p/pyvfs',
     maintainer_email='log2timeline-dev@googlegroups.com',
-    cmdclass = {'test': TestCommand},
+    cmdclass={'test': TestCommand},
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
