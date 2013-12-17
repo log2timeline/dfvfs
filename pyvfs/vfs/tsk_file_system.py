@@ -47,7 +47,7 @@ class _TSKFileSystemImage(pytsk3.Img_Info):
     # Using the old parent class invocation style otherwise some versions
     # of pylint complain also setting type to RAW to make sure Img_Info
     # does not do detection.
-    pytsk3.Img_Info.__init__(self, '', pytsk3.TSK_IMG_TYPE_RAW)
+    pytsk3.Img_Info.__init__(self, url='', type=pytsk3.TSK_IMG_TYPE_RAW)
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the pytsk3.Img_Info object interface.
