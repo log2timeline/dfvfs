@@ -1,4 +1,4 @@
-// Copyright 2012 The PyVFS Project Authors.
+// Copyright 2013 The PyVFS Project Authors.
 // Please see the AUTHORS file for details on individual authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,8 +12,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// Author: Kristinn Gudjonsson <kristinn at log2timeline dot net>>
 
 // This is the main protobuf for all internal transmission
 // of messages between plaso threads/processes.
@@ -22,118 +20,24 @@ syntax = "proto2";
 
 package transmission;
 
-// This is a message that is passed between threads/processes during
-// the run of Plaso so that workers can successfully open the correct
-// file and parse it.
-// Since the file we are about to read can be embedded within another file,
-// such as inside an image file, or within a compressed container or even
-// embedded inside another file we need a way to describe it in enough
-// details so that the worker can successfully find it, extract and parse.
+// Protobuf to store the PyVFS path specification.
 message PathSpec {
-  // Description of the source file type, indicating
-  // which driver we need to use to open the file.
-  enum FileType {
-    UNSET = -1;
-    OS = 0;
-    TSK = 1;
-    ZIP = 2;
-    GZIP = 3;
-    BZ2 = 4;
-    TAR = 5;
-    VSS = 6;
-  };
+  // Optional nested parent path specification.
+  optional PathSpec parent = 1;
 
-  // The file type.
-  optional FileType type = 1 [default = UNSET];
+  // The path specification type indicator.
+  required string type_indicator = 2;
 
-  // Path to the file about to be parsed, interpreted differently depending
-  // on the type of file.
-  optional string file_path = 2;
+  // Optional location string.
+  optional string location = 3;
 
-  // Path to the container, interpretation depends on the type variable.
-  optional string container_path = 3;
+  // Optional unique identifier e.g. a GUID/UUID.
+  optional string identifier = 4;
 
-  // If this is a multi partioned image we need the offset to the partition.
-  optional uint64 image_offset = 4;
+  // Optional inode number e.g. used by TSK.
+  optional uint64 inode = 5;
 
-  // If this is an image file we need the inode number to read it.
-  optional uint64 image_inode = 5;
-
-  // If there is a nested file within it, we need to save it here.
-  optional PathSpec nested_pathspec = 6;
-
-  // If the file is embedded within another file, this is the offset
-  // into the host file and the size of the embedded file so it can be
-  // extracted from it.
-  optional uint64 file_offset = 7;
-  optional uint64 file_size = 8;
-
-  // Define whether path is case sensitive or not.
-  enum Options {
-    CASE_INSENSITIVE = 0;
-    CASE_LITERAL = 1;
-  };
-
-  optional Options transmit_options = 9 [default = CASE_LITERAL];
-
-  enum TskFsAttrType {
-    TSK_FS_ATTR_TYPE_DEFAULT = 0x01;        // 1
-    TSK_FS_ATTR_TYPE_HFS_COMP_REC = 0x1103; // 4355
-    TSK_FS_ATTR_TYPE_HFS_DATA = 0x1100;     // 4352
-    TSK_FS_ATTR_TYPE_HFS_EXT_ATTR = 0x1102; // 4354
-    TSK_FS_ATTR_TYPE_HFS_RSRC = 0x1101;     // 4353
-    TSK_FS_ATTR_TYPE_NOT_FOUND = 0x0;       // 0
-    TSK_FS_ATTR_TYPE_UNIX_EXTENT = 0x1002;  // 4098
-    TSK_FS_ATTR_TYPE_NTFS_SI = 0x10;        // 16
-    TSK_FS_ATTR_TYPE_NTFS_ATTRLIST = 0x20;  // 32
-    TSK_FS_ATTR_TYPE_NTFS_FNAME = 0x30;     // 48
-    TSK_FS_ATTR_TYPE_NTFS_VVER = 0x40;      // 64 (NT)
-    TSK_FS_ATTR_TYPE_NTFS_SEC = 0x50;       // 80
-    TSK_FS_ATTR_TYPE_NTFS_VNAME = 0x60;     // 96
-    TSK_FS_ATTR_TYPE_NTFS_VINFO = 0x70;     // 112
-    TSK_FS_ATTR_TYPE_NTFS_DATA = 0x80;      // 128
-    TSK_FS_ATTR_TYPE_NTFS_IDXROOT = 0x90;   // 144
-    TSK_FS_ATTR_TYPE_NTFS_IDXALLOC = 0xA0;  // 160
-    TSK_FS_ATTR_TYPE_NTFS_BITMAP = 0xB0;    // 176
-    TSK_FS_ATTR_TYPE_NTFS_SYMLNK = 0xC0;    // 192 (NT)
-    TSK_FS_ATTR_TYPE_NTFS_EAINFO = 0xD0;    // 208
-    TSK_FS_ATTR_TYPE_NTFS_EA = 0xE0;        // 224
-    TSK_FS_ATTR_TYPE_NTFS_PROP = 0xF0;      // (NT)
-    TSK_FS_ATTR_TYPE_NTFS_LOG = 0x100;      // (2K)
-    TSK_FS_ATTR_TYPE_UNIX_INDIR = 0x1001;   // Indirect blocks for UFS and ExtX
-  };
-
-  optional TskFsAttrType attribute_type = 10 [default = TSK_FS_ATTR_TYPE_DEFAULT];
-
-  optional uint64 attribute_id = 11;
-
-  // Define which VSS store needs to be opened (in the case of a VSS file).
-  optional uint64 vss_store_number = 12;
-
-  // Define a string that is prepended in the path name, for display reasons.
-  // This can be something like "C:\" to distinguish records from other drives.
-  optional string path_prepend = 13;
+  // Optional store index e.g. used by VSS.
+  optional uint64 store_index = 6;
 };
 
-// A PathBundle is a group of PathSpec messages, a PathSpec dict sort of speak.
-// This is used during collection phase to pass in more than a single file to
-// a parser.
-message PathBundle {
-  // This string describes the pattern used to create the PathBundle.
-  required string pattern = 1;
-
-  // A list of PathSpec protobufs that were discovered using the pattern above.
-  repeated PathSpec pathspecs = 2;
-};
-
-
-// PathFilter is a simple protobuf used to create collection filters in plaso.
-// An example would be:
-// PathFilter (
-//   filter_string: '{sysregistry}/.+evt'
-//   filter_string: '/Users/.+/NTUSER.DAT'
-// )
-message PathFilter {
-  // This repeated field presents a single filter criteria.
-  repeated string filter_string = 1;
-};
