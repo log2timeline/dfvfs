@@ -77,4 +77,4 @@ class Factory(object):
           u'Path specification type: {0:s} not set').format(type_indicator))
 
     path_spec_type = cls._path_spec_types[type_indicator]
-    return type(path_spec_type.__name__, path_spec_type.__bases__, **kwargs)
+    return path_spec_type(**kwargs)

@@ -19,8 +19,6 @@
 
 import abc
 
-# TODO: add serialization support.
-
 
 class PathSpec(object):
   """Class that implements the path specification object interface."""
