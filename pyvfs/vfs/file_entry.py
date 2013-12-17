@@ -17,7 +17,7 @@
 # limitations under the License.
 """The Virtual File System (VFS) file entry object interface.
 
-The file entry can be various file system elments like a regular file,
+The file entry can be various file system elements like a regular file,
 a directory or file system metadata.
 """
 
