@@ -32,12 +32,13 @@ class VShadowFileTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'vsstest.qcow2')
-    path_spec = os_path_spec.OSPathSpec(test_file)
-    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(path_spec)
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
 
   def testOpenClose(self):
     """Test the open and close functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=1, parent=self._qcow_path_spec)
     file_object = vshadow_file_io.VShadowFile()
 
     file_object.open(path_spec)
@@ -48,7 +49,8 @@ class VShadowFileTest(unittest.TestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=1, parent=self._qcow_path_spec)
     file_object = vshadow_file_io.VShadowFile()
 
     file_object.open(path_spec)
@@ -93,7 +95,8 @@ class VShadowFileTest(unittest.TestCase):
   def testRead(self):
     """Test the read functionality."""
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=1, parent=self._qcow_path_spec)
     file_object = vshadow_file_io.VShadowFile()
 
     file_object.open(path_spec)

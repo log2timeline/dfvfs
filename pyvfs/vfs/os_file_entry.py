@@ -44,7 +44,8 @@ class OSDirectory(file_entry.Directory):
       return
 
     for directory_entry in os.listdir(location):
-      yield os_path_spec.OSPathSpec(os.path.join(location, directory_entry))
+      yield os_path_spec.OSPathSpec(
+          location=os.path.join(location, directory_entry))
 
 
 class OSFileEntry(file_entry.FileEntry):

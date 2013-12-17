@@ -31,7 +31,7 @@ class DataRangeResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(DataRangeResolverHelper, self).__init__(
-        data_range_path_spec.DataRangePathSpec.__name__)
+        data_range_path_spec.DataRangePathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

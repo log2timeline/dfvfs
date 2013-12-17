@@ -32,10 +32,10 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    location = os.path.join('test_data', 'syslog')
-    self._os_path_spec = os_path_spec.OSPathSpec(location)
+    test_file = os.path.join('test_data', 'syslog')
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._data_range_path_spec = data_range_path_spec.DataRangePathSpec(
-        167, 1080, parent=self._os_path_spec)
+        range_offset=167, range_size=1080, parent=self._os_path_spec)
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""

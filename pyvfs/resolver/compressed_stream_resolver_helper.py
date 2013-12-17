@@ -31,7 +31,7 @@ class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(CompressedStreamResolverHelper, self).__init__(
-        compressed_stream_path_spec.CompressedStreamPathSpec.__name__)
+        compressed_stream_path_spec.CompressedStreamPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

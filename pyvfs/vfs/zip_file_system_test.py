@@ -32,7 +32,7 @@ class ZipFileSystemTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'syslog.zip')
-    self._os_path_spec = os_path_spec.OSPathSpec(test_file)
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._os_file_object = os_file_io.OSFile()
     self._os_file_object.open(self._os_path_spec, mode='rb')
 
@@ -48,10 +48,12 @@ class ZipFileSystemTest(unittest.TestCase):
     file_system = zip_file_system.ZipFileSystem(
         self._os_file_object, self._os_path_spec)
 
-    path_spec = zip_path_spec.ZipPathSpec(u'/syslog', self._os_path_spec)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/syslog', parent=self._os_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    path_spec = zip_path_spec.ZipPathSpec(u'/bogus', self._os_path_spec)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/bogus', parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
@@ -59,13 +61,15 @@ class ZipFileSystemTest(unittest.TestCase):
     file_system = zip_file_system.ZipFileSystem(
         self._os_file_object, self._os_path_spec)
 
-    path_spec = zip_path_spec.ZipPathSpec(u'/syslog', self._os_path_spec)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/syslog', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'syslog')
 
-    path_spec = zip_path_spec.ZipPathSpec(u'/bogus', self._os_path_spec)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/bogus', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertEquals(file_entry, None)

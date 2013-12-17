@@ -23,13 +23,15 @@ from pyvfs.path import path_spec
 class LocationPathSpec(path_spec.PathSpec):
   """Base class for location-based path specifications."""
 
-  def __init__(self, location, parent=None):
+  def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
     Args:
-      location: the location string.
+      location: optional location string. The default is None.
       parent: optional parent path specification (instance of PathSpec),
               default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification.
 
     Raises:
       ValueError: when location is not set.
@@ -37,7 +39,7 @@ class LocationPathSpec(path_spec.PathSpec):
     if not location:
       raise ValueError(u'Missing location value.')
 
-    super(LocationPathSpec, self).__init__(parent=parent)
+    super(LocationPathSpec, self).__init__(parent=parent, **kwargs)
     self.location = location
 
   @property

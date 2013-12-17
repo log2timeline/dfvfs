@@ -17,20 +17,27 @@
 # limitations under the License.
 """The compressed stream path specification implementation."""
 
+from pyvfs.path import factory
 from pyvfs.path import path_spec
 
 
 class CompressedStreamPathSpec(path_spec.PathSpec):
   """Class that implements the compressed stream path specification."""
 
-  def __init__(self, compression_method, parent):
+  TYPE_INDICATOR = u'COMPRESSED_STREAM'
+
+  def __init__(self, compression_method=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
        Note that the compressed stream path specification must have a parent.
 
     Args:
-      compression_method: the method used to the compress the data.
-      parent: parent path specification (instance of PathSpec).
+      compression_method: optional method used to the compress the data.
+                          The default is None.
+      parent: optional parent path specification (instance of PathSpec).
+              The default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification.
 
     Raises:
       ValueError: when compression method or parent are not set.
@@ -38,7 +45,7 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
     if not compression_method or not parent:
       raise ValueError(u'Missing compression method or parent value.')
 
-    super(CompressedStreamPathSpec, self).__init__(parent=parent)
+    super(CompressedStreamPathSpec, self).__init__(parent=parent, **kwargs)
     self.compression_method = compression_method
 
   @property
@@ -46,3 +53,7 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
     """Comparable representation of the path specification."""
     return self._GetComparable(
         u'compression_method: {0:s}\n'.format(self.compression_method))
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(CompressedStreamPathSpec)

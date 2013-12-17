@@ -31,8 +31,8 @@ class VhdiFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'image.vhd')
-    path_spec = os_path_spec.OSPathSpec(test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VhdiPathSpec(path_spec)
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._vhdi_path_spec = vhdi_path_spec.VhdiPathSpec(parent=path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""

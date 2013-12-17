@@ -80,7 +80,7 @@ class VShadowFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry).
     """
-    path_spec = vshadow_path_spec.VShadowPathSpec(None, self._path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(parent=self._path_spec)
     return pyvfs.vfs.vshadow_file_entry.VShadowFileEntry(self, path_spec)
 
   def GetVShadowVolume(self):

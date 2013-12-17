@@ -71,7 +71,8 @@ class ZipDirectory(file_entry.Directory):
 
       path_spec_location = u'{0:s}{1:s}'.format(
           zip_path_spec.PATH_SEPARATOR, path)
-      yield zip_path_spec.ZipPathSpec(path_spec_location, self.path_spec.parent)
+      yield zip_path_spec.ZipPathSpec(
+          location=path_spec_location, parent=self.path_spec.parent)
 
 
 class ZipFileEntry(file_entry.FileEntry):

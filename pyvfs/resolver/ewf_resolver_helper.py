@@ -31,7 +31,7 @@ class EwfResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(EwfResolverHelper, self).__init__(
-        ewf_path_spec.EwfPathSpec.__name__)
+        ewf_path_spec.EwfPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

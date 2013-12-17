@@ -75,7 +75,8 @@ class TarDirectory(file_entry.Directory):
 
       path_spec_location = '{0:s}{1:s}'.format(
           tar_path_spec.PATH_SEPARATOR, path)
-      yield tar_path_spec.TarPathSpec(path_spec_location, self.path_spec.parent)
+      yield tar_path_spec.TarPathSpec(
+          location=path_spec_location, parent=self.path_spec.parent)
 
 
 class TarFileEntry(file_entry.FileEntry):

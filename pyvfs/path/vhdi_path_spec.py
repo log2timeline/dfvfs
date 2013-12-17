@@ -17,19 +17,25 @@
 # limitations under the License.
 """The VHD image path specification implementation."""
 
+from pyvfs.path import factory
 from pyvfs.path import path_spec
 
 
 class VhdiPathSpec(path_spec.PathSpec):
   """Class that implements the VHD image path specification."""
 
-  def __init__(self, parent):
+  TYPE_INDICATOR = u'VHDI'
+
+  def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
        Note that the vhdi file path specification must have a parent.
 
     Args:
-      parent: parent path specification (instance of PathSpec).
+      parent: optional parent path specification (instance of PathSpec).
+              The default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification
 
     Raises:
       ValueError: when parent is not set.
@@ -37,9 +43,13 @@ class VhdiPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(VhdiPathSpec, self).__init__(parent=parent)
+    super(VhdiPathSpec, self).__init__(parent=parent, **kwargs)
 
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
     return self._GetComparable(u'')
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(VhdiPathSpec)

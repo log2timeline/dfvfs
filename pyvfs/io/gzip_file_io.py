@@ -160,11 +160,11 @@ class GzipFile(file_object_io.FileObjectIO):
       gzip_file_object.close()
 
     path_spec_data_range = data_range_path_spec.DataRangePathSpec(
-        self._compressed_data_offset, self._compressed_data_size,
-        parent=path_spec)
+        range_offset=self._compressed_data_offset,
+        range_size=self._compressed_data_size, parent=path_spec)
     path_spec_compressed_stream = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
-            definitions.COMPRESSION_METHOD_DEFLATE,
+            compression_method=definitions.COMPRESSION_METHOD_DEFLATE,
             parent=path_spec_data_range))
 
     file_object = compressed_stream_io.CompressedStream()

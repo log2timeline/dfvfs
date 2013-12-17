@@ -17,6 +17,7 @@
 # limitations under the License.
 """The tar path specification implementation."""
 
+from pyvfs.path import factory
 from pyvfs.path import location_path_spec
 
 
@@ -26,15 +27,20 @@ PATH_SEPARATOR = u'/'
 class TarPathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the tar file path specification."""
 
-  def __init__(self, location, parent):
+  TYPE_INDICATOR = u'TAR'
+
+  def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
        Note that the tar file path specification must have a parent.
 
     Args:
-      location: the tar file internal location string prefixed with a path
-                separator character.
-      parent: parent path specification (instance of PathSpec).
+      location: optional tar file internal location string prefixed with a path
+                separator character. The default is None.
+      parent: optional parent path specification (instance of PathSpec).
+              The default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification.
 
     Raises:
       ValueError: when parent is not set.
@@ -42,4 +48,9 @@ class TarPathSpec(location_path_spec.LocationPathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(TarPathSpec, self).__init__(location, parent=parent)
+    super(TarPathSpec, self).__init__(
+        location=location, parent=parent, **kwargs)
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(TarPathSpec)

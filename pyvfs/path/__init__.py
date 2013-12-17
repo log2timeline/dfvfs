@@ -15,3 +15,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from pyvfs.path import compressed_stream_path_spec
+from pyvfs.path import data_range_path_spec
+from pyvfs.path import ewf_path_spec
+from pyvfs.path import os_path_spec
+from pyvfs.path import path_spec
+from pyvfs.path import qcow_path_spec
+from pyvfs.path import tar_path_spec
+from pyvfs.path import tsk_path_spec
+from pyvfs.path import vhdi_path_spec
+from pyvfs.path import vshadow_path_spec
+from pyvfs.path import zip_path_spec

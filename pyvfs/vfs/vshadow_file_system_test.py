@@ -35,8 +35,8 @@ class VShadowFileSystemTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'vsstest.qcow2')
-    path_spec = os_path_spec.OSPathSpec(test_file)
-    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(path_spec)
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
     self._qcow_file_object = qcow_file_io.QcowFile()
     self._qcow_file_object.open(self._qcow_path_spec)
 
@@ -56,10 +56,12 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_system = vshadow_file_system.VShadowFileSystem(
         vshadow_volume, self._qcow_path_spec)
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=1, parent=self._qcow_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(9, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=9, parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
@@ -69,13 +71,15 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_system = vshadow_file_system.VShadowFileSystem(
         vshadow_volume, self._qcow_path_spec)
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(1, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=1, parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'vss2')
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(9, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=9, parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertEquals(file_entry, None)

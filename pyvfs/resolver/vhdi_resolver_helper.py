@@ -31,7 +31,7 @@ class VhdiResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(VhdiResolverHelper, self).__init__(
-        vhdi_path_spec.VhdiPathSpec.__name__)
+        vhdi_path_spec.VhdiPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

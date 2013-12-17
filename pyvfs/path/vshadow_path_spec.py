@@ -17,20 +17,24 @@
 # limitations under the License.
 """The Volume Shadow Snapshots (VSS) path specification implementation."""
 
+from pyvfs.path import factory
 from pyvfs.path import path_spec
 
 
 class VShadowPathSpec(path_spec.PathSpec):
   """Class that implements the VSS path specification."""
 
-  def __init__(self, store_index, parent):
+  TYPE_INDICATOR = u'VSHADOW'
+
+  def __init__(self, store_index=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
     Args:
-      store_index: the store index.
-      parent: the parent path specification (instance of PathSpec).
+      store_index: optional store index. The default is None.
+      parent: optional parent path specification (instance of PathSpec).
+              The default is None.
     """
-    super(VShadowPathSpec, self).__init__(parent=parent)
+    super(VShadowPathSpec, self).__init__(parent=parent, **kwargs)
     self.store_index = store_index
 
   @property
@@ -38,3 +42,7 @@ class VShadowPathSpec(path_spec.PathSpec):
     """Comparable representation of the path specification."""
     sub_comparable_string = u'store: {0:d}'.format(self.store_index)
     return self._GetComparable(sub_comparable_string)
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(VShadowPathSpec)
