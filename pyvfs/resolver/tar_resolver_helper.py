@@ -33,7 +33,7 @@ class TarResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(TarResolverHelper, self).__init__(
-        tar_path_spec.TarPathSpec.__name__)
+        tar_path_spec.TarPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

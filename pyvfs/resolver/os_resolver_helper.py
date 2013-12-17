@@ -32,7 +32,8 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
 
   def __init__(self):
     """Initializes the resolver helper object."""
-    super(OSResolverHelper, self).__init__(os_path_spec.OSPathSpec.__name__)
+    super(OSResolverHelper, self).__init__(
+        os_path_spec.OSPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

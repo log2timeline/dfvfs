@@ -74,5 +74,5 @@ class OSFileSystem(file_system.FileSystem):
     if not os.path.exists(location):
       return
 
-    path_spec = os_path_spec.OSPathSpec(location)
+    path_spec = os_path_spec.OSPathSpec(location=location)
     return os_file_entry.OSFileEntry(self, path_spec)

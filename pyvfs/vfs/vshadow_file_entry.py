@@ -55,7 +55,7 @@ class VShadowDirectory(file_entry.Directory):
 
     for store_index in range(0, self._vshadow_volume.number_of_stores):
       yield vshadow_path_spec.VShadowPathSpec(
-          store_index, self.path_spec.parent)
+          store_index=store_index, parent=self.path_spec.parent)
 
 
 class VShadowFileEntry(file_entry.FileEntry):

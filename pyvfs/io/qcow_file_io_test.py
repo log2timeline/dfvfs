@@ -31,8 +31,8 @@ class QcowFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'image.qcow2')
-    path_spec = os_path_spec.OSPathSpec(test_file)
-    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(path_spec)
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""

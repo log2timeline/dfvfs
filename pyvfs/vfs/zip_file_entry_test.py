@@ -33,7 +33,7 @@ class ZipFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'syslog.zip')
-    self._os_path_spec = os_path_spec.OSPathSpec(test_file)
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._os_file_object = os_file_io.OSFile()
     self._os_file_object.open(self._os_path_spec, mode='rb')
     self._zip_file_system = zip_file_system.ZipFileSystem(
@@ -48,7 +48,8 @@ class ZipFileEntryTest(unittest.TestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = zip_path_spec.ZipPathSpec(u'/', self._os_path_spec)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/', parent=self._os_path_spec)
     file_entry = self._zip_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)

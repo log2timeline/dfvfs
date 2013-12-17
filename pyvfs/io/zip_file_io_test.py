@@ -31,10 +31,10 @@ class ZipFileTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    location = os.path.join('test_data', 'syslog.zip')
-    path_spec = os_path_spec.OSPathSpec(location)
+    test_file = os.path.join('test_data', 'syslog.zip')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
-        '/syslog', path_spec)
+        location='/syslog', parent=path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""

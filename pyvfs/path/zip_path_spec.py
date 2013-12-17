@@ -17,6 +17,7 @@
 # limitations under the License.
 """The zip path specification implementation."""
 
+from pyvfs.path import factory
 from pyvfs.path import location_path_spec
 
 
@@ -26,15 +27,20 @@ PATH_SEPARATOR = u'/'
 class ZipPathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the zip file path specification."""
 
-  def __init__(self, location, parent):
+  TYPE_INDICATOR = u'ZIP'
+
+  def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
        Note that the zip file path specification must have a parent.
 
     Args:
-      location: the zip file internal location string prefixed with a path
-                separator character.
-      parent: parent path specification (instance of PathSpec).
+      location: optional zip file internal location string prefixed with a path
+                separator character. The default is None.
+      parent: optional parent path specification (instance of PathSpec).
+              The default None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification
 
     Raises:
       ValueError: when parent is not set.
@@ -42,4 +48,9 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(ZipPathSpec, self).__init__(location, parent=parent)
+    super(ZipPathSpec, self).__init__(
+        location=location, parent=parent, **kwargs)
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(ZipPathSpec)

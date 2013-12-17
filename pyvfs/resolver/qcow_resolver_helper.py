@@ -31,7 +31,7 @@ class QcowResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(QcowResolverHelper, self).__init__(
-        qcow_path_spec.QcowPathSpec.__name__)
+        qcow_path_spec.QcowPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

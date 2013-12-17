@@ -30,11 +30,11 @@ class OSFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._file_system = os_file_system.OSFileSystem()
-    self._test_file = os.path.join('test_data', 'testdir')
+    self._test_file = os.path.join('test_data', 'testdir_os')
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
-    path_spec = os_path_spec.OSPathSpec(self._test_file)
+    path_spec = os_path_spec.OSPathSpec(location=self._test_file)
 
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -42,7 +42,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = os_path_spec.OSPathSpec(self._test_file)
+    path_spec = os_path_spec.OSPathSpec(location=self._test_file)
 
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 

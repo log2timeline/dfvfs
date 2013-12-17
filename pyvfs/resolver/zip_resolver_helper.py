@@ -33,7 +33,7 @@ class ZipResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(ZipResolverHelper, self).__init__(
-        zip_path_spec.ZipPathSpec.__name__)
+        zip_path_spec.ZipPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

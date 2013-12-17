@@ -29,11 +29,11 @@ class OSFileTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    location = os.path.join('test_data', 'password.txt')
-    self._path_spec1 = os_path_spec.OSPathSpec(location)
+    test_file = os.path.join('test_data', 'password.txt')
+    self._path_spec1 = os_path_spec.OSPathSpec(location=test_file)
 
-    location = os.path.join('test_data', 'another_file')
-    self._path_spec2 = os_path_spec.OSPathSpec(location)
+    test_file = os.path.join('test_data', 'another_file')
+    self._path_spec2 = os_path_spec.OSPathSpec(location=test_file)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""

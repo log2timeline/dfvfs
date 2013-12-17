@@ -17,6 +17,7 @@
 # limitations under the License.
 """The SleuthKit path specification implementation."""
 
+from pyvfs.path import factory
 from pyvfs.path import path_spec
 
 
@@ -26,7 +27,9 @@ PATH_SEPARATOR = u'/'
 class TSKPathSpec(path_spec.PathSpec):
   """Class that implements the SleuthKit path specification."""
 
-  def __init__(self, inode=None, location=None, parent=None):
+  TYPE_INDICATOR = u'TSK'
+
+  def __init__(self, inode=None, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
        The SleuthKit path specification object allows to specify a path
@@ -40,6 +43,8 @@ class TSKPathSpec(path_spec.PathSpec):
       location: optional SleuthKit location string.
       parent: optional parent path specification (instance of PathSpec),
               default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification
 
     Raises:
       ValueError: when inode and location, or parent are not set.
@@ -47,7 +52,7 @@ class TSKPathSpec(path_spec.PathSpec):
     if (not inode and not location) or not parent:
       raise ValueError(u'Missing inode and location or parent value.')
 
-    super(TSKPathSpec, self).__init__(parent=parent)
+    super(TSKPathSpec, self).__init__(parent=parent, **kwargs)
     self.inode = inode
     self.location = location
 
@@ -61,3 +66,7 @@ class TSKPathSpec(path_spec.PathSpec):
       sub_comparable_string = u'location: {0:s}\n'.format(self.location)
 
     return self._GetComparable(sub_comparable_string)
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(TSKPathSpec)

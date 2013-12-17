@@ -25,13 +25,21 @@ import abc
 class PathSpec(object):
   """Class that implements the path specification object interface."""
 
-  def __init__(self, parent=None):
+  def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
     Args:
       parent: optional parent path specification (instance of PathSpec),
               default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification.
+
+    Raises:
+      ValueError: when there are unused keyword arguments.
     """
+    if len(kwargs) != 0:
+      raise ValueError(u'Unused keyword arguments.')
+
     super(PathSpec, self).__init__()
     self.parent = parent
 
@@ -49,7 +57,7 @@ class PathSpec(object):
     """
     parent_comparable_string = getattr(self.parent, 'comparable', u'')
 
-    comparable_string = u'type: {0:s}'.format(self.type_identifier)
+    comparable_string = u'type: {0:s}'.format(self.type_indicator)
     if sub_comparable_string:
       comparable_string += u', {0:s}'.format(sub_comparable_string)
     comparable_string += u'\n'
@@ -61,9 +69,13 @@ class PathSpec(object):
     """Comparable representation of the path specification."""
 
   @property
-  def type_identifier(self):
-    """The type identifier."""
-    return self.__class__.__name__
+  def type_indicator(self):
+    """The type indicator."""
+    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    if type_indicator is None:
+      raise NotImplementedError(
+          u'Invalid path specification missing type indicator')
+    return type_indicator
 
   def __eq__(self, other):
     """Determines if the path specification is equal to the other."""

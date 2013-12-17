@@ -17,21 +17,29 @@
 # limitations under the License.
 """The data range path specification implementation."""
 
+from pyvfs.path import factory
 from pyvfs.path import path_spec
 
 
 class DataRangePathSpec(path_spec.PathSpec):
   """Class that implements the data range path specification."""
 
-  def __init__(self, range_offset, range_size, parent):
+  TYPE_INDICATOR = u'DATA_RANGE'
+
+  def __init__(self, range_offset=None, range_size=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
        Note that the data range path specification must have a parent.
 
     Args:
-      range_offset: the start offset of the data range.
-      range_size: the size of the data range.
-      parent: parent path specification (instance of PathSpec).
+      range_offset: optional start offset of the data range.
+                    The default is None.
+      range_size: optional size of the data range.
+                  The default is None.
+      parent: optional parent path specification (instance of PathSpec).
+              The default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification.
 
     Raises:
       ValueError: when range offset, range offset or parent are not set.
@@ -39,7 +47,7 @@ class DataRangePathSpec(path_spec.PathSpec):
     if not range_offset or not range_size or not parent:
       raise ValueError(u'Missing range offset, range size or parent value.')
 
-    super(DataRangePathSpec, self).__init__(parent=parent)
+    super(DataRangePathSpec, self).__init__(parent=parent, **kwargs)
     self.range_offset = range_offset
     self.range_size = range_size
 
@@ -49,3 +57,7 @@ class DataRangePathSpec(path_spec.PathSpec):
     return self._GetComparable(
         u'range_offset: 0x{1:08x}, range_size: 0x{1:08x}\n'.format(
             self.range_offset, self.range_size))
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(DataRangePathSpec)

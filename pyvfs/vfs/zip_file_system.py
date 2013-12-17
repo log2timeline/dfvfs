@@ -109,7 +109,7 @@ class ZipFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.FileEntry).
     """
     path_spec = zip_path_spec.ZipPathSpec(
-        self.LOCATION_ROOT, self._path_spec)
+        location=self.LOCATION_ROOT, parent=self._path_spec)
 
     return pyvfs.vfs.zip_file_entry.ZipFileEntry(self, path_spec)
 

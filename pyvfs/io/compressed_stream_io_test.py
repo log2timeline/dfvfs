@@ -33,11 +33,12 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    location = os.path.join('test_data', 'syslog.bz2')
-    self._os_path_spec = os_path_spec.OSPathSpec(location)
+    test_file = os.path.join('test_data', 'syslog.bz2')
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
-            definitions.COMPRESSION_METHOD_BZIP2, parent=self._os_path_spec))
+            compression_method=definitions.COMPRESSION_METHOD_BZIP2,
+            parent=self._os_path_spec))
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
@@ -85,11 +86,12 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    location = os.path.join('test_data', 'syslog.zlib')
-    self._os_path_spec = os_path_spec.OSPathSpec(location)
+    test_file = os.path.join('test_data', 'syslog.zlib')
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
-            definitions.COMPRESSION_METHOD_ZLIB, parent=self._os_path_spec))
+            compression_method=definitions.COMPRESSION_METHOD_ZLIB,
+            parent=self._os_path_spec))
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""

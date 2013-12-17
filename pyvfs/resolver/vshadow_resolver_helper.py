@@ -40,7 +40,7 @@ class VShadowResolverHelper(resolver_helper.ResolverHelper):
   def __init__(self):
     """Initializes the resolver helper object."""
     super(VShadowResolverHelper, self).__init__(
-        vshadow_path_spec.VShadowPathSpec.__name__)
+        vshadow_path_spec.VShadowPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

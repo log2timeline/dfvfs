@@ -32,7 +32,8 @@ class TSKResolverHelper(resolver_helper.ResolverHelper):
 
   def __init__(self):
     """Initializes the resolver helper object."""
-    super(TSKResolverHelper, self).__init__(tsk_path_spec.TSKPathSpec.__name__)
+    super(TSKResolverHelper, self).__init__(
+        tsk_path_spec.TSKPathSpec.TYPE_INDICATOR)
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

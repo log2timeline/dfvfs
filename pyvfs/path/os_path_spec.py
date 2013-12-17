@@ -19,6 +19,7 @@
 
 import platform
 
+from pyvfs.path import factory
 from pyvfs.path import location_path_spec
 
 
@@ -31,13 +32,21 @@ else:
 class OSPathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the operating system path specification."""
 
-  def __init__(self, location):
+  TYPE_INDICATOR = u'OS'
+
+  def __init__(self, location=None, **kwargs):
     """Initializes the path specification object.
 
        Note that the operating specific path specification cannot have a parent.
 
     Args:
-      location: the operating specific location string e.g. /opt/pyvfs or
-                C:\\Opt\\pyvfs.
+      location: optional operating specific location string e.g. /opt/pyvfs or
+                C:\\Opt\\pyvfs. The default is None.
+      kwargs: a dictionary of keyword arguments dependending on the path
+              specification.
     """
-    super(OSPathSpec, self).__init__(location, parent=None)
+    super(OSPathSpec, self).__init__(location, parent=None, **kwargs)
+
+
+# Register the path specification with the factory.
+factory.Factory.RegisterPathSpec(OSPathSpec)

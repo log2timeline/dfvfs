@@ -36,8 +36,8 @@ class VShadowFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join('test_data', 'vsstest.qcow2')
-    path_spec = os_path_spec.OSPathSpec(test_file)
-    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(path_spec)
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
     file_object = qcow_file_io.QcowFile()
     file_object.open(self._qcow_path_spec)
     vshadow_volume = pyvshadow.volume()
@@ -54,7 +54,7 @@ class VShadowFileEntryTest(unittest.TestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(None, self._qcow_path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(parent=self._qcow_path_spec)
     file_entry = self._vshadow_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)

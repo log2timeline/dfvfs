@@ -39,11 +39,11 @@ class OSFileSystemTest(unittest.TestCase):
     file_system = os_file_system.OSFileSystem()
 
     path_spec = os_path_spec.OSPathSpec(
-      os.path.join('test_data', 'testdir', 'file1.txt'))
+        location=os.path.join('test_data', 'testdir_os', 'file1.txt'))
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = os_path_spec.OSPathSpec(
-      os.path.join('test_data', 'testdir', 'file6.txt'))
+        location=os.path.join('test_data', 'testdir_os', 'file6.txt'))
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
@@ -51,14 +51,14 @@ class OSFileSystemTest(unittest.TestCase):
     file_system = os_file_system.OSFileSystem()
 
     path_spec = os_path_spec.OSPathSpec(
-      os.path.join('test_data', 'testdir', 'file1.txt'))
+        location=os.path.join('test_data', 'testdir_os', 'file1.txt'))
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'file1.txt')
 
     path_spec = os_path_spec.OSPathSpec(
-      os.path.join('test_data', 'testdir', 'file6.txt'))
+        location=os.path.join('test_data', 'testdir_os', 'file6.txt'))
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertEquals(file_entry, None)
