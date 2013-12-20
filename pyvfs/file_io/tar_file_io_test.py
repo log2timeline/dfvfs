@@ -20,8 +20,8 @@
 import os
 import unittest
 
-from pyvfs.io import tar_file_io
-from pyvfs.io import test_lib
+from pyvfs.file_io import tar_file_io
+from pyvfs.file_io import test_lib
 from pyvfs.path import os_path_spec
 from pyvfs.path import tar_path_spec
 

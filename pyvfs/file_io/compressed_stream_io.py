@@ -22,7 +22,7 @@ import bz2
 import os
 import zlib
 
-from pyvfs.io import file_io
+from pyvfs.file_io import file_io
 from pyvfs.lib import definitions
 from pyvfs.lib import errors
 from pyvfs.resolver import resolver

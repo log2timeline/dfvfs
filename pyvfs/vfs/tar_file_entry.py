@@ -18,7 +18,7 @@
 """The tar file entry implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.tar_file_io
+import pyvfs.file_io.tar_file_io
 
 from pyvfs.path import tar_path_spec
 from pyvfs.vfs import file_entry
@@ -199,7 +199,7 @@ class TarFileEntry(file_entry.FileEntry):
         self._tar_info = self.GetTarInfo()
 
       tar_file_object = self.GetTarExFileObject()
-      self._file_object = pyvfs.io.tar_file_io.TarFile(
+      self._file_object = pyvfs.file_io.tar_file_io.TarFile(
           self._tar_info, tar_file_object)
       self._file_object.open()
     return self._file_object

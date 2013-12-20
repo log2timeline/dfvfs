@@ -20,7 +20,7 @@
 import os
 import stat
 
-from pyvfs.io import os_file_io
+from pyvfs.file_io import os_file_io
 from pyvfs.path import os_path_spec
 from pyvfs.vfs import file_entry
 from pyvfs.vfs import vfs_stat

@@ -25,7 +25,7 @@ import os
 # This is necessary to prevent a circular import.
 import pyvfs.vfs.manager
 
-from pyvfs.io import file_io
+from pyvfs.file_io import file_io
 
 
 class ZipFile(file_io.FileIO):

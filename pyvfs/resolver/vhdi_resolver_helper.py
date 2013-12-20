@@ -18,7 +18,7 @@
 """The VHD image path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.vhdi_file_io
+import pyvfs.file_io.vhdi_file_io
 
 from pyvfs.path import vhdi_path_spec
 from pyvfs.resolver import resolver
@@ -43,7 +43,7 @@ class VhdiResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.vhdi_file_io.VhdiFile()
+    file_object = pyvfs.file_io.vhdi_file_io.VhdiFile()
     file_object.open(path_spec)
     return file_object
 

@@ -20,7 +20,7 @@
 import os
 import unittest
 
-from pyvfs.io import vshadow_file_io
+from pyvfs.file_io import vshadow_file_io
 from pyvfs.path import os_path_spec
 from pyvfs.path import qcow_path_spec
 from pyvfs.path import vshadow_path_spec

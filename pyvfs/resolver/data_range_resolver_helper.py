@@ -18,7 +18,7 @@
 """The data range path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.data_range_io
+import pyvfs.file_io.data_range_io
 
 from pyvfs.path import data_range_path_spec
 from pyvfs.resolver import resolver
@@ -43,7 +43,7 @@ class DataRangeResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.data_range_io.DataRange()
+    file_object = pyvfs.file_io.data_range_io.DataRange()
     file_object.open(path_spec)
     return file_object
 

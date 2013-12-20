@@ -19,7 +19,7 @@
 
 import pyvhdi
 
-from pyvfs.io import file_object_io
+from pyvfs.file_io import file_object_io
 from pyvfs.lib import errors
 from pyvfs.resolver import resolver
 

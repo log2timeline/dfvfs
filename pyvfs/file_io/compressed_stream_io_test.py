@@ -20,9 +20,9 @@
 import os
 import unittest
 
-from pyvfs.io import compressed_stream_io
-from pyvfs.io import os_file_io
-from pyvfs.io import test_lib
+from pyvfs.file_io import compressed_stream_io
+from pyvfs.file_io import os_file_io
+from pyvfs.file_io import test_lib
 from pyvfs.lib import definitions
 from pyvfs.path import compressed_stream_path_spec
 from pyvfs.path import os_path_spec

@@ -15,53 +15,40 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the zip extracted file-like object."""
+"""Tests for the file-like object implementation using pyewf."""
 
 import os
 import unittest
 
-from pyvfs.io import zip_file_io
-from pyvfs.io import test_lib
+from pyvfs.file_io import test_lib
 from pyvfs.path import os_path_spec
-from pyvfs.path import zip_path_spec
+from pyvfs.path import ewf_path_spec
 
 
-class ZipFileTest(test_lib.SylogTestCase):
-  """The unit test for a zip extracted file-like object."""
+class EwfFileTest(test_lib.ImageFileTestCase):
+  """The unit test for the EWF image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join('test_data', 'syslog.zip')
+    test_file = os.path.join('test_data', 'image.E01')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._zip_path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=path_spec)
+    self._ewf_path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
-  def testOpenClosePathSpec(self):
-    """Test the open and close functionality using a path specification."""
-    file_object = zip_file_io.ZipFile()
-    file_object.open(self._zip_path_spec)
+  def testOpenCloseInode(self):
+    """Test the open and close functionality using an inode."""
+    self._testOpenCloseInode(self._ewf_path_spec)
 
-    self._testGetSizeFileObject(file_object)
-
-    file_object.close()
+  def testOpenCloseLocation(self):
+    """Test the open and close functionality using a location."""
+    self._testOpenCloseLocation(self._ewf_path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = zip_file_io.ZipFile()
-    file_object.open(self._zip_path_spec)
-
-    self._testSeekFileObject(file_object)
-
-    file_object.close()
+    self._testSeek(self._ewf_path_spec)
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = zip_file_io.ZipFile()
-    file_object.open(self._zip_path_spec)
-
-    self._testReadFileObject(file_object)
-
-    file_object.close()
+    self._testRead(self._ewf_path_spec)
 
 
 if __name__ == '__main__':

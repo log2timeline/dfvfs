@@ -18,7 +18,7 @@
 """The Volume Shadow Snapshots (VSS) file entry implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.vshadow_file_io
+import pyvfs.file_io.vshadow_file_io
 
 from pyvfs.path import vshadow_path_spec
 from pyvfs.vfs import file_entry
@@ -145,7 +145,7 @@ class VShadowFileEntry(file_entry.FileEntry):
         self._vshadow_store = self.GetVShadowStore()
 
       vshadow_volume = self._file_system.GetVShadowVolume()
-      self._file_object = pyvfs.io.vshadow_file_io.VShadowFile(
+      self._file_object = pyvfs.file_io.vshadow_file_io.VShadowFile(
           vshadow_volume, self._vshadow_store)
       self._file_object.open()
     return self._file_object
