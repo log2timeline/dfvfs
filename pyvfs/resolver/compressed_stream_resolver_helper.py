@@ -18,7 +18,7 @@
 """The compressed stream path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.compressed_stream_io
+import pyvfs.file_io.compressed_stream_io
 
 from pyvfs.path import compressed_stream_path_spec
 from pyvfs.resolver import resolver
@@ -43,7 +43,7 @@ class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.compressed_stream_io.CompressedStream()
+    file_object = pyvfs.file_io.compressed_stream_io.CompressedStream()
     file_object.open(path_spec)
     return file_object
 

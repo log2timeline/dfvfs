@@ -15,67 +15,66 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The tar extracted file-like object implementation."""
-
-# Note: that tarfile.ExFileObject is not POSIX compliant for seeking
-# beyond the file size, hence it is wrapped in an instance of io.FileIO.
+"""The SleuthKit (TSK) file-like object implementation."""
 
 import os
+import pytsk3
 
 # This is necessary to prevent a circular import.
 import pyvfs.vfs.manager
 
-from pyvfs.io import file_io
+from pyvfs.file_io import file_io
+from pyvfs.lib import errors
 
 
-class TarFile(file_io.FileIO):
-  """Class that implements a file-like object using tarfile."""
+class TSKFile(file_io.FileIO):
+  """Class that implements a file-like object using pytsk3."""
 
-  def __init__(self, tar_info=None, tar_file_object=None):
+  def __init__(self, tsk_file_system=None, tsk_file=None):
     """Initializes the file-like object.
 
     Args:
-      tar_info: optional tar info object (instance of tarfile.TarInfo).
+      tsk_file_system: optional SleuthKit file system object (instance of
+                       pytsk3.FS_Info). The default is None.
+      tsk_file: optional SleuthKit file object (instance of pytsk3.File).
                 The default is None.
-      tar_file_object: optional extracted file-like object (instance of
-                       tarfile.ExFileObject). The default is None.
 
     Raises:
-      ValueError: if tar_file_object provided but tar_info is not.
+      ValueError: if tsk_file provided but tsk_file_system is not.
     """
-    if tar_file_object is not None and tar_info is None:
+    if tsk_file is not None and tsk_file_system is None:
       raise ValueError(
-          u'Tar extracted file object provided without corresponding info '
+          u'TSK file object provided without corresponding file system '
           u'object.')
 
-    super(TarFile, self).__init__()
-    self._tar_info = tar_info
-    self._tar_file_object = tar_file_object
+    super(TSKFile, self).__init__()
+    self._tsk_file_system = tsk_file_system
+    self._tsk_file = tsk_file
     self._current_offset = 0
     self._size = 0
 
-    if tar_file_object:
-      self._tar_file_object_set_in_init = True
+    if tsk_file:
+      self._tsk_file_set_in_init = True
     else:
-      self._tar_file_object_set_in_init = False
+      self._tsk_file_set_in_init = False
     self._is_open = False
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  def open(self, path_spec=None, mode='rb'):
+  def open(self, path_spec, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
-                 The default is None.
+      path_spec: the path specification (instance of PathSpec).
       mode: the file access mode, the default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
-    if not self._tar_file_object_set_in_init and not path_spec:
+    if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
     if mode != 'rb':
@@ -84,25 +83,58 @@ class TarFile(file_io.FileIO):
     if self._is_open:
       raise IOError(u'Already open.')
 
-    if not self._tar_file_object_set_in_init:
+    if not self._tsk_file_set_in_init:
       file_system = pyvfs.vfs.manager.FileSystemManager.OpenFileSystem(
           path_spec)
+      self._tsk_file_system = file_system.GetFsInfo()
 
-      file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+      # Opening a file by inode number is faster than opening a file
+      # by location.
+      inode = getattr(path_spec, 'inode', None)
+      location = getattr(path_spec, 'location', None)
 
-      self._tar_info = file_entry.GetTarInfo()
-      self._tar_file_object = file_entry.GetFileObject()
+      if inode is not None:
+        self._tsk_file = self._tsk_file_system.open_meta(inode=inode)
+      elif location is not None:
+        self._tsk_file = self._tsk_file_system.open(location)
+      else:
+        raise errors.PathSpecError(
+            u'Path specification missing inode and location.')
+
+      # Note that because pytsk3.File does not explicitly defines info
+      # we need to check if the attribute exists and has a value other
+      # than None.
+      if getattr(self._tsk_file, 'info', None) is None:
+        raise IOError(u'Missing attribute info in file (pytsk3.File).')
+
+      # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
+      # we need to check if the attribute exists and has a value other
+      # than None.
+      if getattr(self._tsk_file.info, 'meta', None) is None:
+        raise IOError(
+            u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
+
+      # Note that because pytsk3.TSK_FS_META does not explicitly defines size
+      # we need to check if the attribute exists.
+      if not hasattr(self._tsk_file.info.meta, 'size'):
+        raise IOError(
+            u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
+
+      # Note that because pytsk3.TSK_FS_META does not explicitly defines type
+      # we need to check if the attribute exists.
+      if not hasattr(self._tsk_file.info.meta, 'type'):
+        raise IOError(
+            u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
+
+      if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
+        raise IOError(u'Not a regular file.')
 
     self._current_offset = 0
-    self._size = self._tar_info.size
+    self._size = self._tsk_file.info.meta.size
     self._is_open = True
 
   def close(self):
     """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
 
     Raises:
       IOError: if the close failed.
@@ -110,10 +142,8 @@ class TarFile(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not self._tar_file_object_set_in_init:
-      self._tar_file_object.close()
-      self._tar_file_object = None
-      self._tar_info = None
+    if not self._tsk_file_set_in_init:
+      self._tsk_file = None
 
     self._is_open = False
 
@@ -124,7 +154,7 @@ class TarFile(file_io.FileIO):
        all of the remaining data if no size was specified.
 
     Args:
-      size: optional integer value containing the number of bytes to read.
+      size: Optional integer value containing the number of bytes to read.
             Default is all remaining data (None).
 
     Returns:
@@ -145,9 +175,7 @@ class TarFile(file_io.FileIO):
     if size is None or self._current_offset + size > self._size:
       size = self._size - self._current_offset
 
-    self._tar_file_object.seek(self._current_offset, os.SEEK_SET)
-
-    data = self._tar_file_object.read(size)
+    data = self._tsk_file.read_random(self._current_offset, size)
 
     # It is possible the that returned data size is not the same as the
     # requested data size. At this layer we don't care and this discrepancy
@@ -160,16 +188,13 @@ class TarFile(file_io.FileIO):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: the offset to seek.
-      whence: optional value that indicates whether offset is an absolute
+      offset: The offset to seek.
+      whence: Optional value that indicates whether offset is an absolute
               or relative position within the file. Default is SEEK_SET.
 
     Raises:
       IOError: if the seek failed.
     """
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
     if not self._is_open:
       raise IOError(u'Not opened.')
 
@@ -182,6 +207,7 @@ class TarFile(file_io.FileIO):
 
     if offset < 0:
       raise IOError(u'Invalid offset value less than zero.')
+
     self._current_offset = offset
 
   def get_offset(self):

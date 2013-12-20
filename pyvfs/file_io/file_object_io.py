@@ -15,70 +15,97 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The operating system file-like object implementation."""
+"""The file object file-like object implementation."""
 
+import abc
 import os
 
-from pyvfs.lib import errors
-from pyvfs.io import file_io
+from pyvfs.file_io import file_io
 
 
-class OSFile(file_io.FileIO):
-  """Class that implements a file-like object using os."""
+class FileObjectIO(file_io.FileIO):
+  """Base class for file object-based file-like object."""
 
-  def __init__(self):
-    """Initializes the file-like object."""
-    super(OSFile, self).__init__()
-    self._file_object = None
+  def __init__(self, file_object=None):
+    """Initializes the file-like object.
+
+    Args:
+      file_object: optional file-like object. The default is None.
+    """
+    super(FileObjectIO, self).__init__()
+    self._file_object = file_object
+    self._size = None
+
+    if file_object:
+      self._file_object_set_in_init = True
+    else:
+      self._file_object_set_in_init = False
+    self._is_open = False
+
+  @abc.abstractmethod
+  def _OpenFileObject(self, path_spec):
+    """Opens the file-like object defined by path specification.
+
+    Args:
+      path_spec: the path specification (instance of path.PathSpec).
+
+    Returns:
+      A file-like object.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+    """
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  def open(self, path_spec, mode='rb'):
+  def open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec: optional the path specification (instance of path.PathSpec).
+                 The default is None.
       mode: the file access mode, the default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
-    if not path_spec:
+    if not self._file_object_set_in_init and not path_spec:
       raise ValueError(u'Missing path specfication.')
 
     if mode != 'rb':
       raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
 
-    if self._file_object:
+    if self._is_open:
       raise IOError(u'Already open.')
 
-    if path_spec.HasParent():
-      raise errors.PathSpecError(u'Unsupported path specification with parent.')
+    if not self._file_object_set_in_init:
+      self._file_object = self._OpenFileObject(path_spec)
 
-    location = getattr(path_spec, 'location', None)
+      if not self._file_object:
+        raise IOError(u'Unable to open missing file-like object.')
 
-    if location is None:
-      raise errors.PathSpecError(u'Path specification missing location.')
-
-    self._file_object = open(location, mode=mode)
-
-    stat_info = os.stat(location)
-    self._size = stat_info.st_size
+    self._is_open = True
 
   def close(self):
     """Closes the file-like object.
 
+       If the file-like object was passed in the init function
+       the data range file-like object does not control the file-like object
+       and should not actually close it.
+
     Raises:
       IOError: if the close failed.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
-    self._file_object.close()
-    self._file_object = None
+    if not self._file_object_set_in_init:
+      self._file_object.close()
+      self._file_object = None
+
+    self._is_open = False
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -87,7 +114,7 @@ class OSFile(file_io.FileIO):
        all of the remaining data if no size was specified.
 
     Args:
-      size: Optional integer value containing the number of bytes to read.
+      size: optional integer value containing the number of bytes to read.
             Default is all remaining data (None).
 
     Returns:
@@ -96,11 +123,8 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the read failed.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
-
-    if size is None:
-      size = self._size - self._file_object.tell()
 
     return self._file_object.read(size)
 
@@ -108,17 +132,17 @@ class OSFile(file_io.FileIO):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: The offset to seek.
-      whence: Optional value that indicates whether offset is an absolute
+      offset: the offset to seek.
+      whence: optional value that indicates whether offset is an absolute
               or relative position within the file. Default is SEEK_SET.
 
     Raises:
       IOError: if the seek failed.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._file_object.seek(offset, whence)
+    self._file_object.seek(offset, whence)
 
   def get_offset(self):
     """Returns the current offset into the file-like object.
@@ -126,10 +150,12 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._file_object.tell()
+    if not hasattr(self._file_object, 'get_offset'):
+      return self._file_object.tell()
+    return self._file_object.get_offset()
 
   def get_size(self):
     """Returns the size of the file-like object.
@@ -137,7 +163,15 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._size
+    if not hasattr(self._file_object, 'get_size'):
+      if not self._size:
+        current_offset = self.get_offset()
+        self.seek(0, os.SEEK_END)
+        self._size = self.get_offset()
+        self.seek(current_offset, os.SEEK_SET)
+      return self._size
+
+    return self._file_object.get_size()

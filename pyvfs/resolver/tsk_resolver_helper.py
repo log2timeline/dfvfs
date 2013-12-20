@@ -18,7 +18,7 @@
 """The SleuthKit (TSK) path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.tsk_file_io
+import pyvfs.file_io.tsk_file_io
 import pyvfs.vfs.tsk_file_system
 
 from pyvfs.lib import errors
@@ -45,7 +45,7 @@ class TSKResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.tsk_file_io.TSKFile()
+    file_object = pyvfs.file_io.tsk_file_io.TSKFile()
     file_object.open(path_spec)
     return file_object
 

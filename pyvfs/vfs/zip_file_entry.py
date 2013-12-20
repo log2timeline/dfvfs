@@ -18,7 +18,7 @@
 """The zip file entry implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.zip_file_io
+import pyvfs.file_io.zip_file_io
 
 from pyvfs.path import zip_path_spec
 from pyvfs.vfs import file_entry
@@ -200,7 +200,8 @@ class ZipFileEntry(file_entry.FileEntry):
         self._zip_info = self.GetZipInfo()
 
       zip_file = self.GetZipFile()
-      self._file_object = pyvfs.io.zip_file_io.ZipFile(self._zip_info, zip_file)
+      self._file_object = pyvfs.file_io.zip_file_io.ZipFile(
+          self._zip_info, zip_file)
       self._file_object.open()
     return self._file_object
 

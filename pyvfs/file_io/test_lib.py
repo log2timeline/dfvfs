@@ -20,7 +20,7 @@
 import os
 import unittest
 
-from pyvfs.io import tsk_file_io
+from pyvfs.file_io import tsk_file_io
 from pyvfs.path import tsk_path_spec
 
 

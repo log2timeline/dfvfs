@@ -15,63 +15,62 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The file object file-like object implementation."""
+"""The Volume Shadow Snapshots (VSS) file-like object implementation."""
 
-import abc
 import os
 
-from pyvfs.io import file_io
+# This is necessary to prevent a circular import.
+import pyvfs.vfs.manager
+
+from pyvfs.file_io import file_io
+from pyvfs.lib import errors
 
 
-class FileObjectIO(file_io.FileIO):
-  """Base class for file object-based file-like object."""
+class VShadowFile(file_io.FileIO):
+  """Class that implements a file-like object using pyvshadow."""
 
-  def __init__(self, file_object=None):
+  def __init__(self, vshadow_volume=None, vshadow_store=None):
     """Initializes the file-like object.
 
     Args:
-      file_object: optional file-like object. The default is None.
-    """
-    super(FileObjectIO, self).__init__()
-    self._file_object = file_object
-    self._size = None
-
-    if file_object:
-      self._file_object_set_in_init = True
-    else:
-      self._file_object_set_in_init = False
-    self._is_open = False
-
-  @abc.abstractmethod
-  def _OpenFileObject(self, path_spec):
-    """Opens the file-like object defined by path specification.
-
-    Args:
-      path_spec: the path specification (instance of path.PathSpec).
-
-    Returns:
-      A file-like object.
+      vshadow_volume: optional VSS volume object (instance of
+                      pyvshadow.volume). The default is None.
+      vshadow_store: optional VSS store object (instance of pyvshadow.store).
+                     The default is None.
 
     Raises:
-      PathSpecError: if the path specification is incorrect.
+      ValueError: if vshadow_store provided but vshadow_volume is not.
     """
+    if vshadow_store is not None and vshadow_volume is None:
+      raise ValueError(
+          u'VShadow store object provided without corresponding volume object.')
+
+    super(VShadowFile, self).__init__()
+    self._vshadow_volume = vshadow_volume
+    self._vshadow_store = vshadow_store
+
+    if vshadow_store:
+      self._vshadow_store_set_in_init = True
+    else:
+      self._vshadow_store_set_in_init = False
+    self._is_open = False
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  def open(self, path_spec=None, mode='rb'):
+  def open(self, path_spec, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
-                 The default is None.
+      path_spec: the path specification (instance of PathSpec).
       mode: the file access mode, the default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
-    if not self._file_object_set_in_init and not path_spec:
+    if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
     if mode != 'rb':
@@ -80,20 +79,23 @@ class FileObjectIO(file_io.FileIO):
     if self._is_open:
       raise IOError(u'Already open.')
 
-    if not self._file_object_set_in_init:
-      self._file_object = self._OpenFileObject(path_spec)
+    if not self._vshadow_store_set_in_init:
+      file_system = pyvfs.vfs.manager.FileSystemManager.OpenFileSystem(
+          path_spec)
+      self._vshadow_volume = file_system.GetVShadowVolume()
 
-      if not self._file_object:
-        raise IOError(u'Unable to open missing file-like object.')
+      store_index = getattr(path_spec, 'store_index', None)
+
+      if store_index is None:
+        raise errors.PathSpecError(
+            u'Path specification missing store index.')
+
+      self._vshadow_store = self._vshadow_volume.get_store(store_index)
 
     self._is_open = True
 
   def close(self):
     """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
 
     Raises:
       IOError: if the close failed.
@@ -101,9 +103,8 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not self._file_object_set_in_init:
-      self._file_object.close()
-      self._file_object = None
+    if not self._vshadow_store_set_in_init:
+      self._vshadow_store = None
 
     self._is_open = False
 
@@ -114,7 +115,7 @@ class FileObjectIO(file_io.FileIO):
        all of the remaining data if no size was specified.
 
     Args:
-      size: optional integer value containing the number of bytes to read.
+      size: Optional integer value containing the number of bytes to read.
             Default is all remaining data (None).
 
     Returns:
@@ -126,14 +127,14 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._file_object.read(size)
+    return self._vshadow_store.read(size)
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: the offset to seek.
-      whence: optional value that indicates whether offset is an absolute
+      offset: The offset to seek.
+      whence: Optional value that indicates whether offset is an absolute
               or relative position within the file. Default is SEEK_SET.
 
     Raises:
@@ -142,7 +143,7 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    self._file_object.seek(offset, whence)
+    self._vshadow_store.seek(offset, whence)
 
   def get_offset(self):
     """Returns the current offset into the file-like object.
@@ -153,9 +154,7 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not hasattr(self._file_object, 'get_offset'):
-      return self._file_object.tell()
-    return self._file_object.get_offset()
+    return self._vshadow_store.get_offset()
 
   def get_size(self):
     """Returns the size of the file-like object.
@@ -166,12 +165,4 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not hasattr(self._file_object, 'get_size'):
-      if not self._size:
-        current_offset = self.get_offset()
-        self.seek(0, os.SEEK_END)
-        self._size = self.get_offset()
-        self.seek(current_offset, os.SEEK_SET)
-      return self._size
-
-    return self._file_object.get_size()
+    return self._vshadow_store.volume_size

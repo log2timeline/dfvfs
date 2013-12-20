@@ -20,7 +20,7 @@
 import os
 import unittest
 
-from pyvfs.io import qcow_file_io
+from pyvfs.file_io import qcow_file_io
 from pyvfs.path import os_path_spec
 from pyvfs.path import qcow_path_spec
 from pyvfs.volume import vshadow_volume_system

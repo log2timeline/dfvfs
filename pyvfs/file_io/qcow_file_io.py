@@ -15,21 +15,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The EWF image file-like object."""
+"""The QCOW image file-like object."""
 
-import pyewf
+import pyqcow
 
-from pyvfs.io import file_object_io
+from pyvfs.file_io import file_object_io
 from pyvfs.lib import errors
 from pyvfs.resolver import resolver
 
 
-if pyewf.get_version() < '20131210':
-  raise ImportWarning('EwfFile requires at least pyewf 20131210.')
+if pyqcow.get_version() < '20131204':
+  raise ImportWarning('QcowFile requires at least pyqcow 20131204.')
 
 
-class EwfFile(file_object_io.FileObjectIO):
-  """Class that implements a file-like object using pyewf."""
+class QcowFile(file_object_io.FileObjectIO):
+  """Class that implements a file-like object using pyqcow."""
 
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
@@ -44,12 +44,10 @@ class EwfFile(file_object_io.FileObjectIO):
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
 
-    # TODO: handle multiple segment file here.
-    # Glob first then resolve the file objects of every segment file?
     file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
-    ewf = pyewf.handle()
-    ewf.open_file_objects([file_object])
-    return ewf
+    qcow_file = pyqcow.file()
+    qcow_file.open_file_object(file_object)
+    return qcow_file
 
   def get_size(self):
     """Returns the size of the file-like object.

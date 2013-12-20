@@ -18,7 +18,7 @@
 """The QCOW image path specification resolver helper implementation."""
 
 # This is necessary to prevent a circular import.
-import pyvfs.io.qcow_file_io
+import pyvfs.file_io.qcow_file_io
 
 from pyvfs.path import qcow_path_spec
 from pyvfs.resolver import resolver
@@ -43,7 +43,7 @@ class QcowResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = pyvfs.io.qcow_file_io.QcowFile()
+    file_object = pyvfs.file_io.qcow_file_io.QcowFile()
     file_object.open(path_spec)
     return file_object
 
