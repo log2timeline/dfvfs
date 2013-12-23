@@ -139,7 +139,7 @@ class VShadowFileEntry(file_entry.FileEntry):
     return sub_file_entries
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of io.FileIO) of the data."""
+    """Retrieves the file-like object (instance of file_io.FileIO)."""
     if self._file_object is None:
       if self._vshadow_store is None:
         self._vshadow_store = self.GetVShadowStore()

@@ -52,7 +52,7 @@ class FileSystem(object):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file-like object (instance of io.FileIO) or None.
+      A file-like object (instance of file_io.FileIO) or None.
     """
     file_entry = self.GetFileEntryByPathSpec(path_spec)
     if file_entry is None:

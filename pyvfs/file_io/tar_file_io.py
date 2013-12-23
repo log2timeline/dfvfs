@@ -18,7 +18,7 @@
 """The tar extracted file-like object implementation."""
 
 # Note: that tarfile.ExFileObject is not POSIX compliant for seeking
-# beyond the file size, hence it is wrapped in an instance of io.FileIO.
+# beyond the file size, hence it is wrapped in an instance of file_io.FileIO.
 
 import os
 

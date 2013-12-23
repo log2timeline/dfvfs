@@ -260,7 +260,7 @@ class TSKFileEntry(file_entry.FileEntry):
     return sub_file_entries
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of io.FileIO) of the data."""
+    """Retrieves the file-like object (instance of file_io.FileIO)."""
     if self._file_object is None:
       tsk_file_system = self._file_system.GetFsInfo()
       self._file_object = pyvfs.file_io.tsk_file_io.TSKFile(

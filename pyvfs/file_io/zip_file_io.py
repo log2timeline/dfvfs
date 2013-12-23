@@ -18,7 +18,7 @@
 """The zip extracted file-like object implementation."""
 
 # Note: that zipfile.ZipExtFile is not seekable, hence it is wrapped in
-# an instance of io.FileIO.
+# an instance of file_io.FileIO.
 
 import os
 

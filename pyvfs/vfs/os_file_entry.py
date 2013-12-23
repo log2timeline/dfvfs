@@ -140,7 +140,7 @@ class OSFileEntry(file_entry.FileEntry):
     return sub_file_entries
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of io.FileIO) of the data."""
+    """Retrieves the file-like object (instance of file_io.FileIO)."""
     if not self._file_object:
       self._file_object = os_file_io.OSFile()
       self._file_object.open(self.path_spec)
