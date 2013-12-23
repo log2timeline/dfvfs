@@ -40,7 +40,7 @@ class QcowResolverHelper(resolver_helper.ResolverHelper):
       path_spec: the VFS path specification (instance of path.PathSpec).
 
     Returns:
-      The file-like object (instance of io.FileIO) or None if the path
+      The file-like object (instance of file_io.FileIO) or None if the path
       specification could not be resolved.
     """
     file_object = pyvfs.file_io.qcow_file_io.QcowFile()

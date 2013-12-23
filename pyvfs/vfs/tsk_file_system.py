@@ -34,7 +34,7 @@ class _TSKFileSystemImage(pytsk3.Img_Info):
     """Initializes the image object.
 
     Args:
-      file_object: the file-like object (instance of io.FileIO).
+      file_object: the file-like object (instance of file_io.FileIO).
 
     Raises:
       ValueError: if the file-like object is invalid.
@@ -83,7 +83,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Initializes the file system object.
 
     Args:
-      file_object: the file-like object (instance of io.FileIO).
+      file_object: the file-like object (instance of file_io.FileIO).
       path_spec: the path specification (instance of path.PathSpec) of
                  the file-like object.
       offset: option offset, in bytes, of the start of the file system,

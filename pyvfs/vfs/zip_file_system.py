@@ -35,7 +35,7 @@ class ZipFileSystem(file_system.FileSystem):
     """Initializes the file system object.
 
     Args:
-      file_object: the file-like object (instance of io.FileIO).
+      file_object: the file-like object (instance of file_io.FileIO).
       path_spec: the path specification (instance of path.PathSpec) of
                  the file-like object.
       encoding: optional file entry name encoding. The default is 'utf-8'.

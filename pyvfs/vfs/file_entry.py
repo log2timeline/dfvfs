@@ -79,7 +79,7 @@ class FileEntry(object):
 
   @abc.abstractmethod
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of io.FileIO) of the data."""
+    """Retrieves the file-like object (instance of file_io.FileIO)."""
 
   @abc.abstractmethod
   def GetStat(self):

@@ -39,7 +39,8 @@ class TextFile(object):
     """Initializes the text file.
 
     Args:
-      file_object: the file-like object (instance of io.FileIO) to read from.
+      file_object: the file-like object (instance of file_io.FileIO) to read
+                   from.
       end_of_line: optional string containing the end of line indicator.
     """
     super(TextFile, self).__init__()
