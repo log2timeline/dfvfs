@@ -46,6 +46,20 @@ class ZipFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
+  def testGetParentFileEntry(self):
+    """Test the get parent file entry functionality."""
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/syslog', parent=self._os_path_spec)
+    file_entry = self._zip_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+
+    parent_file_entry = file_entry.GetParentFileEntry()
+
+    self.assertNotEquals(parent_file_entry, None)
+
+    self.assertEquals(parent_file_entry.name, u'')
+
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = zip_path_spec.ZipPathSpec(
@@ -54,7 +68,7 @@ class ZipFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
-    expected_sub_file_entry_names = ['syslog', 'wtmp.1']
+    expected_sub_file_entry_names = [u'syslog', u'wtmp.1']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:

@@ -17,6 +17,7 @@
 # limitations under the License.
 """The compressed stream path specification implementation."""
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import path_spec
 
@@ -24,7 +25,7 @@ from pyvfs.path import path_spec
 class CompressedStreamPathSpec(path_spec.PathSpec):
   """Class that implements the compressed stream path specification."""
 
-  TYPE_INDICATOR = u'COMPRESSED_STREAM'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
   def __init__(self, compression_method=None, parent=None, **kwargs):
     """Initializes the path specification object.

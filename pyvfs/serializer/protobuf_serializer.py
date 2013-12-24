@@ -53,8 +53,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
         type_indicator = value
       elif proto_attribute.name == 'parent':
         kwargs['parent'] = cls.ReadSerialized(value)
-      elif proto_attribute.name in [
-          'identifier', 'inode', 'location', 'store_index']:
+      elif proto_attribute.name in path_spec_factory.Factory.PROPERTY_NAMES:
         kwargs[proto_attribute.name] = value
 
     return path_spec_factory.Factory.NewPathSpec(type_indicator, **kwargs)
@@ -78,13 +77,9 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
       serialized.parent.MergeFrom(serialized_parent)
 
     # We don't want to set attributes here that are not used.
-    if hasattr(path_spec, 'location'):
-      serialized.location = path_spec.location
-    if hasattr(path_spec, 'identifier'):
-      serialized.identifier = path_spec.identifier
-    if hasattr(path_spec, 'inode'):
-      serialized.inode = path_spec.inode
-    if hasattr(path_spec, 'store_index'):
-      serialized.store_index = path_spec.store_index
+    for property_name in path_spec_factory.Factory.PROPERTY_NAMES:
+      if hasattr(path_spec, property_name):
+        property_value = getattr(path_spec, property_name)
+        setattr(serialized, property_name, property_value)
 
     return serialized

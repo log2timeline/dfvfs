@@ -28,16 +28,6 @@ from pyvfs.vfs import vfs_stat
 class TarDirectory(file_entry.Directory):
   """Class that implements a directory object using tarfile."""
 
-  def __init__(self, tar_file, path_spec):
-    """Initializes the directory object.
-
-    Args:
-      tar_file: the tar file object (instance of tarfile.TarFile).
-      path_spec: the path specification (instance of path.PathSpec).
-    """
-    super(TarDirectory, self).__init__(path_spec)
-    self._tar_file = tar_file
-
   def _EntriesGenerator(self):
     """Retrieves directory entries.
 
@@ -50,10 +40,11 @@ class TarDirectory(file_entry.Directory):
     location = getattr(self.path_spec, 'location', None)
 
     if (location is None or
-        not location.startswith(tar_path_spec.PATH_SEPARATOR)):
+        not location.startswith(self._file_system.PATH_SEPARATOR)):
       return
 
-    for tar_info in self._tar_file.getmembers():
+    tar_file = self._file_system.GetTarFile()
+    for tar_info in tar_file.getmembers():
       path = tar_info.name
 
       # Determine if the start of the tar info name is similar to
@@ -63,18 +54,13 @@ class TarDirectory(file_entry.Directory):
       if (not path or not path.startswith(location[1:])):
         continue
 
-      if path.endswith(tar_path_spec.PATH_SEPARATOR):
-        path = path[:-1]
-
-      path_index = len(location) - 2
-      _, _, suffix = path[path_index:].partition(tar_path_spec.PATH_SEPARATOR)
+      _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
 
       # Ignore anything that is part of a sub directory.
       if suffix:
         continue
 
-      path_spec_location = '{0:s}{1:s}'.format(
-          tar_path_spec.PATH_SEPARATOR, path)
+      path_spec_location = self._file_system.JoinPath([path])
       yield tar_path_spec.TarPathSpec(
           location=path_spec_location, parent=self.path_spec.parent)
 
@@ -93,10 +79,8 @@ class TarFileEntry(file_entry.FileEntry):
     """
     super(TarFileEntry, self).__init__(file_system, path_spec)
     self._tar_info = tar_info
-    self._directory = None
     self._file_object = None
     self._name = None
-    self._stat_object = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of TarDirectory)."""
@@ -105,8 +89,7 @@ class TarFileEntry(file_entry.FileEntry):
 
     if (self._stat_object and
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
-      tar_file = self._file_system.GetTarFile()
-      return TarDirectory(tar_file, self.path_spec)
+      return TarDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
@@ -174,9 +157,7 @@ class TarFileEntry(file_entry.FileEntry):
             path.decode(self._file_system.encoding)
           except UnicodeDecodeError:
             path = None
-        if path.endswith(tar_path_spec.PATH_SEPARATOR):
-          path = path[:-1]
-        _, _, self._name = path.rpartition(tar_path_spec.PATH_SEPARATOR)
+        self._name = self._file_system.BasenamePath(path)
     return self._name
 
   @property
@@ -188,8 +169,8 @@ class TarFileEntry(file_entry.FileEntry):
     sub_file_entries = []
     if self._directory:
       for path_spec in self._directory.entries:
-        sub_file_entries.append(
-            TarFileEntry(self._file_system, path_spec))
+        sub_file_entry = TarFileEntry(self._file_system, path_spec)
+        sub_file_entries.append(sub_file_entry)
     return sub_file_entries
 
   def GetFileObject(self):
@@ -204,11 +185,21 @@ class TarFileEntry(file_entry.FileEntry):
       self._file_object.open()
     return self._file_object
 
-  def GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
-    if self._stat_object is None:
-      self.GetStat()
-    return self._stat_object
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry."""
+    location = getattr(self.path_spec, 'location', None)
+    if location is None:
+      return
+    parent_location = self._file_system.DirnamePath(location)
+    if parent_location is None:
+      return
+    if parent_location == u'':
+      parent_location = self._file_system.PATH_SEPARATOR
+
+    parent_path_spec = getattr(self.path_spec, 'parent', None)
+    path_spec = tar_path_spec.TarPathSpec(
+        location=parent_location, parent=parent_path_spec)
+    return TarFileEntry(self._file_system, path_spec)
 
   def GetTarExFileObject(self):
     """Retrieves the tar extracted file-like object.

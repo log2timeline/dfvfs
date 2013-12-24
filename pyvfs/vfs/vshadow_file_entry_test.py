@@ -52,6 +52,18 @@ class VShadowFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
+  def testGetParentFileEntry(self):
+    """Test the get parent file entry functionality."""
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=1, parent=self._qcow_path_spec)
+    file_entry = self._vshadow_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+
+    parent_file_entry = file_entry.GetParentFileEntry()
+
+    self.assertEquals(parent_file_entry, None)
+
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(parent=self._qcow_path_spec)
@@ -59,7 +71,7 @@ class VShadowFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
-    expected_sub_file_entry_names = ['vss1', 'vss2']
+    expected_sub_file_entry_names = [u'vss1', u'vss2']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:

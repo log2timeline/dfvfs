@@ -27,15 +27,17 @@ import abc
 class Directory(object):
   """Class that implements the VFS directory object interface."""
 
-  def __init__(self, path_spec):
+  def __init__(self, file_system, path_spec):
     """Initializes the directory object.
 
     Args:
+      file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification object (instance of path.PathSpec).
     """
     super(Directory, self).__init__()
-    self.path_spec = path_spec
     self._entries = None
+    self._file_system = file_system
+    self.path_spec = path_spec
 
   @abc.abstractmethod
   def _EntriesGenerator(self):
@@ -66,8 +68,18 @@ class FileEntry(object):
       path_spec: the path specification object (instance of path.PathSpec).
     """
     super(FileEntry, self).__init__()
+    self._directory = None
     self._file_system = file_system
+    self._stat_object = None
     self.path_spec = path_spec
+
+  @abc.abstractmethod
+  def _GetDirectory(self):
+    """Retrieves the directory object (instance of vfs.Directory)."""
+
+  @abc.abstractmethod
+  def _GetStat(self):
+    """Retrieves the stat object (instance of vfs.VFSStat)."""
 
   @abc.abstractproperty
   def name(self):
@@ -82,5 +94,26 @@ class FileEntry(object):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
 
   @abc.abstractmethod
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry."""
+
+  def GetSubFileEntryByName(self, name, case_sensitive=True):
+    """Retrieves a sub file entry by name."""
+    name_lower = name.lower()
+    matching_sub_file_entry = None
+
+    for sub_file_entry in self.sub_file_entries:
+      if sub_file_entry.name == name:
+        return sub_file_entry
+
+      if (not case_sensitive and sub_file_entry.name.lower() == name_lower):
+        if not matching_sub_file_entry:
+          matching_sub_file_entry = sub_file_entry
+
+    return matching_sub_file_entry
+
   def GetStat(self):
-    """Retrieves the stat object (instance of vfs.Stat)."""
+    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object

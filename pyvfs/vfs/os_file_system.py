@@ -20,6 +20,7 @@
 import os
 import platform
 
+from pyvfs.lib import definitions
 from pyvfs.path import os_path_spec
 from pyvfs.vfs import file_system
 from pyvfs.vfs import os_file_entry
@@ -27,6 +28,13 @@ from pyvfs.vfs import os_file_entry
 
 class OSFileSystem(file_system.FileSystem):
   """Class that implements a file system object using os."""
+
+  if platform.system() == 'Windows':
+    PATH_SEPARATOR = u'\\'
+  else:
+    PATH_SEPARATOR = u'/'
+
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.

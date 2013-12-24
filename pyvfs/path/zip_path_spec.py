@@ -17,17 +17,15 @@
 # limitations under the License.
 """The zip path specification implementation."""
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import location_path_spec
-
-
-PATH_SEPARATOR = u'/'
 
 
 class ZipPathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the zip file path specification."""
 
-  TYPE_INDICATOR = u'ZIP'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
   def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.

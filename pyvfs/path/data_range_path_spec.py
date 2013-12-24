@@ -17,6 +17,7 @@
 # limitations under the License.
 """The data range path specification implementation."""
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import path_spec
 
@@ -24,7 +25,7 @@ from pyvfs.path import path_spec
 class DataRangePathSpec(path_spec.PathSpec):
   """Class that implements the data range path specification."""
 
-  TYPE_INDICATOR = u'DATA_RANGE'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_DATA_RANGE
 
   def __init__(self, range_offset=None, range_size=None, parent=None, **kwargs):
     """Initializes the path specification object.

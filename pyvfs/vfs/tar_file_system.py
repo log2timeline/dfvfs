@@ -22,6 +22,7 @@ import tarfile
 # This is necessary to prevent a circular import.
 import pyvfs.vfs.tar_file_entry
 
+from pyvfs.lib import definitions
 from pyvfs.path import tar_path_spec
 from pyvfs.vfs import file_system
 
@@ -30,6 +31,7 @@ class TarFileSystem(file_system.FileSystem):
   """Class that implements a file system object using tarfile."""
 
   LOCATION_ROOT = u'/'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
   def __init__(self, file_object, path_spec, encoding='utf-8'):
     """Initializes the file system object.

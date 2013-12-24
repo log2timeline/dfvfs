@@ -20,12 +20,15 @@
 # This is necessary to prevent a circular import.
 import pyvfs.vfs.vshadow_file_entry
 
+from pyvfs.lib import definitions
 from pyvfs.path import vshadow_path_spec
 from pyvfs.vfs import file_system
 
 
 class VShadowFileSystem(file_system.FileSystem):
   """Class that implements a file system object using pyvshadow."""
+
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, vshadow_volume, path_spec):
     """Initializes the file system object.

@@ -17,17 +17,15 @@
 # limitations under the License.
 """The tar path specification implementation."""
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import location_path_spec
-
-
-PATH_SEPARATOR = u'/'
 
 
 class TarPathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the tar file path specification."""
 
-  TYPE_INDICATOR = u'TAR'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
   def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.

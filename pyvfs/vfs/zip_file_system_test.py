@@ -39,7 +39,7 @@ class ZipFileSystemTest(unittest.TestCase):
   def testIntialize(self):
     """Test the initialize functionality."""
     file_system = zip_file_system.ZipFileSystem(
-        self._os_file_object, self._os_path_spec, 'utf-8')
+        self._os_file_object, self._os_path_spec)
 
     self.assertNotEquals(file_system, None)
 

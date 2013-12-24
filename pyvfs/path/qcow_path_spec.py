@@ -17,6 +17,7 @@
 # limitations under the License.
 """The QCOW image path specification implementation."""
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import path_spec
 
@@ -24,7 +25,7 @@ from pyvfs.path import path_spec
 class QcowPathSpec(path_spec.PathSpec):
   """Class that implements the QCOW image path specification."""
 
-  TYPE_INDICATOR = u'QCOW'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_QCOW
 
   def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.

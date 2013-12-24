@@ -17,6 +17,7 @@
 # limitations under the License.
 """The Volume Shadow Snapshots (VSS) path specification implementation."""
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import path_spec
 
@@ -24,7 +25,7 @@ from pyvfs.path import path_spec
 class VShadowPathSpec(path_spec.PathSpec):
   """Class that implements the VSS path specification."""
 
-  TYPE_INDICATOR = u'VSHADOW'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, store_index=None, parent=None, **kwargs):
     """Initializes the path specification object.
