@@ -41,6 +41,14 @@ class PathSpec(object):
     super(PathSpec, self).__init__()
     self.parent = parent
 
+  def __eq__(self, other):
+    """Determines if the path specification is equal to the other."""
+    return self.comparable == other.comparable
+
+  def __hash__(self):
+    """Returns the hash of a path specification."""
+    return hash(self.comparable)
+
   def _GetComparable(self, sub_comparable_string=u''):
     """Retrieves the comparable representation.
 
@@ -74,14 +82,6 @@ class PathSpec(object):
       raise NotImplementedError(
           u'Invalid path specification missing type indicator')
     return type_indicator
-
-  def __eq__(self, other):
-    """Determines if the path specification is equal to the other."""
-    return self.comparable == other.comparable
-
-  def __hash__(self):
-    """Returns the hash of a path specification."""
-    return hash(self.comparable)
 
   def HasParent(self):
     """Determines if the path specfication has a parent."""

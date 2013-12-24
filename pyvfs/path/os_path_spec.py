@@ -17,22 +17,15 @@
 # limitations under the License.
 """The operating system path specification implementation."""
 
-import platform
-
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import location_path_spec
-
-
-if platform.system() == 'Windows':
-  PATH_SEPARATOR = u'\\'
-else:
-  PATH_SEPARATOR = u'/'
 
 
 class OSPathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the operating system path specification."""
 
-  TYPE_INDICATOR = u'OS'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   def __init__(self, location=None, **kwargs):
     """Initializes the path specification object.

@@ -53,6 +53,21 @@ class TSKFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
+  def testGetParentFileEntry(self):
+    """Test the get parent file entry functionality."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location=u'/a_directory/another_file',
+        parent=self._os_path_spec)
+    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+
+    parent_file_entry = file_entry.GetParentFileEntry()
+
+    self.assertNotEquals(parent_file_entry, None)
+
+    self.assertEquals(parent_file_entry.name, u'a_directory')
+
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(

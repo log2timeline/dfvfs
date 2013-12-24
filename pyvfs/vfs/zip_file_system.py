@@ -22,6 +22,7 @@ import zipfile
 # This is necessary to prevent a circular import.
 import pyvfs.vfs.zip_file_entry
 
+from pyvfs.lib import definitions
 from pyvfs.path import zip_path_spec
 from pyvfs.vfs import file_system
 
@@ -30,20 +31,19 @@ class ZipFileSystem(file_system.FileSystem):
   """Class that implements a file system object using zipfile."""
 
   LOCATION_ROOT = u'/'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def __init__(self, file_object, path_spec, encoding='utf-8'):
+  def __init__(self, file_object, path_spec):
     """Initializes the file system object.
 
     Args:
       file_object: the file-like object (instance of file_io.FileIO).
       path_spec: the path specification (instance of path.PathSpec) of
                  the file-like object.
-      encoding: optional file entry name encoding. The default is 'utf-8'.
     """
     super(ZipFileSystem, self).__init__()
     self._file_object = file_object
     self._path_spec = path_spec
-    self.encoding = encoding
 
     self._zip_file = zipfile.ZipFile(file_object, 'r')
 

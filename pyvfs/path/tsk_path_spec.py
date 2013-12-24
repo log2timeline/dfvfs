@@ -17,17 +17,15 @@
 # limitations under the License.
 """The SleuthKit path specification implementation."""
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory
 from pyvfs.path import path_spec
-
-
-PATH_SEPARATOR = u'/'
 
 
 class TSKPathSpec(path_spec.PathSpec):
   """Class that implements the SleuthKit path specification."""
 
-  TYPE_INDICATOR = u'TSK'
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
   def __init__(self, inode=None, location=None, parent=None, **kwargs):
     """Initializes the path specification object.

@@ -28,16 +28,6 @@ from pyvfs.vfs import vfs_stat
 class ZipDirectory(file_entry.Directory):
   """Class that implements a directory object using zipfile."""
 
-  def __init__(self, zip_file, path_spec):
-    """Initializes the directory object.
-
-    Args:
-      zip_file: the zip file object (instance of zipfile.ZipFile).
-      path_spec: the path specification (instance of path.PathSpec).
-    """
-    super(ZipDirectory, self).__init__(path_spec)
-    self._zip_file = zip_file
-
   def _EntriesGenerator(self):
     """Retrieves directory entries.
 
@@ -50,27 +40,23 @@ class ZipDirectory(file_entry.Directory):
     location = getattr(self.path_spec, 'location', None)
 
     if (location is None or
-        not location.startswith(zip_path_spec.PATH_SEPARATOR)):
+        not location.startswith(self._file_system.PATH_SEPARATOR)):
       return
 
-    for zip_info in self._zip_file.infolist():
+    zip_file = self._file_system.GetZipFile()
+    for zip_info in zip_file.infolist():
       path = zip_info.filename
 
       if (not path or not path.startswith(location[1:])):
         continue
 
-      if path.endswith(zip_path_spec.PATH_SEPARATOR):
-        path = path[:-1]
-
-      path_index = len(location) - 2
-      _, _, suffix = path[path_index:].partition(zip_path_spec.PATH_SEPARATOR)
+      _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
 
       # Ignore anything that is part of a sub directory.
       if suffix:
         continue
 
-      path_spec_location = u'{0:s}{1:s}'.format(
-          zip_path_spec.PATH_SEPARATOR, path)
+      path_spec_location = self._file_system.JoinPath([path])
       yield zip_path_spec.ZipPathSpec(
           location=path_spec_location, parent=self.path_spec.parent)
 
@@ -99,10 +85,8 @@ class ZipFileEntry(file_entry.FileEntry):
     """
     super(ZipFileEntry, self).__init__(file_system, path_spec)
     self._zip_info = zip_info
-    self._directory = None
     self._file_object = None
     self._name = None
-    self._stat_object = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of ZipDirectory)."""
@@ -111,8 +95,7 @@ class ZipFileEntry(file_entry.FileEntry):
 
     if (self._stat_object and
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
-      zip_file = self._file_system.GetZipFile()
-      return ZipDirectory(zip_file, self.path_spec)
+      return ZipDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
@@ -174,10 +157,7 @@ class ZipFileEntry(file_entry.FileEntry):
       if self._zip_info is None:
         self._name = u''
       else:
-        path = self._zip_info.filename
-        if path.endswith(zip_path_spec.PATH_SEPARATOR):
-          path = path[:-1]
-        _, _, self._name = path.rpartition(zip_path_spec.PATH_SEPARATOR)
+        self._name = self._file_system.BasenamePath(self._zip_info.filename)
     return self._name
 
   @property
@@ -189,8 +169,8 @@ class ZipFileEntry(file_entry.FileEntry):
     sub_file_entries = []
     if self._directory:
       for path_spec in self._directory.entries:
-        sub_file_entries.append(
-            ZipFileEntry(self._file_system, path_spec))
+        sub_file_entry = ZipFileEntry(self._file_system, path_spec)
+        sub_file_entries.append(sub_file_entry)
     return sub_file_entries
 
   def GetFileObject(self):
@@ -205,11 +185,21 @@ class ZipFileEntry(file_entry.FileEntry):
       self._file_object.open()
     return self._file_object
 
-  def GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
-    if self._stat_object is None:
-      self.GetStat()
-    return self._stat_object
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry."""
+    location = getattr(self.path_spec, 'location', None)
+    if location is None:
+      return
+    parent_location = self._file_system.DirnamePath(location)
+    if parent_location is None:
+      return
+    if parent_location == u'':
+      parent_location = self._file_system.PATH_SEPARATOR
+
+    parent_path_spec = getattr(self.path_spec, 'parent', None)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=parent_location, parent=parent_path_spec)
+    return ZipFileEntry(self._file_system, path_spec)
 
   def GetZipFile(self):
     """Retrieves the zip file object.

@@ -30,16 +30,16 @@ class TextFileTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    location = os.path.join('test_data', 'another_file')
-    self._path_spec1 = os_path_spec.OSPathSpec(location=location)
+    test_file = os.path.join('test_data', 'another_file')
+    self._os_path_spec1 = os_path_spec.OSPathSpec(location=test_file)
 
-    location = os.path.join('test_data', 'password.txt')
-    self._path_spec2 = os_path_spec.OSPathSpec(location=location)
+    test_file = os.path.join('test_data', 'password.txt')
+    self._os_path_spec2 = os_path_spec.OSPathSpec(location=test_file)
 
   def testReadline(self):
     """Test the readline() function."""
     file_object = os_file_io.OSFile()
-    file_object.open(self._path_spec1)
+    file_object.open(self._os_path_spec1)
     text_file_object = text_file.TextFile(file_object)
 
     self.assertEquals(text_file_object.readline(), 'This is another file.\n')
@@ -51,7 +51,7 @@ class TextFileTest(unittest.TestCase):
   def testReadlines(self):
     """Test the readlines() function."""
     file_object = os_file_io.OSFile()
-    file_object.open(self._path_spec2)
+    file_object.open(self._os_path_spec2)
     text_file_object = text_file.TextFile(file_object)
 
     lines = text_file_object.readlines()
@@ -68,7 +68,7 @@ class TextFileTest(unittest.TestCase):
   def testReadlinesWithSizeHint(self):
     """Test the readlines() function."""
     file_object = os_file_io.OSFile()
-    file_object.open(self._path_spec2)
+    file_object.open(self._os_path_spec2)
     text_file_object = text_file.TextFile(file_object)
 
     lines = text_file_object.readlines(sizehint=60)
@@ -83,7 +83,7 @@ class TextFileTest(unittest.TestCase):
   def testIterator(self):
     """Test the iterator functionality."""
     file_object = os_file_io.OSFile()
-    file_object.open(self._path_spec2)
+    file_object.open(self._os_path_spec2)
     text_file_object = text_file.TextFile(file_object)
 
     lines = []

@@ -30,17 +30,6 @@ from pyvfs.vfs import vfs_stat
 class TSKDirectory(file_entry.Directory):
   """Class that implements a directory object using pytsk3."""
 
-  def __init__(self, tsk_file_system, path_spec):
-    """Initializes the directory object.
-
-    Args:
-      tsk_file_system: SleuthKit file system object (instance of
-                       pytsk3.FS_Info).
-      path_spec: the path specification (instance of path.PathSpec).
-    """
-    super(TSKDirectory, self).__init__(path_spec)
-    self._tsk_file_system = tsk_file_system
-
   def _EntriesGenerator(self):
     """Retrieves directory entries.
 
@@ -55,10 +44,11 @@ class TSKDirectory(file_entry.Directory):
     inode = getattr(self.path_spec, 'inode', None)
     location = getattr(self.path_spec, 'location', None)
 
+    tsk_file_system = self._file_system.GetFsInfo()
     if inode is not None:
-      tsk_directory = self._tsk_file_system.open_dir(inode=inode)
+      tsk_directory = tsk_file_system.open_dir(inode=inode)
     elif location is not None:
-      tsk_directory = self._tsk_file_system.open_dir(path=location)
+      tsk_directory = tsk_file_system.open_dir(path=location)
     else:
       return
 
@@ -101,10 +91,10 @@ class TSKDirectory(file_entry.Directory):
           if directory_entry in ['.', '..']:
             continue
 
-          if location == tsk_path_spec.PATH_SEPARATOR:
-            directory_entry = u''.join([location, directory_entry])
+          if location == self._file_system.PATH_SEPARATOR:
+            directory_entry = self._file_system.JoinPath([directory_entry])
           else:
-            directory_entry = tsk_path_spec.PATH_SEPARATOR.join([
+            directory_entry = self._file_system.JoinPath([
                 location, directory_entry])
 
       yield tsk_path_spec.TSKPathSpec(
@@ -115,20 +105,21 @@ class TSKDirectory(file_entry.Directory):
 class TSKFileEntry(file_entry.FileEntry):
   """Class that implements a file entry object using pytsk3."""
 
-  def __init__(self, file_system, path_spec, tsk_file=None):
+  def __init__(self, file_system, path_spec, tsk_file=None, parent_inode=None):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
-      tsk_file: the file object (instance of pytsk3.File).
+      tsk_file: optional file object (instance of pytsk3.File).
+                The default is None.
+      parent_inode: optional parent inode number. The default is None.
     """
     super(TSKFileEntry, self).__init__(file_system, path_spec)
-    self._tsk_file = tsk_file
-    self._directory = None
     self._file_object = None
     self._name = None
-    self._stat_object = None
+    self._parent_inode = parent_inode
+    self._tsk_file = tsk_file
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of TSKDirectory)."""
@@ -137,8 +128,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
     if (self._stat_object and
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
-      tsk_file_system = self._file_system.GetFsInfo()
-      return TSKDirectory(tsk_file_system, self.path_spec)
+      return TSKDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
@@ -241,8 +231,7 @@ class TSKFileEntry(file_entry.FileEntry):
       else:
         location = getattr(self.path_spec, 'location', None)
         if location:
-          _, _, location = location.rpartition(tsk_path_spec.PATH_SEPARATOR)
-          self._name = location
+          self._name = self._file_system.BasenamePath(location)
 
     return self._name
 
@@ -255,8 +244,10 @@ class TSKFileEntry(file_entry.FileEntry):
     sub_file_entries = []
     if self._directory:
       for path_spec in self._directory.entries:
-        sub_file_entries.append(
-            TSKFileEntry(self._file_system, path_spec))
+        parent_inode = getattr(self.path_spec, 'inode', None)
+        sub_file_entry = TSKFileEntry(
+            self._file_system, path_spec, parent_inode=parent_inode)
+        sub_file_entries.append(sub_file_entry)
     return sub_file_entries
 
   def GetFileObject(self):
@@ -268,11 +259,23 @@ class TSKFileEntry(file_entry.FileEntry):
       self._file_object.open()
     return self._file_object
 
-  def GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
-    if self._stat_object is None:
-      self.GetStat()
-    return self._stat_object
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry."""
+    location = getattr(self.path_spec, 'location', None)
+    if location is None:
+      return
+    parent_inode = self._parent_inode
+    parent_location = self._file_system.DirnamePath(location)
+    if parent_inode is None and parent_location is None:
+      return
+    if parent_location == u'':
+      parent_location = self._file_system.PATH_SEPARATOR
+
+    parent_path_spec = getattr(self.path_spec, 'parent', None)
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=parent_inode, location=parent_location, parent=parent_path_spec)
+    # TODO: is there a way to determine the parent inode number here?
+    return TSKFileEntry(self._file_system, path_spec)
 
   def GetTSKFile(self):
     """Retrieves the SleuthKit file object (instance of pytsk3.File)."""

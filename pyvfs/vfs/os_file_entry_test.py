@@ -29,27 +29,39 @@ class OSFileEntryTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    self._file_system = os_file_system.OSFileSystem()
+    self._os_file_system = os_file_system.OSFileSystem()
     self._test_file = os.path.join('test_data', 'testdir_os')
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     path_spec = os_path_spec.OSPathSpec(location=self._test_file)
-
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
+
+  def testGetParentFileEntry(self):
+    """Test the get parent file entry functionality."""
+    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+
+    parent_file_entry = file_entry.GetParentFileEntry()
+
+    self.assertNotEquals(parent_file_entry, None)
+
+    self.assertEquals(parent_file_entry.name, u'testdir_os')
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = os_path_spec.OSPathSpec(location=self._test_file)
-
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
     expected_sub_file_entry_names = [
-        'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', 'file5.txt']
+        u'file1.txt', u'file2.txt', u'file3.txt', u'file4.txt', u'file5.txt']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:

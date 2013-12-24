@@ -23,6 +23,7 @@ import pytsk3
 # This is necessary to prevent a circular import.
 import pyvfs.vfs.tsk_file_entry
 
+from pyvfs.lib import definitions
 from pyvfs.path import tsk_path_spec
 from pyvfs.vfs import file_system
 
@@ -78,6 +79,8 @@ class TSKFileSystem(file_system.FileSystem):
   """Class that implements a file system object using pytsk3."""
 
   _LOCATION_ROOT = u'/'
+
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
   def __init__(self, file_object, path_spec, offset=0):
     """Initializes the file system object.
@@ -145,6 +148,7 @@ class TSKFileSystem(file_system.FileSystem):
 
     if tsk_file is None:
       return
+    # TODO: is there a way to determine the parent inode number here?
     return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
         self, path_spec, tsk_file=tsk_file)
 
@@ -168,5 +172,6 @@ class TSKFileSystem(file_system.FileSystem):
     path_spec = tsk_path_spec.TSKPathSpec(
         location=self._LOCATION_ROOT, parent=self._path_spec)
 
+    # TODO: is there a way to determine the parent inode number here?
     return pyvfs.vfs.tsk_file_entry.TSKFileEntry(
         self, path_spec, tsk_file=tsk_file)

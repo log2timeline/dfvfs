@@ -28,17 +28,6 @@ from pyvfs.vfs import vfs_stat
 class VShadowDirectory(file_entry.Directory):
   """Class that implements a directory object using pyvshadow."""
 
-  def __init__(self, vshadow_volume, path_spec):
-    """Initializes the directory object.
-
-    Args:
-      vshadow_volume: the VSS volume file object (instance of pyvshadow.volume).
-      path_spec: the path specification (instance of path.PathSpec) of
-                 the file-like object.
-    """
-    super(VShadowDirectory, self).__init__(path_spec)
-    self._vshadow_volume = vshadow_volume
-
   def _EntriesGenerator(self):
     """Retrieves directory entries.
 
@@ -53,7 +42,8 @@ class VShadowDirectory(file_entry.Directory):
     if store_index is not None:
       return
 
-    for store_index in range(0, self._vshadow_volume.number_of_stores):
+    vshadow_volume = self._file_system.GetVShadowVolume()
+    for store_index in range(0, vshadow_volume.number_of_stores):
       yield vshadow_path_spec.VShadowPathSpec(
           store_index=store_index, parent=self.path_spec.parent)
 
@@ -69,10 +59,8 @@ class VShadowFileEntry(file_entry.FileEntry):
       path_spec: the path specification (instance of path.PathSpec).
     """
     super(VShadowFileEntry, self).__init__(file_system, path_spec)
-    self._directory = None
     self._file_object = None
     self._name = None
-    self._stat_object = None
     self._vshadow_store = None
 
   def _GetDirectory(self):
@@ -81,8 +69,7 @@ class VShadowFileEntry(file_entry.FileEntry):
       self._stat_object = self._GetStat()
 
     if self._stat_object is None:
-      vshadow_volume = self._file_system.GetVShadowVolume()
-      return VShadowDirectory(vshadow_volume, self.path_spec)
+      return VShadowDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
@@ -133,8 +120,8 @@ class VShadowFileEntry(file_entry.FileEntry):
     sub_file_entries = []
     if self._directory:
       for path_spec in self._directory.entries:
-        sub_file_entries.append(
-            VShadowFileEntry(self._file_system, path_spec))
+        sub_file_entry = VShadowFileEntry(self._file_system, path_spec)
+        sub_file_entries.append(sub_file_entry)
     # TODO: change to generator.
     return sub_file_entries
 
@@ -150,11 +137,9 @@ class VShadowFileEntry(file_entry.FileEntry):
       self._file_object.open()
     return self._file_object
 
-  def GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
-    if self._stat_object is None:
-      self.GetStat()
-    return self._stat_object
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry."""
+    return
 
   def GetVShadowStore(self):
     """Retrieves the VSS store object (instance of pyvshadow.store)."""

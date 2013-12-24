@@ -59,9 +59,8 @@ class OSFileEntry(file_entry.FileEntry):
       path_spec: the path specification object (instance of path.PathSpec).
     """
     super(OSFileEntry, self).__init__(file_system, path_spec)
-    self._directory = None
     self._file_object = None
-    self._stat_object = None
+    self._name = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of OSDirectory)."""
@@ -70,7 +69,7 @@ class OSFileEntry(file_entry.FileEntry):
 
     if (self._stat_object and
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
-      return OSDirectory(self.path_spec)
+      return OSDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
@@ -123,8 +122,11 @@ class OSFileEntry(file_entry.FileEntry):
   @property
   def name(self):
     """The name of the file entry, which does not include the full path."""
-    location = getattr(self.path_spec, 'location', '')
-    return os.path.basename(location)
+    if self._name is None:
+      location = getattr(self.path_spec, 'location', None)
+      if location is not None:
+        self._name = self._file_system.BasenamePath(location)
+    return self._name
 
   @property
   def sub_file_entries(self):
@@ -135,8 +137,8 @@ class OSFileEntry(file_entry.FileEntry):
     sub_file_entries = []
     if self._directory:
       for path_spec in self._directory.entries:
-        sub_file_entries.append(
-            OSFileEntry(self._file_system, path_spec))
+        sub_file_entry = OSFileEntry(self._file_system, path_spec)
+        sub_file_entries.append(sub_file_entry)
     return sub_file_entries
 
   def GetFileObject(self):
@@ -146,8 +148,16 @@ class OSFileEntry(file_entry.FileEntry):
       self._file_object.open(self.path_spec)
     return self._file_object
 
-  def GetStat(self):
-    """Retrieves the stat object (instance of vfs.Stat)."""
-    if self._stat_object is None:
-      self.GetStat()
-    return self._stat_object
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry."""
+    location = getattr(self.path_spec, 'location', None)
+    if location is None:
+      return
+    parent_location = self._file_system.DirnamePath(location)
+    if parent_location is None:
+      return
+    if parent_location == u'':
+      parent_location = self._file_system.PATH_SEPARATOR
+
+    path_spec = os_path_spec.OSPathSpec(location=parent_location)
+    return OSFileEntry(self._file_system, path_spec)
