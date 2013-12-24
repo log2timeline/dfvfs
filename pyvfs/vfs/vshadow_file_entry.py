@@ -113,17 +113,13 @@ class VShadowFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (list of instance of vfs.FileEntry)."""
+    """The sub file entries (generator of instance of vfs.FileEntry)."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
-    sub_file_entries = []
     if self._directory:
       for path_spec in self._directory.entries:
-        sub_file_entry = VShadowFileEntry(self._file_system, path_spec)
-        sub_file_entries.append(sub_file_entry)
-    # TODO: change to generator.
-    return sub_file_entries
+        yield VShadowFileEntry(self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
