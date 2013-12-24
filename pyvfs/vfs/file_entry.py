@@ -87,7 +87,7 @@ class FileEntry(object):
 
   @abc.abstractproperty
   def sub_file_entries(self):
-    """The sub file entries."""
+    """The sub file entries (generator of instance of vfs.FileEntry)."""
 
   @abc.abstractmethod
   def GetFileObject(self):

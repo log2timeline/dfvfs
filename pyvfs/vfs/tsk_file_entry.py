@@ -237,18 +237,13 @@ class TSKFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (list of instance of vfs.FileEntry)."""
+    """The sub file entries (generator of instance of vfs.FileEntry)."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
-    sub_file_entries = []
     if self._directory:
       for path_spec in self._directory.entries:
-        parent_inode = getattr(self.path_spec, 'inode', None)
-        sub_file_entry = TSKFileEntry(
-            self._file_system, path_spec, parent_inode=parent_inode)
-        sub_file_entries.append(sub_file_entry)
-    return sub_file_entries
+        yield TSKFileEntry(self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
