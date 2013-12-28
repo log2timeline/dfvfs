@@ -79,7 +79,8 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
     # We don't want to set attributes here that are not used.
     for property_name in path_spec_factory.Factory.PROPERTY_NAMES:
       if hasattr(path_spec, property_name):
-        property_value = getattr(path_spec, property_name)
-        setattr(serialized, property_name, property_value)
+        property_value = getattr(path_spec, property_name, None)
+        if property_value is not None:
+          setattr(serialized, property_name, property_value)
 
     return serialized

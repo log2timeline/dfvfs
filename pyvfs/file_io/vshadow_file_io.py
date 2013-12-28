@@ -24,6 +24,7 @@ import pyvfs.vfs.manager
 
 from pyvfs.file_io import file_io
 from pyvfs.lib import errors
+from pyvfs.lib import vshadow
 
 
 class VShadowFile(file_io.FileIO):
@@ -62,8 +63,8 @@ class VShadowFile(file_io.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
-      mode: the file access mode, the default is 'rb' read-only binary.
+      path_spec: the path specification (instance of path.PathSpec).
+      mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.
@@ -80,15 +81,20 @@ class VShadowFile(file_io.FileIO):
       raise IOError(u'Already open.')
 
     if not self._vshadow_store_set_in_init:
+      store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
+      if store_index is None:
+        raise errors.PathSpecError(
+            u'Unable to retrieve store index from path specification.')
+
       file_system = pyvfs.vfs.manager.FileSystemManager.OpenFileSystem(
           path_spec)
       self._vshadow_volume = file_system.GetVShadowVolume()
 
-      store_index = getattr(path_spec, 'store_index', None)
-
-      if store_index is None:
-        raise errors.PathSpecError(
-            u'Path specification missing store index.')
+      if (store_index < 0 or
+          store_index >= self._vshadow_volume.number_of_stores):
+        raise errors.PathSpecError((
+            u'Unable to retrieve VSS store: {0:d} from path '
+            u'specification.').format(store_index))
 
       self._vshadow_store = self._vshadow_volume.get_store(store_index)
 

@@ -65,7 +65,7 @@ class FileObjectIO(file_io.FileIO):
     Args:
       path_spec: optional the path specification (instance of path.PathSpec).
                  The default is None.
-      mode: the file access mode, the default is 'rb' read-only binary.
+      mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.

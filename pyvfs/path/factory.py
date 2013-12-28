@@ -22,7 +22,8 @@ class Factory(object):
   """Class that implements the VFS path specification factory."""
 
   PROPERTY_NAMES = frozenset([
-      'identifier', 'inode', 'location', 'store_index'])
+      'compression_method', 'identifier', 'inode', 'location', 'part_index',
+      'range_offset', 'range_size', 'start_offset', 'store_index'])
 
   _path_spec_types = {}
 

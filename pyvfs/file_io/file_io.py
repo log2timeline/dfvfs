@@ -37,8 +37,8 @@ class FileIO(object):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
-      mode: the file access mode, the default is 'rb' read-only binary.
+      path_spec: the path specification (instance of path.PathSpec).
+      mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.

@@ -17,71 +17,75 @@
 # limitations under the License.
 """Volume system object implementation using Volume Shadow Snapshots (VSS)."""
 
-import pyvshadow
-
+from pyvfs.lib import definitions
 from pyvfs.lib import errors
+from pyvfs.resolver import resolver
 from pyvfs.volume import volume_system
 
 
 class VShadowVolume(volume_system.Volume):
   """Class that implements a volume object using pyvshadow."""
 
-  def __init__(self, vshadow_store, store_index):
+  def __init__(self, file_entry):
     """Initializes the volume object.
 
     Args:
-      vshadow_store: the VSS store object (pyvshadow.store).
-      store_index: the VSS store index.
+      file_entry: the VSS file entry object (instance of vfs.VShadowFileEntry).
     """
-    identifier = 'vss{0:d}'.format(store_index + 1)
-    super(VShadowVolume, self).__init__(identifier)
-    self._vshadow_store = vshadow_store
-    self._store_index = store_index
+    super(VShadowVolume, self).__init__(file_entry.name)
+    self._file_entry = file_entry
 
   def _Parse(self):
     """Extracts attributes and extents from the volume."""
+    vshadow_store = self._file_entry.GetVShadowStore()
+
     self._AddAttribute(volume_system.VolumeAttribute(
-        'identifier', self._vshadow_store.identifier))
+        'identifier', vshadow_store.identifier))
     self._AddAttribute(volume_system.VolumeAttribute(
-        'copy_identifier', self._vshadow_store.copy_identifier))
+        'copy_identifier', vshadow_store.copy_identifier))
     self._AddAttribute(volume_system.VolumeAttribute(
-        'copy_set_identifier', self._vshadow_store.copy_set_identifier))
+        'copy_set_identifier', vshadow_store.copy_set_identifier))
     self._AddAttribute(volume_system.VolumeAttribute(
-        'creation_time', self._vshadow_store.get_creation_time_as_integer))
+        'creation_time', vshadow_store.get_creation_time_as_integer))
 
     self._extents.append(volume_system.VolumeExtent(
-        0, self._vshadow_store.volume_size))
+        0, vshadow_store.volume_size))
 
 
 class VShadowVolumeSystem(volume_system.VolumeSystem):
   """Class that implements a volume system object using pyvshadow."""
 
-  def __init__(self, file_object):
+  def __init__(self):
     """Initializes the volume system object.
-
-    Args:
-      file_object: a file-like object containing the VSS volume.
 
     Raises:
       VolumeSystemError: if the volume system could not be accessed.
     """
     super(VShadowVolumeSystem, self).__init__()
-    self._vshadow_volume = pyvshadow.volume()
-
-    self._file_object = file_object
-    try:
-      self._vshadow_volume.open_file_object(file_object)
-    except IOError as exception:
-      # Note that the libvshadow exception string already contains
-      # a trailing dot.
-      raise errors.VolumeSystemError(
-          u'Unable to access volume system with error: {0:s}'.format(
-              exception))
+    self._file_system = None
 
   def _Parse(self):
     """Extracts sections and volumes from the volume system."""
-    store_index = 0
-    for vshadow_store in self._vshadow_volume.stores:
-      volume = VShadowVolume(vshadow_store, store_index)
+    root_file_entry = self._file_system.GetRootFileEntry()
+
+    for sub_file_entry in root_file_entry.sub_file_entries:
+      volume = VShadowVolume(sub_file_entry)
       self._AddVolume(volume)
-      store_index += 1
+
+  def Open(self, path_spec):
+    """Opens a volume object defined by path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Raises:
+      VolumeSystemError: if the VSS virtual file system could not be resolved.
+    """
+    self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
+
+    if self._file_system is None:
+      raise errors.VolumeSystemError(
+          u'Unable to resolve file system from path specification.')
+
+    if self._file_system.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
+      raise errors.VolumeSystemError(u'Unsupported file system type.')

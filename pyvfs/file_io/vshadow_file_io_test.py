@@ -20,6 +20,7 @@
 import os
 import unittest
 
+from pyvfs.lib import errors
 from pyvfs.file_io import vshadow_file_io
 from pyvfs.path import os_path_spec
 from pyvfs.path import qcow_path_spec
@@ -45,7 +46,34 @@ class VShadowFileTest(unittest.TestCase):
     self.assertEquals(file_object.get_size(), 0x40000000)
     file_object.close()
 
-    # TODO: add a failing scenario.
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=13, parent=self._qcow_path_spec)
+    file_object = vshadow_file_io.VShadowFile()
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec)
+
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        location=u'/vss1', parent=self._qcow_path_spec)
+    file_object = vshadow_file_io.VShadowFile()
+
+    file_object.open(path_spec)
+    self.assertEquals(file_object.get_size(), 0x40000000)
+    file_object.close()
+
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        location=u'/vss0', parent=self._qcow_path_spec)
+    file_object = vshadow_file_io.VShadowFile()
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec)
+
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        location=u'/vss13', parent=self._qcow_path_spec)
+    file_object = vshadow_file_io.VShadowFile()
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
@@ -94,7 +122,6 @@ class VShadowFileTest(unittest.TestCase):
 
   def testRead(self):
     """Test the read functionality."""
-
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._qcow_path_spec)
     file_object = vshadow_file_io.VShadowFile()

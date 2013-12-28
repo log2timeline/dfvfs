@@ -73,46 +73,6 @@ class Volume(object):
     self._extents = []
     self._is_parsed = False
 
-  @abc.abstractmethod
-  def _Parse(self):
-    """Extracts attributes and extents from the volume."""
-
-  @property
-  def number_of_attributes(self):
-    """The number of attributes."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return len(self._attributes)
-
-  @property
-  def attributes(self):
-    """The attributes."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return self._attributes.itervalues()
-
-  @property
-  def number_of_extents(self):
-    """The number of extents."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return len(self._extents)
-
-  @property
-  def extents(self):
-    """The extents."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return self._extents.itervalues()
-
   def _AddAttribute(self, attribute):
     """Adds an attribute.
 
@@ -130,6 +90,46 @@ class Volume(object):
 
     self._attributes[attribute.identifier] = attribute
 
+  @abc.abstractmethod
+  def _Parse(self):
+    """Extracts attributes and extents from the volume."""
+
+  @property
+  def attributes(self):
+    """The attributes."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return self._attributes.itervalues()
+
+  @property
+  def extents(self):
+    """The extents."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return self._extents.itervalues()
+
+  @property
+  def number_of_attributes(self):
+    """The number of attributes."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return len(self._attributes)
+
+  @property
+  def number_of_extents(self):
+    """The number of extents."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return len(self._extents)
+
 
 class VolumeSystem(object):
   """The VFS volume system interface."""
@@ -137,62 +137,10 @@ class VolumeSystem(object):
   def __init__(self):
     """Initializes the volume system object."""
     super(VolumeSystem, self).__init__()
+    self._is_parsed = False
     self._sections = []
     self._volumes = {}
     self._volume_identifiers = []
-    self._is_parsed = False
-
-  @abc.abstractmethod
-  def _Parse(self):
-    """Extracts sections and volumes from the volume system."""
-
-  @property
-  def number_of_sections(self):
-    """The number of sections."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return len(self._sections)
-
-  @property
-  def sections(self):
-    """The sections."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return self._sections.itervalues()
-
-  def GetSectionIndex(self, section_index):
-    """Retrieves a specific section based on the index.
-
-    Args:
-      section_index: the index of the section.
-    """
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return self._sections[section_index]
-
-  @property
-  def number_of_volumes(self):
-    """The number of volumes."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return len(self._volumes)
-
-  @property
-  def volumes(self):
-    """The volumes."""
-    if not self._is_parsed:
-      self._Parse()
-      self._is_parsed = True
-
-    return self._volumes.itervalues()
 
   def _AddVolume(self, volume):
     """Adds a volume.
@@ -212,21 +160,57 @@ class VolumeSystem(object):
     self._volumes[volume.identifier] = volume
     self._volume_identifiers.append(volume.identifier)
 
-  def GetVolumeByIndex(self, volume_index):
-    """Retrieves a specific volume based on the index.
+  @abc.abstractmethod
+  def _Parse(self):
+    """Extracts sections and volumes from the volume system."""
+
+  @property
+  def number_of_sections(self):
+    """The number of sections."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return len(self._sections)
+
+  @property
+  def number_of_volumes(self):
+    """The number of volumes."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return len(self._volumes)
+
+  @property
+  def sections(self):
+    """The sections."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return self._sections.itervalues()
+
+  @property
+  def volumes(self):
+    """The volumes."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return self._volumes.itervalues()
+
+  def GetSectionByIndex(self, section_index):
+    """Retrieves a specific section based on the index.
 
     Args:
-      volume_index: the index of the volume.
-
-    Returns:
-      The volume object (instance of Volume).
+      section_index: the index of the section.
     """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
 
-    volume_identifier = self._volume_identifiers[volume_index]
-    return self._volumes[volume_identifier]
+    return self._sections[section_index]
 
   def GetVolumeByIdentifier(self, volume_identifier):
     """Retrieves a specific volume based on the identifier.
@@ -243,3 +227,27 @@ class VolumeSystem(object):
       self._is_parsed = True
 
     return self._volumes[volume_identifier]
+
+  def GetVolumeByIndex(self, volume_index):
+    """Retrieves a specific volume based on the index.
+
+    Args:
+      volume_index: the index of the volume.
+
+    Returns:
+      The volume object (instance of Volume).
+    """
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    volume_identifier = self._volume_identifiers[volume_index]
+    return self._volumes[volume_identifier]
+
+  @abc.abstractmethod
+  def Open(self, path_spec):
+    """Opens a volume object defined by path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+    """

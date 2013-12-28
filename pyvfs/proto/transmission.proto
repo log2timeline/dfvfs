@@ -28,8 +28,8 @@ message PathSpec {
   // The path specification type indicator.
   required string type_indicator = 2;
 
-  // Optional location string.
-  optional string location = 3;
+  // Optional compression method e.g. used byt compressed stream.
+  optional string compression_method = 3;
 
   // Optional unique identifier e.g. a GUID/UUID.
   optional string identifier = 4;
@@ -37,7 +37,22 @@ message PathSpec {
   // Optional inode number e.g. used by TSK.
   optional uint64 inode = 5;
 
+  // Optional location string.
+  optional string location = 6;
+
+  // Optional part index e.g. used by TSK partition.
+  optional int32 part_index = 7;
+
+  // Optional range offset e.g. used by data range.
+  optional uint64 range_offset = 8;
+
+  // Optional range size e.g. used by data range.
+  optional uint64 range_size = 9;
+
+  // Optional start offset e.g. used by TSK partition.
+  optional uint64 start_offset = 10;
+
   // Optional store index e.g. used by VSS.
-  optional uint64 store_index = 6;
+  optional int32 store_index = 11;
 };
 

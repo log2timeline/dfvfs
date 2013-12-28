@@ -11,7 +11,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = descriptor.FileDescriptor(
   name='pyvfs/proto/transmission.proto',
   package='transmission',
-  serialized_pb='\n\x1epyvfs/proto/transmission.proto\x12\x0ctransmission\"\x94\x01\n\x08PathSpec\x12&\n\x06parent\x18\x01 \x01(\x0b\x32\x16.transmission.PathSpec\x12\x16\n\x0etype_indicator\x18\x02 \x02(\t\x12\x10\n\x08location\x18\x03 \x01(\t\x12\x12\n\nidentifier\x18\x04 \x01(\t\x12\r\n\x05inode\x18\x05 \x01(\x04\x12\x13\n\x0bstore_index\x18\x06 \x01(\x04')
+  serialized_pb='\n\x1epyvfs/proto/transmission.proto\x12\x0ctransmission\"\x84\x02\n\x08PathSpec\x12&\n\x06parent\x18\x01 \x01(\x0b\x32\x16.transmission.PathSpec\x12\x16\n\x0etype_indicator\x18\x02 \x02(\t\x12\x1a\n\x12\x63ompression_method\x18\x03 \x01(\t\x12\x12\n\nidentifier\x18\x04 \x01(\t\x12\r\n\x05inode\x18\x05 \x01(\x04\x12\x10\n\x08location\x18\x06 \x01(\t\x12\x12\n\npart_index\x18\x07 \x01(\x05\x12\x14\n\x0crange_offset\x18\x08 \x01(\x04\x12\x12\n\nrange_size\x18\t \x01(\x04\x12\x14\n\x0cstart_offset\x18\n \x01(\x04\x12\x13\n\x0bstore_index\x18\x0b \x01(\x05')
 
 
 
@@ -38,7 +38,7 @@ _PATHSPEC = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='location', full_name='transmission.PathSpec.location', index=2,
+      name='compression_method', full_name='transmission.PathSpec.compression_method', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -59,8 +59,43 @@ _PATHSPEC = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='store_index', full_name='transmission.PathSpec.store_index', index=5,
-      number=6, type=4, cpp_type=4, label=1,
+      name='location', full_name='transmission.PathSpec.location', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='part_index', full_name='transmission.PathSpec.part_index', index=6,
+      number=7, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='range_offset', full_name='transmission.PathSpec.range_offset', index=7,
+      number=8, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='range_size', full_name='transmission.PathSpec.range_size', index=8,
+      number=9, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='start_offset', full_name='transmission.PathSpec.start_offset', index=9,
+      number=10, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='store_index', full_name='transmission.PathSpec.store_index', index=10,
+      number=11, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -75,7 +110,7 @@ _PATHSPEC = descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=49,
-  serialized_end=197,
+  serialized_end=309,
 )
 
 _PATHSPEC.fields_by_name['parent'].message_type = _PATHSPEC
