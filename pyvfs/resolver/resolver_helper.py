@@ -23,14 +23,14 @@ import abc
 class ResolverHelper(object):
   """Class that implements the resolver helper object interface."""
 
-  def __init__(self, type_indicator):
-    """Initializes the resolver helper object.
-
-    Args:
-      type_indicator: the path specification type indicator.
-    """
-    super(ResolverHelper, self).__init__()
-    self.type_indicator = type_indicator
+  @property
+  def type_indicator(self):
+    """The type indicator."""
+    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    if type_indicator is None:
+      raise NotImplementedError(
+          u'Invalid resolver helper missing type indicator')
+    return type_indicator
 
   @abc.abstractmethod
   def OpenFileObject(self, path_spec):

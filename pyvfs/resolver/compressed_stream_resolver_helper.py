@@ -20,7 +20,7 @@
 # This is necessary to prevent a circular import.
 import pyvfs.file_io.compressed_stream_io
 
-from pyvfs.path import compressed_stream_path_spec
+from pyvfs.lib import definitions
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
@@ -28,10 +28,7 @@ from pyvfs.resolver import resolver_helper
 class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the compressed stream resolver helper."""
 
-  def __init__(self):
-    """Initializes the resolver helper object."""
-    super(CompressedStreamResolverHelper, self).__init__(
-        compressed_stream_path_spec.CompressedStreamPathSpec.TYPE_INDICATOR)
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

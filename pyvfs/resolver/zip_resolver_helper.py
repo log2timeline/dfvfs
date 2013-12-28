@@ -21,8 +21,8 @@
 import pyvfs.file_io.zip_file_io
 import pyvfs.vfs.zip_file_system
 
+from pyvfs.lib import definitions
 from pyvfs.lib import errors
-from pyvfs.path import zip_path_spec
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
@@ -30,10 +30,7 @@ from pyvfs.resolver import resolver_helper
 class ZipResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the zip resolver helper."""
 
-  def __init__(self):
-    """Initializes the resolver helper object."""
-    super(ZipResolverHelper, self).__init__(
-        zip_path_spec.ZipPathSpec.TYPE_INDICATOR)
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

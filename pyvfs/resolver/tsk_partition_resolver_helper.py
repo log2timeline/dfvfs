@@ -23,9 +23,9 @@ import pytsk3
 import pyvfs.file_io.tsk_partition_file_io
 import pyvfs.vfs.tsk_partition_file_system
 
+from pyvfs.lib import definitions
 from pyvfs.lib import errors
 from pyvfs.lib import tsk_image
-from pyvfs.path import tsk_partition_path_spec
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
@@ -33,10 +33,7 @@ from pyvfs.resolver import resolver_helper
 class TSKPartitionResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the SleuthKit resolver helper."""
 
-  def __init__(self):
-    """Initializes the resolver helper object."""
-    super(TSKPartitionResolverHelper, self).__init__(
-        tsk_partition_path_spec.TSKPartitionPathSpec.TYPE_INDICATOR)
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.
