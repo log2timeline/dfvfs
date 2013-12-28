@@ -37,7 +37,7 @@ class Resolver(object):
     """
     if resolver_helper.type_indicator not in cls._resolver_helpers:
       raise KeyError((
-          u'Resolver helper object not set for type indicator: {0:s}').format(
+          u'Resolver helper object not set for type indicator: {0:s}.').format(
               resolver_helper.type_indicator))
 
     del cls._resolver_helpers[resolver_helper.type_indicator]
@@ -59,7 +59,7 @@ class Resolver(object):
     """
     if path_spec.type_indicator not in cls._resolver_helpers:
       raise KeyError((
-          u'Resolver helper object not set for type indicator: {0:s}').format(
+          u'Resolver helper object not set for type indicator: {0:s}.').format(
               path_spec.type_indicator))
 
     resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
@@ -83,7 +83,7 @@ class Resolver(object):
     """
     if path_spec.type_indicator not in cls._resolver_helpers:
       raise KeyError((
-          u'Resolver helper object not set for type indicator: {0:s}').format(
+          u'Resolver helper object not set for type indicator: {0:s}.').format(
               path_spec.type_indicator))
 
     resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
@@ -105,6 +105,6 @@ class Resolver(object):
     if resolver_helper.type_indicator in cls._resolver_helpers:
       raise KeyError((
           u'Resolver helper object already set for type indicator: '
-          u'{0:s}').format(resolver_helper.type_indicator))
+          u'{0:s}.').format(resolver_helper.type_indicator))
 
     cls._resolver_helpers[resolver_helper.type_indicator] = resolver_helper

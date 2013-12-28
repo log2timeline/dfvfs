@@ -29,7 +29,7 @@ class ResolverHelper(object):
     type_indicator = getattr(self, 'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid resolver helper missing type indicator')
+          u'Invalid resolver helper missing type indicator.')
     return type_indicator
 
   @abc.abstractmethod

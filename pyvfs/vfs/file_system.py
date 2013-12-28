@@ -31,7 +31,7 @@ class FileSystem(object):
     type_indicator = getattr(self, 'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid file system missing type indicator')
+          u'Invalid file system missing type indicator.')
     return type_indicator
 
   def BasenamePath(self, path):
