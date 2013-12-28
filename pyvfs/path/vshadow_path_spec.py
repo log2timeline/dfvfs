@@ -27,22 +27,38 @@ class VShadowPathSpec(path_spec.PathSpec):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
-  def __init__(self, store_index=None, parent=None, **kwargs):
+  def __init__(self, location=None, store_index=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
+       Note that the VSS path specification must have a parent.
+
     Args:
+      location: optional location string. The default is None.
       store_index: optional store index. The default is None.
       parent: optional parent path specification (instance of PathSpec).
               The default is None.
+
+    Raises:
+      ValueError: when parent is not set.
     """
+    if not parent:
+      raise ValueError(u'Missing parent value.')
+
     super(VShadowPathSpec, self).__init__(parent=parent, **kwargs)
+    self.location = location
     self.store_index = store_index
 
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
-    sub_comparable_string = u'store: {0:d}'.format(self.store_index)
-    return self._GetComparable(sub_comparable_string)
+    string_parts = []
+
+    if self.location is not None:
+      string_parts.append(u'location: {0:s}'.format(self.location))
+    if self.store_index is not None:
+      string_parts.append(u'store: {0:d}'.format(self.store_index))
+
+    return self._GetComparable(u', '.join(string_parts))
 
 
 # Register the path specification with the factory.

@@ -61,14 +61,16 @@ class PathSpec(object):
     Returns:
       A string containing the comparable.
     """
-    parent_comparable_string = getattr(self.parent, 'comparable', u'')
+    string_parts = []
 
-    comparable_string = u'type: {0:s}'.format(self.type_indicator)
+    string_parts.append(getattr(self.parent, 'comparable', u''))
+    string_parts.append(u'type: {0:s}'.format(self.type_indicator))
+
     if sub_comparable_string:
-      comparable_string += u', {0:s}'.format(sub_comparable_string)
-    comparable_string += u'\n'
+      string_parts.append(u', {0:s}'.format(sub_comparable_string))
+    string_parts.append(u'\n')
 
-    return u''.join([parent_comparable_string, comparable_string])
+    return u''.join(string_parts)
 
   @abc.abstractproperty
   def comparable(self):

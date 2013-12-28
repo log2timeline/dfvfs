@@ -38,7 +38,7 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
     """
-    super(OSPathSpec, self).__init__(location, parent=None, **kwargs)
+    super(OSPathSpec, self).__init__(location=location, parent=None, **kwargs)
 
 
 # Register the path specification with the factory.

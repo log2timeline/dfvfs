@@ -260,9 +260,9 @@ class CompressedStream(file_io.FileIO):
     """Opens the file-like object.
 
     Args:
-      path_spec: optional path specification (instance of PathSpec),
-                 the default is None.
-      mode: the file access mode, the default is 'rb' read-only binary.
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
       IOError: if the open file-like object could not be opened.

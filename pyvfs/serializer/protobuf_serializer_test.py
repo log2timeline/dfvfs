@@ -45,11 +45,10 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
 
     self._proto_string = (
         '\n0\n#\n\x1b'
-        '\x12\x02OS\x1a\x15test_data/image.qcow2'
+        '\x12\x02OS2\x15test_data/image.qcow2'
         '\x12\x04QCOW'
-        '\x12\x07VSHADOW0\x01'
-        '\x12\x03TSK\x1a\x19/a_directory/another_file'
-        '(\x10')
+        '\x12\x07VSHADOWX\x01'
+        '\x12\x03TSK(\x102\x19/a_directory/another_file')
     self._proto = transmission_pb2.PathSpec()
     self._proto.ParseFromString(self._proto_string)
 

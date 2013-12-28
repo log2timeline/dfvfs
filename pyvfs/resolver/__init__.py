@@ -34,6 +34,11 @@ except ImportError:
 from pyvfs.resolver import tar_resolver_helper
 
 try:
+  from pyvfs.resolver import tsk_partition_resolver_helper
+except ImportError:
+  pass
+
+try:
   from pyvfs.resolver import tsk_resolver_helper
 except ImportError:
   pass

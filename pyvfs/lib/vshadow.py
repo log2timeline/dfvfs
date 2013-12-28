@@ -15,22 +15,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The Virtual File System (VFS) definitions."""
+"""Helper function for the Volume Shadow Snapshots (VSS) support."""
 
-# The compression method definitions.
-COMPRESSION_METHOD_BZIP2 = u'bzip2'
-COMPRESSION_METHOD_DEFLATE = u'deflate'
-COMPRESSION_METHOD_ZLIB = u'zlib'
 
-# The type indicator definitions.
-TYPE_INDICATOR_COMPRESSED_STREAM = u'COMPRESSED_STREAM'
-TYPE_INDICATOR_DATA_RANGE = u'DATA_RANGE'
-TYPE_INDICATOR_EWF = u'EWF'
-TYPE_INDICATOR_OS = u'OS'
-TYPE_INDICATOR_QCOW = u'QCOW'
-TYPE_INDICATOR_TAR = u'TAR'
-TYPE_INDICATOR_TSK = u'TSK'
-TYPE_INDICATOR_TSK_PARTITION = u'TSK_PARTITION'
-TYPE_INDICATOR_VHDI = u'VHDI'
-TYPE_INDICATOR_VSHADOW = u'VSHADOW'
-TYPE_INDICATOR_ZIP = u'ZIP'
+def VShadowPathSpecGetStoreIndex(path_spec):
+  """Retrieves the store index from the path specification.
+
+  Args:
+    path_spec: the path specification (instance of path.PathSpec).
+  """
+  store_index = getattr(path_spec, 'store_index', None)
+
+  if store_index is None:
+    location = getattr(path_spec, 'location', None)
+
+    if location is None or not location.startswith(u'/vss'):
+      return
+
+    store_index = None
+    try:
+      store_index = int(location[4:], 10) - 1
+    except ValueError:
+      pass
+
+    if store_index is None or store_index < 0:
+      return
+
+  return store_index
