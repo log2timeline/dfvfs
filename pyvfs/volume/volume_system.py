@@ -86,7 +86,7 @@ class Volume(object):
     if attribute.identifier in self._attributes:
       raise KeyError((
           u'Volume attribute object already set for volume attribute '
-          u'identifier: {0:s}').format(attribute.identifier))
+          u'identifier: {0:s}.').format(attribute.identifier))
 
     self._attributes[attribute.identifier] = attribute
 

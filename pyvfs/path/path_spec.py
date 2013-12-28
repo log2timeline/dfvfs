@@ -82,7 +82,7 @@ class PathSpec(object):
     type_indicator = getattr(self, 'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid path specification missing type indicator')
+          u'Invalid path specification missing type indicator.')
     return type_indicator
 
   def HasParent(self):

@@ -39,7 +39,7 @@ class Factory(object):
     """
     if path_spec_type.TYPE_INDICATOR not in cls._path_spec_types:
       raise KeyError((
-          u'Path specification type: {0:s} not set').format(
+          u'Path specification type: {0:s} not set.').format(
               path_spec_type.TYPE_INDICATOR))
 
     del cls._path_spec_types[path_spec_type.TYPE_INDICATOR]
@@ -80,7 +80,7 @@ class Factory(object):
     """
     if type_indicator not in cls._path_spec_types:
       raise KeyError((
-          u'Path specification type: {0:s} not set').format(type_indicator))
+          u'Path specification type: {0:s} not set.').format(type_indicator))
 
     path_spec_type = cls._path_spec_types[type_indicator]
     return path_spec_type(**kwargs)
@@ -97,7 +97,7 @@ class Factory(object):
     """
     if path_spec_type.TYPE_INDICATOR in cls._path_spec_types:
       raise KeyError((
-          u'Path specification type: {0:s} already set').format(
+          u'Path specification type: {0:s} already set.').format(
               path_spec_type.TYPE_INDICATOR))
 
     cls._path_spec_types[path_spec_type.TYPE_INDICATOR] = path_spec_type

@@ -40,7 +40,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
       RuntimeError: when proto is not of type: transmission_pb2.PathSpec.
     """
     if not isinstance(proto, transmission_pb2.PathSpec):
-      raise RuntimeError('Unsupported serialized type')
+      raise RuntimeError('Unsupported serialized type.')
 
     # Note that we don't want to set the keyword arguments when not used because
     # the path specification base class will check for unused keyword arguments
