@@ -1,5 +1,5 @@
 #!/bin/bash
-# A small helper script to compile protobufs.
+# A small helper script to update the version information.
 #
 # Copyright 2013 The PyVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
@@ -16,9 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-compile()
-{
-  protoc -I=. --python_out=. pyvfs/proto/$1
-}
+DATE_VERSION=`date +"%Y%m%d"`;
+DATE_DPKG=`date -R`;
+EMAIL_DPKG="Log2Timeline <log2timeline-dev@googlegroups.com>";
 
-compile transmission.proto
+sed -i -e "s/^\(__version__ = \)'[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'$/\1'${DATE_VERSION}'/" pyvfs/__init__.py
+sed -i -e "s/^\(python-pyvfs \)([0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-1)/\1(${DATE_VERSION}-1)/" config/dpkg/debian/changelog
+sed -i -e "s/^\( -- ${EMAIL_DPKG}  \).*$/\1${DATE_DPKG}/" config/dpkg/debian/changelog
