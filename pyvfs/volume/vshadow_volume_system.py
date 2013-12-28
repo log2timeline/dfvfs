@@ -87,5 +87,6 @@ class VShadowVolumeSystem(volume_system.VolumeSystem):
       raise errors.VolumeSystemError(
           u'Unable to resolve file system from path specification.')
 
-    if self._file_system.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
+    type_indicator = self._file_system.type_indicator
+    if type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
       raise errors.VolumeSystemError(u'Unsupported file system type.')

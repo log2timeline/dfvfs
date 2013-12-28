@@ -35,7 +35,7 @@ class VShadowVolumeSystemTest(unittest.TestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
-        parent=path_spec)
+        location=u'/', parent=path_spec)
 
   # qcowmount test_data/vsstest.qcow2 fuse/
   # vshadowinfo fuse/qcow1

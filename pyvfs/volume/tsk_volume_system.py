@@ -17,98 +17,100 @@
 # limitations under the License.
 """Volume system object implementation using the SleuthKit (TSK)."""
 
-import pytsk3
-
+from pyvfs.lib import definitions
 from pyvfs.lib import errors
+from pyvfs.lib import tsk_partition
+from pyvfs.resolver import resolver
 from pyvfs.volume import volume_system
 
 
 class TSKVolume(volume_system.Volume):
   """Class that implements a volume object using pytsk3."""
 
-  def __init__(self, tsk_vs_part, volume_index, block_size):
+  def __init__(self, file_entry, bytes_per_sector):
     """Initializes the volume object.
 
     Args:
-      tsk_vs_part: a SleuthKit volume system part object (instance of
-                   pytsk3.TSK_VS_PART_INFO).
-      volume_index: the volume index number.
-      block_size: the block (or sector) size used by SleuthKit.
+      file_entry: the TSK partition file entry object (instance of
+                  vfs.TSKPartitionFileEntry).
+      bytes_per_sector: the number of bytes per sector.
     """
-    identifier = u'p{0:d}'.format(volume_index + 1)
-    super(TSKVolume, self).__init__(identifier)
-    self._tsk_vs_part = tsk_vs_part
-    self._block_size = block_size
+    super(TSKVolume, self).__init__(file_entry.name)
+    self._file_entry = file_entry
+    self._bytes_per_sector = bytes_per_sector
 
   def _Parse(self):
     """Extracts attributes and extents from the volume."""
-    tsk_addr = getattr(self._tsk_vs_part, 'addr', None)
+    tsk_vs_part = self._file_entry.GetTSKVsPart()
+
+    tsk_addr = getattr(tsk_vs_part, 'addr', None)
     if tsk_addr is not None:
       self._AddAttribute(volume_system.VolumeAttribute('address', tsk_addr))
 
-    tsk_desc = getattr(self._tsk_vs_part, 'desc', None)
+    tsk_desc = getattr(tsk_vs_part, 'desc', None)
     if tsk_desc is not None:
       self._AddAttribute(volume_system.VolumeAttribute('description', tsk_desc))
 
+    start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
+    number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(tsk_vs_part)
     self._extents.append(volume_system.VolumeExtent(
-        self._tsk_vs_part.start * self._block_size,
-        self._tsk_vs_part.len * self._block_size))
+        start_sector * self._bytes_per_sector,
+        number_of_sectors * self._bytes_per_sector))
 
 
 class TSKVolumeSystem(volume_system.VolumeSystem):
   """Class that implements a volume system object using pytsk3."""
 
-  def __init__(self, tsk_image):
+  def __init__(self):
     """Initializes the volume system object.
-
-    Args:
-      tsk_image: a SleuthKit image object (pytsk3.Img_Info).
 
     Raises:
       VolumeSystemError: if the volume system could not be accessed.
     """
     super(TSKVolumeSystem, self).__init__()
-    self._tsk_image = tsk_image
-
-    try:
-      self._tsk_volume = pytsk3.Volume_Info(tsk_image)
-    except IOError as exception:
-      raise errors.VolumeSystemError(
-          u'Unable to access volume system with error: {0:s}.'.format(
-              exception))
-
-    # Note that because pytsk3.Volume_Info does not explicitly defines info
-    # we need to check if the attribute exists and has a value other
-    # than None. Default to 512 otherwise.
-    if (hasattr(self._tsk_volume, 'info') and
-        self._tsk_volume.info is not None):
-      self.block_size = getattr(self._tsk_volume.info, 'block_size', 512)
-    else:
-      self.block_size = 512
+    self._file_system = None
+    self.bytes_per_sector = 512
 
   def _Parse(self):
     """Extracts sections and volumes from the volume system."""
-    volume_index = 0
+    root_file_entry = self._file_system.GetRootFileEntry()
+    tsk_volume = self._file_system.GetTSKVolume()
+    self.bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(tsk_volume)
 
-    # Sticking with the SleuthKit naming convention here, tsk_vs_part is
-    # a volume system section (part) and tsk_volume is the volume system.
-    for tsk_vs_part in self._tsk_volume:
-      # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
-      # start and len we need to check if the attribute exists.
-      if (not hasattr(tsk_vs_part, 'start') or not hasattr(tsk_vs_part, 'len')):
+    for sub_file_entry in root_file_entry.sub_file_entries:
+      tsk_vs_part = sub_file_entry.GetTSKVsPart()
+      start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
+      number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(tsk_vs_part)
+
+      if start_sector is None or number_of_sectors is None:
         continue
 
+      if tsk_partition.TSKVsPartIsAllocated(tsk_vs_part):
+        volume = TSKVolume(sub_file_entry, self.bytes_per_sector)
+        self._AddVolume(volume)
+
       volume_extent = volume_system.VolumeExtent(
-          tsk_vs_part.start * self.block_size,
-          tsk_vs_part.len * self.block_size)
+          start_sector * self.bytes_per_sector,
+          number_of_sectors * self.bytes_per_sector)
 
       self._sections.append(volume_extent)
 
-      # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
-      # flags need to check if the attribute exists.
-      # The flags are an instance of TSK_VS_PART_FLAG_ENUM.
-      if (hasattr(tsk_vs_part, 'flags') and
-          tsk_vs_part.flags == pytsk3.TSK_VS_PART_FLAG_ALLOC):
-        volume = TSKVolume(tsk_vs_part, volume_index, self.block_size)
-        self._AddVolume(volume)
-        volume_index += 1
+  def Open(self, path_spec):
+    """Opens a volume object defined by path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Raises:
+      VolumeSystemError: if the TSK partition virtual file system could not
+                         be resolved.
+    """
+    self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
+
+    if self._file_system is None:
+      raise errors.VolumeSystemError(
+          u'Unable to resolve file system from path specification.')
+
+    type_indicator = self._file_system.type_indicator
+    if type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
+      raise errors.VolumeSystemError(u'Unsupported file system type.')
