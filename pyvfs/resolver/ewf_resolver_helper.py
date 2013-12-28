@@ -20,7 +20,7 @@
 # This is necessary to prevent a circular import.
 import pyvfs.file_io.ewf_file_io
 
-from pyvfs.path import ewf_path_spec
+from pyvfs.lib import definitions
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
@@ -28,10 +28,7 @@ from pyvfs.resolver import resolver_helper
 class EwfResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the EWF image resolver helper."""
 
-  def __init__(self):
-    """Initializes the resolver helper object."""
-    super(EwfResolverHelper, self).__init__(
-        ewf_path_spec.EwfPathSpec.TYPE_INDICATOR)
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_EWF
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

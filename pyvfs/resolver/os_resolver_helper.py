@@ -21,8 +21,8 @@
 import pyvfs.file_io.os_file_io
 import pyvfs.vfs.os_file_system
 
+from pyvfs.lib import definitions
 from pyvfs.lib import errors
-from pyvfs.path import os_path_spec
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
@@ -30,10 +30,7 @@ from pyvfs.resolver import resolver_helper
 class OSResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the operating system resolver helper."""
 
-  def __init__(self):
-    """Initializes the resolver helper object."""
-    super(OSResolverHelper, self).__init__(
-        os_path_spec.OSPathSpec.TYPE_INDICATOR)
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

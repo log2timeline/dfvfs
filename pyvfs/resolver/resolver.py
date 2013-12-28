@@ -24,40 +24,21 @@ class Resolver(object):
   _resolver_helpers = {}
 
   @classmethod
-  def RegisterHelper(cls, resolver_helper):
-    """Registers a path specification resolving helper function.
-
-    Args:
-      resolver_helper: the resolver helper object (instance of
-                       vfs.ResolverHelper).
-
-    Raises:
-      KeyError: if resolver helper object is already set for the corresponding
-                path specification class.
-    """
-    if resolver_helper.type_indicator in cls._resolver_helpers:
-      raise KeyError((
-          u'Resolver object already set for path specification class: '
-          u'{0:s}').format(resolver_helper.type_indicator))
-
-    cls._resolver_helpers[resolver_helper.type_indicator] = resolver_helper
-
-  @classmethod
   def DeregisterHelper(cls, resolver_helper):
-    """Deregisters a path specification resolving helper function.
+    """Deregisters a path specification resolver helper.
 
     Args:
       resolver_helper: the resolver helper object (instance of
-                       vfs.ResolverHelper).
+                       resolver.ResolverHelper).
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
-                path specification class.
+                type indicator.
     """
     if resolver_helper.type_indicator not in cls._resolver_helpers:
       raise KeyError((
-          u'Resolver object not set for path specification class: '
-          u'{0:s}').format(resolver_helper.type_indicator))
+          u'Resolver helper object not set for type indicator: {0:s}').format(
+              resolver_helper.type_indicator))
 
     del cls._resolver_helpers[resolver_helper.type_indicator]
 
@@ -74,12 +55,12 @@ class Resolver(object):
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
-                path specification class.
+                type indicator.
     """
     if path_spec.type_indicator not in cls._resolver_helpers:
       raise KeyError((
-          u'Resolver object not set for path specification class: '
-          u'{0:s}').format(path_spec.type_indicator))
+          u'Resolver helper object not set for type indicator: {0:s}').format(
+              path_spec.type_indicator))
 
     resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
 
@@ -98,13 +79,32 @@ class Resolver(object):
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
-                path specification class.
+                type indicator.
     """
     if path_spec.type_indicator not in cls._resolver_helpers:
       raise KeyError((
-          u'Resolver object not set for path specification class: '
-          u'{0:s}').format(path_spec.type_indicator))
+          u'Resolver helper object not set for type indicator: {0:s}').format(
+              path_spec.type_indicator))
 
     resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
 
     return resolver_helper.OpenFileSystem(path_spec)
+
+  @classmethod
+  def RegisterHelper(cls, resolver_helper):
+    """Registers a path specification resolver helper.
+
+    Args:
+      resolver_helper: the resolver helper object (instance of
+                       resolver.ResolverHelper).
+
+    Raises:
+      KeyError: if resolver helper object is already set for the corresponding
+                type indicator.
+    """
+    if resolver_helper.type_indicator in cls._resolver_helpers:
+      raise KeyError((
+          u'Resolver helper object already set for type indicator: '
+          u'{0:s}').format(resolver_helper.type_indicator))
+
+    cls._resolver_helpers[resolver_helper.type_indicator] = resolver_helper

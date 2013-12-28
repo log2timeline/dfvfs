@@ -21,8 +21,8 @@
 import pyvfs.file_io.tsk_file_io
 import pyvfs.vfs.tsk_file_system
 
+from pyvfs.lib import definitions
 from pyvfs.lib import errors
-from pyvfs.path import tsk_path_spec
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
@@ -30,10 +30,7 @@ from pyvfs.resolver import resolver_helper
 class TSKResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the SleuthKit resolver helper."""
 
-  def __init__(self):
-    """Initializes the resolver helper object."""
-    super(TSKResolverHelper, self).__init__(
-        tsk_path_spec.TSKPathSpec.TYPE_INDICATOR)
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.

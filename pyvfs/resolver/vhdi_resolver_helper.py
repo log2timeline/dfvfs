@@ -20,7 +20,7 @@
 # This is necessary to prevent a circular import.
 import pyvfs.file_io.vhdi_file_io
 
-from pyvfs.path import vhdi_path_spec
+from pyvfs.lib import definitions
 from pyvfs.resolver import resolver
 from pyvfs.resolver import resolver_helper
 
@@ -28,10 +28,7 @@ from pyvfs.resolver import resolver_helper
 class VhdiResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the VHD image resolver helper."""
 
-  def __init__(self):
-    """Initializes the resolver helper object."""
-    super(VhdiResolverHelper, self).__init__(
-        vhdi_path_spec.VhdiPathSpec.TYPE_INDICATOR)
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
 
   def OpenFileObject(self, path_spec):
     """Opens a file-like object defined by path specification.
