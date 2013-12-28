@@ -60,12 +60,15 @@ pyvfs_version = pyvfs.__version__
 if 'build_msi' in sys.argv:
   pyvfs_version += '.1'
 
+pyvfs_description = (
+    'PyVFS is a Python module used to provide a read-only Virtual File '
+    'System (VFS) for various file system and file formats.')
+
 setup(
     name='pyvfs',
     version=pyvfs_version,
-    description=(
-        'PyVFS is a Python module used to provide a read-only Virtual File '
-        'System (VFS) for various file system and file formats.'),
+    description=pyvfs_description,
+    long_description=pyvfs_description,
     license='Apache License, Version 2.0',
     url='https://code.google.com/p/pyvfs',
     maintainer_email='log2timeline-dev@googlegroups.com',
