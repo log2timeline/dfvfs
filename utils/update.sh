@@ -88,15 +88,18 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-echo "Run tests.";
-python run_tests.py
-
-if test $? -ne 0;
+if test -e run_tests.py;
 then
-  echo "Tests failed, not updating change list: ${CL_NUMBER}";
-  exit ${EXIT_FAILURE};
-else
-  echo "Tests succeeded, updating change list: ${CL_NUMBER}";
+  echo "Run tests.";
+  python run_tests.py
+
+  if test $? -ne 0;
+  then
+    echo "Tests failed, not updating change list: ${CL_NUMBER}";
+    exit ${EXIT_FAILURE};
+  else
+    echo "Tests succeeded, updating change list: ${CL_NUMBER}";
+  fi
 fi
 
 python utils/upload.py \

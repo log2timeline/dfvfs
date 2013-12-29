@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 #
+# This file originates from the Rietveld project:
+# https://code.google.com/p/rietveld/
+#
 # Copyright 2007 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

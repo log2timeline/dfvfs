@@ -92,14 +92,17 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-echo "Running tests."
-# python run_tests.py
-
-if test $? -ne 0;
+if test -e run_tests.py;
 then
-  echo "Sumbit aborted - fix the issues reported by the failing test.";
+  echo "Running tests."
+  python run_tests.py
 
-  exit ${EXIT_FAILURE};
+  if test $? -ne 0;
+  then
+    echo "Sumbit aborted - fix the issues reported by the failing test.";
+
+    exit ${EXIT_FAILURE};
+  fi
 fi
 
 echo "All came out clean, let's submit the code."
