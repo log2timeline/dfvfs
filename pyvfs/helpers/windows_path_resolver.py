@@ -19,6 +19,7 @@
 
 import re
 
+from pyvfs.lib import definitions
 from pyvfs.path import factory as path_spec_factory
 
 
@@ -28,17 +29,28 @@ class WindowsPathResolver(object):
   _PATH_SEPARATOR = u'\\'
   _PATH_EXPANSION_VARIABLE = re.compile('^[%][^%]+[%]$')
 
-  def __init__(self, file_system, parent=None):
+  def __init__(self, file_system, mount_point):
     """Initializes the Windows path helper.
+
+       The mount point indicates a path specification where the Windows
+       file system is mounted. This can either be a path specification
+       into a storage media image or a directory accessible by the operating
+       system.
 
     Args:
       file_system: the file system object.
-      parent: optional parent path specification (instance of path.PathSpec).
-              The default is None.
+      mount_point: the mount point path specification (instance of
+                   path.PathSpec). The default is None.
+
+    Raises:
+      ValueError: when file system or mount point is not set.
     """
+    if not file_system or not mount_point:
+      raise ValueError(u'Missing file system or mount point value.')
+
     self._environment_variables = {}
     self._file_system = file_system
-    self._parent = parent
+    self._mount_point = mount_point
 
   # Windows paths:
   # Device path:                    \\.\PhysicalDrive0
@@ -121,8 +133,15 @@ class WindowsPathResolver(object):
     if path is None:
       return None, None
 
-    expanded_path_segments = []
-    file_entry = self._file_system.GetRootFileEntry()
+    if self._mount_point.type_indicator == definitions.TYPE_INDICATOR_OS:
+      file_entry = self._file_system.GetFileEntryByPathSpec(self._mount_point)
+      expanded_path_segments = self._file_system.SplitPath(
+          self._mount_point.location)
+    else:
+      file_entry = self._file_system.GetRootFileEntry()
+      expanded_path_segments = []
+
+    number_of_expanded_path_segments = 0
 
     for path_segment in path.split(self._PATH_SEPARATOR):
       if file_entry is None:
@@ -133,8 +152,10 @@ class WindowsPathResolver(object):
         continue
 
       if path_segment == '..':
-        if len(expanded_path_segments) > 0:
+        # Only allow to traverse back up to the mount point.
+        if number_of_expanded_path_segments > 0:
           _ = expanded_path_segments.pop()
+          number_of_expanded_path_segments -= 1
           file_entry = file_entry.GetParentFileEntry()
         continue
 
@@ -149,6 +170,7 @@ class WindowsPathResolver(object):
         return None, None
 
       expanded_path_segments.append(sub_file_entry.name)
+      number_of_expanded_path_segments += 1
       file_entry = sub_file_entry
 
     location = self._file_system.JoinPath(expanded_path_segments)
@@ -177,8 +199,8 @@ class WindowsPathResolver(object):
     kwargs = path_spec_factory.Factory.GetProperties(path_spec)
 
     kwargs['location'] = location
-    if self._parent:
-      kwargs['parent'] = self._parent
+    if self._mount_point.type_indicator != definitions.TYPE_INDICATOR_OS:
+      kwargs['parent'] = self._mount_point
 
     return path_spec_factory.Factory.NewPathSpec(
         self._file_system.type_indicator, **kwargs)

@@ -24,6 +24,7 @@ from pyvfs.file_io import qcow_file_io
 from pyvfs.helpers import windows_path_resolver
 from pyvfs.path import os_path_spec
 from pyvfs.path import qcow_path_spec
+from pyvfs.vfs import os_file_system
 from pyvfs.vfs import tsk_file_system
 
 
@@ -32,6 +33,10 @@ class WindowsPathResolverTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    test_file = os.path.join(os.getcwd(), 'test_data')
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._os_file_system = os_file_system.OSFileSystem()
+
     test_file = os.path.join('test_data', 'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
@@ -40,10 +45,27 @@ class WindowsPathResolverTest(unittest.TestCase):
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
         file_object, self._qcow_path_spec)
 
-  def testResolvePath(self):
-    """Test the resolve path function."""
+  def testResolvePathDirectory(self):
+    """Test the resolve path function on a mount point directory."""
     path_resolver = windows_path_resolver.WindowsPathResolver(
-        self._tsk_file_system, parent=self._qcow_path_spec)
+        self._os_file_system, self._os_path_spec)
+
+    expected_path = os.path.join(
+        os.getcwd(), 'test_data', 'testdir_os', 'file1.txt')
+
+    windows_path = u'C:\\testdir_os\\file1.txt'
+    path_spec = path_resolver.ResolvePath(windows_path)
+    self.assertNotEquals(path_spec, None)
+    self.assertEquals(path_spec.location, expected_path)
+
+    windows_path = u'C:\\testdir_os\\file6.txt'
+    path_spec = path_resolver.ResolvePath(windows_path)
+    self.assertEquals(path_spec, None)
+
+  def testResolvePathImage(self):
+    """Test the resolve path function on a storage media image."""
+    path_resolver = windows_path_resolver.WindowsPathResolver(
+        self._tsk_file_system, self._qcow_path_spec)
 
     expected_path = (
         u'/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
@@ -121,9 +143,9 @@ class WindowsPathResolverTest(unittest.TestCase):
     self.assertEquals(path_spec, None)
 
   def testResolvePathWithEnvironmentVariable(self):
-    """Test the resolve path function."""
+    """Test the resolve path function with environment variable expansion."""
     path_resolver = windows_path_resolver.WindowsPathResolver(
-        self._tsk_file_system, parent=self._qcow_path_spec)
+        self._tsk_file_system, self._qcow_path_spec)
 
     path_resolver.SetEnvironmentVariable(
         'SystemRoot', 'C:\\System Volume Information')
