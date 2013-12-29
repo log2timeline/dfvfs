@@ -76,19 +76,20 @@ linter
 if test $? -ne 0;
 then
   exit ${EXIT_FAILURE};
-else
-  echo "Linter clear.";
 fi
 
-echo "Run tests.";
-python run_tests.py
-
-if test $? -ne 0;
+if test -e run_tests.py;
 then
-  echo "Tests failed, not submitting for review.";
-  exit ${EXIT_FAILURE};
-else
-  echo "Tests all came up clean. Send for review.";
+  echo "Run tests.";
+  python run_tests.py
+
+  if test $? -ne 0;
+  then
+    echo "Tests failed, not submitting for review.";
+    exit ${EXIT_FAILURE};
+  else
+    echo "Tests all came up clean. Send for review.";
+  fi
 fi
 
 MISSING_TESTS="";
