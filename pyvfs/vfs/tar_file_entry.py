@@ -154,7 +154,7 @@ class TarFileEntry(file_entry.FileEntry):
         path = getattr(self._tar_info, 'name', None)
         if path is not None:
           try:
-            path.decode(self._file_system.encoding)
+            path = path.decode(self._file_system.encoding)
           except UnicodeDecodeError:
             path = None
         self._name = self._file_system.BasenamePath(path)

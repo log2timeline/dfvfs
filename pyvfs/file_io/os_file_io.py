@@ -118,6 +118,12 @@ class OSFile(file_io.FileIO):
     if not self._file_object:
       raise IOError(u'Not opened.')
 
+    # For a yet unknown reason a Python file-like object on Windows allows for
+    # invalid whence values to be passed to the seek function. This check
+    # makes sure the behavior of the function is the same on all platforms.
+    if whence not in [os.SEEK_SET, os.SEEK_CUR, os.SEEK_END]:
+      raise IOError(u'Invalid whence value.')
+
     return self._file_object.seek(offset, whence)
 
   def get_offset(self):

@@ -42,7 +42,7 @@ def RunTests(path):
   test_classes = []
 
   for test_file in FindTestFiles(path):
-    library_name = test_file.rstrip('.py').replace('/', '.').lstrip('.')
+    library_name = test_file.rstrip('.py').replace(os.path.sep, '.').lstrip('.')
     test_classes.append(library_name)
 
   tests = unittest.TestLoader().loadTestsFromNames(test_classes)
