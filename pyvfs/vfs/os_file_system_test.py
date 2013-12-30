@@ -71,15 +71,14 @@ class OSFileSystemTest(unittest.TestCase):
       # Return the root with the drive letter of the volume the current
       # working directory is on.
       expected_location = os.getcwd()
-      expected_location, _, _ = expected_location.rpartition('\\')
-      expected_location = u'{0:s}\\'.format(expected_location)
+      expected_location, _, _ = expected_location.partition('\\')
     else:
-      expected_location = u'/'
+      expected_location = u''
 
     file_entry = file_system.GetRootFileEntry()
 
     self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.name, u'')
+    self.assertEquals(file_entry.name, expected_location)
 
 
 if __name__ == '__main__':

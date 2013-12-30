@@ -74,7 +74,7 @@ class OSFileSystem(file_system.FileSystem):
       # Return the root with the drive letter of the volume the current
       # working directory is on.
       location = os.getcwd()
-      location, _, _ = location.rpartition('\\')
+      location, _, _ = location.partition('\\')
       location = u'{0:s}\\'.format(location)
     else:
       location = u'/'

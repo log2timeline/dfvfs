@@ -17,6 +17,7 @@
 # limitations under the License.
 """Tests for the serializer object implementation using protobuf."""
 
+import platform
 import os
 import unittest
 
@@ -43,12 +44,21 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
         inode=16, location='/a_directory/another_file',
         parent=self._vshadow_path_spec)
 
-    self._proto_string = (
-        '\n0\n#\n\x1b'
-        '\x12\x02OS2\x15test_data/image.qcow2'
-        '\x12\x04QCOW'
-        '\x12\x07VSHADOWX\x01'
-        '\x12\x03TSK(\x102\x19/a_directory/another_file')
+    if platform.system() == 'Windows':
+      self._proto_string = (
+          '\n0\n#\n\x1b'
+          '\x12\x02OS2\x15test_data\\image.qcow2'
+          '\x12\x04QCOW'
+          '\x12\x07VSHADOWX\x01'
+          '\x12\x03TSK(\x102\x19/a_directory/another_file')
+    else:
+      self._proto_string = (
+          '\n0\n#\n\x1b'
+          '\x12\x02OS2\x15test_data/image.qcow2'
+          '\x12\x04QCOW'
+          '\x12\x07VSHADOWX\x01'
+          '\x12\x03TSK(\x102\x19/a_directory/another_file')
+
     self._proto = transmission_pb2.PathSpec()
     self._proto.ParseFromString(self._proto_string)
 
