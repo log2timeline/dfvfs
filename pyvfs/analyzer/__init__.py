@@ -16,4 +16,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = '20131231'
+from pyvfs.analyzer import ewf_analyzer_helper
+from pyvfs.analyzer import qcow_analyzer_helper
+
+try:
+  from pyvfs.analyzer import tsk_analyzer_helper
+except ImportError:
+  pass
+
+try:
+  from pyvfs.analyzer import tsk_partition_analyzer_helper
+except ImportError:
+  pass
+
+from pyvfs.analyzer import vhdi_analyzer_helper
+from pyvfs.analyzer import vshadow_analyzer_helper

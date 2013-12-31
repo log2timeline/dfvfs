@@ -15,13 +15,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The Virtual File System (VFS) resolver helper object interface."""
-
-import abc
+"""The Virtual File System (VFS) analyzer helper object interface."""
 
 
-class ResolverHelper(object):
-  """Class that implements the resolver helper object interface."""
+class AnalyzerHelper(object):
+  """Class that implements the analyzer helper object interface."""
+
+  @property
+  def format_categories(self):
+    """The format categories."""
+    format_categories = getattr(self, 'FORMAT_CATEGORIES', None)
+    if format_categories is None:
+      raise NotImplementedError(
+          u'Invalid analyzer helper missing format categories.')
+    return format_categories
 
   @property
   def type_indicator(self):
@@ -29,28 +36,20 @@ class ResolverHelper(object):
     type_indicator = getattr(self, 'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid resolver helper missing type indicator.')
+          u'Invalid analyzer helper missing type indicator.')
     return type_indicator
 
-  @abc.abstractmethod
-  def OpenFileObject(self, path_spec):
-    """Opens a file-like object defined by path specification.
-
-    Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
-
-    Returns:
-      The file-like object (instance of file_io.FileIO) or None if the path
-      specification could not be resolved.
-    """
-
-  def OpenFileSystem(self, dummy_path_spec):
-    """Opens a file system object defined by path specification.
+  def AnalyzeFileObject(self, dummy_file_object):
+    """Retrieves the format specification.
 
        This is the fall through implementation that raises a RuntimeError.
 
     Args:
-      dummy_path_spec: the VFS path specification (instance of path.PathSpec).
+      dummy_file_object: a file-like object (instance of file_io.FileIO).
+
+    Returns:
+      The type indicator if the file-like object contains a supported format
+      or None otherwise.
 
     Raises:
       RuntimeError: since this is the fall through implementation.
@@ -58,4 +57,15 @@ class ResolverHelper(object):
     # Note: not using NotImplementedError here since pylint then will complain
     # derived classes will need to implement the method, which should not
     # be the the case.
-    raise RuntimeError('Missing implemention to open file system.')
+    raise RuntimeError('Missing implemention to analyze file object.')
+
+  def GetFormatSpecification(self):
+    """Retrieves the format specification.
+
+       This is the fall through implementation that returns None.
+
+    Returns:
+      The format specification object (instance of analyzer.Specification)
+      or None if the format cannot be defined by a specification object.
+    """
+    return
