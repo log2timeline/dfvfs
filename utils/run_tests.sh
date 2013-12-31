@@ -20,7 +20,7 @@ EXIT_FAILURE=1;
 EXIT_SUCCESS=0;
 
 # Run the tests in a specific order.
-for SUBDIR in lib path vfs volume file_io resolver helpers serializer;
+for SUBDIR in lib path vfs volume file_io resolver analyzer helpers serializer;
 do
   TEST_FILES=`find "pyvfs/${SUBDIR}" -name "*_test.py"`;
 
