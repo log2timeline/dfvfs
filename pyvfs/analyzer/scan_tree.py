@@ -214,6 +214,12 @@ class ScanTree(object):
           signature_offset = signature.offset if is_bound else 0
           signature_pattern_length = len(signature.expression)
 
+          # Make sure signature offset is numeric.
+          try:
+            signature_offset = int(signature_offset)
+          except (TypeError, ValueError):
+            signature_offset = 0
+
           if signature_offset < 0:
             if offset_mode == self.OFFSET_MODE_POSITIVE:
               continue
