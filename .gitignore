@@ -7,7 +7,7 @@
 # Specific auto-generated build files
 /build
 /dist
-/pyvfs.egg-info
+/dfvfs.egg-info
 
 # Project specific files
 ._code_review_number

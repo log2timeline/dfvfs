@@ -1,7 +1,7 @@
 #!/bin/bash
 # A small helper script to compile protobufs.
 #
-# Copyright 2013 The PyVFS Project Authors.
+# Copyright 2013 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 
 compile()
 {
-  protoc -I=. --python_out=. pyvfs/proto/$1
+  protoc -I=. --python_out=. dfvfs/proto/$1
 }
 
 compile transmission.proto

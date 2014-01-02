@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The PyVFS Project Authors.
+# Copyright 2013 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -190,7 +190,7 @@ def CheckPytsk():
 
 if __name__ == '__main__':
   check_result = True
-  print u'Checking availability and versions of PyVFS dependencies.'
+  print u'Checking availability and versions of dfVFS dependencies.'
 
   if not CheckPythonModule('construct', '__version__', '2.5.1'):
     check_result = False
@@ -205,9 +205,9 @@ if __name__ == '__main__':
 
   if not check_result:
     installation_instructions_url = (
-        u'https://code.google.com/p/pyvfs/wiki/Installing')
+        u'https://code.google.com/p/dfvfs/wiki/Installing')
 
-    print u'For more information on how to set up PyVFS see: {0:s}'.format(
+    print u'For more information on how to set up dfVFS see: {0:s}'.format(
         installation_instructions_url)
 
   print u''

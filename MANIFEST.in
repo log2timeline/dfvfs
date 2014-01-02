@@ -4,6 +4,6 @@ include utils/check_dependencies.py
 exclude .gitignore
 exclude *.pyc
 recursive-include config *
-recursive-include pyvfs *.proto
-recursive-exclude pyvfs *.pyc
+recursive-include dfvfs *.proto
+recursive-exclude dfvfs *.pyc
 recursive-include test_data *
