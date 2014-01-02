@@ -29,11 +29,6 @@ USE_CL_FILE=1;
 while test $# -gt 0;
 do
   case $1 in
-  --cache )
-    CACHE_PARAM="--cache";
-    shift;
-    ;;
-
   --nobrowser | --no-browser | --no_browser )
     BROWSER_PARAM="--no_oauth2_webbrowser";
     shift;
@@ -51,7 +46,7 @@ do
   esac
 done
 
-if test -z $REVIEWER;
+if test -z "${REVIEWER}";
 then
   echo "Usage: ./${SCRIPTNAME} [--nobrowser] [--noclfile] REVIEWER";
   echo "";
@@ -70,25 +65,36 @@ fi
 
 . utils/common.sh
 
-# First find all files that need linter
-linter
+# Check for double status codes, upload.py cannot handle these correctly.
+STATUS_CODES=`git status -s | cut -b1,2 | grep '\S\S' | grep -v '??' | sort | uniq`;
 
-if test $? -ne 0;
+if ! test -z "${STATUS_CODES}";
 then
+  echo "Upload aborted - detected double git status codes."
+  echo "Run: 'git stash && git stash pop'.";
+
   exit ${EXIT_FAILURE};
 fi
 
+# Check if the linting is correct.
+if ! linter;
+then
+  echo "Upload aborted - fix the issues reported by the linter.";
+
+  exit ${EXIT_FAILURE};
+fi
+
+# Check if all the tests pass.
 if test -e run_tests.py;
 then
-  echo "Run tests.";
+  echo "Running tests.";
   python run_tests.py
 
   if test $? -ne 0;
   then
-    echo "Tests failed, not submitting for review.";
+    echo "Upload aborted - fix the issues reported by the failing test.";
+
     exit ${EXIT_FAILURE};
-  else
-    echo "Tests all came up clean. Send for review.";
   fi
 fi
 
@@ -103,7 +109,7 @@ do
   fi
 done
 
-if test "x${MISSING_TESTS}" == "x";
+if test -z "${MISSING_TESTS}";
 then
   MISSING_TEST_FILES=".";
 else
@@ -116,7 +122,18 @@ echo -n "Short description of code review request: ";
 read DESCRIPTION
 TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
 
-if test "x${BROWSER_PARAM}" != "x";
+# Check if we need to set --cache.
+STATUS_CODES=`git status -s | cut -b1,2 | sed 's/\s//g' | sort | uniq`;
+
+for STATUS_CODE in ${STATUS_CODES};
+do
+  if test "${STATUS_CODE}" = "A";
+  then
+    CACHE_PARAM="--cache";
+  fi
+done
+
+if ! test -z "${BROWSER_PARAM}";
 then
   echo "You need to visit: https://codereview.appspot.com/get-access-token";
   echo "and copy+paste the access token to the window (no prompt)";
