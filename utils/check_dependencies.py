@@ -79,7 +79,7 @@ def CheckLibyal(libyal_python_modules):
     True if the libyal libraries are available, false otherwise.
   """
   result = True
-  for module_name in libyal_python_modules:
+  for module_name, module_version in libyal_python_modules:
     try:
       module_object = map(__import__, [module_name])[0]
     except ImportError:
@@ -100,12 +100,19 @@ def CheckLibyal(libyal_python_modules):
         result = False
         break
 
-      version_mismatch = installed_version != latest_version
-      if version_mismatch:
+      if module_version is not None and installed_version < module_version:
         print (
-            u'[WARNING]\t{0:s} ({1:s}) version mismatch: installed {2:d}, '
-            u'available: {3:d}').format(
+            u'[FAILURE]\t{0:s} ({1:s}) version: {2:d} is too old, {3:d} or '
+            u'later required.').format(
+                libyal_name, module_name, installed_version, module_version)
+        result = False
+
+      elif installed_version != latest_version:
+        print (
+            u'[INFO]\t\t{0:s} ({1:s}) version: {2:d} installed, '
+            u'version: {3:d} available.').format(
                 libyal_name, module_name, installed_version, latest_version)
+
       else:
         print u'[OK]\t\t{0:s} ({1:s}) version: {2:d}'.format(
             libyal_name, module_name, installed_version)
@@ -200,7 +207,14 @@ if __name__ == '__main__':
   if not CheckPytsk():
     check_result = False
 
-  if not CheckLibyal(['pyewf', 'pyqcow', 'pyvhdi', 'pyvshadow']):
+  libyal_check_result = CheckLibyal([
+      ('pyewf', 20131210),
+      ('pyqcow', 20131204),
+      ('pyvhdi', 20131210),
+      ('pyvshadow', 20131209),
+  ])
+
+  if not libyal_check_result:
     check_result = False
 
   if not check_result:
