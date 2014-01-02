@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The PyVFS Project Authors.
+# Copyright 2013 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,7 +80,7 @@ if __name__ == '__main__':
   # Modify the system path to first search the CWD.
   sys.path.insert(0, '.')
 
-  test_results = RunTests(os.path.join('.', 'pyvfs'))
+  test_results = RunTests(os.path.join('.', 'dfvfs'))
 
   PrintResults(test_results)
   if not test_results.wasSuccessful():

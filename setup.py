@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The PyVFS Project Authors.
+# Copyright 2013 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,10 +33,10 @@ if sys.version < '2.7':
   print 'Supported Python versions are 2.7 or a later 2.x version.'
   sys.exit(1)
 
-# Change PYTHONPATH to include pyvfs so that we can get the version.
+# Change PYTHONPATH to include dfvfs so that we can get the version.
 sys.path.insert(0, '.')
 
-import pyvfs
+import dfvfs
 
 
 class TestCommand(Command):
@@ -50,35 +50,39 @@ class TestCommand(Command):
     pass
 
   def run(self):
-    test_results = run_tests.RunTests(os.path.join('.', 'pyvfs'))
+    test_results = run_tests.RunTests(os.path.join('.', 'dfvfs'))
 
 
-pyvfs_version = pyvfs.__version__
+dfvfs_version = dfvfs.__version__
 
 # Command bdist_msi does not support the library version, neither a date
 # as a version but if we suffix it with .1 everything is fine.
 if 'build_msi' in sys.argv:
-  pyvfs_version += '.1'
+  dfvfs_version += '.1'
 
-pyvfs_description = (
-    'PyVFS is a Python module used to provide a read-only Virtual File '
-    'System (VFS) for various file system and file formats.')
+dfvfs_description = (
+    'Digital Forensics Virtual File System (dfVFS).')
+
+dfvfs_long_description = (
+    'dfVFS, or Digital Forensics Virtual File System, is a Python module '
+    'that provides read-only access to file-system objects from various '
+    'storage media types and file formats.')
 
 setup(
-    name='pyvfs',
-    version=pyvfs_version,
-    description=pyvfs_description,
-    long_description=pyvfs_description,
+    name='dfvfs',
+    version=dfvfs_version,
+    description=dfvfs_description,
+    long_description=dfvfs_long_description,
     license='Apache License, Version 2.0',
-    url='https://code.google.com/p/pyvfs',
+    url='https://code.google.com/p/dfvfs',
     maintainer_email='log2timeline-dev@googlegroups.com',
     cmdclass={'test': TestCommand},
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    package_dir={'pyvfs': 'pyvfs'},
+    package_dir={'dfvfs': 'dfvfs'},
     packages=find_packages('.'),
 )

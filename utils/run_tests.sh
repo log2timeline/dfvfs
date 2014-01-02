@@ -1,7 +1,7 @@
 #!/bin/bash
 # A small script that runs all tests
 #
-# Copyright 2013 The PyVFS Project Authors.
+# Copyright 2013 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ EXIT_SUCCESS=0;
 # Run the tests in a specific order.
 for SUBDIR in lib path vfs volume file_io resolver analyzer helpers serializer;
 do
-  TEST_FILES=`find "pyvfs/${SUBDIR}" -name "*_test.py"`;
+  TEST_FILES=`find "dfvfs/${SUBDIR}" -name "*_test.py"`;
 
   for TEST_FILE in ${TEST_FILES};
   do

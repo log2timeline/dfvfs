@@ -1,17 +1,25 @@
-Acknowledgements: pyvfs
+Acknowledgements: dfvfs
 
-Copyright 2013 The PyVFS Project Authors.
+Copyright 2013 The dfVFS Project Authors.
 Please see the AUTHORS file for details on individual authors.
 
-PyVFS is a Python Virtual File System implementation that originates form
-the Plaso project: https://code.google.com/p/plaso/
+dfVFS, or Digital Forensics Virtual File System, provides read-only access to
+file-system objects from various storage media types and file formats. The goal
+of dfVFS is to provide a generic interface for accessing file-system objects,
+for which it uses several back-ends that provide the actual implementation of
+the various storage media types, volume systems and file systems.
 
-PyVFS is developed and maintained by:
+dfVFS originates from the Plaso project [https://code.google.com/p/plaso/].
+It was largely rewritten and made into a stand-alone project to provide more
+flexibility and allow other projects to make use of the VFS functionality.
+dfVFS originally was named PyVFS, but that name conflicted with another project.
+
+dfVFS is developed and maintained by:
 * Kristinn Gudjonsson
 * Joachim Metz
 
-PyVFS depends on various other projects. So thanks to the authors and
-others involved with these projects:
+dfVFS depends on various other projects. So thanks to the authors and others
+involved with these projects:
 * Python and modules
 * the SleuthKit
 * pytsk

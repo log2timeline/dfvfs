@@ -1,7 +1,7 @@
 #!/bin/bash
 # A small script that runs the linter on all files.
 #
-# Copyright 2013 The PyVFS Project Authors.
+# Copyright 2013 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

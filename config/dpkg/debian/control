@@ -1,18 +1,18 @@
-Source: python-pyvfs
+Source: python-dfvfs
 Section: unknown
 Priority: extra
 Maintainer: Log2Timeline <log2timeline-dev@googlegroups.com>
 Build-Depends: debhelper (>= 7.0.0), python, python-setuptools
 Standards-Version: 3.9.2
-Homepage: http://code.google.com/p/pyvfs/
+Homepage: http://code.google.com/p/dfvfs/
 
-Package: python-pyvfs
+Package: python-dfvfs
 Architecture: any
 Depends: python, libprotobuf7, python-protobuf, libewf-python, libqcow-python, libvhdi-python, libvshadow-python, pytsk3, ${python:Depends}
-Description: Python-based Virtual File System (VFS) module
- PyVFS is a virtual file system (VFS) Python module to provide access to
- read-only file-system objects from various storage media types. The goal
- of PyVFS is to provide a generic interface for accessing file-system objects,
- for which it uses several back-ends that provide the actual implementation
- of the various storage media types, volume systems and file systems.
+Description: Digital Forensics Virtual File System (dfVFS).
+ dfVFS, or Digital Forensics Virtual File System, provides read-only access to
+ file-system objects from various storage media types and file formats. The goal
+ of dfVFS is to provide a generic interface for accessing file-system objects,
+ for which it uses several back-ends that provide the actual implementation of
+ the various storage media types, volume systems and file systems.
  

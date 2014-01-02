@@ -1,7 +1,7 @@
 #!/bin/bash
 # A small script that submits a code for code review.
 #
-# Copyright 2013 The PyVFS Project Authors.
+# Copyright 2013 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -114,7 +114,7 @@ fi
 
 echo -n "Short description of code review request: ";
 read DESCRIPTION
-TEMP_FILE=`mktemp .tmp_pyvfs_code_review.XXXXXX`;
+TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
 
 if test "x${BROWSER_PARAM}" != "x";
 then
