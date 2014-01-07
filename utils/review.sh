@@ -89,7 +89,7 @@ else
     echo "";
     echo "  --nobrowser: forces upload.py not to open a separate browser";
     echo "               process to obtain OAuth2 credentials for Rietveld";
-    echo "               (https://codereview.appspot.com)).";
+    echo "               (https://codereview.appspot.com).";
     echo "";
     echo "  --noclfile: do not store the resulting CL number in a file named:"
     echo "              ._code_review_number";
@@ -121,7 +121,7 @@ then
     fi
   fi
 else
-  if have_double_git_status_codes:
+  if have_double_git_status_codes;
   then
     echo "Review upload aborted - detected double git status codes."
     echo "Run: 'git stash && git stash pop'.";
@@ -162,7 +162,7 @@ then
 
 else
   MISSING_TESTS="";
-  FILES=`git status -s | grep -v "^?" | awk '{if ($1 != 'D') { print $2;}}' | grep "\.py$" | grep -v "_test.py$"`
+  FILES=`git status -s | grep -v "^?" | awk '{if ($1 != 'D') { print $2;}}' | grep "\.py$" | grep -v -e "_test.py$" -e "^__init__.py$"`;
   for CHANGED_FILE in ${FILES};
   do
     TEST_FILE=`echo ${CHANGED_FILE} | sed -e 's/\.py//g'`
