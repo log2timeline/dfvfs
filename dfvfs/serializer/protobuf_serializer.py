@@ -23,7 +23,7 @@ from dfvfs.serializer import serializer
 
 
 class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
-  """Class that implements the path specification serializer interface."""
+  """Class that implements a protobuf path specification serializer object."""
 
   @classmethod
   def ReadSerialized(cls, proto):

@@ -30,7 +30,7 @@ from dfvfs.serializer import protobuf_serializer as serializer
 
 
 class ProtobufPathSpecSerializerTest(unittest.TestCase):
-  """The unit test for the SleuthKit (TSK) file-like object."""
+  """Tests for the protobuf path specification serializer object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

@@ -82,7 +82,7 @@ then
     echo "";
     echo "  --nobrowser: forces upload.py not to open a separate browser";
     echo "               process to obtain OAuth2 credentials for Rietveld";
-    echo "               (https://codereview.appspot.com)).";
+    echo "               (https://codereview.appspot.com).";
     echo "";
 
     exit ${EXIT_MISSING_ARGS};
@@ -118,7 +118,7 @@ else
     exit ${EXIT_FAILURE};
   fi
 
-  if have_double_git_status_codes:
+  if have_double_git_status_codes;
   then
     echo "Submit aborted - detected double git status codes."
     echo "Run: 'git stash && git stash pop'.";

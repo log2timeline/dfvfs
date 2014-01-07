@@ -35,7 +35,7 @@ class PathSpec(object):
     Raises:
       ValueError: when there are unused keyword arguments.
     """
-    if len(kwargs) != 0:
+    if kwargs:
       raise ValueError(u'Unused keyword arguments.')
 
     super(PathSpec, self).__init__()
