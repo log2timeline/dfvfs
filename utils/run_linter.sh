@@ -28,7 +28,7 @@ fi
 
 . utils/common.sh
 
-if ! linter;
+if ! linting_is_correct;
 then
   echo "Aborted - fix the issues reported by the linter.";
 

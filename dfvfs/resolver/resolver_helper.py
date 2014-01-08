@@ -44,13 +44,13 @@ class ResolverHelper(object):
       specification could not be resolved.
     """
 
-  def OpenFileSystem(self, dummy_path_spec):
+  def OpenFileSystem(self, unused_path_spec):
     """Opens a file system object defined by path specification.
 
        This is the fall through implementation that raises a RuntimeError.
 
     Args:
-      dummy_path_spec: the VFS path specification (instance of path.PathSpec).
+      unused_path_spec: the VFS path specification (instance of path.PathSpec).
 
     Raises:
       RuntimeError: since this is the fall through implementation.

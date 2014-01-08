@@ -37,38 +37,33 @@ load-plugins=
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
 # CHANGED:
-# C0103: Invalid name ""
+# C0103: Invalid name %r
 # C0111: Missing docstring
-# C0302: Too many lines in module (N)
+# C0302: Too many lines in module (%s)
 #
-# I0010: Unable to consider inline option ''
+# I0010: Unable to consider inline option %r
 # I0011: Locally disabling WNNNN
 #
 # R0201: Method could be a function
 # R0801: Similar lines in N files
-# R0901: Too many ancestors (8/7)
-# R0902: Too many instance attributes (N/7)
-# R0903: Too few public methods (N/2)
-# R0904: Too many public methods (N/20)
-# R0911: Too many return statements (N/6)
-# R0912: Too many branches (N/12)
-# R0913: Too many arguments (N/5)
-# R0914: Too many local variables (N/15)
-# R0915: Too many statements (N/50)
+# R0901: Too many ancestors (%s/%s)
+# R0902: Too many instance attributes (%s/%s)
+# R0903: Too few public methods (%s/%s)
+# R0904: Too many public methods (%s/%s)
+# R0911: Too many return statements (%s/%s)
+# R0912: Too many branches (%s/%s)
+# R0913: Too many arguments (%s/%s)
+# R0914: Too many local variables (%s/%s)
+# R0915: Too many statements (%s/%s)
 # R0921: Abstract class not referenced
-# R0922: Abstract class is only referenced 1 times
-# R0924: Badly implemented Container, implements __len__ but not __getitem__ (incomplete-protocol) (pylint 0.26 and later)
-# W0122: Use of the exec statement
-# W0141: Used builtin function ''
+# R0922: Abstract class is only referenced %s times
+# W0141: Used builtin function %r
 # W0142: Used * or ** magic
 # W0402: Uses of a deprecated module 'string'
 # W0404: 41: Reimport 'XX' (imported line NN)
-# W0511: TODO
-# W0603: Using the global statement
+# W0511: Found a TODO comment in the source.
 # W0703: Catch "Exception"
-# W1201: Specify string format arguments as logging function parameters
-# W0201: Variables defined initially outside the scope of __init__ (reconsider this, added by Kristinn).
-disable=C0103,C0111,C0302,I0010,I0011,R0201,R0801,R0901,R0902,R0903,R0904,R0911,R0912,R0913,R0914,R0915,R0921,R0922,R0924,W0122,W0141,W0142,W0402,W0404,W0511,W0603,W0703,W1201,W0201
+disable=C0103,C0111,C0302,I0010,I0011,R0201,R0801,R0901,R0902,R0903,R0904,R0911,R0912,R0913,R0914,R0915,R0921,R0922,W0141,W0142,W0402,W0404,W0511,W0703
 
 
 [REPORTS]
@@ -106,9 +101,9 @@ comment=no
 # Tells whether we should check for unused import in __init__ files.
 init-import=no
 
-# A regular expression matching the beginning of the name of dummy variables
-# (i.e. not used).
-dummy-variables-rgx=_|dummy
+# A regular expression matching the beginning of the name of unused variables.
+# By default this is _ and dummy but we prefer _ and unused.
+dummy-variables-rgx=_|unused
 
 # List of additional names supposed to be defined in builtins. Remember that
 # you should avoid to define new builtins when possible.
