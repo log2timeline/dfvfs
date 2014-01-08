@@ -39,13 +39,13 @@ class AnalyzerHelper(object):
           u'Invalid analyzer helper missing type indicator.')
     return type_indicator
 
-  def AnalyzeFileObject(self, dummy_file_object):
+  def AnalyzeFileObject(self, unused_file_object):
     """Retrieves the format specification.
 
        This is the fall through implementation that raises a RuntimeError.
 
     Args:
-      dummy_file_object: a file-like object (instance of file_io.FileIO).
+      unused_file_object: a file-like object (instance of file_io.FileIO).
 
     Returns:
       The type indicator if the file-like object contains a supported format
