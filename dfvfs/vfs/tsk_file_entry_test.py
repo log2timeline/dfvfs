@@ -68,6 +68,67 @@ class TSKFileEntryTest(unittest.TestCase):
 
     self.assertEquals(parent_file_entry.name, u'a_directory')
 
+  def testGetStat(self):
+    """Test the get stat functionality."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location=u'/a_directory/another_file',
+        parent=self._os_path_spec)
+    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+
+    stat_object = file_entry.GetStat()
+
+    self.assertNotEquals(stat_object, None)
+    self.assertEquals(stat_object.type, stat_object.TYPE_FILE)
+
+  def testIsFunctions(self):
+    """Test the Is? functionality."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location=u'/a_directory/another_file',
+        parent=self._os_path_spec)
+    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertFalse(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertFalse(file_entry.IsDirectory())
+    self.assertTrue(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=12, location=u'/a_directory',
+        parent=self._os_path_spec)
+    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertFalse(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertTrue(file_entry.IsDirectory())
+    self.assertFalse(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location=u'/', parent=self._os_path_spec)
+    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertTrue(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertTrue(file_entry.IsDirectory())
+    self.assertFalse(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(

@@ -22,6 +22,8 @@ import pytsk3
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.tsk_file_io
 
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import tsk_path_spec
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
@@ -105,17 +107,28 @@ class TSKDirectory(file_entry.Directory):
 class TSKFileEntry(file_entry.FileEntry):
   """Class that implements a file entry object using pytsk3."""
 
-  def __init__(self, file_system, path_spec, tsk_file=None, parent_inode=None):
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
+
+  def __init__(
+      self, file_system, path_spec, is_root=False, is_virtual=False,
+      tsk_file=None, parent_inode=None):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+               The default is False.
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system. The default is False.
       tsk_file: optional file object (instance of pytsk3.File).
                 The default is None.
       parent_inode: optional parent inode number. The default is None.
     """
-    super(TSKFileEntry, self).__init__(file_system, path_spec)
+    super(TSKFileEntry, self).__init__(
+        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
     self._file_object = None
     self._name = None
     self._parent_inode = parent_inode
@@ -132,12 +145,20 @@ class TSKFileEntry(file_entry.FileEntry):
     return
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object.
+
+    Returns:
+      The stat object (instance of vfs.VFSStat).
+
+    Raises:
+      BackEndError: when the tsk File .info or .info.meta attribute is missing.
+    """
     if self._tsk_file is None:
       self._tsk_file = self.GetTSKFile()
 
-    if not self._tsk_file.info or not self._tsk_file.info.meta:
-      return
+    if (not self._tsk_file or not self._tsk_file.info or
+        not self._tsk_file.info.meta):
+      raise errors.BackEndError(u'Missing tsk File .info or .info.meta.')
 
     stat_object = vfs_stat.VFSStat()
 
@@ -204,9 +225,9 @@ class TSKFileEntry(file_entry.FileEntry):
 
     # The flags are an instance of pytsk3.TSK_FS_META_FLAG_ENUM.
     if int(flags) & pytsk3.TSK_FS_META_FLAG_ALLOC:
-      stat_object.allocated = True
+      stat_object.is_allocated = True
     else:
-      stat_object.allocated = False
+      stat_object.is_allocated = False
 
     return stat_object
 

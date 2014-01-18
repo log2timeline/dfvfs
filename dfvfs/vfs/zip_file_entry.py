@@ -20,6 +20,8 @@
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.zip_file_io
 
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import zip_path_spec
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
@@ -74,16 +76,27 @@ class ZipFileEntry(file_entry.FileEntry):
 
   _UNIX_FILE_ATTRIBUTES_IS_DIRECTORY = 0x8000
 
-  def __init__(self, file_system, path_spec, zip_info=None):
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
+
+  def __init__(
+      self, file_system, path_spec, is_root=False, is_virtual=False,
+      zip_info=None):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+               The default is False.
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system. The default is False.
       zip_info: optional zip info object (instance of zipfile.ZipInfo).
                 The default is None.
     """
-    super(ZipFileEntry, self).__init__(file_system, path_spec)
+    super(ZipFileEntry, self).__init__(
+        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
     self._zip_info = zip_info
     self._file_object = None
     self._name = None
@@ -99,14 +112,25 @@ class ZipFileEntry(file_entry.FileEntry):
     return
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object.
+
+    Returns:
+      The stat object (instance of vfs.VFSStat).
+
+    Raises:
+      BackEndError: when the zip info is missing in a non-virtual file entry.
+    """
     if self._zip_info is None:
       self._zip_info = self.GetZipInfo()
+
+    if not self._is_virtual and self._zip_info is None:
+      raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = getattr(self._zip_info, 'size', None)
+    if self._zip_info is not None:
+      stat_object.size = getattr(self._zip_info, 'size', None)
 
     # Date and time stat information.
     # TODO: determine how to standarize these time values.
@@ -114,18 +138,19 @@ class ZipFileEntry(file_entry.FileEntry):
     # year, month, day_of_month, hours, minutes, seconds = date_time
 
     # Ownership and permissions stat information.
-    creator_system = getattr(self._zip_info, 'create_system', 0)
-    external_attributes = getattr(self._zip_info, 'external_attr', 0)
+    if self._zip_info is not None:
+      creator_system = getattr(self._zip_info, 'create_system', 0)
+      external_attributes = getattr(self._zip_info, 'external_attr', 0)
 
-    if external_attributes != 0:
-      if creator_system == self._CREATOR_SYSTEM_UNIX:
-        st_mode = external_attributes >> 16
-        stat_object.mode = st_mode & 0x0fff
+      if external_attributes != 0:
+        if creator_system == self._CREATOR_SYSTEM_UNIX:
+          st_mode = external_attributes >> 16
+          stat_object.mode = st_mode & 0x0fff
 
     # File entry type stat information.
 
     # The root file entry is virtual and should have type directory.
-    if (not self._zip_info or
+    if (self._is_virtual or
         external_attributes & self._MSDOS_FILE_ATTRIBUTES_IS_DIRECTORY):
       stat_object.type = stat_object.TYPE_DIRECTORY
     else:
@@ -141,8 +166,6 @@ class ZipFileEntry(file_entry.FileEntry):
     # zip_info.volume
     # zip_info.internal_attr
     # zip_info.compress_size
-
-    stat_object.allocated = True
 
     return stat_object
 

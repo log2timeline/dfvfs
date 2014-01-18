@@ -126,7 +126,7 @@ else
     exit ${EXIT_FAILURE};
   fi
 
-  if local_repo_in_sync_with_origin;
+  if ! local_repo_in_sync_with_origin;
   then
     echo "Submit aborted - local repo out of sync with origin."
     echo "Run: 'git stash && git pull && git stash pop'.";

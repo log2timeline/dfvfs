@@ -100,7 +100,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec)
     return dfvfs.vfs.tsk_partition_file_entry.TSKPartitionFileEntry(
-        self, path_spec)
+        self, path_spec, is_root=True, is_virtual=True)
 
   def GetTSKVolume(self):
     """Retrieves the TSK volume object.

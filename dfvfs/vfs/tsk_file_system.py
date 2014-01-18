@@ -52,6 +52,19 @@ class TSKFileSystem(file_system.FileSystem):
     tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
     self._tsk_file_system = pytsk3.FS_Info(tsk_image_object, offset=offset)
 
+  def _GetRootInode(self):
+    """Retrieves the root inode or None."""
+    # Note that because pytsk3.FS_Info does not explicitly define info
+    # we need to check if the attribute exists and has a value other
+    # than None
+    if getattr(self._tsk_file_system, 'info', None) is None:
+      return
+
+    # Note that because pytsk3.TSK_FS_INFO does not explicitly define
+    # root_inum we need to check if the attribute exists and has a value
+    # other than None
+    return getattr(self._tsk_file_system.info, 'root_inum', None)
+
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
 
@@ -90,6 +103,12 @@ class TSKFileSystem(file_system.FileSystem):
     inode = getattr(path_spec, 'inode', None)
     location = getattr(path_spec, 'location', None)
 
+    root_inode = self._GetRootInode()
+    if inode is not None and root_inode is not None and inode == root_inode:
+      return self.GetRootFileEntry()
+    elif location is not None and location == self._LOCATION_ROOT:
+      return self.GetRootFileEntry()
+
     try:
       if inode is not None:
         tsk_file = self._tsk_file_system.open_meta(inode=inode)
@@ -101,6 +120,7 @@ class TSKFileSystem(file_system.FileSystem):
 
     if tsk_file is None:
       return
+
     # TODO: is there a way to determine the parent inode number here?
     return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
         self, path_spec, tsk_file=tsk_file)
@@ -122,9 +142,16 @@ class TSKFileSystem(file_system.FileSystem):
     """
     tsk_file = self._tsk_file_system.open(self._LOCATION_ROOT)
 
-    path_spec = tsk_path_spec.TSKPathSpec(
-        location=self._LOCATION_ROOT, parent=self._path_spec)
+    kwargs = {}
 
-    # TODO: is there a way to determine the parent inode number here?
+    root_inode = self._GetRootInode()
+    if root_inode is not None:
+      kwargs['inode'] = root_inode
+
+    kwargs['location'] = self._LOCATION_ROOT
+    kwargs['parent'] = self._path_spec
+
+    path_spec = tsk_path_spec.TSKPathSpec(**kwargs)
+
     return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
-        self, path_spec, tsk_file=tsk_file)
+        self, path_spec, tsk_file=tsk_file, is_root=True)

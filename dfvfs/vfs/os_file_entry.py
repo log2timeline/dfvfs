@@ -20,6 +20,7 @@
 import os
 import stat
 
+from dfvfs.lib import definitions
 from dfvfs.file_io import os_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_entry
@@ -51,14 +52,20 @@ class OSDirectory(file_entry.Directory):
 class OSFileEntry(file_entry.FileEntry):
   """Class that implements a file entry object using os."""
 
-  def __init__(self, file_system, path_spec):
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
+
+  def __init__(self, file_system, path_spec, is_root=False):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification object (instance of path.PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+               The default is False.
     """
-    super(OSFileEntry, self).__init__(file_system, path_spec)
+    super(OSFileEntry, self).__init__(
+        file_system, path_spec, is_root=is_root, is_virtual=False)
     self._file_object = None
     self._name = None
 
@@ -109,13 +116,6 @@ class OSFileEntry(file_entry.FileEntry):
       stat_object.type = stat_object.TYPE_PIPE
     elif stat.S_ISSOCK(stat_info.st_mode):
       stat_object.type = stat_object.TYPE_SOCKET
-
-    # Other stat information.
-    # stat_object.ino = stat_info.st_ino
-    # stat_object.dev = stat_info.st_dev
-    # stat_object.nlink = stat_info.st_nlink
-    # stat_object.fs_type = 'Unknown'
-    stat_object.allocated = True
 
     return stat_object
 

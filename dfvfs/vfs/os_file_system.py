@@ -83,4 +83,4 @@ class OSFileSystem(file_system.FileSystem):
       return
 
     path_spec = os_path_spec.OSPathSpec(location=location)
-    return os_file_entry.OSFileEntry(self, path_spec)
+    return os_file_entry.OSFileEntry(self, path_spec, is_root=True)

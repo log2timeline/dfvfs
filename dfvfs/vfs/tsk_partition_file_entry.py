@@ -20,6 +20,8 @@
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.tsk_partition_file_io
 
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.lib import tsk_partition
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.vfs import file_entry
@@ -80,14 +82,22 @@ class TSKPartitionDirectory(file_entry.Directory):
 class TSKPartitionFileEntry(file_entry.FileEntry):
   """Class that implements a file entry object using pytsk3."""
 
-  def __init__(self, file_system, path_spec):
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
+
+  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system. The default is False.
+      tar_info: optional tar info object (instance of tarfile.TarInfo).
+                The default is None.
     """
-    super(TSKPartitionFileEntry, self).__init__(file_system, path_spec)
+    super(TSKPartitionFileEntry, self).__init__(
+        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
     self._file_object = None
     self._name = None
     self._tsk_vs_part = None
@@ -97,33 +107,40 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 
-    if self._stat_object is None:
+    if (self._stat_object and
+        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
       return TSKPartitionDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object.
+
+    Returns:
+      The stat object (instance of vfs.VFSStat).
+
+    Raises:
+      BackEndError: when the tsk volume system part is missing in a non-virtual
+                    file entry.
+    """
     if self._tsk_vs_part is None:
       self._tsk_vs_part = self.GetTSKVsPart()
 
-    # TODO: rewrite file entry a bit to expose more clear what is virtual
-    # and what not.
+    stat_object = vfs_stat.VFSStat()
 
-    # The virtual root file entry has no stat information.
-    if self._tsk_vs_part is None:
-      return None
+    if not self._is_virtual and self._tsk_vs_part is None:
+      raise errors.BackEndError(
+          u'Missing tsk volume system part in non-virtual file entry.')
 
     tsk_volume = self._file_system.GetTSKVolume()
     bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(tsk_volume)
 
-    stat_object = vfs_stat.VFSStat()
-
     # File data stat information.
-    number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(
-        self._tsk_vs_part)
+    if self._tsk_vs_part is not None:
+      number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(
+          self._tsk_vs_part)
 
-    if number_of_sectors:
-      stat_object.size = number_of_sectors * bytes_per_sector
+      if number_of_sectors:
+        stat_object.size = number_of_sectors * bytes_per_sector
 
     # Date and time stat information.
 
@@ -132,6 +149,14 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     # File entry type stat information.
 
     # The root file entry is virtual and should have type directory.
+    if self._is_virtual:
+      stat_object.type = stat_object.TYPE_DIRECTORY
+    else:
+      stat_object.type = stat_object.TYPE_FILE
+
+    if not self._is_virtual:
+      stat_object.is_allocated = tsk_partition.TSKVsPartIsAllocated(
+          self._tsk_vs_part)
 
     return stat_object
 
