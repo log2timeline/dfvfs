@@ -20,6 +20,8 @@
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.tar_file_io
 
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import tar_path_spec
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
@@ -68,16 +70,27 @@ class TarDirectory(file_entry.Directory):
 class TarFileEntry(file_entry.FileEntry):
   """Class that implements a file entry object using tarfile."""
 
-  def __init__(self, file_system, path_spec, tar_info=None):
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
+
+  def __init__(
+      self, file_system, path_spec, is_root=False, is_virtual=False,
+      tar_info=None):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+               The default is False.
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system. The default is False.
       tar_info: optional tar info object (instance of tarfile.TarInfo).
                 The default is None.
     """
-    super(TarFileEntry, self).__init__(file_system, path_spec)
+    super(TarFileEntry, self).__init__(
+        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
     self._tar_info = tar_info
     self._file_object = None
     self._name = None
@@ -93,9 +106,19 @@ class TarFileEntry(file_entry.FileEntry):
     return
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object.
+
+    Returns:
+      The stat object (instance of vfs.VFSStat).
+
+    Raises:
+      BackEndError: when the tar info is missing in a non-virtual file entry.
+    """
     if self._tar_info is None:
       self._tar_info = self.GetTarInfo()
+
+    if not self._is_virtual and self._tar_info is None:
+      raise errors.BackEndError(u'Missing tar info in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
@@ -117,7 +140,7 @@ class TarFileEntry(file_entry.FileEntry):
     # File entry type stat information.
 
     # The root file entry is virtual and should have type directory.
-    if not self._tar_info or self._tar_info.isdir():
+    if self._is_virtual or self._tar_info.isdir():
       stat_object.type = stat_object.TYPE_DIRECTORY
     elif self._tar_info.isfile():
       stat_object.type = stat_object.TYPE_FILE
@@ -135,8 +158,6 @@ class TarFileEntry(file_entry.FileEntry):
     # Other stat information.
     # tar_info.linkname
     # tar_info.pax_headers
-
-    stat_object.allocated = True
 
     return stat_object
 

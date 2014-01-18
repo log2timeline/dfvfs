@@ -115,7 +115,8 @@ class TarFileSystem(file_system.FileSystem):
     path_spec = tar_path_spec.TarPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec)
 
-    return dfvfs.vfs.tar_file_entry.TarFileEntry(self, path_spec)
+    return dfvfs.vfs.tar_file_entry.TarFileEntry(
+        self, path_spec, is_root=True, is_virtual=True)
 
   def GetTarFile(self):
     """Retrieves the tar file object.

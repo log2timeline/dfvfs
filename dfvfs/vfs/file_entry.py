@@ -60,16 +60,24 @@ class Directory(object):
 class FileEntry(object):
   """Class that implements the VFS file entry object interface."""
 
-  def __init__(self, file_system, path_spec):
+  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification object (instance of path.PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+               The default is False.
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system. The default is False.
     """
     super(FileEntry, self).__init__()
     self._directory = None
     self._file_system = file_system
+    self._is_root = is_root
+    self._is_virtual = is_virtual
     self._stat_object = None
     self.path_spec = path_spec
 
@@ -89,9 +97,22 @@ class FileEntry(object):
   def sub_file_entries(self):
     """The sub file entries (generator of instance of vfs.FileEntry)."""
 
+  @property
+  def type_indicator(self):
+    """The type indicator."""
+    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    if type_indicator is None:
+      raise NotImplementedError(
+          u'Invalid file system missing type indicator.')
+    return type_indicator
+
   @abc.abstractmethod
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
+
+  def GetFileSystem(self):
+    """Retrieves the file system (instance of vfs.FileSystem)."""
+    return self._file_system
 
   @abc.abstractmethod
   def GetParentFileEntry(self):
@@ -117,3 +138,53 @@ class FileEntry(object):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     return self._stat_object
+
+  def IsAllocated(self):
+    """Determines if the file entry is allocated."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object.is_allocated
+
+  def IsDevice(self):
+    """Determines if the file entry is a device."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object.type == self._stat_object.TYPE_DEVICE
+
+  def IsDirectory(self):
+    """Determines if the file entry is a directory."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object.type == self._stat_object.TYPE_DIRECTORY
+
+  def IsFile(self):
+    """Determines if the file entry is a file."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object.type == self._stat_object.TYPE_FILE
+
+  def IsLink(self):
+    """Determines if the file entry is a link."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object.type == self._stat_object.TYPE_LINK
+
+  def IsPipe(self):
+    """Determines if the file entry is a pipe."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object.type == self._stat_object.TYPE_PIPE
+
+  def IsRoot(self):
+    """Determines if the file entry is the root file entry."""
+    return self._is_root
+
+  def IsSocket(self):
+    """Determines if the file entry is a socket."""
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object.type == self._stat_object.TYPE_SOCKET
+
+  def IsVirtual(self):
+    """Determines if the file entry is virtual (emulated by dfVFS)."""
+    return self._is_virtual

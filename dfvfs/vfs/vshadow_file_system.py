@@ -95,7 +95,8 @@ class VShadowFileSystem(file_system.FileSystem):
     """
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec)
-    return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(self, path_spec)
+    return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(
+        self, path_spec, is_root=True, is_virtual=True)
 
   def GetVShadowVolume(self):
     """Retrieves the VSS volume object.

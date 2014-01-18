@@ -20,6 +20,8 @@
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.vshadow_file_io
 
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.lib import vshadow
 from dfvfs.path import vshadow_path_spec
 from dfvfs.vfs import file_entry
@@ -58,14 +60,23 @@ class VShadowDirectory(file_entry.Directory):
 class VShadowFileEntry(file_entry.FileEntry):
   """Class that implements a file entry object using pyvshadow."""
 
-  def __init__(self, file_system, path_spec):
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
+
+  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
     """Initializes the file entry object.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+               The default is False.
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system. The default is False.
     """
-    super(VShadowFileEntry, self).__init__(file_system, path_spec)
+    super(VShadowFileEntry, self).__init__(
+        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
     self._file_object = None
     self._name = None
     self._vshadow_store = None
@@ -75,26 +86,33 @@ class VShadowFileEntry(file_entry.FileEntry):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 
-    if self._stat_object is None:
+    if (self._stat_object and
+        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
       return VShadowDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object.
+
+    Returns:
+      The stat object (instance of vfs.VFSStat).
+
+    Raises:
+      BackEndError: when the vshadow store is missing in a non-virtual
+                    file entry.
+    """
     if self._vshadow_store is None:
       self._vshadow_store = self.GetVShadowStore()
 
-    # TODO: rewrite file entry a bit to expose more clear what is virtual
-    # and what not.
-
-    # The virtual root file entry has no stat information.
-    if self._vshadow_store is None:
-      return None
+    if not self._is_virtual and self._vshadow_store is None:
+      raise errors.BackEndError(
+          u'Missing vshadow store in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = self._vshadow_store.volume_size
+    if self._vshadow_store is not None:
+      stat_object.size = self._vshadow_store.volume_size
 
     # Date and time stat information.
 
@@ -103,6 +121,10 @@ class VShadowFileEntry(file_entry.FileEntry):
     # File entry type stat information.
 
     # The root file entry is virtual and should have type directory.
+    if self._is_virtual:
+      stat_object.type = stat_object.TYPE_DIRECTORY
+    else:
+      stat_object.type = stat_object.TYPE_FILE
 
     return stat_object
 

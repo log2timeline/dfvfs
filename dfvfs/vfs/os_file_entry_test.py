@@ -53,6 +53,49 @@ class OSFileEntryTest(unittest.TestCase):
 
     self.assertEquals(parent_file_entry.name, u'testdir_os')
 
+  def testGetStat(self):
+    """Test the get stat functionality."""
+    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+
+    stat_object = file_entry.GetStat()
+
+    self.assertNotEquals(stat_object, None)
+    self.assertEquals(stat_object.type, stat_object.TYPE_FILE)
+
+  def testIsFunctions(self):
+    """Test the Is? functionality."""
+    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertFalse(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertFalse(file_entry.IsDirectory())
+    self.assertTrue(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
+    test_file = os.path.join('test_data', 'testdir_os')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertFalse(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertTrue(file_entry.IsDirectory())
+    self.assertFalse(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = os_path_spec.OSPathSpec(location=self._test_file)

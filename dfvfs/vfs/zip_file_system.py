@@ -111,7 +111,8 @@ class ZipFileSystem(file_system.FileSystem):
     path_spec = zip_path_spec.ZipPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec)
 
-    return dfvfs.vfs.zip_file_entry.ZipFileEntry(self, path_spec)
+    return dfvfs.vfs.zip_file_entry.ZipFileEntry(
+        self, path_spec, is_root=True, is_virtual=True)
 
   def GetZipFile(self):
     """Retrieves the zip file object.

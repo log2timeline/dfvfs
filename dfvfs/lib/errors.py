@@ -22,6 +22,10 @@ class Error(Exception):
   """Class that defines a generic error."""
 
 
+class BackEndError(Error):
+  """Class that defines back-end errors."""
+
+
 class FileFormatError(Error):
   """Class that defines file format errors."""
 
