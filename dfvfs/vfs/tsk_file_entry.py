@@ -88,9 +88,16 @@ class TSKDirectory(file_entry.Directory):
       if getattr(tsk_directory_entry.info, 'name', None) is not None:
         directory_entry = getattr(tsk_directory_entry.info.name, 'name', '')
 
+        # pytsk3 returns a UTF-8 encoded byte string.
+        try:
+          directory_entry = directory_entry.decode('utf8')
+        except UnicodeError:
+          # Continue here since we cannot represent the directory entry.
+          continue
+
         if directory_entry:
           # Ignore references to self or parent.
-          if directory_entry in ['.', '..']:
+          if directory_entry in [u'.', u'..']:
             continue
 
           if location == self._file_system.PATH_SEPARATOR:
@@ -233,7 +240,11 @@ class TSKFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """"The name of the file entry, which does not include the full path."""
+    """"The name of the file entry, which does not include the full path.
+
+    Raises:
+      BackEndError: when the pytsk3 returns a non UTF-8 formatted name.
+    """
     if self._name is None:
       if self._tsk_file is None:
         self._tsk_file = self.GetTSKFile()
@@ -248,7 +259,15 @@ class TSKFileEntry(file_entry.FileEntry):
       # (pytsk3.TSK_FS_FILE) that contains the name string. Otherwise the
       # name from the path specification is used.
       if getattr(self._tsk_file.info, 'name', None) is not None:
-        self._name = getattr(self._tsk_file.info.name, 'name', None)
+        name = getattr(self._tsk_file.info.name, 'name', None)
+
+        # pytsk3 returns a UTF-8 encoded byte string.
+        try:
+          self._name = name.decode('utf8')
+        except UnicodeError:
+          raise errors.BackEndError(
+              u'pytsk3 returned a non UTF-8 formatted name.')
+
       else:
         location = getattr(self.path_spec, 'location', None)
         if location:
