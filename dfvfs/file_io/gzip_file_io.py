@@ -20,7 +20,9 @@
 import construct
 import os
 
-from dfvfs.file_io import compressed_stream_io
+# This is necessary to prevent a circular import.
+import dfvfs.file_io.compressed_stream_io
+
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -167,7 +169,7 @@ class GzipFile(file_object_io.FileObjectIO):
             compression_method=definitions.COMPRESSION_METHOD_DEFLATE,
             parent=path_spec_data_range))
 
-    file_object = compressed_stream_io.CompressedStream()
+    file_object = dfvfs.file_io.compressed_stream_io.CompressedStream()
     file_object.SetUncompressedStreamSize(self._uncompressed_data_size)
     file_object.open(path_spec_compressed_stream)
 
