@@ -43,6 +43,23 @@ class Resolver(object):
     del cls._resolver_helpers[resolver_helper.type_indicator]
 
   @classmethod
+  def OpenFileEntry(cls, path_spec):
+    """Opens a file entry object defined by path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      The file entry object (instance of vfs.FileEntry) or None if the path
+      specification could not be resolved.
+    """
+    file_system = cls.OpenFileSystem(path_spec)
+    if file_system is None:
+      return
+
+    return file_system.GetFileEntryByPathSpec(path_spec)
+
+  @classmethod
   def OpenFileObject(cls, path_spec):
     """Opens a file-like object defined by path specification.
 

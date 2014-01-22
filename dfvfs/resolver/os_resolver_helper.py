@@ -53,14 +53,14 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
       path_spec: the VFS path specification (instance of path.PathSpec).
 
     Returns:
-      The file system object (instance of vfs.OsFileSystem) or None if
+      The file system object (instance of vfs.OSFileSystem) or None if
       the path specification could not be resolved.
     """
     if path_spec.HasParent():
       raise errors.PathSpecError(
           u'Unsupported path specification with parent.')
 
-    return dfvfs.vfs.os_file_system.OsFileSystem()
+    return dfvfs.vfs.os_file_system.OSFileSystem()
 
 
 # Register the resolver helpers with the resolver.
