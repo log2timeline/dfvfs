@@ -19,6 +19,7 @@
 from dfvfs.path import compressed_stream_path_spec
 from dfvfs.path import data_range_path_spec
 from dfvfs.path import ewf_path_spec
+from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import path_spec
 from dfvfs.path import qcow_path_spec
