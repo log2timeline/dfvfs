@@ -98,7 +98,6 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     """
     super(TSKPartitionFileEntry, self).__init__(
         file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
-    self._file_object = None
     self._name = None
     self._tsk_vs_part = None
 
@@ -185,15 +184,14 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._file_object is None:
-      if self._tsk_vs_part is None:
-        self._tsk_vs_part = self.GetTSKVsPart()
+    if self._tsk_vs_part is None:
+      self._tsk_vs_part = self.GetTSKVsPart()
 
-      tsk_volume = self._file_system.GetTSKVolume()
-      self._file_object = dfvfs.file_io.tsk_partition_file_io.TSKPartitionFile(
-          tsk_volume, self._tsk_vs_part)
-      self._file_object.open()
-    return self._file_object
+    tsk_volume = self._file_system.GetTSKVolume()
+    file_object = dfvfs.file_io.tsk_partition_file_io.TSKPartitionFile(
+        tsk_volume, self._tsk_vs_part)
+    file_object.open()
+    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""

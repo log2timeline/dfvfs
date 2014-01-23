@@ -98,7 +98,6 @@ class ZipFileEntry(file_entry.FileEntry):
     super(ZipFileEntry, self).__init__(
         file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
     self._zip_info = zip_info
-    self._file_object = None
     self._name = None
 
   def _GetDirectory(self):
@@ -195,15 +194,13 @@ class ZipFileEntry(file_entry.FileEntry):
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._file_object is None:
-      if self._zip_info is None:
-        self._zip_info = self.GetZipInfo()
+    if self._zip_info is None:
+      self._zip_info = self.GetZipInfo()
 
-      zip_file = self.GetZipFile()
-      self._file_object = dfvfs.file_io.zip_file_io.ZipFile(
-          self._zip_info, zip_file)
-      self._file_object.open()
-    return self._file_object
+    zip_file = self.GetZipFile()
+    file_object = dfvfs.file_io.zip_file_io.ZipFile(self._zip_info, zip_file)
+    file_object.open()
+    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""

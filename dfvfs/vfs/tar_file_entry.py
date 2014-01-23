@@ -92,7 +92,6 @@ class TarFileEntry(file_entry.FileEntry):
     super(TarFileEntry, self).__init__(
         file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
     self._tar_info = tar_info
-    self._file_object = None
     self._name = None
 
   def _GetDirectory(self):
@@ -193,15 +192,14 @@ class TarFileEntry(file_entry.FileEntry):
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._file_object is None:
-      if self._tar_info is None:
-        self._tar_info = self.GetTarInfo()
+    if self._tar_info is None:
+      self._tar_info = self.GetTarInfo()
 
-      tar_file_object = self.GetTarExFileObject()
-      self._file_object = dfvfs.file_io.tar_file_io.TarFile(
-          self._tar_info, tar_file_object)
-      self._file_object.open()
-    return self._file_object
+    tar_file_object = self.GetTarExFileObject()
+    file_object = dfvfs.file_io.tar_file_io.TarFile(
+        self._tar_info, tar_file_object)
+    file_object.open()
+    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""

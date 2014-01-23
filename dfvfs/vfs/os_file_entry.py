@@ -66,7 +66,6 @@ class OSFileEntry(file_entry.FileEntry):
     """
     super(OSFileEntry, self).__init__(
         file_system, path_spec, is_root=is_root, is_virtual=False)
-    self._file_object = None
     self._name = None
 
   def _GetDirectory(self):
@@ -140,10 +139,9 @@ class OSFileEntry(file_entry.FileEntry):
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if not self._file_object:
-      self._file_object = os_file_io.OSFile()
-      self._file_object.open(self.path_spec)
-    return self._file_object
+    file_object = os_file_io.OSFile()
+    file_object.open(self.path_spec)
+    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
