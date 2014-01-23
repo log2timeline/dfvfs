@@ -77,7 +77,6 @@ class VShadowFileEntry(file_entry.FileEntry):
     """
     super(VShadowFileEntry, self).__init__(
         file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
-    self._file_object = None
     self._name = None
     self._vshadow_store = None
 
@@ -155,15 +154,14 @@ class VShadowFileEntry(file_entry.FileEntry):
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._file_object is None:
-      if self._vshadow_store is None:
-        self._vshadow_store = self.GetVShadowStore()
+    if self._vshadow_store is None:
+      self._vshadow_store = self.GetVShadowStore()
 
-      vshadow_volume = self._file_system.GetVShadowVolume()
-      self._file_object = dfvfs.file_io.vshadow_file_io.VShadowFile(
-          vshadow_volume, self._vshadow_store)
-      self._file_object.open()
-    return self._file_object
+    vshadow_volume = self._file_system.GetVShadowVolume()
+    file_object = dfvfs.file_io.vshadow_file_io.VShadowFile(
+        vshadow_volume, self._vshadow_store)
+    file_object.open()
+    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
