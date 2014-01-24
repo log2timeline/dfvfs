@@ -222,7 +222,7 @@ class TSKFileEntry(file_entry.FileEntry):
     # pytsk3.TSK_FS_META_TYPE_VIRT
 
     # Other stat information.
-    # stat_object.ino = getattr(self._tsk_file.info.meta, 'addr', None)
+    stat_object.ino = getattr(self._tsk_file.info.meta, 'addr', None)
     # stat_object.dev = stat_info.st_dev
     # stat_object.nlink = getattr(self._tsk_file.info.meta, 'nlink', None)
     # stat_object.fs_type = 'Unknown'
