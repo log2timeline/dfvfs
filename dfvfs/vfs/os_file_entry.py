@@ -116,6 +116,11 @@ class OSFileEntry(file_entry.FileEntry):
     elif stat.S_ISSOCK(stat_info.st_mode):
       stat_object.type = stat_object.TYPE_SOCKET
 
+    # Other stat information.
+    stat_object.ino = stat_info.st_ino
+    # stat_info.st_dev
+    # stat_info.st_nlink
+
     return stat_object
 
   @property
