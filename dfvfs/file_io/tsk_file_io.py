@@ -169,7 +169,9 @@ class TSKFile(file_io.FileIO):
     if self._current_offset < 0:
       raise IOError(u'Invalid current offset value less than zero.')
 
-    if self._current_offset > self._size:
+    # The SleuthKit is not POSIX compliant in its read behavior. Therefore
+    # pytsk3 will raise an IOError if the read offset is beyond the data size.
+    if self._current_offset >= self._size:
       return ''
 
     if size is None or self._current_offset + size > self._size:
