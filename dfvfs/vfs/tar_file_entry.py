@@ -72,9 +72,8 @@ class TarFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
-  def __init__(
-      self, file_system, path_spec, is_root=False, is_virtual=False,
-      tar_info=None):
+  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False,
+               tar_info=None):
     """Initializes the file entry object.
 
     Args:

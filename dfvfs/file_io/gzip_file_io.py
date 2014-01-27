@@ -70,11 +70,11 @@ class GzipFile(file_object_io.FileObjectIO):
     self._gzip_file_object = file_object
     self._compressed_data_offset = -1
     self._compressed_data_size = -1
-    self._uncompressed_data_size = -1
     self.comment = None
     self.modification_time = None
     self.operating_system = None
     self.original_filename = None
+    self.uncompressed_data_size = 0
 
   def _ReadFileHeader(self, file_object):
     """Reads the file header.
@@ -138,7 +138,7 @@ class GzipFile(file_object_io.FileObjectIO):
     file_object.seek(-8, os.SEEK_END)
     file_footer = self._FILE_FOOTER_STRUCT.parse_stream(file_object)
 
-    self._uncompressed_data_size = file_footer.uncompressed_data_size
+    self.uncompressed_data_size = file_footer.uncompressed_data_size
 
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
@@ -151,7 +151,7 @@ class GzipFile(file_object_io.FileObjectIO):
       A file-like object.
     """
     if not self._gzip_file_object:
-      gzip_file_object = resolver.Resolver.OpenFileObject(path_spec)
+      gzip_file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
     else:
       gzip_file_object = self._gzip_file_object
 
@@ -163,14 +163,14 @@ class GzipFile(file_object_io.FileObjectIO):
 
     path_spec_data_range = data_range_path_spec.DataRangePathSpec(
         range_offset=self._compressed_data_offset,
-        range_size=self._compressed_data_size, parent=path_spec)
+        range_size=self._compressed_data_size, parent=path_spec.parent)
     path_spec_compressed_stream = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
             compression_method=definitions.COMPRESSION_METHOD_DEFLATE,
             parent=path_spec_data_range))
 
     file_object = dfvfs.file_io.compressed_stream_io.CompressedStream()
-    file_object.SetUncompressedStreamSize(self._uncompressed_data_size)
+    file_object.SetUncompressedStreamSize(self.uncompressed_data_size)
     file_object.open(path_spec_compressed_stream)
 
     return file_object
