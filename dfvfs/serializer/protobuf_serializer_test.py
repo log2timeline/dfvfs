@@ -64,13 +64,13 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
 
   def testReadSerialized(self):
     """Test the read serialized functionality."""
-    path_spec = serializer.ProtobufPathSpecSerializer.ReadSerialized(
+    path_spec = serializer.ProtobufPathSpecSerializer.ReadSerializedObject(
         self._proto)
     self.assertEquals(path_spec.comparable, self._tsk_path_spec.comparable)
 
   def testWriteSerialized(self):
     """Test the write serialized functionality."""
-    serialized = serializer.ProtobufPathSpecSerializer.WriteSerialized(
+    serialized = serializer.ProtobufPathSpecSerializer.WriteSerializedObject(
         self._tsk_path_spec)
     self.assertEquals(serialized, self._proto)
 
