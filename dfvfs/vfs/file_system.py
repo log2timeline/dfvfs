@@ -146,6 +146,20 @@ class FileSystem(object):
       A string containing the joined path segments prefixed with the path
       separator.
     """
+    # This is an optimized way to combine the path segments into a single path
+    # and combine multiple successive path separators to one.
+
+    # Split all the path segments based on the path (segment) separator.
+    path_segments = [
+        segment.split(self.PATH_SEPARATOR) for segment in path_segments]
+
+    # Flatten the sublists into one list.
+    path_segments = [
+        element for sublist in path_segments for element in sublist]
+
+    # Remove empty path segments.
+    path_segments = filter(None, path_segments)
+
     return u'{0:s}{1:s}'.format(
         self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
 
