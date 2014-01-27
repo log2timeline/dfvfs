@@ -26,7 +26,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
   """Class that implements a protobuf path specification serializer object."""
 
   @classmethod
-  def ReadSerialized(cls, proto):
+  def ReadSerializedObject(cls, proto):
     """Reads a path specification from serialized form.
 
     Args:
@@ -52,14 +52,29 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
       if proto_attribute.name == 'type_indicator':
         type_indicator = value
       elif proto_attribute.name == 'parent':
-        kwargs['parent'] = cls.ReadSerialized(value)
+        kwargs['parent'] = cls.ReadSerializedObject(value)
       elif proto_attribute.name in path_spec_factory.Factory.PROPERTY_NAMES:
         kwargs[proto_attribute.name] = value
 
     return path_spec_factory.Factory.NewPathSpec(type_indicator, **kwargs)
 
   @classmethod
-  def WriteSerialized(cls, path_spec):
+  def ReadSerialized(cls, proto_string):
+    """Reads a path specification from serialized form.
+
+    Args:
+      proto_string: a protobuf string containing the serialized form.
+
+    Returns:
+      A path specification (instance of path.PathSpec).
+    """
+    proto = transmission_pb2.PathSpec()
+    proto.ParseFromString(proto_string)
+
+    return cls.ReadSerializedObject(proto)
+
+  @classmethod
+  def WriteSerializedObject(cls, path_spec):
     """Writes a path specification to serialized form.
 
     Args:
@@ -73,7 +88,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
     serialized.type_indicator = path_spec.type_indicator
 
     if path_spec.HasParent():
-      serialized_parent = cls.WriteSerialized(path_spec.parent)
+      serialized_parent = cls.WriteSerializedObject(path_spec.parent)
       serialized.parent.MergeFrom(serialized_parent)
 
     # We don't want to set attributes here that are not used.
@@ -84,3 +99,16 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
           setattr(serialized, property_name, property_value)
 
     return serialized
+
+  @classmethod
+  def WriteSerialized(cls, path_spec):
+    """Writes a path specification to serialized form.
+
+    Args:
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      A protobuf string containing the serialized form.
+    """
+    proto = cls.WriteSerializedObject(path_spec)
+    return proto.SerializeToString()
