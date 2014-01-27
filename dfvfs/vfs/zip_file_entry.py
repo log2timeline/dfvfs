@@ -78,9 +78,8 @@ class ZipFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def __init__(
-      self, file_system, path_spec, is_root=False, is_virtual=False,
-      zip_info=None):
+  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False,
+               zip_info=None):
     """Initializes the file entry object.
 
     Args:

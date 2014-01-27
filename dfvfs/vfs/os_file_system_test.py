@@ -29,7 +29,7 @@ class OSFileSystemTest(unittest.TestCase):
   """The unit test for the operating system file system object."""
 
   def testIntialize(self):
-    """Test the open and close functionality."""
+    """Test the intialize functionality."""
     file_system = os_file_system.OSFileSystem()
 
     self.assertNotEquals(file_system, None)
