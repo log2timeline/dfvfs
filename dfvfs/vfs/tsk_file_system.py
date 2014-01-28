@@ -35,17 +35,18 @@ class TSKFileSystem(file_system.FileSystem):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
-  def __init__(self, file_object, path_spec, offset=0):
+  def __init__(self, resolver_context, file_object, path_spec, offset=0):
     """Initializes the file system object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_object: the file-like object (instance of file_io.FileIO).
       path_spec: the path specification (instance of path.PathSpec) of
                  the file-like object.
       offset: option offset, in bytes, of the start of the file system,
               the default is 0.
     """
-    super(TSKFileSystem, self).__init__()
+    super(TSKFileSystem, self).__init__(resolver_context)
     self._file_object = file_object
     self._path_spec = path_spec
 
@@ -123,7 +124,7 @@ class TSKFileSystem(file_system.FileSystem):
 
     # TODO: is there a way to determine the parent inode number here?
     return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
-        self, path_spec, tsk_file=tsk_file)
+        self._resolver_context, self, path_spec, tsk_file=tsk_file)
 
   def GetFsInfo(self):
     """Retrieves the file system info object.
@@ -154,4 +155,5 @@ class TSKFileSystem(file_system.FileSystem):
     path_spec = tsk_path_spec.TSKPathSpec(**kwargs)
 
     return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
-        self, path_spec, tsk_file=tsk_file, is_root=True)
+        self._resolver_context, self, path_spec, tsk_file=tsk_file,
+        is_root=True)

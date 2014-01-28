@@ -72,11 +72,13 @@ class TarFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False,
-               tar_info=None):
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False, tar_info=None):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
@@ -89,7 +91,8 @@ class TarFileEntry(file_entry.FileEntry):
                 The default is None.
     """
     super(TarFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
     self._tar_info = tar_info
     self._name = None
 
@@ -187,7 +190,7 @@ class TarFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield TarFileEntry(self._file_system, path_spec)
+        yield TarFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
@@ -196,7 +199,8 @@ class TarFileEntry(file_entry.FileEntry):
 
     tar_file_object = self.GetTarExFileObject()
     file_object = dfvfs.file_io.tar_file_io.TarFile(
-        self._tar_info, tar_file_object)
+        self._resolver_context, tar_info=self._tar_info,
+        tar_file_object=tar_file_object)
     file_object.open()
     return file_object
 
@@ -214,7 +218,7 @@ class TarFileEntry(file_entry.FileEntry):
     parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = tar_path_spec.TarPathSpec(
         location=parent_location, parent=parent_path_spec)
-    return TarFileEntry(self._file_system, path_spec)
+    return TarFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetTarExFileObject(self):
     """Retrieves the tar extracted file-like object.

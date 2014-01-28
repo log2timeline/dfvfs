@@ -25,22 +25,6 @@ from dfvfs.vfs import file_entry
 class RootOnlyFileEntry(file_entry.FileEntry):
   """Class that implements a root only file entry object."""
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
-    """Initializes the file entry object.
-
-    Args:
-      file_system: the file system object (instance of vfs.FileSystem).
-      path_spec: the path specification object (instance of path.PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
-               The default is False.
-      is_virtual: optional boolean value to indicate if the file entry is
-                  a virtual file entry emulated by the corresponding file
-                  system. The default is False.
-    """
-    super(RootOnlyFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
-
   def _GetDirectory(self):
     """Retrieves the directory object (instance of vfs.Directory)."""
     return

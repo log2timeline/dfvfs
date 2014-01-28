@@ -22,10 +22,15 @@ import unittest
 
 from dfvfs.file_io import tsk_file_io
 from dfvfs.path import tsk_path_spec
+from dfvfs.resolver import context
 
 
 class ImageFileTestCase(unittest.TestCase):
   """The unit test case for the syslog test data."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
 
   def _testOpenCloseInode(self, parent_path_spec):
     """Test the open and close functionality using an inode.
@@ -34,9 +39,9 @@ class ImageFileTestCase(unittest.TestCase):
       parent_path_spec: the parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile()
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 116)
     file_object.close()
 
@@ -50,9 +55,9 @@ class ImageFileTestCase(unittest.TestCase):
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         location='/passwords.txt', parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile()
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 116)
     file_object.close()
 
@@ -66,9 +71,9 @@ class ImageFileTestCase(unittest.TestCase):
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location='/a_directory/another_file', parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile()
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -109,9 +114,9 @@ class ImageFileTestCase(unittest.TestCase):
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=15, location='/passwords.txt', parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile()
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     read_buffer = file_object.read()
 
     expected_buffer = (

@@ -44,7 +44,8 @@ class VhdiFile(file_object_io.FileObjectIO):
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
 
-    file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec.parent, resolver_context=self._resolver_context)
     vhdi_file = pyvhdi.file()
     vhdi_file.open_file_object(file_object)
     return vhdi_file

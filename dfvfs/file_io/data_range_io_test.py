@@ -25,6 +25,7 @@ from dfvfs.file_io import os_file_io
 from dfvfs.file_io import test_lib
 from dfvfs.path import data_range_path_spec
 from dfvfs.path import os_path_spec
+from dfvfs.resolver import context
 
 
 class DataRangeTest(test_lib.SylogTestCase):
@@ -32,6 +33,7 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'syslog')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._data_range_path_spec = data_range_path_spec.DataRangePathSpec(
@@ -39,9 +41,10 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    os_file_object = os_file_io.OSFile()
-    os_file_object.open(self._os_path_spec)
-    file_object = data_range_io.DataRange(file_object=os_file_object)
+    os_file_object = os_file_io.OSFile(self._resolver_context)
+    os_file_object.open(path_spec=self._os_path_spec)
+    file_object = data_range_io.DataRange(
+        self._resolver_context, file_object=os_file_object)
     file_object.open()
 
     self._testGetSizeFileObject(file_object)
@@ -51,9 +54,10 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def testSetRange(self):
     """Test the set data range functionality."""
-    os_file_object = os_file_io.OSFile()
-    os_file_object.open(self._os_path_spec)
-    file_object = data_range_io.DataRange(file_object=os_file_object)
+    os_file_object = os_file_io.OSFile(self._resolver_context)
+    os_file_object.open(path_spec=self._os_path_spec)
+    file_object = data_range_io.DataRange(
+        self._resolver_context, file_object=os_file_object)
     file_object.SetRange(167, 1080)
     file_object.open()
 
@@ -66,8 +70,8 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = data_range_io.DataRange()
-    file_object.open(self._data_range_path_spec)
+    file_object = data_range_io.DataRange(self._resolver_context)
+    file_object.open(path_spec=self._data_range_path_spec)
 
     self.assertEquals(file_object.get_size(), 1080)
 
@@ -75,8 +79,8 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = data_range_io.DataRange()
-    file_object.open(self._data_range_path_spec)
+    file_object = data_range_io.DataRange(self._resolver_context)
+    file_object.open(path_spec=self._data_range_path_spec)
 
     self._testSeekFileObject(file_object, base_offset=0)
 
@@ -84,8 +88,8 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = data_range_io.DataRange()
-    file_object.open(self._data_range_path_spec)
+    file_object = data_range_io.DataRange(self._resolver_context)
+    file_object.open(path_spec=self._data_range_path_spec)
 
     self._testReadFileObject(file_object, base_offset=0)
 

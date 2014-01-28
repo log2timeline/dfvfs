@@ -26,6 +26,7 @@ from dfvfs.file_io import os_file_io
 from dfvfs.lib import tsk_image
 from dfvfs.path import os_path_spec
 from dfvfs.path import tsk_partition_path_spec
+from dfvfs.resolver import context
 from dfvfs.vfs import tsk_partition_file_entry
 from dfvfs.vfs import tsk_partition_file_system
 
@@ -35,14 +36,15 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'tsk_volume_system.raw')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_object = os_file_io.OSFile()
+    file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(self._os_path_spec)
     tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
     tsk_volume = pytsk3.Volume_Info(tsk_image_object)
     self._tsk_file_system = tsk_partition_file_system.TSKPartitionFileSystem(
-        tsk_volume, self._os_path_spec)
+        self._resolver_context, tsk_volume, self._os_path_spec)
 
   # mmls test_data/tsk_volume_system.raw
   # DOS Partition Table
@@ -61,7 +63,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = tsk_partition_file_entry.TSKPartitionFileEntry(
-        self._tsk_file_system, self._os_path_spec)
+        self._resolver_context, self._tsk_file_system, self._os_path_spec)
 
     self.assertNotEquals(file_entry, None)
 

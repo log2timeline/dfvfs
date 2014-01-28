@@ -30,6 +30,7 @@ class VhdiFileTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    super(VhdiFileTest, self).setUp()
     test_file = os.path.join('test_data', 'image.vhd')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._vhdi_path_spec = vhdi_path_spec.VhdiPathSpec(parent=path_spec)

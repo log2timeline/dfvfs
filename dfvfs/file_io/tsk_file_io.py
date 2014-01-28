@@ -20,20 +20,19 @@
 import os
 import pytsk3
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.manager
-
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
+from dfvfs.resolver import resolver
 
 
 class TSKFile(file_io.FileIO):
   """Class that implements a file-like object using pytsk3."""
 
-  def __init__(self, tsk_file_system=None, tsk_file=None):
+  def __init__(self, resolver_context, tsk_file_system=None, tsk_file=None):
     """Initializes the file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       tsk_file_system: optional SleuthKit file system object (instance of
                        pytsk3.FS_Info). The default is None.
       tsk_file: optional SleuthKit file object (instance of pytsk3.File).
@@ -47,7 +46,7 @@ class TSKFile(file_io.FileIO):
           u'TSK file object provided without corresponding file system '
           u'object.')
 
-    super(TSKFile, self).__init__()
+    super(TSKFile, self).__init__(resolver_context)
     self._tsk_file_system = tsk_file_system
     self._tsk_file = tsk_file
     self._current_offset = 0
@@ -62,11 +61,12 @@ class TSKFile(file_io.FileIO):
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  def open(self, path_spec, mode='rb'):
+  def open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -74,7 +74,7 @@ class TSKFile(file_io.FileIO):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
-    if not path_spec:
+    if not self._tsk_file_set_in_init and not path_spec:
       raise ValueError(u'Missing path specfication.')
 
     if mode != 'rb':
@@ -84,8 +84,8 @@ class TSKFile(file_io.FileIO):
       raise IOError(u'Already open.')
 
     if not self._tsk_file_set_in_init:
-      file_system = dfvfs.vfs.manager.FileSystemManager.OpenFileSystem(
-          path_spec)
+      file_system = resolver.Resolver.OpenFileSystem(
+          path_spec, resolver_context=self._resolver_context)
       self._tsk_file_system = file_system.GetFsInfo()
 
       # Opening a file by inode number is faster than opening a file
@@ -141,6 +141,8 @@ class TSKFile(file_io.FileIO):
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
+
+    self._resolver_context.RemoveFileObject(self)
 
     if not self._tsk_file_set_in_init:
       self._tsk_file = None

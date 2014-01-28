@@ -115,13 +115,15 @@ class CompressedStream(file_io.FileIO):
   # The size of the compressed data buffer.
   _COMPRESSED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
-  def __init__(self, compression_method=None, file_object=None):
+  def __init__(
+      self, resolver_context, compression_method=None, file_object=None):
     """Initializes the file-like object.
 
        If the file-like object is chained do not separately use the parent
        file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       compression_method: optional method used to the compress the data.
       file_object: optional parent file-like object. The default is None.
 
@@ -133,7 +135,7 @@ class CompressedStream(file_io.FileIO):
           u'File-like object provided without corresponding compression '
           u'method.')
 
-    super(CompressedStream, self).__init__()
+    super(CompressedStream, self).__init__(resolver_context)
     self._compression_method = compression_method
     self._file_object = file_object
     self._compressed_data = ''
@@ -289,7 +291,8 @@ class CompressedStream(file_io.FileIO):
         raise errors.PathSpecError(
             u'Path specification missing compression method.')
 
-      self._file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
+      self._file_object = resolver.Resolver.OpenFileObject(
+          path_spec.parent, resolver_context=self._resolver_context)
 
     self._is_open = True
 
@@ -305,6 +308,8 @@ class CompressedStream(file_io.FileIO):
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
+
+    self._resolver_context.RemoveFileObject(self)
 
     if not self._file_object_set_in_init:
       self._file_object.close()

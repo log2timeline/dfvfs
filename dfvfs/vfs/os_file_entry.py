@@ -54,10 +54,11 @@ class OSFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
-  def __init__(self, file_system, path_spec, is_root=False):
+  def __init__(self, resolver_context, file_system, path_spec, is_root=False):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification object (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
@@ -65,7 +66,8 @@ class OSFileEntry(file_entry.FileEntry):
                The default is False.
     """
     super(OSFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=False)
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=False)
     self._name = None
 
   def _GetDirectory(self):
@@ -140,12 +142,12 @@ class OSFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield OSFileEntry(self._file_system, path_spec)
+        yield OSFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    file_object = os_file_io.OSFile()
-    file_object.open(self.path_spec)
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(path_spec=self.path_spec)
     return file_object
 
   def GetParentFileEntry(self):
@@ -160,4 +162,4 @@ class OSFileEntry(file_entry.FileEntry):
       parent_location = self._file_system.PATH_SEPARATOR
 
     path_spec = os_path_spec.OSPathSpec(location=parent_location)
-    return OSFileEntry(self._file_system, path_spec)
+    return OSFileEntry(self._resolver_context, self._file_system, path_spec)

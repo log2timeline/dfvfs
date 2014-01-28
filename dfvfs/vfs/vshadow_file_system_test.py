@@ -26,6 +26,7 @@ from dfvfs.file_io import qcow_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
+from dfvfs.resolver import context
 from dfvfs.vfs import vshadow_file_system
 
 
@@ -34,10 +35,11 @@ class VShadowFileSystemTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
-    self._qcow_file_object = qcow_file_io.QcowFile()
+    self._qcow_file_object = qcow_file_io.QcowFile(self._resolver_context)
     self._qcow_file_object.open(self._qcow_path_spec)
 
   # qcowmount test_data/vsstest.qcow2 fuse/
@@ -68,7 +70,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     vshadow_volume = pyvshadow.volume()
     vshadow_volume.open_file_object(self._qcow_file_object)
     file_system = vshadow_file_system.VShadowFileSystem(
-        vshadow_volume, self._qcow_path_spec)
+        self._resolver_context, vshadow_volume, self._qcow_path_spec)
 
     self.assertNotEquals(file_system, None)
 
@@ -77,7 +79,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     vshadow_volume = pyvshadow.volume()
     vshadow_volume.open_file_object(self._qcow_file_object)
     file_system = vshadow_file_system.VShadowFileSystem(
-        vshadow_volume, self._qcow_path_spec)
+        self._resolver_context, vshadow_volume, self._qcow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
@@ -108,7 +110,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     vshadow_volume = pyvshadow.volume()
     vshadow_volume.open_file_object(self._qcow_file_object)
     file_system = vshadow_file_system.VShadowFileSystem(
-        vshadow_volume, self._qcow_path_spec)
+        self._resolver_context, vshadow_volume, self._qcow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
@@ -154,7 +156,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     vshadow_volume = pyvshadow.volume()
     vshadow_volume.open_file_object(self._qcow_file_object)
     file_system = vshadow_file_system.VShadowFileSystem(
-        vshadow_volume, self._qcow_path_spec)
+        self._resolver_context, vshadow_volume, self._qcow_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

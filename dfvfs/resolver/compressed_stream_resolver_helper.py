@@ -30,17 +30,19 @@ class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
-  def OpenFileObject(self, path_spec):
+  def OpenFileObject(self, path_spec, resolver_context):
     """Opens a file-like object defined by path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
       The file-like object (instance of file_io.FileIO) or None if the path
       specification could not be resolved.
     """
-    file_object = dfvfs.file_io.compressed_stream_io.CompressedStream()
+    file_object = dfvfs.file_io.compressed_stream_io.CompressedStream(
+        resolver_context)
     file_object.open(path_spec)
     return file_object
 

@@ -29,15 +29,25 @@ import os
 class FileIO(object):
   """Class that implements the VFS file-like object interface."""
 
+  def __init__(self, resolver_context):
+    """Initializes the file-like object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+    """
+    super(FileIO, self).__init__()
+    self._resolver_context = resolver_context
+
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
   @abc.abstractmethod
-  def open(self, path_spec, mode='rb'):
+  def open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

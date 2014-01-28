@@ -36,4 +36,4 @@ class GzipFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     path_spec = gzip_path_spec.GzipPathSpec(parent=self._path_spec)
     return gzip_file_entry.GzipFileEntry(
-        self, path_spec, is_root=True, is_virtual=True)
+        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)

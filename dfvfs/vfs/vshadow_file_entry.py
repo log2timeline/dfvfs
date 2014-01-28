@@ -62,10 +62,13 @@ class VShadowFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
@@ -76,7 +79,8 @@ class VShadowFileEntry(file_entry.FileEntry):
                   system. The default is False.
     """
     super(VShadowFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
     self._name = None
     self._vshadow_store = None
 
@@ -150,7 +154,8 @@ class VShadowFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield VShadowFileEntry(self._file_system, path_spec)
+        yield VShadowFileEntry(
+            self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
@@ -159,7 +164,8 @@ class VShadowFileEntry(file_entry.FileEntry):
 
     vshadow_volume = self._file_system.GetVShadowVolume()
     file_object = dfvfs.file_io.vshadow_file_io.VShadowFile(
-        vshadow_volume, self._vshadow_store)
+        self._resolver_context, vshadow_volume=vshadow_volume,
+        vshadow_store=self._vshadow_store)
     file_object.open()
     return file_object
 

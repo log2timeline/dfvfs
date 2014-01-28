@@ -33,24 +33,27 @@ class ResolverHelper(object):
     return type_indicator
 
   @abc.abstractmethod
-  def OpenFileObject(self, path_spec):
+  def OpenFileObject(self, path_spec, resolver_context):
     """Opens a file-like object defined by path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
       The file-like object (instance of file_io.FileIO) or None if the path
       specification could not be resolved.
     """
 
-  def OpenFileSystem(self, unused_path_spec):
+  def OpenFileSystem(self, unused_path_spec, unused_resolver_context):
     """Opens a file system object defined by path specification.
 
        This is the fall through implementation that raises a RuntimeError.
 
     Args:
       unused_path_spec: the VFS path specification (instance of path.PathSpec).
+      unused_resolver_context: the resolver context (instance of
+                               resolver.Context).
 
     Raises:
       RuntimeError: since this is the fall through implementation.

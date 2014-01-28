@@ -60,10 +60,13 @@ class Directory(object):
 class FileEntry(object):
   """Class that implements the VFS file entry object interface."""
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification object (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
@@ -78,6 +81,7 @@ class FileEntry(object):
     self._file_system = file_system
     self._is_root = is_root
     self._is_virtual = is_virtual
+    self._resolver_context = resolver_context
     self._stat_object = None
     self.path_spec = path_spec
 

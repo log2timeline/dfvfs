@@ -84,10 +84,13 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
       is_virtual: optional boolean value to indicate if the file entry is
@@ -97,7 +100,8 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
                 The default is None.
     """
     super(TSKPartitionFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
     self._name = None
     self._tsk_vs_part = None
 
@@ -180,7 +184,8 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield TSKPartitionFileEntry(self._file_system, path_spec)
+        yield TSKPartitionFileEntry(
+            self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
@@ -189,7 +194,8 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
 
     tsk_volume = self._file_system.GetTSKVolume()
     file_object = dfvfs.file_io.tsk_partition_file_io.TSKPartitionFile(
-        tsk_volume, self._tsk_vs_part)
+        self._resolver_context, tsk_volume=tsk_volume,
+        tsk_vs_part=self._tsk_vs_part)
     file_object.open()
     return file_object
 

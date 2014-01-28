@@ -25,6 +25,7 @@ from dfvfs.file_io import qcow_file_io
 from dfvfs.helpers import windows_path_resolver
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
+from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
 from dfvfs.vfs import tsk_file_system
 
@@ -34,17 +35,18 @@ class WindowsPathResolverTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join(os.getcwd(), 'test_data')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._os_file_system = os_file_system.OSFileSystem()
+    self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     test_file = os.path.join('test_data', 'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
-    file_object = qcow_file_io.QcowFile()
+    file_object = qcow_file_io.QcowFile(self._resolver_context)
     file_object.open(self._qcow_path_spec)
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
-        file_object, self._qcow_path_spec)
+        self._resolver_context, file_object, self._qcow_path_spec)
 
   def testResolvePathDirectory(self):
     """Test the resolve path function on a mount point directory."""
@@ -54,11 +56,11 @@ class WindowsPathResolverTest(unittest.TestCase):
     cwd = os.getcwd()
     if platform.system() == 'Windows':
       # Remove the drive letter from the current working directory.
-      _, _, cwd = cwd.partition('\\')
-      cwd = '\\{0:s}'.format(cwd)
-    
+      _, _, cwd = cwd.partition(u'\\')
+      cwd = u'\\{0:s}'.format(cwd)
+
     expected_path = os.path.join(
-        cwd, 'test_data', 'testdir_os', 'file1.txt')
+        cwd, u'test_data', u'testdir_os', u'file1.txt')
 
     windows_path = u'C:\\testdir_os\\file1.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
@@ -155,7 +157,7 @@ class WindowsPathResolverTest(unittest.TestCase):
         self._tsk_file_system, self._qcow_path_spec)
 
     path_resolver.SetEnvironmentVariable(
-        'SystemRoot', 'C:\\System Volume Information')
+        u'SystemRoot', u'C:\\System Volume Information')
 
     expected_path = (
         u'/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')

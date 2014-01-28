@@ -26,6 +26,7 @@ from dfvfs.file_io import qcow_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
+from dfvfs.resolver import context
 from dfvfs.vfs import vshadow_file_entry
 from dfvfs.vfs import vshadow_file_system
 
@@ -35,15 +36,16 @@ class VShadowFileEntryTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
-    file_object = qcow_file_io.QcowFile()
+    file_object = qcow_file_io.QcowFile(self._resolver_context)
     file_object.open(self._qcow_path_spec)
     vshadow_volume = pyvshadow.volume()
     vshadow_volume.open_file_object(file_object)
     self._vshadow_file_system = vshadow_file_system.VShadowFileSystem(
-        vshadow_volume, self._qcow_path_spec)
+        self._resolver_context, vshadow_volume, self._qcow_path_spec)
 
   # qcowmount test_data/vsstest.qcow2 fuse/
   # vshadowinfo fuse/qcow1
@@ -71,7 +73,7 @@ class VShadowFileEntryTest(unittest.TestCase):
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = vshadow_file_entry.VShadowFileEntry(
-        self._vshadow_file_system, self._qcow_path_spec)
+        self._resolver_context, self._vshadow_file_system, self._qcow_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
