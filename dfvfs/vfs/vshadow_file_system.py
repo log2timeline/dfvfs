@@ -32,15 +32,16 @@ class VShadowFileSystem(file_system.FileSystem):
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
-  def __init__(self, vshadow_volume, path_spec):
+  def __init__(self, resolver_context, vshadow_volume, path_spec):
     """Initializes the file system object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       vshadow_volume: the VSS volume object (instance of pyvshadow.volume).
       path_spec: the path specification (instance of path.PathSpec) of
                  the file-like object.
     """
-    super(VShadowFileSystem, self).__init__()
+    super(VShadowFileSystem, self).__init__(resolver_context)
     self._vshadow_volume = vshadow_volume
     self._path_spec = path_spec
 
@@ -85,7 +86,8 @@ class VShadowFileSystem(file_system.FileSystem):
 
     if store_index < 0 or store_index >= self._vshadow_volume.number_of_stores:
       return
-    return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(self, path_spec)
+    return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(
+        self._resolver_context, self, path_spec)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -96,7 +98,7 @@ class VShadowFileSystem(file_system.FileSystem):
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec)
     return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(
-        self, path_spec, is_root=True, is_virtual=True)
+        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
 
   def GetVShadowVolume(self):
     """Retrieves the VSS volume object.

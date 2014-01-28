@@ -30,6 +30,7 @@ class EwfFileTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    super(EwfFileTest, self).setUp()
     test_file = os.path.join('test_data', 'image.E01')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._ewf_path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)

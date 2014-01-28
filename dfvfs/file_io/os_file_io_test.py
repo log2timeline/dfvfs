@@ -22,6 +22,7 @@ import unittest
 
 from dfvfs.file_io import os_file_io
 from dfvfs.path import os_path_spec
+from dfvfs.resolver import context
 
 
 class OSFileTest(unittest.TestCase):
@@ -29,6 +30,7 @@ class OSFileTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'password.txt')
     self._path_spec1 = os_path_spec.OSPathSpec(location=test_file)
 
@@ -37,8 +39,8 @@ class OSFileTest(unittest.TestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = os_file_io.OSFile()
-    file_object.open(self._path_spec1)
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(path_spec=self._path_spec1)
 
     self.assertEquals(file_object.get_size(), 116)
     file_object.close()
@@ -47,8 +49,8 @@ class OSFileTest(unittest.TestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = os_file_io.OSFile()
-    file_object.open(self._path_spec2)
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(path_spec=self._path_spec2)
 
     self.assertEquals(file_object.get_size(), 22)
 
@@ -84,8 +86,8 @@ class OSFileTest(unittest.TestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = os_file_io.OSFile()
-    file_object.open(self._path_spec1)
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(path_spec=self._path_spec1)
 
     read_buffer = file_object.read()
 

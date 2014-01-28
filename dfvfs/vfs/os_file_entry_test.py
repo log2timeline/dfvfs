@@ -21,6 +21,8 @@ import os
 import unittest
 
 from dfvfs.path import os_path_spec
+from dfvfs.resolver import context
+from dfvfs.vfs import os_file_entry
 from dfvfs.vfs import os_file_system
 
 
@@ -29,8 +31,17 @@ class OSFileEntryTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    self._os_file_system = os_file_system.OSFileSystem()
+    self._resolver_context = context.Context()
+    self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
     self._test_file = os.path.join('test_data', 'testdir_os')
+
+  def testIntialize(self):
+    """Test the initialize functionality."""
+    path_spec = os_path_spec.OSPathSpec(location=self._test_file)
+    file_entry = os_file_entry.OSFileEntry(
+        self._resolver_context, self._os_file_system, path_spec)
+
+    self.assertNotEquals(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""

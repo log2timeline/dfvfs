@@ -22,21 +22,26 @@ import platform
 import unittest
 
 from dfvfs.path import os_path_spec
+from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
 
 
 class OSFileSystemTest(unittest.TestCase):
   """The unit test for the operating system file system object."""
 
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+
   def testIntialize(self):
     """Test the intialize functionality."""
-    file_system = os_file_system.OSFileSystem()
+    file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     self.assertNotEquals(file_system, None)
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    file_system = os_file_system.OSFileSystem()
+    file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     path_spec = os_path_spec.OSPathSpec(
         location=os.path.join('test_data', 'testdir_os', 'file1.txt'))
@@ -48,7 +53,7 @@ class OSFileSystemTest(unittest.TestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
-    file_system = os_file_system.OSFileSystem()
+    file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     path_spec = os_path_spec.OSPathSpec(
         location=os.path.join('test_data', 'testdir_os', 'file1.txt'))
@@ -65,7 +70,7 @@ class OSFileSystemTest(unittest.TestCase):
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    file_system = os_file_system.OSFileSystem()
+    file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     if platform.system() == 'Windows':
       # Return the root with the drive letter of the volume the current

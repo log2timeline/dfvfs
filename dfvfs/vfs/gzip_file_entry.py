@@ -17,7 +17,9 @@
 # limitations under the License.
 """The gzip file entry implementation."""
 
-from dfvfs.file_io import gzip_file_io
+# This is necessary to prevent a circular import.
+import dfvfs.file_io.gzip_file_io
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
@@ -29,10 +31,13 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False):
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification object (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
@@ -43,7 +48,8 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
                   system. The default is False.
     """
     super(GzipFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
     self._gzip_file = None
 
   def _GetStat(self):
@@ -85,8 +91,8 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    file_object = gzip_file_io.GzipFile()
-    file_object.open(self.path_spec)
+    file_object = dfvfs.file_io.gzip_file_io.GzipFile(self._resolver_context)
+    file_object.open(path_spec=self.path_spec)
     return file_object
 
   def GetGzipFile(self):
@@ -95,6 +101,6 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
     Returns:
       The gzip file object (instance of file_io.GzipFile).
     """
-    gzip_file = gzip_file_io.GzipFile()
-    gzip_file.open(self.path_spec)
+    gzip_file = dfvfs.file_io.gzip_file_io.GzipFile(self._resolver_context)
+    gzip_file.open(path_spec=self.path_spec)
     return gzip_file

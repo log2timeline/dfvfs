@@ -46,7 +46,8 @@ class EwfFile(file_object_io.FileObjectIO):
 
     # TODO: handle multiple segment file here.
     # Glob first then resolve the file objects of every segment file?
-    file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec.parent, resolver_context=self._resolver_context)
     ewf = pyewf.handle()
     ewf.open_file_objects([file_object])
     return ewf

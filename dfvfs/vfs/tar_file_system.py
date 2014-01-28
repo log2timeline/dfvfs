@@ -33,16 +33,18 @@ class TarFileSystem(file_system.FileSystem):
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
-  def __init__(self, file_object, path_spec, encoding='utf-8'):
+  def __init__(
+      self, resolver_context, file_object, path_spec, encoding='utf-8'):
     """Initializes the file system object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_object: the file-like object (instance of file_io.FileIO).
       path_spec: the path specification (instance of path.PathSpec) of
                  the file-like object.
       encoding: optional file entry name encoding. The default is 'utf-8'.
     """
-    super(TarFileSystem, self).__init__()
+    super(TarFileSystem, self).__init__(resolver_context)
     self._file_object = file_object
     self._path_spec = path_spec
     self.encoding = encoding
@@ -104,7 +106,7 @@ class TarFileSystem(file_system.FileSystem):
     if tar_info is None:
       return
     return dfvfs.vfs.tar_file_entry.TarFileEntry(
-        self, path_spec, tar_info=tar_info)
+        self._resolver_context, self, path_spec, tar_info=tar_info)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -116,7 +118,7 @@ class TarFileSystem(file_system.FileSystem):
         location=self.LOCATION_ROOT, parent=self._path_spec)
 
     return dfvfs.vfs.tar_file_entry.TarFileEntry(
-        self, path_spec, is_root=True, is_virtual=True)
+        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
 
   def GetTarFile(self):
     """Retrieves the tar file object.

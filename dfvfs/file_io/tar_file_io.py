@@ -22,19 +22,18 @@
 
 import os
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.manager
-
 from dfvfs.file_io import file_io
+from dfvfs.resolver import resolver
 
 
 class TarFile(file_io.FileIO):
   """Class that implements a file-like object using tarfile."""
 
-  def __init__(self, tar_info=None, tar_file_object=None):
+  def __init__(self, resolver_context, tar_info=None, tar_file_object=None):
     """Initializes the file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       tar_info: optional tar info object (instance of tarfile.TarInfo).
                 The default is None.
       tar_file_object: optional extracted file-like object (instance of
@@ -48,7 +47,7 @@ class TarFile(file_io.FileIO):
           u'Tar extracted file object provided without corresponding info '
           u'object.')
 
-    super(TarFile, self).__init__()
+    super(TarFile, self).__init__(resolver_context)
     self._tar_info = tar_info
     self._tar_file_object = tar_file_object
     self._current_offset = 0
@@ -85,9 +84,8 @@ class TarFile(file_io.FileIO):
       raise IOError(u'Already open.')
 
     if not self._tar_file_object_set_in_init:
-      file_system = dfvfs.vfs.manager.FileSystemManager.OpenFileSystem(
-          path_spec)
-
+      file_system = resolver.Resolver.OpenFileSystem(
+          path_spec, resolver_context=self._resolver_context)
       file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
       self._tar_info = file_entry.GetTarInfo()
@@ -109,6 +107,8 @@ class TarFile(file_io.FileIO):
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
+
+    self._resolver_context.RemoveFileObject(self)
 
     if not self._tar_file_object_set_in_init:
       self._tar_file_object.close()

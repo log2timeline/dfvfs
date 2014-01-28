@@ -17,6 +17,8 @@
 # limitations under the License.
 """The zip file entry implementation."""
 
+import calendar
+
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.zip_file_io
 
@@ -78,11 +80,13 @@ class ZipFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False,
-               zip_info=None):
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False, zip_info=None):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
@@ -95,7 +99,8 @@ class ZipFileEntry(file_entry.FileEntry):
                 The default is None.
     """
     super(ZipFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
     self._zip_info = zip_info
     self._name = None
 
@@ -131,9 +136,10 @@ class ZipFileEntry(file_entry.FileEntry):
       stat_object.size = getattr(self._zip_info, 'size', None)
 
     # Date and time stat information.
-    # TODO: determine how to standarize these time values.
-    # date_time = getattr(self._zip_info, 'date_time', None)
-    # year, month, day_of_month, hours, minutes, seconds = date_time
+    # TODO: move this to a timelib equivalent.
+    date_time = getattr(self._zip_info, 'date_time', None)
+    if date_time:
+      stat_object.mtime = calendar.timegm(date_time)
 
     # Ownership and permissions stat information.
     if self._zip_info is not None:
@@ -189,7 +195,7 @@ class ZipFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield ZipFileEntry(self._file_system, path_spec)
+        yield ZipFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
@@ -197,7 +203,8 @@ class ZipFileEntry(file_entry.FileEntry):
       self._zip_info = self.GetZipInfo()
 
     zip_file = self.GetZipFile()
-    file_object = dfvfs.file_io.zip_file_io.ZipFile(self._zip_info, zip_file)
+    file_object = dfvfs.file_io.zip_file_io.ZipFile(
+          self._resolver_context, zip_info=self._zip_info, zip_file=zip_file)
     file_object.open()
     return file_object
 
@@ -215,7 +222,7 @@ class ZipFileEntry(file_entry.FileEntry):
     parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = zip_path_spec.ZipPathSpec(
         location=parent_location, parent=parent_path_spec)
-    return ZipFileEntry(self._file_system, path_spec)
+    return ZipFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetZipFile(self):
     """Retrieves the zip file object.

@@ -33,15 +33,16 @@ class ZipFileSystem(file_system.FileSystem):
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def __init__(self, file_object, path_spec):
+  def __init__(self, resolver_context, file_object, path_spec):
     """Initializes the file system object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_object: the file-like object (instance of file_io.FileIO).
       path_spec: the path specification (instance of path.PathSpec) of
                  the file-like object.
     """
-    super(ZipFileSystem, self).__init__()
+    super(ZipFileSystem, self).__init__(resolver_context)
     self._file_object = file_object
     self._path_spec = path_spec
 
@@ -100,7 +101,7 @@ class ZipFileSystem(file_system.FileSystem):
     if zip_info is None:
       return
     return dfvfs.vfs.zip_file_entry.ZipFileEntry(
-        self, path_spec, zip_info=zip_info)
+        self._resolver_context, self, path_spec, zip_info=zip_info)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -112,7 +113,7 @@ class ZipFileSystem(file_system.FileSystem):
         location=self.LOCATION_ROOT, parent=self._path_spec)
 
     return dfvfs.vfs.zip_file_entry.ZipFileEntry(
-        self, path_spec, is_root=True, is_virtual=True)
+        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
 
   def GetZipFile(self):
     """Retrieves the zip file object.

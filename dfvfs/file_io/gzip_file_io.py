@@ -60,13 +60,14 @@ class GzipFile(file_object_io.FileObjectIO):
   _FLAG_FNAME = 0x08
   _FLAG_FCOMMENT = 0x10
 
-  def __init__(self, file_object=None):
+  def __init__(self, resolver_context, file_object=None):
     """Initializes the file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_object: optional file-like object. The default is None.
     """
-    super(GzipFile, self).__init__(file_object=None)
+    super(GzipFile, self).__init__(resolver_context, file_object=None)
     self._gzip_file_object = file_object
     self._compressed_data_offset = -1
     self._compressed_data_size = -1
@@ -151,7 +152,8 @@ class GzipFile(file_object_io.FileObjectIO):
       A file-like object.
     """
     if not self._gzip_file_object:
-      gzip_file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
+      gzip_file_object = resolver.Resolver.OpenFileObject(
+          path_spec.parent, resolver_context=self._resolver_context)
     else:
       gzip_file_object = self._gzip_file_object
 
@@ -159,6 +161,7 @@ class GzipFile(file_object_io.FileObjectIO):
     self._ReadFileFooter(gzip_file_object)
 
     if not self._gzip_file_object:
+      self._resolver_context.RemoveFileObject(path_spec)
       gzip_file_object.close()
 
     path_spec_data_range = data_range_path_spec.DataRangePathSpec(
@@ -169,8 +172,9 @@ class GzipFile(file_object_io.FileObjectIO):
             compression_method=definitions.COMPRESSION_METHOD_DEFLATE,
             parent=path_spec_data_range))
 
-    file_object = dfvfs.file_io.compressed_stream_io.CompressedStream()
+    file_object = dfvfs.file_io.compressed_stream_io.CompressedStream(
+        self._resolver_context)
     file_object.SetUncompressedStreamSize(self.uncompressed_data_size)
-    file_object.open(path_spec_compressed_stream)
+    file_object.open(path_spec=path_spec_compressed_stream)
 
     return file_object

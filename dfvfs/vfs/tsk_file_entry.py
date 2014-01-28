@@ -116,11 +116,13 @@ class TSKFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
-  def __init__(self, file_system, path_spec, is_root=False, is_virtual=False,
-               tsk_file=None, parent_inode=None):
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False, tsk_file=None, parent_inode=None):
     """Initializes the file entry object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
@@ -134,7 +136,8 @@ class TSKFileEntry(file_entry.FileEntry):
       parent_inode: optional parent inode number. The default is None.
     """
     super(TSKFileEntry, self).__init__(
-        file_system, path_spec, is_root=is_root, is_virtual=is_virtual)
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
     self._name = None
     self._parent_inode = parent_inode
     self._tsk_file = tsk_file
@@ -281,13 +284,14 @@ class TSKFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield TSKFileEntry(self._file_system, path_spec)
+        yield TSKFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
     tsk_file_system = self._file_system.GetFsInfo()
     file_object = dfvfs.file_io.tsk_file_io.TSKFile(
-        tsk_file_system, tsk_file=self._tsk_file)
+        self._resolver_context, tsk_file_system=tsk_file_system,
+        tsk_file=self._tsk_file)
     file_object.open()
     return file_object
 
@@ -307,7 +311,7 @@ class TSKFileEntry(file_entry.FileEntry):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=parent_inode, location=parent_location, parent=parent_path_spec)
     # TODO: is there a way to determine the parent inode number here?
-    return TSKFileEntry(self._file_system, path_spec)
+    return TSKFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetTSKFile(self):
     """Retrieves the SleuthKit file object (instance of pytsk3.File)."""

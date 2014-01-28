@@ -33,16 +33,17 @@ class DataRange(file_io.FileIO):
      image.
   """
 
-  def __init__(self, file_object=None):
+  def __init__(self, resolver_context, file_object=None):
     """Initializes the file-like object.
 
        If the file-like object is chained do not separately use the parent
        file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_object: optional parent file-like object. The default is None.
     """
-    super(DataRange, self).__init__()
+    super(DataRange, self).__init__(resolver_context)
     self._file_object = file_object
     self._current_offset = 0
 
@@ -94,7 +95,7 @@ class DataRange(file_io.FileIO):
     """Opens the file-like object.
 
     Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of path.PathSpec).
                  The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
@@ -125,7 +126,8 @@ class DataRange(file_io.FileIO):
             u'Path specification missing range offset and range size.')
 
       self.SetRange(range_offset, range_size)
-      self._file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
+      self._file_object = resolver.Resolver.OpenFileObject(
+          path_spec.parent, resolver_context=self._resolver_context)
 
     self._is_open = True
 
@@ -141,6 +143,8 @@ class DataRange(file_io.FileIO):
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
+
+    self._resolver_context.RemoveFileObject(self)
 
     if not self._file_object_set_in_init:
       self._file_object.close()

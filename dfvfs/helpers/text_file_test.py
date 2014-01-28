@@ -23,6 +23,7 @@ import unittest
 from dfvfs.file_io import os_file_io
 from dfvfs.helpers import text_file
 from dfvfs.path import os_path_spec
+from dfvfs.resolver import context
 
 
 class TextFileTest(unittest.TestCase):
@@ -30,6 +31,7 @@ class TextFileTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'another_file')
     self._os_path_spec1 = os_path_spec.OSPathSpec(location=test_file)
 
@@ -38,7 +40,7 @@ class TextFileTest(unittest.TestCase):
 
   def testReadline(self):
     """Test the readline() function."""
-    file_object = os_file_io.OSFile()
+    file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(self._os_path_spec1)
     text_file_object = text_file.TextFile(file_object)
 
@@ -50,7 +52,7 @@ class TextFileTest(unittest.TestCase):
 
   def testReadlines(self):
     """Test the readlines() function."""
-    file_object = os_file_io.OSFile()
+    file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(self._os_path_spec2)
     text_file_object = text_file.TextFile(file_object)
 
@@ -67,7 +69,7 @@ class TextFileTest(unittest.TestCase):
 
   def testReadlinesWithSizeHint(self):
     """Test the readlines() function."""
-    file_object = os_file_io.OSFile()
+    file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(self._os_path_spec2)
     text_file_object = text_file.TextFile(file_object)
 
@@ -82,7 +84,7 @@ class TextFileTest(unittest.TestCase):
 
   def testIterator(self):
     """Test the iterator functionality."""
-    file_object = os_file_io.OSFile()
+    file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(self._os_path_spec2)
     text_file_object = text_file.TextFile(file_object)
 

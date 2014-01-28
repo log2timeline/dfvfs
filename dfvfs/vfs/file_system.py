@@ -25,6 +25,15 @@ class FileSystem(object):
 
   PATH_SEPARATOR = u'/'
 
+  def __init__(self, resolver_context):
+    """Initializes the file system object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+    """
+    super(FileSystem, self).__init__()
+    self._resolver_context = resolver_context
+
   @property
   def type_indicator(self):
     """The type indicator."""

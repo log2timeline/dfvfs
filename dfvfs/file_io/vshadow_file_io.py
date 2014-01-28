@@ -19,21 +19,20 @@
 
 import os
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.manager
-
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
 from dfvfs.lib import vshadow
+from dfvfs.resolver import resolver
 
 
 class VShadowFile(file_io.FileIO):
   """Class that implements a file-like object using pyvshadow."""
 
-  def __init__(self, vshadow_volume=None, vshadow_store=None):
+  def __init__(self, resolver_context, vshadow_volume=None, vshadow_store=None):
     """Initializes the file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       vshadow_volume: optional VSS volume object (instance of
                       pyvshadow.volume). The default is None.
       vshadow_store: optional VSS store object (instance of pyvshadow.store).
@@ -46,7 +45,7 @@ class VShadowFile(file_io.FileIO):
       raise ValueError(
           u'VShadow store object provided without corresponding volume object.')
 
-    super(VShadowFile, self).__init__()
+    super(VShadowFile, self).__init__(resolver_context)
     self._vshadow_volume = vshadow_volume
     self._vshadow_store = vshadow_store
 
@@ -59,11 +58,12 @@ class VShadowFile(file_io.FileIO):
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  def open(self, path_spec, mode='rb'):
+  def open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -71,7 +71,7 @@ class VShadowFile(file_io.FileIO):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
-    if not path_spec:
+    if not self._vshadow_store_set_in_init and not path_spec:
       raise ValueError(u'Missing path specfication.')
 
     if mode != 'rb':
@@ -86,8 +86,8 @@ class VShadowFile(file_io.FileIO):
         raise errors.PathSpecError(
             u'Unable to retrieve store index from path specification.')
 
-      file_system = dfvfs.vfs.manager.FileSystemManager.OpenFileSystem(
-          path_spec)
+      file_system = resolver.Resolver.OpenFileSystem(
+          path_spec, resolver_context=self._resolver_context)
       self._vshadow_volume = file_system.GetVShadowVolume()
 
       if (store_index < 0 or
@@ -108,6 +108,8 @@ class VShadowFile(file_io.FileIO):
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
+
+    self._resolver_context.RemoveFileObject(self)
 
     if not self._vshadow_store_set_in_init:
       self._vshadow_store = None

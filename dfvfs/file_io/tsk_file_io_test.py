@@ -29,6 +29,7 @@ class TSKFileTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    super(TSKFileTest, self).setUp()
     test_file = os.path.join('test_data', 'image.dd')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
 

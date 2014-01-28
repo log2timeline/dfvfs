@@ -22,10 +22,8 @@
 
 import os
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.manager
-
 from dfvfs.file_io import file_io
+from dfvfs.resolver import resolver
 
 
 class ZipFile(file_io.FileIO):
@@ -34,10 +32,11 @@ class ZipFile(file_io.FileIO):
   # The size of the uncompressed data buffer.
   _UNCOMPRESSED_DATA_BUFFER_SIZE = 16 * 1024 * 1024
 
-  def __init__(self, zip_info=None, zip_file=None):
+  def __init__(self, resolver_context, zip_info=None, zip_file=None):
     """Initializes the file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       zip_info: optional zip info object (instance of zipfile.ZipInfo).
                 The default is None.
       zip_file: optional extracted file-like object (instance of
@@ -51,7 +50,7 @@ class ZipFile(file_io.FileIO):
           u'Zip extracted file object provided without corresponding info '
           u'object.')
 
-    super(ZipFile, self).__init__()
+    super(ZipFile, self).__init__(resolver_context)
     self._zip_info = zip_info
     self._zip_file = zip_file
     self._compressed_data = ''
@@ -126,8 +125,8 @@ class ZipFile(file_io.FileIO):
       raise IOError(u'Already open.')
 
     if not self._zip_file_set_in_init:
-      file_system = dfvfs.vfs.manager.FileSystemManager.OpenFileSystem(
-          path_spec)
+      file_system = resolver.Resolver.OpenFileSystem(
+          path_spec, resolver_context=self._resolver_context)
 
       file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -150,6 +149,8 @@ class ZipFile(file_io.FileIO):
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
+
+    self._resolver_context.RemoveFileObject(self)
 
     if not self._zip_file_set_in_init:
       if self._zip_ext_file:

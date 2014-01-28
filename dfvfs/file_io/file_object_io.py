@@ -26,13 +26,14 @@ from dfvfs.file_io import file_io
 class FileObjectIO(file_io.FileIO):
   """Base class for file object-based file-like object."""
 
-  def __init__(self, file_object=None):
+  def __init__(self, resolver_context, file_object=None):
     """Initializes the file-like object.
 
     Args:
+      resolver_context: the resolver context (instance of resolver.Context).
       file_object: optional file-like object. The default is None.
     """
-    super(FileObjectIO, self).__init__()
+    super(FileObjectIO, self).__init__(resolver_context)
     self._file_object = file_object
     self._size = None
 
@@ -100,6 +101,8 @@ class FileObjectIO(file_io.FileIO):
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
+
+    self._resolver_context.RemoveFileObject(self)
 
     if not self._file_object_set_in_init:
       self._file_object.close()

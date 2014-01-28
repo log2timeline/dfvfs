@@ -62,7 +62,7 @@ class OSFileSystem(file_system.FileSystem):
     """
     if not self.FileEntryExistsByPathSpec(path_spec):
       return
-    return os_file_entry.OSFileEntry(self, path_spec)
+    return os_file_entry.OSFileEntry(self._resolver_context, self, path_spec)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -83,4 +83,5 @@ class OSFileSystem(file_system.FileSystem):
       return
 
     path_spec = os_path_spec.OSPathSpec(location=location)
-    return os_file_entry.OSFileEntry(self, path_spec, is_root=True)
+    return os_file_entry.OSFileEntry(
+        self._resolver_context, self, path_spec, is_root=True)

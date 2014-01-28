@@ -44,7 +44,8 @@ class QcowFile(file_object_io.FileObjectIO):
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
 
-    file_object = resolver.Resolver.OpenFileObject(path_spec.parent)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec.parent, resolver_context=self._resolver_context)
     qcow_file = pyqcow.file()
     qcow_file.open_file_object(file_object)
     return qcow_file

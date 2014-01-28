@@ -26,19 +26,25 @@ from dfvfs.lib import errors
 class OSFile(file_io.FileIO):
   """Class that implements a file-like object using os."""
 
-  def __init__(self):
-    """Initializes the file-like object."""
-    super(OSFile, self).__init__()
+  def __init__(self, resolver_context):
+    """Initializes the file-like object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+    """
+    super(OSFile, self).__init__(resolver_context)
     self._file_object = None
+    self._size = 0
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  def open(self, path_spec, mode='rb'):
+  def open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -77,6 +83,7 @@ class OSFile(file_io.FileIO):
     if not self._file_object:
       raise IOError(u'Not opened.')
 
+    self._resolver_context.RemoveFileObject(self)
     self._file_object.close()
     self._file_object = None
 

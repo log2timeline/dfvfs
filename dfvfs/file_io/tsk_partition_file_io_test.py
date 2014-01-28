@@ -24,6 +24,7 @@ from dfvfs.lib import errors
 from dfvfs.file_io import tsk_partition_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import tsk_partition_path_spec
+from dfvfs.resolver import context
 
 
 class TSKPartitionFileTest(unittest.TestCase):
@@ -31,6 +32,7 @@ class TSKPartitionFileTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'tsk_volume_system.raw')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
@@ -52,64 +54,64 @@ class TSKPartitionFileTest(unittest.TestCase):
     """Test the open and close functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=2, parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 350 * 512)
     file_object.close()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=13, parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec)
+      file_object.open(path_spec=path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p2', parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 2528 * 512)
     file_object.close()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p0', parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec)
+      file_object.open(path_spec=path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p3', parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec)
+      file_object.open(path_spec=path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         start_offset=(352 * 512), parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 2528 * 512)
     file_object.close()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         start_offset=(350 * 512), parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec)
+      file_object.open(path_spec=path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
     partition_offset = 352 * 512
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 2528 * 512)
 
     file_object.seek(0x7420)
@@ -153,10 +155,10 @@ class TSKPartitionFileTest(unittest.TestCase):
     """Test the read functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=self._os_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile()
+    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
     partition_offset = 352 * 512
 
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     self.assertEquals(file_object.get_size(), 2528 * 512)
 
     file_object.seek(0x2e900 - partition_offset)
