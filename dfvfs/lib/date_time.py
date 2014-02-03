@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The dfVFS Project Authors.
+# Copyright 2014 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""The date and time definitions."""
 
-from dfvfs.path import compressed_stream_path_spec
-from dfvfs.path import data_range_path_spec
-from dfvfs.path import ewf_path_spec
-from dfvfs.path import fake_path_spec
-from dfvfs.path import gzip_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import path_spec
-from dfvfs.path import qcow_path_spec
-from dfvfs.path import tar_path_spec
-from dfvfs.path import tsk_path_spec
-from dfvfs.path import vhdi_path_spec
-from dfvfs.path import vshadow_path_spec
-from dfvfs.path import zip_path_spec
+import calendar
+import time
+
+
+class PosixTimestamp(object):
+  """Class that implements a POSIX timestamp."""
+
+  @classmethod
+  def FromTimeElements(cls, time_elements_tuple):
+    """Copies a timestamp from the time elements tuple."""
+    return calendar.timegm(time_elements_tuple)
+
+  @classmethod
+  def GetNow(cls):
+    """Retrieves the current time (now) as a timestamp in UTC."""
+    time_elements = time.gmtime()
+    return calendar.timegm(time_elements)

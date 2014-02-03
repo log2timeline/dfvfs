@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The dfVFS Project Authors.
+# Copyright 2014 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +15,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The operating system file entry implementation."""
-
-import os
-import stat
+"""The fake file entry implementation."""
 
 from dfvfs.lib import definitions
-from dfvfs.file_io import os_file_io
-from dfvfs.path import os_path_spec
+from dfvfs.file_io import fake_file_io
+from dfvfs.path import fake_path_spec
 from dfvfs.vfs import file_entry
-from dfvfs.vfs import vfs_stat
 
 
-class OSDirectory(file_entry.Directory):
-  """Class that implements an operating system directory object."""
+class FakeDirectory(file_entry.Directory):
+  """Class that implements a fake directory object."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -37,23 +33,34 @@ class OSDirectory(file_entry.Directory):
        a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.OSPathSpec).
+      A path specification (instance of path.FakePathSpec).
     """
     location = getattr(self.path_spec, 'location', None)
-
     if location is None:
       return
 
-    for directory_entry in os.listdir(location):
-      directory_entry_location = self._file_system.JoinPath([
-          location, directory_entry])
-      yield os_path_spec.OSPathSpec(location=directory_entry_location)
+    paths = self._file_system.GetPaths()
+
+    for path, _ in paths.iteritems():
+      # Determine if the start of the path is similar to the location string.
+      # If not the file the path refers to is not in the same directory.
+      if (not path or not path.startswith(location)):
+        continue
+
+      _, suffix = self._file_system.GetPathSegmentAndSuffix(location, path)
+
+      # Ignore anything that is part of a sub directory or the directory itself.
+      if suffix or path == location:
+        continue
+
+      path_spec_location = self._file_system.JoinPath([path])
+      yield fake_path_spec.FakePathSpec(location=path_spec_location)
 
 
-class OSFileEntry(file_entry.FileEntry):
-  """Class that implements an operating system file entry object."""
+class FakeFileEntry(file_entry.FileEntry):
+  """Class that implements a fake file entry object."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
   def __init__(self, resolver_context, file_system, path_spec, is_root=False):
     """Initializes the file entry object.
@@ -66,19 +73,19 @@ class OSFileEntry(file_entry.FileEntry):
                the root file entry of the corresponding file system.
                The default is False.
     """
-    super(OSFileEntry, self).__init__(
+    super(FakeFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
-        is_virtual=False)
+        is_virtual=True)
     self._name = None
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of OSDirectory)."""
+    """Retrieves the directory object (instance of FakeDirectory)."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 
     if (self._stat_object and
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
-      return OSDirectory(self._file_system, self.path_spec)
+      return FakeDirectory(self._file_system, self.path_spec)
     return
 
   def _GetStat(self):
@@ -87,43 +94,7 @@ class OSFileEntry(file_entry.FileEntry):
     if location is None:
       return
 
-    stat_info = os.stat(location)
-    stat_object = vfs_stat.VFSStat()
-
-    # File data stat information.
-    stat_object.size = stat_info.st_size
-
-    # Date and time stat information.
-    stat_object.atime = stat_info.st_atime
-    stat_object.ctime = stat_info.st_ctime
-    stat_object.mtime = stat_info.st_mtime
-
-    # Ownership and permissions stat information.
-    stat_object.mode = stat.S_IMODE(stat_info.st_mode)
-    stat_object.uid = stat_info.st_uid
-    stat_object.gid = stat_info.st_gid
-
-    # File entry type stat information.
-    if stat.S_ISREG(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_FILE
-    elif stat.S_ISDIR(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_DIRECTORY
-    elif stat.S_ISLNK(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_LINK
-    elif (stat.S_ISCHR(stat_info.st_mode) or
-          stat.S_ISBLK(stat_info.st_mode)):
-      stat_object.type = stat_object.TYPE_DEVICE
-    elif stat.S_ISFIFO(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_PIPE
-    elif stat.S_ISSOCK(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_SOCKET
-
-    # Other stat information.
-    stat_object.ino = stat_info.st_ino
-    # stat_info.st_dev
-    # stat_info.st_nlink
-
-    return stat_object
+    return self._file_system.GetStatObjectByPath(location)
 
   @property
   def name(self):
@@ -136,17 +107,23 @@ class OSFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.OSFileEntry)."""
+    """The sub file entries (generator of instance of vfs.FakeFileEntry)."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield OSFileEntry(self._resolver_context, self._file_system, path_spec)
+        yield FakeFileEntry(
+            self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.OSFile)."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    """Retrieves the file-like object (instance of file_io.FakeFile)."""
+    location = getattr(self.path_spec, 'location', None)
+    if location is None:
+      return
+
+    file_data = self._file_system.GetStatObjectByPath(location)
+    file_object = fake_file_io.FakeFile(self._resolver_context, file_data)
     file_object.open(path_spec=self.path_spec)
     return file_object
 
@@ -163,5 +140,5 @@ class OSFileEntry(file_entry.FileEntry):
     if parent_location == u'':
       parent_location = self._file_system.PATH_SEPARATOR
 
-    path_spec = os_path_spec.OSPathSpec(location=parent_location)
-    return OSFileEntry(self._resolver_context, self._file_system, path_spec)
+    path_spec = fake_path_spec.FakePathSpec(location=parent_location)
+    return FakeFileEntry(self._resolver_context, self._file_system, path_spec)

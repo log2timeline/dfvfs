@@ -129,9 +129,9 @@ class OSFile(file_io.FileIO):
     # invalid whence values to be passed to the seek function. This check
     # makes sure the behavior of the function is the same on all platforms.
     if whence not in [os.SEEK_SET, os.SEEK_CUR, os.SEEK_END]:
-      raise IOError(u'Invalid whence value.')
+      raise IOError(u'Unsupported whence.')
 
-    return self._file_object.seek(offset, whence)
+    self._file_object.seek(offset, whence)
 
   def get_offset(self):
     """Returns the current offset into the file-like object.

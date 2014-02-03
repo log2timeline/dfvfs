@@ -24,18 +24,18 @@
 # compatibility. Having a file (entry) attribute object might be more
 # flexible in dealing with e.g. NTFS attributes.
 
-# TODO: add protobuf/serialization support.
+from dfvfs.lib import definitions
 
 
 class VFSStat(object):
   """Class that implements the VFS stat object interface."""
 
-  TYPE_DEVICE = 1
-  TYPE_DIRECTORY = 2
-  TYPE_FILE = 3
-  TYPE_LINK = 4
-  TYPE_SOCKET = 5
-  TYPE_PIPE = 6
+  TYPE_DEVICE = definitions.FILE_ENTRY_TYPE_DEVICE
+  TYPE_DIRECTORY = definitions.FILE_ENTRY_TYPE_DIRECTORY
+  TYPE_FILE = definitions.FILE_ENTRY_TYPE_FILE
+  TYPE_LINK = definitions.FILE_ENTRY_TYPE_LINK
+  TYPE_SOCKET = definitions.FILE_ENTRY_TYPE_SOCKET
+  TYPE_PIPE = definitions.FILE_ENTRY_TYPE_PIPE
 
   def __init__(self):
     """Initializes the stat object."""
