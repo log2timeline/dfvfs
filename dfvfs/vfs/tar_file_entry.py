@@ -51,15 +51,15 @@ class TarDirectory(file_entry.Directory):
 
       # Determine if the start of the tar info name is similar to
       # the location string. If not the file tar info refers to is not in
-      # the same directory.  Note that the tar info name does not have the
+      # the same directory. Note that the tar info name does not have the
       # leading path separator as the location string does.
       if (not path or not path.startswith(location[1:])):
         continue
 
       _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
 
-      # Ignore anything that is part of a sub directory.
-      if suffix:
+      # Ignore anything that is part of a sub directory or the directory itself.
+      if suffix or path == location:
         continue
 
       path_spec_location = self._file_system.JoinPath([path])
@@ -209,6 +209,7 @@ class TarFileEntry(file_entry.FileEntry):
     location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
+
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
       return

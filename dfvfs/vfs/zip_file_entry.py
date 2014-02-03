@@ -17,11 +17,10 @@
 # limitations under the License.
 """The zip file entry implementation."""
 
-import calendar
-
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.zip_file_io
 
+from dfvfs.lib import date_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import zip_path_spec
@@ -56,8 +55,8 @@ class ZipDirectory(file_entry.Directory):
 
       _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
 
-      # Ignore anything that is part of a sub directory.
-      if suffix:
+      # Ignore anything that is part of a sub directory or the directory itself.
+      if suffix or path == location:
         continue
 
       path_spec_location = self._file_system.JoinPath([path])
@@ -137,9 +136,10 @@ class ZipFileEntry(file_entry.FileEntry):
 
     # Date and time stat information.
     # TODO: move this to a timelib equivalent.
-    date_time = getattr(self._zip_info, 'date_time', None)
-    if date_time:
-      stat_object.mtime = calendar.timegm(date_time)
+    zip_info_date_time = getattr(self._zip_info, 'date_time', None)
+    if zip_info_date_time:
+      stat_object.mtime = date_time.PosixTimestamp.FromTimeElements(
+          zip_info_date_time)
 
     # Ownership and permissions stat information.
     if self._zip_info is not None:
@@ -213,6 +213,7 @@ class ZipFileEntry(file_entry.FileEntry):
     location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
+
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
       return

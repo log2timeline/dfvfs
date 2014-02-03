@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The dfVFS Project Authors.
+# Copyright 2014 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,46 +15,61 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the operating system file entry implementation."""
+"""Tests for the fake file entry implementation."""
 
-import os
 import unittest
 
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import fake_path_spec
 from dfvfs.resolver import context
-from dfvfs.vfs import os_file_entry
-from dfvfs.vfs import os_file_system
+from dfvfs.vfs import fake_file_entry
+from dfvfs.vfs import fake_file_system
 
 
-class OSFileEntryTest(unittest.TestCase):
-  """The unit test for the operating system file entry object."""
+class FakeFileEntryTest(unittest.TestCase):
+  """The unit test for the fake file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
-    self._test_file = os.path.join('test_data', 'testdir_os')
+    self._fake_file_system = fake_file_system.FakeFileSystem(
+        self._resolver_context)
+    self._fake_file_system.AddFileEntry(
+        u'/test_data/testdir_fake',
+        file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
+    self._fake_file_system.AddFileEntry(
+        u'/test_data/testdir_fake/file1.txt', file_data='FILE1')
+    self._fake_file_system.AddFileEntry(
+        u'/test_data/testdir_fake/file2.txt', file_data='FILE2')
+    self._fake_file_system.AddFileEntry(
+        u'/test_data/testdir_fake/file3.txt', file_data='FILE3')
+    self._fake_file_system.AddFileEntry(
+        u'/test_data/testdir_fake/file4.txt', file_data='FILE4')
+    self._fake_file_system.AddFileEntry(
+        u'/test_data/testdir_fake/file5.txt', file_data='FILE5')
+
+    self._test_file = u'/test_data/testdir_fake'
 
   def testIntialize(self):
     """Test the initialize functionality."""
-    path_spec = os_path_spec.OSPathSpec(location=self._test_file)
-    file_entry = os_file_entry.OSFileEntry(
-        self._resolver_context, self._os_file_system, path_spec)
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = fake_file_entry.FakeFileEntry(
+        self._resolver_context, self._fake_file_system, path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
-    path_spec = os_path_spec.OSPathSpec(location=self._test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    test_file = u'/test_data/testdir_fake/file1.txt'
+    path_spec = fake_path_spec.FakePathSpec(location=test_file)
+    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -62,13 +77,13 @@ class OSFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(parent_file_entry, None)
 
-    self.assertEquals(parent_file_entry.name, u'testdir_os')
+    self.assertEquals(parent_file_entry.name, u'testdir_fake')
 
   def testGetStat(self):
     """Test the get stat functionality."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    test_file = u'/test_data/testdir_fake/file1.txt'
+    path_spec = fake_path_spec.FakePathSpec(location=test_file)
+    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -77,12 +92,12 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    test_file = u'/test_data/testdir_fake/file1.txt'
+    path_spec = fake_path_spec.FakePathSpec(location=test_file)
+    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
-    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsVirtual())
     self.assertTrue(file_entry.IsAllocated())
 
     self.assertFalse(file_entry.IsDevice())
@@ -92,12 +107,12 @@ class OSFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    test_file = os.path.join('test_data', 'testdir_os')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    test_file = u'/test_data/testdir_fake'
+    path_spec = fake_path_spec.FakePathSpec(location=test_file)
+    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
-    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsVirtual())
     self.assertTrue(file_entry.IsAllocated())
 
     self.assertFalse(file_entry.IsDevice())
@@ -109,8 +124,8 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = os_path_spec.OSPathSpec(location=self._test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

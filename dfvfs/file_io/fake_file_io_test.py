@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The dfVFS Project Authors.
+# Copyright 2014 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,31 +15,42 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the operating system file-like object implementation."""
+"""Tests for the fake file-like object implementation."""
 
 import os
 import unittest
 
-from dfvfs.file_io import os_file_io
-from dfvfs.path import os_path_spec
+from dfvfs.file_io import fake_file_io
+from dfvfs.path import fake_path_spec
 from dfvfs.resolver import context
 
 
-class OSFileTest(unittest.TestCase):
+class FakeFileTest(unittest.TestCase):
   """The unit test for the operating systesm file-like object."""
+
+  _FILE_DATA1 = (
+      'place,user,password\n'
+      'bank,joesmith,superrich\n'
+      'alarm system,-,1234\n'
+      'treasure chest,-,1111\n'
+      'uber secret laire,admin,admin\n')
+
+  _FILE_DATA2 = (
+      'This is another file.\n')
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'password.txt')
-    self._path_spec1 = os_path_spec.OSPathSpec(location=test_file)
+    test_file = u'/test_data/password.txt'
+    self._path_spec1 = fake_path_spec.FakePathSpec(location=test_file)
 
-    test_file = os.path.join('test_data', 'another_file')
-    self._path_spec2 = os_path_spec.OSPathSpec(location=test_file)
+    test_file = u'/test_data/another_file'
+    self._path_spec2 = fake_path_spec.FakePathSpec(location=test_file)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = fake_file_io.FakeFile(
+        self._resolver_context, self._FILE_DATA1)
     file_object.open(path_spec=self._path_spec1)
 
     self.assertEquals(file_object.get_size(), 116)
@@ -49,7 +60,8 @@ class OSFileTest(unittest.TestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = fake_file_io.FakeFile(
+        self._resolver_context, self._FILE_DATA2)
     file_object.open(path_spec=self._path_spec2)
 
     self.assertEquals(file_object.get_size(), 22)
@@ -86,7 +98,8 @@ class OSFileTest(unittest.TestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = fake_file_io.FakeFile(
+        self._resolver_context, self._FILE_DATA1)
     file_object.open(path_spec=self._path_spec1)
 
     read_buffer = file_object.read()

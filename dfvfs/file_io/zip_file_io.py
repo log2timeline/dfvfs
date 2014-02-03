@@ -240,9 +240,6 @@ class ZipFile(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:

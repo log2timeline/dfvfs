@@ -27,7 +27,7 @@ from dfvfs.vfs import os_file_entry
 
 
 class OSFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using os."""
+  """Class that implements an operating system file system object."""
 
   if platform.system() == 'Windows':
     PATH_SEPARATOR = u'\\'
