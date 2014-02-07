@@ -141,20 +141,23 @@ def CheckPythonModule(module_name, version_attribute_name, minimum_version):
     result = False
 
   if result:
-    module_version = getattr(module_object, version_attribute_name, None)
+    if version_attribute_name and minimum_version:
+      module_version = getattr(module_object, version_attribute_name, None)
 
-    # Split the version string and convert every digit into an integer.
-    # A string compare of both version strings will yield an incorrect result.
-    module_version_map = map(int, module_version.split('.'))
-    minimum_version_map = map(int, minimum_version.split('.'))
-    if module_version_map < minimum_version_map:
-      result = False
-      print (
-          u'[FAILURE]\t{0:s} version: {1:s} is too old, {2:s} or later '
-          u'required.').format(module_name, module_version, minimum_version)
-    else:
-      print u'[OK]\t\t{0:s} version: {1:s}'.format(
+      # Split the version string and convert every digit into an integer.
+      # A string compare of both version strings will yield an incorrect result.
+      module_version_map = map(int, module_version.split('.'))
+      minimum_version_map = map(int, minimum_version.split('.'))
+      if module_version_map < minimum_version_map:
+        result = False
+        print (
+            u'[FAILURE]\t{0:s} version: {1:s} is too old, {2:s} or later '
+            u'required.').format(module_name, module_version, minimum_version)
+      else:
+        print u'[OK]\t\t{0:s} version: {1:s}'.format(
           module_name, module_version)
+    else:
+      print u'[OK]\t\t{0:s}'.format(module_name)
 
   return result
 
@@ -202,7 +205,9 @@ if __name__ == '__main__':
   if not CheckPythonModule('construct', '__version__', '2.5.1'):
     check_result = False
 
-  # TODO: determine the version of protobuf.
+  # The protobuf module does not appear to have version information.
+  if not CheckPythonModule('google.protobuf', '', ''):
+    check_result = False
 
   if not CheckPytsk():
     check_result = False
