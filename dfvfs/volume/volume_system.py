@@ -110,7 +110,7 @@ class Volume(object):
       self._Parse()
       self._is_parsed = True
 
-    return self._extents.itervalues()
+    return self._extents
 
   @property
   def number_of_attributes(self):
@@ -189,7 +189,7 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
-    return self._sections.itervalues()
+    return self._sections
 
   @property
   def volumes(self):
