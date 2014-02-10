@@ -21,6 +21,7 @@ import os
 import stat
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.file_io import os_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_entry
@@ -82,13 +83,27 @@ class OSFileEntry(file_entry.FileEntry):
     return
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object (instance of vfs.VFSStat).
+
+    Raises:
+      BackEndError: If an OSError comes up it is caught and an
+                    BackEndError error is raised instead.
+    Returns:
+      Stat object (instance of VFSStat) or None if no location is set.
+    """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
-    stat_info = os.stat(location)
     stat_object = vfs_stat.VFSStat()
+    # We are only catching OSError. However on the Windows platform
+    # a WindowsError can be raised as well. We are not catching that since
+    # that error does not exist on non-Windows platforms.
+    try:
+      stat_info = os.stat(location)
+    except OSError as exception:
+      raise errors.BackEndError(
+          u'Unable to get stat object, {0:s}'.format(exception))
 
     # File data stat information.
     stat_object.size = stat_info.st_size
@@ -103,13 +118,24 @@ class OSFileEntry(file_entry.FileEntry):
     stat_object.uid = stat_info.st_uid
     stat_object.gid = stat_info.st_gid
 
+    # If location contains a trailing segment separator and points to
+    # a symbolic link to a directory stat info will not indicate
+    # the file entry as a symbolic link. The following check ensures
+    # that the LINK type is correctly detected.
+    is_link = os.path.islink(location)
+
     # File entry type stat information.
-    if stat.S_ISREG(stat_info.st_mode):
+
+    # The stat info member st_mode can have multiple types e.g.
+    # LINK and DIRECTORY in case of a symbolic link to a directory
+    # dfVFS currently only supports one type so we need to check
+    # for LINK first.
+    if stat.S_ISLNK(stat_info.st_mode) or is_link:
+      stat_object.type = stat_object.TYPE_LINK
+    elif stat.S_ISREG(stat_info.st_mode):
       stat_object.type = stat_object.TYPE_FILE
     elif stat.S_ISDIR(stat_info.st_mode):
       stat_object.type = stat_object.TYPE_DIRECTORY
-    elif stat.S_ISLNK(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_LINK
     elif (stat.S_ISCHR(stat_info.st_mode) or
           stat.S_ISBLK(stat_info.st_mode)):
       stat_object.type = stat_object.TYPE_DEVICE
