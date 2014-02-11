@@ -67,6 +67,9 @@ class WindowsPathResolverTest(unittest.TestCase):
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.location, expected_path)
 
+    test_windows_path = path_resolver.GetWindowsPath(path_spec)
+    self.assertEquals(test_windows_path, windows_path)
+
     windows_path = u'C:\\testdir_os\\file6.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertEquals(path_spec, None)
@@ -85,6 +88,9 @@ class WindowsPathResolverTest(unittest.TestCase):
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.location, expected_path)
+
+    test_windows_path = path_resolver.GetWindowsPath(path_spec)
+    self.assertEquals(test_windows_path, windows_path)
 
     windows_path = (
         u'\\\\?\\C:\\System Volume Information'
@@ -166,6 +172,12 @@ class WindowsPathResolverTest(unittest.TestCase):
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.location, expected_path)
+
+    expected_windows_path = (
+        u'C:\\System Volume Information'
+        u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    test_windows_path = path_resolver.GetWindowsPath(path_spec)
+    self.assertEquals(test_windows_path, expected_windows_path)
 
     windows_path = u'%WinDir%\\{3808876b-c176-4e48-b7ae-04046e6cc752}'
     path_spec = path_resolver.ResolvePath(windows_path)

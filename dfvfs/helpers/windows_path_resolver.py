@@ -20,16 +20,22 @@
 import re
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 
 
 class WindowsPathResolver(object):
   """Resolver object for Windows paths."""
 
+  # Type indicators that do not have a parent.
+  _PARENTLESS_TYPE_INDICATORS = frozenset([
+      definitions.TYPE_INDICATOR_FAKE,
+      definitions.TYPE_INDICATOR_OS])
+
   _PATH_SEPARATOR = u'\\'
   _PATH_EXPANSION_VARIABLE = re.compile('^[%][^%]+[%]$')
 
-  def __init__(self, file_system, mount_point):
+  def __init__(self, file_system, mount_point, drive_letter=u'C'):
     """Initializes the Windows path helper.
 
        The mount point indicates a path specification where the Windows
@@ -41,13 +47,22 @@ class WindowsPathResolver(object):
       file_system: the file system object.
       mount_point: the mount point path specification (instance of
                    path.PathSpec). The default is None.
+      drive_letter: optional string that contains the drive letter used by
+                    the file system. The default is C.
 
     Raises:
+      PathSpecError: if the mount point path specification is incorrect.
       ValueError: when file system or mount point is not set.
     """
     if not file_system or not mount_point:
       raise ValueError(u'Missing file system or mount point value.')
 
+    if mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+      if not hasattr(mount_point, 'location'):
+        raise errors.PathSpecError(
+            u'Mount point path specification missing location.')
+
+    self._drive_letter = drive_letter
     self._environment_variables = {}
     self._file_system = file_system
     self._mount_point = mount_point
@@ -133,7 +148,7 @@ class WindowsPathResolver(object):
     if path is None:
       return None, None
 
-    if self._mount_point.type_indicator == definitions.TYPE_INDICATOR_OS:
+    if self._mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
       file_entry = self._file_system.GetFileEntryByPathSpec(self._mount_point)
       expanded_path_segments = self._file_system.SplitPath(
           self._mount_point.location)
@@ -176,6 +191,45 @@ class WindowsPathResolver(object):
     location = self._file_system.JoinPath(expanded_path_segments)
     return location, file_entry.path_spec
 
+  def GetWindowsPath(self, path_spec):
+    """Returns the Windows path based on a resolved path specification.
+
+    Args:
+      path_spec: the path specification (instance of path.PathSpec).
+
+    Returns:
+      The corresponding Windows path or None if the Windows path could not
+      be determined.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+    """
+    location = getattr(path_spec, 'location', None)
+    if location is None:
+      raise errors.PathSpecError(u'Path specification missing location.')
+
+    if self._mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+      if not location.startswith(self._mount_point.location):
+        raise errors.PathSpecError(
+            u'Path specification does not contain mount point.')
+    else:
+      if not hasattr(path_spec, 'parent'):
+        raise errors.PathSpecError(u'Path specification missing parent.')
+
+      if path_spec.parent != self._mount_point:
+        raise errors.PathSpecError(
+            u'Path specification does not contain mount point.')
+
+    path_segments = self._file_system.SplitPath(location)
+
+    if self._mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+      mount_point_path_segments = self._file_system.SplitPath(
+          self._mount_point.location)
+      path_segments = path_segments[len(mount_point_path_segments):]
+
+    return u'{0:s}:\\{1:s}'.format(
+        self._drive_letter, self._PATH_SEPARATOR.join(path_segments))
+
   def ResolvePath(self, path, expand_variables=True):
     """Resolves a Windows path in file system specific format.
 
@@ -185,7 +239,8 @@ class WindowsPathResolver(object):
                         expanded or not. The default is to expand (True).
 
     Returns:
-      The path specification in file system specific format.
+      The path specification (instance of path.PathSpec) in file system
+      specific format.
     """
     location, path_spec = self._ResolvePath(
         path, expand_variables=expand_variables)
@@ -199,7 +254,7 @@ class WindowsPathResolver(object):
     kwargs = path_spec_factory.Factory.GetProperties(path_spec)
 
     kwargs['location'] = location
-    if self._mount_point.type_indicator != definitions.TYPE_INDICATOR_OS:
+    if self._mount_point.type_indicator not in self._PARENTLESS_TYPE_INDICATORS:
       kwargs['parent'] = self._mount_point
 
     return path_spec_factory.Factory.NewPathSpec(
