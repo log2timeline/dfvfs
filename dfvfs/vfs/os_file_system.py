@@ -85,3 +85,36 @@ class OSFileSystem(file_system.FileSystem):
     path_spec = os_path_spec.OSPathSpec(location=location)
     return os_file_entry.OSFileEntry(
         self._resolver_context, self, path_spec, is_root=True)
+
+  def JoinPath(self, path_segments):
+    """Joins the path segments into a path.
+
+    Args:
+      path_segments: a list of path segments.
+
+    Returns:
+      A string containing the joined path segments prefixed with the path
+      separator.
+    """
+    # We are not using os.path.join() here since it will not remove all
+    # variations of successive path separators.
+
+    # For paths on Windows we need to make sure to handle the first path
+    # segment correctly.
+    first_path_segment = None
+    if platform.system() == 'Windows':
+      if path_segments:
+        first_path_segment = path_segments[0]
+        # Check if the first path segment contains a "special" path definition
+        # e.g. \\.\, \\?\, C: or \\server\share (UNC).
+        if (first_path_segment.startswith(u'\\\\') or
+            first_path_segment[1] == u':'):
+          path_segments = path_segments[1:]
+        else:
+          first_path_segment = None
+
+    path = super(OSFileSystem, self).JoinPath(path_segments)
+    if first_path_segment:
+      path = self.PATH_SEPARATOR.join([first_path_segment, path])
+
+    return path
