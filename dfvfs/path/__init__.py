@@ -26,6 +26,7 @@ from dfvfs.path import path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import tar_path_spec
 from dfvfs.path import tsk_path_spec
+from dfvfs.path import tsk_partition_path_spec
 from dfvfs.path import vhdi_path_spec
 from dfvfs.path import vshadow_path_spec
 from dfvfs.path import zip_path_spec
