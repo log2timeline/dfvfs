@@ -57,7 +57,7 @@ dfvfs_version = dfvfs.__version__
 
 # Command bdist_msi does not support the library version, neither a date
 # as a version but if we suffix it with .1 everything is fine.
-if 'build_msi' in sys.argv:
+if 'bdist_msi' in sys.argv:
   dfvfs_version += '.1'
 
 dfvfs_description = (
