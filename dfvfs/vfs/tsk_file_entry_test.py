@@ -55,6 +55,20 @@ class TSKFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
+  def testGetLinkedFileEntry(self):
+    """Test the get linked file entry functionality."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=13, location=u'/a_link', parent=self._os_path_spec)
+    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
+
+    linked_file_entry = file_entry.GetLinkedFileEntry()
+
+    self.assertNotEquals(linked_file_entry, None)
+
+    self.assertEquals(linked_file_entry.name, u'another_file')
+
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(
@@ -143,6 +157,7 @@ class TSKFileEntryTest(unittest.TestCase):
     # its directory entry has no pytsk3.TSK_FS_META object.
     expected_sub_file_entry_names = [
         u'a_directory',
+        u'a_link',
         u'lost+found',
         u'passwords.txt',
         u'$OrphanFiles' ]
