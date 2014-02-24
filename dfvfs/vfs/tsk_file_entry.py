@@ -138,6 +138,7 @@ class TSKFileEntry(file_entry.FileEntry):
     super(TSKFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
+    self._link = None
     self._name = None
     self._parent_inode = parent_inode
     self._tsk_file = tsk_file
@@ -240,6 +241,46 @@ class TSKFileEntry(file_entry.FileEntry):
     return stat_object
 
   @property
+  def link(self):
+    """The full path of the linked file entry."""
+    if self._link is None:
+      self._link = u''
+
+      if not self.IsLink():
+        return self._link
+
+      if self._tsk_file is None:
+        self._tsk_file = self.GetTSKFile()
+
+      # Note that because pytsk3.File does not explicitly defines info
+      # we need to check if the attribute exists and has a value other
+      # than None.
+      if getattr(self._tsk_file, 'info', None) is None:
+        return self._link
+
+      # If pytsk3.FS_Info.open() was used file.info has an attribute meta
+      # (pytsk3.TSK_FS_META) that contains the link.
+      if getattr(self._tsk_file.info, 'meta', None) is None:
+        return self._link
+
+      link = getattr(self._tsk_file.info.meta, 'link', None)
+
+      if link is None:
+        return self._link
+
+      # pytsk3 returns a UTF-8 encoded byte string without a leading
+      # path segment separator.
+      try:
+        link = '{0:s}{1:s}'.format(
+          self._file_system.PATH_SEPARATOR, link.decode('utf8'))
+      except UnicodeError:
+        raise errors.BackEndError(
+            u'pytsk3 returned a non UTF-8 formatted link.')
+
+      self._link = link
+    return self._link
+
+  @property
   def name(self):
     """"The name of the file entry, which does not include the full path.
 
@@ -295,6 +336,17 @@ class TSKFileEntry(file_entry.FileEntry):
     file_object.open()
     return file_object
 
+  def GetLinkedFileEntry(self):
+    """Retrieves the linked file entry, e.g. for a symbolic link."""
+    if not self.link:
+      return
+
+    parent_path_spec = getattr(self.path_spec, 'parent', None)
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location=self.link, parent=parent_path_spec)
+    # TODO: is there a way to determine the inode number here?
+    return TSKFileEntry(self._resolver_context, self._file_system, path_spec)
+
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
     location = getattr(self.path_spec, 'location', None)
@@ -310,7 +362,6 @@ class TSKFileEntry(file_entry.FileEntry):
     parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=parent_inode, location=parent_location, parent=parent_path_spec)
-    # TODO: is there a way to determine the parent inode number here?
     return TSKFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetTSKFile(self):

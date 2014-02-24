@@ -93,6 +93,11 @@ class FileEntry(object):
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat)."""
 
+  @property
+  def link(self):
+    """The full path of the linked file entry."""
+    return u''
+
   @abc.abstractproperty
   def name(self):
     """The name of the file entry, which does not include the full path."""
@@ -117,6 +122,10 @@ class FileEntry(object):
   def GetFileSystem(self):
     """Retrieves the file system (instance of vfs.FileSystem)."""
     return self._file_system
+
+  def GetLinkedFileEntry(self):
+    """Retrieves the linked file entry, e.g. for a symbolic link."""
+    return None
 
   @abc.abstractmethod
   def GetParentFileEntry(self):

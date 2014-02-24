@@ -70,6 +70,7 @@ class OSFileEntry(file_entry.FileEntry):
     super(OSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=False)
+    self._link = None
     self._name = None
 
   def _GetDirectory(self):
@@ -152,6 +153,23 @@ class OSFileEntry(file_entry.FileEntry):
     return stat_object
 
   @property
+  def link(self):
+    """The full path of the linked file entry."""
+    if self._link is None:
+      self._link = u''
+
+      if not self.IsLink():
+        return self._link
+
+      location = getattr(self.path_spec, 'location', None)
+      if location is None:
+        return self._link
+
+      self._link = os.readlink(location)
+      self._link = os.path.abspath(self._link)
+    return self._link
+
+  @property
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
@@ -175,6 +193,14 @@ class OSFileEntry(file_entry.FileEntry):
     file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(path_spec=self.path_spec)
     return file_object
+
+  def GetLinkedFileEntry(self):
+    """Retrieves the linked file entry, e.g. for a symbolic link."""
+    if not self.link:
+      return
+
+    path_spec = os_path_spec.OSPathSpec(location=self.link)
+    return OSFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
