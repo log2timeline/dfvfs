@@ -62,9 +62,14 @@ class TSKVolumeSystemTest(unittest.TestCase):
 
     volume = volume_system.GetVolumeByIndex(1)
 
+    self.assertNotEquals(volume, None)
     self.assertEquals(volume.number_of_extents, 1)
     self.assertEquals(volume.number_of_attributes, 2)
     self.assertEquals(volume.identifier, 'p2')
+
+    volume = volume_system.GetVolumeByIndex(7)
+
+    self.assertEquals(volume, None)
 
 
 if __name__ == '__main__':
