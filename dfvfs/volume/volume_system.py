@@ -210,6 +210,8 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
+    if section_index < 0 or section_index >= len(self._sections):
+      return
     return self._sections[section_index]
 
   def GetVolumeByIdentifier(self, volume_identifier):
@@ -241,6 +243,8 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
+    if volume_index < 0 or volume_index >= len(self._volume_identifiers):
+      return
     volume_identifier = self._volume_identifiers[volume_index]
     return self._volumes[volume_identifier]
 
