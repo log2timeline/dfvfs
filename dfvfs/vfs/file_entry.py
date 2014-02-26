@@ -102,6 +102,16 @@ class FileEntry(object):
   def name(self):
     """The name of the file entry, which does not include the full path."""
 
+  @property
+  def number_of_sub_file_entries(self):
+    """The number of sub file entries."""
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory is None:
+      return 0
+    return len(self._directory.entries)
+
   @abc.abstractproperty
   def sub_file_entries(self):
     """The sub file entries (generator of instance of vfs.FileEntry)."""
