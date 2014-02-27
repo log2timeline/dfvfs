@@ -129,6 +129,8 @@ class FakeFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
+    self.assertEquals(file_entry.number_of_sub_file_entries, 5)
+
     expected_sub_file_entry_names = [
         u'file1.txt', u'file2.txt', u'file3.txt', u'file4.txt', u'file5.txt']
 

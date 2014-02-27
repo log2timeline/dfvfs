@@ -153,6 +153,8 @@ class TSKFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
+    self.assertEquals(file_entry.number_of_sub_file_entries, 5)
+
     # Note that passwords.txt~ is currently ignored by dfvfs, since
     # its directory entry has no pytsk3.TSK_FS_META object.
     expected_sub_file_entry_names = [

@@ -110,7 +110,9 @@ class FileEntry(object):
 
     if self._directory is None:
       return 0
-    return len(self._directory.entries)
+
+    # We cannot use len(self._directory.entries) since entries is a generator.
+    return sum(1 for path_spec in self._directory.entries)
 
   @abc.abstractproperty
   def sub_file_entries(self):
