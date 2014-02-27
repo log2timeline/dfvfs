@@ -130,6 +130,8 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
 
     self.assertNotEquals(file_entry, None)
 
+    self.assertEquals(file_entry.number_of_sub_file_entries, 7)
+
     expected_sub_file_entry_names = [u'', u'', u'', u'', u'', u'p1', u'p2']
 
     sub_file_entry_names = []
