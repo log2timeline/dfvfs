@@ -130,6 +130,20 @@ class Volume(object):
 
     return len(self._extents)
 
+  def GetAttribute(self, identifier):
+    """Retrieves a specific attribute.
+
+    Args:
+      identifier: the attribute identifier.
+
+    Returns:
+      The volume attribute object (instance of VolumeAttribute) or None.
+    """
+    if identifier not in self._attributes:
+      return
+
+    return self._attributes[identifier]
+
 
 class VolumeSystem(object):
   """The VFS volume system interface."""

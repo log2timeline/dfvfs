@@ -46,7 +46,7 @@ class VShadowVolume(volume_system.Volume):
     self._AddAttribute(volume_system.VolumeAttribute(
         'copy_set_identifier', vshadow_store.copy_set_identifier))
     self._AddAttribute(volume_system.VolumeAttribute(
-        'creation_time', vshadow_store.get_creation_time_as_integer))
+        'creation_time', vshadow_store.get_creation_time_as_integer()))
 
     self._extents.append(volume_system.VolumeExtent(
         0, vshadow_store.volume_size))

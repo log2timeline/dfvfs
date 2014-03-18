@@ -75,6 +75,26 @@ class VShadowVolumeSystemTest(unittest.TestCase):
     self.assertEquals(volume.number_of_attributes, 4)
     self.assertEquals(volume.identifier, 'vss2')
 
+    expected_value = '600f0b6d-5bdf-11e3-9d6c-005056c00008'
+    volume_attribute = volume.GetAttribute('identifier')
+    self.assertNotEquals(volume_attribute, None)
+    self.assertEquals(volume_attribute.value, expected_value)
+
+    expected_value = '18f1ac6e-959d-436f-bdcc-e797a729e290'
+    volume_attribute = volume.GetAttribute('copy_identifier')
+    self.assertNotEquals(volume_attribute, None)
+    self.assertEquals(volume_attribute.value, expected_value)
+
+    expected_value = '8438a0ee-0f06-443b-ac0c-2905647ca5d6'
+    volume_attribute = volume.GetAttribute('copy_set_identifier')
+    self.assertNotEquals(volume_attribute, None)
+    self.assertEquals(volume_attribute.value, expected_value)
+
+    expected_value = 130305262689190583
+    volume_attribute = volume.GetAttribute('creation_time')
+    self.assertNotEquals(volume_attribute, None)
+    self.assertEquals(volume_attribute.value, expected_value)
+
     volume = volume_system.GetVolumeByIndex(7)
 
     self.assertEquals(volume, None)
