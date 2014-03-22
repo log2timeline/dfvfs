@@ -58,7 +58,8 @@ class Context(object):
       path_spec: the VFS path specification (instance of path.PathSpec).
       file_system: the file system object (instance of vfs.FileSystem).
     """
-    self._file_system_cache.CacheObject(path_spec, file_system)
+    if path_spec.HasParent():
+      self._file_system_cache.CacheObject(path_spec.parent, file_system)
 
   def GetFileObject(self, path_spec):
     """Retrieves a file-like object defined by path specification.
@@ -80,7 +81,8 @@ class Context(object):
     Returns:
       The file system object (instance of vfs.FileSystem) or None if not cached.
     """
-    return self._file_system_cache.GetObject(path_spec)
+    if path_spec.HasParent():
+      return self._file_system_cache.GetObject(path_spec.parent)
 
   def RemoveFileObject(self, path_spec):
     """Removes a file-like object based on a path specification.
@@ -96,4 +98,5 @@ class Context(object):
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
     """
-    self._file_system_cache.RemoveObject(path_spec)
+    if path_spec.HasParent():
+      self._file_system_cache.RemoveObject(path_spec.parent)
