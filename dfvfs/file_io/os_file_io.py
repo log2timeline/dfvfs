@@ -17,7 +17,10 @@
 # limitations under the License.
 """The operating system file-like object implementation."""
 
+import stat
 import os
+
+import pysmdev
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
@@ -69,10 +72,16 @@ class OSFile(file_io.FileIO):
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
 
-    self._file_object = open(location, mode=mode)
-
     stat_info = os.stat(location)
-    self._size = stat_info.st_size
+
+    if (stat.S_ISCHR(stat_info.st_mode) or
+        stat.S_ISBLK(stat_info.st_mode)):
+      self._file_object = pysmdev.handle()
+      self._file_object.open(location, mode=mode)
+      self._size = self._file_object.media_size
+    else:
+      self._file_object = open(location, mode=mode)
+      self._size = stat_info.st_size
 
   def close(self):
     """Closes the file-like object.

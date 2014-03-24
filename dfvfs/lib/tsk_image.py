@@ -39,9 +39,11 @@ class TSKFileSystemImage(pytsk3.Img_Info):
     # pytsk3.Img_Info does not let you set attributes after initialization.
     self._file_object = file_object
     # Using the old parent class invocation style otherwise some versions
-    # of pylint complain also setting type to RAW to make sure Img_Info
-    # does not do detection.
-    pytsk3.Img_Info.__init__(self, url='', type=pytsk3.TSK_IMG_TYPE_RAW)
+    # of pylint complain also setting type to RAW or EXTERNAL to make sure
+    # Img_Info does not do detection.
+    tsk_img_type = getattr(
+        pytsk3, 'TSK_IMG_TYPE_EXTERNAL', pytsk3.TSK_IMG_TYPE_RAW)
+    pytsk3.Img_Info.__init__(self, url='', type=tsk_img_type)
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the pytsk3.Img_Info object interface.

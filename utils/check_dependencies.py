@@ -82,11 +82,13 @@ def CheckLibyal(libyal_python_modules):
   for module_name, module_version in libyal_python_modules:
     try:
       module_object = map(__import__, [module_name])[0]
+      module_loaded = True
     except ImportError:
       print u'[FAILURE]\tmissing: {0:s}.'.format(module_name)
+      module_loaded = False
       result = False
 
-    if result:
+    if module_loaded:
       libyal_name = u'lib{}'.format(module_name[2:])
 
       installed_version = int(module_object.get_version())
@@ -141,6 +143,9 @@ def CheckPythonModule(module_name, version_attribute_name, minimum_version):
 
   if version_attribute_name and minimum_version:
     module_version = getattr(module_object, version_attribute_name, None)
+
+    if not module_version:
+      return False
 
     # Split the version string and convert every digit into an integer.
     # A string compare of both version strings will yield an incorrect result.
@@ -223,6 +228,7 @@ if __name__ == '__main__':
   libyal_check_result = CheckLibyal([
       ('pyewf', 20131210),
       ('pyqcow', 20131204),
+      ('pysmdev', 20140323),
       ('pyvhdi', 20131210),
       ('pyvshadow', 20131209),
   ])
