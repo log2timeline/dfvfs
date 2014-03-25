@@ -215,6 +215,9 @@ if __name__ == '__main__':
   check_result = True
   print u'Checking availability and versions of dfVFS dependencies.'
 
+  if not CheckPythonModule('six', '__version__', '1.2.0'):
+    check_result = False
+
   if not CheckPythonModule('construct', '__version__', '2.5.1'):
     check_result = False
 
