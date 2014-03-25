@@ -139,6 +139,10 @@ class Volume(object):
     Returns:
       The volume attribute object (instance of VolumeAttribute) or None.
     """
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
     if identifier not in self._attributes:
       return
 
