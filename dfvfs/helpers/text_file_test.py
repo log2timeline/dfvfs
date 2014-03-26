@@ -26,6 +26,10 @@ from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 
 
+# TODO: Add a test which tests reading a text file which is
+# larger than the buffer size, and read lines until it crosses
+# that original buffer size (to test if the buffer is correctly
+# filled).
 class TextFileTest(unittest.TestCase):
   """The unit test for the text file object."""
 
