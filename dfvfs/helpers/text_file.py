@@ -173,10 +173,12 @@ class TextFile(object):
 
       if lines_data:
         self._lines_buffer = ''.join([lines_data, self._lines_buffer])
+        self._lines_buffer_size = len(self._lines_buffer)
 
     else:
       result, separator, self._lines_buffer = self._lines_buffer.partition(
           self._end_of_line)
+      self._lines_buffer_size -= len(result + separator)
 
     line = ''.join([result, separator])
     self._current_offset += len(line)
