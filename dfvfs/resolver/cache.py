@@ -19,8 +19,6 @@
 
 import collections
 
-from dfvfs.path import path_spec as dfvfs_path_spec
-
 
 class ObjectsCache(object):
   """Class that implements the resolver object cache."""
@@ -43,60 +41,58 @@ class ObjectsCache(object):
     self._vfs_objects = {}
     self._vfs_objects_mru = collections.deque()
 
-  def CacheObject(self, path_spec, vfs_object):
+  def CacheObject(self, identifier, vfs_object):
     """Caches a VFS object.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      identifier: string that identifiers the VFS object.
       vfs_object: the VFS object to cache.
     """
     if len(self._vfs_objects) == self._maximum_number_of_cached_objects:
-      lfu_path_spec = self._vfs_objects_mru.pop()
-      del self._vfs_objects[lfu_path_spec]
+      lfu_identifier = self._vfs_objects_mru.pop()
+      del self._vfs_objects[lfu_identifier]
 
-    self._vfs_objects[path_spec] = vfs_object
-    self._vfs_objects_mru.appendleft(path_spec)
+    self._vfs_objects[identifier] = vfs_object
+    self._vfs_objects_mru.appendleft(identifier)
 
-  def GetObject(self, path_spec):
-    """Retrieves a cached object based on the path specification.
+  def GetIdentifier(self, vfs_object):
+    """Retrieves the identifier cached object.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      vfs_object: the VFS object that was cached.
+
+    Returns:
+      The string that identifiers the VFS object or None.
+    """
+    for key, value in self._vfs_objects.iteritems():
+      if vfs_object == value:
+        return key
+
+  def GetObject(self, identifier):
+    """Retrieves a cached object based on the identifier.
+
+    Args:
+      identifier: string that identifiers the VFS object.
 
     Returns:
       The cached VFS object or None if not cached.
     """
-    if path_spec not in self._vfs_objects:
+    if identifier not in self._vfs_objects:
       return
 
-    self._vfs_objects_mru.remove(path_spec)
-    self._vfs_objects_mru.appendleft(path_spec)
+    self._vfs_objects_mru.remove(identifier)
+    self._vfs_objects_mru.appendleft(identifier)
 
-    return self._vfs_objects[path_spec]
+    return self._vfs_objects[identifier]
 
-  def RemoveObject(self, vfs_object):
-    """Removes a cached object based on the path specification.
+  def RemoveObject(self, identifier):
+    """Removes a cached object based on the identifier.
 
     Args:
-      vfs_object: the VFS path specification (instance of path.PathSpec)
-                  or VFS object that was cached.
+      identifier: string that identifiers the VFS object.
     """
-    if isinstance(vfs_object, dfvfs_path_spec.PathSpec):
-      if vfs_object not in self._vfs_objects:
-        return
+    if identifier not in self._vfs_objects_mru:
+      return
 
-      path_spec = vfs_object
-
-    else:
-      path_spec = None
-      for key, value in self._vfs_objects.iteritems():
-        if vfs_object == value:
-          path_spec = key
-          break
-
-      if not path_spec:
-        return
-
-    self._vfs_objects_mru.remove(path_spec)
-
-    del self._vfs_objects[path_spec]
+    self._vfs_objects_mru.remove(identifier)
+    del self._vfs_objects[identifier]
