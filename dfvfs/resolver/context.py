@@ -42,6 +42,22 @@ class Context(object):
     self._file_system_cache = cache.ObjectsCache(
         maximum_number_of_file_systems)
 
+  def _GetFileSystemCacheIdentifier(self, path_spec):
+    """Determines the file system cache identifier for the path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      The string that identifiers the VFS object. 
+    """
+    string_parts = []
+
+    string_parts.append(getattr(path_spec.parent, 'comparable', u''))
+    string_parts.append(u'type: {0:s}'.format(path_spec.type_indicator))
+
+    return u''.join(string_parts)
+
   def CacheFileObject(self, path_spec, file_object):
     """Caches a file-like object based on a path specification.
 
@@ -49,7 +65,7 @@ class Context(object):
       path_spec: the VFS path specification (instance of path.PathSpec).
       file_object: the file-like object (instance of file_io.FileIO).
     """
-    self._file_object_cache.CacheObject(path_spec, file_object)
+    self._file_object_cache.CacheObject(path_spec.comparable, file_object)
 
   def CacheFileSystem(self, path_spec, file_system):
     """Caches a file system object based on a path specification.
@@ -58,8 +74,8 @@ class Context(object):
       path_spec: the VFS path specification (instance of path.PathSpec).
       file_system: the file system object (instance of vfs.FileSystem).
     """
-    if path_spec.HasParent():
-      self._file_system_cache.CacheObject(path_spec.parent, file_system)
+    identifier = self._GetFileSystemCacheIdentifier(path_spec)
+    self._file_system_cache.CacheObject(identifier, file_system)
 
   def GetFileObject(self, path_spec):
     """Retrieves a file-like object defined by path specification.
@@ -70,7 +86,7 @@ class Context(object):
     Returns:
       The file-like object (instance of file_io.FileIO) or None if not cached.
     """
-    return self._file_object_cache.GetObject(path_spec)
+    return self._file_object_cache.GetObject(path_spec.comparable)
 
   def GetFileSystem(self, path_spec):
     """Retrieves a file system object defined by path specification.
@@ -81,22 +97,32 @@ class Context(object):
     Returns:
       The file system object (instance of vfs.FileSystem) or None if not cached.
     """
-    if path_spec.HasParent():
-      return self._file_system_cache.GetObject(path_spec.parent)
+    identifier = self._GetFileSystemCacheIdentifier(path_spec)
+    return self._file_system_cache.GetObject(identifier)
 
-  def RemoveFileObject(self, path_spec):
+  def RemoveFileObject(self, file_object):
+    """Removes a file-like object.
+
+    Args:
+      file_object: the file-like object (instance of file_io.FileIO).
+    """
+    identifier = self._file_object_cache.GetIdentifier(file_object)
+    if identifier:
+      self._file_object_cache.RemoveObject(identifier)
+
+  def RemoveFileObjectByPathSpec(self, path_spec):
     """Removes a file-like object based on a path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
     """
-    self._file_object_cache.RemoveObject(path_spec)
+    self._file_object_cache.RemoveObject(path_spec.comparable)
 
-  def RemoveFileSystem(self, path_spec):
+  def RemoveFileSystemByPathSpec(self, path_spec):
     """Removes a file system object based on a path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
     """
-    if path_spec.HasParent():
-      self._file_system_cache.RemoveObject(path_spec.parent)
+    identifier = self._GetFileSystemCacheIdentifier(path_spec)
+    self._file_system_cache.RemoveObject(identifier)

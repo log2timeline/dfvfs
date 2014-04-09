@@ -161,7 +161,7 @@ class GzipFile(file_object_io.FileObjectIO):
     self._ReadFileFooter(gzip_file_object)
 
     if not self._gzip_file_object:
-      self._resolver_context.RemoveFileObject(path_spec)
+      self._resolver_context.RemoveFileObjectByPathSpec(path_spec)
       gzip_file_object.close()
 
     path_spec_data_range = data_range_path_spec.DataRangePathSpec(
