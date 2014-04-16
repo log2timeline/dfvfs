@@ -45,7 +45,7 @@ class WindowsPathResolver(object):
        system.
 
     Args:
-      file_system: the file system object.
+      file_system: the file system object (instance of vfs.FileSystem).
       mount_point: the mount point path specification (instance of
                    path.PathSpec). The default is None.
       drive_letter: optional string that contains the drive letter used by
