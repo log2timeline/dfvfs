@@ -17,7 +17,6 @@
 # limitations under the License.
 """Tests for the serializer object implementation using protobuf."""
 
-import platform
 import os
 import unittest
 
@@ -44,35 +43,36 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
         inode=16, location='/a_directory/another_file',
         parent=self._vshadow_path_spec)
 
-    if platform.system() == 'Windows':
-      self._proto_string = (
-          '\n0\n#\n\x1b'
-          '\x12\x02OS2\x15test_data\\image.qcow2'
-          '\x12\x04QCOW'
-          '\x12\x07VSHADOWX\x01'
-          '\x12\x03TSK(\x102\x19/a_directory/another_file')
-    else:
-      self._proto_string = (
-          '\n0\n#\n\x1b'
-          '\x12\x02OS2\x15test_data/image.qcow2'
-          '\x12\x04QCOW'
-          '\x12\x07VSHADOWX\x01'
-          '\x12\x03TSK(\x102\x19/a_directory/another_file')
+    test_path = os.path.abspath(test_file).encode('utf8')
+    test_path_length = len(test_path)
 
-    self._proto = transmission_pb2.PathSpec()
-    self._proto.ParseFromString(self._proto_string)
+    if test_path_length < 228:
+      self._proto_string = (
+          '\n{0:s}\n{1:s}\n{2:s}'
+          '\x12\x02OS2{3:s}{4:s}'
+          '\x12\x04QCOW'
+          '\x12\x07VSHADOWX\x01'
+          '\x12\x03TSK(\x102\x19/a_directory/another_file').format(
+            chr(test_path_length + 27), chr(test_path_length + 14),
+            chr(test_path_length + 6), chr(test_path_length), test_path)
+
+      self._proto = transmission_pb2.PathSpec()
+      self._proto.ParseFromString(self._proto_string)
 
   def testReadSerialized(self):
     """Test the read serialized functionality."""
-    path_spec = serializer.ProtobufPathSpecSerializer.ReadSerializedObject(
-        self._proto)
-    self.assertEquals(path_spec.comparable, self._tsk_path_spec.comparable)
+    if self._proto:
+      path_spec = serializer.ProtobufPathSpecSerializer.ReadSerializedObject(
+          self._proto)
+      self.assertEquals(path_spec.comparable, self._tsk_path_spec.comparable)
 
   def testWriteSerialized(self):
     """Test the write serialized functionality."""
-    serialized = serializer.ProtobufPathSpecSerializer.WriteSerializedObject(
-        self._tsk_path_spec)
-    self.assertEquals(serialized, self._proto)
+    if self._proto:
+      serialized = serializer.ProtobufPathSpecSerializer.WriteSerializedObject(
+          self._tsk_path_spec)
+
+      self.assertEquals(serialized, self._proto)
 
 
 if __name__ == '__main__':
