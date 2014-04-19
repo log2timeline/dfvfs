@@ -17,7 +17,6 @@
 # limitations under the License.
 """A resolver for Windows paths to file system specific formats."""
 
-import os
 import re
 
 from dfvfs.lib import definitions
@@ -62,10 +61,6 @@ class WindowsPathResolver(object):
       if not hasattr(mount_point, 'location'):
         raise errors.PathSpecError(
             u'Mount point path specification missing location.')
-
-    if mount_point.type_indicator == definitions.TYPE_INDICATOR_OS:
-      # Make sure an OS location string contains an absolute path.
-      mount_point.location = os.path.abspath(mount_point.location)
 
     super(WindowsPathResolver, self).__init__()
 

@@ -17,6 +17,8 @@
 # limitations under the License.
 """The operating system path specification implementation."""
 
+import os
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import location_path_spec
@@ -38,6 +40,9 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
     """
+    # Within the path specification the path should be absolute.
+    location = os.path.abspath(location)
+
     super(OSPathSpec, self).__init__(location=location, parent=None, **kwargs)
 
 
