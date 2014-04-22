@@ -18,7 +18,6 @@
 """Tests for the Windows path resolver object."""
 
 import os
-import platform
 import unittest
 
 from dfvfs.file_io import qcow_file_io
@@ -53,14 +52,8 @@ class WindowsPathResolverTest(unittest.TestCase):
     path_resolver = windows_path_resolver.WindowsPathResolver(
         self._os_file_system, self._os_path_spec)
 
-    cwd = os.getcwd()
-    if platform.system() == 'Windows':
-      # Remove the drive letter from the current working directory.
-      _, _, cwd = cwd.partition(u'\\')
-      cwd = u'\\{0:s}'.format(cwd)
-
     expected_path = os.path.join(
-        cwd, u'test_data', u'testdir_os', u'file1.txt')
+        os.getcwd(), u'test_data', u'testdir_os', u'file1.txt')
 
     windows_path = u'C:\\testdir_os\\file1.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
