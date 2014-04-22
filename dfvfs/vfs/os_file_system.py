@@ -99,6 +99,17 @@ class OSFileSystem(file_system.FileSystem):
     # We are not using os.path.join() here since it will not remove all
     # variations of successive path separators.
 
+    # Split all the path segments based on the path (segment) separator.
+    path_segments = [
+        segment.split(self.PATH_SEPARATOR) for segment in path_segments]
+
+    # Flatten the sublists into one list.
+    path_segments = [
+        element for sublist in path_segments for element in sublist]
+
+    # Remove empty path segments.
+    path_segments = filter(None, path_segments)
+
     # For paths on Windows we need to make sure to handle the first path
     # segment correctly.
     first_path_segment = None
@@ -107,14 +118,19 @@ class OSFileSystem(file_system.FileSystem):
         first_path_segment = path_segments[0]
         # Check if the first path segment contains a "special" path definition
         # e.g. \\.\, \\?\, C: or \\server\share (UNC).
-        if (first_path_segment.startswith(u'\\\\') or
-            first_path_segment[1] == u':'):
+        if (len(first_path_segment) > 1 and (
+            first_path_segment.startswith(u'\\\\') or
+            first_path_segment[1] == u':')):
           path_segments = path_segments[1:]
         else:
           first_path_segment = None
 
-    path = super(OSFileSystem, self).JoinPath(path_segments)
     if first_path_segment:
-      path = self.PATH_SEPARATOR.join([first_path_segment, path])
+      path = u'{0:s}{1:s}{2:s}'.format(
+          first_path_segment, self.PATH_SEPARATOR,
+          self.PATH_SEPARATOR.join(path_segments))
+    else:
+      path = u'{0:s}{1:s}'.format(
+          self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
 
     return path
