@@ -47,7 +47,7 @@ class DataRangeTest(test_lib.SylogTestCase):
         self._resolver_context, file_object=os_file_object)
     file_object.open()
 
-    self._testGetSizeFileObject(file_object)
+    self._TestGetSizeFileObject(file_object)
 
     file_object.close()
     os_file_object.close()
@@ -82,7 +82,7 @@ class DataRangeTest(test_lib.SylogTestCase):
     file_object = data_range_io.DataRange(self._resolver_context)
     file_object.open(path_spec=self._data_range_path_spec)
 
-    self._testSeekFileObject(file_object, base_offset=0)
+    self._TestSeekFileObject(file_object, base_offset=0)
 
     file_object.close()
 
@@ -91,7 +91,7 @@ class DataRangeTest(test_lib.SylogTestCase):
     file_object = data_range_io.DataRange(self._resolver_context)
     file_object.open(path_spec=self._data_range_path_spec)
 
-    self._testReadFileObject(file_object, base_offset=0)
+    self._TestReadFileObject(file_object, base_offset=0)
 
     file_object.close()
 

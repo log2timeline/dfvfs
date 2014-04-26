@@ -52,7 +52,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
         file_object=os_file_object)
     file_object.open()
 
-    self._testGetSizeFileObject(file_object)
+    self._TestGetSizeFileObject(file_object)
 
     file_object.close()
     os_file_object.close()
@@ -62,7 +62,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
     file_object = compressed_stream_io.CompressedStream(self._resolver_context)
     file_object.open(path_spec=self._compressed_stream_path_spec)
 
-    self._testGetSizeFileObject(file_object)
+    self._TestGetSizeFileObject(file_object)
 
     file_object.close()
 
@@ -71,7 +71,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
     file_object = compressed_stream_io.CompressedStream(self._resolver_context)
     file_object.open(path_spec=self._compressed_stream_path_spec)
 
-    self._testSeekFileObject(file_object)
+    self._TestSeekFileObject(file_object)
 
     file_object.close()
 
@@ -80,7 +80,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
     file_object = compressed_stream_io.CompressedStream(self._resolver_context)
     file_object.open(path_spec=self._compressed_stream_path_spec)
 
-    self._testReadFileObject(file_object)
+    self._TestReadFileObject(file_object)
 
     file_object.close()
 
@@ -108,7 +108,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
         file_object=os_file_object)
     file_object.open()
 
-    self._testGetSizeFileObject(file_object)
+    self._TestGetSizeFileObject(file_object)
 
     file_object.close()
     os_file_object.close()
@@ -118,7 +118,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
     file_object = compressed_stream_io.CompressedStream(self._resolver_context)
     file_object.open(path_spec=self._compressed_stream_path_spec)
 
-    self._testGetSizeFileObject(file_object)
+    self._TestGetSizeFileObject(file_object)
 
     file_object.close()
 
@@ -127,7 +127,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
     file_object = compressed_stream_io.CompressedStream(self._resolver_context)
     file_object.open(path_spec=self._compressed_stream_path_spec)
 
-    self._testSeekFileObject(file_object)
+    self._TestSeekFileObject(file_object)
 
     file_object.close()
 
@@ -136,7 +136,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
     file_object = compressed_stream_io.CompressedStream(self._resolver_context)
     file_object.open(path_spec=self._compressed_stream_path_spec)
 
-    self._testReadFileObject(file_object)
+    self._TestReadFileObject(file_object)
 
     file_object.close()
 
