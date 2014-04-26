@@ -39,6 +39,9 @@ class QcowFile(file_object_io.FileObjectIO):
 
     Returns:
       A file-like object.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(

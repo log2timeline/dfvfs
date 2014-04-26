@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The dfVFS Project Authors.
+# Copyright 2014 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The VHDI format analyzer helper implementation."""
+"""The VMDK format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
@@ -23,27 +23,30 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class VhdiAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Class that implements the VHDI analyzer helper."""
+class VmdkAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+  """Class that implements the VMDK analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
       definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VMDK
 
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
     format_specification = specification.Specification(self.type_indicator)
 
-    # VHDI image signature in footer.
-    format_specification.AddNewSignature('conectix', offset=-512, is_bound=True)
+    # VMDK descriptor file signature.
+    format_specification.AddNewSignature(
+        '# Disk DescriptorFile', offset=0, is_bound=True)
 
-    # VHDI image signature in copy of footer in differential
-    # or dynamic disk image.
-    format_specification.AddNewSignature('conectix', offset=0, is_bound=True)
+    # VMDK sparse extent file signature.
+    format_specification.AddNewSignature('KDMV', offset=0, is_bound=True)
+
+    # COWD sparse extent file signature.
+    format_specification.AddNewSignature('COWD', offset=0, is_bound=True)
 
     return format_specification
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(VhdiAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(VmdkAnalyzerHelper())

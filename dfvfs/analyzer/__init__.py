@@ -30,4 +30,5 @@ except ImportError:
   pass
 
 from dfvfs.analyzer import vhdi_analyzer_helper
+from dfvfs.analyzer import vmdk_analyzer_helper
 from dfvfs.analyzer import vshadow_analyzer_helper

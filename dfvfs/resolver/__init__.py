@@ -51,6 +51,11 @@ except ImportError:
   pass
 
 try:
+  from dfvfs.resolver import vmdk_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver import vshadow_resolver_helper
 except ImportError:
   pass
