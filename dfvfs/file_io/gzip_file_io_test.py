@@ -42,7 +42,7 @@ class GzipFileTest(test_lib.SylogTestCase):
     file_object = gzip_file_io.GzipFile(self._resolver_context)
     file_object.open(path_spec=self._gzip_path_spec)
 
-    self._testGetSizeFileObject(file_object)
+    self._TestGetSizeFileObject(file_object)
 
     self.assertEquals(file_object.modification_time, 0x501416d7)
     self.assertEquals(file_object.operating_system, 0x03)
@@ -56,7 +56,7 @@ class GzipFileTest(test_lib.SylogTestCase):
     file_object = gzip_file_io.GzipFile(self._resolver_context)
     file_object.open(path_spec=self._gzip_path_spec)
 
-    self._testSeekFileObject(file_object)
+    self._TestSeekFileObject(file_object)
 
     file_object.close()
 
@@ -65,7 +65,7 @@ class GzipFileTest(test_lib.SylogTestCase):
     file_object = gzip_file_io.GzipFile(self._resolver_context)
     file_object.open(path_spec=self._gzip_path_spec)
 
-    self._testReadFileObject(file_object)
+    self._TestReadFileObject(file_object)
 
     file_object.close()
 

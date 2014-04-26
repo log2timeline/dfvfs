@@ -43,7 +43,7 @@ class TarFileTest(test_lib.SylogTestCase):
     file_object = tar_file_io.TarFile(self._resolver_context)
     file_object.open(path_spec=self._tar_path_spec)
 
-    self._testGetSizeFileObject(file_object)
+    self._TestGetSizeFileObject(file_object)
 
     file_object.close()
 
@@ -52,7 +52,7 @@ class TarFileTest(test_lib.SylogTestCase):
     file_object = tar_file_io.TarFile(self._resolver_context)
     file_object.open(path_spec=self._tar_path_spec)
 
-    self._testSeekFileObject(file_object)
+    self._TestSeekFileObject(file_object)
 
     file_object.close()
 
@@ -61,7 +61,7 @@ class TarFileTest(test_lib.SylogTestCase):
     file_object = tar_file_io.TarFile(self._resolver_context)
     file_object.open(path_spec=self._tar_path_spec)
 
-    self._testReadFileObject(file_object)
+    self._TestReadFileObject(file_object)
 
     file_object.close()
 
