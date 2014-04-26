@@ -39,15 +39,21 @@ class VhdiFile(file_object_io.FileObjectIO):
 
     Returns:
       A file-like object.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
 
+    # TODO: add parent image support.
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
+
     vhdi_file = pyvhdi.file()
     vhdi_file.open_file_object(file_object)
+
     return vhdi_file
 
   def get_size(self):

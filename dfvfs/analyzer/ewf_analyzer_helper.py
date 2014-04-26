@@ -39,6 +39,7 @@ class EwfAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     # EWF version 1 signature and start of fields.
     format_specification.AddNewSignature(
         'EVF\x09\x0d\x0a\xff\x00\x01', offset=0, is_bound=True)
+
     # EWF version 2 signature and major version.
     format_specification.AddNewSignature(
         'EVF2\r\n\x81\x00\x02', offset=0, is_bound=True)

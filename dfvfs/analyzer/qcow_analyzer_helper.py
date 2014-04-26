@@ -38,6 +38,7 @@ class QcowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     # QCOW version 1 signature and version.
     format_specification.AddNewSignature(
         'QFI\xfb\x00\x00\x00\x01', offset=0, is_bound=True)
+
     # QCOW version 2 signature and version.
     format_specification.AddNewSignature(
         'QFI\xfb\x00\x00\x00\x02', offset=0, is_bound=True)
