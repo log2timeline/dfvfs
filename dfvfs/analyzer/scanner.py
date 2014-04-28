@@ -473,29 +473,17 @@ class OffsetBoundScanner(ScanTreeScannerBase):
     Returns:
       A range (instance of Range).
     """
-    # The actual footer range is in reverse since the spanning footer range
-    # is based on positive offsets, where 0 is the end of file.
-    if self._footer_spanning_range.end_offset < total_data_size:
-      footer_range_start_offset = (
-          total_data_size - self._footer_spanning_range.end_offset)
-    else:
-      footer_range_start_offset = 0
-
-    # Calculate the lower bound modulus of the footer range start offset
-    # in increments of the read buffer size.
-    footer_range_start_offset /= self._READ_BUFFER_SIZE
-    footer_range_start_offset *= self._READ_BUFFER_SIZE
-
     # Calculate the upper bound modulus of the footer range size
     # in increments of the read buffer size.
-    footer_range_size = self._footer_spanning_range.size
-    remainder = footer_range_size % self._READ_BUFFER_SIZE
-    footer_range_size /= self._READ_BUFFER_SIZE
+    footer_range_size, remainder = divmod(
+        self._footer_spanning_range.size, self._READ_BUFFER_SIZE)
 
     if remainder > 0:
       footer_range_size += 1
     
     footer_range_size *= self._READ_BUFFER_SIZE
+
+    footer_range_start_offset = total_data_size - footer_range_size
 
     return range_list.Range(footer_range_start_offset, footer_range_size)
 
@@ -507,15 +495,15 @@ class OffsetBoundScanner(ScanTreeScannerBase):
     """
     # Calculate the lower bound modulus of the header range start offset
     # in increments of the read buffer size.
-    header_range_start_offset = self._header_spanning_range.start_offset
-    header_range_start_offset /= self._READ_BUFFER_SIZE
+    header_range_start_offset, _ = divmod(
+        self._header_spanning_range.start_offset, self._READ_BUFFER_SIZE)
     header_range_start_offset *= self._READ_BUFFER_SIZE
 
     # Calculate the upper bound modulus of the header range size
     # in increments of the read buffer size.
     header_range_size = self._header_spanning_range.size
-    remainder = header_range_size % self._READ_BUFFER_SIZE
-    header_range_size /= self._READ_BUFFER_SIZE
+    header_range_size, remainder = divmod(
+        self._header_spanning_range.size, self._READ_BUFFER_SIZE)
 
     if remainder > 0:
       header_range_size += 1
@@ -652,18 +640,7 @@ class OffsetBoundScanner(ScanTreeScannerBase):
     if self._footer_scan_tree.root_node is not None:
       footer_range = self._GetFooterRange(file_size)
 
-      # Note that the offset in the footer scan tree start with 0. Make sure
-      # the data offset of the data being scanned is aligned with the offset
-      # in the scan tree.
-      if footer_range.start_offset < self._footer_spanning_range.end_offset:
-        data_offset = (
-            self._footer_spanning_range.end_offset - footer_range.start_offset)
-      else:
-        data_offset = 0
-
-      if file_offset < footer_range.start_offset:
-        file_offset = footer_range.start_offset
-
+      file_offset = footer_range.start_offset
       file_object.seek(file_offset, os.SEEK_SET)
 
       data = file_object.read(self._READ_BUFFER_SIZE)
@@ -671,8 +648,7 @@ class OffsetBoundScanner(ScanTreeScannerBase):
 
       if data_size > 0:
         self._ScanBufferScanState(
-            self._scan_tree, scan_state, data[data_offset:],
-            data_size - data_offset, file_offset + data_offset,
+            self._scan_tree, scan_state, data, data_size, file_offset,
             total_data_size=file_size)
 
       file_offset += data_size
