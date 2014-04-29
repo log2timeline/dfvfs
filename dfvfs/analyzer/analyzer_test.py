@@ -64,6 +64,14 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEquals(type_indicators, expected_type_indicators)
 
+    test_file = os.path.join('test_data', 'mactime.body')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = []
+    type_indicators = analyzer.Analyzer.GetStorageMediaImageTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
+
   def testGetVolumeSystemTypeIndicators(self):
     """Function to test the get volume system type indicators function."""
     test_file = os.path.join('test_data', 'tsk_volume_system.raw')

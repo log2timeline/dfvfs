@@ -26,6 +26,10 @@ from dfvfs.file_io import file_io
 from dfvfs.lib import errors
 
 
+if pysmdev.get_version() < '20140428':
+  raise ImportWarning('OSFile requires at least pysmdev 20140428.')
+
+
 class OSFile(file_io.FileIO):
   """Class that implements a file-like object using os."""
 
@@ -72,10 +76,25 @@ class OSFile(file_io.FileIO):
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
 
-    stat_info = os.stat(location)
+    # Windows does not support running os.stat on device files so we use
+    # libsmdev to do an initial check.
+    try:
+      is_device = pysmdev.check_device(location)
+    except IOError:
+      is_device = False
 
-    if (stat.S_ISCHR(stat_info.st_mode) or
-        stat.S_ISBLK(stat_info.st_mode)):
+    if not is_device:
+      try:
+        stat_info = os.stat(location)
+      except OSError as exception:
+        raise IOError(u'Unable to open with error: {0:s}.'.format(exception))
+
+      # In case the libsmdev check is not able to detect the device also use
+      # the stat information.
+      if stat.S_ISCHR(stat_info.st_mode) or stat.S_ISBLK(stat_info.st_mode):
+        is_device = True
+
+    if is_device:
       self._file_object = pysmdev.handle()
       self._file_object.open(location, mode=mode)
       self._size = self._file_object.media_size

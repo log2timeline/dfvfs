@@ -18,7 +18,10 @@
 """The operating system file entry implementation."""
 
 import os
+import platform
 import stat
+
+import pysmdev
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -97,58 +100,74 @@ class OSFileEntry(file_entry.FileEntry):
       return
 
     stat_object = vfs_stat.VFSStat()
-    # We are only catching OSError. However on the Windows platform
-    # a WindowsError can be raised as well. We are not catching that since
-    # that error does not exist on non-Windows platforms.
-    try:
-      stat_info = os.stat(location)
-    except OSError as exception:
-      raise errors.BackEndError(
-          u'Unable to get stat object, {0:s}'.format(exception))
 
-    # File data stat information.
-    stat_object.size = stat_info.st_size
+    is_windows_device = False
+    stat_info = None
 
-    # Date and time stat information.
-    stat_object.atime = stat_info.st_atime
-    stat_object.ctime = stat_info.st_ctime
-    stat_object.mtime = stat_info.st_mtime
+    # Windows does not support running os.stat on device files so we use
+    # libsmdev to do an initial check.
+    if platform.system() == 'Windows':
+      try:
+        is_windows_device = pysmdev.check_device(location)
+      except IOError:
+        pass
 
-    # Ownership and permissions stat information.
-    stat_object.mode = stat.S_IMODE(stat_info.st_mode)
-    stat_object.uid = stat_info.st_uid
-    stat_object.gid = stat_info.st_gid
-
-    # If location contains a trailing segment separator and points to
-    # a symbolic link to a directory stat info will not indicate
-    # the file entry as a symbolic link. The following check ensures
-    # that the LINK type is correctly detected.
-    is_link = os.path.islink(location)
-
-    # File entry type stat information.
-
-    # The stat info member st_mode can have multiple types e.g.
-    # LINK and DIRECTORY in case of a symbolic link to a directory
-    # dfVFS currently only supports one type so we need to check
-    # for LINK first.
-    if stat.S_ISLNK(stat_info.st_mode) or is_link:
-      stat_object.type = stat_object.TYPE_LINK
-    elif stat.S_ISREG(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_FILE
-    elif stat.S_ISDIR(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_DIRECTORY
-    elif (stat.S_ISCHR(stat_info.st_mode) or
-          stat.S_ISBLK(stat_info.st_mode)):
+    if is_windows_device:
       stat_object.type = stat_object.TYPE_DEVICE
-    elif stat.S_ISFIFO(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_PIPE
-    elif stat.S_ISSOCK(stat_info.st_mode):
-      stat_object.type = stat_object.TYPE_SOCKET
 
-    # Other stat information.
-    stat_object.ino = stat_info.st_ino
-    # stat_info.st_dev
-    # stat_info.st_nlink
+    else:
+      # We are only catching OSError. However on the Windows platform
+      # a WindowsError can be raised as well. We are not catching that since
+      # that error does not exist on non-Windows platforms.
+      try:
+        stat_info = os.stat(location)
+      except OSError as exception:
+        raise errors.BackEndError(
+            u'Unable to get stat object, {0:s}'.format(exception))
+
+      # File data stat information.
+      stat_object.size = stat_info.st_size
+
+      # Date and time stat information.
+      stat_object.atime = stat_info.st_atime
+      stat_object.ctime = stat_info.st_ctime
+      stat_object.mtime = stat_info.st_mtime
+
+      # Ownership and permissions stat information.
+      stat_object.mode = stat.S_IMODE(stat_info.st_mode)
+      stat_object.uid = stat_info.st_uid
+      stat_object.gid = stat_info.st_gid
+
+      # If location contains a trailing segment separator and points to
+      # a symbolic link to a directory stat info will not indicate
+      # the file entry as a symbolic link. The following check ensures
+      # that the LINK type is correctly detected.
+      is_link = os.path.islink(location)
+
+      # File entry type stat information.
+
+      # The stat info member st_mode can have multiple types e.g.
+      # LINK and DIRECTORY in case of a symbolic link to a directory
+      # dfVFS currently only supports one type so we need to check
+      # for LINK first.
+      if stat.S_ISLNK(stat_info.st_mode) or is_link:
+        stat_object.type = stat_object.TYPE_LINK
+      elif stat.S_ISREG(stat_info.st_mode):
+        stat_object.type = stat_object.TYPE_FILE
+      elif stat.S_ISDIR(stat_info.st_mode):
+        stat_object.type = stat_object.TYPE_DIRECTORY
+      elif (stat.S_ISCHR(stat_info.st_mode) or
+            stat.S_ISBLK(stat_info.st_mode)):
+        stat_object.type = stat_object.TYPE_DEVICE
+      elif stat.S_ISFIFO(stat_info.st_mode):
+        stat_object.type = stat_object.TYPE_PIPE
+      elif stat.S_ISSOCK(stat_info.st_mode):
+        stat_object.type = stat_object.TYPE_SOCKET
+
+      # Other stat information.
+      stat_object.ino = stat_info.st_ino
+      # stat_info.st_dev
+      # stat_info.st_nlink
 
     return stat_object
 

@@ -231,7 +231,7 @@ if __name__ == '__main__':
   libyal_check_result = CheckLibyal([
       ('pyewf', 20131210),
       ('pyqcow', 20131204),
-      ('pysmdev', 20140323),
+      ('pysmdev', 20140428),
       ('pyvhdi', 20131210),
       ('pyvmdk', 20140421),
       ('pyvshadow', 20131209),
