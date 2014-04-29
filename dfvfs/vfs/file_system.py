@@ -182,5 +182,5 @@ class FileSystem(object):
       A list of path segements without the root path segment, which is an
       empty string.
     """
-    path_segments = path.split(self.PATH_SEPARATOR)
-    return path_segments[1:]
+    # Split the path with the path separator and remove empty path segments.
+    return filter(None, path.split(self.PATH_SEPARATOR))

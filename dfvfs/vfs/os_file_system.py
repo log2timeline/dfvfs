@@ -96,6 +96,57 @@ class OSFileSystem(file_system.FileSystem):
       A string containing the joined path segments prefixed with the path
       separator.
     """
+    # For paths on Windows we need to make sure to handle the first path
+    # segment correctly.
+    first_path_segment = None
+
+    if path_segments and platform.system() == 'Windows':
+      # Check if the first path segment contains a "special" path definition.
+      first_path_segment = path_segments[0]
+      first_path_segment_length = len(first_path_segment)
+      first_path_segment_prefix = None
+
+      # In case the path start with: \\.\C:\
+      if (first_path_segment_length >= 7 and
+          first_path_segment.startswith(u'\\\\.\\') and
+          first_path_segment[5:7] == u':\\'):
+        first_path_segment_prefix = first_path_segment[4:6]
+        first_path_segment = first_path_segment[7:]
+
+      # In case the path start with: \\.\ or \\?\
+      elif (first_path_segment_length >= 4 and
+            first_path_segment[:4] in [u'\\\\.\\', u'\\\\?\\']):
+        first_path_segment_prefix = first_path_segment[:4]
+        first_path_segment = first_path_segment[4:]
+
+      # In case the path start with: C:
+      elif first_path_segment_length >= 2 and first_path_segment[1] == u':':
+        first_path_segment_prefix = first_path_segment[:2]
+        first_path_segment = first_path_segment[2:]
+
+      # In case the path start with: \\server\share (UNC).
+      elif first_path_segment.startswith(u'\\\\'):
+        prefix, _, remainder = first_path_segment[2:].partition(
+            self.PATH_SEPARATOR)
+
+        first_path_segment_prefix = u'\\\\{0:s}'.format(prefix)
+        first_path_segment = u'\\{0:s}'.format(remainder)
+
+      if first_path_segment_prefix:
+        first_path_segment, _, remainder = first_path_segment.partition(
+            self.PATH_SEPARATOR)
+
+        if not remainder:
+          _ = path_segments.pop(0)
+        else:
+          path_segments[0] = remainder
+
+        first_path_segment = u''.join([
+            first_path_segment_prefix, first_path_segment])
+
+      else:
+        first_path_segment = None
+
     # We are not using os.path.join() here since it will not remove all
     # variations of successive path separators.
 
@@ -110,27 +161,13 @@ class OSFileSystem(file_system.FileSystem):
     # Remove empty path segments.
     path_segments = filter(None, path_segments)
 
-    # For paths on Windows we need to make sure to handle the first path
-    # segment correctly.
-    first_path_segment = None
-    if platform.system() == 'Windows':
-      if path_segments:
-        first_path_segment = path_segments[0]
-        # Check if the first path segment contains a "special" path definition
-        # e.g. \\.\, \\?\, C: or \\server\share (UNC).
-        if (len(first_path_segment) > 1 and (
-            first_path_segment.startswith(u'\\\\') or
-            first_path_segment[1] == u':')):
-          path_segments = path_segments[1:]
-        else:
-          first_path_segment = None
-
-    if first_path_segment:
-      path = u'{0:s}{1:s}{2:s}'.format(
-          first_path_segment, self.PATH_SEPARATOR,
-          self.PATH_SEPARATOR.join(path_segments))
-    else:
+    if first_path_segment is None:
       path = u'{0:s}{1:s}'.format(
           self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
+    else:
+      path = first_path_segment
+      if path_segments:
+        path = u'{0:s}{1:s}{2:s}'.format(
+            path, self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
 
     return path
