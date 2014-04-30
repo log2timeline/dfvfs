@@ -82,6 +82,11 @@ class Factory(object):
       raise KeyError((
           u'Path specification type: {0:s} not set.').format(type_indicator))
 
+    # An empty parent will cause parentless path specifications to raise
+    # so we conveniently remove it here.
+    if 'parent' in kwargs and kwargs['parent'] is None:
+      del kwargs['parent']
+
     path_spec_type = cls._path_spec_types[type_indicator]
     return path_spec_type(**kwargs)
 
