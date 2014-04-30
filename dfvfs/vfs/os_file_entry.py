@@ -17,6 +17,7 @@
 # limitations under the License.
 """The operating system file entry implementation."""
 
+import errno
 import os
 import platform
 import stat
@@ -42,16 +43,35 @@ class OSDirectory(file_entry.Directory):
 
     Yields:
       A path specification (instance of path.OSPathSpec).
+
+    Raises:
+      AccessError: if the access to list the directory was denied.
+      BackEndError: if the directory could not be listed.
     """
     location = getattr(self.path_spec, 'location', None)
 
     if location is None:
       return
 
-    for directory_entry in os.listdir(location):
-      directory_entry_location = self._file_system.JoinPath([
-          location, directory_entry])
-      yield os_path_spec.OSPathSpec(location=directory_entry_location)
+    # Windows will raise WindowsError, which can be caught by OSError,
+    # if the process has not access to list the directory. The os.access()
+    # function cannot be used since it will return true even when os.listdir()
+    # fails.
+    try:
+      for directory_entry in os.listdir(location):
+        directory_entry_location = self._file_system.JoinPath([
+            location, directory_entry])
+        yield os_path_spec.OSPathSpec(location=directory_entry_location)
+
+    except OSError as exception:
+      if exception.errno == errno.EACCES:
+        raise errors.AccessError(
+            u'Access denied to directory: {0:s} with error: {1:s}'.format(
+                location, exception))
+      else:
+        raise errors.BackEndError(
+            u'Unable to list directory: {0:s} with error: {1:s}'.format(
+                location, exception))
 
 
 class OSFileEntry(file_entry.FileEntry):
@@ -123,7 +143,8 @@ class OSFileEntry(file_entry.FileEntry):
         stat_info = os.stat(location)
       except OSError as exception:
         raise errors.BackEndError(
-            u'Unable to get stat object, {0:s}'.format(exception))
+            u'Unable to retrieve stat object with error: {0:s}'.format(
+                exception))
 
       # File data stat information.
       stat_object.size = stat_info.st_size

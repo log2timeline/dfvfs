@@ -22,6 +22,10 @@ class Error(Exception):
   """Class that defines a generic error."""
 
 
+class AccessError(Error):
+  """Class that defines access errors."""
+
+
 class BackEndError(Error):
   """Class that defines back-end errors."""
 
