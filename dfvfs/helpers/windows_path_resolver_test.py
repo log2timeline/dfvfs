@@ -39,6 +39,8 @@ class WindowsPathResolverTest(unittest.TestCase):
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
 
+    # TODO: add RAW volume only test image.
+
     test_file = os.path.join('test_data', 'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)

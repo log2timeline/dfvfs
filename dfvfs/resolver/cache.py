@@ -55,6 +55,13 @@ class ObjectsCache(object):
     self._vfs_objects[identifier] = vfs_object
     self._vfs_objects_mru.appendleft(identifier)
 
+  def Empty(self):
+    """Empties the cache."""
+    # Since we're changing the self._vfs_objects dict we cannot use iterkeys().
+    for key in self._vfs_objects.keys():
+      self._vfs_objects_mru.remove(key)
+      del self._vfs_objects[key]
+
   def GetIdentifier(self, vfs_object):
     """Retrieves the identifier cached object.
 
@@ -91,7 +98,7 @@ class ObjectsCache(object):
     Args:
       identifier: string that identifiers the VFS object.
     """
-    if identifier not in self._vfs_objects_mru:
+    if identifier not in self._vfs_objects:
       return
 
     self._vfs_objects_mru.remove(identifier)

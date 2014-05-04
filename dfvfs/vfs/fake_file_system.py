@@ -43,7 +43,7 @@ class FakeFileSystem(file_system.FileSystem):
 
   def AddFileEntry(
       self, path, file_entry_type=definitions.FILE_ENTRY_TYPE_FILE,
-      file_data=None):
+      file_data=None, link_data=None):
     """Adds a fake file entry.
 
     Args:
@@ -52,12 +52,23 @@ class FakeFileSystem(file_system.FileSystem):
                        The default is file (definitions.FILE_ENTRY_TYPE_FILE).
       file_data: optional data of the fake file-like object.
                  The default is None.
+      link_data: optional link data of the fake file entry object.
+                 The default is None.
 
     Raises:
       KeyError: if the path already exists.
+      ValueError: if the file data is set but the file entry type is not a file
+                  or if the link data is set but the file entry type is not
+                  a link.
     """
     if path in self._paths:
       raise KeyError(u'File entry already set for path: {0:s}.'.format(path))
+
+    if file_data and file_entry_type != definitions.FILE_ENTRY_TYPE_FILE:
+      raise ValueError(u'File data set for non-file file entry type.')
+
+    if link_data and file_entry_type != definitions.FILE_ENTRY_TYPE_LINK:
+      raise ValueError(u'Link data set for non-link file entry type.')
 
     stat_object = vfs_stat.VFSStat()
 
@@ -79,7 +90,14 @@ class FakeFileSystem(file_system.FileSystem):
 
     # Other stat information.
 
-    self._paths[path] = (stat_object, file_data)
+    if file_data:
+      path_data = file_data
+    elif link_data:
+      path_data = link_data
+    else:
+      path_data = None
+
+    self._paths[path] = (stat_object, path_data)
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -96,17 +114,17 @@ class FakeFileSystem(file_system.FileSystem):
       return False
     return True
 
-  def GetFileDataByPath(self, path):
-    """Retrieves the file data for a path.
+  def GetDataByPath(self, path):
+    """Retrieves the data associated to a path.
 
     Args:
       path: a path.
 
     Returns:
-      Binary string containing the file data or None if not available.
+      Binary string containing the data or None if not available.
     """
-    _, file_data = self._paths.get(path, (None, None))
-    return file_data
+    _, path_data = self._paths.get(path, (None, None))
+    return path_data
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.

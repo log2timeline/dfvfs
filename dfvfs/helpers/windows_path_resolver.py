@@ -46,7 +46,7 @@ class WindowsPathResolver(object):
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
       mount_point: the mount point path specification (instance of
-                   path.PathSpec). The default is None.
+                   path.PathSpec).
       drive_letter: optional string that contains the drive letter used by
                     the file system. The default is C.
 
@@ -57,7 +57,7 @@ class WindowsPathResolver(object):
     if not file_system or not mount_point:
       raise ValueError(u'Missing file system or mount point value.')
 
-    if mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
       if not hasattr(mount_point, 'location'):
         raise errors.PathSpecError(
             u'Mount point path specification missing location.')
@@ -150,7 +150,7 @@ class WindowsPathResolver(object):
     if path is None:
       return None, None
 
-    if self._mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
       file_entry = self._file_system.GetFileEntryByPathSpec(self._mount_point)
       expanded_path_segments = self._file_system.SplitPath(
           self._mount_point.location)
@@ -210,7 +210,7 @@ class WindowsPathResolver(object):
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
 
-    if self._mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
       if not location.startswith(self._mount_point.location):
         raise errors.PathSpecError(
             u'Path specification does not contain mount point.')
@@ -224,7 +224,7 @@ class WindowsPathResolver(object):
 
     path_segments = self._file_system.SplitPath(location)
 
-    if self._mount_point.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
       mount_point_path_segments = self._file_system.SplitPath(
           self._mount_point.location)
       path_segments = path_segments[len(mount_point_path_segments):]
@@ -256,7 +256,7 @@ class WindowsPathResolver(object):
     kwargs = path_spec_factory.Factory.GetProperties(path_spec)
 
     kwargs['location'] = location
-    if self._mount_point.type_indicator not in self._PARENTLESS_TYPE_INDICATORS:
+    if self._file_system.type_indicator not in self._PARENTLESS_TYPE_INDICATORS:
       kwargs['parent'] = self._mount_point
 
     return path_spec_factory.Factory.NewPathSpec(
