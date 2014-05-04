@@ -97,6 +97,18 @@ class FakeFileEntry(file_entry.FileEntry):
     return self._file_system.GetStatObjectByPath(location)
 
   @property
+  def link(self):
+    """The full path of the linked file entry."""
+    if not self.IsLink():
+      return u''
+
+    location = getattr(self.path_spec, 'location', None)
+    if location is None:
+      return u''
+
+    return self._file_system.GetDataByPath(location)
+
+  @property
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
@@ -117,12 +129,19 @@ class FakeFileEntry(file_entry.FileEntry):
             self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FakeFile)."""
+    """Retrieves the file-like object (instance of file_io.FakeFile).
+
+    Raises:
+      IOError: if the file entry is not a file.
+    """
+    if not self.IsFile():
+      raise IOError(u'Cannot open non-file.')
+
     location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
-    file_data = self._file_system.GetStatObjectByPath(location)
+    file_data = self._file_system.GetDataByPath(location)
     file_object = fake_file_io.FakeFile(self._resolver_context, file_data)
     file_object.open(path_spec=self.path_spec)
     return file_object

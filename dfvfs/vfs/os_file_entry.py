@@ -66,8 +66,7 @@ class OSDirectory(file_entry.Directory):
     except OSError as exception:
       if exception.errno == errno.EACCES:
         raise errors.AccessError(
-            u'Access denied to directory: {0:s} with error: {1:s}'.format(
-                location, exception))
+            u'Access to directory denied with error: {0:s}'.format(exception))
       else:
         raise errors.BackEndError(
             u'Unable to list directory: {0:s} with error: {1:s}'.format(

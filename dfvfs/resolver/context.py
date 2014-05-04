@@ -77,6 +77,11 @@ class Context(object):
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     self._file_system_cache.CacheObject(identifier, file_system)
 
+  def Empty(self):
+    """Empties the caches."""
+    self._file_object_cache.Empty()
+    self._file_system_cache.Empty()
+
   def GetFileObject(self, path_spec):
     """Retrieves a file-like object defined by path specification.
 
