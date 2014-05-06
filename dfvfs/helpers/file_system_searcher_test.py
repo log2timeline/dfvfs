@@ -208,8 +208,9 @@ class FileSystemSearcherTest(unittest.TestCase):
     searcher = file_system_searcher.FileSystemSearcher(
         self._os_file_system, self._os_path_spec)
 
+    location = u'{0:s}syslog[.].*'.format(os.path.sep)
     find_spec = file_system_searcher.FindSpec(
-        location_regex=u'/syslog[.].*', case_sensitive=False)
+        location_regex=location, case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertNotEquals(path_spec_generator, None)
 
