@@ -110,8 +110,12 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not or
+      None if no file entry type specification is defined.
     """
+    if self._file_entry_types is None:
+      return
+
     return (self._CheckIsDevice(file_entry) or
             self._CheckIsDirectory(file_entry) or
             self._CheckIsFile(file_entry) or
@@ -126,10 +130,12 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not or
+      None if no allocation specification is defined.
     """
-    return (self._is_allocated is not None and
-            self._is_allocated == file_entry.IsAllocated())
+    if self._is_allocated is None:
+      return
+    return self._is_allocated == file_entry.IsAllocated()
 
   def _CheckIsDevice(self, file_entry):
     """Checks the is_device find specification.
@@ -138,10 +144,9 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not.
     """
-    if (self._file_entry_types is not None and
-        definitions.FILE_ENTRY_TYPE_DEVICE not in self._file_entry_types):
+    if definitions.FILE_ENTRY_TYPE_DEVICE not in self._file_entry_types:
       return False
     return file_entry.IsDevice()
 
@@ -152,10 +157,9 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not.
     """
-    if (self._file_entry_types is not None and
-        definitions.FILE_ENTRY_TYPE_DIRECTORY not in self._file_entry_types):
+    if definitions.FILE_ENTRY_TYPE_DIRECTORY not in self._file_entry_types:
       return False
     return file_entry.IsDirectory()
 
@@ -166,10 +170,9 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not.
     """
-    if (self._file_entry_types is not None and
-        definitions.FILE_ENTRY_TYPE_FILE not in self._file_entry_types):
+    if definitions.FILE_ENTRY_TYPE_FILE not in self._file_entry_types:
       return False
     return file_entry.IsFile()
 
@@ -180,10 +183,9 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not.
     """
-    if (self._file_entry_types is not None and
-        definitions.FILE_ENTRY_TYPE_LINK not in self._file_entry_types):
+    if definitions.FILE_ENTRY_TYPE_LINK not in self._file_entry_types:
       return False
     return file_entry.IsLink()
 
@@ -194,10 +196,9 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not.
     """
-    if (self._file_entry_types is not None and
-        definitions.FILE_ENTRY_TYPE_PIPE not in self._file_entry_types):
+    if definitions.FILE_ENTRY_TYPE_PIPE not in self._file_entry_types:
       return False
     return file_entry.IsPipe()
 
@@ -208,12 +209,69 @@ class FindSpec(object):
       file_entry: the file entry (instance of vfs.FileEntry).
 
     Returns:
-      True if the file entry matches the find specification false otherwise.
+      True if the file entry matches the find specification, False if not.
     """
-    if (self._file_entry_types is not None and
-        definitions.FILE_ENTRY_TYPE_SOCKET not in self._file_entry_types):
+    if definitions.FILE_ENTRY_TYPE_SOCKET not in self._file_entry_types:
       return False
     return file_entry.IsSocket()
+
+  def _CheckLocation(self, file_entry, search_depth):
+    """Checks the location find specification.
+
+    Args:
+      file_entry: the file entry (instance of vfs.FileEntry).
+      search_depth: the search depth.
+
+    Returns:
+      True if the file entry matches the find specification, False if not.
+    """
+    if self._location_segments is None:
+      return False
+
+    if search_depth < 0 or search_depth > self._number_of_location_segments:
+      return False
+
+    # Note that the root has no entry in the location segments and
+    # no name to match.
+    if search_depth == 0:
+      segment_name = u''
+    else:
+      segment_name = self._location_segments[search_depth - 1]
+
+      if self._is_regex:
+        if isinstance(segment_name, basestring):
+          # Allow '\n' to be matched by '.' and make '\w', '\W', '\b', '\B',
+          # '\d', '\D', '\s' and '\S' Unicode safe.
+          flags = re.DOTALL | re.UNICODE
+          if not self._is_case_sensitive:
+            flags |= re.IGNORECASE
+
+          try:
+            segment_name = r'^{0:s}$'.format(segment_name)
+            segment_name = re.compile(segment_name, flags=flags)
+          except sre_constants.error:
+            # TODO: set self._location_segments[search_depth - 1] to None ?
+            return False
+
+          self._location_segments[search_depth - 1] = segment_name
+
+      elif not self._is_case_sensitive:
+        segment_name = segment_name.lower()
+        self._location_segments[search_depth - 1] = segment_name
+
+    if search_depth > 0:
+      if self._is_regex:
+        if not segment_name.match(file_entry.name):
+          return False
+
+      elif self._is_case_sensitive:
+        if segment_name != file_entry.name:
+          return False
+
+      elif segment_name != file_entry.name.lower():
+        return False
+
+    return True
 
   def AtMaximumDepth(self, search_depth):
     """Determines if the find specification is at maximum depth.
@@ -222,7 +280,7 @@ class FindSpec(object):
       search_depth: the search depth.
 
     Returns:
-      True if at maximum depth, false otherwise.
+      True if at maximum depth, False if not.
     """
     if self._location_segments is not None:
       if search_depth == self._number_of_location_segments:
@@ -253,60 +311,30 @@ class FindSpec(object):
       search_depth: the search depth.
 
     Returns:
-      True if the file entry matches the find specification, false otherwise.
+      A tuple containing:
+        True if the file entry matches the find specification, False otherwise.
+        True if the location matches, False if not or None if no location
+        specified.
     """
-    if self._location_segments is not None:
-      if search_depth < 0 or search_depth > self._number_of_location_segments:
-        return False
-
-      # Note that the root has no entry in the location segments and
-      # no name to match.
-      if search_depth == 0:
-        segment_name = u''
-      else:
-        segment_name = self._location_segments[search_depth - 1]
-
-        if self._is_regex:
-          if isinstance(segment_name, basestring):
-            # Allow '\n' to be matched by '.' and make '\w', '\W', '\b', '\B',
-            # '\d', '\D', '\s' and '\S' Unicode safe.
-            flags = re.DOTALL | re.UNICODE
-            if not self._is_case_sensitive:
-              flags |= re.IGNORECASE
-
-            try:
-              segment_name = r'^{0:s}$'.format(segment_name)
-              segment_name = re.compile(segment_name, flags=flags)
-            except sre_constants.error:
-              return False
-
-            self._location_segments[search_depth - 1] = segment_name
-
-        elif not self._is_case_sensitive:
-          segment_name = segment_name.lower()
-          self._location_segments[search_depth - 1] = segment_name
-
-      if search_depth > 0 and self._is_regex:
-        if not segment_name.match(file_entry.name):
-          return False
-
-      elif search_depth == 0 or self._is_case_sensitive:
-        if segment_name != file_entry.name:
-          return False
-
-      elif segment_name != file_entry.name.lower():
-        return False
+    if self._location_segments is None:
+      location_match = None
+    else:
+      location_match = self._CheckLocation(file_entry, search_depth)
+      if not location_match:
+        return False, location_match
 
       if search_depth != self._number_of_location_segments:
-        return False
+        return False, location_match
 
-    if not self._CheckFileEntryType(file_entry):
-      return False
+    match = self._CheckFileEntryType(file_entry)
+    if match is not None and not match:
+      return False, location_match
 
-    if not self._CheckIsAllocated(file_entry):
-      return False
+    match = self._CheckIsAllocated(file_entry)
+    if match is not None and not match:
+      return False, location_match
 
-    return True
+    return True, location_match
 
 
 class FileSystemSearcher(object):
@@ -356,9 +384,11 @@ class FileSystemSearcher(object):
     """
     sub_find_specs = []
     for find_spec in find_specs:
-      if find_spec.Matches(file_entry, search_depth):
+      match, location_match = find_spec.Matches(file_entry, search_depth)
+      if match:
         yield file_entry.path_spec
-      if not find_spec.AtMaximumDepth(search_depth):
+
+      if location_match != False and not find_spec.AtMaximumDepth(search_depth):
         sub_find_specs.append(find_spec)
 
     if not sub_find_specs: 
