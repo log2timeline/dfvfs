@@ -86,6 +86,18 @@ class TextFileTest(unittest.TestCase):
 
     file_object.close()
 
+  def testReadlinesWithFileWithoutNewLineAtEnd(self):
+    """Test reading lines from a file without a new line char at the end."""
+    test_file = os.path.join('test_data', 'fls_bodyfile.txt')
+    test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(test_file_path_spec)
+    text_file_object = text_file.TextFile(file_object)
+
+    lines = text_file_object.readlines()
+
+    self.assertEquals(len(lines), 25)
+
   def testIterator(self):
     """Test the iterator functionality."""
     file_object = os_file_io.OSFile(self._resolver_context)

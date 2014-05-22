@@ -165,8 +165,17 @@ class TextFile(object):
     if size is None or size <= 0:
       size = None
 
+    next_offset = self._current_offset + self._lines_buffer_size
+
     if (self._end_of_line not in self._lines_buffer and
-        (size is None or self._lines_buffer_size < size)):
+        next_offset == self._file_object_size):
+      line = self._lines_buffer
+      self._lines_buffer_size = 0
+      self._lines_buffer = ''
+
+      return line
+    elif (self._end_of_line not in self._lines_buffer and
+          (size is None or self._lines_buffer_size < size)):
       lines_data = self._ReadLinesData(size)
 
       result, separator, lines_data = lines_data.partition(self._end_of_line)
