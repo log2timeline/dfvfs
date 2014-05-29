@@ -49,7 +49,6 @@ class OSDirectory(file_entry.Directory):
       BackEndError: if the directory could not be listed.
     """
     location = getattr(self.path_spec, 'location', None)
-
     if location is None:
       return
 

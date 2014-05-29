@@ -55,6 +55,7 @@ class OSFile(file_io.FileIO):
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
+      AccessError: if the access to open the file was denied.
       IOError: if the open file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
@@ -80,14 +81,23 @@ class OSFile(file_io.FileIO):
     # libsmdev to do an initial check.
     try:
       is_device = pysmdev.check_device(location)
-    except IOError:
+    except IOError as exception:
+      # Since os.stat() will not recognize Windows device file names and
+      # will return '[Error 87] The parameter is incorrect' we check here
+      # if pysmdev exception message contains ' access denied ' and raise
+      # AccessError instead.
+      if u' access denied ' in exception.message:
+        raise errors.AccessError(
+            u'Access denied to file: {0:s} with error: {1:s}'.format(
+                location, exception))
       is_device = False
 
     if not is_device:
       try:
         stat_info = os.stat(location)
       except OSError as exception:
-        raise IOError(u'Unable to open with error: {0:s}.'.format(exception))
+        raise IOError(u'Unable to open file with error: {0:s}.'.format(
+             exception))
 
       # In case the libsmdev check is not able to detect the device also use
       # the stat information.
