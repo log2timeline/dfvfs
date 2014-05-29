@@ -20,6 +20,8 @@
 import os
 import platform
 
+import pysmdev
+
 from dfvfs.lib import definitions
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_system
@@ -47,8 +49,25 @@ class OSFileSystem(file_system.FileSystem):
     """
     location = getattr(path_spec, 'location', None)
 
-    if location is None or not os.path.exists(location):
+    if location is None:
       return False
+
+    is_device = False
+    if platform.system() == 'Windows':
+      # Windows does not support running os.path.exists on device files
+      # so we use libsmdev to do the check.
+      try:
+        is_device = pysmdev.check_device(location)
+      except IOError as exception:
+        # Since pysmdev will raise IOError when it has no access to the device
+        # we check if the exception message contains ' access denied ' and
+        # return true.
+        if u' access denied ' in exception.message:
+          is_device = True
+
+    if not is_device and not os.path.exists(location):
+      return False
+
     return True
 
   def GetFileEntryByPathSpec(self, path_spec):

@@ -149,6 +149,11 @@ then
   exit ${EXIT_FAILURE};
 fi
 
+if test -f "utils/update_version.sh";
+then
+  . utils/update_version.sh
+fi
+
 if ${HAVE_GIT_CL};
 then
   if have_uncommitted_changes;
