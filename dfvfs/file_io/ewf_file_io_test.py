@@ -21,8 +21,8 @@ import os
 import unittest
 
 from dfvfs.file_io import test_lib
-from dfvfs.path import os_path_spec
 from dfvfs.path import ewf_path_spec
+from dfvfs.path import os_path_spec
 
 
 class EwfFileTest(test_lib.ImageFileTestCase):
