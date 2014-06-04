@@ -63,15 +63,15 @@ class EwfFile(file_object_io.FileObjectIO):
     file_system = resolver.Resolver.OpenFileSystem(
         parent_path_spec, resolver_context=self._resolver_context)
 
-    parent_location, _, segment_extention = parent_location.rpartition(u'.')
-    segment_extention_length = len(segment_extention)
+    parent_location, _, segment_extension = parent_location.rpartition(u'.')
+    segment_extension_length = len(segment_extension)
 
-    if (segment_extention_length not in [3, 4] or
-        not segment_extention.endswith(u'01') or (
-            segment_extention_length == 3 and
-            segment_extention[0] not in ['E', 'e', 's']) or (
-            segment_extention_length == 4 and
-            not segment_extention.starstwith(u'Ex'))):
+    if (segment_extension_length not in [3, 4] or
+        not segment_extension.endswith(u'01') or (
+            segment_extension_length == 3 and
+            segment_extension[0] not in ['E', 'e', 's']) or (
+            segment_extension_length == 4 and
+            not segment_extension.starstwith(u'Ex'))):
       raise errors.PathSpecError(
           u'Unsupported parent path specification invalid segment file '
           u'extenstion.')
@@ -80,7 +80,7 @@ class EwfFile(file_object_io.FileObjectIO):
     segment_files = []
     while True:
       segment_location = u'{0:s}.{1:s}'.format(
-          parent_location, segment_extention)
+          parent_location, segment_extension)
 
       # Note that we don't want to set the keyword arguments when not used
       # because the path specification base class will check for unused
@@ -101,38 +101,38 @@ class EwfFile(file_object_io.FileObjectIO):
 
       segment_number += 1
       if segment_number <= 99:
-        if segment_extention_length == 3:
-          segment_extention = u'{0:s}{1:02d}'.format(
-              segment_extention[0], segment_number)
-        elif segment_extention_length == 4:
-          segment_extention = u'{0:s}x{1:02d}'.format(
-              segment_extention[0], segment_number)
+        if segment_extension_length == 3:
+          segment_extension = u'{0:s}{1:02d}'.format(
+              segment_extension[0], segment_number)
+        elif segment_extension_length == 4:
+          segment_extension = u'{0:s}x{1:02d}'.format(
+              segment_extension[0], segment_number)
 
       else:
         segment_index = segment_number - 100
-        _, remainder = divmod(segment_index, 26)
-        if segment_extention[0] in ['e', 's']:
-          third_letter = chr(ord('a') + remainder)
-        else:
-          third_letter = chr(ord('A') + remainder)
 
-        segment_index, remainder = divmod(segment_index, 26)
-        if segment_extention[0] in ['e', 's']:
-          second_letter = chr(ord('a') + remainder)
-        else:
-          second_letter = chr(ord('A') + remainder)
+        quotient, remainder = divmod(segment_index, 26)
 
-        segment_index, _ = divmod(segment_index, 26)
-        first_letter = chr(ord(segment_extention[0]) + segment_index)
-
-        if first_letter in ['[', '{']:
+        if quotient > 26:
           raise RuntimeError(u'Unsupported number of segment files.')
 
-        if segment_extention_length == 3:
-          segment_extention = u'{0:s}{1:s}{2:s}'.format(
+        first_letter = segment_extension[0]
+
+        if segment_extension[0] in ['e', 's']:
+          letter_offset = ord('a')
+        else:
+          letter_offset = ord('A')
+
+        # The quotient is used to calculate the second letter
+        # while the remainder indicates the third and last.
+        second_letter = chr(letter_offset + quotient)
+        third_letter = chr(letter_offset + remainder)
+
+        if segment_extension_length == 3:
+          segment_extension = u'{0:s}{1:s}{2:s}'.format(
               first_letter, second_letter, third_letter)
-        elif segment_extention_length == 4:
-          segment_extention = u'{0:s}x{1:s}{2:s}'.format(
+        elif segment_extension_length == 4:
+          segment_extension = u'{0:s}x{1:s}{2:s}'.format(
               first_letter, second_letter, third_letter)
 
     if not segment_files:
