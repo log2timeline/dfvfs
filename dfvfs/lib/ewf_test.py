@@ -30,23 +30,78 @@ from dfvfs.vfs import fake_file_system
 class GlobEwfFileTest(unittest.TestCase):
   """The unit test for the EWF image file glob functionality."""
 
-  def testGlobE01(self):
-    """Test the glob function."""
+  def _BuildFileFakeFileSystem(
+      self, filename, number_of_segments, segment_file_path_specs):
+    """Builds a fake file system containing EWF segment files.
+
+    Args:
+      filename: the filename of the first segment file with extension.
+      number_of_segments: the number of segments.
+      segment_file_path_specs: a list to store the segment file path
+                               specifications in.
+
+    Returns:
+      The fake file system (instance of dvfvs.FakeFileSystem).
+    """
     resolver_context = context.Context()
     file_system = fake_file_system.FakeFileSystem(resolver_context)
 
     file_system.AddFileEntry(
         u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-    file_system.AddFileEntry(u'/image.E01')
+
+    filename, _, extension = filename.partition(u'.')
+    number_of_segments += 1
+
+    for segment_number in range(1, number_of_segments):
+      if segment_number < 100:
+        if extension[1] == u'x':
+          path = u'/{0:s}.{1:s}x{2:02d}'.format(
+              filename, extension[0], segment_number)
+        else:
+          path = u'/{0:s}.{1:s}{2:02d}'.format(
+              filename, extension[0], segment_number)
+      else:
+        segment_index = segment_number - 100
+        segment_index, remainder = divmod(segment_index, 26)
+
+        if extension[0].islower():
+          third_letter = chr(ord('a') + remainder)
+        else:
+          third_letter = chr(ord('A') + remainder)
+
+        segment_index, remainder = divmod(segment_index, 26)
+
+        if extension[0].islower():
+          second_letter = chr(ord('a') + remainder)
+        else:
+          second_letter = chr(ord('A') + remainder)
+
+        first_letter = chr(ord(extension[0]) + segment_index)
+        if extension[1] == u'x':
+          path = u'/{0:s}.{1:s}x{2:s}{3:s}'.format(
+              filename, first_letter, second_letter, third_letter)
+        else:
+          path = u'/{0:s}.{1:s}{2:s}{3:s}'.format(
+              filename, first_letter, second_letter, third_letter)
+
+      file_system.AddFileEntry(path)
+      segment_file_path_specs.append(fake_path_spec.FakePathSpec(location=path))
+
+    return file_system
+
+  def testGlobE01(self):
+    """Test the glob function."""
+    expected_segment_file_path_specs = []
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.E01', 1, expected_segment_file_path_specs)
 
     # Test single segment file: E01.
-    expected_segment_file_path_specs = [
-        fake_path_spec.FakePathSpec(location=u'/image.E01')]
-
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.E01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
+    self.assertEquals(
+        len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEquals(
         segment_file_path_specs, expected_segment_file_path_specs)
 
@@ -63,19 +118,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E10.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 11):
-      path = u'/image.E{0:02d}'.format(segment_number)
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.E01', 10, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.E01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -87,27 +132,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 101):
-      if segment_number < 100:
-        path = u'/image.E{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        second_letter = chr(ord('A') + segment_index)
-        path = u'/image.E{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.E01', 100, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.E01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -119,27 +146,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-EBA.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 127):
-      if segment_number < 100:
-        path = u'/image.E{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        second_letter = chr(ord('A') + segment_index)
-        path = u'/image.E{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.E01', 126, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.E01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -151,27 +160,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-EZZ.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 776):
-      if segment_number < 100:
-        path = u'/image.E{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        second_letter = chr(ord('A') + segment_index)
-        path = u'/image.E{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.E01', 775, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.E01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -183,30 +174,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-ZZZ.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 14971):
-      if segment_number < 100:
-        path = u'/image.E{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        segment_index, remainder = divmod(segment_index, 26)
-        second_letter = chr(ord('A') + remainder)
-        first_letter = chr(ord('E') + segment_index)
-        path = u'/image.{0:s}{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.E01', 14970, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.E01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -218,30 +188,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-[ZZ.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 14972):
-      if segment_number < 100:
-        path = u'/image.E{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        segment_index, remainder = divmod(segment_index, 26)
-        second_letter = chr(ord('A') + remainder)
-        first_letter = chr(ord('E') + segment_index)
-        path = u'/image.{0:s}{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.E01', 14971, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.E01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -251,21 +200,17 @@ class GlobEwfFileTest(unittest.TestCase):
 
   def testGlobEx01(self):
     """Test the glob function."""
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-    file_system.AddFileEntry(u'/image.Ex01')
+    expected_segment_file_path_specs = []
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.Ex01', 1, expected_segment_file_path_specs)
 
     # Test single segment file: Ex01.
-    expected_segment_file_path_specs = [
-        fake_path_spec.FakePathSpec(location=u'/image.Ex01')]
-
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.Ex01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
+    self.assertEquals(
+        len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEquals(
         segment_file_path_specs, expected_segment_file_path_specs)
 
@@ -282,19 +227,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex10.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 11):
-      path = u'/image.Ex{0:02d}'.format(segment_number)
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.Ex01', 10, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.Ex01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -306,27 +241,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 101):
-      if segment_number < 100:
-        path = u'/image.Ex{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        second_letter = chr(ord('A') + segment_index)
-        path = u'/image.Ex{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.Ex01', 100, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.Ex01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -338,27 +255,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-ExBA.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 127):
-      if segment_number < 100:
-        path = u'/image.Ex{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        second_letter = chr(ord('A') + segment_index)
-        path = u'/image.Ex{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.Ex01', 126, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.Ex01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -370,27 +269,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-ExZZ.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 776):
-      if segment_number < 100:
-        path = u'/image.Ex{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        second_letter = chr(ord('A') + segment_index)
-        path = u'/image.Ex{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.Ex01', 775, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.Ex01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -402,30 +283,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-ZxZZ.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 14971):
-      if segment_number < 100:
-        path = u'/image.Ex{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        segment_index, remainder = divmod(segment_index, 26)
-        second_letter = chr(ord('A') + remainder)
-        first_letter = chr(ord('E') + segment_index)
-        path = u'/image.{0:s}x{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.Ex01', 14970, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.Ex01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -437,30 +297,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-[xZZ.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 14972):
-      if segment_number < 100:
-        path = u'/image.Ex{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('A') + remainder)
-        segment_index, remainder = divmod(segment_index, 26)
-        second_letter = chr(ord('A') + remainder)
-        first_letter = chr(ord('E') + segment_index)
-        path = u'/image.{0:s}x{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.Ex01', 14971, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.Ex01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -470,21 +309,17 @@ class GlobEwfFileTest(unittest.TestCase):
 
   def testGlobs01(self):
     """Test the glob function."""
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-    file_system.AddFileEntry(u'/image.s01')
+    expected_segment_file_path_specs = []
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.s01', 1, expected_segment_file_path_specs)
 
     # Test single segment file: s01.
-    expected_segment_file_path_specs = [
-        fake_path_spec.FakePathSpec(location=u'/image.s01')]
-
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.s01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
+    self.assertEquals(
+        len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEquals(
         segment_file_path_specs, expected_segment_file_path_specs)
 
@@ -501,19 +336,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s10.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 11):
-      path = u'/image.s{0:02d}'.format(segment_number)
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.s01', 10, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.s01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -525,27 +350,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 101):
-      if segment_number < 100:
-        path = u'/image.s{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('a') + remainder)
-        second_letter = chr(ord('a') + segment_index)
-        path = u'/image.s{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.s01', 100, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.s01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -557,27 +364,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa-sba.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 127):
-      if segment_number < 100:
-        path = u'/image.s{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('a') + remainder)
-        second_letter = chr(ord('a') + segment_index)
-        path = u'/image.s{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.s01', 126, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.s01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -589,27 +378,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa-szz.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 776):
-      if segment_number < 100:
-        path = u'/image.s{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('a') + remainder)
-        second_letter = chr(ord('a') + segment_index)
-        path = u'/image.s{0:s}{1:s}'.format(second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.s01', 775, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.s01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -621,30 +392,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa-zzz.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 5507):
-      if segment_number < 100:
-        path = u'/image.s{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('a') + remainder)
-        segment_index, remainder = divmod(segment_index, 26)
-        second_letter = chr(ord('a') + remainder)
-        first_letter = chr(ord('s') + segment_index)
-        path = u'/image.{0:s}{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.s01', 5506, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.s01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
@@ -656,30 +406,9 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-[ZZ.
-    resolver_context = context.Context()
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     expected_segment_file_path_specs = []
-
-    for segment_number in range(1, 5508):
-      if segment_number < 100:
-        path = u'/image.s{0:02d}'.format(segment_number)
-      else:
-        segment_index = segment_number - 100
-        segment_index, remainder = divmod(segment_index, 26)
-        third_letter = chr(ord('a') + remainder)
-        segment_index, remainder = divmod(segment_index, 26)
-        second_letter = chr(ord('a') + remainder)
-        first_letter = chr(ord('s') + segment_index)
-        path = u'/image.{0:s}{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
-
-      file_system.AddFileEntry(path)
-      expected_segment_file_path_specs.append(
-          fake_path_spec.FakePathSpec(location=path))
+    file_system = self._BuildFileFakeFileSystem(
+        u'image.s01', 5507, expected_segment_file_path_specs)
 
     path_spec = fake_path_spec.FakePathSpec(location=u'/image.s01')
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
