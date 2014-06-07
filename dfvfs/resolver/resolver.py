@@ -17,6 +17,7 @@
 # limitations under the License.
 """The Virtual File System (VFS) path specification resolver object."""
 
+from dfvfs.credentials import keychain
 from dfvfs.resolver import context
 
 
@@ -25,6 +26,8 @@ class Resolver(object):
 
   _resolver_context = context.Context()
   _resolver_helpers = {}
+
+  key_chain = keychain.KeyChain()
 
   @classmethod
   def DeregisterHelper(cls, resolver_helper):
@@ -39,8 +42,8 @@ class Resolver(object):
                 type indicator.
     """
     if resolver_helper.type_indicator not in cls._resolver_helpers:
-      raise KeyError((
-          u'Resolver helper object not set for type indicator: {0:s}.').format(
+      raise KeyError(
+          u'Resolver helper object not set for type indicator: {0:s}.'.format(
               resolver_helper.type_indicator))
 
     del cls._resolver_helpers[resolver_helper.type_indicator]

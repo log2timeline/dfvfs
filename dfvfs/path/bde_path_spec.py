@@ -27,17 +27,12 @@ class BdePathSpec(path_spec.PathSpec):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 
-  def __init__(
-      self, password=None, recovery_password=None, startup_key=None,
-      parent=None, **kwargs):
+  def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
        Note that the BDE path specification must have a parent.
 
     Args:
-      password: optional password string. The default is None.
-      recovery_password: optional recovery password string. The default is None.
-      startup_key: optional startup key file path. The default is None.
       parent: optional parent path specification (instance of PathSpec).
               The default is None.
 
@@ -48,9 +43,6 @@ class BdePathSpec(path_spec.PathSpec):
       raise ValueError(u'Missing parent value.')
 
     super(BdePathSpec, self).__init__(parent=parent, **kwargs)
-    self.password = password
-    self.recovery_password = recovery_password
-    self.startup_key = startup_key
 
   @property
   def comparable(self):

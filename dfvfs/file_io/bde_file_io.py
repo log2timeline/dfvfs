@@ -51,5 +51,6 @@ class BdeFile(file_object_io.FileObjectIO):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
     bde_volume = pybde.volume()
-    bde.BdeVolumeOpen(bde_volume, path_spec, file_object)
+    bde.BdeVolumeOpen(
+        bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
     return bde_volume
