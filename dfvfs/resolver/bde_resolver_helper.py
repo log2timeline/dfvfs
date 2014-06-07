@@ -68,7 +68,8 @@ class BdeResolverHelper(resolver_helper.ResolverHelper):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=resolver_context)
     bde_volume = pybde.volume()
-    bde.BdeVolumeOpen(bde_volume, path_spec, file_object)
+    bde.BdeVolumeOpen(
+        bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
     return dfvfs.vfs.bde_file_system.BdeFileSystem(
         resolver_context, bde_volume, path_spec.parent)
 

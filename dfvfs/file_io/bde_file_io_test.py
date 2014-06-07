@@ -23,6 +23,7 @@ import unittest
 from dfvfs.file_io import test_lib
 from dfvfs.path import bde_path_spec
 from dfvfs.path import os_path_spec
+from dfvfs.resolver import resolver
 
 
 class BdeFileTest(test_lib.ImageFileTestCase):
@@ -38,8 +39,9 @@ class BdeFileTest(test_lib.ImageFileTestCase):
     super(BdeFileTest, self).setUp()
     test_file = os.path.join('test_data', 'bdetogo.raw')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._bde_path_spec = bde_path_spec.BdePathSpec(
-        parent=path_spec, password=self._BDE_PASSWORD)
+    self._bde_path_spec = bde_path_spec.BdePathSpec(parent=path_spec)
+    resolver.Resolver.key_chain.SetCredential(
+        self._bde_path_spec, u'password', self._BDE_PASSWORD)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
