@@ -51,7 +51,7 @@ class VShadowResolverHelper(resolver_helper.ResolverHelper):
       specification could not be resolved.
     """
     file_object = dfvfs.file_io.vshadow_file_io.VShadowFile(resolver_context)
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     return file_object
 
   def OpenFileSystem(self, path_spec, resolver_context):
@@ -70,7 +70,7 @@ class VShadowResolverHelper(resolver_helper.ResolverHelper):
           u'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context)
+        path_spec.parent, resolver_context=resolver_context)
     vshadow_volume = pyvshadow.volume()
     vshadow_volume.open_file_object(file_object)
     return dfvfs.vfs.vshadow_file_system.VShadowFileSystem(

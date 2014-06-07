@@ -25,7 +25,7 @@ from dfvfs.vfs import fake_file_system
 
 
 class FakeFileSystemTest(unittest.TestCase):
-  """The unit test for the operating system file system object."""
+  """The unit test for the fake file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

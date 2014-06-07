@@ -46,4 +46,4 @@ class LocationPathSpec(path_spec.PathSpec):
   def comparable(self):
     """Comparable representation of the path specification."""
     sub_comparable_string = u'location: {0:s}'.format(self.location)
-    return self._GetComparable(sub_comparable_string)
+    return self._GetComparable(sub_comparable_string=sub_comparable_string)

@@ -44,7 +44,7 @@ class ZipResolverHelper(resolver_helper.ResolverHelper):
       specification could not be resolved.
     """
     file_object = dfvfs.file_io.zip_file_io.ZipFile(resolver_context)
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     return file_object
 
   def OpenFileSystem(self, path_spec, resolver_context):
@@ -63,7 +63,7 @@ class ZipResolverHelper(resolver_helper.ResolverHelper):
           u'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context)
+        path_spec.parent, resolver_context=resolver_context)
     return dfvfs.vfs.zip_file_system.ZipFileSystem(
         resolver_context, file_object, path_spec.parent)
 

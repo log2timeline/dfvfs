@@ -21,7 +21,6 @@ import os
 import unittest
 
 from dfvfs.file_io import os_file_io
-from dfvfs.path import os_path_spec
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
@@ -40,7 +39,7 @@ class GzipFileEntryTest(unittest.TestCase):
     self._os_file_object = os_file_io.OSFile(self._resolver_context)
     self._os_file_object.open(self._os_path_spec, mode='rb')
     self._gzip_file_system = gzip_file_system.GzipFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._os_path_spec)
 
   def testIntialize(self):
     """Test the initialize functionality."""

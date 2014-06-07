@@ -28,7 +28,7 @@ from dfvfs.vfs import gzip_file_system
 
 
 class GzipFileSystemTest(unittest.TestCase):
-  """The unit test for the operating system file system object."""
+  """The unit test for the gzip file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -41,14 +41,14 @@ class GzipFileSystemTest(unittest.TestCase):
   def testIntialize(self):
     """Test the intialize functionality."""
     file_system = gzip_file_system.GzipFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._os_path_spec)
 
     self.assertNotEquals(file_system, None)
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = gzip_file_system.GzipFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._os_path_spec)
 
     path_spec = gzip_path_spec.GzipPathSpec(parent=self._os_path_spec)
 
@@ -57,7 +57,7 @@ class GzipFileSystemTest(unittest.TestCase):
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     file_system = gzip_file_system.GzipFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._os_path_spec)
 
     path_spec = gzip_path_spec.GzipPathSpec(parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
@@ -68,7 +68,7 @@ class GzipFileSystemTest(unittest.TestCase):
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = gzip_file_system.GzipFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._os_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

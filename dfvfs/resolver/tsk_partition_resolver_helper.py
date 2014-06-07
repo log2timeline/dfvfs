@@ -48,7 +48,7 @@ class TSKPartitionResolverHelper(resolver_helper.ResolverHelper):
     """
     file_object = dfvfs.file_io.tsk_partition_file_io.TSKPartitionFile(
         resolver_context)
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     return file_object
 
   def OpenFileSystem(self, path_spec, resolver_context):
@@ -67,7 +67,7 @@ class TSKPartitionResolverHelper(resolver_helper.ResolverHelper):
           u'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context)
+        path_spec.parent, resolver_context=resolver_context)
     tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
     tsk_volume = pytsk3.Volume_Info(tsk_image_object)
     return dfvfs.vfs.tsk_partition_file_system.TSKPartitionFileSystem(

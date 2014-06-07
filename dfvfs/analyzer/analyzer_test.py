@@ -91,6 +91,14 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEquals(type_indicators, expected_type_indicators)
 
+    test_file = os.path.join('test_data', 'bdetogo.raw')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_BDE]
+    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
+
   def testGetFileSystemTypeIndicators(self):
     """Function to test the get file system type indicators function."""
     test_file = os.path.join('test_data', 'vsstest.qcow2')

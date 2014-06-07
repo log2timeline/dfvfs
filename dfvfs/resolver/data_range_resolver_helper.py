@@ -42,7 +42,7 @@ class DataRangeResolverHelper(resolver_helper.ResolverHelper):
       specification could not be resolved.
     """
     file_object = dfvfs.file_io.data_range_io.DataRange(resolver_context)
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     return file_object
 
 

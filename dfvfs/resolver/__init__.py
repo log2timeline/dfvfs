@@ -16,6 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+try:
+  from dfvfs.resolver import bde_resolver_helper
+except ImportError:
+  pass
+
 from dfvfs.resolver import compressed_stream_resolver_helper
 from dfvfs.resolver import data_range_resolver_helper
 

@@ -1,5 +1,5 @@
-python-dfvfs (20140605-1) unstable; urgency=low
+python-dfvfs (20140607-1) unstable; urgency=low
 
   * Initial release
 
- -- Log2Timeline <log2timeline-dev@googlegroups.com>  Thu, 05 Jun 2014 21:34:49 +0200
+ -- Log2Timeline <log2timeline-dev@googlegroups.com>  Sat, 07 Jun 2014 11:20:23 +0200

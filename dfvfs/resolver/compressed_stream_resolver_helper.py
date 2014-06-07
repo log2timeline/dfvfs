@@ -43,7 +43,7 @@ class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
     """
     file_object = dfvfs.file_io.compressed_stream_io.CompressedStream(
         resolver_context)
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     return file_object
 
 # Register the resolver helpers with the resolver.

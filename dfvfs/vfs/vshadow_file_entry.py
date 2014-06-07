@@ -20,6 +20,7 @@
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.vshadow_file_io
 
+from dfvfs.lib import date_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import vshadow
@@ -118,6 +119,12 @@ class VShadowFileEntry(file_entry.FileEntry):
       stat_object.size = self._vshadow_store.volume_size
 
     # Date and time stat information.
+    if self._vshadow_store is not None:
+      timestamp = date_time.PosixTimestamp.FromFiletime(
+          self._vshadow_store.get_creation_time_as_integer())
+
+      if timestamp is not None:
+        stat_object.crtime = timestamp
 
     # Ownership and permissions stat information.
 
