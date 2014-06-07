@@ -58,7 +58,7 @@ class DataRangePathSpec(path_spec.PathSpec):
     sub_comparable_string = (
         u'range_offset: 0x{1:08x}, range_size: 0x{1:08x}').format(
             self.range_offset, self.range_size)
-    return self._GetComparable(sub_comparable_string)
+    return self._GetComparable(sub_comparable_string=sub_comparable_string)
 
 
 # Register the path specification with the factory.

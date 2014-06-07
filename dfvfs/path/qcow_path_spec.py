@@ -49,7 +49,7 @@ class QcowPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
-    return self._GetComparable(u'')
+    return self._GetComparable()
 
 
 # Register the path specification with the factory.

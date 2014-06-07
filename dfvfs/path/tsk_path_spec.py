@@ -60,7 +60,7 @@ class TSKPathSpec(path_spec.PathSpec):
     if self.location is not None:
       string_parts.append(u'location: {0:s}'.format(self.location))
 
-    return self._GetComparable(u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
 
 # Register the path specification with the factory.

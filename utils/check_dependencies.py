@@ -218,7 +218,7 @@ if __name__ == '__main__':
   if not CheckPythonModule('six', '__version__', '1.2.0'):
     check_result = False
 
-  if not CheckPythonModule('construct', '__version__', '2.5.1'):
+  if not CheckPythonModule('construct', '__version__', '2.5.2'):
     check_result = False
 
   # The protobuf module does not appear to have version information.
@@ -229,6 +229,7 @@ if __name__ == '__main__':
     check_result = False
 
   libyal_check_result = CheckLibyal([
+      ('pybde', 20140531),
       ('pyewf', 20131210),
       ('pyqcow', 20131204),
       ('pysmdev', 20140428),

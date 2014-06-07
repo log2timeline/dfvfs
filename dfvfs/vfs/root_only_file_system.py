@@ -25,19 +25,6 @@ from dfvfs.vfs import file_system
 class RootOnlyFileSystem(file_system.FileSystem):
   """Class that implements a root only file system object."""
 
-  def __init__(self, resolver_context, file_object, path_spec):
-    """Initializes the file system object.
-
-    Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_object: the file-like object (instance of file_io.FileIO).
-      path_spec: the path specification (instance of path.PathSpec) of
-                 the file-like object.
-    """
-    super(RootOnlyFileSystem, self).__init__(resolver_context)
-    self._file_object = file_object
-    self._path_spec = path_spec
-
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
 

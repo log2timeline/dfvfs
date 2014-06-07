@@ -78,8 +78,6 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
     # Ownership and permissions stat information.
 
     # File entry type stat information.
-
-    # The root file entry is virtual and should have type directory.
     stat_object.type = stat_object.TYPE_FILE
 
     # Other stat information.

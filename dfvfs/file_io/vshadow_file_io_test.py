@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the file-like object implementation using VSS."""
+"""Tests for the file-like object implementation using pyvshadow."""
 
 import os
 import unittest

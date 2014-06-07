@@ -31,6 +31,9 @@ from dfvfs.resolver import context
 class ImageFileTestCase(unittest.TestCase):
   """The unit test case for storage media image based test data."""
 
+  _INODE_PASSWORDS_TXT = 15
+  _INODE_ANOTHER_FILE = 16
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
@@ -41,7 +44,8 @@ class ImageFileTestCase(unittest.TestCase):
     Args:
       parent_path_spec: the parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=parent_path_spec)
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -73,7 +77,8 @@ class ImageFileTestCase(unittest.TestCase):
       parent_path_spec: the parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location='/a_directory/another_file', parent=parent_path_spec)
+        inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
+        parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -116,7 +121,8 @@ class ImageFileTestCase(unittest.TestCase):
       parent_path_spec: the parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=15, location='/passwords.txt', parent=parent_path_spec)
+        inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
+        parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)

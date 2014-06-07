@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from dfvfs.analyzer import bde_analyzer_helper
 from dfvfs.analyzer import ewf_analyzer_helper
 from dfvfs.analyzer import qcow_analyzer_helper
 

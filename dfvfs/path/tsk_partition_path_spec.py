@@ -66,7 +66,7 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
     if self.start_offset is not None:
       string_parts.append(u'start offset: 0x{0:08x}'.format(self.start_offset))
 
-    return self._GetComparable(u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
 
 # Register the path specification with the factory.

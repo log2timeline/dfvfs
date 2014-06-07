@@ -42,7 +42,7 @@ class QcowResolverHelper(resolver_helper.ResolverHelper):
       specification could not be resolved.
     """
     file_object = dfvfs.file_io.qcow_file_io.QcowFile(resolver_context)
-    file_object.open(path_spec)
+    file_object.open(path_spec=path_spec)
     return file_object
 
 
