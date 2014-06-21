@@ -215,7 +215,7 @@ if __name__ == '__main__':
   check_result = True
   print u'Checking availability and versions of dfVFS dependencies.'
 
-  if not CheckPythonModule('six', '__version__', '1.2.0'):
+  if not CheckPythonModule('six', '__version__', '1.1.0'):
     check_result = False
 
   if not CheckPythonModule('construct', '__version__', '2.5.2'):
@@ -233,6 +233,7 @@ if __name__ == '__main__':
       ('pyewf', 20131210),
       ('pyqcow', 20131204),
       ('pysmdev', 20140428),
+      ('pysmraw', 20140612),
       ('pyvhdi', 20131210),
       ('pyvmdk', 20140421),
       ('pyvshadow', 20131209),

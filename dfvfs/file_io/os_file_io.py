@@ -108,6 +108,7 @@ class OSFile(file_io.FileIO):
       self._file_object = pysmdev.handle()
       self._file_object.open(location, mode=mode)
       self._size = self._file_object.media_size
+
     else:
       self._file_object = open(location, mode=mode)
       self._size = stat_info.st_size
