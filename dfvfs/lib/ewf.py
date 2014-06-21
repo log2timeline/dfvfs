@@ -57,9 +57,9 @@ def EwfGlobPathSpec(file_system, path_spec):
           segment_extension_start not in ['E', 'e', 's']) or (
           segment_extension_length == 4 and
           not segment_extension.startswith(u'Ex'))):
-    raise errors.PathSpecError(
+    raise errors.PathSpecError((
         u'Unsupported parent path specification invalid segment file '
-        u'extenstion.')
+        u'extension: {0:s}').format(segment_extension))
 
   segment_number = 1
   segment_files = []

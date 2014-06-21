@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tests for the file-like object implementation using pyewf."""
+"""Tests for the EWF image support helper functions."""
 
 import unittest
 

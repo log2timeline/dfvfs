@@ -38,6 +38,11 @@ try:
 except ImportError:
   pass
 
+try:
+  from dfvfs.resolver import raw_resolver_helper
+except ImportError:
+  pass
+
 from dfvfs.resolver import tar_resolver_helper
 
 try:

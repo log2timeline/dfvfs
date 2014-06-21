@@ -24,9 +24,11 @@ import stat
 
 import pysmdev
 
+# This is necessary to prevent a circular import.
+import dfvfs.file_io.os_file_io
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.file_io import os_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
@@ -228,7 +230,7 @@ class OSFileEntry(file_entry.FileEntry):
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.OSFile)."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = dfvfs.file_io.os_file_io.OSFile(self._resolver_context)
     file_object.open(path_spec=self.path_spec)
     return file_object
 

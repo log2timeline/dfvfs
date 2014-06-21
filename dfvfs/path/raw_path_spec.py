@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The dfVFS Project Authors.
+# Copyright 2014 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +15,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The EWF image path specification implementation."""
+"""The RAW storage media image path specification implementation."""
 
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
-class EwfPathSpec(path_spec.PathSpec):
-  """Class that implements the EWF image path specification."""
+class RawPathSpec(path_spec.PathSpec):
+  """Class that implements the RAW storage media image path specification."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_EWF
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_RAW
 
   def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the EWF file path specification must have a parent.
+       Note that the RAW path specification must have a parent.
 
     Args:
       parent: optional parent path specification (instance of PathSpec).
@@ -44,7 +44,7 @@ class EwfPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(EwfPathSpec, self).__init__(parent=parent, **kwargs)
+    super(RawPathSpec, self).__init__(parent=parent, **kwargs)
 
   @property
   def comparable(self):
@@ -53,4 +53,4 @@ class EwfPathSpec(path_spec.PathSpec):
 
 
 # Register the path specification with the factory.
-factory.Factory.RegisterPathSpec(EwfPathSpec)
+factory.Factory.RegisterPathSpec(RawPathSpec)
