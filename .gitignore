@@ -9,5 +9,9 @@
 /dist
 /dfvfs.egg-info
 
+# Test files
+.coverage
+tests-coverage.log
+
 # Project specific files
 ._code_review_number
