@@ -137,7 +137,7 @@ class FileEntry(object):
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link."""
-    return None
+    return
 
   @abc.abstractmethod
   def GetParentFileEntry(self):

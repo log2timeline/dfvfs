@@ -251,7 +251,7 @@ class TarFileEntry(file_entry.FileEntry):
       raise ValueError(u'Invalid location in path specification.')
 
     if len(location) == 1:
-      return None
+      return
 
     tar_file = self._file_system.GetTarFile()
     return tar_file.getmember(location[1:])

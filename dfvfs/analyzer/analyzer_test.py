@@ -30,6 +30,19 @@ from dfvfs.path import vshadow_path_spec
 class AnalyzerTest(unittest.TestCase):
   """Class to test the analyzer."""
 
+  def testGetFileSystemTypeIndicators(self):
+    """Function to test the get file system type indicators function."""
+    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        store_index=1, parent=path_spec)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_TSK]
+    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
+
   def testGetStorageMediaImageTypeIndicators(self):
     """Function to test the get image type indicators function."""
     test_file = os.path.join('test_data', 'image.E01')
@@ -96,19 +109,6 @@ class AnalyzerTest(unittest.TestCase):
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_BDE]
     type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
-        path_spec)
-    self.assertEquals(type_indicators, expected_type_indicators)
-
-  def testGetFileSystemTypeIndicators(self):
-    """Function to test the get file system type indicators function."""
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
-    path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=1, parent=path_spec)
-
-    expected_type_indicators = [definitions.TYPE_INDICATOR_TSK]
-    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(
         path_spec)
     self.assertEquals(type_indicators, expected_type_indicators)
 

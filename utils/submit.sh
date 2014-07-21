@@ -179,6 +179,7 @@ else
   # Get the description of the change list.
   RESULT=`which json_xs`;
 
+  # TODO: check if curl exists.
   if ! test -z "${RESULT}";
   then
     DESCRIPTION=`curl -s ${URL_CODEREVIEW}/api/${CL_NUMBER} | json_xs | grep '"subject"' | awk -F '"' '{print $(NF-1)}'`;

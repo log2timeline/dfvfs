@@ -251,7 +251,7 @@ class ZipFileEntry(file_entry.FileEntry):
       raise ValueError(u'Invalid location in path specification.')
 
     if len(location) == 1:
-      return None
+      return
 
     zip_file = self._file_system.GetZipFile()
     return zip_file.getinfo(location[1:])

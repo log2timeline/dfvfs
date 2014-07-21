@@ -88,7 +88,7 @@ class ZipFileSystem(file_system.FileSystem):
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
-      return None
+      return
 
     if len(location) == 1:
       return self.GetRootFileEntry()

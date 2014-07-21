@@ -57,7 +57,7 @@ class EwfFile(file_object_io.FileObjectIO):
     # handle the file system abstraction dfvfs provides.
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
     if not segment_file_path_specs:
-      return None
+      return
 
     file_objects = []
     for segment_file_path_spec in segment_file_path_specs:
