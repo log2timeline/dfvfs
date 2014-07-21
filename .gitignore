@@ -11,7 +11,7 @@
 
 # Test files
 .coverage
-tests-coverage.log
+tests-coverage.txt
 
 # Project specific files
 ._code_review_number

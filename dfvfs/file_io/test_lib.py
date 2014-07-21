@@ -298,6 +298,7 @@ class PartitionedImageFileTestCase(unittest.TestCase):
 
     file_object.close()
 
+
 class SylogTestCase(unittest.TestCase):
   """The unit test case for the syslog test data."""
 

@@ -31,7 +31,7 @@ fi
 
 if ! test -x "${PYTHON}";
 then
-  echo "Unable to location Python interpreter."
+  echo "Unable to locate Python interpreter."
   echo "";
   exit ${EXIT_FAILURE};
 fi
@@ -74,7 +74,8 @@ done
 if test -x "${COVERAGE}";
 then
   echo "Writing tests coverage report: ${COVERAGE_REPORT}"; 
-  ${COVERAGE} report -m > ${COVERAGE_REPORT};
+  SITE_PACKAGES="/usr/lib/python2.7/site-packages";
+  ${COVERAGE} report -m --omit="${SITE_PACKAGES}/*,*_test.py" > ${COVERAGE_REPORT};
 
   rm -f .coverage
 fi

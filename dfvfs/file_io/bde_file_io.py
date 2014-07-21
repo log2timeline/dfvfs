@@ -54,3 +54,8 @@ class BdeFile(file_object_io.FileObjectIO):
     bde.BdeVolumeOpen(
         bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
     return bde_volume
+
+  @property
+  def is_locked(self):
+    """Value to indicated if the volume is locked."""
+    return self._file_object.is_locked()

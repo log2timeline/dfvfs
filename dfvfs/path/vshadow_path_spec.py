@@ -56,7 +56,7 @@ class VShadowPathSpec(path_spec.PathSpec):
     if self.location is not None:
       string_parts.append(u'location: {0:s}'.format(self.location))
     if self.store_index is not None:
-      string_parts.append(u'store: {0:d}'.format(self.store_index))
+      string_parts.append(u'store index: {0:d}'.format(self.store_index))
 
     return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
