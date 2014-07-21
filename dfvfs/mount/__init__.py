@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013 The dfVFS Project Authors.
+# Copyright 2014 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,32 +15,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The Virtual File System (VFS) error classes."""
-
-
-class Error(Exception):
-  """Class that defines a generic error."""
-
-
-class AccessError(Error):
-  """Class that defines access errors."""
-
-
-class BackEndError(Error):
-  """Class that defines back-end errors."""
-
-
-class FileFormatError(Error):
-  """Class that defines file format errors."""
-
-
-class MountPointError(Error):
-  """Class that defines mount point errors."""
-
-
-class PathSpecError(Error):
-  """Class that defines path specification errors."""
-
-
-class VolumeSystemError(Error):
-  """Class that defines volume system errors."""
