@@ -162,10 +162,16 @@ class FileSystemSearcherTest(unittest.TestCase):
         u'/password.txt']
 
     locations = []
+    first_path_spec = None
     for path_spec in path_spec_generator:
+      if not first_path_spec:
+        first_path_spec = path_spec
       locations.append(getattr(path_spec, 'location', u''))
 
     self.assertEquals(locations, expected_locations)
+
+    test_relative_path = searcher.GetRelativePath(path_spec)
+    self.assertEquals(test_relative_path, u'/password.txt')
 
     # Find all the file entries with a location regular expression.
     find_spec1 = file_system_searcher.FindSpec(
@@ -224,10 +230,17 @@ class FileSystemSearcherTest(unittest.TestCase):
         os.path.join(self._os_path, u'syslog.zlib')])
 
     locations = []
+    first_path_spec = None
     for path_spec in path_spec_generator:
+      if not first_path_spec:
+        first_path_spec = path_spec
       locations.append(getattr(path_spec, 'location', u''))
 
     self.assertEquals(sorted(locations), expected_locations)
+
+    expected_relative_path = u'{0:s}syslog.bz2'.format(os.path.sep)
+    test_relative_path = searcher.GetRelativePath(path_spec)
+    self.assertEquals(test_relative_path, expected_relative_path)
 
 
 if __name__ == '__main__':

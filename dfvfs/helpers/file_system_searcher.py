@@ -440,30 +440,48 @@ class FileSystemSearcher(object):
     """
     return self._file_system.GetFileEntryByPathSpec(path_spec)
 
-  def GetRelativePath(self, path):
-    """Removes the mount point from the path.
+  def GetRelativePath(self, path_spec):
+    """Returns the relative path based on a resolved path specification.
+
+    The relative path is the location of the upper most path specification.
+    The the location of the mount point is stripped off if relevant.
 
     Args:
-      path: a string containing the path.
+      path_spec: the path specification (instance of path.PathSpec).
 
     Returns:
-      A string containing the path after the mount point if possible,
-      otherwise the original path gets returned back.
+      The corresponding relative path or None if the relative path could not
+      be determined.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
     """
-    if not self._mount_point:
-      return path
+    location = getattr(path_spec, 'location', None)
+    if location is None:
+      raise errors.PathSpecError(u'Path specification missing location.')
 
-    location = getattr(self._mount_point, 'location', None)
+    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+      if not location.startswith(self._mount_point.location):
+        raise errors.PathSpecError(
+            u'Path specification does not contain mount point.')
+    else:
+      if not hasattr(path_spec, 'parent'):
+        raise errors.PathSpecError(u'Path specification missing parent.')
 
-    if not location:
-      return path
+      if path_spec.parent != self._mount_point:
+        raise errors.PathSpecError(
+            u'Path specification does not contain mount point.')
 
-    _, _, return_path = path.partition(location)
+    path_segments = self._file_system.SplitPath(location)
 
-    if return_path:
-      return return_path
+    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+      mount_point_path_segments = self._file_system.SplitPath(
+          self._mount_point.location)
+      path_segments = path_segments[len(mount_point_path_segments):]
 
-    return path
+    return u'{0:s}{1:s}'.format(
+        self._file_system.PATH_SEPARATOR,
+        self._file_system.PATH_SEPARATOR.join(path_segments))
 
   def SplitPath(self, path):
     """Splits the path into path segments.
