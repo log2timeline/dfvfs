@@ -391,7 +391,7 @@ class FileSystemSearcher(object):
       if location_match != False and not find_spec.AtMaximumDepth(search_depth):
         sub_find_specs.append(find_spec)
 
-    if not sub_find_specs: 
+    if not sub_find_specs:
       return
 
     search_depth += 1
@@ -439,6 +439,31 @@ class FileSystemSearcher(object):
       A file entry (instance of vfs.FileEntry) or None.
     """
     return self._file_system.GetFileEntryByPathSpec(path_spec)
+
+  def GetRelativePath(self, path):
+    """Removes the mount point from the path.
+
+    Args:
+      path: a string containing the path.
+
+    Returns:
+      A string containing the path after the mount point if possible,
+      otherwise the original path gets returned back.
+    """
+    if not self._mount_point:
+      return path
+
+    location = getattr(self._mount_point, 'location', None)
+
+    if not location:
+      return path
+
+    _, _, return_path = path.partition(location)
+
+    if return_path:
+      return return_path
+
+    return path
 
   def SplitPath(self, path):
     """Splits the path into path segments.
