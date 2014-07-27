@@ -170,7 +170,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     self.assertEquals(locations, expected_locations)
 
-    test_relative_path = searcher.GetRelativePath(path_spec)
+    test_relative_path = searcher.GetRelativePath(first_path_spec)
     self.assertEquals(test_relative_path, u'/password.txt')
 
     # Find all the file entries with a location regular expression.
@@ -238,8 +238,10 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     self.assertEquals(sorted(locations), expected_locations)
 
-    expected_relative_path = u'{0:s}syslog.bz2'.format(os.path.sep)
-    test_relative_path = searcher.GetRelativePath(path_spec)
+    _, path_separator, relative_path = locations[0].rpartition(os.path.sep)
+    expected_relative_path = u'{0:s}{1:s}'.format(
+        path_separator, relative_path)
+    test_relative_path = searcher.GetRelativePath(first_path_spec)
     self.assertEquals(test_relative_path, expected_relative_path)
 
 
