@@ -60,6 +60,21 @@ class SourceScanNode(object):
     """The path specification type indicator."""
     return self.path_spec.type_indicator
 
+  def GetSubNodeByLocation(self, location):
+    """Retrieves a sub scan node based on the location.
+
+    Args:
+      location: the location string in the sub scan node path specification,
+                that should match.
+
+    Return:
+      The sub scan node object (instance of SourceScanNode) or None.
+    """
+    for sub_node in self.sub_nodes:
+      sub_node_location = getattr(sub_node.path_spec, 'location', u'')
+      if location == sub_node_location:
+        return sub_node
+
 
 class SourceScannerContext(object):
   """Class that defines contextual information for the source scanner."""
@@ -193,6 +208,8 @@ class SourceScanner(object):
           scan_node.path_spec, resolver_context=self._resolver_context)
 
       if os_file_entry.IsDirectory():
+        scan_context.SetSourceType(
+            scan_context.SOURCE_TYPE_DIRECTORY)
         return scan_context
 
       source_path_spec = self.ScanForStorageMediaImage(scan_node.path_spec)
@@ -221,6 +238,12 @@ class SourceScanner(object):
             scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
       if scan_node.type_indicator in self._VOLUME_SYSTEM_TYPE_INDICATORS:
+        # For VSS add a scan node for the current volume.
+        if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+          path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
+          if path_spec:
+            _ = scan_context.AddScanNode(path_spec, scan_node)
+
         # Determine the path specifications of the sub file entries.
         file_entry = resolver.Resolver.OpenFileEntry(
             source_path_spec, resolver_context=self._resolver_context)
@@ -248,6 +271,12 @@ class SourceScanner(object):
           return scan_context
 
         file_object.close()
+
+        # For BDE to go add a scan node for the unlock volume.
+        if scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+          path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
+          if path_spec:
+            _ = scan_context.AddScanNode(path_spec, scan_node)
 
     # In case we did not find a volume system type we keep looking
     # since we could be dealing with a storage media image that contains

@@ -15,8 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Script to recurs a directory or image file and calculate a message digest
-hash for every file."""
+"""Script to recursively calculate a message digest hash for every file."""
 
 # If you update this script make sure to update the corresponding wiki page
 # as well: https://code.google.com/p/dfvfs/wiki/dfvfs
@@ -30,6 +29,7 @@ import sys
 
 from dfvfs.analyzer import analyzer
 from dfvfs.lib import definitions
+from dfvfs.lib import raw
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import tsk_volume_system
@@ -107,7 +107,7 @@ class RecursiveHasher(object):
       if volume_identifier:
         volume_identifiers.append(volume_identifier)
 
-    if len(volume_identifiers) == 0:
+    if not volume_identifiers:
       logging.warning(u'No supported partitions found.')
       return source_path_spec
 
@@ -183,7 +183,7 @@ class RecursiveHasher(object):
     type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
         source_path_spec)
 
-    if len(type_indicators) == 0:
+    if not type_indicators:
       # No supported volume system found, we are at the upper level.
       return source_path_spec
 
@@ -268,8 +268,21 @@ class RecursiveHasher(object):
         path_spec = path_spec_factory.Factory.NewPathSpec(
             type_indicators[0], parent=path_spec)
 
+      if not type_indicators:
+        # The RAW storage media image type cannot be detected based on
+        # a signature so we try to detect it based on common file naming
+        # schemas.
+        file_system = resolver.Resolver.OpenFileSystem(path_spec)
+        raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_RAW, parent=path_spec)
+
+        glob_results = raw.RawGlobPathSpec(file_system, raw_path_spec)
+        if glob_results:
+          path_spec = raw_path_spec
+
       # In case we did not find a storage media image type we keep looking
-      # since the RAW storage media image type is detected by its content.
+      # since not all RAW storage media image naming schemas are known and
+      # its type can only detected by its content.
 
       path_spec = self._GetUpperLevelVolumeSystemPathSpec(path_spec)
 
@@ -285,7 +298,7 @@ class RecursiveHasher(object):
             u'Unsupported source: {0:s} found more than one file system '
             u'types.').format(source_path))
 
-      if len(type_indicators) == 0:
+      if not type_indicators:
         logging.warning((
           u'Unable to find a supported file system, calculating digest hash '
           u'of file: {0:s} instead.').format(source_path))
