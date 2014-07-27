@@ -483,7 +483,9 @@ class OffsetBoundScanner(ScanTreeScannerBase):
     
     footer_range_size *= self._READ_BUFFER_SIZE
 
-    footer_range_start_offset = total_data_size - footer_range_size
+    footer_range_start_offset = 0
+    if footer_range_size < total_data_size:
+      footer_range_start_offset = total_data_size - footer_range_size
 
     return range_list.Range(footer_range_start_offset, footer_range_size)
 

@@ -47,6 +47,8 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_context = self._source_scanner.Scan(scan_context)
     self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEquals(scan_context.last_scan_node, None)
     self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
     self.assertEquals(
@@ -67,6 +69,8 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = self._source_scanner.Scan(
         scan_context, scan_path_spec=scan_path_spec)
     self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEquals(scan_context.last_scan_node, None)
     self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
     self.assertEquals(
@@ -79,13 +83,15 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_context = self._source_scanner.Scan(scan_context)
     self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEquals(scan_context.last_scan_node, None)
     self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
     self.assertEquals(
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_VSHADOW)
 
-    self.assertEquals(len(scan_context.last_scan_node.sub_nodes), 2)
+    self.assertEquals(len(scan_context.last_scan_node.sub_nodes), 3)
 
     # We need to use the path specificiation provided by the scanner
     # since the scanner does not support scanning for sub path specifications
@@ -94,11 +100,13 @@ class SourceScannerTest(unittest.TestCase):
     #     location=u'/vss1', store_index=0,
     #     parent=scan_context.last_scan_node.path_spec.parent)
 
-    scan_path_spec = scan_context.last_scan_node.sub_nodes[0].path_spec
+    scan_path_spec = scan_context.last_scan_node.sub_nodes[1].path_spec
 
     scan_context = self._source_scanner.Scan(
         scan_context, scan_path_spec=scan_path_spec)
     self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEquals(scan_context.last_scan_node, None)
     self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
     self.assertEquals(
@@ -111,6 +119,8 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_context = self._source_scanner.Scan(scan_context)
     self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEquals(scan_context.last_scan_node, None)
     self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
     self.assertEquals(
@@ -122,11 +132,41 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_context = self._source_scanner.Scan(scan_context)
     self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEquals(scan_context.last_scan_node, None)
     self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
     self.assertEquals(
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_TSK)
+
+    test_file = os.path.join('test_data', 'testdir_os')
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    scan_context = self._source_scanner.Scan(scan_context)
+    self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_DIRECTORY)
+    self.assertNotEquals(scan_context.last_scan_node, None)
+    self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
+    self.assertEquals(
+        scan_context.last_scan_node.type_indicator,
+        definitions.TYPE_INDICATOR_OS)
+
+    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    scan_context = self._source_scanner.Scan(scan_context)
+    self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_FILE)
+    self.assertNotEquals(scan_context.last_scan_node, None)
+    self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
+    self.assertEquals(
+        scan_context.last_scan_node.type_indicator,
+        definitions.TYPE_INDICATOR_OS)
 
   def testScanForFileSystem(self):
     """Test the ScanForFileSystem() function."""
