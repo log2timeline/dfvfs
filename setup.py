@@ -75,6 +75,7 @@ setup(
     long_description=dfvfs_long_description,
     license='Apache License, Version 2.0',
     url='https://code.google.com/p/dfvfs',
+    maintainer='dfVFS development team',
     maintainer_email='log2timeline-dev@googlegroups.com',
     cmdclass={'test': TestCommand},
     classifiers=[
