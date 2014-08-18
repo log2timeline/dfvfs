@@ -133,6 +133,24 @@ class SourceScannerContext(object):
     """
     return self._scan_nodes.get(path_spec, None)
 
+  def IsSourceTypeDirectory(self):
+    """Determines if the source type is a directory.
+
+    Returns:
+      A boolean if the source type is or is not a directory or None if not set.
+    """
+    if self.source_type:
+      return self.source_type == self.SOURCE_TYPE_DIRECTORY
+
+  def IsSourceTypeFile(self):
+    """Determines if the source type is a file.
+
+    Returns:
+      A boolean if the source type is or is not a file or None if not set.
+    """
+    if self.source_type:
+      return self.source_type == self.SOURCE_TYPE_FILE
+
   def OpenSourcePath(self, source_path):
     """Opens the source path.
 
@@ -406,7 +424,13 @@ class SourceScanner(object):
       raw_path_spec = path_spec_factory.Factory.NewPathSpec(
           definitions.TYPE_INDICATOR_RAW, parent=source_path_spec)
 
-      glob_results = raw.RawGlobPathSpec(file_system, raw_path_spec)
+      try:
+        # The RAW glob function will raise a PathSpecError if the path
+        # specification is unsuitable for globbing.
+        glob_results = raw.RawGlobPathSpec(file_system, raw_path_spec)
+      except errors.PathSpecError:
+        glob_results = None
+
       if not glob_results:
         return
 
