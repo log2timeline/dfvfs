@@ -77,6 +77,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         u'/$Extend/$RmMetadata/$TxfLog/$TxfLogContainer00000000000000000001',
         u'/$Extend/$RmMetadata/$TxfLog/$TxfLogContainer00000000000000000002',
         u'/$LogFile',
+        u'/$MFT',
         u'/$MFTMirr',
         u'/$Secure',
         u'/$UpCase',
