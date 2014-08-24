@@ -61,6 +61,12 @@ class TSKDirectory(file_entry.Directory):
       if getattr(tsk_directory_entry, 'info', None) is None:
         continue
 
+      # Note that because pytsk3.TSK_FS_FILE does not explicitly defines fs_info
+      # we need to check if the attribute exists and has a value other
+      # than None.
+      if getattr(tsk_directory_entry.info, 'fs_info', None) is None:
+        continue
+
       # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
       # we need to check if the attribute exists and has a value other
       # than None.
@@ -78,8 +84,15 @@ class TSKDirectory(file_entry.Directory):
       directory_entry_inode = tsk_directory_entry.info.meta.addr
       directory_entry = None
 
-      # Ignore references to inode 0 or self.
-      if directory_entry_inode in [0, inode]:
+      # Ignore references to self.
+      if directory_entry_inode == inode:
+        continue
+
+      # TODO: need better file system support.
+      # On non-NTFS file systems ignore inode 0.
+      ftype = tsk_directory_entry.info.fs_info.ftype
+      if directory_entry_inode == 0 and ftype not in [
+          pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_NTFS_DETECT]:
         continue
 
       # Note that because pytsk3.TSK_FS_FILE does not explicitly defines name
