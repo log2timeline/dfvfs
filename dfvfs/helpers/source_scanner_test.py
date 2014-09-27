@@ -168,6 +168,36 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_OS)
 
+    test_file = os.path.join('test_data', 'bogus.001')
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    scan_context = self._source_scanner.Scan(scan_context)
+    self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_FILE)
+    self.assertNotEquals(scan_context.last_scan_node, None)
+    self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
+    self.assertEquals(
+        scan_context.last_scan_node.type_indicator,
+        definitions.TYPE_INDICATOR_OS)
+
+    test_file = os.path.join('test_data', 'image.dd')
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    scan_context = self._source_scanner.Scan(scan_context)
+    self.assertNotEquals(scan_context, None)
+    self.assertEquals(
+        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+    self.assertNotEquals(scan_context.last_scan_node, None)
+    self.assertNotEquals(scan_context.last_scan_node.path_spec, None)
+    self.assertEquals(
+        scan_context.last_scan_node.type_indicator,
+        definitions.TYPE_INDICATOR_TSK)
+
+    self.assertEquals(len(scan_context.last_scan_node.sub_nodes), 0)
+
   def testScanForFileSystem(self):
     """Test the ScanForFileSystem() function."""
     test_file = os.path.join('test_data', 'vsstest.qcow2')

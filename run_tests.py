@@ -70,9 +70,8 @@ def PrintResults(my_results):
 
     print my_results.printErrors()
     print FormatHeader('Tests failed.')
-    print '  {:>10s}: {}\n  {:>10s}: {}\n  {:>10s}: {}'.format(
-        'Errors', errors, 'Failures', failures, 'Total',
-        errors + failures)
+    print '  {0:>10s}: {1:d}\n  {2:>10s}: {3:d}\n  {4:>10s}: {5:d}'.format(
+        'Errors', errors, 'Failures', failures, 'Total', errors + failures)
     print '+='*40
 
 

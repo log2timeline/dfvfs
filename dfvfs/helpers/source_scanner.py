@@ -162,6 +162,35 @@ class SourceScannerContext(object):
 
     self.last_scan_node = self.AddScanNode(source_path_spec, None)
 
+  def RemoveScanNode(self, path_spec):
+    """Removes a scan node of a certain path specifiation.
+
+    Args:
+      path_spec: the path specification (instance of path.PathSpec).
+
+    Returns:
+      The parent scan node (instance of SourceScanNode) or
+      None if not available.
+
+    Raises:
+      RuntimeError: if the scan node has sub nodes.
+    """
+    scan_node = self._scan_nodes.get(path_spec, None)
+    if not scan_node:
+      return
+
+    if scan_node.sub_nodes:
+      raise RuntimeError(u'Scan node has sub nodes.')
+
+    parent_scan_node = scan_node.parent_node
+    if parent_scan_node:
+      parent_scan_node.sub_nodes.remove(scan_node)
+
+    del self._scan_nodes[path_spec]
+
+    self.last_scan_node = parent_scan_node
+    return parent_scan_node
+
   def SetSourceType(self, source_type):
     """Sets the source type.
 
@@ -302,7 +331,16 @@ class SourceScanner(object):
 
     source_path_spec = self.ScanForFileSystem(scan_node.path_spec)
     if not source_path_spec:
-      scan_context.SetSourceType(scan_context.SOURCE_TYPE_FILE)
+      # Since RAW storage media image can only be determined by naming schema
+      # we could have single file that is not a RAW storage media image yet
+      # matches the naming schema.
+      if scan_node.path_spec.type_indicator == definitions.TYPE_INDICATOR_RAW:
+        scan_node = scan_context.RemoveScanNode(scan_node.path_spec)
+
+        # Make sure to override the previously assigned source type.
+        scan_context.source_type = scan_context.SOURCE_TYPE_FILE
+      else:
+        scan_context.SetSourceType(scan_context.SOURCE_TYPE_FILE)
 
     else:
       scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
