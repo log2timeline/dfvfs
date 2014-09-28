@@ -285,11 +285,14 @@ class SourceScanner(object):
             scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
       if scan_node.type_indicator in self._VOLUME_SYSTEM_TYPE_INDICATORS:
+        file_system_scan_node = None
+
         # For VSS add a scan node for the current volume.
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
           path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
           if path_spec:
-            _ = scan_context.AddScanNode(path_spec, scan_node)
+            file_system_scan_node = scan_context.AddScanNode(
+                path_spec, scan_node)
 
         # Determine the path specifications of the sub file entries.
         file_entry = resolver.Resolver.OpenFileEntry(
@@ -303,8 +306,13 @@ class SourceScanner(object):
 
         # If there is more than one sub file entry we need more information
         # to determine the next layer.
-        if file_entry.number_of_sub_file_entries != 1:
+        if file_entry.number_of_sub_file_entries > 1:
           scan_context.last_scan_node = scan_node
+          return scan_context
+
+        # In case we detected a VSS without snapshots.
+        if file_entry.number_of_sub_file_entries == 0:
+          scan_context.last_scan_node = file_system_scan_node
           return scan_context
 
       elif scan_node.type_indicator in self._ENCRYPTED_VOLUME_TYPE_INDICATORS:
