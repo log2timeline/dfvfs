@@ -37,13 +37,13 @@ class FileSystemSearcherTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._os_path = os.path.join(os.getcwd(), 'test_data')
+    self._os_path = os.path.join(os.getcwd(), u'test_data')
     self._os_path_spec = os_path_spec.OSPathSpec(location=self._os_path)
     self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     # TODO: add RAW volume only test image.
 
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
 

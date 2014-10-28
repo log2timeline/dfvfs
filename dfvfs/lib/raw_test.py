@@ -60,12 +60,12 @@ class GlobRawFileTest(unittest.TestCase):
   def testGlobRawSinglecExtension(self):
     """Test the glob function for a RAW single extension scheme."""
     # Test single segment file: dd.
-    segment_filenames = [u'image.dd']
+    segment_filenames = [u'ímynd.dd']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.dd')
+    path_spec = fake_path_spec.FakePathSpec(location=u'/ímynd.dd')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)

@@ -30,7 +30,7 @@ class TSKFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(TSKFileTest, self).setUp()
-    test_file = os.path.join('test_data', 'image.dd')
+    test_file = os.path.join(u'test_data', u'ímynd.dd')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
   def testOpenCloseInode(self):
