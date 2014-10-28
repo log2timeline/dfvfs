@@ -254,6 +254,9 @@ class SourceScanner(object):
       os_file_entry = resolver.Resolver.OpenFileEntry(
           scan_node.path_spec, resolver_context=self._resolver_context)
 
+      if os_file_entry is None:
+        raise errors.BackEndError(u'Unable to open file entry.')
+
       if os_file_entry.IsDirectory():
         scan_context.SetSourceType(
             scan_context.SOURCE_TYPE_DIRECTORY)

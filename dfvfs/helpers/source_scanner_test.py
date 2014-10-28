@@ -22,6 +22,7 @@ import unittest
 
 from dfvfs.helpers import source_scanner
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
@@ -197,6 +198,13 @@ class SourceScannerTest(unittest.TestCase):
         definitions.TYPE_INDICATOR_TSK)
 
     self.assertEquals(len(scan_context.last_scan_node.sub_nodes), 0)
+
+    test_file = os.path.join('test_data', 'nosuchfile.raw')
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    with self.assertRaises(errors.BackEndError):
+      _ = self._source_scanner.Scan(scan_context)
 
   def testScanForFileSystem(self):
     """Test the ScanForFileSystem() function."""
