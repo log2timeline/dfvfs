@@ -41,7 +41,7 @@ class SourceScannerTest(unittest.TestCase):
 
   def testScan(self):
     """Test the Scan() function."""
-    test_file = os.path.join('test_data', 'tsk_volume_system.raw')
+    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -77,7 +77,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_TSK)
 
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -113,7 +113,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_TSK)
 
-    test_file = os.path.join('test_data', 'bdetogo.raw')
+    test_file = os.path.join(u'test_data', u'bdetogo.raw')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -140,7 +140,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_TSK)
 
-    test_file = os.path.join('test_data', 'testdir_os')
+    test_file = os.path.join(u'test_data', u'testdir_os')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -154,7 +154,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_OS)
 
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -168,7 +168,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_OS)
 
-    test_file = os.path.join('test_data', 'bogus.001')
+    test_file = os.path.join(u'test_data', u'bogus.001')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -182,7 +182,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.last_scan_node.type_indicator,
         definitions.TYPE_INDICATOR_OS)
 
-    test_file = os.path.join('test_data', 'image.dd')
+    test_file = os.path.join(u'test_data', u'ímynd.dd')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -200,7 +200,7 @@ class SourceScannerTest(unittest.TestCase):
 
   def testScanForFileSystem(self):
     """Test the ScanForFileSystem() function."""
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
     source_path_spec = qcow_path_spec.QcowPathSpec(parent=source_path_spec)
     source_path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -210,7 +210,7 @@ class SourceScannerTest(unittest.TestCase):
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
-    test_file = os.path.join('test_data', 'mactime.body')
+    test_file = os.path.join(u'test_data', u'mactime.body')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForFileSystem(source_path_spec)
@@ -218,28 +218,28 @@ class SourceScannerTest(unittest.TestCase):
 
   def testScanForStorageMediaImage(self):
     """Test the ScanForStorageMediaImage() function."""
-    test_file = os.path.join('test_data', 'image.dd')
+    test_file = os.path.join(u'test_data', u'ímynd.dd')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
-    test_file = os.path.join('test_data', 'image.raw.000')
+    test_file = os.path.join(u'test_data', u'image.raw.000')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
-    test_file = os.path.join('test_data', 'image.E01')
+    test_file = os.path.join(u'test_data', u'image.E01')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.type_indicator, definitions.TYPE_INDICATOR_EWF)
 
-    test_file = os.path.join('test_data', 'image.qcow2')
+    test_file = os.path.join(u'test_data', u'image.qcow2')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
@@ -247,7 +247,7 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEquals(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_QCOW)
 
-    test_file = os.path.join('test_data', 'image.vhd')
+    test_file = os.path.join(u'test_data', u'image.vhd')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
@@ -255,7 +255,7 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEquals(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
 
-    test_file = os.path.join('test_data', 'image.vmdk')
+    test_file = os.path.join(u'test_data', u'image.vmdk')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
@@ -263,7 +263,7 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEquals(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VMDK)
 
-    test_file = os.path.join('test_data', 'mactime.body')
+    test_file = os.path.join(u'test_data', u'mactime.body')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
@@ -271,7 +271,7 @@ class SourceScannerTest(unittest.TestCase):
 
   def testScanForVolumeSystem(self):
     """Test the ScanForVolumeSystem() function."""
-    test_file = os.path.join('test_data', 'tsk_volume_system.raw')
+    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
@@ -279,7 +279,7 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEquals(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
 
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
     source_path_spec = qcow_path_spec.QcowPathSpec(parent=source_path_spec)
 
@@ -288,14 +288,14 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEquals(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
 
-    test_file = os.path.join('test_data', 'bdetogo.raw')
+    test_file = os.path.join(u'test_data', u'bdetogo.raw')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
     self.assertNotEquals(path_spec, None)
     self.assertEquals(path_spec.type_indicator, definitions.TYPE_INDICATOR_BDE)
 
-    test_file = os.path.join('test_data', 'mactime.body')
+    test_file = os.path.join(u'test_data', u'mactime.body')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
