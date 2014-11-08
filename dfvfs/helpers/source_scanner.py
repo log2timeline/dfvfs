@@ -305,7 +305,10 @@ class SourceScanner(object):
           sub_scan_node = scan_context.AddScanNode(
               sub_file_entry.path_spec, scan_node)
 
-          scan_context = self._ScanNode(scan_context, sub_scan_node)
+          # Since this can be expensive and not always needed we do not scan
+          # VSS snapshot volumes by default.
+          if scan_node.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
+            scan_context = self._ScanNode(scan_context, sub_scan_node)
 
         # If there is more than one sub file entry we need more information
         # to determine the next layer.
