@@ -70,6 +70,8 @@ class OSFileEntryTest(unittest.TestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
 
+    self.assertNotEquals(file_entry, None)
+
     stat_object = file_entry.GetStat()
 
     self.assertNotEquals(stat_object, None)
@@ -80,6 +82,8 @@ class OSFileEntryTest(unittest.TestCase):
     test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -95,6 +99,8 @@ class OSFileEntryTest(unittest.TestCase):
     test_file = os.path.join('test_data', 'testdir_os')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertNotEquals(file_entry, None)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
