@@ -4,6 +4,6 @@ python:
 before_install:
   - sudo add-apt-repository ppa:kristinn-l/plaso-dev -y
   - sudo apt-get update -q
-  - sudo apt-get install libbde-python libewf-python libqcow-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python python-construct python-protobuf python-six pytsk
+  - sudo apt-get install libbde-python libewf-python libqcow-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python python-construct python-protobuf python-six pytsk3
 script:
   - ./run_tests.py
