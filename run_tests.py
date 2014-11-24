@@ -37,13 +37,19 @@ def FindTestFiles(path):
   return file_list
 
 
-def RunTests(path):
-  """Runs all the test for the test files found within the specified path."""
+def RunTests(path_list):
+  """Runs all the test for the test files found within the specified paths.
+
+  Args:
+    path_list: list of path string to look for test files.
+  """
   test_classes = []
 
-  for test_file in FindTestFiles(path):
-    library_name = test_file.rstrip('.py').replace(os.path.sep, '.').lstrip('.')
-    test_classes.append(library_name)
+  for path in path_list:
+    for test_file in FindTestFiles(path):
+      library_name = (
+          test_file.rstrip('.py').replace(os.path.sep, '.').lstrip('.'))
+      test_classes.append(library_name)
 
   tests = unittest.TestLoader().loadTestsFromNames(test_classes)
   test_run = unittest.TextTestRunner(verbosity=1)
@@ -59,11 +65,13 @@ def PrintResults(my_results):
   """Print the results from an aggregated test run."""
   errors = 0
   failures = 0
-  print 'Ran: {} tests.'.format(my_results.testsRun)
+  print 'Ran: {0:d} tests.'.format(my_results.testsRun)
+
   if my_results.wasSuccessful():
-    print '--++'*20
+    print '--++' * 20
     print 'Yeee you know what, all tests came out clean.'
-    print '--++'*20
+    print '--++' * 20
+
   else:
     errors = len(my_results.errors)
     failures = len(my_results.failures)
@@ -72,14 +80,15 @@ def PrintResults(my_results):
     print FormatHeader('Tests failed.')
     print '  {0:>10s}: {1:d}\n  {2:>10s}: {3:d}\n  {4:>10s}: {5:d}'.format(
         'Errors', errors, 'Failures', failures, 'Total', errors + failures)
-    print '+='*40
+    print '+=' * 40
 
 
 if __name__ == '__main__':
   # Modify the system path to first search the CWD.
   sys.path.insert(0, '.')
 
-  test_results = RunTests(os.path.join('.', 'dfvfs'))
+  test_results = RunTests([
+      os.path.join('.', 'dfvfs'), os.path.join('.', 'examples')])
 
   PrintResults(test_results)
   if not test_results.wasSuccessful():

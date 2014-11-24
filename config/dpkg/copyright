@@ -1,6 +1,6 @@
 Format: http://dep.debian.net/deps/dep5
 Upstream-Name: dfvfs
-Source: http://code.google.com/p/dfvfs/
+Source: https://github.com/log2timeline/dfvfs/
 
 Files: *
 Copyright: 2013 The dfVFS Project Authors.

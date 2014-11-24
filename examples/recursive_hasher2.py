@@ -18,7 +18,7 @@
 """Script to recursively calculate a message digest hash for every file."""
 
 # If you update this script make sure to update the corresponding wiki page
-# as well: https://code.google.com/p/dfvfs/wiki/dfvfs
+# as well: https://github.com/log2timeline/dfvfs/wiki/Development
 
 import argparse
 import hashlib
