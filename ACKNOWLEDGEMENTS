@@ -9,7 +9,7 @@ of dfVFS is to provide a generic interface for accessing file-system objects,
 for which it uses several back-ends that provide the actual implementation of
 the various storage media types, volume systems and file systems.
 
-dfVFS originates from the Plaso project [https://code.google.com/p/plaso/].
+dfVFS originates from the Plaso project [https://github.com/log2timeline/plaso].
 It was largely rewritten and made into a stand-alone project to provide more
 flexibility and allow other projects to make use of the VFS functionality.
 dfVFS originally was named PyVFS, but that name conflicted with another project.
