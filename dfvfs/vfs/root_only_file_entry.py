@@ -44,7 +44,7 @@ class RootOnlyFileEntry(file_entry.FileEntry):
     # We are creating an empty generator here. Yield or return None
     # individually don't provide that behavior, neither does raising
     # GeneratorExit or StopIteration.
-    # pylint: disable-msg=unreachable
+    # pylint: disable=unreachable
     return
     yield
 
