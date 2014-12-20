@@ -310,9 +310,14 @@ class SourceScanner(object):
           if scan_node.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
             scan_context = self._ScanNode(scan_context, sub_scan_node)
 
-        # If there is more than one sub file entry we need more information
-        # to determine the next layer.
-        if file_entry.number_of_sub_file_entries > 1:
+        if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+          minimum_sub_file_entries = 0
+        else:
+          minimum_sub_file_entries = 1
+
+        # If there are more than sub file entry than the minumum we need more
+        # information to determine the next layer.
+        if file_entry.number_of_sub_file_entries > minimum_sub_file_entries:
           scan_context.last_scan_node = scan_node
           return scan_context
 
