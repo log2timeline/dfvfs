@@ -1,10 +1,12 @@
 # Files to ignore by git
 
 # Generic auto-generated build files
+*.swp
 *.pyc
 *.pyo
 
 # Specific auto-generated build files
+/__pycache__
 /build
 /dist
 /dfvfs.egg-info
