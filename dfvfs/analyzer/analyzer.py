@@ -17,10 +17,15 @@
 # limitations under the License.
 """The Virtual File System (VFS) format analyzer object."""
 
-from dfvfs.analyzer import scanner
+import pysigscan
+
 from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
+
+
+if pysigscan.get_version() < '20150112':
+  raise ImportWarning('Analyzer requires at least pysigscan 20150112.')
 
 
 class Analyzer(object):
@@ -59,6 +64,59 @@ class Analyzer(object):
   _volume_system_store = None
 
   @classmethod
+  def _FlushCache(cls, format_categories):
+    """Flushes the cached objects for the specified format categories.
+
+    Args:
+      format_categories: a list of format categories.
+    """
+    if definitions.FORMAT_CATEGORY_FILE_SYSTEM in format_categories:
+      cls._file_system_remainder_list = None
+      cls._file_system_scanner = None
+      cls._file_system_store = None
+
+    if definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE in format_categories:
+      cls._storage_media_image_remainder_list = None
+      cls._storage_media_image_scanner = None
+      cls._storage_media_image_store = None
+
+    if definitions.FORMAT_CATEGORY_VOLUME_SYSTEM in format_categories:
+      cls._volume_system_remainder_list = None
+      cls._volume_system_scanner = None
+      cls._volume_system_store = None
+
+  @classmethod
+  def _GetScanner(cls, specification_store):
+    """Initializes the scanner object form the specification store.
+
+    Args:
+      specification_store: a specification store (instance of
+                           SpecificationStore).
+
+    Returns:
+      A scanner object (instance of pysigscan.scanner).
+    """
+    scanner_object = pysigscan.scanner()
+
+    for format_specification in specification_store.specifications:
+      for signature in format_specification.signatures:
+        pattern_offset = signature.offset
+
+        if not signature.is_bound:
+          signature_flags = pysigscan.signature_flags.NO_OFFSET
+        elif pattern_offset < 0:
+          pattern_offset *= -1
+          signature_flags = pysigscan.signature_flags.RELATIVE_FROM_END
+        else:
+          signature_flags = pysigscan.signature_flags.RELATIVE_FROM_START
+
+        scanner_object.add_signature(
+            signature.identifier, pattern_offset, signature.pattern,
+            signature_flags)
+
+    return scanner_object
+
+  @classmethod
   def _GetSpecificationStore(cls, format_category):
     """Retrieves the specification store for specified format category.
 
@@ -85,11 +143,14 @@ class Analyzer(object):
     return specification_store, remainder_list
 
   @classmethod
-  def _GetTypeIndicators(cls, scanner_object, remainder_list, path_spec):
+  def _GetTypeIndicators(
+      cls, scanner_object, specification_store, remainder_list, path_spec):
     """Determines if a file contains a supported format types.
 
     Args:
-      scanner_object: the format scanner (instance of OffsetBoundScanner).
+      scanner_object: the format scanner (instance of pysigscan.scanner).
+      specification_store: a specification store (instance of
+                           SpecificationStore).
       remainder_list: list of remaining analyzer helpers that do not have
                       a format specification.
       path_spec: the VFS path specification (instance of path.PathSpec).
@@ -100,10 +161,15 @@ class Analyzer(object):
     type_indicator_list = []
 
     file_object = resolver.Resolver.OpenFileObject(path_spec)
-    scan_results = scanner_object.ScanFileObject(file_object)
+    scan_state = pysigscan.scan_state()
+    scanner_object.scan_file_object(scan_state, file_object)
 
-    for scan_result in scan_results:
-      type_indicator_list.append(scan_result.identifier)
+    for scan_result in scan_state.scan_results:
+      format_specification = specification_store.GetSpecificationBySignature(
+          scan_result.identifier)
+
+      if format_specification.identifier not in type_indicator_list:
+        type_indicator_list.append(format_specification.identifier)
 
     for analyzer_helper in remainder_list:
       result = analyzer_helper.AnalyzeFileObject(file_object)
@@ -112,28 +178,6 @@ class Analyzer(object):
         type_indicator_list.append(result)
 
     return type_indicator_list
-
-  @classmethod
-  def _FlushCache(cls, format_categories):
-    """Flushes the cached objects for the specified format categories.
-
-    Args:
-      format_categories: a list of format categories.
-    """
-    if definitions.FORMAT_CATEGORY_FILE_SYSTEM in format_categories:
-      cls._file_system_remainder_list = None
-      cls._file_system_scanner = None
-      cls._file_system_store = None
-
-    if definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE in format_categories:
-      cls._storage_media_image_remainder_list = None
-      cls._storage_media_image_scanner = None
-      cls._storage_media_image_store = None
-
-    if definitions.FORMAT_CATEGORY_VOLUME_SYSTEM in format_categories:
-      cls._volume_system_remainder_list = None
-      cls._volume_system_scanner = None
-      cls._volume_system_store = None
 
   @classmethod
   def GetFileSystemTypeIndicators(cls, path_spec):
@@ -153,12 +197,11 @@ class Analyzer(object):
       cls._file_system_store = specification_store
 
     if cls._file_system_scanner is None:
-      cls._file_system_scanner = scanner.OffsetBoundScanner(
-          cls._file_system_store)
+      cls._file_system_scanner = cls._GetScanner(cls._file_system_store)
 
     return cls._GetTypeIndicators(
-        cls._file_system_scanner, cls._file_system_remainder_list,
-        path_spec)
+        cls._file_system_scanner, cls._file_system_store,
+        cls._file_system_remainder_list, path_spec)
 
   @classmethod
   def GetStorageMediaImageTypeIndicators(cls, path_spec):
@@ -178,11 +221,11 @@ class Analyzer(object):
       cls._storage_media_image_store = specification_store
 
     if cls._storage_media_image_scanner is None:
-      cls._storage_media_image_scanner = scanner.OffsetBoundScanner(
+      cls._storage_media_image_scanner = cls._GetScanner(
           cls._storage_media_image_store)
 
     return cls._GetTypeIndicators(
-        cls._storage_media_image_scanner,
+        cls._storage_media_image_scanner, cls._storage_media_image_store,
         cls._storage_media_image_remainder_list, path_spec)
 
   @classmethod
@@ -203,12 +246,11 @@ class Analyzer(object):
       cls._volume_system_store = specification_store
 
     if cls._volume_system_scanner is None:
-      cls._volume_system_scanner = scanner.OffsetBoundScanner(
-          cls._volume_system_store)
+      cls._volume_system_scanner = cls._GetScanner(cls._volume_system_store)
 
     return cls._GetTypeIndicators(
-        cls._volume_system_scanner, cls._volume_system_remainder_list,
-        path_spec)
+        cls._volume_system_scanner, cls._volume_system_store,
+        cls._volume_system_remainder_list, path_spec)
 
   @classmethod
   def DeregisterHelper(cls, analyzer_helper):
