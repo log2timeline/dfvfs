@@ -21,17 +21,16 @@
 class Signature(object):
   """Class that defines a signature of a format specification.
 
-  The signature consists of a byte string expression, an optional
+  The signature consists of a byte string pattern, an optional
   offset relative to the start of the data, and a value to indidate
-  if the expression is bound to the offset.
+  if the pattern is bound to the offset.
   """
-  def __init__(self, expression, offset=None, is_bound=False):
+  def __init__(self, pattern, offset=None, is_bound=False):
     """Initializes the signature.
 
     Args:
-      expression: string containing the expression of the signature.
-                  The expression consists of a byte string at the moment
-                  regular expression (regexp) are not supported.
+      pattern: a binary string containing the pattern of the signature.
+               Wildcards or regular pattern (regexp) are not supported.
       offset: the offset of the signature or None by default. None is used
               to indicate the signature has no offset. A positive offset
               is relative from the start of the data a negative offset
@@ -39,9 +38,20 @@ class Signature(object):
       is_bound: boolean value to indicate the signature must be bound to
                 the offset or False by default.
     """
-    self.expression = expression
-    self.offset = offset
+    super(Signature, self).__init__()
+    self.identifier = None
     self.is_bound = is_bound
+    self.offset = offset
+    self.pattern = pattern
+
+  def SetIdentifier(self, identifier):
+    """Sets the identifier of the signature in the specification store.
+
+    Args:
+      identifier: a string containing an unique signature identifier for
+                  a specification store.
+    """
+    self.identifier = identifier
 
 
 class Specification(object):
@@ -56,11 +66,11 @@ class Specification(object):
     self.identifier = identifier
     self.signatures = []
 
-  def AddNewSignature(self, expression, offset=None, is_bound=False):
+  def AddNewSignature(self, pattern, offset=None, is_bound=False):
     """Adds a signature.
 
     Args:
-      expression: string containing the expression of the signature.
+      pattern: a binary string containing the pattern of the signature.
       offset: the offset of the signature or None by default. None is used
               to indicate the signature has no offset. A positive offset
               is relative from the start of the data a negative offset
@@ -69,7 +79,7 @@ class Specification(object):
                 the offset or False by default.
     """
     self.signatures.append(
-        Signature(expression, offset=offset, is_bound=is_bound))
+        Signature(pattern, offset=offset, is_bound=is_bound))
 
 
 class SpecificationStore(object):
@@ -78,6 +88,8 @@ class SpecificationStore(object):
   def __init__(self):
     """Initializes the specification store."""
     self._format_specifications = {}
+    # Maps signature identifiers to format specifications.
+    self._signature_map = {}
 
   @property
   def specifications(self):
@@ -95,12 +107,12 @@ class SpecificationStore(object):
       a instance of Specification.
 
     Raises:
-      ValueError: if the store already contains a specification with
-                  the same identifier.
+      KeyError: if the store already contains a specification with
+                the same identifier.
     """
     if identifier in self._format_specifications:
-      raise ValueError("specification {0:s} is already defined in "
-                       "store.".format(identifier))
+      raise KeyError(
+          'Specification {0:s} is already defined in store.'.format(identifier))
 
     self._format_specifications[identifier] = Specification(identifier)
 
@@ -122,3 +134,30 @@ class SpecificationStore(object):
               specification.identifier))
 
     self._format_specifications[specification.identifier] = specification
+
+    for signature in specification.signatures:
+      signature_index = len(self._signature_map)
+
+      signature_identifier = u'{0:s}:{1:d}'.format(
+          specification.identifier, signature_index)
+
+      if signature_identifier in self._signature_map:
+        raise KeyError(
+            u'Signature {0:s} is already defined in map.'.format(
+                signature_identifier))
+
+      signature.SetIdentifier(signature_identifier)
+      self._signature_map[signature_identifier] = specification
+
+  def GetSpecificationBySignature(self, signature_identifier):
+    """Retrieves a specification mapped to a signature identifier.
+
+    Args:
+      identifier: a string containing an unique signature identifier for
+                  a specification store.
+
+    Returns:
+      A specification (instance of Specification) or None if the signature
+      identifier does not exists within the specification store.
+    """
+    return self._signature_map.get(signature_identifier, None)
