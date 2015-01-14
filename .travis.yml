@@ -2,8 +2,6 @@ language: python
 python:
   - "2.7"
 before_install:
-  - sudo add-apt-repository ppa:kristinn-l/plaso-dev -y
-  - sudo apt-get update -q
-  - sudo apt-get install libbde-python libewf-python libqcow-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python python-construct python-protobuf python-six pytsk3
+  - if test `uname -s` = 'Linux'; then sudo add-apt-repository ppa:gift/dev -y && sudo apt-get update -q && sudo apt-get install libbde-python libewf-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python python-construct python-protobuf python-six pytsk3; fi
 script:
   - ./run_tests.py
