@@ -96,6 +96,18 @@ class Resolver(object):
 
     file_object = resolver_context.GetFileObject(path_spec)
 
+    # For cached file-like objects we need to make sure all parent
+    # file-like objects are cached as well.
+    if file_object:
+      parent_path_spec = path_spec.parent
+
+      while parent_path_spec:
+        if not resolver_context.GetFileObject(parent_path_spec):
+          file_object = None
+          break
+
+        parent_path_spec = parent_path_spec.parent
+
     if file_object is None:
       if path_spec.type_indicator not in cls._resolver_helpers:
         raise KeyError((
@@ -130,6 +142,18 @@ class Resolver(object):
       resolver_context = cls._resolver_context
 
     file_system = resolver_context.GetFileSystem(path_spec)
+
+    # For cached file-like objects we need to make sure all parent
+    # file-like objects are cached as well.
+    if file_system:
+      parent_path_spec = path_spec.parent
+
+      while parent_path_spec:
+        if not resolver_context.GetFileObject(parent_path_spec):
+          file_system = None
+          break
+
+        parent_path_spec = parent_path_spec.parent
 
     if file_system is None:
       if path_spec.type_indicator not in cls._resolver_helpers:
