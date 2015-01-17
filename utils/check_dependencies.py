@@ -293,7 +293,7 @@ if __name__ == '__main__':
       ('pybde', 20140531),
       ('pyewf', 20131210),
       ('pyqcow', 20131204),
-      ('pysigscan', 20150112),
+      ('pysigscan', 20150114),
       ('pysmdev', 20140428),
       ('pysmraw', 20140612),
       ('pyvhdi', 20131210),

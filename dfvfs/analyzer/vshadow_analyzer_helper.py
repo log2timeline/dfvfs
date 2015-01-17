@@ -37,8 +37,8 @@ class VShadowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
     # VSS identifier (GUID).
     format_specification.AddNewSignature(
-        '\x6b\x87\x08\x38\x76\xc1\x48\x4e\xb7\xae\x04\x04\x6e\x6c\xc7\x52',
-         offset=7680, is_bound=True)
+        b'\x6b\x87\x08\x38\x76\xc1\x48\x4e\xb7\xae\x04\x04\x6e\x6c\xc7\x52',
+        offset=7680)
 
     return format_specification
 

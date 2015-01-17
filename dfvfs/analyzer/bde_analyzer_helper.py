@@ -36,12 +36,12 @@ class BdeAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     format_specification = specification.Specification(self.type_indicator)
 
     # BDE signature.
-    format_specification.AddNewSignature('-FVE-FS-', offset=3, is_bound=True)
+    format_specification.AddNewSignature(b'-FVE-FS-', offset=3)
 
     # BDE ToGo BDE identifier.
     format_specification.AddNewSignature(
-        '\x3b\xd6\x67\x49\x29\x2e\xd8\x4a\x83\x99\xf6\xa3\x39\xe3\xd0\x01',
-        offset=424, is_bound=True)
+        b'\x3b\xd6\x67\x49\x29\x2e\xd8\x4a\x83\x99\xf6\xa3\x39\xe3\xd0\x01',
+        offset=424)
 
     return format_specification
 

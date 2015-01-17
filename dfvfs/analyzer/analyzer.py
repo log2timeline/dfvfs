@@ -24,14 +24,34 @@ from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 
 
-if pysigscan.get_version() < '20150112':
-  raise ImportWarning('Analyzer requires at least pysigscan 20150112.')
+if pysigscan.get_version() < '20150114':
+  raise ImportWarning('Analyzer requires at least pysigscan 20150114.')
 
 
 class Analyzer(object):
   """Class that implements the VFS format analyzer."""
 
   _analyzer_helpers = {}
+
+  # The archive format category analyzer helpers that do not have
+  # a format specification.
+  _archive_remainder_list = None
+
+  # The archive format category format scanner.
+  _archive_scanner = None
+
+  # The archive format category specification store.
+  _archive_store = None
+
+  # The compressed stream format category analyzer helpers that do not have
+  # a format specification.
+  _compressed_stream_remainder_list = None
+
+  # The compressed stream format category format scanner.
+  _compressed_stream_scanner = None
+
+  # The compressed stream format category specification store.
+  _compressed_stream_store = None
 
   # The file system format category analyzer helpers that do not have
   # a format specification.
@@ -70,6 +90,16 @@ class Analyzer(object):
     Args:
       format_categories: a list of format categories.
     """
+    if definitions.FORMAT_CATEGORY_ARCHIVE in format_categories:
+      cls._archive_remainder_list = None
+      cls._archive_scanner = None
+      cls._archive_store = None
+
+    if definitions.FORMAT_CATEGORY_COMPRESSED_STREAM in format_categories:
+      cls._compressed_stream_remainder_list = None
+      cls._compressed_stream_scanner = None
+      cls._compressed_stream_store = None
+
     if definitions.FORMAT_CATEGORY_FILE_SYSTEM in format_categories:
       cls._file_system_remainder_list = None
       cls._file_system_scanner = None
@@ -102,7 +132,7 @@ class Analyzer(object):
       for signature in format_specification.signatures:
         pattern_offset = signature.offset
 
-        if not signature.is_bound:
+        if pattern_offset is None:
           signature_flags = pysigscan.signature_flags.NO_OFFSET
         elif pattern_offset < 0:
           pattern_offset *= -1
@@ -178,6 +208,55 @@ class Analyzer(object):
         type_indicator_list.append(result)
 
     return type_indicator_list
+
+  @classmethod
+  def GetArchiveTypeIndicators(cls, path_spec):
+    """Determines if a file contains a supported archive types.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      A list of supported format type indicator.
+    """
+    if (cls._archive_remainder_list is None or
+        cls._archive_store is None):
+      specification_store, remainder_list = cls._GetSpecificationStore(
+          definitions.FORMAT_CATEGORY_ARCHIVE)
+      cls._archive_remainder_list = remainder_list
+      cls._archive_store = specification_store
+
+    if cls._archive_scanner is None:
+      cls._archive_scanner = cls._GetScanner(cls._archive_store)
+
+    return cls._GetTypeIndicators(
+        cls._archive_scanner, cls._archive_store,
+        cls._archive_remainder_list, path_spec)
+
+  @classmethod
+  def GetCompressedStreamTypeIndicators(cls, path_spec):
+    """Determines if a file contains a supported compressed stream types.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      A list of supported format type indicator.
+    """
+    if (cls._compressed_stream_remainder_list is None or
+        cls._compressed_stream_store is None):
+      specification_store, remainder_list = cls._GetSpecificationStore(
+          definitions.FORMAT_CATEGORY_COMPRESSED_STREAM)
+      cls._compressed_stream_remainder_list = remainder_list
+      cls._compressed_stream_store = specification_store
+
+    if cls._compressed_stream_scanner is None:
+      cls._compressed_stream_scanner = cls._GetScanner(
+          cls._compressed_stream_store)
+
+    return cls._GetTypeIndicators(
+        cls._compressed_stream_scanner, cls._compressed_stream_store,
+        cls._compressed_stream_remainder_list, path_spec)
 
   @classmethod
   def GetFileSystemTypeIndicators(cls, path_spec):
