@@ -17,8 +17,11 @@
 # limitations under the License.
 
 from dfvfs.analyzer import bde_analyzer_helper
+from dfvfs.analyzer import bzip2_analyzer_helper
 from dfvfs.analyzer import ewf_analyzer_helper
+from dfvfs.analyzer import gzip_analyzer_helper
 from dfvfs.analyzer import qcow_analyzer_helper
+from dfvfs.analyzer import tar_analyzer_helper
 
 try:
   from dfvfs.analyzer import tsk_analyzer_helper
@@ -33,3 +36,4 @@ except ImportError:
 from dfvfs.analyzer import vhdi_analyzer_helper
 from dfvfs.analyzer import vmdk_analyzer_helper
 from dfvfs.analyzer import vshadow_analyzer_helper
+from dfvfs.analyzer import zip_analyzer_helper

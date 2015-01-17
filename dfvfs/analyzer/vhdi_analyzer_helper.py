@@ -36,11 +36,11 @@ class VhdiAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     format_specification = specification.Specification(self.type_indicator)
 
     # VHDI image signature in footer.
-    format_specification.AddNewSignature('conectix', offset=-512, is_bound=True)
+    format_specification.AddNewSignature(b'conectix', offset=-512)
 
     # VHDI image signature in copy of footer in differential
     # or dynamic disk image.
-    format_specification.AddNewSignature('conectix', offset=0, is_bound=True)
+    format_specification.AddNewSignature(b'conectix', offset=0)
 
     return format_specification
 

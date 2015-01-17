@@ -25,7 +25,7 @@ class Signature(object):
   offset relative to the start of the data, and a value to indidate
   if the pattern is bound to the offset.
   """
-  def __init__(self, pattern, offset=None, is_bound=False):
+  def __init__(self, pattern, offset=None):
     """Initializes the signature.
 
     Args:
@@ -35,12 +35,9 @@ class Signature(object):
               to indicate the signature has no offset. A positive offset
               is relative from the start of the data a negative offset
               is relative from the end of the data.
-      is_bound: boolean value to indicate the signature must be bound to
-                the offset or False by default.
     """
     super(Signature, self).__init__()
     self.identifier = None
-    self.is_bound = is_bound
     self.offset = offset
     self.pattern = pattern
 
@@ -66,7 +63,7 @@ class Specification(object):
     self.identifier = identifier
     self.signatures = []
 
-  def AddNewSignature(self, pattern, offset=None, is_bound=False):
+  def AddNewSignature(self, pattern, offset=None):
     """Adds a signature.
 
     Args:
@@ -75,11 +72,8 @@ class Specification(object):
               to indicate the signature has no offset. A positive offset
               is relative from the start of the data a negative offset
               is relative from the end of the data.
-      is_bound: boolean value to indicate the signature must be bound to
-                the offset or False by default.
     """
-    self.signatures.append(
-        Signature(pattern, offset=offset, is_bound=is_bound))
+    self.signatures.append(Signature(pattern, offset=offset))
 
 
 class SpecificationStore(object):

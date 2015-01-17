@@ -22,6 +22,7 @@ import os
 
 from dfvfs.analyzer import analyzer
 from dfvfs.lib import definitions
+from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
@@ -29,6 +30,51 @@ from dfvfs.path import vshadow_path_spec
 
 class AnalyzerTest(unittest.TestCase):
   """Class to test the analyzer."""
+
+  def testGetArchiveTypeIndicators(self):
+    """Function to test the get archive type indicators function."""
+    test_file = os.path.join('test_data', 'syslog.tar')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_TAR]
+    type_indicators = analyzer.Analyzer.GetArchiveTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
+
+    test_file = os.path.join('test_data', 'syslog.zip')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_ZIP]
+    type_indicators = analyzer.Analyzer.GetArchiveTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
+
+  def testGetCompressedStreamTypeIndicators(self):
+    """Function to test the get compressed stream type indicators function."""
+    test_file = os.path.join('test_data', 'syslog.gz')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_GZIP]
+    type_indicators = analyzer.Analyzer.GetCompressedStreamTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
+
+  def testGetCompressedArchiveTypeIndicators(self):
+    """Function to test the get compressed archive type indicators function."""
+    test_file = os.path.join('test_data', 'syslog.tgz')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_GZIP]
+    type_indicators = analyzer.Analyzer.GetCompressedStreamTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
+
+    path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_TAR]
+    type_indicators = analyzer.Analyzer.GetArchiveTypeIndicators(
+        path_spec)
+    self.assertEquals(type_indicators, expected_type_indicators)
 
   def testGetFileSystemTypeIndicators(self):
     """Function to test the get file system type indicators function."""

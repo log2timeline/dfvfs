@@ -36,12 +36,13 @@ class QcowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     format_specification = specification.Specification(self.type_indicator)
 
     # QCOW version 1 signature and version.
-    format_specification.AddNewSignature(
-        'QFI\xfb\x00\x00\x00\x01', offset=0, is_bound=True)
+    format_specification.AddNewSignature(b'QFI\xfb\x00\x00\x00\x01', offset=0)
 
     # QCOW version 2 signature and version.
-    format_specification.AddNewSignature(
-        'QFI\xfb\x00\x00\x00\x02', offset=0, is_bound=True)
+    format_specification.AddNewSignature(b'QFI\xfb\x00\x00\x00\x02', offset=0)
+
+    # QCOW version 3 signature and version.
+    format_specification.AddNewSignature(b'QFI\xfb\x00\x00\x00\x03', offset=0)
 
     return format_specification
 

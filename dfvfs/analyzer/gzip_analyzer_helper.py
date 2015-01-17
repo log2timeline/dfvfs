@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2014 The dfVFS Project Authors.
+# Copyright 2015 The dfVFS Project Authors.
 # Please see the AUTHORS file for details on individual authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""The VMDK format analyzer helper implementation."""
+"""The GZIP format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
@@ -23,29 +23,23 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class VmdkAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Class that implements the VMDK analyzer helper."""
+class GzipAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+  """Class that implements the GZIP analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
-      definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE])
+      definitions.FORMAT_CATEGORY_COMPRESSED_STREAM])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VMDK
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
 
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
     format_specification = specification.Specification(self.type_indicator)
 
-    # VMDK descriptor file signature.
-    format_specification.AddNewSignature(b'# Disk DescriptorFile', offset=0)
-
-    # VMDK sparse extent file signature.
-    format_specification.AddNewSignature(b'KDMV', offset=0)
-
-    # COWD sparse extent file signature.
-    format_specification.AddNewSignature(b'COWD', offset=0)
+    # GZIP file signature.
+    format_specification.AddNewSignature(b'\x1f\x8b', offset=0)
 
     return format_specification
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(VmdkAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(GzipAnalyzerHelper())
