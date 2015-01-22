@@ -6,4 +6,7 @@ exclude *.pyc
 recursive-include config *
 recursive-include dfvfs *.proto
 recursive-exclude dfvfs *.pyc
+# The examples script are considered data files and not required in a binary
+# distributionp package, hence do not add __init__.py to examples directory.
+recursive-include examples *.py
 recursive-include test_data *
