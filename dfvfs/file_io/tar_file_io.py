@@ -87,7 +87,7 @@ class TarFile(file_io.FileIO):
        and should not actually close it.
 
     Raises:
-      IOError: if the close failed.
+      IOError: if the file-like object was not opened or the close failed.
     """
     if not self._is_open:
       raise IOError(u'Not opened.')

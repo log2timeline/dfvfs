@@ -88,7 +88,7 @@ class VShadowFile(file_io.FileIO):
     """Closes the file-like object.
 
     Raises:
-      IOError: if the close failed.
+      IOError: if the file-like object was not opened or the close failed.
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
