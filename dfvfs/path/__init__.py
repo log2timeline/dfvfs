@@ -3,6 +3,7 @@
 from dfvfs.path import bde_path_spec
 from dfvfs.path import compressed_stream_path_spec
 from dfvfs.path import data_range_path_spec
+from dfvfs.path import encoded_stream_path_spec
 from dfvfs.path import ewf_path_spec
 from dfvfs.path import fake_path_spec
 from dfvfs.path import gzip_path_spec

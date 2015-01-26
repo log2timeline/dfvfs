@@ -48,7 +48,7 @@ class _Bzip2Decompressor(_Decompressor):
     """
     uncompressed_data = self._bz2_decompressor.decompress(compressed_data)
     remaining_compressed_data = getattr(
-        self._bz2_decompressor, 'unused_data', '')
+        self._bz2_decompressor, 'unused_data', b'')
 
     return (uncompressed_data, remaining_compressed_data)
 
@@ -80,7 +80,7 @@ class _ZlibDecompressor(_Decompressor):
     """
     uncompressed_data = self._zlib_decompressor.decompress(compressed_data)
     remaining_compressed_data = getattr(
-        self._zlib_decompressor, 'unused_data', '')
+        self._zlib_decompressor, 'unused_data', b'')
 
     return (uncompressed_data, remaining_compressed_data)
 
@@ -122,11 +122,11 @@ class CompressedStream(file_io.FileIO):
     super(CompressedStream, self).__init__(resolver_context)
     self._compression_method = compression_method
     self._file_object = file_object
-    self._compressed_data = ''
+    self._compressed_data = b''
     self._current_offset = 0
     self._decompressor = None
     self._realign_offset = True
-    self._uncompressed_data = ''
+    self._uncompressed_data = b''
     self._uncompressed_data_offset = 0
     self._uncompressed_data_size = 0
     self._uncompressed_stream_size = None
@@ -155,7 +155,7 @@ class CompressedStream(file_io.FileIO):
     self._file_object.seek(0, os.SEEK_SET)
 
     self._decompressor = self._GetDecompressor()
-    self._uncompressed_data = ''
+    self._uncompressed_data = b''
 
     compressed_data_offset = 0
     compressed_data_size = self._file_object.get_size()
@@ -178,7 +178,7 @@ class CompressedStream(file_io.FileIO):
     self._file_object.seek(0, os.SEEK_SET)
 
     self._decompressor = self._GetDecompressor()
-    self._uncompressed_data = ''
+    self._uncompressed_data = b''
 
     compressed_data_offset = 0
     compressed_data_size = self._file_object.get_size()
@@ -207,7 +207,7 @@ class CompressedStream(file_io.FileIO):
 
     read_count = len(compressed_data)
 
-    self._compressed_data = ''.join([self._compressed_data, compressed_data])
+    self._compressed_data = b''.join([self._compressed_data, compressed_data])
 
     self._uncompressed_data, self._compressed_data = (
         self._decompressor.Decompress(self._compressed_data))
@@ -288,7 +288,7 @@ class CompressedStream(file_io.FileIO):
        the file-like object and should not actually close it.
 
     Raises:
-      IOError: if the close failed.
+      IOError: if the file-like object was not opened or the close failed.
     """
     if not self._is_open:
       raise IOError(u'Not opened.')
@@ -299,9 +299,9 @@ class CompressedStream(file_io.FileIO):
       self._file_object.close()
       self._file_object = None
 
-    self._compressed_data = ''
+    self._compressed_data = b''
     self._decompressor = None
-    self._uncompressed_data = ''
+    self._uncompressed_data = b''
     self._is_open = False
 
   def read(self, size=None):
@@ -335,7 +335,7 @@ class CompressedStream(file_io.FileIO):
       raise IOError(u'Invalid uncompressed stream size.')
 
     if self._current_offset >= self._uncompressed_stream_size:
-      return ''
+      return b''
 
     if size is None:
       size = self._uncompressed_stream_size
@@ -346,10 +346,10 @@ class CompressedStream(file_io.FileIO):
       self._AlignUncompressedDataOffset(self._current_offset)
       self._realign_offset = False
 
-    uncompressed_data = ''
+    uncompressed_data = b''
 
     while self._uncompressed_data_offset + size > self._uncompressed_data_size:
-      uncompressed_data = ''.join([
+      uncompressed_data = b''.join([
           uncompressed_data,
           self._uncompressed_data[self._uncompressed_data_offset]])
 
@@ -368,7 +368,7 @@ class CompressedStream(file_io.FileIO):
       slice_start_offset = self._uncompressed_data_offset
       slice_end_offset = slice_start_offset + size
 
-      uncompressed_data = ''.join([
+      uncompressed_data = b''.join([
           uncompressed_data,
           self._uncompressed_data[slice_start_offset:slice_end_offset]])
 

@@ -43,7 +43,7 @@ class FileIO(object):
     """Closes the file-like object.
 
     Raises:
-      IOError: if the close failed.
+      IOError: if the file-like object was not opened or the close failed.
     """
 
   @abc.abstractmethod
