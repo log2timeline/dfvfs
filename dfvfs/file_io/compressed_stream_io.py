@@ -1,96 +1,12 @@
 # -*- coding: utf-8 -*-
 """The compressed stream file-like object implementation."""
 
-import abc
-import bz2
 import os
-import zlib
 
+from dfvfs.compression import manager as compression_manager
 from dfvfs.file_io import file_io
-from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
-
-
-class _Decompressor(object):
-  """Class that implements the decompressor object interface."""
-
-  @abc.abstractmethod
-  def Decompress(self, compressed_data):
-    """Decompresses the compressed data.
-
-    Args:
-      compressed_data: a byte string containing the compressed data.
-
-    Returns:
-      A tuple containing a byte string of the uncompressed data and
-      the remaining compressed data.
-    """
-
-
-class _Bzip2Decompressor(_Decompressor):
-  """Class that implements a BZIP2 decompressor using bz2."""
-
-  def __init__(self):
-    """Initializes the decompressor object."""
-    super(_Bzip2Decompressor, self).__init__()
-    self._bz2_decompressor = bz2.BZ2Decompressor()
-
-  def Decompress(self, compressed_data):
-    """Decompresses the compressed data.
-
-    Args:
-      compressed_data: a byte string containing the compressed data.
-
-    Returns:
-      A tuple containing a byte string of the uncompressed data and
-      the remaining compressed data.
-    """
-    uncompressed_data = self._bz2_decompressor.decompress(compressed_data)
-    remaining_compressed_data = getattr(
-        self._bz2_decompressor, 'unused_data', b'')
-
-    return (uncompressed_data, remaining_compressed_data)
-
-
-class _ZlibDecompressor(_Decompressor):
-  """Class that implements a "zlib DEFLATE" decompressor using zlib."""
-
-  def __init__(self, window_size=zlib.MAX_WBITS):
-    """Initializes the decompressor object.
-
-    Args:
-      window_size: optional base two logarithm of the size of the compression
-                   history buffer (aka window size). The default is
-                   zlib.MAX_WBITS. When the value is negative, the standard
-                   zlib data header is suppressed.
-    """
-    super(_ZlibDecompressor, self).__init__()
-    self._zlib_decompressor = zlib.decompressobj(window_size)
-
-  def Decompress(self, compressed_data):
-    """Decompresses the compressed data.
-
-    Args:
-      compressed_data: a byte string containing the compressed data.
-
-    Returns:
-      A tuple containing a byte string of the uncompressed data and
-      the remaining compressed data.
-    """
-    uncompressed_data = self._zlib_decompressor.decompress(compressed_data)
-    remaining_compressed_data = getattr(
-        self._zlib_decompressor, 'unused_data', b'')
-
-    return (uncompressed_data, remaining_compressed_data)
-
-
-class _DeflateDecompressor(_ZlibDecompressor):
-  """Class that implements a "raw DEFLATE" decompressor using zlib."""
-
-  def __init__(self):
-    """Initializes the decompressor object."""
-    super(_DeflateDecompressor, self).__init__(window_size=-zlib.MAX_WBITS)
 
 
 class CompressedStream(file_io.FileIO):
@@ -139,16 +55,8 @@ class CompressedStream(file_io.FileIO):
 
   def _GetDecompressor(self):
     """Retrieves the decompressor."""
-    if self._compression_method == definitions.COMPRESSION_METHOD_BZIP2:
-      return _Bzip2Decompressor()
-
-    elif self._compression_method == definitions.COMPRESSION_METHOD_DEFLATE:
-      return _DeflateDecompressor()
-
-    elif self._compression_method == definitions.COMPRESSION_METHOD_ZLIB:
-      return _ZlibDecompressor()
-
-    return
+    return compression_manager.CompressionManager.GetDecompressor(
+        self._compression_method)
 
   def _GetUncompressedStreamSize(self):
     """Retrieves the uncompressed stream size."""

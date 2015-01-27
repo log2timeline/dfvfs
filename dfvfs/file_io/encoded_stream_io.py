@@ -1,96 +1,12 @@
 # -*- coding: utf-8 -*-
 """The encoded stream file-like object implementation."""
 
-import abc
-import base64
 import os
 
+from dfvfs.encoding import manager as encoding_manager
 from dfvfs.file_io import file_io
-from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
-
-
-class _Decoder(object):
-  """Class that implements the decoder object interface."""
-
-  @abc.abstractmethod
-  def Decode(self, encoded_data):
-    """Decodes the encoded data.
-
-    Args:
-      encoded_data: a byte string containing the encoded data.
-
-    Returns:
-      A tuple containing a byte string of the decoded data and
-      the remaining encoded data.
-    """
-
-
-class _Base16Decoder(_Decoder):
-  """Class that implements a base16 decoder using base64."""
-
-  def __init__(self):
-    """Initializes the decoder object."""
-    super(_Base16Decoder, self).__init__()
-
-  def Decode(self, encoded_data):
-    """Decode the encoded data.
-
-    Args:
-      encoded_data: a byte string containing the encoded data.
-
-    Returns:
-      A tuple containing a byte string of the decoded data and
-      the remaining encoded data.
-    """
-    decoded_data = base64.b16decode(encoded_data, casefold=False)
-
-    return (decoded_data, b'')
-
-
-class _Base32Decoder(_Decoder):
-  """Class that implements a base32 decoder using base64."""
-
-  def __init__(self):
-    """Initializes the decoder object."""
-    super(_Base32Decoder, self).__init__()
-
-  def Decode(self, encoded_data):
-    """Decode the encoded data.
-
-    Args:
-      encoded_data: a byte string containing the encoded data.
-
-    Returns:
-      A tuple containing a byte string of the decoded data and
-      the remaining encoded data.
-    """
-    decoded_data = base64.b32decode(encoded_data, casefold=False)
-
-    return (decoded_data, b'')
-
-
-class _Base64Decoder(_Decoder):
-  """Class that implements a base64 decoder using base64."""
-
-  def __init__(self):
-    """Initializes the decoder object."""
-    super(_Base64Decoder, self).__init__()
-
-  def Decode(self, encoded_data):
-    """Decode the encoded data.
-
-    Args:
-      encoded_data: a byte string containing the encoded data.
-
-    Returns:
-      A tuple containing a byte string of the decoded data and
-      the remaining encoded data.
-    """
-    decoded_data = base64.standard_b64decode(encoded_data)
-
-    return (decoded_data, b'')
 
 
 class EncodedStream(file_io.FileIO):
@@ -137,17 +53,8 @@ class EncodedStream(file_io.FileIO):
     self._is_open = False
 
   def _GetDecoder(self):
-    """Retrieves the decoder."""
-    if self._encoding_method == definitions.ENCODING_METHOD_BASE16:
-      return _Base16Decoder()
-
-    elif self._encoding_method == definitions.ENCODING_METHOD_BASE32:
-      return _Base32Decoder()
-
-    elif self._encoding_method == definitions.ENCODING_METHOD_BASE64:
-      return _Base64Decoder()
-
-    return
+    """Retrieves the decoder (instance of encodings.Decoder)."""
+    return encoding_manager.EncodingManager.GetDecoder(self._encoding_method)
 
   def _GetDecodedStreamSize(self):
     """Retrieves the decoded stream size."""
