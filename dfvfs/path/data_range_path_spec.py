@@ -40,7 +40,7 @@ class DataRangePathSpec(path_spec.PathSpec):
   def comparable(self):
     """Comparable representation of the path specification."""
     sub_comparable_string = (
-        u'range_offset: 0x{1:08x}, range_size: 0x{1:08x}').format(
+        u'range_offset: 0x{0:08x}, range_size: 0x{1:08x}').format(
             self.range_offset, self.range_size)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
 
