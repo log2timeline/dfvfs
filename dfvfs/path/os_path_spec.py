@@ -23,11 +23,22 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
                 C:\\Opt\\dfvfs. The default is None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
+
+    Raises:
+      ValueError: when parent is set.
     """
+    parent = None
+    if u'parent' in kwargs:
+      parent = kwargs[u'parent']
+      del kwargs[u'parent']
+
+    if parent:
+      raise ValueError(u'Parent value set.')
+
     # Within the path specification the path should be absolute.
     location = os.path.abspath(location)
 
-    super(OSPathSpec, self).__init__(location=location, parent=None, **kwargs)
+    super(OSPathSpec, self).__init__(location=location, parent=parent, **kwargs)
 
 
 # Register the path specification with the factory.
