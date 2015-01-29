@@ -19,7 +19,7 @@ class VShadowFileTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
 
@@ -73,17 +73,17 @@ class VShadowFileTest(unittest.TestCase):
 
     file_object.seek(0x1e0)
     self.assertEquals(file_object.get_offset(), 0x1e0)
-    self.assertEquals(file_object.read(16), 'rl+Alt+Del to re')
+    self.assertEquals(file_object.read(16), b'rl+Alt+Del to re')
     self.assertEquals(file_object.get_offset(), 0x1f0)
 
     file_object.seek(-40, os.SEEK_END)
     self.assertEquals(file_object.get_offset(), 0x3fffffd8)
-    self.assertEquals(file_object.read(8), 'Press Ct')
+    self.assertEquals(file_object.read(8), b'Press Ct')
     self.assertEquals(file_object.get_offset(), 0x3fffffe0)
 
     file_object.seek(3, os.SEEK_CUR)
     self.assertEquals(file_object.get_offset(), 0x3fffffe3)
-    self.assertEquals(file_object.read(7), 'Alt+Del')
+    self.assertEquals(file_object.read(7), b'Alt+Del')
     self.assertEquals(file_object.get_offset(), 0x3fffffea)
 
     # Conforming to the POSIX seek the offset can exceed the file size
@@ -91,7 +91,7 @@ class VShadowFileTest(unittest.TestCase):
     expected_offset = 0x40000000 + 100
     file_object.seek(expected_offset, os.SEEK_SET)
     self.assertEquals(file_object.get_offset(), expected_offset)
-    self.assertEquals(file_object.read(20), '')
+    self.assertEquals(file_object.read(20), b'')
 
     with self.assertRaises(IOError):
       file_object.seek(-10, os.SEEK_SET)
@@ -118,7 +118,7 @@ class VShadowFileTest(unittest.TestCase):
 
     file_object.seek(0x18e)
 
-    expected_data = 'A disk read error occurred\x00\r\nBOOTMGR is missing'
+    expected_data = b'A disk read error occurred\x00\r\nBOOTMGR is missing'
     self.assertEquals(file_object.read(47), expected_data)
 
     file_object.close()

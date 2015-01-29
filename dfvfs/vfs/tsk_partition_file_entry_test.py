@@ -28,7 +28,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     file_object.open(self._os_path_spec)
     tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
     tsk_volume = pytsk3.Volume_Info(tsk_image_object)
-    self._tsk_file_system = tsk_partition_file_system.TSKPartitionFileSystem(
+    self._file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context, tsk_volume, self._os_path_spec)
 
   # mmls test_data/tsk_volume_system.raw
@@ -48,7 +48,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = tsk_partition_file_entry.TSKPartitionFileEntry(
-        self._resolver_context, self._tsk_file_system, self._os_path_spec)
+        self._resolver_context, self._file_system, self._os_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -56,7 +56,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     """Test the get parent file entry functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -68,7 +68,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     """Test the get stat functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -79,7 +79,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     """Test the Is? functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -94,7 +94,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -111,7 +111,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     """Test the sub file entries iteration functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

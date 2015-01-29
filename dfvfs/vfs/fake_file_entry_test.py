@@ -17,23 +17,23 @@ class FakeFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._fake_file_system = fake_file_system.FakeFileSystem(
+    self._file_system = fake_file_system.FakeFileSystem(
         self._resolver_context)
-    self._fake_file_system.AddFileEntry(
+    self._file_system.AddFileEntry(
         u'/test_data/testdir_fake',
         file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-    self._fake_file_system.AddFileEntry(
+    self._file_system.AddFileEntry(
         u'/test_data/testdir_fake/file1.txt', file_data='FILE1')
-    self._fake_file_system.AddFileEntry(
+    self._file_system.AddFileEntry(
         u'/test_data/testdir_fake/file2.txt', file_data='FILE2')
-    self._fake_file_system.AddFileEntry(
+    self._file_system.AddFileEntry(
         u'/test_data/testdir_fake/file3.txt', file_data='FILE3')
-    self._fake_file_system.AddFileEntry(
+    self._file_system.AddFileEntry(
         u'/test_data/testdir_fake/file4.txt', file_data='FILE4')
-    self._fake_file_system.AddFileEntry(
+    self._file_system.AddFileEntry(
         u'/test_data/testdir_fake/file5.txt', file_data='FILE5')
 
-    self._fake_file_system.AddFileEntry(
+    self._file_system.AddFileEntry(
         u'/test_data/testdir_fake/link1.txt',
         file_entry_type=definitions.FILE_ENTRY_TYPE_LINK,
         link_data=u'/test_data/testdir_fake/file1.txt')
@@ -44,14 +44,14 @@ class FakeFileEntryTest(unittest.TestCase):
     """Test the initialize functionality."""
     path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
     file_entry = fake_file_entry.FakeFileEntry(
-        self._resolver_context, self._fake_file_system, path_spec)
+        self._resolver_context, self._file_system, path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -59,7 +59,7 @@ class FakeFileEntryTest(unittest.TestCase):
     """Test the get file object functionality."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     file_object = file_entry.GetFileObject()
 
@@ -74,7 +74,7 @@ class FakeFileEntryTest(unittest.TestCase):
     """Test the get parent file entry functionality."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -88,7 +88,7 @@ class FakeFileEntryTest(unittest.TestCase):
     """Test the get stat functionality."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -99,7 +99,7 @@ class FakeFileEntryTest(unittest.TestCase):
     """Test the Is? functionality."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -114,7 +114,7 @@ class FakeFileEntryTest(unittest.TestCase):
 
     test_file = u'/test_data/testdir_fake'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -129,7 +129,7 @@ class FakeFileEntryTest(unittest.TestCase):
 
     test_file = u'/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -146,14 +146,14 @@ class FakeFileEntryTest(unittest.TestCase):
     """Test the link property functionality."""
     test_file = u'/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertEquals(file_entry.link, u'/test_data/testdir_fake/file1.txt')
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
-    file_entry = self._fake_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

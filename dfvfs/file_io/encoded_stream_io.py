@@ -69,6 +69,8 @@ class EncodedStream(file_io.FileIO):
 
     while encoded_data_offset < encoded_data_size:
       read_count = self._ReadEncodedData(self._ENCODED_DATA_BUFFER_SIZE)
+      if read_count == 0:
+        break
 
       encoded_data_offset += read_count
       decoded_stream_size += self._decoded_data_size
@@ -91,6 +93,8 @@ class EncodedStream(file_io.FileIO):
 
     while encoded_data_offset < encoded_data_size:
       read_count = self._ReadEncodedData(self._ENCODED_DATA_BUFFER_SIZE)
+      if read_count == 0:
+        break
 
       encoded_data_offset += read_count
 
@@ -243,21 +247,24 @@ class EncodedStream(file_io.FileIO):
     if self._current_offset >= self._decoded_stream_size:
       return b''
 
+    if self._realign_offset:
+      self._AlignDecodedDataOffset(self._current_offset)
+      self._realign_offset = False
+
     if size is None:
       size = self._decoded_stream_size
     if self._current_offset + size > self._decoded_stream_size:
       size = self._decoded_stream_size - self._current_offset
 
-    if self._realign_offset:
-      self._AlignDecodedDataOffset(self._current_offset)
-      self._realign_offset = False
-
     decoded_data = b''
 
-    while self._decoded_data_offset + size > self._decoded_data_size:
+    if size == 0:
+      return decoded_data
+
+    while size > self._decoded_data_size:
       decoded_data = b''.join([
           decoded_data,
-          self._decoded_data[self._decoded_data_offset]])
+          self._decoded_data[self._decoded_data_offset:]])
 
       remaining_decoded_data_size = (
           self._decoded_data_size - self._decoded_data_offset)
@@ -265,12 +272,15 @@ class EncodedStream(file_io.FileIO):
       self._current_offset += remaining_decoded_data_size
       size -= remaining_decoded_data_size
 
-      _ = self._ReadEncodedData(self._ENCODED_DATA_BUFFER_SIZE)
+      if self._current_offset >= self._decoded_stream_size:
+        break
 
+      read_count = self._ReadEncodedData(self._ENCODED_DATA_BUFFER_SIZE)
       self._decoded_data_offset = 0
+      if read_count == 0:
+        break
 
-    if (self > 0 and
-        self._decoded_data_offset + size <= self._decoded_data_size):
+    if size > 0:
       slice_start_offset = self._decoded_data_offset
       slice_end_offset = slice_start_offset + size
 

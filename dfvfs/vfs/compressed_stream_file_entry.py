@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""The gzip file entry implementation."""
+"""The compressed stream file entry implementation."""
 
 # This is necessary to prevent a circular import.
-import dfvfs.file_io.gzip_file_io
+import dfvfs.file_io.compressed_stream_io
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -10,10 +10,10 @@ from dfvfs.vfs import root_only_file_entry
 from dfvfs.vfs import vfs_stat
 
 
-class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
-  """Class that implements a file entry object using gzip."""
+class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
+  """Class that implements a compressed stream file entry object."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
@@ -31,10 +31,10 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
                   a virtual file entry emulated by the corresponding file
                   system. The default is False.
     """
-    super(GzipFileEntry, self).__init__(
+    super(CompressedStreamFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
-    self._gzip_file = None
+    self._compressed_stream = None
 
   def _GetStat(self):
     """Retrieves the stat object.
@@ -43,21 +43,20 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
       The stat object (instance of vfs.VFSStat).
 
     Raises:
-      BackEndError: when the gzip file is missing.
+      BackEndError: when the compressed stream is missing.
     """
-    if self._gzip_file is None:
-      self._gzip_file = self.GetFileObject()
+    if self._compressed_stream is None:
+      self._compressed_stream = self.GetFileObject()
 
-    if self._gzip_file is None:
-      raise errors.BackEndError(u'Missing gzip file.')
+    if self._compressed_stream is None:
+      raise errors.BackEndError(u'Missing compressed stream.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = self._gzip_file.uncompressed_data_size
+    stat_object.size = self._compressed_stream.get_size()
 
     # Date and time stat information.
-    stat_object.mtime = self._gzip_file.modification_time
 
     # Ownership and permissions stat information.
 
@@ -65,14 +64,12 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
     stat_object.type = stat_object.TYPE_FILE
 
     # Other stat information.
-    # gzip_file.comment
-    # gzip_file.operating_system
-    # gzip_file.original_filename
 
     return stat_object
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
-    file_object = dfvfs.file_io.gzip_file_io.GzipFile(self._resolver_context)
+    file_object = dfvfs.file_io.compressed_stream_io.CompressedStream(
+        self._resolver_context)
     file_object.open(path_spec=self.path_spec)
     return file_object
