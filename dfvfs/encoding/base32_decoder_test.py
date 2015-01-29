@@ -20,6 +20,8 @@ class Base32DecoderTestCase(test_lib.DecoderTestCase):
     expected_decoded_data = b'\x01\x02\x03\x04\x05\x06\x07\x08'
     self.assertEquals(decoded_data, expected_decoded_data)
 
+    decoder = base32_decoder.Base32Decoder()
+
     with self.assertRaises(errors.BackEndError):
       _, _ = decoder.Decode(b'\x01\x02\x03\x04\x05\x06\x07\x08')
 

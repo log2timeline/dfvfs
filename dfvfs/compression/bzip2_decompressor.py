@@ -6,6 +6,7 @@ import bz2
 from dfvfs.compression import decompressor
 from dfvfs.compression import manager
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 
 class Bzip2Decompressor(decompressor.Decompressor):
@@ -27,10 +28,19 @@ class Bzip2Decompressor(decompressor.Decompressor):
     Returns:
       A tuple containing a byte string of the uncompressed data and
       the remaining compressed data.
+
+    Raises:
+      BackEndError: if the bzip2 compressed stream cannot be decompressed.
     """
-    uncompressed_data = self._bz2_decompressor.decompress(compressed_data)
-    remaining_compressed_data = getattr(
-        self._bz2_decompressor, 'unused_data', b'')
+    try:
+      uncompressed_data = self._bz2_decompressor.decompress(compressed_data)
+      remaining_compressed_data = getattr(
+          self._bz2_decompressor, 'unused_data', b'')
+
+    except (EOFError, IOError) as exception:
+      raise errors.BackEndError((
+          u'Unable to decompress bzip2 compressed stream with error: '
+          u'{0:s}.').format(exception))
 
     return uncompressed_data, remaining_compressed_data
 

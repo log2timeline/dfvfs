@@ -59,6 +59,10 @@ class SourceScanNode(object):
       if location == sub_node_location:
         return sub_node
 
+  def IsSystemLevel(self):
+    """Determines if the path specfication is at system-level."""
+    return self.path_spec.IsSystemLevel()
+
 
 class SourceScannerContext(object):
   """Class that defines contextual information for the source scanner."""
@@ -231,17 +235,17 @@ class SourceScanner(object):
       scan_context.last_scan_node = None
       return scan_context
 
-    if scan_node.type_indicator != definitions.TYPE_INDICATOR_OS:
-      os_file_entry = None
+    if not scan_node.IsSystemLevel():
+      system_level_file_entry = None
 
     else:
-      os_file_entry = resolver.Resolver.OpenFileEntry(
+      system_level_file_entry = resolver.Resolver.OpenFileEntry(
           scan_node.path_spec, resolver_context=self._resolver_context)
 
-      if os_file_entry is None:
+      if system_level_file_entry is None:
         raise errors.BackEndError(u'Unable to open file entry.')
 
-      if os_file_entry.IsDirectory():
+      if system_level_file_entry.IsDirectory():
         scan_context.SetSourceType(
             scan_context.SOURCE_TYPE_DIRECTORY)
         return scan_context
@@ -264,7 +268,7 @@ class SourceScanner(object):
 
       scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
-      if os_file_entry and os_file_entry.IsDevice():
+      if system_level_file_entry and system_level_file_entry.IsDevice():
         scan_context.SetSourceType(
             scan_context.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
       else:
@@ -348,7 +352,7 @@ class SourceScanner(object):
     else:
       scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
-      if os_file_entry and os_file_entry.IsDevice():
+      if system_level_file_entry and system_level_file_entry.IsDevice():
         scan_context.SetSourceType(
             scan_context.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
       else:

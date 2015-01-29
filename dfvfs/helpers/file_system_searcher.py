@@ -6,6 +6,7 @@ import sre_constants
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.path import factory as path_spec_factory
 
 
 class FindSpec(object):
@@ -324,11 +325,6 @@ class FindSpec(object):
 class FileSystemSearcher(object):
   """Searcher object to find file entries within a file system."""
 
-  # Type indicators that do not have a parent.
-  _PARENTLESS_TYPE_INDICATORS = frozenset([
-      definitions.TYPE_INDICATOR_FAKE,
-      definitions.TYPE_INDICATOR_OS])
-
   def __init__(self, file_system, mount_point):
     """Initializes the file system searcher.
 
@@ -344,7 +340,8 @@ class FileSystemSearcher(object):
     if not file_system or not mount_point:
       raise ValueError(u'Missing file system or mount point value.')
 
-    if file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
+        file_system.type_indicator):
       if not hasattr(mount_point, 'location'):
         raise errors.PathSpecError(
             u'Mount point path specification missing location.')
@@ -405,7 +402,8 @@ class FileSystemSearcher(object):
     for find_spec in find_specs:
       find_spec.Initialize(self._file_system)
 
-    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
+        self._file_system.type_indicator):
       file_entry = self._file_system.GetFileEntryByPathSpec(self._mount_point)
     else:
       file_entry = self._file_system.GetRootFileEntry()
@@ -444,7 +442,8 @@ class FileSystemSearcher(object):
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
 
-    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
+        self._file_system.type_indicator):
       if not location.startswith(self._mount_point.location):
         raise errors.PathSpecError(
             u'Path specification does not contain mount point.')
@@ -458,7 +457,8 @@ class FileSystemSearcher(object):
 
     path_segments = self._file_system.SplitPath(location)
 
-    if self._file_system.type_indicator in self._PARENTLESS_TYPE_INDICATORS:
+    if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
+        self._file_system.type_indicator):
       mount_point_path_segments = self._file_system.SplitPath(
           self._mount_point.location)
       path_segments = path_segments[len(mount_point_path_segments):]

@@ -6,6 +6,7 @@ import zlib
 from dfvfs.compression import decompressor
 from dfvfs.compression import manager
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 
 class ZlibDecompressor(decompressor.Decompressor):
@@ -34,10 +35,19 @@ class ZlibDecompressor(decompressor.Decompressor):
     Returns:
       A tuple containing a byte string of the uncompressed data and
       the remaining compressed data.
+
+    Raises:
+      BackEndError: if the zlib compressed stream cannot be decompressed.
     """
-    uncompressed_data = self._zlib_decompressor.decompress(compressed_data)
-    remaining_compressed_data = getattr(
-        self._zlib_decompressor, 'unused_data', b'')
+    try:
+      uncompressed_data = self._zlib_decompressor.decompress(compressed_data)
+      remaining_compressed_data = getattr(
+          self._zlib_decompressor, 'unused_data', b'')
+
+    except zlib.error as exception:
+      raise errors.BackEndError((
+          u'Unable to decompress zlib compressed stream with error: '
+          u'{0:s}.').format(exception))
 
     return uncompressed_data, remaining_compressed_data
 

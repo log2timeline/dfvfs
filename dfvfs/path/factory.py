@@ -6,13 +6,23 @@ class Factory(object):
   """Class that implements the VFS path specification factory."""
 
   PROPERTY_NAMES = frozenset([
-      'compression_method', 'identifier', 'inode', 'location', 'part_index',
-      'range_offset', 'range_size', 'start_offset', 'store_index'])
+      u'compression_method',
+      u'encoding_method',
+      u'identifier',
+      u'inode',
+      u'location',
+      u'part_index',
+      u'range_offset',
+      u'range_size',
+      u'start_offset',
+      u'store_index'])
 
   _path_spec_types = {}
 
+  _system_level_type_indicators = {}
+
   @classmethod
-  def DeregisterHelper(cls, path_spec_type):
+  def DeregisterPathSpec(cls, path_spec_type):
     """Deregisters a path specification.
 
     Args:
@@ -21,12 +31,15 @@ class Factory(object):
     Raises:
       KeyError: if path specification is not registered.
     """
-    if path_spec_type.TYPE_INDICATOR not in cls._path_spec_types:
+    type_indicator = path_spec_type.TYPE_INDICATOR
+    if type_indicator not in cls._path_spec_types:
       raise KeyError((
-          u'Path specification type: {0:s} not set.').format(
-              path_spec_type.TYPE_INDICATOR))
+          u'Path specification type: {0:s} not set.').format(type_indicator))
 
-    del cls._path_spec_types[path_spec_type.TYPE_INDICATOR]
+    del cls._path_spec_types[type_indicator]
+
+    if type_indicator in cls._system_level_type_indicators:
+      del cls._system_level_type_indicators[type_indicator]
 
   @classmethod
   def GetProperties(cls, path_spec):
@@ -46,6 +59,18 @@ class Factory(object):
         properties[property_name] = getattr(path_spec, property_name)
 
     return properties
+
+  @classmethod
+  def IsSystemLevelTypeIndicator(cls, type_indicator):
+    """Determines if the type indicator is at system-level.
+
+    Args:
+      type_indicator: the type indicator.
+
+    Returns:
+      A boolean indicating the type indicator is at system-level.
+    """
+    return type_indicator in cls._system_level_type_indicators
 
   @classmethod
   def NewPathSpec(cls, type_indicator, **kwargs):
@@ -84,9 +109,13 @@ class Factory(object):
     Raises:
       KeyError: if path specification is already registered.
     """
-    if path_spec_type.TYPE_INDICATOR in cls._path_spec_types:
+    type_indicator = path_spec_type.TYPE_INDICATOR
+    if type_indicator in cls._path_spec_types:
       raise KeyError((
           u'Path specification type: {0:s} already set.').format(
-              path_spec_type.TYPE_INDICATOR))
+              type_indicator))
 
-    cls._path_spec_types[path_spec_type.TYPE_INDICATOR] = path_spec_type
+    cls._path_spec_types[type_indicator] = path_spec_type
+
+    if getattr(path_spec_type, u'_IS_SYSTEM_LEVEL', False):
+      cls._system_level_type_indicators[type_indicator] = path_spec_type
