@@ -17,21 +17,21 @@ class OSFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
+    self._file_system = os_file_system.OSFileSystem(self._resolver_context)
     self._test_file = os.path.join('test_data', 'testdir_os')
 
   def testIntialize(self):
     """Test the initialize functionality."""
     path_spec = os_path_spec.OSPathSpec(location=self._test_file)
     file_entry = os_file_entry.OSFileEntry(
-        self._resolver_context, self._os_file_system, path_spec)
+        self._resolver_context, self._file_system, path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     path_spec = os_path_spec.OSPathSpec(location=self._test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -39,7 +39,7 @@ class OSFileEntryTest(unittest.TestCase):
     """Test the get parent file entry functionality."""
     test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -53,7 +53,7 @@ class OSFileEntryTest(unittest.TestCase):
     """Test the get stat functionality."""
     test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -66,7 +66,7 @@ class OSFileEntryTest(unittest.TestCase):
     """Test the Is? functionality."""
     test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -83,7 +83,7 @@ class OSFileEntryTest(unittest.TestCase):
 
     test_file = os.path.join('test_data', 'testdir_os')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -101,7 +101,7 @@ class OSFileEntryTest(unittest.TestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = os_path_spec.OSPathSpec(location=self._test_file)
-    file_entry = self._os_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

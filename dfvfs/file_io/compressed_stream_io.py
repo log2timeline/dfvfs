@@ -71,6 +71,8 @@ class CompressedStream(file_io.FileIO):
 
     while compressed_data_offset < compressed_data_size:
       read_count = self._ReadCompressedData(self._COMPRESSED_DATA_BUFFER_SIZE)
+      if read_count == 0:
+        break
 
       compressed_data_offset += read_count
       uncompressed_stream_size += self._uncompressed_data_size
@@ -93,6 +95,8 @@ class CompressedStream(file_io.FileIO):
 
     while compressed_data_offset < compressed_data_size:
       read_count = self._ReadCompressedData(self._COMPRESSED_DATA_BUFFER_SIZE)
+      if read_count == 0:
+        break
 
       compressed_data_offset += read_count
 
@@ -208,8 +212,8 @@ class CompressedStream(file_io.FileIO):
       self._file_object = None
 
     self._compressed_data = b''
-    self._decompressor = None
     self._uncompressed_data = b''
+    self._decompressor = None
     self._is_open = False
 
   def read(self, size=None):
@@ -245,21 +249,24 @@ class CompressedStream(file_io.FileIO):
     if self._current_offset >= self._uncompressed_stream_size:
       return b''
 
+    if self._realign_offset:
+      self._AlignUncompressedDataOffset(self._current_offset)
+      self._realign_offset = False
+
     if size is None:
       size = self._uncompressed_stream_size
     if self._current_offset + size > self._uncompressed_stream_size:
       size = self._uncompressed_stream_size - self._current_offset
 
-    if self._realign_offset:
-      self._AlignUncompressedDataOffset(self._current_offset)
-      self._realign_offset = False
-
     uncompressed_data = b''
 
-    while self._uncompressed_data_offset + size > self._uncompressed_data_size:
+    if size == 0:
+      return uncompressed_data
+
+    while size > self._uncompressed_data_size:
       uncompressed_data = b''.join([
           uncompressed_data,
-          self._uncompressed_data[self._uncompressed_data_offset]])
+          self._uncompressed_data[self._uncompressed_data_offset:]])
 
       remaining_uncompressed_data_size = (
           self._uncompressed_data_size - self._uncompressed_data_offset)
@@ -267,12 +274,15 @@ class CompressedStream(file_io.FileIO):
       self._current_offset += remaining_uncompressed_data_size
       size -= remaining_uncompressed_data_size
 
-      _ = self._ReadCompressedData(self._COMPRESSED_DATA_BUFFER_SIZE)
+      if self._current_offset >= self._uncompressed_stream_size:
+        break
 
+      read_count = self._ReadCompressedData(self._COMPRESSED_DATA_BUFFER_SIZE)
       self._uncompressed_data_offset = 0
+      if read_count == 0:
+        break
 
-    if (self > 0 and
-        self._uncompressed_data_offset + size <= self._uncompressed_data_size):
+    if size > 0:
       slice_start_offset = self._uncompressed_data_offset
       slice_end_offset = slice_start_offset + size
 

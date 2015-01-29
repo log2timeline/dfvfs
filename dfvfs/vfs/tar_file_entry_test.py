@@ -23,7 +23,7 @@ class TarFileEntryTest(unittest.TestCase):
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._os_file_object = os_file_io.OSFile(self._resolver_context)
     self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._tar_file_system = tar_file_system.TarFileSystem(
+    self._file_system = tar_file_system.TarFileSystem(
         self._resolver_context, self._os_file_object, self._os_path_spec)
 
   def testIntialize(self):
@@ -37,7 +37,7 @@ class TarFileEntryTest(unittest.TestCase):
     """Test the get parent file entry functionality."""
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
-    file_entry = self._tar_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -51,7 +51,7 @@ class TarFileEntryTest(unittest.TestCase):
     """Test the get stat functionality."""
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
-    file_entry = self._tar_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -62,7 +62,7 @@ class TarFileEntryTest(unittest.TestCase):
     """Test the Is? functionality."""
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
-    file_entry = self._tar_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -77,7 +77,7 @@ class TarFileEntryTest(unittest.TestCase):
 
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._tar_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -94,7 +94,7 @@ class TarFileEntryTest(unittest.TestCase):
     """Test the sub file entries iteration functionality."""
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._tar_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

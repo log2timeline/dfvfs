@@ -31,7 +31,7 @@ class BdeFileEntryTest(unittest.TestCase):
     bde_volume = pybde.volume()
     bde_volume.set_password(self._BDE_PASSWORD)
     bde_volume.open_file_object(self._os_file_object)
-    self._bde_file_system = bde_file_system.BdeFileSystem(
+    self._file_system = bde_file_system.BdeFileSystem(
         self._resolver_context, bde_volume, self._os_path_spec)
 
   def testIntialize(self):
@@ -44,14 +44,14 @@ class BdeFileEntryTest(unittest.TestCase):
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     path_spec = bde_path_spec.BdePathSpec(parent=self._os_path_spec)
-    file_entry = self._bde_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
     path_spec = bde_path_spec.BdePathSpec(parent=self._os_path_spec)
-    file_entry = self._bde_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -62,7 +62,7 @@ class BdeFileEntryTest(unittest.TestCase):
   def testGetStat(self):
     """Test the get stat functionality."""
     path_spec = bde_path_spec.BdePathSpec(parent=self._os_path_spec)
-    file_entry = self._bde_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -72,7 +72,7 @@ class BdeFileEntryTest(unittest.TestCase):
   def testIsFunctions(self):
     """Test the Is? functionality."""
     path_spec = bde_path_spec.BdePathSpec(parent=self._os_path_spec)
-    file_entry = self._bde_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -88,7 +88,7 @@ class BdeFileEntryTest(unittest.TestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = bde_path_spec.BdePathSpec(parent=self._os_path_spec)
-    file_entry = self._bde_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

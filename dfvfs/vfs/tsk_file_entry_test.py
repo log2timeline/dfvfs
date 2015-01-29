@@ -23,7 +23,7 @@ class TSKFileEntryTest(unittest.TestCase):
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._os_file_object = os_file_io.OSFile(self._resolver_context)
     self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._tsk_file_system = tsk_file_system.TSKFileSystem(
+    self._file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context, self._os_file_object, self._os_path_spec)
 
   def testIntialize(self):
@@ -36,7 +36,7 @@ class TSKFileEntryTest(unittest.TestCase):
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -44,7 +44,7 @@ class TSKFileEntryTest(unittest.TestCase):
     """Test the get linked file entry functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=13, location=u'/a_link', parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -59,7 +59,7 @@ class TSKFileEntryTest(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -74,7 +74,7 @@ class TSKFileEntryTest(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -86,7 +86,7 @@ class TSKFileEntryTest(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -102,7 +102,7 @@ class TSKFileEntryTest(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=12, location=u'/a_directory',
         parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -117,7 +117,7 @@ class TSKFileEntryTest(unittest.TestCase):
 
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -134,7 +134,7 @@ class TSKFileEntryTest(unittest.TestCase):
     """Test the sub file entries iteration functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._tsk_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

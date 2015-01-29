@@ -41,6 +41,9 @@ class TarResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file system object (instance of vfs.TarFileSystem) or None if
       the path specification could not be resolved.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
