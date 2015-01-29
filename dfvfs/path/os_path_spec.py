@@ -11,6 +11,7 @@ from dfvfs.path import location_path_spec
 class OSPathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the operating system path specification."""
 
+  _IS_SYSTEM_LEVEL = True
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   def __init__(self, location=None, **kwargs):

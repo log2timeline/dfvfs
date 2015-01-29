@@ -7,6 +7,8 @@ import abc
 class PathSpec(object):
   """Class that implements the path specification object interface."""
 
+  _IS_SYSTEM_LEVEL = False
+
   def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
@@ -47,7 +49,7 @@ class PathSpec(object):
     """
     string_parts = []
 
-    string_parts.append(getattr(self.parent, 'comparable', u''))
+    string_parts.append(getattr(self.parent, u'comparable', u''))
     string_parts.append(u'type: {0:s}'.format(self.type_indicator))
 
     if sub_comparable_string:
@@ -63,7 +65,7 @@ class PathSpec(object):
   @property
   def type_indicator(self):
     """The type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
           u'Invalid path specification missing type indicator.')
@@ -72,3 +74,7 @@ class PathSpec(object):
   def HasParent(self):
     """Determines if the path specfication has a parent."""
     return self.parent is not None
+
+  def IsSystemLevel(self):
+    """Determines if the path specfication is at system-level."""
+    return getattr(self, u'_IS_SYSTEM_LEVEL', False)

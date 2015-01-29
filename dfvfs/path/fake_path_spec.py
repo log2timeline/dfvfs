@@ -9,6 +9,7 @@ from dfvfs.path import location_path_spec
 class FakePathSpec(location_path_spec.LocationPathSpec):
   """Class that implements the fake path specification."""
 
+  _IS_SYSTEM_LEVEL = True
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
   def __init__(self, location=None, **kwargs):
