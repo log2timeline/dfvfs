@@ -34,7 +34,8 @@ class ObjectsCache(object):
     """
     if len(self._vfs_objects) == self._maximum_number_of_cached_objects:
       lfu_identifier = self._vfs_objects_mru.pop()
-      del self._vfs_objects[lfu_identifier]
+      if lfu_identifier in self._vfs_objects:
+        del self._vfs_objects[lfu_identifier]
 
     self._vfs_objects[identifier] = vfs_object
     self._vfs_objects_mru.appendleft(identifier)

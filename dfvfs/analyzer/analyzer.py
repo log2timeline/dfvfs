@@ -158,7 +158,8 @@ class Analyzer(object):
 
   @classmethod
   def _GetTypeIndicators(
-      cls, scanner_object, specification_store, remainder_list, path_spec):
+      cls, scanner_object, specification_store, remainder_list, path_spec,
+      resolver_context=None):
     """Determines if a file contains a supported format types.
 
     Args:
@@ -168,13 +169,17 @@ class Analyzer(object):
       remainder_list: list of remaining analyzer helpers that do not have
                       a format specification.
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the optional resolver context (instance of
+                        resolver.Context). The default is None which will use
+                        the built in context which is not multi process safe.
 
     Returns:
       A list of supported format type indicator.
     """
     type_indicator_list = []
 
-    file_object = resolver.Resolver.OpenFileObject(path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=resolver_context)
     scan_state = pysigscan.scan_state()
     scanner_object.scan_file_object(scan_state, file_object)
 
@@ -191,14 +196,18 @@ class Analyzer(object):
       if result is not None:
         type_indicator_list.append(result)
 
+    file_object.close()
     return type_indicator_list
 
   @classmethod
-  def GetArchiveTypeIndicators(cls, path_spec):
+  def GetArchiveTypeIndicators(cls, path_spec, resolver_context=None):
     """Determines if a file contains a supported archive types.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the optional resolver context (instance of
+                        resolver.Context). The default is None which will use
+                        the built in context which is not multi process safe.
 
     Returns:
       A list of supported format type indicator.
@@ -215,14 +224,18 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._archive_scanner, cls._archive_store,
-        cls._archive_remainder_list, path_spec)
+        cls._archive_remainder_list, path_spec,
+        resolver_context=resolver_context)
 
   @classmethod
-  def GetCompressedStreamTypeIndicators(cls, path_spec):
+  def GetCompressedStreamTypeIndicators(cls, path_spec, resolver_context=None):
     """Determines if a file contains a supported compressed stream types.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the optional resolver context (instance of
+                        resolver.Context). The default is None which will use
+                        the built in context which is not multi process safe.
 
     Returns:
       A list of supported format type indicator.
@@ -240,14 +253,18 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._compressed_stream_scanner, cls._compressed_stream_store,
-        cls._compressed_stream_remainder_list, path_spec)
+        cls._compressed_stream_remainder_list, path_spec, 
+        resolver_context=resolver_context)
 
   @classmethod
-  def GetFileSystemTypeIndicators(cls, path_spec):
+  def GetFileSystemTypeIndicators(cls, path_spec, resolver_context=None):
     """Determines if a file contains a supported file system types.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the optional resolver context (instance of
+                        resolver.Context). The default is None which will use
+                        the built in context which is not multi process safe.
 
     Returns:
       A list of supported format type indicator.
@@ -264,14 +281,18 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._file_system_scanner, cls._file_system_store,
-        cls._file_system_remainder_list, path_spec)
+        cls._file_system_remainder_list, path_spec, 
+        resolver_context=resolver_context)
 
   @classmethod
-  def GetStorageMediaImageTypeIndicators(cls, path_spec):
+  def GetStorageMediaImageTypeIndicators(cls, path_spec, resolver_context=None):
     """Determines if a file contains a supported storage media image types.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the optional resolver context (instance of
+                        resolver.Context). The default is None which will use
+                        the built in context which is not multi process safe.
 
     Returns:
       A list of supported format type indicator.
@@ -289,14 +310,18 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._storage_media_image_scanner, cls._storage_media_image_store,
-        cls._storage_media_image_remainder_list, path_spec)
+        cls._storage_media_image_remainder_list, path_spec, 
+        resolver_context=resolver_context)
 
   @classmethod
-  def GetVolumeSystemTypeIndicators(cls, path_spec):
+  def GetVolumeSystemTypeIndicators(cls, path_spec, resolver_context=None):
     """Determines if a file contains a supported volume system types.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
+      resolver_context: the optional resolver context (instance of
+                        resolver.Context). The default is None which will use
+                        the built in context which is not multi process safe.
 
     Returns:
       A list of supported format type indicator.
@@ -313,7 +338,8 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._volume_system_scanner, cls._volume_system_store,
-        cls._volume_system_remainder_list, path_spec)
+        cls._volume_system_remainder_list, path_spec, 
+        resolver_context=resolver_context)
 
   @classmethod
   def DeregisterHelper(cls, analyzer_helper):
