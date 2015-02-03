@@ -16,7 +16,7 @@ class VmdkFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(VmdkFileTest, self).setUp()
-    test_file = os.path.join('test_data', 'image.vmdk')
+    test_file = os.path.join(u'test_data', u'image.vmdk')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._vmdk_path_spec = vmdk_path_spec.VmdkPathSpec(parent=path_spec)
 

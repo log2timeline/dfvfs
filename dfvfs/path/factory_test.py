@@ -6,13 +6,7 @@ import unittest
 
 from dfvfs.lib import definitions
 from dfvfs.path import factory
-from dfvfs.path import path_spec
-
-
-class TestPathSpec(path_spec.PathSpec):
-  """Class that implements a test path specification."""
-
-  TYPE_INDICATOR = u'test'
+from dfvfs.path import test_lib
 
 
 class FactoryTest(unittest.TestCase):
@@ -23,15 +17,15 @@ class FactoryTest(unittest.TestCase):
     # pylint: disable=protected-access
     number_of_path_spec_types = len(factory.Factory._path_spec_types)
 
-    factory.Factory.RegisterPathSpec(TestPathSpec)
+    factory.Factory.RegisterPathSpec(test_lib.TestPathSpec)
     self.assertEquals(
         len(factory.Factory._path_spec_types),
         number_of_path_spec_types + 1)
 
     with self.assertRaises(KeyError):
-      factory.Factory.RegisterPathSpec(TestPathSpec)
+      factory.Factory.RegisterPathSpec(test_lib.TestPathSpec)
 
-    factory.Factory.DeregisterPathSpec(TestPathSpec)
+    factory.Factory.DeregisterPathSpec(test_lib.TestPathSpec)
     self.assertEquals(
         len(factory.Factory._path_spec_types), number_of_path_spec_types)
 
