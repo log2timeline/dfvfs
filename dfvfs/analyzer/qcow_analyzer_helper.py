@@ -17,7 +17,8 @@ class QcowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
-    format_specification = specification.Specification(self.type_indicator)
+    format_specification = specification.FormatSpecification(
+        self.type_indicator)
 
     # QCOW version 1 signature and version.
     format_specification.AddNewSignature(b'QFI\xfb\x00\x00\x00\x01', offset=0)

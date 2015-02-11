@@ -17,7 +17,8 @@ class VShadowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
-    format_specification = specification.Specification(self.type_indicator)
+    format_specification = specification.FormatSpecification(
+        self.type_indicator)
 
     # VSS identifier (GUID).
     format_specification.AddNewSignature(

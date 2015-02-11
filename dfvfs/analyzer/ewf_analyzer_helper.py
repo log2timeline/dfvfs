@@ -18,7 +18,8 @@ class EwfAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
-    format_specification = specification.Specification(self.type_indicator)
+    format_specification = specification.FormatSpecification(
+        self.type_indicator)
 
     # EWF version 1 signature and start of fields.
     format_specification.AddNewSignature(

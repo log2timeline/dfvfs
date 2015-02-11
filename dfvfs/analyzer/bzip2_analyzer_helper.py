@@ -17,7 +17,8 @@ class Bzip2AnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
-    format_specification = specification.Specification(self.type_indicator)
+    format_specification = specification.FormatSpecification(
+        self.type_indicator)
 
     # TODO: add support for signature chains so that we add the 'BZ' at
     # offset 0.
