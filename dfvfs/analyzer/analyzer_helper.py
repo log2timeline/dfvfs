@@ -49,7 +49,7 @@ class AnalyzerHelper(object):
        This is the fall through implementation that returns None.
 
     Returns:
-      The format specification object (instance of analyzer.Specification)
+      The format specification object (instance of FormatSpecification)
       or None if the format cannot be defined by a specification object.
     """
     return

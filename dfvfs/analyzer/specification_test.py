@@ -7,18 +7,18 @@ import unittest
 from dfvfs.analyzer import specification
 
 
-class SpecificationStoreTest(unittest.TestCase):
+class FormatSpecificationStoreTest(unittest.TestCase):
   """Class to test the specification store."""
 
   def testAddSpecification(self):
-    """Function to test the add specification function."""
-    store = specification.SpecificationStore()
+    """Function to test the AddSpecification function."""
+    store = specification.FormatSpecificationStore()
 
-    format_regf = specification.Specification('REGF')
-    format_regf.AddNewSignature('regf', offset=0)
+    format_regf = specification.FormatSpecification(u'REGF')
+    format_regf.AddNewSignature(b'regf', offset=0)
 
-    format_esedb = specification.Specification('ESEDB')
-    format_esedb.AddNewSignature('\xef\xcd\xab\x89', offset=4)
+    format_esedb = specification.FormatSpecification(u'ESEDB')
+    format_esedb.AddNewSignature(b'\xef\xcd\xab\x89', offset=4)
 
     store.AddSpecification(format_regf)
     store.AddSpecification(format_esedb)

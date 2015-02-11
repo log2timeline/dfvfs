@@ -17,7 +17,8 @@ class BdeAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
-    format_specification = specification.Specification(self.type_indicator)
+    format_specification = specification.FormatSpecification(
+        self.type_indicator)
 
     # BDE signature.
     format_specification.AddNewSignature(b'-FVE-FS-', offset=3)

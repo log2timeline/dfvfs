@@ -105,7 +105,7 @@ class Analyzer(object):
 
     Args:
       specification_store: a specification store (instance of
-                           SpecificationStore).
+                           FormatSpecificationStore).
 
     Returns:
       A scanner object (instance of pysigscan.scanner).
@@ -138,11 +138,11 @@ class Analyzer(object):
       format_category: the format category.
 
     Returns:
-      A tuple of a format specification store (instance of SpecificationStore)
-      and the list of remaining analyzer helpers that do not have a format
-      specification.
+      A tuple of a format specification store (instance of
+      FormatSpecificationStore) and the list of remaining analyzer helpers
+      that do not have a format specification.
     """
-    specification_store = specification.SpecificationStore()
+    specification_store = specification.FormatSpecificationStore()
     remainder_list = []
 
     for analyzer_helper in cls._analyzer_helpers.itervalues():
@@ -165,7 +165,7 @@ class Analyzer(object):
     Args:
       scanner_object: the format scanner (instance of pysigscan.scanner).
       specification_store: a specification store (instance of
-                           SpecificationStore).
+                           FormatSpecificationStore).
       remainder_list: list of remaining analyzer helpers that do not have
                       a format specification.
       path_spec: the VFS path specification (instance of path.PathSpec).
