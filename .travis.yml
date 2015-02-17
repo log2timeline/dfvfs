@@ -7,4 +7,4 @@ script:
   - ./run_tests.py
   - python-coverage run --source=dfvfs --omit="*_test*,*__init__*,*test_lib*" ./run_tests.py
 after_success:
-  - coveralls
+  - coveralls --verbose

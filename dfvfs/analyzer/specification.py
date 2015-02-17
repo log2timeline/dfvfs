@@ -6,7 +6,7 @@ class Signature(object):
   """Class that defines a signature of a format specification.
 
   The signature consists of a byte string pattern, an optional
-  offset relative to the start of the data, and a value to indidate
+  offset relative to the start of the data, and a value to indicate
   if the pattern is bound to the offset.
   """
   def __init__(self, pattern, offset=None):
@@ -17,7 +17,7 @@ class Signature(object):
                Wildcards or regular pattern (regexp) are not supported.
       offset: the offset of the signature or None by default. None is used
               to indicate the signature has no offset. A positive offset
-              is relative from the start of the data a negative offset
+              or 0 is relative from the start of the data a negative offset
               is relative from the end of the data.
     """
     super(Signature, self).__init__()
