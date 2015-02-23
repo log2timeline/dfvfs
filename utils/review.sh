@@ -195,26 +195,6 @@ then
     get_current_branch "BRANCH";
   fi
 
-  ORGANIZATION=`git remote -v | grep 'origin' | sed 's?^.*https://github.com/\([^/]*\)/.*$?\1?' | sort | uniq`;
-
-  POST_DATA="{
-  \"title\": \"${DESCRIPTION}\",
-  \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL})/\",
-  \"head\": \"${ORGANIZATION}:${BRANCH}\",
-  \"base\": \"master\"
-}";
-
-  RESULT=`curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls`;
-
-  if test $? -ne 0;
-  then
-    echo "Unable to create pull request.";
-    echo "${RESULT}";
-    echo "";
-
-    exit ${EXIT_FAILURE};
-  fi
-
 else
   echo -n "Short description of code review request: ";
   read DESCRIPTION
