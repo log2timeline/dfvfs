@@ -6,6 +6,7 @@ EXIT_MISSING_ARGS=2;
 EXIT_SUCCESS=0;
 
 SCRIPTNAME=`basename $0`;
+NETRC="${HOME}/.netrc";
 
 BROWSER_PARAM="";
 USE_CL_FILE=1;
@@ -31,6 +32,22 @@ fi
 if ! have_curl;
 then
   echo "You'll need to install curl for this script to continue.";
+
+  exit ${EXIT_FAILURE};
+fi
+
+if ! test -f "${NETRC}";
+then
+  echo "No such file: ${NETRC}";
+
+  exit ${EXIT_FAILURE};
+fi
+
+ACCESS_TOKEN=`grep 'github.com' ${NETRC} | awk '{ print $6 }'`;
+
+if test -z "${ACCESS_TOKEN}";
+then
+  echo "Unable to determine github.com access token from: ${NETRC}";
 
   exit ${EXIT_FAILURE};
 fi
@@ -193,6 +210,25 @@ then
   if test -z "${BRANCH}";
   then
     get_current_branch "BRANCH";
+  fi
+
+  ORGANIZATION=`git remote -v | grep 'origin' | sed 's?^.*https://github.com/\([^/]*\)/.*$?\1?' | sort | uniq`;
+
+  POST_DATA="{
+  \"title\": \"${DESCRIPTION}\",
+  \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL})/\",
+  \"head\": \"${ORGANIZATION}:${BRANCH}\",
+  \"base\": \"master\"
+}";
+
+  curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls?access_token=${ACCESS_TOKEN};
+
+  if test $? -ne 0;
+  then
+    echo "Unable to create pull request.";
+    echo "";
+
+    exit ${EXIT_FAILURE};
   fi
 
 else
