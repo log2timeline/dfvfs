@@ -8,8 +8,16 @@ EXIT_SUCCESS=0;
 SCRIPTNAME=`basename $0`;
 
 BROWSER_PARAM="";
-CACHE_PARAM="";
 USE_CL_FILE=1;
+CL_FILENAME="";
+BRANCH="";
+
+if test -e ".review" && ! test -d ".review";
+then
+  echo "Invalid source tree: .review exists but is not a directory.";
+
+  exit ${EXIT_FAILURE};
+fi
 
 if ! test -f "utils/common.sh";
 then
@@ -20,72 +28,66 @@ fi
 
 . utils/common.sh
 
-HAVE_GIT_CL=have_git_cl;
-
-if ${HAVE_GIT_CL};
+if ! have_curl;
 then
-  while test $# -gt 0;
-  do
-    case $1 in
-    *)
-      REVIEWER=$1;
-      shift
-      ;;
-    esac
-  done
+  echo "You'll need to install curl for this script to continue.";
 
-  if test -z "${REVIEWER}";
-  then
-    echo "Usage: ./${SCRIPTNAME} REVIEWER";
-    echo "";
-    echo "  REVIEWER: the email address of the reviewer that is registered with:"
-    echo "            Rietveld (https://codereview.appspot.com)";
-    echo "";
-
-    exit ${EXIT_MISSING_ARGS};
-  fi
-else
-  while test $# -gt 0;
-  do
-    case $1 in
-    --nobrowser | --no-browser | --no_browser )
-      BROWSER_PARAM="--no_oauth2_webbrowser";
-      shift;
-      ;;
-
-    --noclfile | --no-clfile | --no_clfile )
-      USE_CL_FILE=0;
-      shift;
-      ;;
-
-    *)
-      REVIEWER=$1;
-      shift
-      ;;
-    esac
-  done
-
-  if test -z "${REVIEWER}";
-  then
-    echo "Usage: ./${SCRIPTNAME} [--nobrowser] [--noclfile] REVIEWER";
-    echo "";
-    echo "  REVIEWER: the email address of the reviewer that is registered with:"
-    echo "            https://codereview.appspot.com";
-    echo "";
-    echo "  --nobrowser: forces upload.py not to open a separate browser";
-    echo "               process to obtain OAuth2 credentials for Rietveld";
-    echo "               (https://codereview.appspot.com).";
-    echo "";
-    echo "  --noclfile: do not store the resulting CL number in a file named:"
-    echo "              ._code_review_number";
-    echo "";
-
-    exit ${EXIT_MISSING_ARGS};
-  fi
+  exit ${EXIT_FAILURE};
 fi
 
-if ${HAVE_GIT_CL};
+# TODO: add diffbase support?
+
+# Determine if we have the master repo as origin.
+HAVE_REMOTE_ORIGIN=have_remote_origin;
+
+while test $# -gt 0;
+do
+  case $1 in
+  --nobrowser | --no-browser | --no_browser )
+    BROWSER_PARAM="--no_oauth2_webbrowser";
+    shift;
+    ;;
+
+  --noclfile | --no-clfile | --no_clfile )
+    USE_CL_FILE=0;
+    shift;
+    ;;
+
+  *)
+    REVIEWERS=$1;
+    shift
+    ;;
+  esac
+done
+
+if test -z "${REVIEWERS}";
 then
+  echo "Usage: ./${SCRIPTNAME} [--nobrowser] [--noclfile] REVIEWERS";
+  echo "";
+  echo "  REVIEWERS: the email address of the reviewers that are registered"
+  echo "             with: Rietveld (https://codereview.appspot.com)";
+  echo "";
+  echo "  --nobrowser: forces upload.py not to open a separate browser";
+  echo "               process to obtain OAuth2 credentials for Rietveld";
+  echo "               (https://codereview.appspot.com).";
+  echo "";
+  echo "  --noclfile: do not store the resulting CL number in a CL file"
+  echo "              stored in .review/";
+  echo "";
+
+  exit ${EXIT_MISSING_ARGS};
+fi
+
+if ! ${HAVE_REMOTE_ORIGIN};
+then
+  if ! have_remote_upstream;
+  then
+    echo "Review upload aborted - missing upstream.";
+    echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
+
+    exit ${EXIT_FAILURE};
+  fi
+
   if have_master_branch;
   then
     echo "Review upload aborted - current branch is master.";
@@ -93,18 +95,33 @@ then
     exit ${EXIT_FAILURE};
   fi
 
-  if ! local_repo_in_sync_with_origin;
+  if have_uncommitted_changes;
   then
-    echo "Local repo out of sync with origin: running 'git pull origin master'.":
-    git pull origin master
+    echo "Review upload aborted - detected uncommitted changes.";
+
+    exit ${EXIT_FAILURE};
+  fi
+
+  if ! local_repo_in_sync_with_upstream;
+  then
+    echo "Local repo out of sync with upstream: running 'git pull upstream master'.":
+    git pull upstream master
 
     if test $? -ne 0;
     then
-      echo "Review upload aborted - unable to run: 'git pull origin master'.";
+      echo "Review upload aborted - unable to run: 'git pull upstream master'.";
 
       exit ${EXIT_FAILURE};
     fi
   fi
+
+  if ! linter_pass;
+  then
+    echo "Review upload aborted - fix the issues reported by the linter.";
+
+    exit ${EXIT_FAILURE};
+  fi
+
 else
   if have_double_git_status_codes;
   then
@@ -113,13 +130,13 @@ else
 
     exit ${EXIT_FAILURE};
   fi
-fi
 
-if ! linting_is_correct;
-then
-  echo "Review upload aborted - fix the issues reported by the linter.";
+  if ! linting_is_correct;
+  then
+    echo "Review upload aborted - fix the issues reported by the linter.";
 
-  exit ${EXIT_FAILURE};
+    exit ${EXIT_FAILURE};
+  fi
 fi
 
 if ! tests_pass;
@@ -129,30 +146,83 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-if ${HAVE_GIT_CL};
+if test ${USE_CL_FILE} -ne 0;
 then
-  if have_uncommitted_changes;
-  then
-    echo "Warning detected uncommitted changes - press Enter to continue or"
-    echo "Ctrl^C to stop.";
+  get_current_branch "BRANCH";
 
-    read DUMMY
+  CL_FILENAME=".review/${BRANCH}";
+
+  if test -f ${CL_FILENAME};
+  then
+    echo "Review upload aborted - CL file already exitst: ${CL_FILENAME}";
+    echo "Do you already have a code review pending for the current branch?";
+
+    exit ${EXIT_FAILURE};
   fi
+fi
+
+if ! ${HAVE_REMOTE_ORIGIN};
+then
   DESCRIPTION="";
   get_last_change_description "DESCRIPTION";
 
-  git cl upload --send-mail \
-      -r ${REVIEWER} --cc=log2timeline-dev@googlegroups.com \
-      -f -m "Code updated for review." -t "${DESCRIPTION}" origin/master;
+  if ! test -z "${BROWSER_PARAM}";
+  then
+    echo "You need to visit: https://codereview.appspot.com/get-access-token";
+    echo "and copy+paste the access token to the window (no prompt)";
+  fi
+
+  TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
+
+  python utils/upload.py \
+      --oauth2 ${BROWSER_PARAM} \
+      --send_mail -r ${REVIEWERS} --cc log2timeline-dev@googlegroups.com \
+      -t "${DESCRIPTION}" -y -- upstream/master | tee ${TEMP_FILE};
+
+  CL=`cat ${TEMP_FILE} | grep codereview.appspot.com | awk -F '/' '/created/ {print $NF}'`;
+  cat ${TEMP_FILE};
+  rm -f ${TEMP_FILE};
+
+  if test -z ${CL};
+  then
+    echo "Unable to upload code change for review.";
+
+    exit ${EXIT_FAILURE};
+  fi
+
+  if test -z "${BRANCH}";
+  then
+    get_current_branch "BRANCH";
+  fi
+
+  ORGANIZATION=`git remote -v | grep 'origin' | sed 's?^.*https://github.com/\([^/]*\)/.*$?\1?' | sort | uniq`;
+
+  POST_DATA="{
+  \"title\": \"${DESCRIPTION}\",
+  \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL})/\",
+  \"head\": \"${ORGANIZATION}:${BRANCH}\",
+  \"base\": \"master\"
+}";
+
+  RESULT=`curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls`;
+
+  if test $? -ne 0;
+  then
+    echo "Unable to create pull request.";
+    echo "${RESULT}";
+    echo "";
+
+    exit ${EXIT_FAILURE};
+  fi
 
 else
   echo -n "Short description of code review request: ";
   read DESCRIPTION
-  TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
 
   # Check if we need to set --cache.
   STATUS_CODES=`git status -s | cut -b1,2 | sed 's/\s//g' | sort | uniq`;
 
+  CACHE_PARAM="";
   for STATUS_CODE in ${STATUS_CODES};
   do
     if test "${STATUS_CODE}" = "A";
@@ -167,27 +237,36 @@ else
     echo "and copy+paste the access token to the window (no prompt)";
   fi
 
+  TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
+
   python utils/upload.py \
-      --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} --send_mail \
-      -r ${REVIEWER} --cc log2timeline-dev@googlegroups.com \
-      -y -m "${DESCRIPTION}" -t "${DESCRIPTION}" | tee ${TEMP_FILE};
+      --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} \
+      --send_mail -r ${REVIEWERS} --cc log2timeline-dev@googlegroups.com \
+      -m "${DESCRIPTION}" -t "${DESCRIPTION}" -y | tee ${TEMP_FILE};
 
   CL=`cat ${TEMP_FILE} | grep codereview.appspot.com | awk -F '/' '/created/ {print $NF}'`;
   cat ${TEMP_FILE};
   rm -f ${TEMP_FILE};
 
-  echo "";
-
   if test -z ${CL};
   then
     echo "Unable to upload code change for review.";
-    exit ${EXIT_FAILURE};
 
-  elif test ${USE_CL_FILE} -ne 0;
-  then
-    echo ${CL} > ._code_review_number;
-    echo "Code review number: ${CL} is saved, so no need to include that in future updates/submits.";
+    exit ${EXIT_FAILURE};
   fi
+fi
+
+if test ${USE_CL_FILE} -ne 0;
+then
+  if ! test -e ".review";
+  then
+    mkdir .review;
+  fi
+
+  echo ${CL} > ${CL_FILENAME};
+
+  echo "";
+  echo "Saved code review number for future updates/submits.";
 fi
 
 exit ${EXIT_SUCCESS};
