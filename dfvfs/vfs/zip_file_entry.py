@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """The zip file entry implementation."""
 
-# This is necessary to prevent a circular import.
-import dfvfs.file_io.zip_file_io
-
 from dfvfs.lib import date_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -24,7 +21,7 @@ class ZipDirectory(file_entry.Directory):
     Yields:
       A path specification (instance of path.ZipPathSpec).
     """
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self._file_system.PATH_SEPARATOR)):
@@ -67,7 +64,6 @@ class ZipFileEntry(file_entry.FileEntry):
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False, zip_info=None):
     """Initializes the file entry object.
-
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
@@ -85,7 +81,6 @@ class ZipFileEntry(file_entry.FileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._zip_info = zip_info
-    self._name = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of ZipDirectory)."""
@@ -106,29 +101,27 @@ class ZipFileEntry(file_entry.FileEntry):
     Raises:
       BackEndError: when the zip info is missing in a non-virtual file entry.
     """
-    if self._zip_info is None:
-      self._zip_info = self.GetZipInfo()
-
-    if not self._is_virtual and self._zip_info is None:
+    zip_info = self.GetZipInfo()
+    if not self._is_virtual and zip_info is None:
       raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    if self._zip_info is not None:
-      stat_object.size = getattr(self._zip_info, 'size', None)
+    if zip_info is not None:
+      stat_object.size = getattr(zip_info, u'size', None)
 
     # Date and time stat information.
     # TODO: move this to a timelib equivalent.
-    zip_info_date_time = getattr(self._zip_info, 'date_time', None)
+    zip_info_date_time = getattr(zip_info, u'date_time', None)
     if zip_info_date_time:
       stat_object.mtime = date_time.PosixTimestamp.FromTimeElements(
           zip_info_date_time)
 
     # Ownership and permissions stat information.
-    if self._zip_info is not None:
-      creator_system = getattr(self._zip_info, 'create_system', 0)
-      external_attributes = getattr(self._zip_info, 'external_attr', 0)
+    if zip_info is not None:
+      creator_system = getattr(zip_info, u'create_system', 0)
+      external_attributes = getattr(zip_info, u'external_attr', 0)
 
       if external_attributes != 0:
         if creator_system == self._CREATOR_SYSTEM_UNIX:
@@ -159,17 +152,14 @@ class ZipFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """"The name of the file entry, which does not include the full path."""
-    if self._name is None:
-      if self._zip_info is None:
-        self._zip_info = self.GetZipInfo()
+    """The name of the file entry, which does not include the full path."""
+    zip_info = self.GetZipInfo()
 
-      # Note that the root file entry is virtual and has no zip_info.
-      if self._zip_info is None:
-        self._name = u''
-      else:
-        self._name = self._file_system.BasenamePath(self._zip_info.filename)
-    return self._name
+    # Note that the root file entry is virtual and has no zip_info.
+    if zip_info is None:
+      return u''
+
+    return self._file_system.BasenamePath(zip_info.filename)
 
   @property
   def sub_file_entries(self):
@@ -181,20 +171,9 @@ class ZipFileEntry(file_entry.FileEntry):
       for path_spec in self._directory.entries:
         yield ZipFileEntry(self._resolver_context, self._file_system, path_spec)
 
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._zip_info is None:
-      self._zip_info = self.GetZipInfo()
-
-    zip_file = self.GetZipFile()
-    file_object = dfvfs.file_io.zip_file_io.ZipFile(
-          self._resolver_context, zip_info=self._zip_info, zip_file=zip_file)
-    file_object.open()
-    return file_object
-
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
@@ -204,18 +183,10 @@ class ZipFileEntry(file_entry.FileEntry):
     if parent_location == u'':
       parent_location = self._file_system.PATH_SEPARATOR
 
-    parent_path_spec = getattr(self.path_spec, 'parent', None)
+    parent_path_spec = getattr(self.path_spec, u'parent', None)
     path_spec = zip_path_spec.ZipPathSpec(
         location=parent_location, parent=parent_path_spec)
     return ZipFileEntry(self._resolver_context, self._file_system, path_spec)
-
-  def GetZipFile(self):
-    """Retrieves the zip file object.
-
-    Returns:
-      The zip file object (instance of zipfile.ZipFile).
-    """
-    return self._file_system.GetZipFile()
 
   def GetZipInfo(self):
     """Retrieves the zip info object.
@@ -226,16 +197,17 @@ class ZipFileEntry(file_entry.FileEntry):
     Raises:
       ValueError: if the path specification is incorrect.
     """
-    location = getattr(self.path_spec, 'location', None)
+    if not self._zip_info:
+      location = getattr(self.path_spec, u'location', None)
+      if location is None:
+        raise ValueError(u'Path specification missing location.')
 
-    if location is None:
-      raise ValueError(u'Path specification missing location.')
+      if not location.startswith(self._file_system.LOCATION_ROOT):
+        raise ValueError(u'Invalid location in path specification.')
 
-    if not location.startswith(self._file_system.LOCATION_ROOT):
-      raise ValueError(u'Invalid location in path specification.')
+      if len(location) == 1:
+        return
 
-    if len(location) == 1:
-      return
-
-    zip_file = self._file_system.GetZipFile()
-    return zip_file.getinfo(location[1:])
+      zip_file = self._file_system.GetZipFile()
+      self._zip_info =  zip_file.getinfo(location[1:])
+    return self._zip_info

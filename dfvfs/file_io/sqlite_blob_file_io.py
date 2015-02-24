@@ -38,6 +38,29 @@ class SQLiteBlobFile(file_io.FileIO):
     self._size = 0
     self._temp_file_path = u''
 
+  def _Close(self):
+    """Closes the file-like object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    if self._connection:
+      self._cursor = None
+      self._connection.close()
+      self._connection = None
+
+    self._blob = None
+    self._current_offset = 0
+    self._size = 0
+
+    # TODO: move this to a central temp file manager and have it track errors.
+    try:
+      os.remove(self._temp_file_path)
+    except (OSError, IOError):
+      pass
+
+    self._temp_file_path = u''
+
   def _HasColumn(self, table_name, column_name):
     """Determines if a specific column exists.
 
@@ -97,10 +120,7 @@ class SQLiteBlobFile(file_io.FileIO):
 
     return False
 
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-
-  def open(self, path_spec=None, mode='rb'):
+  def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
@@ -110,18 +130,12 @@ class SQLiteBlobFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the open file-like object could not be opened.
+      IOError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification or mode is invalid.
+      ValueError: if the path specification is invalid.
     """
     if not path_spec:
       raise ValueError(u'Missing path specfication.')
-
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
-
-    if self._connection:
-      raise IOError(u'Already open.')
 
     if not path_spec.HasParent():
       raise errors.PathSpecError(
@@ -147,7 +161,10 @@ class SQLiteBlobFile(file_io.FileIO):
       raise errors.PathSpecError(
           u'Path specification missing row condition and row index.')
 
-    # Since sqlite3 does not provide an exclusive read-only mode and
+    if self._connection:
+      raise IOError(u'Connection already set.')
+
+    # Since pysqlite3 does not provide an exclusive read-only mode and
     # cannot interact with a file-like object directly we make a temporary
     # copy. Before making a copy we check the header signature.
 
@@ -223,30 +240,8 @@ class SQLiteBlobFile(file_io.FileIO):
     self._current_offset = 0
     self._size = len(self._blob)
 
-  def close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._connection:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-    self._blob = None
-    self._current_offset = 0
-    self._size = 0
-    self._cursor = None
-    self._connection.close()
-    self._connection = None
-
-    # TODO: move this to a central temp file manager and have it track errors.
-    try:
-      os.remove(self._temp_file_path)
-    except (OSError, IOError):
-      pass
-
-    self._temp_file_path = u''
+  # Note: that the following functions do not follow the style guide
+  # because they are part of the file-like object interface.
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.

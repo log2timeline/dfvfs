@@ -6,10 +6,10 @@
 import os
 import unittest
 
-from dfvfs.file_io import qcow_file_io
 from dfvfs.helpers import windows_path_resolver
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
+from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
 from dfvfs.vfs import tsk_file_system
@@ -30,10 +30,12 @@ class WindowsPathResolverTest(unittest.TestCase):
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
-    file_object = qcow_file_io.QcowFile(self._resolver_context)
-    file_object.open(self._qcow_path_spec)
+    self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
+        location=u'/', parent=self._qcow_path_spec)
+
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
-        self._resolver_context, file_object, self._qcow_path_spec)
+        self._resolver_context)
+    self._tsk_file_system.Open(path_spec=self._tsk_path_spec)
 
   def testResolvePathDirectory(self):
     """Test the resolve path function on a mount point directory."""

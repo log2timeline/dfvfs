@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition file system implementation."""
 
+import pytsk3
+
 # This is necessary to prevent a circular import.
 import dfvfs.vfs.tsk_partition_file_entry
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
+from dfvfs.lib import tsk_image
 from dfvfs.lib import tsk_partition
 from dfvfs.path import tsk_partition_path_spec
+from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
 
 
@@ -16,18 +21,52 @@ class TSKPartitionFileSystem(file_system.FileSystem):
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
-  def __init__(self, resolver_context, tsk_volume, path_spec):
+  def __init__(self, resolver_context):
     """Initializes the file system object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      tsk_volume: the TSK volume object (instance of pytsk.Volume_Info).
-      path_spec: the path specification (instance of path.PathSpec) of
-                 the file-like object.
     """
     super(TSKPartitionFileSystem, self).__init__(resolver_context)
+    self._file_object = None
+    self._tsk_volume = None
+
+  def _Close(self):
+    """Closes the file system object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    self._tsk_volume = None
+
+    self._file_object.close()
+    self._file_object = None
+
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file system object defined by path specification.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file system object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
+    if not path_spec.HasParent():
+      raise errors.PathSpecError(
+          u'Unsupported path specification without parent.')
+
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec.parent, resolver_context=self._resolver_context)
+    tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
+    tsk_volume = pytsk3.Volume_Info(tsk_image_object)
+
+    self._file_object = file_object
     self._tsk_volume = tsk_volume
-    self._path_spec = path_spec
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -68,7 +107,9 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     if tsk_vs_part is None:
       if location is None or location != self.LOCATION_ROOT:
         return
-      return self.GetRootFileEntry()
+      return dfvfs.vfs.tsk_partition_file_entry.TSKPartitionFileEntry(
+          self._resolver_context, self, path_spec, is_root=True,
+          is_virtual=True)
 
     if location is None and partition_index is not None:
       path_spec.location = u'/p{0:d}'.format(partition_index)
@@ -83,9 +124,8 @@ class TSKPartitionFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.FileEntry).
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=self.LOCATION_ROOT, parent=self._path_spec)
-    return dfvfs.vfs.tsk_partition_file_entry.TSKPartitionFileEntry(
-        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
+        location=self.LOCATION_ROOT, parent=self._path_spec.parent)
+    return self.GetFileEntryByPathSpec(path_spec)
 
   def GetTSKVolume(self):
     """Retrieves the TSK volume object.

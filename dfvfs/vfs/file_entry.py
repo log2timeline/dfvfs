@@ -7,6 +7,8 @@ a directory or file system metadata.
 
 import abc
 
+from dfvfs.resolver import resolver
+
 
 class Directory(object):
   """Class that implements the VFS directory object interface."""
@@ -69,6 +71,12 @@ class FileEntry(object):
     self._stat_object = None
     self.path_spec = path_spec
 
+    self._file_system.Open(path_spec=path_spec)
+
+  def __del__(self):
+    """Cleans up the file entry object."""
+    self._file_system.Close()
+
   @abc.abstractmethod
   def _GetDirectory(self):
     """Retrieves the directory object (instance of vfs.Directory)."""
@@ -105,15 +113,16 @@ class FileEntry(object):
   @property
   def type_indicator(self):
     """The type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
           u'Invalid file system missing type indicator.')
     return type_indicator
 
-  @abc.abstractmethod
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO)."""
+    return resolver.Resolver.OpenFileObject(
+        self.path_spec, resolver_context=self._resolver_context)
 
   def GetFileSystem(self):
     """Retrieves the file system (instance of vfs.FileSystem)."""

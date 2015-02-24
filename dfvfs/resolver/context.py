@@ -33,11 +33,11 @@ class Context(object):
       path_spec: the VFS path specification (instance of path.PathSpec).
 
     Returns:
-      The string that identifiers the VFS object. 
+      The string that identifiers the VFS object.
     """
     string_parts = []
 
-    string_parts.append(getattr(path_spec.parent, 'comparable', u''))
+    string_parts.append(getattr(path_spec.parent, u'comparable', u''))
     string_parts.append(u'type: {0:s}'.format(path_spec.type_indicator))
 
     return u''.join(string_parts)
@@ -66,6 +66,25 @@ class Context(object):
     self._file_object_cache.Empty()
     self._file_system_cache.Empty()
 
+  def ForceRemoveFileObject(self, path_spec):
+    """Forces the removal of a file-like object based on a path specification.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      A boolean that indicates the file-like object was cached or not.
+    """
+    file_object = self._file_object_cache.GetObject(path_spec.comparable)
+    if not file_object:
+      return False
+
+    cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
+    while not cache_value.IsDereferenced():
+      cache_value.vfs_object.close()
+
+    return True
+
   def GetFileObject(self, path_spec):
     """Retrieves a file-like object defined by path specification.
 
@@ -89,29 +108,81 @@ class Context(object):
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     return self._file_system_cache.GetObject(identifier)
 
-  def RemoveFileObject(self, file_object):
-    """Removes a file-like object.
-
-    Args:
-      file_object: the file-like object (instance of file_io.FileIO).
-    """
-    identifier = self._file_object_cache.GetIdentifier(file_object)
-    if identifier:
-      self._file_object_cache.RemoveObject(identifier)
-
-  def RemoveFileObjectByPathSpec(self, path_spec):
-    """Removes a file-like object based on a path specification.
+  def GrabFileObject(self, path_spec):
+    """Grabs a cached file-like object defined by path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
     """
-    self._file_object_cache.RemoveObject(path_spec.comparable)
+    self._file_object_cache.GrabObject(path_spec.comparable)
 
-  def RemoveFileSystemByPathSpec(self, path_spec):
-    """Removes a file system object based on a path specification.
+  def GrabFileSystem(self, path_spec):
+    """Grabs a cached file system object defined by path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
-    self._file_system_cache.RemoveObject(identifier)
+    self._file_system_cache.GrabObject(identifier)
+
+  def ReleaseFileObject(self, file_object):
+    """Releases a cached file-like object.
+
+    Args:
+      file_object: the file-like object (instance of file_io.FileIO).
+
+    Returns:
+      A boolean value indicating true if the file-like object can be closed.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+      RuntimeError: if the file-like object is not cached or an inconsistency
+                    is detected in the cache.
+    """
+    identifier, cache_value = self._file_object_cache.GetCacheValueByObject(
+        file_object)
+
+    if not identifier:
+      raise RuntimeError(u'Object not cached.')
+
+    if not cache_value:
+      raise RuntimeError(u'Invalid cache value.')
+
+    self._file_object_cache.ReleaseObject(identifier)
+
+    result = cache_value.IsDereferenced()
+    if result:
+      self._file_object_cache.RemoveObject(identifier)
+
+    return result
+
+  def ReleaseFileSystem(self, file_system):
+    """Releases a cached file system object.
+
+    Args:
+      file_system: the file systemobject (instance of vfs.FileSystem).
+
+    Returns:
+      A boolean value indicating true if the file system object can be closed.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+      RuntimeError: if the file system object is not cached or an inconsistency
+                    is detected in the cache.
+    """
+    identifier, cache_value = self._file_system_cache.GetCacheValueByObject(
+        file_system)
+
+    if not identifier:
+      raise RuntimeError(u'Object not cached.')
+
+    if not cache_value:
+      raise RuntimeError(u'Invalid cache value.')
+
+    self._file_system_cache.ReleaseObject(identifier)
+
+    result = cache_value.IsDereferenced()
+    if result:
+      self._file_system_cache.RemoveObject(identifier)
+
+    return result

@@ -2,6 +2,9 @@
 """The Virtual File System (VFS) path specification resolver object."""
 
 from dfvfs.credentials import keychain
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
+from dfvfs.mount import manager as mount_manager
 from dfvfs.resolver import context
 
 
@@ -48,14 +51,17 @@ class Resolver(object):
     """
     file_system = cls.OpenFileSystem(
         path_spec, resolver_context=resolver_context)
-    if file_system is None:
-      return
 
     if resolver_context is None:
       resolver_context = cls._resolver_context
 
-    # TODO: add file entry context support?
-    return file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    # Release the file system so it will be removed from the cache
+    # when the file entry is destroyed.
+    resolver_context.ReleaseFileSystem(file_system)
+
+    return file_entry
 
   @classmethod
   def OpenFileObject(cls, path_spec, resolver_context=None):
@@ -74,34 +80,37 @@ class Resolver(object):
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
                 type indicator.
+      PathSpecError: if the path specification is incorrect.
     """
     if resolver_context is None:
       resolver_context = cls._resolver_context
 
+    if path_spec.type_indicator == definitions.TYPE_INDICATOR_MOUNT:
+      if path_spec.HasParent():
+        raise errors.PathSpecError(
+            u'Unsupported mount path specification with parent.')
+
+      mount_point = getattr(path_spec, u'identifier', None)
+      if not mount_point:
+        raise errors.PathSpecError(
+            u'Unsupported path specification without mount point identifier.')
+
+      path_spec = mount_manager.MountPointManager.GetMountPoint(mount_point)
+      if not path_spec:
+        raise errors.MountPointError(
+            u'No such mount point: {0:s}'.format(mount_point))
+
     file_object = resolver_context.GetFileObject(path_spec)
-
-    # For cached file-like objects we need to make sure all parent
-    # file-like objects are cached as well.
-    if file_object:
-      parent_path_spec = path_spec.parent
-
-      while parent_path_spec:
-        if not resolver_context.GetFileObject(parent_path_spec):
-          file_object = None
-          break
-
-        parent_path_spec = parent_path_spec.parent
-
-    if file_object is None:
+    if not file_object:
       if path_spec.type_indicator not in cls._resolver_helpers:
         raise KeyError((
             u'Resolver helper object not set for type indicator: '
             u'{0:s}.').format(path_spec.type_indicator))
 
       resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
-      file_object = resolver_helper.OpenFileObject(path_spec, resolver_context)
-      resolver_context.CacheFileObject(path_spec, file_object)
+      file_object = resolver_helper.NewFileObject(resolver_context)
 
+    file_object.open(path_spec=path_spec)
     return file_object
 
   @classmethod
@@ -121,34 +130,37 @@ class Resolver(object):
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
                 type indicator.
+      PathSpecError: if the path specification is incorrect.
     """
     if resolver_context is None:
       resolver_context = cls._resolver_context
 
+    if path_spec.type_indicator == definitions.TYPE_INDICATOR_MOUNT:
+      if path_spec.HasParent():
+        raise errors.PathSpecError(
+            u'Unsupported mount path specification with parent.')
+
+      mount_point = getattr(path_spec, u'identifier', None)
+      if not mount_point:
+        raise errors.PathSpecError(
+            u'Unsupported path specification without mount point identifier.')
+
+      path_spec = mount_manager.MountPointManager.GetMountPoint(mount_point)
+      if not path_spec:
+        raise errors.MountPointError(
+            u'No such mount point: {0:s}'.format(mount_point))
+
     file_system = resolver_context.GetFileSystem(path_spec)
-
-    # For cached file-like objects we need to make sure all parent
-    # file-like objects are cached as well.
-    if file_system:
-      parent_path_spec = path_spec.parent
-
-      while parent_path_spec:
-        if not resolver_context.GetFileObject(parent_path_spec):
-          file_system = None
-          break
-
-        parent_path_spec = parent_path_spec.parent
-
-    if file_system is None:
+    if not file_system:
       if path_spec.type_indicator not in cls._resolver_helpers:
         raise KeyError((
             u'Resolver helper object not set for type indicator: '
             u'{0:s}.').format(path_spec.type_indicator))
 
       resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
-      file_system = resolver_helper.OpenFileSystem(path_spec, resolver_context)
-      resolver_context.CacheFileSystem(path_spec, file_system)
+      file_system = resolver_helper.NewFileSystem(resolver_context)
 
+    file_system.Open(path_spec=path_spec)
     return file_system
 
   @classmethod

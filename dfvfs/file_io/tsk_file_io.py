@@ -5,47 +5,36 @@ import os
 import pytsk3
 
 from dfvfs.file_io import file_io
-from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
 class TSKFile(file_io.FileIO):
   """Class that implements a file-like object using pytsk3."""
 
-  def __init__(self, resolver_context, tsk_file_system=None, tsk_file=None):
+  def __init__(self, resolver_context):
     """Initializes the file-like object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      tsk_file_system: optional SleuthKit file system object (instance of
-                       pytsk3.FS_Info). The default is None.
-      tsk_file: optional SleuthKit file object (instance of pytsk3.File).
-                The default is None.
+    """
+    super(TSKFile, self).__init__(resolver_context)
+    self._current_offset = 0
+    self._file_system = None
+    self._size = 0
+    self._tsk_file = None
+
+  def _Close(self):
+    """Closes the file-like object.
 
     Raises:
-      ValueError: if tsk_file provided but tsk_file_system is not.
+      IOError: if the close failed.
     """
-    if tsk_file is not None and tsk_file_system is None:
-      raise ValueError(
-          u'TSK file object provided without corresponding file system '
-          u'object.')
+    self._tsk_file = None
 
-    super(TSKFile, self).__init__(resolver_context)
-    self._tsk_file_system = tsk_file_system
-    self._tsk_file = tsk_file
-    self._current_offset = 0
-    self._size = 0
+    self._file_system.Close()
+    self._file_system = None
 
-    if tsk_file:
-      self._tsk_file_set_in_init = True
-    else:
-      self._tsk_file_set_in_init = False
-    self._is_open = False
-
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-
-  def open(self, path_spec=None, mode='rb'):
+  def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
@@ -54,84 +43,53 @@ class TSKFile(file_io.FileIO):
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
-      IOError: if the open file-like object could not be opened.
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification or mode is invalid.
+      ValueError: if the path specification is invalid.
     """
-    if not self._tsk_file_set_in_init and not path_spec:
+    if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+    self._file_system = resolver.Resolver.OpenFileSystem(
+        path_spec, resolver_context=self._resolver_context)
 
-    if self._is_open:
-      raise IOError(u'Already open.')
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self._tsk_file = file_entry.GetTSKFile()
 
-    if not self._tsk_file_set_in_init:
-      file_system = resolver.Resolver.OpenFileSystem(
-          path_spec, resolver_context=self._resolver_context)
-      self._tsk_file_system = file_system.GetFsInfo()
+    # Note that because pytsk3.File does not explicitly defines info
+    # we need to check if the attribute exists and has a value other
+    # than None.
+    if getattr(self._tsk_file, u'info', None) is None:
+      raise IOError(u'Missing attribute info in file (pytsk3.File).')
 
-      # Opening a file by inode number is faster than opening a file
-      # by location.
-      inode = getattr(path_spec, 'inode', None)
-      location = getattr(path_spec, 'location', None)
+    # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
+    # we need to check if the attribute exists and has a value other
+    # than None.
+    if getattr(self._tsk_file.info, u'meta', None) is None:
+      raise IOError(
+          u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
 
-      if inode is not None:
-        self._tsk_file = self._tsk_file_system.open_meta(inode=inode)
-      elif location is not None:
-        self._tsk_file = self._tsk_file_system.open(location)
-      else:
-        raise errors.PathSpecError(
-            u'Path specification missing inode and location.')
+    # Note that because pytsk3.TSK_FS_META does not explicitly defines size
+    # we need to check if the attribute exists.
+    if not hasattr(self._tsk_file.info.meta, u'size'):
+      raise IOError(
+          u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
 
-      # Note that because pytsk3.File does not explicitly defines info
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(self._tsk_file, 'info', None) is None:
-        raise IOError(u'Missing attribute info in file (pytsk3.File).')
+    # Note that because pytsk3.TSK_FS_META does not explicitly defines type
+    # we need to check if the attribute exists.
+    if not hasattr(self._tsk_file.info.meta, u'type'):
+      raise IOError(
+          u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
-      # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(self._tsk_file.info, 'meta', None) is None:
-        raise IOError(
-            u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
-
-      # Note that because pytsk3.TSK_FS_META does not explicitly defines size
-      # we need to check if the attribute exists.
-      if not hasattr(self._tsk_file.info.meta, 'size'):
-        raise IOError(
-            u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
-
-      # Note that because pytsk3.TSK_FS_META does not explicitly defines type
-      # we need to check if the attribute exists.
-      if not hasattr(self._tsk_file.info.meta, 'type'):
-        raise IOError(
-            u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
-
-      if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
-        raise IOError(u'Not a regular file.')
+    if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
+      raise IOError(u'Not a regular file.')
 
     self._current_offset = 0
     self._size = self._tsk_file.info.meta.size
-    self._is_open = True
 
-  def close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-
-    if not self._tsk_file_set_in_init:
-      self._tsk_file = None
-
-    self._is_open = False
+  # Note: that the following functions do not follow the style guide
+  # because they are part of the file-like object interface.
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -158,7 +116,7 @@ class TSKFile(file_io.FileIO):
     # The SleuthKit is not POSIX compliant in its read behavior. Therefore
     # pytsk3 will raise an IOError if the read offset is beyond the data size.
     if self._current_offset >= self._size:
-      return ''
+      return b''
 
     if size is None or self._current_offset + size > self._size:
       size = self._size - self._current_offset

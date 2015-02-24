@@ -12,16 +12,17 @@ class GzipFileSystem(root_only_file_system.RootOnlyFileSystem):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
 
-  def __init__(self, resolver_context, path_spec):
-    """Initializes the file system object.
+  def GetFileEntryByPathSpec(self, path_spec):
+    """Retrieves a file entry for a path specification.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      path_spec: the path specification (instance of path.PathSpec) of
-                 the file-like object.
+      path_spec: a path specification (instance of path.PathSpec).
+
+    Returns:
+      A file entry (instance of vfs.FileEntry) or None.
     """
-    super(GzipFileSystem, self).__init__(resolver_context)
-    self._path_spec = path_spec
+    return gzip_file_entry.GzipFileEntry(
+        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -29,6 +30,5 @@ class GzipFileSystem(root_only_file_system.RootOnlyFileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    path_spec = gzip_path_spec.GzipPathSpec(parent=self._path_spec)
-    return gzip_file_entry.GzipFileEntry(
-        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
+    path_spec = gzip_path_spec.GzipPathSpec(parent=self._path_spec.parent)
+    return self.GetFileEntryByPathSpec(path_spec)

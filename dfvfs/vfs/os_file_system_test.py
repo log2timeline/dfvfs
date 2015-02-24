@@ -34,11 +34,11 @@ class OSFileSystemTest(unittest.TestCase):
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join('test_data', 'testdir_os', 'file1.txt'))
+        location=os.path.join(u'test_data', u'testdir_os', u'file1.txt'))
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join('test_data', 'testdir_os', 'file6.txt'))
+        location=os.path.join(u'test_data', u'testdir_os', u'file6.txt'))
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
@@ -46,14 +46,14 @@ class OSFileSystemTest(unittest.TestCase):
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join('test_data', 'testdir_os', 'file1.txt'))
+        location=os.path.join(u'test_data', u'testdir_os', u'file1.txt'))
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'file1.txt')
 
     path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join('test_data', 'testdir_os', 'file6.txt'))
+        location=os.path.join(u'test_data', u'testdir_os', u'file6.txt'))
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertEquals(file_entry, None)
@@ -62,11 +62,11 @@ class OSFileSystemTest(unittest.TestCase):
     """Test the get root file entry functionality."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
-    if platform.system() == 'Windows':
+    if platform.system() == u'Windows':
       # Return the root with the drive letter of the volume the current
       # working directory is on.
       expected_location = os.getcwd()
-      expected_location, _, _ = expected_location.partition('\\')
+      expected_location, _, _ = expected_location.partition(u'\\')
     else:
       expected_location = u''
 

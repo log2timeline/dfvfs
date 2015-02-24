@@ -16,7 +16,6 @@ except ImportError:
 
 from dfvfs.resolver import fake_resolver_helper
 from dfvfs.resolver import gzip_resolver_helper
-from dfvfs.resolver import mount_resolver_helper
 from dfvfs.resolver import os_resolver_helper
 
 try:

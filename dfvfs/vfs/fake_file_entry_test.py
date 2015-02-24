@@ -17,8 +17,8 @@ class FakeFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._file_system = fake_file_system.FakeFileSystem(
-        self._resolver_context)
+    self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
+
     self._file_system.AddFileEntry(
         u'/test_data/testdir_fake',
         file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
@@ -39,6 +39,13 @@ class FakeFileEntryTest(unittest.TestCase):
         link_data=u'/test_data/testdir_fake/file1.txt')
 
     self._test_file = u'/test_data/testdir_fake'
+
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location=u'/')
+    self._file_system.Open(path_spec=self._fake_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
 
   def testIntialize(self):
     """Test the initialize functionality."""

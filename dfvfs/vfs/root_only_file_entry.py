@@ -32,10 +32,6 @@ class RootOnlyFileEntry(file_entry.FileEntry):
     return
     yield
 
-  @abc.abstractmethod
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO)."""
-
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
     return

@@ -3,6 +3,7 @@
 
 from dfvfs.lib import date_time
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import fake_path_spec
 from dfvfs.vfs import file_system
 from dfvfs.vfs import fake_file_entry
@@ -12,7 +13,7 @@ from dfvfs.vfs import vfs_stat
 class FakeFileSystem(file_system.FileSystem):
   """Class that implements a fake file system object."""
 
-  _LOCATION_ROOT = u'/'
+  LOCATION_ROOT = u'/'
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
@@ -24,6 +25,32 @@ class FakeFileSystem(file_system.FileSystem):
     """
     super(FakeFileSystem, self).__init__(resolver_context)
     self._paths = {}
+
+  def _Close(self):
+    """Closes the file system object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    return
+
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file system object defined by path specification.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file system object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
+    if path_spec.HasParent():
+      raise errors.PathSpecError(
+          u'Unsupported path specification with parent.')
 
   def AddFileEntry(
       self, path, file_entry_type=definitions.FILE_ENTRY_TYPE_FILE,
@@ -119,8 +146,14 @@ class FakeFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    if not self.FileEntryExistsByPathSpec(path_spec):
+    location = getattr(path_spec, 'location', None)
+    if location is None:
       return
+
+    if (location != self.LOCATION_ROOT and
+        not self.FileEntryExistsByPathSpec(path_spec)):
+      return
+
     return fake_file_entry.FakeFileEntry(
         self._resolver_context, self, path_spec)
 
@@ -138,9 +171,8 @@ class FakeFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    path_spec = fake_path_spec.FakePathSpec(location=self._LOCATION_ROOT)
-    return fake_file_entry.FakeFileEntry(
-        self._resolver_context, self, path_spec, is_root=True)
+    path_spec = fake_path_spec.FakePathSpec(location=self.LOCATION_ROOT)
+    return self.GetFileEntryByPathSpec(path_spec)
 
   def GetStatObjectByPath(self, path):
     """Retrieves the stat object for a path.

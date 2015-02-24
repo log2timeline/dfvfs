@@ -16,6 +16,40 @@ if pysmraw.get_version() < '20140614':
 class RawFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object using pysmraw."""
 
+  def __init__(self, resolver_context, file_object=None):
+    """Initializes the file-like object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+      file_object: optional file-like object. The default is None.
+
+    Raises:
+      ValueError: when file_object is set.
+    """
+    if file_object:
+      raise ValueError(u'File object value set.')
+
+    super(RawFile, self).__init__(resolver_context)
+    self._file_objects = []
+
+  def _Close(self):
+    """Closes the file-like object.
+
+       If the file-like object was passed in the init function
+       the data range file-like object does not control the file-like object
+       and should not actually close it.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    # pylint: disable=protected-access
+    super(RawFile, self)._Close()
+
+    for file_object in self._file_objects:
+      file_object.close()
+
+    self._file_objects = []
+
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
 

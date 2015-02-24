@@ -7,7 +7,9 @@ import zipfile
 import dfvfs.vfs.zip_file_entry
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import zip_path_spec
+from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
 
 
@@ -17,20 +19,53 @@ class ZipFileSystem(file_system.FileSystem):
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def __init__(self, resolver_context, file_object, path_spec):
+  def __init__(self, resolver_context):
     """Initializes the file system object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_object: the file-like object (instance of file_io.FileIO).
-      path_spec: the path specification (instance of path.PathSpec) of
-                 the file-like object.
     """
     super(ZipFileSystem, self).__init__(resolver_context)
-    self._file_object = file_object
-    self._path_spec = path_spec
+    self._file_object = None
+    self._zip_file = None
 
-    self._zip_file = zipfile.ZipFile(file_object, 'r')
+  def _Close(self):
+    """Closes the file system object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    self._zip_file.close()
+    self._zip_file = None
+
+    self._file_object.close()
+    self._file_object = None
+
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file system object defined by path specification.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file system object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
+    if not path_spec.HasParent():
+      raise errors.PathSpecError(
+          u'Unsupported path specification without parent.')
+
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec.parent, resolver_context=self._resolver_context)
+
+    zip_file = zipfile.ZipFile(file_object, 'r')
+
+    self._file_object = file_object
+    self._zip_file = zip_file
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -75,7 +110,9 @@ class ZipFileSystem(file_system.FileSystem):
       return
 
     if len(location) == 1:
-      return self.GetRootFileEntry()
+      return dfvfs.vfs.zip_file_entry.ZipFileEntry(
+          self._resolver_context, self, path_spec, is_root=True,
+          is_virtual=True)
 
     try:
       zip_info = self._zip_file.getinfo(location[1:])
@@ -94,10 +131,8 @@ class ZipFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.FileEntry).
     """
     path_spec = zip_path_spec.ZipPathSpec(
-        location=self.LOCATION_ROOT, parent=self._path_spec)
-
-    return dfvfs.vfs.zip_file_entry.ZipFileEntry(
-        self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
+        location=self.LOCATION_ROOT, parent=self._path_spec.parent)
+    return self.GetFileEntryByPathSpec(path_spec)
 
   def GetZipFile(self):
     """Retrieves the zip file object.

@@ -15,18 +15,26 @@ class FakeFileSystemTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location=u'/')
 
-  def testIntialize(self):
-    """Test the intialize functionality."""
+  def testOpenAndClose(self):
+    """Test the open and close functionality."""
     file_system = fake_file_system.FakeFileSystem(self._resolver_context)
-
     self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._fake_path_spec)
+
+    file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = fake_file_system.FakeFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
+
     file_system.AddFileEntry(
         u'/test_data/testdir_fake/file1.txt', file_data='FILE1')
+
+    file_system.Open(path_spec=self._fake_path_spec)
 
     path_spec = fake_path_spec.FakePathSpec(
         location=u'/test_data/testdir_fake/file1.txt')
@@ -36,11 +44,17 @@ class FakeFileSystemTest(unittest.TestCase):
         location=u'/test_data/testdir_fake/file6.txt')
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
+    file_system.Close()
+
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     file_system = fake_file_system.FakeFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
+
     file_system.AddFileEntry(
         u'/test_data/testdir_fake/file1.txt', file_data='FILE1')
+
+    file_system.Open(path_spec=self._fake_path_spec)
 
     path_spec = fake_path_spec.FakePathSpec(
         location=u'/test_data/testdir_fake/file1.txt')
@@ -55,14 +69,21 @@ class FakeFileSystemTest(unittest.TestCase):
 
     self.assertEquals(file_entry, None)
 
+    file_system.Close()
+
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = fake_file_system.FakeFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._fake_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'')
+
+    file_system.Close()
 
 
 if __name__ == '__main__':

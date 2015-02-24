@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition file entry implementation."""
 
-# This is necessary to prevent a circular import.
-import dfvfs.file_io.tsk_partition_file_io
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import tsk_partition
@@ -87,7 +84,6 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._name = None
-    self._tsk_vs_part = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of TSKPartitionDirectory)."""
@@ -109,12 +105,10 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
       BackEndError: when the tsk volume system part is missing in a non-virtual
                     file entry.
     """
-    if self._tsk_vs_part is None:
-      self._tsk_vs_part = self.GetTSKVsPart()
-
+    tsk_vs_part = self.GetTSKVsPart()
     stat_object = vfs_stat.VFSStat()
 
-    if not self._is_virtual and self._tsk_vs_part is None:
+    if not self._is_virtual and tsk_vs_part is None:
       raise errors.BackEndError(
           u'Missing tsk volume system part in non-virtual file entry.')
 
@@ -122,9 +116,9 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(tsk_volume)
 
     # File data stat information.
-    if self._tsk_vs_part is not None:
+    if tsk_vs_part is not None:
       number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(
-          self._tsk_vs_part)
+          tsk_vs_part)
 
       if number_of_sectors:
         stat_object.size = number_of_sectors * bytes_per_sector
@@ -143,13 +137,13 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
 
     if not self._is_virtual:
       stat_object.is_allocated = tsk_partition.TSKVsPartIsAllocated(
-          self._tsk_vs_part)
+          tsk_vs_part)
 
     return stat_object
 
   @property
   def name(self):
-    """"The name of the file entry, which does not include the full path."""
+    """The name of the file entry, which does not include the full path."""
     if self._name is None:
       # Directory entries without a location in the path specification
       # are not given a name for now.
@@ -170,18 +164,6 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
       for path_spec in self._directory.entries:
         yield TSKPartitionFileEntry(
             self._resolver_context, self._file_system, path_spec)
-
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._tsk_vs_part is None:
-      self._tsk_vs_part = self.GetTSKVsPart()
-
-    tsk_volume = self._file_system.GetTSKVolume()
-    file_object = dfvfs.file_io.tsk_partition_file_io.TSKPartitionFile(
-        self._resolver_context, tsk_volume=tsk_volume,
-        tsk_vs_part=self._tsk_vs_part)
-    file_object.open()
-    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""

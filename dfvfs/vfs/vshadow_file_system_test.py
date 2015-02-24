@@ -5,9 +5,6 @@
 import os
 import unittest
 
-import pyvshadow
-
-from dfvfs.file_io import qcow_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
@@ -21,11 +18,11 @@ class VShadowFileSystemTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
-    self._qcow_file_object = qcow_file_io.QcowFile(self._resolver_context)
-    self._qcow_file_object.open(self._qcow_path_spec)
+    self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
+        location=u'/', parent=self._qcow_path_spec)
 
   # qcowmount test_data/vsstest.qcow2 fuse/
   # vshadowinfo fuse/qcow1
@@ -50,21 +47,21 @@ class VShadowFileSystemTest(unittest.TestCase):
   #   Volume size		: 1073741824 bytes
   #   Attribute flags		: 0x00420009
 
-  def testIntialize(self):
-    """Test the initialize functionality."""
-    vshadow_volume = pyvshadow.volume()
-    vshadow_volume.open_file_object(self._qcow_file_object)
-    file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context, vshadow_volume, self._qcow_path_spec)
-
+  def testOpenAndClose(self):
+    """Test the open and close functionality."""
+    file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
     self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._vshadow_path_spec)
+
+    file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    vshadow_volume = pyvshadow.volume()
-    vshadow_volume.open_file_object(self._qcow_file_object)
-    file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context, vshadow_volume, self._qcow_path_spec)
+    file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._vshadow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
@@ -90,12 +87,14 @@ class VShadowFileSystemTest(unittest.TestCase):
         location=u'/vss9', parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
+    file_system.Close()
+
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
-    vshadow_volume = pyvshadow.volume()
-    vshadow_volume.open_file_object(self._qcow_file_object)
-    file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context, vshadow_volume, self._qcow_path_spec)
+    file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._vshadow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
@@ -136,17 +135,21 @@ class VShadowFileSystemTest(unittest.TestCase):
 
     self.assertEquals(file_entry, None)
 
+    file_system.Close()
+
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    vshadow_volume = pyvshadow.volume()
-    vshadow_volume.open_file_object(self._qcow_file_object)
-    file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context, vshadow_volume, self._qcow_path_spec)
+    file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._vshadow_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'')
+
+    file_system.Close()
 
 
 if __name__ == '__main__':

@@ -27,10 +27,16 @@ class OSFile(file_io.FileIO):
     self._file_object = None
     self._size = 0
 
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
+  def _Close(self):
+    """Closes the file-like object.
 
-  def open(self, path_spec=None, mode='rb'):
+    Raises:
+      IOError: if the close failed.
+    """
+    self._file_object.close()
+    self._file_object = None
+
+  def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
@@ -40,18 +46,12 @@ class OSFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the open file-like object could not be opened.
+      IOError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification or mode is invalid.
+      ValueError: if the path specification is invalid.
     """
     if not path_spec:
       raise ValueError(u'Missing path specfication.')
-
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
-
-    if self._file_object:
-      raise IOError(u'Already open.')
 
     if path_spec.HasParent():
       raise errors.PathSpecError(u'Unsupported path specification with parent.')
@@ -97,18 +97,8 @@ class OSFile(file_io.FileIO):
       self._file_object = open(location, mode=mode)
       self._size = stat_info.st_size
 
-  def close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._file_object:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-    self._file_object.close()
-    self._file_object = None
+  # Note: that the following functions do not follow the style guide
+  # because they are part of the file-like object interface.
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -126,7 +116,7 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the read failed.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
     if size is None:
@@ -145,7 +135,7 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the seek failed.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
     # For a yet unknown reason a Python file-like object on Windows allows for
@@ -162,7 +152,7 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
     return self._file_object.tell()
@@ -173,7 +163,7 @@ class OSFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
-    if not self._file_object:
+    if not self._is_open:
       raise IOError(u'Not opened.')
 
     return self._size

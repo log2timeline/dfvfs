@@ -5,76 +5,74 @@
 import os
 import unittest
 
-import pybde
-
-from dfvfs.file_io import os_file_io
 from dfvfs.path import bde_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
+from dfvfs.resolver import resolver
 from dfvfs.vfs import bde_file_system
 
 
 class BdeFileSystemTest(unittest.TestCase):
   """The unit test for the BDE file system object."""
 
-  _BDE_PASSWORD = 'bde-TEST'
+  _BDE_PASSWORD = u'bde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'bdetogo.raw')
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._os_file_object = os_file_io.OSFile(self._resolver_context)
-    self._os_file_object.open(self._os_path_spec, mode='rb')
+    test_file = os.path.join(u'test_data', u'bdetogo.raw')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._bde_path_spec = bde_path_spec.BdePathSpec(parent=path_spec)
+    resolver.Resolver.key_chain.SetCredential(
+        self._bde_path_spec, u'password', self._BDE_PASSWORD)
 
-  def testIntialize(self):
-    """Test the intialize functionality."""
-    bde_volume = pybde.volume()
-    bde_volume.set_password(self._BDE_PASSWORD)
-    bde_volume.open_file_object(self._os_file_object)
-    file_system = bde_file_system.BdeFileSystem(
-        self._resolver_context, bde_volume, self._os_path_spec)
-
+  def testOpenAndClose(self):
+    """Test the open and close functionality."""
+    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
     self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._bde_path_spec)
+
+    file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    bde_volume = pybde.volume()
-    bde_volume.set_password(self._BDE_PASSWORD)
-    bde_volume.open_file_object(self._os_file_object)
-    file_system = bde_file_system.BdeFileSystem(
-        self._resolver_context, bde_volume, self._os_path_spec)
+    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
 
-    path_spec = bde_path_spec.BdePathSpec(parent=self._os_path_spec)
+    file_system.Open(path_spec=self._bde_path_spec)
 
-    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(self._bde_path_spec))
+
+    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
-    bde_volume = pybde.volume()
-    bde_volume.set_password(self._BDE_PASSWORD)
-    bde_volume.open_file_object(self._os_file_object)
-    file_system = bde_file_system.BdeFileSystem(
-        self._resolver_context, bde_volume, self._os_path_spec)
+    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
 
-    path_spec = bde_path_spec.BdePathSpec(parent=self._os_path_spec)
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    file_system.Open(path_spec=self._bde_path_spec)
+
+    file_entry = file_system.GetFileEntryByPathSpec(self._bde_path_spec)
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'')
 
+    file_system.Close()
+
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    bde_volume = pybde.volume()
-    bde_volume.set_password(self._BDE_PASSWORD)
-    bde_volume.open_file_object(self._os_file_object)
-    file_system = bde_file_system.BdeFileSystem(
-        self._resolver_context, bde_volume, self._os_path_spec)
+    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    self.assertNotEquals(file_system, None)
+
+    file_system.Open(path_spec=self._bde_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
     self.assertNotEquals(file_entry, None)
     self.assertEquals(file_entry.name, u'')
+
+    file_system.Close()
 
 
 if __name__ == '__main__':

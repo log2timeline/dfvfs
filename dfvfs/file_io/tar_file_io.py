@@ -13,40 +13,35 @@ from dfvfs.resolver import resolver
 class TarFile(file_io.FileIO):
   """Class that implements a file-like object using tarfile."""
 
-  def __init__(self, resolver_context, tar_info=None, tar_file_object=None):
+  def __init__(self, resolver_context):
     """Initializes the file-like object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      tar_info: optional tar info object (instance of tarfile.TarInfo).
-                The default is None.
-      tar_file_object: optional extracted file-like object (instance of
-                       tarfile.ExFileObject). The default is None.
+    """
+    super(TarFile, self).__init__(resolver_context)
+    self._current_offset = 0
+    self._file_system = None
+    self._size = 0
+    self._tar_ext_file = None
+
+  def _Close(self):
+    """Closes the file-like object.
+
+       If the file-like object was passed in the init function
+       the data range file-like object does not control the file-like object
+       and should not actually close it.
 
     Raises:
-      ValueError: if tar_file_object provided but tar_info is not.
+      IOError: if the close failed.
     """
-    if tar_file_object is not None and tar_info is None:
-      raise ValueError(
-          u'Tar extracted file object provided without corresponding info '
-          u'object.')
+    self._tar_ext_file.close()
+    self._tar_ext_file = None
 
-    super(TarFile, self).__init__(resolver_context)
-    self._tar_info = tar_info
-    self._tar_file_object = tar_file_object
-    self._current_offset = 0
-    self._size = 0
+    self._file_system.Close()
+    self._file_system = None
 
-    if tar_file_object:
-      self._tar_file_object_set_in_init = True
-    else:
-      self._tar_file_object_set_in_init = False
-    self._is_open = False
-
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-
-  def open(self, path_spec=None, mode='rb'):
+  def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
@@ -55,51 +50,28 @@ class TarFile(file_io.FileIO):
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
-      IOError: if the open file-like object could not be opened.
-      ValueError: if the path specification or mode is invalid.
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
     """
-    if not self._tar_file_object_set_in_init and not path_spec:
+    if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+    self._file_system = resolver.Resolver.OpenFileSystem(
+        path_spec, resolver_context=self._resolver_context)
+    tar_file = self._file_system.GetTarFile()
 
-    if self._is_open:
-      raise IOError(u'Already open.')
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    tar_info = file_entry.GetTarInfo()
 
-    if not self._tar_file_object_set_in_init:
-      file_system = resolver.Resolver.OpenFileSystem(
-          path_spec, resolver_context=self._resolver_context)
-      file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
-      self._tar_info = file_entry.GetTarInfo()
-      self._tar_file_object = file_entry.GetFileObject()
+    self._tar_ext_file = tar_file.extractfile(tar_info)
 
     self._current_offset = 0
-    self._size = self._tar_info.size
-    self._is_open = True
+    self._size = tar_info.size
 
-  def close(self):
-    """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-
-    if not self._tar_file_object_set_in_init:
-      self._tar_file_object.close()
-      self._tar_file_object = None
-      self._tar_info = None
-
-    self._is_open = False
+  # Note: that the following functions do not follow the style guide
+  # because they are part of the file-like object interface.
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -124,14 +96,14 @@ class TarFile(file_io.FileIO):
       raise IOError(u'Invalid current offset value less than zero.')
 
     if self._current_offset > self._size:
-      return ''
+      return b''
 
     if size is None or self._current_offset + size > self._size:
       size = self._size - self._current_offset
 
-    self._tar_file_object.seek(self._current_offset, os.SEEK_SET)
+    self._tar_ext_file.seek(self._current_offset, os.SEEK_SET)
 
-    data = self._tar_file_object.read(size)
+    data = self._tar_ext_file.read(size)
 
     # It is possible the that returned data size is not the same as the
     # requested data size. At this layer we don't care and this discrepancy

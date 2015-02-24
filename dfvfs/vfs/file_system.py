@@ -16,16 +16,43 @@ class FileSystem(object):
       resolver_context: the resolver context (instance of resolver.Context).
     """
     super(FileSystem, self).__init__()
+    self._is_cached = False
+    self._is_open = False
+    self._path_spec = None
     self._resolver_context = resolver_context
 
   @property
   def type_indicator(self):
     """The type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
           u'Invalid file system missing type indicator.')
     return type_indicator
+
+  @abc.abstractmethod
+  def _Close(self):
+    """Closes the file system object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+
+  @abc.abstractmethod
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file system object defined by path specification.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file system object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
 
   def BasenamePath(self, path):
     """Determines the basename of the path.
@@ -40,6 +67,28 @@ class FileSystem(object):
       path = path[:-1]
     _, _, basename = path.rpartition(self.PATH_SEPARATOR)
     return basename
+
+  def Close(self):
+    """Closes the file system object.
+
+    Raises:
+      IOError: if the file system object was not opened or the close failed.
+    """
+    if not self._is_open:
+      raise IOError(u'Not opened.')
+
+    if not self._is_cached:
+      close_file_system = True
+    elif self._resolver_context.ReleaseFileSystem(self):
+      self._is_cached = False
+      close_file_system = True
+    else:
+      close_file_system = False
+
+    if close_file_system:
+      self._Close()
+      self._is_open = False
+      self._path_spec = None
 
   def DirnamePath(self, path):
     """Determines the directory name of the path.
@@ -155,6 +204,38 @@ class FileSystem(object):
 
     return u'{0:s}{1:s}'.format(
         self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
+
+  def Open(self, path_spec=None, mode='rb'):
+    """Opens the file system object defined by path specification.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file system object was already opened or the open failed.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification or mode is invalid.
+    """
+    if self._is_open and not self._is_cached:
+      raise IOError(u'Already open.')
+
+    if mode != 'rb':
+      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+
+    if not self._is_open:
+      self._Open(path_spec=path_spec, mode=mode)
+      self._is_open = True
+      self._path_spec = path_spec
+
+      if path_spec and not self._resolver_context.GetFileSystem(path_spec):
+        self._resolver_context.CacheFileSystem(path_spec, self)
+        self._is_cached = True
+
+    if self._is_cached:
+      self._resolver_context.GrabFileSystem(path_spec)
 
   def SplitPath(self, path):
     """Splits the path into path segments.

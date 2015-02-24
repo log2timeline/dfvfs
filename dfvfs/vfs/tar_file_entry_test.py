@@ -5,7 +5,6 @@
 import os
 import unittest
 
-from dfvfs.file_io import os_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import tar_path_spec
 from dfvfs.resolver import context
@@ -19,17 +18,22 @@ class TarFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.tar')
+    test_file = os.path.join(u'test_data', u'syslog.tar')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._os_file_object = os_file_io.OSFile(self._resolver_context)
-    self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._file_system = tar_file_system.TarFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+    self._tar_path_spec = tar_path_spec.TarPathSpec(
+        location=u'/syslog', parent=self._os_path_spec)
+
+    self._file_system = tar_file_system.TarFileSystem(self._resolver_context)
+    self._file_system.Open(path_spec=self._tar_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
 
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = tar_file_entry.TarFileEntry(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._file_system, self._tar_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -110,6 +114,7 @@ class TarFileEntryTest(unittest.TestCase):
         len(sub_file_entry_names), len(expected_sub_file_entry_names))
     self.assertEquals(
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+
 
 if __name__ == '__main__':
   unittest.main()

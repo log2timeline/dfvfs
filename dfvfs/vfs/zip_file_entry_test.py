@@ -5,7 +5,6 @@
 import os
 import unittest
 
-from dfvfs.file_io import os_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import zip_path_spec
 from dfvfs.resolver import context
@@ -21,15 +20,20 @@ class ZipFileEntryTest(unittest.TestCase):
     self._resolver_context = context.Context()
     test_file = os.path.join('test_data', 'syslog.zip')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._os_file_object = os_file_io.OSFile(self._resolver_context)
-    self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._zip_file_system = zip_file_system.ZipFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+    self._zip_path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/', parent=self._os_path_spec)
+
+    self._file_system = zip_file_system.ZipFileSystem(self._resolver_context)
+    self._file_system.Open(path_spec=self._zip_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
 
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = zip_file_entry.ZipFileEntry(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._file_system, self._zip_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -37,7 +41,7 @@ class ZipFileEntryTest(unittest.TestCase):
     """Test the get parent file entry functionality."""
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
-    file_entry = self._zip_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -51,7 +55,7 @@ class ZipFileEntryTest(unittest.TestCase):
     """Test the get stat functionality."""
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
-    file_entry = self._zip_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -62,7 +66,7 @@ class ZipFileEntryTest(unittest.TestCase):
     """Test the Is? functionality."""
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
-    file_entry = self._zip_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -77,7 +81,7 @@ class ZipFileEntryTest(unittest.TestCase):
 
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._zip_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -94,7 +98,7 @@ class ZipFileEntryTest(unittest.TestCase):
     """Test the sub file entries iteration functionality."""
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/', parent=self._os_path_spec)
-    file_entry = self._zip_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 

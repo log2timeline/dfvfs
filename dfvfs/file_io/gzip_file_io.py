@@ -4,9 +4,6 @@
 import construct
 import os
 
-# This is necessary to prevent a circular import.
-import dfvfs.file_io.compressed_stream_io
-
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -21,18 +18,18 @@ class GzipFile(file_object_io.FileObjectIO):
      The gzip file is a zlib compressed data stream with additional metadata.
   """
   _FILE_HEADER_STRUCT = construct.Struct(
-      'file_header',
-      construct.ULInt16('signature'),
-      construct.UBInt8('compression_method'),
-      construct.UBInt8('flags'),
-      construct.SLInt32('modification_time'),
-      construct.UBInt8('extra_flags'),
-      construct.UBInt8('operating_system'))
+      u'file_header',
+      construct.ULInt16(u'signature'),
+      construct.UBInt8(u'compression_method'),
+      construct.UBInt8(u'flags'),
+      construct.SLInt32(u'modification_time'),
+      construct.UBInt8(u'extra_flags'),
+      construct.UBInt8(u'operating_system'))
 
   _FILE_FOOTER_STRUCT = construct.Struct(
-      'file_footer',
-      construct.ULInt32('checksum'),
-      construct.ULInt32('uncompressed_data_size'))
+      u'file_footer',
+      construct.ULInt32(u'checksum'),
+      construct.ULInt32(u'uncompressed_data_size'))
 
   _FILE_SIGNATURE = 0x8b1f
 
@@ -50,9 +47,14 @@ class GzipFile(file_object_io.FileObjectIO):
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
       file_object: optional file-like object. The default is None.
+
+    Raises:
+      ValueError: when file_object is set.
     """
-    super(GzipFile, self).__init__(resolver_context, file_object=None)
-    self._gzip_file_object = file_object
+    if file_object:
+      raise ValueError(u'File object value set.')
+
+    super(GzipFile, self).__init__(resolver_context)
     self._compressed_data_offset = -1
     self._compressed_data_size = -1
     self.comment = None
@@ -89,20 +91,25 @@ class GzipFile(file_object_io.FileObjectIO):
 
     if file_header.flags & self._FLAG_FEXTRA:
       extra_field_data_size = construct.ULInt16(
-          'extra_field_data_size').parse_stream(file_object)
+          u'extra_field_data_size').parse_stream(file_object)
       file_object.seek(extra_field_data_size, os.SEEK_CUR)
       self._compressed_data_offset += 2 + extra_field_data_size
 
     if file_header.flags & self._FLAG_FNAME:
       # Since encoding is set construct will convert the C string to Unicode.
+      # Note that construct 2 does not support the encoding to be a Unicode
+      # string.
       self.original_filename = construct.CString(
-          'original_filename', encoding='iso-8859-1').parse_stream(file_object)
+          u'original_filename', encoding='iso-8859-1').parse_stream(
+              file_object)
       self._compressed_data_offset = file_object.get_offset()
 
     if file_header.flags & self._FLAG_FCOMMENT:
       # Since encoding is set construct will convert the C string to Unicode.
+      # Note that construct 2 does not support the encoding to be a Unicode
+      # string.
       self.comment = construct.CString(
-          'comment', encoding='iso-8859-1').parse_stream(file_object)
+          u'comment', encoding='iso-8859-1').parse_stream(file_object)
       self._compressed_data_offset = file_object.get_offset()
 
     if file_header.flags & self._FLAG_FHCRC:
@@ -135,18 +142,13 @@ class GzipFile(file_object_io.FileObjectIO):
     Returns:
       A file-like object.
     """
-    if not self._gzip_file_object:
-      gzip_file_object = resolver.Resolver.OpenFileObject(
-          path_spec.parent, resolver_context=self._resolver_context)
-    else:
-      gzip_file_object = self._gzip_file_object
+    gzip_file_object = resolver.Resolver.OpenFileObject(
+        path_spec.parent, resolver_context=self._resolver_context)
 
     self._ReadFileHeader(gzip_file_object)
     self._ReadFileFooter(gzip_file_object)
 
-    if not self._gzip_file_object:
-      self._resolver_context.RemoveFileObjectByPathSpec(path_spec)
-      gzip_file_object.close()
+    gzip_file_object.close()
 
     path_spec_data_range = data_range_path_spec.DataRangePathSpec(
         range_offset=self._compressed_data_offset,
@@ -156,9 +158,5 @@ class GzipFile(file_object_io.FileObjectIO):
             compression_method=definitions.COMPRESSION_METHOD_DEFLATE,
             parent=path_spec_data_range))
 
-    file_object = dfvfs.file_io.compressed_stream_io.CompressedStream(
-        self._resolver_context)
-    file_object.SetUncompressedStreamSize(self.uncompressed_data_size)
-    file_object.open(path_spec=path_spec_compressed_stream)
-
-    return file_object
+    return resolver.Resolver.OpenFileObject(
+        path_spec_compressed_stream, resolver_context=self._resolver_context)

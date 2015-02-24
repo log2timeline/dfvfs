@@ -5,7 +5,6 @@
 import os
 import unittest
 
-from dfvfs.file_io import os_file_io
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
@@ -19,31 +18,33 @@ class GzipFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.gz')
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._os_file_object = os_file_io.OSFile(self._resolver_context)
-    self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._file_system = gzip_file_system.GzipFileSystem(
-        self._resolver_context, self._os_path_spec)
+    test_file = os.path.join(u'test_data', u'syslog.gz')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
+
+    self._file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
+    self._file_system.Open(path_spec=self._gzip_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
 
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = gzip_file_entry.GzipFileEntry(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._file_system, self._gzip_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
-    path_spec = gzip_path_spec.GzipPathSpec(parent=self._os_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
-    path_spec = gzip_path_spec.GzipPathSpec(parent=self._os_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -53,8 +54,7 @@ class GzipFileEntryTest(unittest.TestCase):
 
   def testGetStat(self):
     """Test the get stat functionality."""
-    path_spec = gzip_path_spec.GzipPathSpec(parent=self._os_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -63,8 +63,7 @@ class GzipFileEntryTest(unittest.TestCase):
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
-    path_spec = gzip_path_spec.GzipPathSpec(parent=self._os_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -79,8 +78,7 @@ class GzipFileEntryTest(unittest.TestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = gzip_path_spec.GzipPathSpec(parent=self._os_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
     self.assertNotEquals(file_entry, None)
 

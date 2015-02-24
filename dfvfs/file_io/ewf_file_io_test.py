@@ -16,7 +16,7 @@ class EwfFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(EwfFileTest, self).setUp()
-    test_file = os.path.join('test_data', 'image.E01')
+    test_file = os.path.join(u'test_data', u'image.E01')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._ewf_path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
@@ -43,7 +43,7 @@ class SplitEwfFileTest(test_lib.PartitionedImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(SplitEwfFileTest, self).setUp()
-    test_file = os.path.join('test_data', 'image-split.E01')
+    test_file = os.path.join(u'test_data', u'image-split.E01')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._ewf_path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 

@@ -39,7 +39,55 @@ class DataRange(file_io.FileIO):
       self._file_object_set_in_init = False
       self._range_offset = -1
       self._range_size = -1
-    self._is_open = False
+
+  def _Close(self):
+    """Closes the file-like object.
+
+       If the file-like object was passed in the init function
+       the data range file-like object does not control the file-like object
+       and should not actually close it.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    if not self._file_object_set_in_init:
+      self._file_object.close()
+      self._file_object = None
+      self._range_offset = -1
+      self._range_size = -1
+
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file-like object.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
+    if not self._file_object_set_in_init and not path_spec:
+      raise ValueError(u'Missing path specfication.')
+
+    if not self._file_object_set_in_init:
+      if not path_spec.HasParent():
+        raise errors.PathSpecError(
+            u'Unsupported path specification without parent.')
+
+      range_offset = getattr(path_spec, u'range_offset', None)
+      range_size = getattr(path_spec, u'range_size', None)
+
+      if range_offset is None or range_size is None:
+        raise errors.PathSpecError(
+            u'Path specification missing range offset and range size.')
+
+      self.SetRange(range_offset, range_size)
+      self._file_object = resolver.Resolver.OpenFileObject(
+          path_spec.parent, resolver_context=self._resolver_context)
 
   def SetRange(self, range_offset, range_size):
     """Sets the data range (offset and size).
@@ -74,69 +122,6 @@ class DataRange(file_io.FileIO):
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
-
-  def open(self, path_spec=None, mode='rb'):
-    """Opens the file-like object.
-
-    Args:
-      path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
-      mode: optional file access mode. The default is 'rb' read-only binary.
-
-    Raises:
-      IOError: if the open file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification or mode is invalid.
-    """
-    if not self._file_object_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specfication.')
-
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
-
-    if self._is_open:
-      raise IOError(u'Already open.')
-
-    if not self._file_object_set_in_init:
-      if not path_spec.HasParent():
-        raise errors.PathSpecError(
-            u'Unsupported path specification without parent.')
-
-      range_offset = getattr(path_spec, 'range_offset', None)
-      range_size = getattr(path_spec, 'range_size', None)
-
-      if range_offset is None or range_size is None:
-        raise errors.PathSpecError(
-            u'Path specification missing range offset and range size.')
-
-      self.SetRange(range_offset, range_size)
-      self._file_object = resolver.Resolver.OpenFileObject(
-          path_spec.parent, resolver_context=self._resolver_context)
-
-    self._is_open = True
-
-  def close(self):
-    """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-
-    if not self._file_object_set_in_init:
-      self._file_object.close()
-      self._file_object = None
-      self._range_offset = -1
-      self._range_size = -1
-
-    self._is_open = False
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.

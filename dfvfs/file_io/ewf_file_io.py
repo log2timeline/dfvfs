@@ -16,6 +16,40 @@ if pyewf.get_version() < '20131210':
 class EwfFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object using pyewf."""
 
+  def __init__(self, resolver_context, file_object=None):
+    """Initializes the file-like object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+      file_object: optional file-like object. The default is None.
+
+    Raises:
+      ValueError: when file_object is set.
+    """
+    if file_object:
+      raise ValueError(u'File object value set.')
+
+    super(EwfFile, self).__init__(resolver_context)
+    self._file_objects = []
+
+  def _Close(self):
+    """Closes the file-like object.
+
+       If the file-like object was passed in the init function
+       the data range file-like object does not control the file-like object
+       and should not actually close it.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    # pylint: disable=protected-access
+    super(EwfFile, self)._Close()
+
+    for file_object in self._file_objects:
+      file_object.close()
+
+    self._file_objects = []
+
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
 
@@ -43,14 +77,13 @@ class EwfFile(file_object_io.FileObjectIO):
     if not segment_file_path_specs:
       return
 
-    file_objects = []
     for segment_file_path_spec in segment_file_path_specs:
       file_object = resolver.Resolver.OpenFileObject(
           segment_file_path_spec, resolver_context=self._resolver_context)
-      file_objects.append(file_object)
+      self._file_objects.append(file_object)
 
     ewf_handle = pyewf.handle()
-    ewf_handle.open_file_objects(file_objects)
+    ewf_handle.open_file_objects(self._file_objects)
     return ewf_handle
 
   def get_size(self):

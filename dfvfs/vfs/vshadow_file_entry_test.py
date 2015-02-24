@@ -5,9 +5,6 @@
 import os
 import unittest
 
-import pyvshadow
-
-from dfvfs.file_io import qcow_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
@@ -22,15 +19,19 @@ class VShadowFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
-    file_object = qcow_file_io.QcowFile(self._resolver_context)
-    file_object.open(self._qcow_path_spec)
-    vshadow_volume = pyvshadow.volume()
-    vshadow_volume.open_file_object(file_object)
-    self._vshadow_file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context, vshadow_volume, self._qcow_path_spec)
+    self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
+        location=u'/', parent=self._qcow_path_spec)
+
+    self._file_system = vshadow_file_system.VShadowFileSystem(
+        self._resolver_context)
+    self._file_system.Open(path_spec=self._vshadow_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
 
   # qcowmount test_data/vsstest.qcow2 fuse/
   # vshadowinfo fuse/qcow1
@@ -58,7 +59,7 @@ class VShadowFileEntryTest(unittest.TestCase):
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = vshadow_file_entry.VShadowFileEntry(
-        self._resolver_context, self._vshadow_file_system, self._qcow_path_spec)
+        self._resolver_context, self._file_system, self._vshadow_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -66,7 +67,7 @@ class VShadowFileEntryTest(unittest.TestCase):
     """Test the get parent file entry functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._qcow_path_spec)
-    file_entry = self._vshadow_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -78,7 +79,7 @@ class VShadowFileEntryTest(unittest.TestCase):
     """Test the get stat functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._qcow_path_spec)
-    file_entry = self._vshadow_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     stat_object = file_entry.GetStat()
 
@@ -89,7 +90,7 @@ class VShadowFileEntryTest(unittest.TestCase):
     """Test the Is? functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._qcow_path_spec)
-    file_entry = self._vshadow_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -104,7 +105,7 @@ class VShadowFileEntryTest(unittest.TestCase):
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
-    file_entry = self._vshadow_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -121,7 +122,7 @@ class VShadowFileEntryTest(unittest.TestCase):
     """Test the sub file entries iteration functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
-    file_entry = self._vshadow_file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertNotEquals(file_entry, None)
 
