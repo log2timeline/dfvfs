@@ -6,6 +6,7 @@ class Factory(object):
   """Class that implements the VFS path specification factory."""
 
   PROPERTY_NAMES = frozenset([
+      u'column_name',
       u'compression_method',
       u'encoding_method',
       u'identifier',
@@ -14,8 +15,11 @@ class Factory(object):
       u'part_index',
       u'range_offset',
       u'range_size',
+      u'row_condition',
+      u'row_index',
       u'start_offset',
-      u'store_index'])
+      u'store_index',
+      u'table_name'])
 
   _path_spec_types = {}
 

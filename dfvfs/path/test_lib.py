@@ -9,6 +9,7 @@ from dfvfs.path import path_spec
 class TestPathSpec(path_spec.PathSpec):
   """Test path specification."""
 
+  _IS_SYSTEM_LEVEL = True
   TYPE_INDICATOR = u'TEST'
 
   def __init__(self, **kwargs):
