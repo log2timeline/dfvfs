@@ -25,7 +25,44 @@ class FileObjectIO(file_io.FileIO):
       self._file_object_set_in_init = True
     else:
       self._file_object_set_in_init = False
-    self._is_open = False
+
+  def _Close(self):
+    """Closes the file-like object.
+
+       If the file-like object was passed in the init function
+       the data range file-like object does not control the file-like object
+       and should not actually close it.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    if not self._file_object_set_in_init:
+      self._file_object.close()
+      self._file_object = None
+
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file-like object defined by path specification.
+
+    Args:
+      path_spec: optional the path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
+    if not self._file_object_set_in_init and not path_spec:
+      raise ValueError(u'Missing path specfication.')
+
+    if self._file_object_set_in_init:
+      return
+
+    self._file_object = self._OpenFileObject(path_spec)
+    if not self._file_object:
+      raise IOError(u'Unable to open missing file-like object.')
 
   @abc.abstractmethod
   def _OpenFileObject(self, path_spec):
@@ -43,56 +80,6 @@ class FileObjectIO(file_io.FileIO):
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
-
-  def open(self, path_spec=None, mode='rb'):
-    """Opens the file-like object defined by path specification.
-
-    Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
-                 The default is None.
-      mode: optional file access mode. The default is 'rb' read-only binary.
-
-    Raises:
-      IOError: if the open file-like object could not be opened.
-      ValueError: if the path specification or mode is invalid.
-    """
-    if not self._file_object_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specfication.')
-
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
-
-    if self._is_open:
-      raise IOError(u'Already open.')
-
-    if not self._file_object_set_in_init:
-      self._file_object = self._OpenFileObject(path_spec)
-
-      if not self._file_object:
-        raise IOError(u'Unable to open missing file-like object.')
-
-    self._is_open = True
-
-  def close(self):
-    """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-
-    if not self._file_object_set_in_init:
-      self._file_object.close()
-      self._file_object = None
-
-    self._is_open = False
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -140,7 +127,7 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not hasattr(self._file_object, 'get_offset'):
+    if not hasattr(self._file_object, u'get_offset'):
       return self._file_object.tell()
     return self._file_object.get_offset()
 
@@ -153,7 +140,7 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not hasattr(self._file_object, 'get_size'):
+    if not hasattr(self._file_object, u'get_size'):
       if not self._size:
         current_offset = self.get_offset()
         self.seek(0, os.SEEK_END)

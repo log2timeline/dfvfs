@@ -16,41 +16,71 @@ class ZipFile(file_io.FileIO):
   # The size of the uncompressed data buffer.
   _UNCOMPRESSED_DATA_BUFFER_SIZE = 16 * 1024 * 1024
 
-  def __init__(self, resolver_context, zip_info=None, zip_file=None):
+  def __init__(self, resolver_context):
     """Initializes the file-like object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      zip_info: optional zip info object (instance of zipfile.ZipInfo).
-                The default is None.
-      zip_file: optional extracted file-like object (instance of
-                zipfile.ZipFile). The default is None.
-
-    Raises:
-      ValueError: if zip_file provided but zip_info is not.
     """
-    if zip_file is not None and zip_info is None:
-      raise ValueError(
-          u'Zip extracted file object provided without corresponding info '
-          u'object.')
-
     super(ZipFile, self).__init__(resolver_context)
-    self._zip_info = zip_info
-    self._zip_file = zip_file
-    self._compressed_data = ''
+    self._compressed_data = b''
     self._current_offset = 0
+    self._file_system = None
     self._realign_offset = True
-    self._uncompressed_data = ''
+    self._uncompressed_data = b''
     self._uncompressed_data_offset = 0
     self._uncompressed_data_size = 0
     self._uncompressed_stream_size = None
     self._zip_ext_file = None
+    self._zip_file = None
+    self._zip_info = None
 
-    if zip_file:
-      self._zip_file_set_in_init = True
-    else:
-      self._zip_file_set_in_init = False
-    self._is_open = False
+  def _Close(self):
+    """Closes the file-like object.
+
+       If the file-like object was passed in the init function
+       the data range file-like object does not control the file-like object
+       and should not actually close it.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    if self._zip_ext_file:
+      self._zip_ext_file.close()
+      self._zip_ext_file = None
+
+    self._zip_file = None
+    self._zip_info = None
+
+    self._file_system.Close()
+    self._file_system = None
+
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file-like object defined by path specification.
+
+    Args:
+      path_spec: optional the path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
+    if not path_spec:
+      raise ValueError(u'Missing path specfication.')
+
+    self._file_system = resolver.Resolver.OpenFileSystem(
+        path_spec, resolver_context=self._resolver_context)
+    self._zip_file = self._file_system.GetZipFile()
+
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self._zip_info = file_entry.GetZipInfo()
+
+    self._current_offset = 0
+    self._uncompressed_stream_size = self._zip_info.file_size
 
   def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
     """Aligns the compressed file with the uncompressed data offset.
@@ -64,7 +94,7 @@ class ZipFile(file_io.FileIO):
 
     self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
 
-    self._uncompressed_data = ''
+    self._uncompressed_data = b''
 
     while uncompressed_data_offset > 0:
       self._ReadCompressedData(self._UNCOMPRESSED_DATA_BUFFER_SIZE)
@@ -86,65 +116,6 @@ class ZipFile(file_io.FileIO):
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
-
-  def open(self, path_spec=None, mode='rb'):
-    """Opens the file-like object defined by path specification.
-
-    Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
-                 The default is None.
-      mode: optional file access mode. The default is 'rb' read-only binary.
-
-    Raises:
-      IOError: if the open file-like object could not be opened.
-      ValueError: if the path specification or mode is invalid.
-    """
-    if not self._zip_file_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specfication.')
-
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
-
-    if self._is_open:
-      raise IOError(u'Already open.')
-
-    if not self._zip_file_set_in_init:
-      file_system = resolver.Resolver.OpenFileSystem(
-          path_spec, resolver_context=self._resolver_context)
-
-      file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
-      self._zip_info = file_entry.GetZipInfo()
-      self._zip_file = file_entry.GetZipFile()
-
-    self._current_offset = 0
-    self._uncompressed_stream_size = self._zip_info.file_size
-    self._is_open = True
-
-  def close(self):
-    """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-
-    if not self._zip_file_set_in_init:
-      if self._zip_ext_file:
-        self._zip_ext_file.close()
-        self._zip_ext_file = None
-
-      self._zip_file = None
-      self._zip_info = None
-
-    self._is_open = False
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
@@ -169,7 +140,7 @@ class ZipFile(file_io.FileIO):
       raise IOError(u'Invalid current offset value less than zero.')
 
     if self._current_offset > self._uncompressed_stream_size:
-      return ''
+      return b''
 
     if (size is None or
         self._current_offset + size > self._uncompressed_stream_size):
@@ -179,10 +150,10 @@ class ZipFile(file_io.FileIO):
       self._AlignUncompressedDataOffset(self._current_offset)
       self._realign_offset = False
 
-    uncompressed_data = ''
+    uncompressed_data = b''
 
     while self._uncompressed_data_offset + size > self._uncompressed_data_size:
-      uncompressed_data = ''.join([
+      uncompressed_data = b''.join([
           uncompressed_data,
           self._uncompressed_data[self._uncompressed_data_offset]])
 
@@ -201,7 +172,7 @@ class ZipFile(file_io.FileIO):
       slice_start_offset = self._uncompressed_data_offset
       slice_end_offset = slice_start_offset + size
 
-      uncompressed_data = ''.join([
+      uncompressed_data = b''.join([
           uncompressed_data,
           self._uncompressed_data[slice_start_offset:slice_end_offset]])
 

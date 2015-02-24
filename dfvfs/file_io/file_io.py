@@ -20,12 +20,37 @@ class FileIO(object):
       resolver_context: the resolver context (instance of resolver.Context).
     """
     super(FileIO, self).__init__()
+    self._is_cached = False
+    self._is_open = False
     self._resolver_context = resolver_context
+
+  @abc.abstractmethod
+  def _Close(self):
+    """Closes the file-like object.
+
+    Raises:
+      IOError: if the close failed.
+    """
+
+  @abc.abstractmethod
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file-like object defined by path specification.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
 
-  @abc.abstractmethod
   def open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
@@ -35,16 +60,48 @@ class FileIO(object):
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
-      IOError: if the open file-like object could not be opened.
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object was already opened or the open failed.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification or mode is invalid.
     """
+    if self._is_open and not self._is_cached:
+      raise IOError(u'Already open.')
 
-  @abc.abstractmethod
+    if mode != 'rb':
+      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+
+    if not self._is_open:
+      self._Open(path_spec=path_spec, mode=mode)
+      self._is_open = True
+
+      if path_spec and not self._resolver_context.GetFileObject(path_spec):
+        self._resolver_context.CacheFileObject(path_spec, self)
+        self._is_cached = True
+
+    if self._is_cached:
+      self._resolver_context.GrabFileObject(path_spec)
+
   def close(self):
     """Closes the file-like object.
 
     Raises:
       IOError: if the file-like object was not opened or the close failed.
     """
+    if not self._is_open:
+      raise IOError(u'Not opened.')
+
+    if not self._is_cached:
+      close_file_object = True
+    elif self._resolver_context.ReleaseFileObject(self):
+      self._is_cached = False
+      close_file_object = True
+    else:
+      close_file_object = False
+
+    if close_file_object:
+      self._Close()
+      self._is_open = False
 
   @abc.abstractmethod
   def read(self, size=None):

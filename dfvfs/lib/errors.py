@@ -14,6 +14,10 @@ class BackEndError(Error):
   """Class that defines back-end errors."""
 
 
+class CacheFullError(Error):
+  """Class that defines cache full errors."""
+
+
 class FileFormatError(Error):
   """Class that defines file format errors."""
 

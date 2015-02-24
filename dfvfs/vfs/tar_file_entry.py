@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """The tar file entry implementation."""
 
-# This is necessary to prevent a circular import.
-import dfvfs.file_io.tar_file_io
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import tar_path_spec
@@ -60,7 +57,6 @@ class TarFileEntry(file_entry.FileEntry):
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False, tar_info=None):
     """Initializes the file entry object.
-
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
       file_system: the file system object (instance of vfs.FileSystem).
@@ -78,7 +74,6 @@ class TarFileEntry(file_entry.FileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._tar_info = tar_info
-    self._name = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of TarDirectory)."""
@@ -99,41 +94,39 @@ class TarFileEntry(file_entry.FileEntry):
     Raises:
       BackEndError: when the tar info is missing in a non-virtual file entry.
     """
-    if self._tar_info is None:
-      self._tar_info = self.GetTarInfo()
-
-    if not self._is_virtual and self._tar_info is None:
+    tar_info = self.GetTarInfo()
+    if not self._is_virtual and tar_info is None:
       raise errors.BackEndError(u'Missing tar info in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = getattr(self._tar_info, 'size', None)
+    stat_object.size = getattr(tar_info, 'size', None)
 
     # Date and time stat information.
-    stat_object.mtime = getattr(self._tar_info, 'mtime', None)
+    stat_object.mtime = getattr(tar_info, 'mtime', None)
 
     # Ownership and permissions stat information.
-    stat_object.mode = getattr(self._tar_info, 'mode', None)
-    stat_object.uid = getattr(self._tar_info, 'uid', None)
-    stat_object.gid = getattr(self._tar_info, 'gid', None)
+    stat_object.mode = getattr(tar_info, 'mode', None)
+    stat_object.uid = getattr(tar_info, 'uid', None)
+    stat_object.gid = getattr(tar_info, 'gid', None)
 
     # TODO: implement support for:
-    # stat_object.uname = getattr(self._tar_info, 'uname', None)
-    # stat_object.gname = getattr(self._tar_info, 'gname', None)
+    # stat_object.uname = getattr(tar_info, 'uname', None)
+    # stat_object.gname = getattr(tar_info, 'gname', None)
 
     # File entry type stat information.
 
     # The root file entry is virtual and should have type directory.
-    if self._is_virtual or self._tar_info.isdir():
+    if self._is_virtual or tar_info.isdir():
       stat_object.type = stat_object.TYPE_DIRECTORY
-    elif self._tar_info.isfile():
+    elif tar_info.isfile():
       stat_object.type = stat_object.TYPE_FILE
-    elif self._tar_info.issym() or self._tar_info.islnk():
+    elif tar_info.issym() or tar_info.islnk():
       stat_object.type = stat_object.TYPE_LINK
-    elif self._tar_info.ischr() or self._tar_info.isblk():
+    elif tar_info.ischr() or tar_info.isblk():
       stat_object.type = stat_object.TYPE_DEVICE
-    elif self._tar_info.isfifo():
+    elif tar_info.isfifo():
       stat_object.type = stat_object.TYPE_PIPE
 
     # TODO: determine if this covers all the types:
@@ -146,25 +139,32 @@ class TarFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetTarExFileObject(self):
+    """Retrieves the tar extracted file-like object.
+
+    Returns:
+      The extracted file-like object (instance of tarfile.ExFileObject).
+    """
+    tar_info = self.GetTarInfo()
+    tar_file = self._file_system.GetTarFile()
+    return tar_file.extractfile(tar_info)
+
   @property
   def name(self):
-    """"The name of the file entry, which does not include the full path."""
-    if self._name is None:
-      if self._tar_info is None:
-        self._tar_info = self.GetTarInfo()
+    """The name of the file entry, which does not include the full path."""
+    tar_info = self.GetTarInfo()
 
-      # Note that the root file entry is virtual and has no tar_info.
-      if self._tar_info is None:
-        self._name = u''
-      else:
-        path = getattr(self._tar_info, 'name', None)
-        if path is not None:
-          try:
-            path = path.decode(self._file_system.encoding)
-          except UnicodeDecodeError:
-            path = None
-        self._name = self._file_system.BasenamePath(path)
-    return self._name
+    # Note that the root file entry is virtual and has no tar_info.
+    if tar_info is None:
+      return u''
+
+    path = getattr(tar_info, 'name', None)
+    if path is not None:
+      try:
+        path = path.decode(self._file_system.encoding)
+      except UnicodeDecodeError:
+        path = None
+    return self._file_system.BasenamePath(path)
 
   @property
   def sub_file_entries(self):
@@ -175,18 +175,6 @@ class TarFileEntry(file_entry.FileEntry):
     if self._directory:
       for path_spec in self._directory.entries:
         yield TarFileEntry(self._resolver_context, self._file_system, path_spec)
-
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._tar_info is None:
-      self._tar_info = self.GetTarInfo()
-
-    tar_file_object = self.GetTarExFileObject()
-    file_object = dfvfs.file_io.tar_file_io.TarFile(
-        self._resolver_context, tar_info=self._tar_info,
-        tar_file_object=tar_file_object)
-    file_object.open()
-    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
@@ -205,18 +193,6 @@ class TarFileEntry(file_entry.FileEntry):
         location=parent_location, parent=parent_path_spec)
     return TarFileEntry(self._resolver_context, self._file_system, path_spec)
 
-  def GetTarExFileObject(self):
-    """Retrieves the tar extracted file-like object.
-
-    Returns:
-      The extracted file-like object (instance of tarfile.ExFileObject).
-    """
-    if self._tar_info is None:
-      self._tar_info = self.GetTarInfo()
-
-    tar_file = self._file_system.GetTarFile()
-    return tar_file.extractfile(self._tar_info)
-
   def GetTarInfo(self):
     """Retrieves the tar info object.
 
@@ -226,16 +202,18 @@ class TarFileEntry(file_entry.FileEntry):
     Raises:
       ValueError: if the path specification is incorrect.
     """
-    location = getattr(self.path_spec, 'location', None)
+    if not self._tar_info:
+      location = getattr(self.path_spec, 'location', None)
+      if location is None:
+        raise ValueError(u'Path specification missing location.')
 
-    if location is None:
-      raise ValueError(u'Path specification missing location.')
+      if not location.startswith(self._file_system.LOCATION_ROOT):
+        raise ValueError(u'Invalid location in path specification.')
 
-    if not location.startswith(self._file_system.LOCATION_ROOT):
-      raise ValueError(u'Invalid location in path specification.')
+      if len(location) == 1:
+        return
 
-    if len(location) == 1:
-      return
+      tar_file = self._file_system.GetTarFile()
+      self._tar_info = tar_file.getmember(location[1:])
 
-    tar_file = self._file_system.GetTarFile()
-    return tar_file.getmember(location[1:])
+    return self._tar_info

@@ -26,7 +26,7 @@ class VmdkFile(file_object_io.FileObjectIO):
       A file-like object.
 
     Raises:
-      IOError: if the open file-like object could not be opened.
+      IOError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
     if not path_spec.HasParent():
@@ -102,7 +102,7 @@ class VmdkFile(file_object_io.FileObjectIO):
 
     # TODO: add parent image support.
     vmdk_handle.open_extent_data_files_file_objects(file_objects)
-      
+
     return vmdk_handle
 
   def get_size(self):

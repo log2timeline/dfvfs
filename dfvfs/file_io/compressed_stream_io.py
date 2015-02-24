@@ -51,7 +51,24 @@ class CompressedStream(file_io.FileIO):
       self._file_object_set_in_init = True
     else:
       self._file_object_set_in_init = False
-    self._is_open = False
+
+  def _Close(self):
+    """Closes the file-like object.
+
+       If the file-like object was passed in the init function
+       the compressed stream file-like object does not control
+       the file-like object and should not actually close it.
+
+    Raises:
+      IOError: if the close failed.
+    """
+    if not self._file_object_set_in_init:
+      self._file_object.close()
+      self._file_object = None
+
+    self._compressed_data = b''
+    self._uncompressed_data = b''
+    self._decompressor = None
 
   def _GetDecompressor(self):
     """Retrieves the decompressor."""
@@ -78,6 +95,37 @@ class CompressedStream(file_io.FileIO):
       uncompressed_stream_size += self._uncompressed_data_size
 
     return uncompressed_stream_size
+
+  def _Open(self, path_spec=None, mode='rb'):
+    """Opens the file-like object.
+
+    Args:
+      path_spec: optional path specification (instance of path.PathSpec).
+                 The default is None.
+      mode: optional file access mode. The default is 'rb' read-only binary.
+
+    Raises:
+      AccessError: if the access to open the file was denied.
+      IOError: if the file-like object could not be opened.
+      PathSpecError: if the path specification is incorrect.
+      ValueError: if the path specification is invalid.
+    """
+    if not self._file_object_set_in_init and not path_spec:
+      raise ValueError(u'Missing path specfication.')
+
+    if not self._file_object_set_in_init:
+      if not path_spec.HasParent():
+        raise errors.PathSpecError(
+            u'Unsupported path specification without parent.')
+
+      self._compression_method = getattr(path_spec, 'compression_method', None)
+
+      if self._compression_method is None:
+        raise errors.PathSpecError(
+            u'Path specification missing compression method.')
+
+      self._file_object = resolver.Resolver.OpenFileObject(
+          path_spec.parent, resolver_context=self._resolver_context)
 
   def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
     """Aligns the compressed file with the uncompressed data offset.
@@ -128,93 +176,8 @@ class CompressedStream(file_io.FileIO):
 
     return read_count
 
-  def SetUncompressedStreamSize(self, uncompressed_stream_size):
-    """Sets the uncompressed stream size.
-
-       This function is used to set the uncompressed stream size if it can be
-       determined separately.
-
-    Args:
-      uncompressed_stream_size: the size of the uncompressed stream in bytes.
-
-    Raises:
-      IOError: if the file-like object is already open.
-      ValueError: if the uncompressed stream size is invalid.
-    """
-    if self._is_open:
-      raise IOError(u'Already open.')
-
-    if uncompressed_stream_size < 0:
-      raise ValueError((
-          u'Invalid uncompressed stream size: {0:d} value out of '
-          u'bounds.').format(uncompressed_stream_size))
-
-    self._uncompressed_stream_size = uncompressed_stream_size
-
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
-
-  def open(self, path_spec=None, mode='rb'):
-    """Opens the file-like object.
-
-    Args:
-      path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
-      mode: optional file access mode. The default is 'rb' read-only binary.
-
-    Raises:
-      IOError: if the open file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification or mode is invalid.
-    """
-    if not self._file_object_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specfication.')
-
-    if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
-
-    if self._is_open:
-      raise IOError(u'Already open.')
-
-    if not self._file_object_set_in_init:
-      if not path_spec.HasParent():
-        raise errors.PathSpecError(
-            u'Unsupported path specification without parent.')
-
-      self._compression_method = getattr(path_spec, 'compression_method', None)
-
-      if self._compression_method is None:
-        raise errors.PathSpecError(
-            u'Path specification missing compression method.')
-
-      self._file_object = resolver.Resolver.OpenFileObject(
-          path_spec.parent, resolver_context=self._resolver_context)
-
-    self._is_open = True
-
-  def close(self):
-    """Closes the file-like object.
-
-       If the file-like object was passed in the init function
-       the compressed stream file-like object does not control
-       the file-like object and should not actually close it.
-
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-    """
-    if not self._is_open:
-      raise IOError(u'Not opened.')
-
-    self._resolver_context.RemoveFileObject(self)
-
-    if not self._file_object_set_in_init:
-      self._file_object.close()
-      self._file_object = None
-
-    self._compressed_data = b''
-    self._uncompressed_data = b''
-    self._decompressor = None
-    self._is_open = False
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.

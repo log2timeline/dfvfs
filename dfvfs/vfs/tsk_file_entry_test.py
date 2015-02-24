@@ -5,7 +5,6 @@
 import os
 import unittest
 
-from dfvfs.file_io import os_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import context
@@ -21,15 +20,20 @@ class TSKFileEntryTest(unittest.TestCase):
     self._resolver_context = context.Context()
     test_file = os.path.join(u'test_data', u'ímynd.dd')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._os_file_object = os_file_io.OSFile(self._resolver_context)
-    self._os_file_object.open(self._os_path_spec, mode='rb')
-    self._file_system = tsk_file_system.TSKFileSystem(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+    self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
+        location=u'/', parent=self._os_path_spec)
+
+    self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
+    self._file_system.Open(path_spec=self._tsk_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
 
   def testIntialize(self):
     """Test the initialize functionality."""
     file_entry = tsk_file_entry.TSKFileEntry(
-        self._resolver_context, self._os_file_object, self._os_path_spec)
+        self._resolver_context, self._file_system, self._tsk_path_spec)
 
     self.assertNotEquals(file_entry, None)
 
@@ -157,6 +161,7 @@ class TSKFileEntryTest(unittest.TestCase):
         len(sub_file_entry_names), len(expected_sub_file_entry_names))
     self.assertEquals(
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+
 
 if __name__ == '__main__':
   unittest.main()

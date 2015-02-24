@@ -121,9 +121,9 @@ class ImageFileTestCase(unittest.TestCase):
 
     self.assertEquals(read_buffer, expected_buffer)
 
-    file_object.close()
-
     # TODO: add boundary scenarios.
+
+    file_object.close()
 
 
 class PartitionedImageFileTestCase(unittest.TestCase):

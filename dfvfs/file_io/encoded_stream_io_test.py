@@ -20,7 +20,7 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.base16')
+    test_file = os.path.join(u'test_data', u'syslog.base16')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(
@@ -76,7 +76,7 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.base32')
+    test_file = os.path.join(u'test_data', u'syslog.base32')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(
@@ -132,7 +132,7 @@ class Base64EncodedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.base64')
+    test_file = os.path.join(u'test_data', u'syslog.base64')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(

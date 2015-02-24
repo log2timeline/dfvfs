@@ -1,90 +1,210 @@
 # -*- coding: utf-8 -*-
 """The resolver objects cache."""
 
-import collections
+from dfvfs.lib import errors
+
+
+class ObjectsCacheValue(object):
+  """Class that implements the resolver object cache value."""
+
+  def __init__(self, vfs_object):
+    """Initializes the resolver objects cache value object.
+
+    Args:
+      vfs_object: the cached VFS object.
+    """
+    super(ObjectsCacheValue, self).__init__()
+    self._reference_count = 0
+    self.vfs_object = vfs_object
+
+  def DecrementReferenceCount(self):
+    """Decrements the reference count.
+
+    Raises:
+      RuntimeError: if the reference count is 0.
+    """
+    if self._reference_count == 0:
+      raise RuntimeError(u'Unable to decrement a reference count of 0.')
+
+    self._reference_count -= 1
+
+  def IncrementReferenceCount(self):
+    """Increments the reference count."""
+    self._reference_count += 1
+
+  def IsDereferenced(self):
+    """Checks if the cache value is dereferenced."""
+    return self._reference_count == 0
 
 
 class ObjectsCache(object):
   """Class that implements the resolver object cache."""
 
-  def __init__(self, maximum_number_of_cached_objects):
+  def __init__(self, maximum_number_of_cached_values):
     """Initializes the resolver objects cache object.
 
     Args:
-      maximum_number_of_cached_object: the maximum number of cached objects.
+      maximum_number_of_cached_values: the maximum number of cached values.
 
     Raises:
       ValueError: when the maximum number of cached objects is 0 or less.
     """
-    if maximum_number_of_cached_objects <= 0:
+    if maximum_number_of_cached_values <= 0:
       raise ValueError(
           u'Invalid maximum number of cached objects value zero or less.')
 
     super(ObjectsCache, self).__init__()
-    self._maximum_number_of_cached_objects = maximum_number_of_cached_objects
-    self._vfs_objects = {}
-    self._vfs_objects_mru = collections.deque()
+    self._maximum_number_of_cached_values = maximum_number_of_cached_values
+    self._values = {}
 
   def CacheObject(self, identifier, vfs_object):
     """Caches a VFS object.
 
-    Args:
-      identifier: string that identifiers the VFS object.
-      vfs_object: the VFS object to cache.
-    """
-    if len(self._vfs_objects) == self._maximum_number_of_cached_objects:
-      lfu_identifier = self._vfs_objects_mru.pop()
-      if lfu_identifier in self._vfs_objects:
-        del self._vfs_objects[lfu_identifier]
+    This method ignores the cache value reference count.
 
-    self._vfs_objects[identifier] = vfs_object
-    self._vfs_objects_mru.appendleft(identifier)
+    Args:
+      identifier: string that identifies the VFS object.
+      vfs_object: the VFS object to cache.
+
+    Raises:
+      CacheFullError: if he maximum number of cached values is reached.
+      KeyError: if the VFS object already is cached.
+    """
+    if identifier in self._values:
+      raise KeyError(u'Object already cached for identifier: {0:s}'.format(
+          identifier))
+
+    if len(self._values) == self._maximum_number_of_cached_values:
+      raise errors.CacheFullError(u'Maximum number of cached values reached.')
+
+    self._values[identifier] = ObjectsCacheValue(vfs_object)
 
   def Empty(self):
-    """Empties the cache."""
-    # Since we're changing the self._vfs_objects dict we cannot use iterkeys().
-    for key in self._vfs_objects.keys():
-      self._vfs_objects_mru.remove(key)
-      del self._vfs_objects[key]
+    """Empties the cache.
 
-  def GetIdentifier(self, vfs_object):
-    """Retrieves the identifier cached object.
+    This method ignores the cache value reference count.
+    """
+    # Since we're changing the self._values dict we cannot use iterkeys().
+    for identifier in self._values.keys():
+      del self._values[identifier]
+
+  def GetCacheValue(self, identifier):
+    """Retrieves the cache value based on the identifier.
+
+    Args:
+      identifier: string that identifies the VFS object.
+
+    Returns:
+      The cache value object (instance of ObjectsCacheValue) or
+      None if not cached.
+
+    Raises:
+      RuntimeError: if the cache value is missing.
+    """
+    return self._values.get(identifier, None)
+
+  def GetCacheValueByObject(self, vfs_object):
+    """Retrieves the cache value for the cached object.
 
     Args:
       vfs_object: the VFS object that was cached.
 
     Returns:
-      The string that identifiers the VFS object or None.
+      A tuple of the string that identifies the VFS object and
+      the cache value object (instance of ObjectsCacheValue) or
+      None if not cached.
+
+    Raises:
+      RuntimeError: if the cache value is missing.
     """
-    for key, value in self._vfs_objects.iteritems():
-      if vfs_object == value:
-        return key
+    for identifier, cache_value in self._values.iteritems():
+      if not cache_value:
+        raise RuntimeError(u'Missing cache value.')
+
+      if cache_value.vfs_object == vfs_object:
+        return identifier, cache_value
+
+    return None, None
 
   def GetObject(self, identifier):
     """Retrieves a cached object based on the identifier.
 
+    This method ignores the cache value reference count.
+
     Args:
-      identifier: string that identifiers the VFS object.
+      identifier: string that identifies the VFS object.
 
     Returns:
       The cached VFS object or None if not cached.
     """
-    if identifier not in self._vfs_objects:
+    if identifier not in self._values:
       return
 
-    self._vfs_objects_mru.remove(identifier)
-    self._vfs_objects_mru.appendleft(identifier)
+    cache_value = self._values[identifier]
+    if not cache_value:
+      return
 
-    return self._vfs_objects[identifier]
+    return cache_value.vfs_object
+
+  def GrabObject(self, identifier):
+    """Grabs a cached object based on the identifier.
+
+    This method increments the cache value reference count.
+
+    Args:
+      identifier: string that identifies the VFS object.
+
+    Raises:
+      KeyError: if the VFS object is not found in the cache.
+      RuntimeError: if the cache value is missing.
+    """
+    if identifier not in self._values:
+      raise KeyError(u'Missing cached object for identifier: {0:s}'.format(
+          identifier))
+
+    cache_value = self._values[identifier]
+    if not cache_value:
+      raise RuntimeError(u'Missing cache value for identifier: {0:s}'.format(
+          identifier))
+
+    cache_value.IncrementReferenceCount()
+
+  def ReleaseObject(self, identifier):
+    """Releases a cached object based on the identifier.
+
+    This method decrements the cache value reference count.
+
+    Args:
+      identifier: string that identifies the VFS object.
+
+    Raises:
+      KeyError: if the VFS object is not found in the cache.
+      RuntimeError: if the cache value is missing.
+    """
+    if identifier not in self._values:
+      raise KeyError(u'Missing cached object for identifier: {0:s}'.format(
+          identifier))
+
+    cache_value = self._values[identifier]
+    if not cache_value:
+      raise RuntimeError(u'Missing cache value for identifier: {0:s}'.format(
+          identifier))
+
+    cache_value.DecrementReferenceCount()
 
   def RemoveObject(self, identifier):
     """Removes a cached object based on the identifier.
 
-    Args:
-      identifier: string that identifiers the VFS object.
-    """
-    if identifier not in self._vfs_objects:
-      return
+    This method ignores the cache value reference count.
 
-    self._vfs_objects_mru.remove(identifier)
-    del self._vfs_objects[identifier]
+    Args:
+      identifier: string that identifies the VFS object.
+
+    Raises:
+      KeyError: if the VFS object is not found in the cache.
+    """
+    if identifier not in self._values:
+      raise KeyError(u'Missing cached object for identifier: {0:s}'.format(
+          identifier))
+
+    del self._values[identifier]

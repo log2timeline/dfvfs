@@ -422,7 +422,7 @@ class SourceScanner(object):
     """
     try:
       type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(
-          source_path_spec)
+          source_path_spec, resolver_context=self._resolver_context)
     except RuntimeError as exception:
       raise errors.BackEndError((
           u'Unable to process source path specification with error: '
@@ -455,7 +455,7 @@ class SourceScanner(object):
     """
     try:
       type_indicators = analyzer.Analyzer.GetStorageMediaImageTypeIndicators(
-          source_path_spec)
+          source_path_spec, resolver_context=self._resolver_context)
     except RuntimeError as exception:
       raise errors.BackEndError((
           u'Unable to process source path specification with error: '
@@ -510,7 +510,7 @@ class SourceScanner(object):
 
     try:
       type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
-          source_path_spec)
+          source_path_spec, resolver_context=self._resolver_context)
     except RuntimeError as exception:
       raise errors.BackEndError((
           u'Unable to process source path specification with error: '

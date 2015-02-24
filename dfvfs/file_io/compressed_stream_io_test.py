@@ -20,7 +20,7 @@ class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.bz2')
+    test_file = os.path.join(u'test_data', u'syslog.bz2')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
@@ -76,7 +76,7 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.zlib')
+    test_file = os.path.join(u'test_data', u'syslog.zlib')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(

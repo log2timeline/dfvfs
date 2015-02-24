@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file entry implementation."""
 
-# This is necessary to prevent a circular import.
-import dfvfs.file_io.vshadow_file_io
-
 from dfvfs.lib import date_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -67,7 +64,6 @@ class VShadowFileEntry(file_entry.FileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._name = None
-    self._vshadow_store = None
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of VShadowDirectory)."""
@@ -89,23 +85,21 @@ class VShadowFileEntry(file_entry.FileEntry):
       BackEndError: when the vshadow store is missing in a non-virtual
                     file entry.
     """
-    if self._vshadow_store is None:
-      self._vshadow_store = self.GetVShadowStore()
-
-    if not self._is_virtual and self._vshadow_store is None:
+    vshadow_store = self.GetVShadowStore()
+    if not self._is_virtual and vshadow_store is None:
       raise errors.BackEndError(
           u'Missing vshadow store in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    if self._vshadow_store is not None:
-      stat_object.size = self._vshadow_store.volume_size
+    if vshadow_store is not None:
+      stat_object.size = vshadow_store.volume_size
 
     # Date and time stat information.
-    if self._vshadow_store is not None:
+    if vshadow_store is not None:
       timestamp = date_time.PosixTimestamp.FromFiletime(
-          self._vshadow_store.get_creation_time_as_integer())
+          vshadow_store.get_creation_time_as_integer())
 
       if timestamp is not None:
         stat_object.crtime = timestamp
@@ -124,7 +118,7 @@ class VShadowFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """"The name of the file entry, which does not include the full path."""
+    """The name of the file entry, which does not include the full path."""
     if self._name is None:
       location = getattr(self.path_spec, 'location', None)
       if location is not None:
@@ -147,18 +141,6 @@ class VShadowFileEntry(file_entry.FileEntry):
       for path_spec in self._directory.entries:
         yield VShadowFileEntry(
             self._resolver_context, self._file_system, path_spec)
-
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO)."""
-    if self._vshadow_store is None:
-      self._vshadow_store = self.GetVShadowStore()
-
-    vshadow_volume = self._file_system.GetVShadowVolume()
-    file_object = dfvfs.file_io.vshadow_file_io.VShadowFile(
-        self._resolver_context, vshadow_volume=vshadow_volume,
-        vshadow_store=self._vshadow_store)
-    file_object.open()
-    return file_object
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""

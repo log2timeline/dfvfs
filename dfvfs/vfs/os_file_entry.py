@@ -8,9 +8,6 @@ import stat
 
 import pysmdev
 
-# This is necessary to prevent a circular import.
-import dfvfs.file_io.os_file_io
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
@@ -211,12 +208,6 @@ class OSFileEntry(file_entry.FileEntry):
     if self._directory:
       for path_spec in self._directory.entries:
         yield OSFileEntry(self._resolver_context, self._file_system, path_spec)
-
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.OSFile)."""
-    file_object = dfvfs.file_io.os_file_io.OSFile(self._resolver_context)
-    file_object.open(path_spec=self.path_spec)
-    return file_object
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link."""
