@@ -45,7 +45,7 @@ class ImageFileTestCase(unittest.TestCase):
       parent_path_spec: the parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', parent=parent_path_spec)
+        location=u'/passwords.txt', parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -61,7 +61,7 @@ class ImageFileTestCase(unittest.TestCase):
       parent_path_spec: the parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
+        inode=self._INODE_ANOTHER_FILE, location=u'/a_directory/another_file',
         parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
@@ -69,20 +69,20 @@ class ImageFileTestCase(unittest.TestCase):
     self.assertEquals(file_object.get_size(), 22)
 
     file_object.seek(10)
-    self.assertEquals(file_object.read(5), 'other')
+    self.assertEquals(file_object.read(5), b'other')
     self.assertEquals(file_object.get_offset(), 15)
 
     file_object.seek(-10, os.SEEK_END)
-    self.assertEquals(file_object.read(5), 'her f')
+    self.assertEquals(file_object.read(5), b'her f')
 
     file_object.seek(2, os.SEEK_CUR)
-    self.assertEquals(file_object.read(2), 'e.')
+    self.assertEquals(file_object.read(2), b'e.')
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
     file_object.seek(300, os.SEEK_SET)
     self.assertEquals(file_object.get_offset(), 300)
-    self.assertEquals(file_object.read(2), '')
+    self.assertEquals(file_object.read(2), b'')
 
     with self.assertRaises(IOError):
       file_object.seek(-10, os.SEEK_SET)
@@ -105,7 +105,7 @@ class ImageFileTestCase(unittest.TestCase):
       parent_path_spec: the parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
+        inode=self._INODE_PASSWORDS_TXT, location=u'/passwords.txt',
         parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
@@ -113,11 +113,11 @@ class ImageFileTestCase(unittest.TestCase):
     read_buffer = file_object.read()
 
     expected_buffer = (
-        'place,user,password\n'
-        'bank,joesmith,superrich\n'
-        'alarm system,-,1234\n'
-        'treasure chest,-,1111\n'
-        'uber secret laire,admin,admin\n')
+        b'place,user,password\n'
+        b'bank,joesmith,superrich\n'
+        b'alarm system,-,1234\n'
+        b'treasure chest,-,1111\n'
+        b'uber secret laire,admin,admin\n')
 
     self.assertEquals(read_buffer, expected_buffer)
 
@@ -224,17 +224,17 @@ class PartitionedImageFileTestCase(unittest.TestCase):
     file_object.seek(0x7420)
     self.assertEquals(file_object.get_offset(), 0x33420 - partition_offset)
     self.assertEquals(
-        file_object.read(16), 'lost+found\x00\x00\x00\x00\x00\x00')
+        file_object.read(16), b'lost+found\x00\x00\x00\x00\x00\x00')
     self.assertEquals(file_object.get_offset(), 0x33430 - partition_offset)
 
     file_object.seek(-1251324, os.SEEK_END)
     self.assertEquals(file_object.get_offset(), 0x36804 - partition_offset)
-    self.assertEquals(file_object.read(8), '\x03\x00\x00\x00\x04\x00\x00\x00')
+    self.assertEquals(file_object.read(8), b'\x03\x00\x00\x00\x04\x00\x00\x00')
     self.assertEquals(file_object.get_offset(), 0x3680c - partition_offset)
 
     file_object.seek(4, os.SEEK_CUR)
     self.assertEquals(file_object.get_offset(), 0x36810 - partition_offset)
-    self.assertEquals(file_object.read(7), '\x06\x00\x00\x00\x00\x00\x00')
+    self.assertEquals(file_object.read(7), b'\x06\x00\x00\x00\x00\x00\x00')
     self.assertEquals(file_object.get_offset(), 0x36817 - partition_offset)
 
     # Conforming to the POSIX seek the offset can exceed the file size
@@ -242,7 +242,7 @@ class PartitionedImageFileTestCase(unittest.TestCase):
     expected_offset = (2528 * self._BYTES_PER_SECTOR) + 100
     file_object.seek(expected_offset, os.SEEK_SET)
     self.assertEquals(file_object.get_offset(), expected_offset)
-    self.assertEquals(file_object.read(20), '')
+    self.assertEquals(file_object.read(20), b'')
 
     with self.assertRaises(IOError):
       file_object.seek(-10, os.SEEK_SET)
@@ -275,8 +275,8 @@ class PartitionedImageFileTestCase(unittest.TestCase):
     file_object.seek(0x2e900 - partition_offset)
 
     expected_data = (
-        '\xc0\x41\x00\x00\x00\x30\x00\x00\xc8\x8c\xb9\x52\xc8\x8c\xb9\x52'
-        '\xc8\x8c\xb9\x52\x00\x00\x00\x00\x00\x00\x02\x00\x18\x00\x00\x00')
+        b'\xc0\x41\x00\x00\x00\x30\x00\x00\xc8\x8c\xb9\x52\xc8\x8c\xb9\x52'
+        b'\xc8\x8c\xb9\x52\x00\x00\x00\x00\x00\x00\x02\x00\x18\x00\x00\x00')
 
     self.assertEquals(file_object.read(32), expected_data)
 
@@ -302,22 +302,22 @@ class SylogTestCase(unittest.TestCase):
       base_offset: optional base offset use in the tests, the default is 167.
     """
     file_object.seek(base_offset + 10)
-    self.assertEquals(file_object.read(5), '53:01')
+    self.assertEquals(file_object.read(5), b'53:01')
 
     expected_offset = base_offset + 15
     self.assertEquals(file_object.get_offset(), expected_offset)
 
     file_object.seek(-10, os.SEEK_END)
-    self.assertEquals(file_object.read(5), 'times')
+    self.assertEquals(file_object.read(5), b'times')
 
     file_object.seek(2, os.SEEK_CUR)
-    self.assertEquals(file_object.read(2), '--')
+    self.assertEquals(file_object.read(2), b'--')
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
     file_object.seek(2000, os.SEEK_SET)
     self.assertEquals(file_object.get_offset(), 2000)
-    self.assertEquals(file_object.read(2), '')
+    self.assertEquals(file_object.read(2), b'')
 
     # Test with an invalid offset.
     with self.assertRaises(IOError):
@@ -345,8 +345,8 @@ class SylogTestCase(unittest.TestCase):
     self.assertEquals(file_object.get_offset(), base_offset)
 
     expected_buffer = (
-        'Jan 22 07:53:01 myhostname.myhost.com CRON[31051]: (root) CMD '
-        '(touch /var/run/crond.somecheck)\n')
+        b'Jan 22 07:53:01 myhostname.myhost.com CRON[31051]: (root) CMD '
+        b'(touch /var/run/crond.somecheck)\n')
 
     read_buffer = file_object.read(95)
 

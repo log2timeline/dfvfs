@@ -18,7 +18,7 @@ class GzipFileTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.gz')
+    test_file = os.path.join(u'test_data', u'syslog.gz')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
 
@@ -31,7 +31,7 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     self.assertEquals(file_object.modification_time, 0x501416d7)
     self.assertEquals(file_object.operating_system, 0x03)
-    self.assertEquals(file_object.original_filename, 'syslog.1')
+    self.assertEquals(file_object.original_filename, u'syslog.1')
     self.assertEquals(file_object.comment, None)
 
     file_object.close()
