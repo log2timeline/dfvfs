@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Installation and deployment script."""
 
-import glob
 import os
 import sys
 
@@ -69,6 +68,8 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    package_dir={'dfvfs': 'dfvfs'},
     packages=find_packages('.'),
+    package_dir={
+        'dfvfs': 'dfvfs'
+    },
 )

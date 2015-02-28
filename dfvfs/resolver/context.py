@@ -75,11 +75,10 @@ class Context(object):
     Returns:
       A boolean that indicates the file-like object was cached or not.
     """
-    file_object = self._file_object_cache.GetObject(path_spec.comparable)
-    if not file_object:
+    cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
+    if not cache_value:
       return False
 
-    cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
     while not cache_value.IsDereferenced():
       cache_value.vfs_object.close()
 
@@ -95,6 +94,21 @@ class Context(object):
       The file-like object (instance of file_io.FileIO) or None if not cached.
     """
     return self._file_object_cache.GetObject(path_spec.comparable)
+
+  def GetFileObjectReferenceCount(self, path_spec):
+    """Retrieves the reference count of a cached file-like object.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      An integer containing the reference count or None if not cached.
+    """
+    cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
+    if not cache_value:
+      return
+
+    return cache_value.reference_count
 
   def GetFileSystem(self, path_spec):
     """Retrieves a file system object defined by path specification.
