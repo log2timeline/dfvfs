@@ -17,6 +17,11 @@ class ObjectsCacheValue(object):
     self._reference_count = 0
     self.vfs_object = vfs_object
 
+  @property
+  def reference_count(self):
+    """The reference count."""
+    return self._reference_count
+
   def DecrementReferenceCount(self):
     """Decrements the reference count.
 
@@ -137,10 +142,7 @@ class ObjectsCache(object):
     Returns:
       The cached VFS object or None if not cached.
     """
-    if identifier not in self._values:
-      return
-
-    cache_value = self._values[identifier]
+    cache_value = self._values.get(identifier, None)
     if not cache_value:
       return
 
