@@ -72,4 +72,8 @@ setup(
     package_dir={
         'dfvfs': 'dfvfs'
     },
+    data_files=[
+        ('share/doc/dfvfs', [
+            u'AUTHORS', u'ACKNOWLEDGEMENTS', u'LICENSE', u'README']),
+    ],
 )
