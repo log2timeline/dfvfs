@@ -89,7 +89,7 @@ if ! ${HAVE_REMOTE_ORIGIN};
 then
   if ! have_remote_upstream;
   then
-    echo "Review upload aborted - missing upstream.";
+    echo "Submit upload aborted - missing upstream.";
     echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
 
     exit ${EXIT_FAILURE};
@@ -97,14 +97,14 @@ then
 
   if have_master_branch;
   then
-    echo "Review upload aborted - current branch is master.";
+    echo "Submit upload aborted - current branch is master.";
 
     exit ${EXIT_FAILURE};
   fi
 
   if have_uncommitted_changes;
   then
-    echo "Review upload aborted - detected uncommitted changes.";
+    echo "Submit upload aborted - detected uncommitted changes.";
 
     exit ${EXIT_FAILURE};
   fi
@@ -116,7 +116,7 @@ then
 
     if test $? -ne 0;
     then
-      echo "Review upload aborted - unable to run: 'git pull upstream master'.";
+      echo "SubmiT upload aborted - unable to run: 'git pull upstream master'.";
 
       exit ${EXIT_FAILURE};
     fi
@@ -124,7 +124,7 @@ then
 
   if ! linter_pass;
   then
-    echo "Review upload aborted - fix the issues reported by the linter.";
+    echo "Submit upload aborted - fix the issues reported by the linter.";
 
     exit ${EXIT_FAILURE};
   fi
