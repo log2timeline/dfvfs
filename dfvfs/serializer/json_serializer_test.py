@@ -17,29 +17,28 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join('test_data', 'image.qcow2')
+    test_file = os.path.join(u'test_data', u'image.qcow2')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(
         parent=self._os_path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._qcow_path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location='/a_directory/another_file',
+        inode=16, location=u'/a_directory/another_file',
         parent=self._vshadow_path_spec)
 
-    test_path = os.path.abspath(test_file).encode('utf8')
+    test_path = os.path.abspath(test_file).encode(u'utf8')
     test_path_length = len(test_path)
 
     if test_path_length < 228:
       self._json_string = (
-          '{{"type_indicator": "TSK", "inode": 16, "location": '
-          '"/a_directory/another_file", "parent": "{{\\"store_index\\": 1, '
-          '\\"type_indicator\\": \\"VSHADOW\\", \\"parent\\": '
-          '\\"{{\\\\\\"type_indicator\\\\\\": \\\\\\"QCOW\\\\\\", '
-          '\\\\\\"parent\\\\\\": \\\\\\"{{\\\\\\\\\\\\\\"type_indicator'
-          '\\\\\\\\\\\\\\": \\\\\\\\\\\\\\"OS\\\\\\\\\\\\\\", \\\\\\\\\\\\\\'
-          '"location\\\\\\\\\\\\\\": \\\\\\\\\\\\\\"{0:s}\\\\\\\\\\\\\\"}}'
-          '\\\\\\"}}\\"}}"}}').format(test_path)
+          u'{{"inode": 16, "type_indicator": "TSK", "__type__": "PathSpec", '
+          u'"location": "/a_directory/another_file", '
+          u'"parent": {{"store_index": 1, "__type__": "PathSpec", '
+          u'"type_indicator": "VSHADOW", '
+          u'"parent": {{"type_indicator": "QCOW", "__type__": "PathSpec", '
+          u'"parent": {{"type_indicator": "OS", "__type__": "PathSpec", '
+          u'"location": "{0:s}"}}}}}}}}').format(test_path)
 
   def testReadSerialized(self):
     """Test the read serialized functionality."""
