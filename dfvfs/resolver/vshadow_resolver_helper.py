@@ -33,7 +33,7 @@ class VShadowResolverHelper(resolver_helper.ResolverHelper):
       resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
-      The file system object (instance of vfs.TSKFileSystem).
+      The file system object (instance of vfs.FileSystem).
     """
     return dfvfs.vfs.vshadow_file_system.VShadowFileSystem(resolver_context)
 

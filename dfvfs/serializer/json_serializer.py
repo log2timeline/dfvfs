@@ -100,10 +100,9 @@ class _PathSpecJsonEncoder(json.JSONEncoder):
 
     json_dict = {u'__type__': u'PathSpec'}
     for property_name in path_spec_factory.Factory.PROPERTY_NAMES:
-      if hasattr(path_spec_object, property_name):
-        property_value = getattr(path_spec_object, property_name, None)
-        if property_value is not None:
-          json_dict[property_name] = property_value
+      property_value = getattr(path_spec_object, property_name, None)
+      if property_value is not None:
+        json_dict[property_name] = property_value
 
     if path_spec_object.HasParent():
       json_dict[u'parent'] = self.default(path_spec_object.parent)

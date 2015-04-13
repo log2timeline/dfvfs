@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Tests for the operating system path specification implementation."""
 
+import platform
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -13,31 +14,47 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
   def testInitialize(self):
     """Tests the path specification initialization."""
-    path_spec = os_path_spec.OSPathSpec(location=u'/test')
+    if platform.system() == u'Windows':
+      test_location = u'C:\\test'
+    else:
+      test_location = u'/test'
+
+    path_spec = os_path_spec.OSPathSpec(location=test_location)
 
     self.assertNotEquals(path_spec, None)
 
     with self.assertRaises(ValueError):
-      _ = os_path_spec.OSPathSpec(location=u'/test', parent=self._path_spec)
+      _ = os_path_spec.OSPathSpec(
+          location=test_location, parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = os_path_spec.OSPathSpec(location=u'/test', bogus=u'BOGUS')
+      _ = os_path_spec.OSPathSpec(location=test_location, bogus=u'BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
-    path_spec = os_path_spec.OSPathSpec(location=u'/test')
+    if platform.system() == u'Windows':
+      test_location = u'C:\\test'
+    else:
+      test_location = u'/test'
+
+    path_spec = os_path_spec.OSPathSpec(location=test_location)
 
     self.assertNotEquals(path_spec, None)
 
     expected_comparable = u'\n'.join([
-        u'type: OS, location: /test',
+        u'type: OS, location: {0:s}'.format(test_location),
         u''])
 
     self.assertEquals(path_spec.comparable, expected_comparable)
 
   def testIsSystemLevel(self):
     """Tests the IsSystemLevel function."""
-    path_spec = os_path_spec.OSPathSpec(location=u'/test')
+    if platform.system() == u'Windows':
+      test_location = u'C:\\test'
+    else:
+      test_location = u'/test'
+
+    path_spec = os_path_spec.OSPathSpec(location=test_location)
 
     self.assertNotEquals(path_spec, None)
     self.assertTrue(path_spec.IsSystemLevel())

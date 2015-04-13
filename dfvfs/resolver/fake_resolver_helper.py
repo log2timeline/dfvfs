@@ -24,7 +24,7 @@ class FakeResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file-like object (instance of file_io.FileIO).
     """
-    return dfvfs.file_io.fake_file_io.FakeFile(resolver_context)
+    return dfvfs.file_io.fake_file_io.FakeFile(resolver_context, b'')
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system object.
@@ -33,7 +33,7 @@ class FakeResolverHelper(resolver_helper.ResolverHelper):
       resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
-      The file system object (instance of vfs.TSKFileSystem).
+      The file system object (instance of vfs.FileSystem).
     """
     return dfvfs.vfs.fake_file_system.FakeFileSystem(resolver_context)
 
