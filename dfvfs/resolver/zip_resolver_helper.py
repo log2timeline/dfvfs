@@ -33,7 +33,7 @@ class ZipResolverHelper(resolver_helper.ResolverHelper):
       resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
-      The file system object (instance of vfs.TSKFileSystem).
+      The file system object (instance of vfs.FileSystem).
     """
     return dfvfs.vfs.zip_file_system.ZipFileSystem(resolver_context)
 

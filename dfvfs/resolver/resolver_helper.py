@@ -35,7 +35,7 @@ class ResolverHelper(object):
       resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
-      The file system object (instance of vfs.TSKFileSystem).
+      The file system object (instance of vfs.FileSystem).
     """
     # Note: not using NotImplementedError here since pylint then will complain
     # derived classes will need to implement the method, which should not
