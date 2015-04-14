@@ -102,7 +102,8 @@ class Context(object):
       path_spec: the VFS path specification (instance of path.PathSpec).
 
     Returns:
-      An integer containing the reference count or None if not cached.
+      An integer containing the reference count or None if there is no
+      file-like object for the corresponding path specification cached.
     """
     cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
     if not cache_value:
@@ -121,6 +122,23 @@ class Context(object):
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     return self._file_system_cache.GetObject(identifier)
+
+  def GetFileSystemReferenceCount(self, path_spec):
+    """Retrieves the reference count of a cached file system object.
+
+    Args:
+      path_spec: the VFS path specification (instance of path.PathSpec).
+
+    Returns:
+      An integer containing the reference count or None if there is no
+      file system for the corresponding path specification cached.
+    """
+    identifier = self._GetFileSystemCacheIdentifier(path_spec)
+    cache_value = self._file_system_cache.GetCacheValue(identifier)
+    if not cache_value:
+      return
+
+    return cache_value.reference_count
 
   def GrabFileObject(self, path_spec):
     """Grabs a cached file-like object defined by path specification.
