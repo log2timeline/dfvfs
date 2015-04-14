@@ -68,7 +68,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    packages=find_packages('.'),
+    packages=find_packages('.', exclude=[u'examples', u'tests']),
     package_dir={
         'dfvfs': 'dfvfs'
     },
