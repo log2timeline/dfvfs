@@ -10,7 +10,7 @@ class ResolverHelper(object):
   @property
   def type_indicator(self):
     """The type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
           u'Invalid resolver helper missing type indicator.')
@@ -27,7 +27,6 @@ class ResolverHelper(object):
       The file-like object (instance of file_io.FileIO).
     """
 
-  @abc.abstractmethod
   def NewFileSystem(self, unused_resolver_context):
     """Creates a new file system object.
 
@@ -37,7 +36,7 @@ class ResolverHelper(object):
     Returns:
       The file system object (instance of vfs.FileSystem).
     """
-    # Note: not using NotImplementedError here since pylint then will complain
-    # derived classes will need to implement the method, which should not
-    # be the the case.
-    raise RuntimeError('Missing implemention to create file system.')
+    # Note: not using NotImplementedError or @abc.abstractmethod here since
+    # pylint then will complain derived classes will need to implement
+    # abstract methods, which should not be the the case.
+    raise RuntimeError(u'Missing implemention to create file system.')
