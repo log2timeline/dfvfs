@@ -5,9 +5,9 @@
 import os
 import unittest
 
-from tests.file_io import test_lib
 from dfvfs.path import os_path_spec
 from dfvfs.path import vmdk_path_spec
+from tests.file_io import test_lib
 
 
 class VmdkFileTest(test_lib.ImageFileTestCase):

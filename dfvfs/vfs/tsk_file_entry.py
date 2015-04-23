@@ -262,7 +262,7 @@ class TSKFileEntry(file_entry.FileEntry):
       # path segment separator.
       try:
         link = u'{0:s}{1:s}'.format(
-          self._file_system.PATH_SEPARATOR, link.decode(u'utf8'))
+            self._file_system.PATH_SEPARATOR, link.decode(u'utf8'))
       except UnicodeError:
         raise errors.BackEndError(
             u'pytsk3 returned a non UTF-8 formatted link.')
@@ -321,11 +321,23 @@ class TSKFileEntry(file_entry.FileEntry):
     if not self.link:
       return
 
+    # TODO: is there a way to determine the link inode number here?
+    link_inode = None
+
     parent_path_spec = getattr(self.path_spec, u'parent', None)
     path_spec = tsk_path_spec.TSKPathSpec(
         location=self.link, parent=parent_path_spec)
-    # TODO: is there a way to determine the inode number here?
-    return TSKFileEntry(self._resolver_context, self._file_system, path_spec)
+
+    root_inode = self._file_system.GetRootInode()
+    if (self.link == self._file_system.LOCATION_ROOT or
+        (link_inode is not None and root_inode is not None and
+         link_inode == root_inode)):
+      is_root = True
+    else:
+      is_root = False
+
+    return TSKFileEntry(
+        self._resolver_context, self._file_system, path_spec, is_root=is_root)
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
@@ -339,26 +351,39 @@ class TSKFileEntry(file_entry.FileEntry):
     if parent_location == u'':
       parent_location = self._file_system.PATH_SEPARATOR
 
+    root_inode = self._file_system.GetRootInode()
+    if (parent_location == self._file_system.LOCATION_ROOT or
+        (parent_inode is not None and root_inode is not None and
+         parent_inode == root_inode)):
+      is_root = True
+    else:
+      is_root = False
+
     parent_path_spec = getattr(self.path_spec, u'parent', None)
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=parent_inode, location=parent_location, parent=parent_path_spec)
-    return TSKFileEntry(self._resolver_context, self._file_system, path_spec)
+    return TSKFileEntry(
+        self._resolver_context, self._file_system, path_spec, is_root=is_root)
 
   def GetTSKFile(self):
-    """Retrieves the SleuthKit file object (instance of pytsk3.File)."""
-    if not self._tsk_file:
-      fs_info = self._file_system.GetFsInfo()
+    """Retrieves the SleuthKit file object (instance of pytsk3.File).
 
+    Raises:
+      PathSpecError: when the path specification is missing inode and location.
+    """
+    if not self._tsk_file:
       # Opening a file by inode number is faster than opening a file
       # by location.
       inode = getattr(self.path_spec, u'inode', None)
       location = getattr(self.path_spec, u'location', None)
 
+      fs_info = self._file_system.GetFsInfo()
       if inode is not None:
         self._tsk_file = fs_info.open_meta(inode=inode)
       elif location is not None:
         self._tsk_file = fs_info.open(location)
       else:
-        raise RuntimeError(u'Path specification missing inode and location.')
+        raise errors.PathSpecError(
+            u'Path specification missing inode and location.')
 
     return self._tsk_file

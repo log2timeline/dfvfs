@@ -19,6 +19,11 @@ class TSKPathSpecTest(test_lib.PathSpecTestCase):
     self.assertNotEquals(path_spec, None)
 
     path_spec = tsk_path_spec.TSKPathSpec(
+        data_stream=u'test', location=u'/test', parent=self._path_spec)
+
+    self.assertNotEquals(path_spec, None)
+
+    path_spec = tsk_path_spec.TSKPathSpec(
         inode=1, parent=self._path_spec)
 
     self.assertNotEquals(path_spec, None)
@@ -51,6 +56,18 @@ class TSKPathSpecTest(test_lib.PathSpecTestCase):
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: TSK, location: /test',
+        u''])
+
+    self.assertEquals(path_spec.comparable, expected_comparable)
+
+    path_spec = tsk_path_spec.TSKPathSpec(
+        data_stream=u'test', location=u'/test', parent=self._path_spec)
+
+    self.assertNotEquals(path_spec, None)
+
+    expected_comparable = u'\n'.join([
+        u'type: TEST',
+        u'type: TSK, data stream: test, location: /test',
         u''])
 
     self.assertEquals(path_spec.comparable, expected_comparable)

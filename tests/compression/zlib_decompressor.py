@@ -5,8 +5,8 @@
 import unittest
 
 from dfvfs.compression import zlib_decompressor
-from tests.compression import test_lib
 from dfvfs.lib import errors
+from tests.compression import test_lib
 
 
 class ZlibDecompressorTestCase(test_lib.DecompressorTestCase):

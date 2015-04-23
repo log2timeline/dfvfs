@@ -6,10 +6,10 @@ import os
 import unittest
 
 from dfvfs.file_io import gzip_file_io
-from tests.file_io import test_lib
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
+from tests.file_io import test_lib
 
 
 class GzipFileTest(test_lib.SylogTestCase):

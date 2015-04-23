@@ -5,8 +5,8 @@
 import unittest
 
 from dfvfs.encoding import base16_decoder
-from tests.encoding import test_lib
 from dfvfs.lib import errors
+from tests.encoding import test_lib
 
 
 class Base16DecoderTestCase(test_lib.DecoderTestCase):

@@ -7,11 +7,11 @@ import unittest
 
 from dfvfs.file_io import compressed_stream_io
 from dfvfs.file_io import os_file_io
-from tests.file_io import test_lib
 from dfvfs.lib import definitions
 from dfvfs.path import compressed_stream_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
+from tests.file_io import test_lib
 
 
 class Bzip2CompressedStreamTest(test_lib.SylogTestCase):
