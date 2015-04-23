@@ -4,8 +4,8 @@
 
 import unittest
 
-from tests.resolver import test_lib
 from dfvfs.resolver import tsk_partition_resolver_helper
+from tests.resolver import test_lib
 
 
 class TSKPartitionResolverHelperTest(test_lib.ResolverHelperTestCase):

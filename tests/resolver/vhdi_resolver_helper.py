@@ -4,8 +4,8 @@
 
 import unittest
 
-from tests.resolver import test_lib
 from dfvfs.resolver import vhdi_resolver_helper
+from tests.resolver import test_lib
 
 
 class VhdiResolverHelperTest(test_lib.ResolverHelperTestCase):

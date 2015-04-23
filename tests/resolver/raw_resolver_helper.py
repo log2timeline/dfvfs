@@ -4,8 +4,8 @@
 
 import unittest
 
-from tests.resolver import test_lib
 from dfvfs.resolver import raw_resolver_helper
+from tests.resolver import test_lib
 
 
 class RawResolverHelperTest(test_lib.ResolverHelperTestCase):

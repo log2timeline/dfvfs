@@ -4,8 +4,8 @@
 
 import unittest
 
-from tests.resolver import test_lib
 from dfvfs.resolver import zip_resolver_helper
+from tests.resolver import test_lib
 
 
 class ZipResolverHelperTest(test_lib.ResolverHelperTestCase):

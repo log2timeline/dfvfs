@@ -7,10 +7,10 @@ import unittest
 
 from dfvfs.file_io import data_range_io
 from dfvfs.file_io import os_file_io
-from tests.file_io import test_lib
 from dfvfs.path import data_range_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
+from tests.file_io import test_lib
 
 
 class DataRangeTest(test_lib.SylogTestCase):

@@ -69,7 +69,7 @@ class TSKFileSystem(file_system.FileSystem):
     self._file_object = file_object
     self._tsk_file_system = tsk_file_system
 
-  def _GetRootInode(self):
+  def GetRootInode(self):
     """Retrieves the root inode or None."""
     # Note that because pytsk3.FS_Info does not explicitly define info
     # we need to check if the attribute exists and has a value other
@@ -91,6 +91,7 @@ class TSKFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
+    # Opening a file by inode number is faster than opening a file by location.
     tsk_file = None
     inode = getattr(path_spec, u'inode', None)
     location = getattr(path_spec, u'location', None)
@@ -120,14 +121,9 @@ class TSKFileSystem(file_system.FileSystem):
     inode = getattr(path_spec, u'inode', None)
     location = getattr(path_spec, u'location', None)
 
-    root_inode = self._GetRootInode()
-    if inode is not None and root_inode is not None and inode == root_inode:
-      tsk_file = self._tsk_file_system.open(self.LOCATION_ROOT)
-      return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
-          self._resolver_context, self, path_spec, tsk_file=tsk_file,
-          is_root=True)
-
-    elif location is not None and location == self.LOCATION_ROOT:
+    root_inode = self.GetRootInode()
+    if (location == self.LOCATION_ROOT or
+        (inode is not None and root_inode is not None and inode == root_inode)):
       tsk_file = self._tsk_file_system.open(self.LOCATION_ROOT)
       return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
           self._resolver_context, self, path_spec, tsk_file=tsk_file,
@@ -153,8 +149,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Retrieves the file system info object.
 
     Returns:
-      The SleuthKit file system info object (instance of
-      pytsk3.FS_Info).
+      The SleuthKit file system info object (instance of pytsk3.FS_Info).
     """
     return self._tsk_file_system
 
@@ -166,7 +161,7 @@ class TSKFileSystem(file_system.FileSystem):
     """
     kwargs = {}
 
-    root_inode = self._GetRootInode()
+    root_inode = self.GetRootInode()
     if root_inode is not None:
       kwargs[u'inode'] = root_inode
 

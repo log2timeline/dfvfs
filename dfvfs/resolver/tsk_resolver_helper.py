@@ -11,7 +11,7 @@ from dfvfs.resolver import resolver_helper
 
 
 class TSKResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the SleuthKit resolver helper."""
+  """Class that implements the SleuthKit (TSK) resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 

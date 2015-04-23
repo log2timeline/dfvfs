@@ -6,10 +6,10 @@ import os
 import unittest
 
 from dfvfs.file_io import zip_file_io
-from tests.file_io import test_lib
 from dfvfs.path import os_path_spec
 from dfvfs.path import zip_path_spec
 from dfvfs.resolver import context
+from tests.file_io import test_lib
 
 
 class ZipFileTest(test_lib.SylogTestCase):

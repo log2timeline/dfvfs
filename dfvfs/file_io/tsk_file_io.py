@@ -2,9 +2,11 @@
 """The SleuthKit (TSK) file-like object implementation."""
 
 import os
+
 import pytsk3
 
 from dfvfs.file_io import file_io
+from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
@@ -51,6 +53,8 @@ class TSKFile(file_io.FileIO):
     if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
+    data_stream = getattr(path_spec, u'data_stream', None)
+
     self._file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
 
@@ -82,7 +86,11 @@ class TSKFile(file_io.FileIO):
       raise IOError(
           u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
-    if self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
+    if data_stream:
+      # TODO: add data stream support.
+      raise errors.PathSpecError(u'Data stream not yet supported.')
+
+    elif self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
       raise IOError(u'Not a regular file.')
 
     self._current_offset = 0

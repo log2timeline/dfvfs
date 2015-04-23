@@ -15,8 +15,8 @@ from dfvfs.resolver import context
 class ImageFileTestCase(unittest.TestCase):
   """The unit test case for storage media image based test data."""
 
-  _INODE_PASSWORDS_TXT = 15
   _INODE_ANOTHER_FILE = 16
+  _INODE_PASSWORDS_TXT = 15
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
