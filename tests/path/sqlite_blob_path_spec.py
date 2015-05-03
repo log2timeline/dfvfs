@@ -17,13 +17,13 @@ class SQLiteBlobPathSpecTest(test_lib.PathSpecTestCase):
         table_name=u'test_table', column_name=u'test_column',
         row_condition=(u'identifier', u'==', 0), parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name=u'test_table', column_name=u'test_column', row_index=0,
         parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     with self.assertRaises(ValueError):
       _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
@@ -66,7 +66,7 @@ class SQLiteBlobPathSpecTest(test_lib.PathSpecTestCase):
         table_name=u'test_table', column_name=u'test_column',
         row_condition=(u'identifier', u'==', 0), parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -74,13 +74,13 @@ class SQLiteBlobPathSpecTest(test_lib.PathSpecTestCase):
          u'column name: test_column, row condition: "identifier == 0"'),
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name=u'test_table', column_name=u'test_column', row_index=0,
         parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -88,7 +88,7 @@ class SQLiteBlobPathSpecTest(test_lib.PathSpecTestCase):
          u'column name: test_column, row index: 0'),
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
 
 if __name__ == '__main__':

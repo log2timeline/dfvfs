@@ -33,9 +33,9 @@ class TextFileTest(unittest.TestCase):
     file_object.open(self._os_path_spec1)
     text_file_object = text_file.TextFile(file_object)
 
-    self.assertEquals(text_file_object.readline(), 'This is another file.\n')
+    self.assertEqual(text_file_object.readline(), 'This is another file.\n')
 
-    self.assertEquals(text_file_object.get_offset(), 22)
+    self.assertEqual(text_file_object.get_offset(), 22)
 
     file_object.close()
 
@@ -47,12 +47,12 @@ class TextFileTest(unittest.TestCase):
 
     lines = text_file_object.readlines()
 
-    self.assertEquals(len(lines), 5)
-    self.assertEquals(lines[0], 'place,user,password\n')
-    self.assertEquals(lines[1], 'bank,joesmith,superrich\n')
-    self.assertEquals(lines[2], 'alarm system,-,1234\n')
-    self.assertEquals(lines[3], 'treasure chest,-,1111\n')
-    self.assertEquals(lines[4], 'uber secret laire,admin,admin\n')
+    self.assertEqual(len(lines), 5)
+    self.assertEqual(lines[0], 'place,user,password\n')
+    self.assertEqual(lines[1], 'bank,joesmith,superrich\n')
+    self.assertEqual(lines[2], 'alarm system,-,1234\n')
+    self.assertEqual(lines[3], 'treasure chest,-,1111\n')
+    self.assertEqual(lines[4], 'uber secret laire,admin,admin\n')
 
     file_object.close()
 
@@ -64,10 +64,10 @@ class TextFileTest(unittest.TestCase):
 
     lines = text_file_object.readlines(sizehint=60)
 
-    self.assertEquals(len(lines), 3)
-    self.assertEquals(lines[0], 'place,user,password\n')
-    self.assertEquals(lines[1], 'bank,joesmith,superrich\n')
-    self.assertEquals(lines[2], 'alarm system,-,1234\n')
+    self.assertEqual(len(lines), 3)
+    self.assertEqual(lines[0], 'place,user,password\n')
+    self.assertEqual(lines[1], 'bank,joesmith,superrich\n')
+    self.assertEqual(lines[2], 'alarm system,-,1234\n')
 
     file_object.close()
 
@@ -81,7 +81,7 @@ class TextFileTest(unittest.TestCase):
 
     lines = text_file_object.readlines()
 
-    self.assertEquals(len(lines), 25)
+    self.assertEqual(len(lines), 25)
 
   def testIterator(self):
     """Test the iterator functionality."""
@@ -93,12 +93,12 @@ class TextFileTest(unittest.TestCase):
     for line in text_file_object:
       lines.append(line)
 
-    self.assertEquals(len(lines), 5)
-    self.assertEquals(lines[0], 'place,user,password\n')
-    self.assertEquals(lines[1], 'bank,joesmith,superrich\n')
-    self.assertEquals(lines[2], 'alarm system,-,1234\n')
-    self.assertEquals(lines[3], 'treasure chest,-,1111\n')
-    self.assertEquals(lines[4], 'uber secret laire,admin,admin\n')
+    self.assertEqual(len(lines), 5)
+    self.assertEqual(lines[0], 'place,user,password\n')
+    self.assertEqual(lines[1], 'bank,joesmith,superrich\n')
+    self.assertEqual(lines[2], 'alarm system,-,1234\n')
+    self.assertEqual(lines[3], 'treasure chest,-,1111\n')
+    self.assertEqual(lines[4], 'uber secret laire,admin,admin\n')
 
     file_object.close()
 

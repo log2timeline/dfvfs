@@ -25,7 +25,7 @@ class TSKFileSystemTest(unittest.TestCase):
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._tsk_path_spec)
 
@@ -34,7 +34,7 @@ class TSKFileSystemTest(unittest.TestCase):
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._tsk_path_spec)
 
@@ -51,7 +51,7 @@ class TSKFileSystemTest(unittest.TestCase):
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._tsk_path_spec)
 
@@ -59,7 +59,7 @@ class TSKFileSystemTest(unittest.TestCase):
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
     # There is no way to determine the file_entry.name without a location string
     # in the path_spec or retrieving the file_entry from its parent.
 
@@ -67,28 +67,28 @@ class TSKFileSystemTest(unittest.TestCase):
         inode=15, location=u'/password.txt', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.name, u'password.txt')
+    self.assertNotEqual(file_entry, None)
+    self.assertEqual(file_entry.name, u'password.txt')
 
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=19, location=u'/bogus.txt', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertEquals(file_entry, None)
+    self.assertEqual(file_entry, None)
 
     file_system.Close()
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._tsk_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.name, u'')
+    self.assertNotEqual(file_entry, None)
+    self.assertEqual(file_entry.name, u'')
 
     file_system.Close()
 

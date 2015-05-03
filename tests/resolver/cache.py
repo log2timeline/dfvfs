@@ -21,26 +21,26 @@ class ObjectsCacheValueTest(unittest.TestCase):
     vfs_object = TestVFSObject()
 
     cache_value = cache.ObjectsCacheValue(vfs_object)
-    self.assertNotEquals(cache_value, None)
+    self.assertNotEqual(cache_value, None)
 
     # pylint: disable=protected-access
-    self.assertEquals(cache_value._reference_count, 0)
+    self.assertEqual(cache_value._reference_count, 0)
 
     self.assertTrue(cache_value.IsDereferenced())
 
     cache_value.IncrementReferenceCount()
-    self.assertEquals(cache_value._reference_count, 1)
+    self.assertEqual(cache_value._reference_count, 1)
 
     self.assertFalse(cache_value.IsDereferenced())
 
     cache_value.IncrementReferenceCount()
-    self.assertEquals(cache_value._reference_count, 2)
+    self.assertEqual(cache_value._reference_count, 2)
 
     cache_value.DecrementReferenceCount()
-    self.assertEquals(cache_value._reference_count, 1)
+    self.assertEqual(cache_value._reference_count, 1)
 
     cache_value.DecrementReferenceCount()
-    self.assertEquals(cache_value._reference_count, 0)
+    self.assertEqual(cache_value._reference_count, 0)
 
     self.assertTrue(cache_value.IsDereferenced())
 
@@ -59,25 +59,25 @@ class ObjectsCacheTest(unittest.TestCase):
   def testCache(self):
     """Tests the cache functionality."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEquals(cache_object, None)
+    self.assertNotEqual(cache_object, None)
 
     # pylint: disable=protected-access
-    self.assertEquals(len(cache_object._values), 0)
+    self.assertEqual(len(cache_object._values), 0)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
-    self.assertEquals(len(cache_object._values), 1)
+    self.assertEqual(len(cache_object._values), 1)
 
     with self.assertRaises(KeyError):
       cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
-    self.assertEquals(len(cache_object._values), 1)
+    self.assertEqual(len(cache_object._values), 1)
 
     cache_object.RemoveObject(self._path_spec.comparable)
-    self.assertEquals(len(cache_object._values), 0)
+    self.assertEqual(len(cache_object._values), 0)
 
   def testCacheFull(self):
     """Tests if the CacheFullError is raised."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEquals(cache_object, None)
+    self.assertNotEqual(cache_object, None)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
@@ -90,7 +90,7 @@ class ObjectsCacheTest(unittest.TestCase):
   def testEmpty(self):
     """Tests the Empty method."""
     cache_object = cache.ObjectsCache(5)
-    self.assertNotEquals(cache_object, None)
+    self.assertNotEqual(cache_object, None)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
@@ -103,58 +103,58 @@ class ObjectsCacheTest(unittest.TestCase):
     cache_object.CacheObject(path_spec.comparable, vfs_object)
 
     # pylint: disable=protected-access
-    self.assertEquals(len(cache_object._values), 3)
+    self.assertEqual(len(cache_object._values), 3)
 
     cache_object.Empty()
-    self.assertEquals(len(cache_object._values), 0)
+    self.assertEqual(len(cache_object._values), 0)
 
   def testGetObject(self):
     """Tests the GetObject method."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEquals(cache_object, None)
+    self.assertNotEqual(cache_object, None)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
     cached_object = cache_object.GetObject(self._path_spec.comparable)
-    self.assertEquals(cached_object, self._vfs_object)
+    self.assertEqual(cached_object, self._vfs_object)
 
   def testGetCacheValueByObjectGetCacheValueByObject(self):
     """Tests the GetCacheValueByObject method."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEquals(cache_object, None)
+    self.assertNotEqual(cache_object, None)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
     identifier, cache_value = cache_object.GetCacheValueByObject(
         self._vfs_object)
-    self.assertEquals(identifier, self._path_spec.comparable)
-    self.assertEquals(cache_value.vfs_object, self._vfs_object)
+    self.assertEqual(identifier, self._path_spec.comparable)
+    self.assertEqual(cache_value.vfs_object, self._vfs_object)
 
   def testGrabAndRelease(self):
     """Tests the GrabObject and ReleaseObject methods."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEquals(cache_object, None)
+    self.assertNotEqual(cache_object, None)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
     _, cache_value = cache_object.GetCacheValueByObject(self._vfs_object)
     # pylint: disable=protected-access
-    self.assertEquals(cache_value._reference_count, 0)
+    self.assertEqual(cache_value._reference_count, 0)
 
     cache_object.GrabObject(self._path_spec.comparable)
     _, cache_value = cache_object.GetCacheValueByObject(self._vfs_object)
-    self.assertEquals(cache_value._reference_count, 1)
+    self.assertEqual(cache_value._reference_count, 1)
 
     cache_object.GrabObject(self._path_spec.comparable)
     _, cache_value = cache_object.GetCacheValueByObject(self._vfs_object)
-    self.assertEquals(cache_value._reference_count, 2)
+    self.assertEqual(cache_value._reference_count, 2)
 
     cache_object.ReleaseObject(self._path_spec.comparable)
     _, cache_value = cache_object.GetCacheValueByObject(self._vfs_object)
-    self.assertEquals(cache_value._reference_count, 1)
+    self.assertEqual(cache_value._reference_count, 1)
 
     cache_object.ReleaseObject(self._path_spec.comparable)
     _, cache_value = cache_object.GetCacheValueByObject(self._vfs_object)
-    self.assertEquals(cache_value._reference_count, 0)
+    self.assertEqual(cache_value._reference_count, 0)
 
 
 if __name__ == '__main__':

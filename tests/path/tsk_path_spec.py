@@ -16,22 +16,22 @@ class TSKPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     path_spec = tsk_path_spec.TSKPathSpec(
         data_stream=u'test', location=u'/test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=1, parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/test', inode=1, parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     with self.assertRaises(ValueError):
       _ = tsk_path_spec.TSKPathSpec(location=u'/test', parent=None)
@@ -51,50 +51,50 @@ class TSKPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: TSK, location: /test',
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = tsk_path_spec.TSKPathSpec(
         data_stream=u'test', location=u'/test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: TSK, data stream: test, location: /test',
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=1, parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: TSK, inode: 1',
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/test', inode=1, parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: TSK, inode: 1, location: /test',
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
 
 if __name__ == '__main__':

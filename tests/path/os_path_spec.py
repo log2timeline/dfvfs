@@ -21,7 +21,7 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
     path_spec = os_path_spec.OSPathSpec(location=test_location)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     with self.assertRaises(ValueError):
       _ = os_path_spec.OSPathSpec(
@@ -39,13 +39,13 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
     path_spec = os_path_spec.OSPathSpec(location=test_location)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: OS, location: {0:s}'.format(test_location),
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
   def testIsSystemLevel(self):
     """Tests the IsSystemLevel function."""
@@ -56,7 +56,7 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
     path_spec = os_path_spec.OSPathSpec(location=test_location)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
     self.assertTrue(path_spec.IsSystemLevel())
 
 

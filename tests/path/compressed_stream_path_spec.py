@@ -16,7 +16,7 @@ class CompressedStreamPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = compressed_stream_path_spec.CompressedStreamPathSpec(
         compression_method=u'test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     with self.assertRaises(ValueError):
       _ = compressed_stream_path_spec.CompressedStreamPathSpec(
@@ -35,14 +35,14 @@ class CompressedStreamPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = compressed_stream_path_spec.CompressedStreamPathSpec(
         compression_method=u'test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: COMPRESSED_STREAM, compression_method: test',
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
 
 if __name__ == '__main__':

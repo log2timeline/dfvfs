@@ -21,7 +21,7 @@ class ZlibDecompressorTestCase(test_lib.DecompressorTestCase):
 
     uncompressed_data, _ = decompressor.Decompress(compressed_data)
     expected_uncompressed_data = b'This is a test.'
-    self.assertEquals(uncompressed_data, expected_uncompressed_data)
+    self.assertEqual(uncompressed_data, expected_uncompressed_data)
 
     decompressor = zlib_decompressor.ZlibDecompressor()
 
@@ -41,7 +41,7 @@ class DeflateDecompressorTestCase(test_lib.DecompressorTestCase):
 
     uncompressed_data, _ = decompressor.Decompress(compressed_data)
     expected_uncompressed_data = b'This is a test.'
-    self.assertEquals(uncompressed_data, expected_uncompressed_data)
+    self.assertEqual(uncompressed_data, expected_uncompressed_data)
 
     decompressor = zlib_decompressor.DeflateDecompressor()
 

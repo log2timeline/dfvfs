@@ -46,7 +46,7 @@ class DataRangeTest(test_lib.SylogTestCase):
     file_object.SetRange(167, 1080)
     file_object.open()
 
-    self.assertEquals(file_object.get_size(), 1080)
+    self.assertEqual(file_object.get_size(), 1080)
 
     file_object.close()
     os_file_object.close()
@@ -58,7 +58,7 @@ class DataRangeTest(test_lib.SylogTestCase):
     file_object = data_range_io.DataRange(self._resolver_context)
     file_object.open(path_spec=self._data_range_path_spec)
 
-    self.assertEquals(file_object.get_size(), 1080)
+    self.assertEqual(file_object.get_size(), 1080)
 
     file_object.close()
 

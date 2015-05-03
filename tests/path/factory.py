@@ -18,7 +18,7 @@ class FactoryTest(unittest.TestCase):
     number_of_path_spec_types = len(factory.Factory._path_spec_types)
 
     factory.Factory.RegisterPathSpec(test_lib.TestPathSpec)
-    self.assertEquals(
+    self.assertEqual(
         len(factory.Factory._path_spec_types),
         number_of_path_spec_types + 1)
 
@@ -26,7 +26,7 @@ class FactoryTest(unittest.TestCase):
       factory.Factory.RegisterPathSpec(test_lib.TestPathSpec)
 
     factory.Factory.DeregisterPathSpec(test_lib.TestPathSpec)
-    self.assertEquals(
+    self.assertEqual(
         len(factory.Factory._path_spec_types), number_of_path_spec_types)
 
   def testNewPathSpec(self):
@@ -34,7 +34,7 @@ class FactoryTest(unittest.TestCase):
     test_path_spec = factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=u'/test')
 
-    self.assertNotEquals(test_path_spec, None)
+    self.assertNotEqual(test_path_spec, None)
 
   def testIsSystemLevelTypeIndicator(self):
     """Tests the IsSystemLevelTypeIndicator function."""

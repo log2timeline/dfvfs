@@ -15,7 +15,7 @@ class VmdkPathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification initialization."""
     path_spec = vmdk_path_spec.VmdkPathSpec(parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     with self.assertRaises(ValueError):
       _ = vmdk_path_spec.VmdkPathSpec(parent=None)
@@ -27,14 +27,14 @@ class VmdkPathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification comparable property."""
     path_spec = vmdk_path_spec.VmdkPathSpec(parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: VMDK',
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
 
 if __name__ == '__main__':

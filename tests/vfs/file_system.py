@@ -19,7 +19,7 @@ class FileSystemTest(unittest.TestCase):
     """Test the intialize functionality."""
     test_file_system = file_system.FileSystem(self._resolver_context)
 
-    self.assertNotEquals(test_file_system, None)
+    self.assertNotEqual(test_file_system, None)
 
   def testJoinPath(self):
     """Test the join path functionality."""
@@ -28,16 +28,16 @@ class FileSystemTest(unittest.TestCase):
     expected_path = u'/test1/test2/test3'
 
     path = test_file_system.JoinPath([u'test1', u'test2', u'test3'])
-    self.assertEquals(path, expected_path)
+    self.assertEqual(path, expected_path)
 
     path = test_file_system.JoinPath([u'/test1', u'test2//', u'test3/'])
-    self.assertEquals(path, expected_path)
+    self.assertEqual(path, expected_path)
 
     path = test_file_system.JoinPath([u'/test1/test2/', u'/test3/'])
-    self.assertEquals(path, expected_path)
+    self.assertEqual(path, expected_path)
 
     path = test_file_system.JoinPath([u'/test1///test2', u'test3'])
-    self.assertEquals(path, expected_path)
+    self.assertEqual(path, expected_path)
 
   def testSplitPath(self):
     """Test the split path functionality."""
@@ -46,13 +46,13 @@ class FileSystemTest(unittest.TestCase):
     expected_path_segments = [u'test1', u'test2', u'test3']
 
     path_segments = test_file_system.SplitPath(u'/test1/test2/test3')
-    self.assertEquals(path_segments, expected_path_segments)
+    self.assertEqual(path_segments, expected_path_segments)
 
     path_segments = test_file_system.SplitPath(u'/test1/test2/test3/')
-    self.assertEquals(path_segments, expected_path_segments)
+    self.assertEqual(path_segments, expected_path_segments)
 
     path_segments = test_file_system.SplitPath(u'/test1///test2/test3')
-    self.assertEquals(path_segments, expected_path_segments)
+    self.assertEqual(path_segments, expected_path_segments)
 
 
 if __name__ == '__main__':

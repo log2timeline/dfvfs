@@ -60,7 +60,7 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
     """Test the read serialized functionality."""
     serialized = u'{0!s}'.format(self._json_dict).replace(u'\'', u'"')
     path_spec = serializer.JsonPathSpecSerializer.ReadSerialized(serialized)
-    self.assertEquals(path_spec.comparable, self._tsk_path_spec.comparable)
+    self.assertEqual(path_spec.comparable, self._tsk_path_spec.comparable)
 
   def testWriteSerialized(self):
     """Test the write serialized functionality."""
@@ -70,7 +70,7 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
     # We need to compare dicts since we cannot determine the order
     # of values in the string.
     json_dict = json.loads(serialized)
-    self.assertEquals(json_dict, self._json_dict)
+    self.assertEqual(json_dict, self._json_dict)
 
 
 if __name__ == '__main__':

@@ -85,9 +85,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: E01.
@@ -97,9 +97,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E10.
@@ -111,9 +111,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA.
@@ -125,9 +125,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-EBA.
@@ -139,9 +139,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-EZZ.
@@ -153,9 +153,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-ZZZ.
@@ -167,9 +167,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-[ZZ.
@@ -194,9 +194,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: Ex01.
@@ -206,9 +206,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex10.
@@ -220,9 +220,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA.
@@ -234,9 +234,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-ExBA.
@@ -248,9 +248,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-ExZZ.
@@ -262,9 +262,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-ZxZZ.
@@ -276,9 +276,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: Ex01-Ex99,ExAA-[xZZ.
@@ -303,9 +303,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: s01.
@@ -315,9 +315,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s10.
@@ -329,9 +329,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa.
@@ -343,9 +343,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa-sba.
@@ -357,9 +357,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa-szz.
@@ -371,9 +371,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: s01-s99,saa-zzz.
@@ -385,9 +385,9 @@ class GlobEwfFileTest(unittest.TestCase):
     path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: E01-E99,EAA-[ZZ.

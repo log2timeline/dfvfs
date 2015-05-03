@@ -37,7 +37,7 @@ class EncodingManagerTest(unittest.TestCase):
     number_of_decoders = len(manager.EncodingManager._decoders)
 
     manager.EncodingManager.RegisterDecoder(TestDecoder)
-    self.assertEquals(
+    self.assertEqual(
         len(manager.EncodingManager._decoders),
         number_of_decoders + 1)
 
@@ -45,7 +45,7 @@ class EncodingManagerTest(unittest.TestCase):
       manager.EncodingManager.RegisterDecoder(TestDecoder)
 
     manager.EncodingManager.DeregisterDecoder(TestDecoder)
-    self.assertEquals(
+    self.assertEqual(
         len(manager.EncodingManager._decoders), number_of_decoders)
 
   def testGetDecoder(self):
@@ -55,7 +55,7 @@ class EncodingManagerTest(unittest.TestCase):
     self.assertIsInstance(decoder_object, base16_decoder.Base16Decoder)
 
     decoder_object = manager.EncodingManager.GetDecoder(u'bogus')
-    self.assertEquals(decoder_object, None)
+    self.assertEqual(decoder_object, None)
 
 
 if __name__ == '__main__':

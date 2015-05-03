@@ -54,9 +54,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test single segment file: dmg.
@@ -69,9 +69,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test single segment file: img.
@@ -84,9 +84,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test single segment file: raw.
@@ -99,9 +99,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
   def testGlobRawAlphabeticalExtension(self):
@@ -116,9 +116,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: aaa.
@@ -128,9 +128,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: aaa-aak.
@@ -146,9 +146,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: AAA-AAk.
@@ -164,9 +164,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
   def testGlobRawAlphabeticalSuffix(self):
@@ -181,9 +181,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: aaa.
@@ -193,9 +193,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: aaa-aak.
@@ -211,9 +211,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: AAA-AAk.
@@ -229,9 +229,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
   def testGlobRawNumericExtension(self):
@@ -246,9 +246,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: 000.
@@ -258,9 +258,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 000-010.
@@ -276,9 +276,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 001-010.
@@ -293,9 +293,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 1-10.
@@ -310,9 +310,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
   def testGlobRawNumericSuffix(self):
@@ -327,9 +327,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: 000.
@@ -339,9 +339,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 000-010.
@@ -356,9 +356,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 1-10.
@@ -373,9 +373,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 001-010.
@@ -390,9 +390,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
   def testGlobRawAsbExtension(self):
@@ -407,9 +407,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: 001.
@@ -419,9 +419,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 001-010.
@@ -437,9 +437,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
   def testGlobRawVmdkExtension(self):
@@ -454,9 +454,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test non exiting segment file: 001.
@@ -466,9 +466,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test multiple segment files: 001-010.
@@ -485,9 +485,9 @@ class GlobRawFileTest(unittest.TestCase):
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
-    self.assertEquals(
+    self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
-    self.assertEquals(
+    self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
 

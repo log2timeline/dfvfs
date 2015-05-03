@@ -35,14 +35,14 @@ class TSKFileEntryTest(unittest.TestCase):
     file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
   def testGetLinkedFileEntry(self):
     """Test the get linked file entry functionality."""
@@ -50,13 +50,13 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=13, location=u'/a_link', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
     linked_file_entry = file_entry.GetLinkedFileEntry()
 
-    self.assertNotEquals(linked_file_entry, None)
+    self.assertNotEqual(linked_file_entry, None)
 
-    self.assertEquals(linked_file_entry.name, u'another_file')
+    self.assertEqual(linked_file_entry.name, u'another_file')
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
@@ -65,13 +65,13 @@ class TSKFileEntryTest(unittest.TestCase):
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertNotEquals(parent_file_entry, None)
+    self.assertNotEqual(parent_file_entry, None)
 
-    self.assertEquals(parent_file_entry.name, u'a_directory')
+    self.assertEqual(parent_file_entry.name, u'a_directory')
 
   def testGetStat(self):
     """Test the get stat functionality."""
@@ -82,8 +82,8 @@ class TSKFileEntryTest(unittest.TestCase):
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEquals(stat_object, None)
-    self.assertEquals(stat_object.type, stat_object.TYPE_FILE)
+    self.assertNotEqual(stat_object, None)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
@@ -140,9 +140,9 @@ class TSKFileEntryTest(unittest.TestCase):
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
-    self.assertEquals(file_entry.number_of_sub_file_entries, 5)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 5)
 
     # Note that passwords.txt~ is currently ignored by dfvfs, since
     # its directory entry has no pytsk3.TSK_FS_META object.
@@ -157,9 +157,9 @@ class TSKFileEntryTest(unittest.TestCase):
     for sub_file_entry in file_entry.sub_file_entries:
       sub_file_entry_names.append(sub_file_entry.name)
 
-    self.assertEquals(
+    self.assertEqual(
         len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEquals(
+    self.assertEqual(
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
 

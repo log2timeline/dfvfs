@@ -29,10 +29,10 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     self._TestGetSizeFileObject(file_object)
 
-    self.assertEquals(file_object.modification_time, 0x501416d7)
-    self.assertEquals(file_object.operating_system, 0x03)
-    self.assertEquals(file_object.original_filename, u'syslog.1')
-    self.assertEquals(file_object.comment, None)
+    self.assertEqual(file_object.modification_time, 0x501416d7)
+    self.assertEqual(file_object.operating_system, 0x03)
+    self.assertEqual(file_object.original_filename, u'syslog.1')
+    self.assertEqual(file_object.comment, None)
 
     file_object.close()
 
