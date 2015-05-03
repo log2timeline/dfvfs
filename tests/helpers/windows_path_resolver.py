@@ -47,15 +47,15 @@ class WindowsPathResolverTest(unittest.TestCase):
 
     windows_path = u'C:\\testdir_os\\file1.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     test_windows_path = path_resolver.GetWindowsPath(path_spec)
-    self.assertEquals(test_windows_path, windows_path)
+    self.assertEqual(test_windows_path, windows_path)
 
     windows_path = u'C:\\testdir_os\\file6.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
   def testResolvePathImage(self):
     """Test the resolve path function on a storage media image."""
@@ -69,76 +69,76 @@ class WindowsPathResolverTest(unittest.TestCase):
         u'C:\\System Volume Information'
         u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     test_windows_path = path_resolver.GetWindowsPath(path_spec)
-    self.assertEquals(test_windows_path, windows_path)
+    self.assertEqual(test_windows_path, windows_path)
 
     windows_path = (
         u'\\\\?\\C:\\System Volume Information'
         u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     windows_path = (
         u'\\\\.\\C:\\System Volume Information'
         u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     expected_path = u'/syslog.gz'
 
     windows_path = u'\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     windows_path = u'C:\\..\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     expected_path = u'/'
 
     windows_path = u'\\'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     windows_path = u'S'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
     windows_path = u'\\\\?\\'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
     windows_path = u'\\\\.\\'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
     windows_path = u'\\\\?\\UNC\\server\\share\\directory\\file.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
     windows_path = u'\\\\server\\share\\directory\\file.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
     windows_path = u'SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
     windows_path = u'.\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
     windows_path = u'..\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
   def testResolvePathWithEnvironmentVariable(self):
     """Test the resolve path function with environment variable expansion."""
@@ -153,18 +153,18 @@ class WindowsPathResolverTest(unittest.TestCase):
 
     windows_path = u'%SystemRoot%\\{3808876b-c176-4e48-b7ae-04046e6cc752}'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertNotEquals(path_spec, None)
-    self.assertEquals(path_spec.location, expected_path)
+    self.assertNotEqual(path_spec, None)
+    self.assertEqual(path_spec.location, expected_path)
 
     expected_windows_path = (
         u'C:\\System Volume Information'
         u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     test_windows_path = path_resolver.GetWindowsPath(path_spec)
-    self.assertEquals(test_windows_path, expected_windows_path)
+    self.assertEqual(test_windows_path, expected_windows_path)
 
     windows_path = u'%WinDir%\\{3808876b-c176-4e48-b7ae-04046e6cc752}'
     path_spec = path_resolver.ResolvePath(windows_path)
-    self.assertEquals(path_spec, None)
+    self.assertEqual(path_spec, None)
 
 
 if __name__ == '__main__':

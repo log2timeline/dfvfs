@@ -30,7 +30,7 @@ class VShadowFileTest(unittest.TestCase):
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEquals(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 0x40000000)
     file_object.close()
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -45,7 +45,7 @@ class VShadowFileTest(unittest.TestCase):
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEquals(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 0x40000000)
     file_object.close()
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -69,41 +69,41 @@ class VShadowFileTest(unittest.TestCase):
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEquals(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 0x40000000)
 
     file_object.seek(0x1e0)
-    self.assertEquals(file_object.get_offset(), 0x1e0)
-    self.assertEquals(file_object.read(16), b'rl+Alt+Del to re')
-    self.assertEquals(file_object.get_offset(), 0x1f0)
+    self.assertEqual(file_object.get_offset(), 0x1e0)
+    self.assertEqual(file_object.read(16), b'rl+Alt+Del to re')
+    self.assertEqual(file_object.get_offset(), 0x1f0)
 
     file_object.seek(-40, os.SEEK_END)
-    self.assertEquals(file_object.get_offset(), 0x3fffffd8)
-    self.assertEquals(file_object.read(8), b'Press Ct')
-    self.assertEquals(file_object.get_offset(), 0x3fffffe0)
+    self.assertEqual(file_object.get_offset(), 0x3fffffd8)
+    self.assertEqual(file_object.read(8), b'Press Ct')
+    self.assertEqual(file_object.get_offset(), 0x3fffffe0)
 
     file_object.seek(3, os.SEEK_CUR)
-    self.assertEquals(file_object.get_offset(), 0x3fffffe3)
-    self.assertEquals(file_object.read(7), b'Alt+Del')
-    self.assertEquals(file_object.get_offset(), 0x3fffffea)
+    self.assertEqual(file_object.get_offset(), 0x3fffffe3)
+    self.assertEqual(file_object.read(7), b'Alt+Del')
+    self.assertEqual(file_object.get_offset(), 0x3fffffea)
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
     expected_offset = 0x40000000 + 100
     file_object.seek(expected_offset, os.SEEK_SET)
-    self.assertEquals(file_object.get_offset(), expected_offset)
-    self.assertEquals(file_object.read(20), b'')
+    self.assertEqual(file_object.get_offset(), expected_offset)
+    self.assertEqual(file_object.read(20), b'')
 
     with self.assertRaises(IOError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
-    self.assertEquals(file_object.get_offset(), expected_offset)
+    self.assertEqual(file_object.get_offset(), expected_offset)
 
     with self.assertRaises(IOError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
-    self.assertEquals(file_object.get_offset(), expected_offset)
+    self.assertEqual(file_object.get_offset(), expected_offset)
 
     file_object.close()
 
@@ -114,12 +114,12 @@ class VShadowFileTest(unittest.TestCase):
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEquals(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 0x40000000)
 
     file_object.seek(0x18e)
 
     expected_data = b'A disk read error occurred\x00\r\nBOOTMGR is missing'
-    self.assertEquals(file_object.read(47), expected_data)
+    self.assertEqual(file_object.read(47), expected_data)
 
     file_object.close()
 

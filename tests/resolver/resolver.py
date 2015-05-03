@@ -17,7 +17,7 @@ class ResolverTest(unittest.TestCase):
     number_of_resolver_helpers = len(resolver.Resolver._resolver_helpers)
 
     resolver.Resolver.RegisterHelper(test_lib.TestResolverHelper)
-    self.assertEquals(
+    self.assertEqual(
         len(resolver.Resolver._resolver_helpers),
         number_of_resolver_helpers + 1)
 
@@ -25,7 +25,7 @@ class ResolverTest(unittest.TestCase):
       resolver.Resolver.RegisterHelper(test_lib.TestResolverHelper)
 
     resolver.Resolver.DeregisterHelper(test_lib.TestResolverHelper)
-    self.assertEquals(
+    self.assertEqual(
         len(resolver.Resolver._resolver_helpers), number_of_resolver_helpers)
 
 

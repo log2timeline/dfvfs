@@ -18,7 +18,7 @@ class Base16DecoderTestCase(test_lib.DecoderTestCase):
 
     decoded_data, _ = decoder.Decode(b'0102030405060708')
     expected_decoded_data = b'\x01\x02\x03\x04\x05\x06\x07\x08'
-    self.assertEquals(decoded_data, expected_decoded_data)
+    self.assertEqual(decoded_data, expected_decoded_data)
 
     decoder = base16_decoder.Base16Decoder()
 

@@ -38,34 +38,34 @@ class BdeFileEntryTest(unittest.TestCase):
     """Test the initialize functionality."""
     file_entry = bde_file_entry.BdeFileEntry(
         self._resolver_context, self._file_system, self._bde_path_spec)
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
     parent_file_entry = file_entry.GetParentFileEntry()
-    self.assertEquals(parent_file_entry, None)
+    self.assertEqual(parent_file_entry, None)
 
   def testGetStat(self):
     """Test the get stat functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
     stat_object = file_entry.GetStat()
-    self.assertNotEquals(stat_object, None)
-    self.assertEquals(stat_object.type, stat_object.TYPE_FILE)
+    self.assertNotEqual(stat_object, None)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -81,9 +81,9 @@ class BdeFileEntryTest(unittest.TestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
-    self.assertEquals(file_entry.number_of_sub_file_entries, 0)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 0)
 
     expected_sub_file_entry_names = []
 
@@ -91,9 +91,9 @@ class BdeFileEntryTest(unittest.TestCase):
     for sub_file_entry in file_entry.sub_file_entries:
       sub_file_entry_names.append(sub_file_entry.name)
 
-    self.assertEquals(
+    self.assertEqual(
         len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEquals(
+    self.assertEqual(
         sorted(sub_file_entry_names), expected_sub_file_entry_names)
 
 

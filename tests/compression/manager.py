@@ -37,7 +37,7 @@ class CompressionManagerTest(unittest.TestCase):
     number_of_decompressors = len(manager.CompressionManager._decompressors)
 
     manager.CompressionManager.RegisterDecompressor(TestDecompressor)
-    self.assertEquals(
+    self.assertEqual(
         len(manager.CompressionManager._decompressors),
         number_of_decompressors + 1)
 
@@ -45,7 +45,7 @@ class CompressionManagerTest(unittest.TestCase):
       manager.CompressionManager.RegisterDecompressor(TestDecompressor)
 
     manager.CompressionManager.DeregisterDecompressor(TestDecompressor)
-    self.assertEquals(
+    self.assertEqual(
         len(manager.CompressionManager._decompressors), number_of_decompressors)
 
   def testGetDecompressor(self):
@@ -56,7 +56,7 @@ class CompressionManagerTest(unittest.TestCase):
         decompressor_object, zlib_decompressor.ZlibDecompressor)
 
     decompressor_object = manager.CompressionManager.GetDecompressor(u'bogus')
-    self.assertEquals(decompressor_object, None)
+    self.assertEqual(decompressor_object, None)
 
 
 if __name__ == '__main__':

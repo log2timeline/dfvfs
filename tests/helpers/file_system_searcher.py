@@ -47,7 +47,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = [
         u'/$AttrDef',
@@ -81,13 +81,13 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(locations, expected_locations)
+    self.assertEqual(locations, expected_locations)
 
     # Find all the file entries of type: FILE_ENTRY_TYPE_DIRECTORY.
     find_spec = file_system_searcher.FindSpec(
         file_entry_types=[definitions.FILE_ENTRY_TYPE_DIRECTORY])
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = [
         u'/',
@@ -102,13 +102,13 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(locations, expected_locations)
+    self.assertEqual(locations, expected_locations)
 
     # Find all the file entries of type: FILE_ENTRY_TYPE_LINK.
     find_spec = file_system_searcher.FindSpec(
         file_entry_types=[definitions.FILE_ENTRY_TYPE_LINK])
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = []
 
@@ -116,7 +116,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(locations, expected_locations)
+    self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a location.
     find_spec1 = file_system_searcher.FindSpec(
@@ -127,7 +127,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         location=u'/PASSWORD.TXT')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = [
         u'/$Extend/$RmMetadata',
@@ -137,13 +137,13 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(locations, expected_locations)
+    self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a case insensitive location.
     find_spec = file_system_searcher.FindSpec(
         location=u'/PASSWORD.TXT', case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = [
         u'/password.txt']
@@ -155,10 +155,10 @@ class FileSystemSearcherTest(unittest.TestCase):
         first_path_spec = path_spec
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(locations, expected_locations)
+    self.assertEqual(locations, expected_locations)
 
     test_relative_path = searcher.GetRelativePath(first_path_spec)
-    self.assertEquals(test_relative_path, u'/password.txt')
+    self.assertEqual(test_relative_path, u'/password.txt')
 
     # Find all the file entries with a location regular expression.
     find_spec1 = file_system_searcher.FindSpec(
@@ -169,7 +169,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         location_regex=u'/PASSWORD.TXT')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = [
         u'/$Extend/$RmMetadata',
@@ -179,14 +179,14 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(locations, expected_locations)
+    self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a case insensitive location regular
     # expression.
     find_spec = file_system_searcher.FindSpec(
         location_regex=u'/PASSWORD.TXT', case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = [
         u'/password.txt']
@@ -195,7 +195,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(locations, expected_locations)
+    self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a location.
     searcher = file_system_searcher.FileSystemSearcher(
@@ -205,7 +205,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         location_regex=location, case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEquals(path_spec_generator, None)
+    self.assertNotEqual(path_spec_generator, None)
 
     expected_locations = sorted([
         os.path.join(self._os_path, u'syslog.base16'),
@@ -227,13 +227,13 @@ class FileSystemSearcherTest(unittest.TestCase):
         first_path_spec = path_spec
       locations.append(getattr(path_spec, 'location', u''))
 
-    self.assertEquals(sorted(locations), expected_locations)
+    self.assertEqual(sorted(locations), expected_locations)
 
     _, path_separator, relative_path = locations[0].rpartition(os.path.sep)
     expected_relative_path = u'{0:s}{1:s}'.format(
         path_separator, relative_path)
     test_relative_path = searcher.GetRelativePath(first_path_spec)
-    self.assertEquals(test_relative_path, expected_relative_path)
+    self.assertEqual(test_relative_path, expected_relative_path)
 
 
 if __name__ == '__main__':

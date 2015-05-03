@@ -22,7 +22,7 @@ class Bzip2DecompressorTestCase(test_lib.DecompressorTestCase):
 
     uncompressed_data, _ = decompressor.Decompress(compressed_data)
     expected_uncompressed_data = b'This is a test.'
-    self.assertEquals(uncompressed_data, expected_uncompressed_data)
+    self.assertEqual(uncompressed_data, expected_uncompressed_data)
 
     # Test to trigger bz2 raising EOFError.
     with self.assertRaises(errors.BackEndError):

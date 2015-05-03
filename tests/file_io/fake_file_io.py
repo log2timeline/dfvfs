@@ -38,7 +38,7 @@ class FakeFileTest(unittest.TestCase):
         self._resolver_context, self._FILE_DATA1)
     file_object.open(path_spec=self._path_spec1)
 
-    self.assertEquals(file_object.get_size(), 116)
+    self.assertEqual(file_object.get_size(), 116)
     file_object.close()
 
     # TODO: add a failing scenario.
@@ -49,35 +49,35 @@ class FakeFileTest(unittest.TestCase):
         self._resolver_context, self._FILE_DATA2)
     file_object.open(path_spec=self._path_spec2)
 
-    self.assertEquals(file_object.get_size(), 22)
+    self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
-    self.assertEquals(file_object.read(5), 'other')
-    self.assertEquals(file_object.get_offset(), 15)
+    self.assertEqual(file_object.read(5), 'other')
+    self.assertEqual(file_object.get_offset(), 15)
 
     file_object.seek(-10, os.SEEK_END)
-    self.assertEquals(file_object.read(5), 'her f')
+    self.assertEqual(file_object.read(5), 'her f')
 
     file_object.seek(2, os.SEEK_CUR)
-    self.assertEquals(file_object.read(2), 'e.')
+    self.assertEqual(file_object.read(2), 'e.')
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
     file_object.seek(300, os.SEEK_SET)
-    self.assertEquals(file_object.get_offset(), 300)
-    self.assertEquals(file_object.read(2), '')
+    self.assertEqual(file_object.get_offset(), 300)
+    self.assertEqual(file_object.read(2), '')
 
     with self.assertRaises(IOError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
-    self.assertEquals(file_object.get_offset(), 300)
+    self.assertEqual(file_object.get_offset(), 300)
 
     with self.assertRaises(IOError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
-    self.assertEquals(file_object.get_offset(), 300)
+    self.assertEqual(file_object.get_offset(), 300)
 
     file_object.close()
 
@@ -96,7 +96,7 @@ class FakeFileTest(unittest.TestCase):
         'treasure chest,-,1111\n'
         'uber secret laire,admin,admin\n')
 
-    self.assertEquals(read_buffer, expected_buffer)
+    self.assertEqual(read_buffer, expected_buffer)
 
     file_object.close()
 

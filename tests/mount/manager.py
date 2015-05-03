@@ -30,10 +30,10 @@ class MountPointManagerTest(unittest.TestCase):
     manager.MountPointManager.RegisterMountPoint(u'C', self._qcow_path_spec)
 
     mount_point_path_spec = manager.MountPointManager.GetMountPoint(u'C')
-    self.assertEquals(mount_point_path_spec, self._qcow_path_spec)
+    self.assertEqual(mount_point_path_spec, self._qcow_path_spec)
 
     mount_point_path_spec = manager.MountPointManager.GetMountPoint(u'D')
-    self.assertEquals(mount_point_path_spec, None)
+    self.assertEqual(mount_point_path_spec, None)
 
     manager.MountPointManager.DeregisterMountPoint(u'C')
 
@@ -47,8 +47,8 @@ class MountPointManagerTest(unittest.TestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    self.assertNotEquals(file_object, None)
-    self.assertEquals(file_object.get_size(), 116)
+    self.assertNotEqual(file_object, None)
+    self.assertEqual(file_object.get_size(), 116)
     file_object.close()
 
     parent_path_spec = mount_path_spec.MountPathSpec(identifier=u'D')

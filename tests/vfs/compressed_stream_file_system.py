@@ -29,7 +29,7 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
     """Test the open and close functionality."""
     file_system = compressed_stream_file_system.CompressedStreamFileSystem(
         self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._compressed_stream_path_spec)
 
@@ -39,7 +39,7 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
     """Test the file entry exists by path specification functionality."""
     file_system = compressed_stream_file_system.CompressedStreamFileSystem(
         self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._compressed_stream_path_spec)
 
@@ -52,15 +52,15 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
     """Test the get entry by path specification functionality."""
     file_system = compressed_stream_file_system.CompressedStreamFileSystem(
         self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._compressed_stream_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(
         self._compressed_stream_path_spec)
 
-    self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.name, u'')
+    self.assertNotEqual(file_entry, None)
+    self.assertEqual(file_entry.name, u'')
 
     file_system.Close()
 
@@ -68,14 +68,14 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
     """Test the get root file entry functionality."""
     file_system = compressed_stream_file_system.CompressedStreamFileSystem(
         self._resolver_context)
-    self.assertNotEquals(file_system, None)
+    self.assertNotEqual(file_system, None)
 
     file_system.Open(path_spec=self._compressed_stream_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEquals(file_entry, None)
-    self.assertEquals(file_entry.name, u'')
+    self.assertNotEqual(file_entry, None)
+    self.assertEqual(file_entry.name, u'')
 
     file_system.Close()
 

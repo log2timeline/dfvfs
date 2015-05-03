@@ -49,7 +49,7 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
     if self._proto:
       path_spec = serializer.ProtobufPathSpecSerializer.ReadSerializedObject(
           self._proto)
-      self.assertEquals(path_spec.comparable, self._tsk_path_spec.comparable)
+      self.assertEqual(path_spec.comparable, self._tsk_path_spec.comparable)
 
   def testWriteSerialized(self):
     """Test the write serialized functionality."""
@@ -57,7 +57,7 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
       serialized = serializer.ProtobufPathSpecSerializer.WriteSerializedObject(
           self._tsk_path_spec)
 
-      self.assertEquals(serialized, self._proto)
+      self.assertEqual(serialized, self._proto)
 
 
 if __name__ == '__main__':

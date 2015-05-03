@@ -16,7 +16,7 @@ class TarPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     with self.assertRaises(ValueError):
       _ = tar_path_spec.TarPathSpec(location=u'/test', parent=None)
@@ -33,14 +33,14 @@ class TarPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/test', parent=self._path_spec)
 
-    self.assertNotEquals(path_spec, None)
+    self.assertNotEqual(path_spec, None)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
         u'type: TAR, location: /test',
         u''])
 
-    self.assertEquals(path_spec.comparable, expected_comparable)
+    self.assertEqual(path_spec.comparable, expected_comparable)
 
 
 if __name__ == '__main__':

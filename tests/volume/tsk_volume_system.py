@@ -40,31 +40,31 @@ class TSKVolumeSystemTest(unittest.TestCase):
     volume_system = tsk_volume_system.TSKVolumeSystem()
     volume_system.Open(self._tsk_path_spec)
 
-    self.assertEquals(volume_system.bytes_per_sector, 512)
+    self.assertEqual(volume_system.bytes_per_sector, 512)
 
-    self.assertEquals(volume_system.number_of_sections, 7)
-    self.assertEquals(volume_system.number_of_volumes, 2)
+    self.assertEqual(volume_system.number_of_sections, 7)
+    self.assertEqual(volume_system.number_of_volumes, 2)
 
     volume = volume_system.GetVolumeByIndex(1)
 
-    self.assertNotEquals(volume, None)
-    self.assertEquals(volume.number_of_extents, 1)
-    self.assertEquals(volume.number_of_attributes, 2)
-    self.assertEquals(volume.identifier, 'p2')
+    self.assertNotEqual(volume, None)
+    self.assertEqual(volume.number_of_extents, 1)
+    self.assertEqual(volume.number_of_attributes, 2)
+    self.assertEqual(volume.identifier, 'p2')
 
     expected_value = 6
     volume_attribute = volume.GetAttribute('address')
-    self.assertNotEquals(volume_attribute, None)
-    self.assertEquals(volume_attribute.value, expected_value)
+    self.assertNotEqual(volume_attribute, None)
+    self.assertEqual(volume_attribute.value, expected_value)
 
     expected_value = u'Linux (0x83)'
     volume_attribute = volume.GetAttribute('description')
-    self.assertNotEquals(volume_attribute, None)
-    self.assertEquals(volume_attribute.value, expected_value)
+    self.assertNotEqual(volume_attribute, None)
+    self.assertEqual(volume_attribute.value, expected_value)
 
     volume = volume_system.GetVolumeByIndex(7)
 
-    self.assertEquals(volume, None)
+    self.assertEqual(volume, None)
 
 
 if __name__ == '__main__':

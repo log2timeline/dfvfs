@@ -35,7 +35,7 @@ class TarFileEntryTest(unittest.TestCase):
     file_entry = tar_file_entry.TarFileEntry(
         self._resolver_context, self._file_system, self._tar_path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
@@ -43,13 +43,13 @@ class TarFileEntryTest(unittest.TestCase):
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertNotEquals(parent_file_entry, None)
+    self.assertNotEqual(parent_file_entry, None)
 
-    self.assertEquals(parent_file_entry.name, u'')
+    self.assertEqual(parent_file_entry.name, u'')
 
   def testGetStat(self):
     """Test the get stat functionality."""
@@ -59,8 +59,8 @@ class TarFileEntryTest(unittest.TestCase):
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEquals(stat_object, None)
-    self.assertEquals(stat_object.type, stat_object.TYPE_FILE)
+    self.assertNotEqual(stat_object, None)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
@@ -100,9 +100,9 @@ class TarFileEntryTest(unittest.TestCase):
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEquals(file_entry, None)
+    self.assertNotEqual(file_entry, None)
 
-    self.assertEquals(file_entry.number_of_sub_file_entries, 1)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 1)
 
     expected_sub_file_entry_names = [u'syslog']
 
@@ -110,9 +110,9 @@ class TarFileEntryTest(unittest.TestCase):
     for sub_file_entry in file_entry.sub_file_entries:
       sub_file_entry_names.append(sub_file_entry.name)
 
-    self.assertEquals(
+    self.assertEqual(
         len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEquals(
+    self.assertEqual(
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
 
