@@ -3,6 +3,7 @@
 
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.encoded_stream_io
+import dfvfs.vfs.encoded_stream_file_system
 
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
@@ -24,6 +25,18 @@ class EncodedStreamResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of file_io.FileIO).
     """
     return dfvfs.file_io.encoded_stream_io.EncodedStream(resolver_context)
+
+  def NewFileSystem(self, resolver_context):
+    """Creates a new file system object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+
+    Returns:
+      The file system object (instance of vfs.EncodedStreamFileSystem).
+    """
+    return dfvfs.vfs.encoded_stream_file_system.EncodedStreamFileSystem(
+      resolver_context)
 
 
 # Register the resolver helpers with the resolver.

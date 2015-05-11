@@ -21,7 +21,7 @@ class EncodedStreamResolverHelperTest(test_lib.ResolverHelperTestCase):
     """Tests the NewFileSystem function."""
     resolver_helper_object = (
         encoded_stream_resolver_helper.EncodedStreamResolverHelper())
-    self._TestNewFileSystemRaisesRuntimeError(resolver_helper_object)
+    self._TestNewFileSystem(resolver_helper_object)
 
 
 if __name__ == '__main__':
