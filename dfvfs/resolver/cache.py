@@ -210,3 +210,18 @@ class ObjectsCache(object):
           identifier))
 
     del self._values[identifier]
+
+  def SetMaximumNumberOfCachedValues(self, maximum_number_of_cached_values):
+    """Sets the maximum number of cached values.
+
+    Args:
+      maximum_number_of_cached_values: the maximum number of cached values.
+
+    Raises:
+      ValueError: when the maximum number of cached objects is 0 or less.
+    """
+    if maximum_number_of_cached_values <= 0:
+      raise ValueError(
+          u'Invalid maximum number of cached objects value zero or less.')
+
+    self._maximum_number_of_cached_values = maximum_number_of_cached_values

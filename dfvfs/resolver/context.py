@@ -218,3 +218,23 @@ class Context(object):
       self._file_system_cache.RemoveObject(identifier)
 
     return result
+
+  def SetMaximumNumberOfFileObjects(self, maximum_number_of_file_objects):
+    """Sets the maximum number of cached filei-like objects.
+
+    Args:
+      maximum_number_of_file_objects: the maximum number of file-like
+                                      objects cached in the context.
+    """
+    self._file_object_cache.SetMaximumNumberOfCachedValues(
+        maximum_number_of_file_objects)
+
+  def SetMaximumNumberOfFileSystems(self, maximum_number_of_file_systems):
+    """Sets the maximum number of cached file system objects.
+
+    Args:
+      maximum_number_of_file_systems: the maximum number of file system
+                                      objects cached in the context.
+    """
+    self._file_system_cache.SetMaximumNumberOfCachedValues(
+        maximum_number_of_file_systems)
