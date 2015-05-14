@@ -13,13 +13,18 @@ fi
 
 . utils/common.sh
 
+if ! linting_is_correct;
+then
+  echo "Aborted - fix the issues reported by the linter.";
+
+  exit ${EXIT_FAILURE};
+fi
+
 # Determine if we have the master repo as origin.
 HAVE_REMOTE_ORIGIN=have_remote_origin;
 
-if ${HAVE_REMOTE_ORIGIN};
+if ! ${HAVE_REMOTE_ORIGIN};
 then
-  HAVE_UNCOMMITTED_CHANGES=1;
-else
   if ! have_remote_upstream;
   then
     echo "Review upload aborted - missing upstream.";
@@ -28,21 +33,12 @@ else
     exit ${EXIT_FAILURE};
   fi
 
-  HAVE_UNCOMMITTED_CHANGES=have_uncommitted_changes;
-fi
+  if ! linter_pass;
+  then
+    echo "Aborted - fix the issues reported by the linter.";
 
-if ${HAVE_UNCOMMITTED_CHANGES};
-then
-  LINTING_IS_CORRECT=linting_is_correct;
-else
-  LINTING_IS_CORRECT=linter_pass;
-fi
-
-if ! ${LINTING_IS_CORRECT};
-then
-  echo "Aborted - fix the issues reported by the linter.";
-
-  exit ${EXIT_FAILURE};
+    exit ${EXIT_FAILURE};
+  fi
 fi
 
 exit ${EXIT_SUCCESS};
