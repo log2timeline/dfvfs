@@ -75,11 +75,13 @@ class SourceScannerContext(object):
   def __init__(self):
     """Initializes the source scanner context object."""
     super(SourceScannerContext, self).__init__()
-
+    self._root_path_spec = None
     self._scan_nodes = {}
 
+    self.file_system_found = False
     self.last_scan_node = None
     self.source_type = None
+    self.updated = False
 
   def AddScanNode(self, path_spec, parent_scan_node):
     """Adds a scan node for a certain path specifiation.
@@ -93,22 +95,48 @@ class SourceScannerContext(object):
       The scan node (instance of SourceScanNode).
 
     Raises:
+      KeyError: if the scan node already exists.
       RuntimeError: if the parent scan node is not present.
     """
     scan_node = self._scan_nodes.get(path_spec, None)
-    if not scan_node:
-      scan_node = SourceScanNode(path_spec)
+    if scan_node:
+      raise KeyError(u'Scan node already exists.')
 
-      if parent_scan_node:
-        if parent_scan_node.path_spec not in self._scan_nodes:
-          raise RuntimeError(u'Parent scan node not present.')
-        scan_node.parent_node = parent_scan_node
-        parent_scan_node.sub_nodes.append(scan_node)
+    scan_node = SourceScanNode(path_spec)
+    if parent_scan_node:
+      if parent_scan_node.path_spec not in self._scan_nodes:
+        raise RuntimeError(u'Parent scan node not present.')
+      scan_node.parent_node = parent_scan_node
+      parent_scan_node.sub_nodes.append(scan_node)
 
-      self._scan_nodes[path_spec] = scan_node
+    if not self._root_path_spec:
+      self._root_path_spec = path_spec
+
+    self._scan_nodes[path_spec] = scan_node
 
     self.last_scan_node = scan_node
+    self.updated = True
     return scan_node
+
+  def HasScanNode(self, path_spec):
+    """Determines if there is a scan node for a certain path specifiation.
+
+    Args:
+      path_spec: the path specification (instance of path.PathSpec).
+
+    Returns:
+      A boolean value indicating if there is a scan node for
+      the path specification.
+    """
+    return self._scan_nodes.get(path_spec, None) is not None
+
+  def GetRootScanNode(self):
+    """Retrieves the root scan node.
+
+    Returns:
+      A scan node (instance of SourceScanNode) or None.
+    """
+    return self._scan_nodes.get(self._root_path_spec, None)
 
   def GetScanNode(self, path_spec):
     """Retrieves a scan node for a certain path specifiation.
@@ -174,6 +202,8 @@ class SourceScannerContext(object):
     if parent_scan_node:
       parent_scan_node.sub_nodes.remove(scan_node)
 
+    if path_spec == self._root_path_spec:
+      self._root_path_spec = None
     del self._scan_nodes[path_spec]
 
     self.last_scan_node = parent_scan_node
@@ -192,13 +222,6 @@ class SourceScannerContext(object):
 class SourceScanner(object):
   """Searcher object to find volumes within a volume system."""
 
-  _ENCRYPTED_VOLUME_TYPE_INDICATORS = frozenset([
-      definitions.TYPE_INDICATOR_BDE])
-
-  _VOLUME_SYSTEM_TYPE_INDICATORS = frozenset([
-      definitions.TYPE_INDICATOR_TSK_PARTITION,
-      definitions.TYPE_INDICATOR_VSHADOW])
-
   def __init__(self, resolver_context=None):
     """Initializes the file-like object.
 
@@ -213,13 +236,20 @@ class SourceScanner(object):
   # TODO: add functions to check if path spec type is an Image type,
   # FS type, etc.
 
-  def _ScanNode(self, scan_context, scan_node):
+  def _ScanNode(
+      self, scan_context, scan_node, auto_recurse=True, next_layer_input=True):
     """Scans for supported formats using a scan node.
 
     Args:
       scan_context: the source scanner context (instance of
                     SourceScannerContext).
       scan_node: the scan node (instance of SourceScanNode).
+      auto_recurse: optional boolean value to indicate if the scan should
+                    automatically recurse as far as possible. The default
+                    is False.
+      next_layer_input: optional boolean value to indicate if the scan should
+                        return if it needs input about the next layer. The
+                        default is True.
 
     Returns:
       The updated source scanner context (instance of SourceScannerContext).
@@ -230,6 +260,8 @@ class SourceScanner(object):
     """
     if not scan_context:
       raise ValueError(u'Invalid scan context.')
+
+    scan_context.updated = False
 
     if not scan_node:
       scan_context.last_scan_node = None
@@ -257,46 +289,64 @@ class SourceScanner(object):
         scan_context.SetSourceType(
             scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
+        if not auto_recurse:
+          return scan_context
+
     # In case we did not find a storage media image type we keep looking
     # since not all RAW storage media image naming schemas are known and
     # its type can only detected by its content.
 
+    source_path_spec = None
     while True:
+      last_source_path_spec = source_path_spec
       source_path_spec = self.ScanForVolumeSystem(scan_node.path_spec)
       if not source_path_spec:
         break
 
-      scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
+      if last_source_path_spec and last_source_path_spec == source_path_spec:
+        break
 
-      if system_level_file_entry and system_level_file_entry.IsDevice():
-        scan_context.SetSourceType(
-            scan_context.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
-      else:
-        scan_context.SetSourceType(
-            scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+      if not scan_context.HasScanNode(source_path_spec):
+        scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
-      if scan_node.type_indicator in self._VOLUME_SYSTEM_TYPE_INDICATORS:
+        if system_level_file_entry and system_level_file_entry.IsDevice():
+          scan_context.SetSourceType(
+              scan_context.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+        else:
+          scan_context.SetSourceType(
+              scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+      if scan_node.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
         file_system_scan_node = None
 
         # For VSS add a scan node for the current volume.
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
           path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
           if path_spec:
-            file_system_scan_node = scan_context.AddScanNode(
-                path_spec, scan_node)
+            if not scan_context.HasScanNode(path_spec):
+              file_system_scan_node = scan_context.AddScanNode(
+                  path_spec, scan_node)
+            else:
+              file_system_scan_node = scan_context.GetScanNode(path_spec)
 
         # Determine the path specifications of the sub file entries.
         file_entry = resolver.Resolver.OpenFileEntry(
             source_path_spec, resolver_context=self._resolver_context)
 
         for sub_file_entry in file_entry.sub_file_entries:
-          sub_scan_node = scan_context.AddScanNode(
-              sub_file_entry.path_spec, scan_node)
+          if not scan_context.HasScanNode(sub_file_entry.path_spec):
+            sub_scan_node = scan_context.AddScanNode(
+                sub_file_entry.path_spec, scan_node)
+          else:
+            sub_scan_node = scan_context.GetScanNode(sub_file_entry.path_spec)
 
           # Since this can be expensive and not always needed we do not scan
           # VSS snapshot volumes by default.
           if scan_node.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
-            scan_context = self._ScanNode(scan_context, sub_scan_node)
+            if auto_recurse or not scan_context.updated:
+              scan_context = self._ScanNode(
+                  scan_context, sub_scan_node, auto_recurse=auto_recurse,
+                  next_layer_input=next_layer_input)
 
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
           minimum_sub_file_entries = 0
@@ -306,15 +356,17 @@ class SourceScanner(object):
         # If there are more than sub file entry than the minumum we need more
         # information to determine the next layer.
         if file_entry.number_of_sub_file_entries > minimum_sub_file_entries:
-          scan_context.last_scan_node = scan_node
-          return scan_context
+          if next_layer_input:
+            scan_context.last_scan_node = scan_node
+            return scan_context
 
         # In case we detected a VSS without snapshots.
         if file_entry.number_of_sub_file_entries == 0:
           scan_context.last_scan_node = file_system_scan_node
           return scan_context
 
-      elif scan_node.type_indicator in self._ENCRYPTED_VOLUME_TYPE_INDICATORS:
+      elif scan_node.type_indicator in (
+          definitions.ENCRYPTED_VOLUME_TYPE_INDICATORS):
         file_object = resolver.Resolver.OpenFileObject(
             source_path_spec, resolver_context=self._resolver_context)
 
@@ -330,7 +382,20 @@ class SourceScanner(object):
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
           path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
           if path_spec:
-            _ = scan_context.AddScanNode(path_spec, scan_node)
+            if not scan_context.HasScanNode(path_spec):
+              _ = scan_context.AddScanNode(path_spec, scan_node)
+
+      if not auto_recurse and scan_context.updated:
+        return scan_context
+
+      if not scan_context.updated:
+        return scan_context
+
+    # Do not scan the root of a volume system for a file system.
+    if scan_node.path_spec.type_indicator in (
+        definitions.VOLUME_SYSTEM_TYPE_INDICATORS):
+      if getattr(scan_node.path_spec, u'location', None) == u'/':
+        return scan_context
 
     # In case we did not find a volume system type we keep looking
     # since we could be dealing with a storage media image that contains
@@ -349,7 +414,7 @@ class SourceScanner(object):
       else:
         scan_context.SetSourceType(scan_context.SOURCE_TYPE_FILE)
 
-    else:
+    elif not scan_context.HasScanNode(source_path_spec):
       scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
       if system_level_file_entry and system_level_file_entry.IsDevice():
@@ -358,6 +423,11 @@ class SourceScanner(object):
       else:
         scan_context.SetSourceType(
             scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+      scan_context.file_system_found = True
+
+    elif next_layer_input:
+      scan_context.last_scan_node = scan_context.GetScanNode(source_path_spec)
 
     return scan_context
 
@@ -378,12 +448,20 @@ class SourceScanner(object):
 
     return sorted(volume_identifiers)
 
-  def Scan(self, scan_context, scan_path_spec=None):
+  def Scan(
+      self, scan_context, auto_recurse=True, next_layer_input=True,
+      scan_path_spec=None):
     """Scans for supported formats.
 
     Args:
       scan_context: the source scanner context (instance of
                     SourceScannerContext).
+      auto_recurse: optional boolean value to indicate if the scan should
+                    automatically recurse as far as possible. The default
+                    is False.
+      next_layer_input: optional boolean value to indicate if the scan should
+                        return if it needs input about the next layer. The
+                        default is True.
       scan_path_spec: optional path specification (instance of path.PathSpec)
                       to indicate where the source scanner should continue
                       scanning. The default is None which indicates the
@@ -403,7 +481,9 @@ class SourceScanner(object):
     else:
       scan_node = scan_context.GetScanNode(scan_path_spec)
 
-    return self._ScanNode(scan_context, scan_node)
+    return self._ScanNode(
+        scan_context, scan_node, auto_recurse=auto_recurse,
+        next_layer_input=next_layer_input)
 
   def ScanForFileSystem(self, source_path_spec):
     """Scans the path specification for a supported file system format.
@@ -508,6 +588,12 @@ class SourceScanner(object):
     if source_path_spec.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
       return
 
+    # Check if we already have a volume system path specification.
+    if source_path_spec.type_indicator in (
+        definitions.VOLUME_SYSTEM_TYPE_INDICATORS):
+      if getattr(source_path_spec, u'location', None) == u'/':
+        return source_path_spec
+
     try:
       type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
           source_path_spec, resolver_context=self._resolver_context)
@@ -523,15 +609,12 @@ class SourceScanner(object):
       raise errors.BackEndError(
           u'Unsupported source found more than one volume system types.')
 
-    # TODO: improve the analyzer.
-    # The analyzer allows to detect a TSK partition volume system in
-    # a TSK partition volume system.
     if (type_indicators[0] == definitions.TYPE_INDICATOR_TSK_PARTITION and
         source_path_spec.type_indicator in [
             definitions.TYPE_INDICATOR_TSK_PARTITION]):
       return
 
-    if type_indicators[0] in self._VOLUME_SYSTEM_TYPE_INDICATORS:
+    if type_indicators[0] in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
       return path_spec_factory.Factory.NewPathSpec(
           type_indicators[0], location=u'/', parent=source_path_spec)
 

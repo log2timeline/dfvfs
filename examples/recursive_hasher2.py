@@ -1,25 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
-# Copyright 2014 The dfVFS Project Authors.
-# Please see the AUTHORS file for details on individual authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 """Script to recursively calculate a message digest hash for every file."""
 
 # If you update this script make sure to update the corresponding wiki page
 # as well: https://github.com/log2timeline/dfvfs/wiki/Development
 
+from __future__ import print_function
 import argparse
 import hashlib
 import logging
@@ -39,6 +25,10 @@ class RecursiveHasher(object):
 
   # Class constant that defines the default read buffer size.
   _READ_BUFFER_SIZE = 32768
+
+  # For context see: http://en.wikipedia.org/wiki/Byte
+  _UNITS_1000 = [u'B', u'kB', u'MB', u'GB', u'TB', u'EB', u'ZB', u'YB']
+  _UNITS_1024 = [u'B', u'KiB', u'MiB', u'GiB', u'TiB', u'EiB', u'ZiB', u'YiB']
 
   def __init__(self):
     """Initializes the recursive hasher object."""
@@ -84,6 +74,43 @@ class RecursiveHasher(object):
       self._CalculateHashesFileEntry(
           file_system, sub_file_entry, full_path, output_writer)
 
+  def _GetHumanReadableSize(self, size):
+    """Retrieves a human readable string of the size.
+
+    Args:
+      size: The size in bytes.
+
+    Returns:
+      A human readable string of the size.
+    """
+    magnitude_1000 = 0
+    size_1000 = float(size)
+    while size_1000 >= 1000:
+      size_1000 /= 1000
+      magnitude_1000 += 1
+
+    magnitude_1024 = 0
+    size_1024 = float(size)
+    while size_1024 >= 1024:
+      size_1024 /= 1024
+      magnitude_1024 += 1
+
+    size_string_1000 = None
+    if magnitude_1000 > 0 and magnitude_1000 <= 7:
+      size_string_1000 = u'{0:.1f}{1:s}'.format(
+          size_1000, self._UNITS_1000[magnitude_1000])
+
+    size_string_1024 = None
+    if magnitude_1024 > 0 and magnitude_1024 <= 7:
+      size_string_1024 = u'{0:.1f}{1:s}'.format(
+          size_1024, self._UNITS_1024[magnitude_1024])
+
+    if not size_string_1000 or not size_string_1024:
+      return u'{0:d} B'.format(size)
+
+    return u'{0:s} / {1:s} ({2:d} B)'.format(
+        size_string_1024, size_string_1000, size)
+
   def _GetNextLevelTSKPartionVolumeSystemPathSpec(self, scan_context):
     """Determines the next level volume system path specification.
 
@@ -114,18 +141,26 @@ class RecursiveHasher(object):
       selected_volume_identifier = u'p1'
 
     else:
-      print u'The following partitions were found:'
-      print u'Identifier\tOffset\t\tSize'
-      for volume in volume_system.volumes:
-        if hasattr(volume, 'identifier'):
-          volume_extent = volume.extents[0]
-          print u'{0:s}\t\t0x{1:08x}\t{2:d}'.format(
-              volume.identifier, volume_extent.offset, volume_extent.size)
+      print(u'The following partitions were found:')
+      print(u'Identifier\tOffset\t\t\tSize')
 
-      print u''
+      for volume_identifier in sorted(volume_identifiers):
+        volume = volume_system.GetVolumeByIdentifier(volume_identifier)
+        if not volume:
+          raise RuntimeError(
+              u'Volume missing for identifier: {0:s}.'.format(
+                  volume_identifier))
+
+        volume_extent = volume.extents[0]
+        print(
+            u'{0:s}\t\t{1:d} (0x{1:08x})\t{2:s}'.format(
+                volume.identifier, volume_extent.offset,
+                self._GetHumanReadableSize(volume_extent.size)))
+
+      print(u'')
 
       while True:
-        print (
+        print(
             u'Please specify the identifier of the partition that should '
             u'be processed:')
 
@@ -135,11 +170,11 @@ class RecursiveHasher(object):
         if selected_volume_identifier in volume_identifiers:
           break
 
-        print u''
-        print (
+        print(u'')
+        print(
             u'Unsupported partition identifier, please try again or abort '
             u'with Ctrl^C.')
-        print u''
+        print(u'')
 
     # We need to return the path specification as defined by the scan node.
     selected_location = u'/{0:s}'.format(selected_volume_identifier)
@@ -172,8 +207,8 @@ class RecursiveHasher(object):
     if not volume_identifiers:
       return
 
-    print u'The following Volume Shadow Snapshots (VSS) were found:'
-    print u'Identifier\tVSS store identifier'
+    print(u'The following Volume Shadow Snapshots (VSS) were found:')
+    print(u'Identifier\tVSS store identifier')
 
     for volume_identifier in volume_identifiers:
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
@@ -183,13 +218,13 @@ class RecursiveHasher(object):
                 volume_identifier))
 
       vss_identifier = volume.GetAttribute('identifier')
-      print u'{0:s}\t\t{1:s}'.format(
-          volume.identifier, vss_identifier.value)
+      print(u'{0:s}\t\t{1:s}'.format(
+          volume.identifier, vss_identifier.value))
 
-    print u''
+    print(u'')
 
     while True:
-      print (
+      print(
           u'Please specify the identifier of the volume shadow snapshot that '
           u'should be processed or none for no VSS:')
 
@@ -202,11 +237,11 @@ class RecursiveHasher(object):
       if selected_volume_identifier in volume_identifiers:
         break
 
-      print u''
-      print (
+      print(u'')
+      print(
           u'Unsupported volume shadow snapshot identifier, please try again or '
           u'abort with Ctrl^C.')
-      print u''
+      print(u'')
 
     # We need to return the path specification as defined by the scan node.
     selected_location = u'/{0:s}'.format(selected_volume_identifier)
@@ -330,7 +365,7 @@ class StdoutWriter(object):
       path: the path of the file.
       hash_value: the message digest hash calculated over the file data.
     """
-    print u'{0:s}\t{1:s}'.format(hash_value, path)
+    print(u'{0:s}\t{1:s}'.format(hash_value, path))
 
 
 def Main():
@@ -339,22 +374,22 @@ def Main():
   Returns:
     A boolean containing True if successful or False if not.
   """
-  args_parser = argparse.ArgumentParser(description=(
+  argument_parser = argparse.ArgumentParser(description=(
       'Calculates a message digest hash for every file in a directory or '
       'storage media image.'))
 
-  args_parser.add_argument(
+  argument_parser.add_argument(
       'source', nargs='?', action='store', metavar='image.raw',
       default=None, help=('path of the directory or filename of a storage '
                           'media image containing the file.'))
 
-  options = args_parser.parse_args()
+  options = argument_parser.parse_args()
 
   if not options.source:
-    print u'Source value is missing.'
-    print u''
-    args_parser.print_help()
-    print u''
+    print(u'Source value is missing.')
+    print(u'')
+    argument_parser.print_help()
+    print(u'')
     return False
 
   logging.basicConfig(
@@ -363,8 +398,8 @@ def Main():
   output_writer = StdoutWriter()
 
   if not output_writer.Open():
-    print u'Unable to open output writer.'
-    print u''
+    print(u'Unable to open output writer.')
+    print(u'')
     return False
 
   return_value = True
@@ -375,14 +410,14 @@ def Main():
 
     recursive_hasher.CalculateHashes(base_path_spec, output_writer)
 
-    print u''
-    print u'Completed.'
+    print(u'')
+    print(u'Completed.')
 
   except KeyboardInterrupt:
     return_value = False
 
-    print u''
-    print u'Aborted by user.'
+    print(u'')
+    print(u'Aborted by user.')
 
   output_writer.Close()
 
