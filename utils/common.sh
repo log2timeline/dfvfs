@@ -193,6 +193,12 @@ linter_pass()
       continue
     fi
 
+    if ! test -f "${FILE}";
+    then
+      echo "Skipping: ${FILE}";
+      continue
+    fi
+
     echo "Checking: ${FILE}";
     ${LINTER} "${FILE}";
 
