@@ -99,7 +99,7 @@ if ! ${HAVE_REMOTE_ORIGIN};
 then
   if ! have_remote_upstream;
   then
-    echo "Review upload aborted - missing upstream.";
+    echo "Review aborted - missing upstream.";
     echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
 
     exit ${EXIT_FAILURE};
@@ -107,14 +107,14 @@ then
 
   if have_master_branch;
   then
-    echo "Review upload aborted - current branch is master.";
+    echo "Review aborted - current branch is master.";
 
     exit ${EXIT_FAILURE};
   fi
 
   if have_uncommitted_changes;
   then
-    echo "Review upload aborted - detected uncommitted changes.";
+    echo "Review aborted - detected uncommitted changes.";
 
     exit ${EXIT_FAILURE};
   fi
@@ -126,7 +126,7 @@ then
 
     if test $? -ne 0;
     then
-      echo "Review upload aborted - unable to run: 'git pull upstream master'.";
+      echo "Review aborted - unable to run: 'git pull upstream master'.";
 
       exit ${EXIT_FAILURE};
     fi
@@ -134,7 +134,7 @@ then
 
   if ! linter_pass;
   then
-    echo "Review upload aborted - fix the issues reported by the linter.";
+    echo "Review aborted - fix the issues reported by the linter.";
 
     exit ${EXIT_FAILURE};
   fi
@@ -142,7 +142,7 @@ then
 else
   if have_double_git_status_codes;
   then
-    echo "Review upload aborted - detected double git status codes."
+    echo "Review aborted - detected double git status codes."
     echo "Run: 'git stash && git stash pop'.";
 
     exit ${EXIT_FAILURE};
@@ -150,7 +150,7 @@ else
 
   if ! linting_is_correct;
   then
-    echo "Review upload aborted - fix the issues reported by the linter.";
+    echo "Review aborted - fix the issues reported by the linter.";
 
     exit ${EXIT_FAILURE};
   fi
@@ -158,7 +158,7 @@ fi
 
 if ! tests_pass;
 then
-  echo "Review upload aborted - fix the issues reported by the failing test.";
+  echo "Review aborted - fix the issues reported by the failing test.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -171,7 +171,7 @@ then
 
   if test -f ${CL_FILENAME};
   then
-    echo "Review upload aborted - CL file already exitst: ${CL_FILENAME}";
+    echo "Review aborted - CL file already exitst: ${CL_FILENAME}";
     echo "Do you already have a code review pending for the current branch?";
 
     exit ${EXIT_FAILURE};

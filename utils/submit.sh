@@ -89,7 +89,7 @@ if ! ${HAVE_REMOTE_ORIGIN};
 then
   if ! have_remote_upstream;
   then
-    echo "Submit upload aborted - missing upstream.";
+    echo "Submit aborted - missing upstream.";
     echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
 
     exit ${EXIT_FAILURE};
@@ -97,14 +97,14 @@ then
 
   if have_master_branch;
   then
-    echo "Submit upload aborted - current branch is master.";
+    echo "Submit aborted - current branch is master.";
 
     exit ${EXIT_FAILURE};
   fi
 
   if have_uncommitted_changes;
   then
-    echo "Submit upload aborted - detected uncommitted changes.";
+    echo "Submit aborted - detected uncommitted changes.";
 
     exit ${EXIT_FAILURE};
   fi
@@ -116,7 +116,7 @@ then
 
     if test $? -ne 0;
     then
-      echo "SubmiT upload aborted - unable to run: 'git pull upstream master'.";
+      echo "Submit aborted - unable to run: 'git pull upstream master'.";
 
       exit ${EXIT_FAILURE};
     fi
@@ -124,7 +124,7 @@ then
 
   if ! linter_pass;
   then
-    echo "Submit upload aborted - fix the issues reported by the linter.";
+    echo "Submit aborted - fix the issues reported by the linter.";
 
     exit ${EXIT_FAILURE};
   fi
@@ -168,24 +168,16 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-if test -f "utils/update_version.sh";
-then
-  . utils/update_version.sh
-fi
-
 URL_CODEREVIEW="https://codereview.appspot.com";
 
 # Get the description of the change list.
-RESULT=`which json_xs`;
 
-if ! test -z "${RESULT}";
-then
-  DESCRIPTION=`curl -s ${URL_CODEREVIEW}/api/${CL_NUMBER} | json_xs | grep '"subject"' | awk -F '"' '{print $(NF-1)}'`;
-else
-  DESCRIPTION=`curl ${URL_CODEREVIEW}/${CL_NUMBER}/ -s | grep "Issue ${CL_NUMBER}" | awk -F ':' '{print $2}' | tail -1`;
-fi
+# This will convert newlines into spaces.
+CODEREVIEW=`curl -s ${URL_CODEREVIEW}/api/${CL_NUMBER}`;
 
-if test -z "${DESCRIPTION}";
+DESCRIPTION=`echo ${CODEREVIEW} | sed 's/^.*"subject":"\(.*\)","created.*$/\1/'`;
+
+if test -z "${DESCRIPTION}" || test "${DESCRIPTION}" = "${CODEREVIEW}";
 then
   echo "Submit aborted - unable to find change list with number: ${CL_NUMBER}.";
 
@@ -195,15 +187,13 @@ fi
 COMMIT_DESCRIPTION="Code review: ${CL_NUMBER}: ${DESCRIPTION}";
 echo "Submitting ${COMMIT_DESCRIPTION}";
 
-if ! ${HAVE_REMOTE_ORIGIN};
+if ${HAVE_REMOTE_ORIGIN};
 then
-  # TODO: implement.
+  if test -f "utils/update_version.sh";
+  then
+    . utils/update_version.sh
+  fi
 
-  python utils/upload.py \
-      --oauth2 ${BROWSER_PARAM} --send_mail -i ${CL_NUMBER} \
-      -m "Code Submitted." -t "Submitted." -y -- upstream/master;
-
-else
   # Check if we need to set --cache.
   STATUS_CODES=`git status -s | cut -b1,2 | sed 's/\s//g' | sort | uniq`;
 
@@ -216,25 +206,33 @@ else
     fi
   done
 
-  python utils/upload.py \
-      --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} --send_mail -i ${CL_NUMBER} \
-      -m "Code Submitted." -t "Submitted." -y;
-
   git commit -a -m "${COMMIT_DESCRIPTION}";
   git push
 
-  if test -f "${CODEREVIEW_COOKIES}";
+  if test $? -ne 0;
   then
-    curl -b "${CODEREVIEW_COOKIES}" ${URL_CODEREVIEW}/${CL_NUMBER}/close -d  '';
-  else
-    echo "Could not find an authenticated session to codereview. You need to"
-    echo "manually close the ticket on the code review site."
-  fi
+    echo "Submit aborted - unable to run: 'git push'.";
 
-  if ! test -z "${USE_CL_FILE}" && test -f "${CL_FILENAME}";
-  then
-    rm -f ${CL_FILENAME};
+    exit ${EXIT_FAILURE};
   fi
+fi
+
+python utils/upload.py \
+    --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} --send_mail -i ${CL_NUMBER} \
+    -m "Code Submitted." -t "Submitted." -y;
+
+if test -f "${CODEREVIEW_COOKIES}";
+then
+  curl -b "${CODEREVIEW_COOKIES}" ${URL_CODEREVIEW}/${CL_NUMBER}/close -d  '';
+else
+  echo "Could not find an authenticated session to codereview.";
+  echo "You need to manually close the ticket on the code review site:";
+  echo "${URL_CODEREVIEW}/${CL_NUMBER}";
+fi
+
+if ! test -z "${USE_CL_FILE}" && test -f "${CL_FILENAME}";
+then
+  rm -f ${CL_FILENAME};
 fi
 
 exit ${EXIT_SUCCESS};
