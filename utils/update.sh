@@ -100,12 +100,12 @@ then
 
   if ! local_repo_in_sync_with_upstream;
   then
-    echo "Local repo out of sync with upstream: running 'git pull upstream master'.":
-    git pull upstream master
+    echo "Local repo out of sync with upstream: running 'git pull --rebase upstream master'.":
+    git pull --rebase upstream master
 
     if test $? -ne 0;
     then
-      echo "Update aborted - unable to run: 'git pull upstream master'.";
+      echo "Update aborted - unable to run: 'git pull --rebase upstream master'.";
 
       exit ${EXIT_FAILURE};
     fi
