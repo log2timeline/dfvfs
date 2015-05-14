@@ -38,7 +38,7 @@ else
   LINTING_IS_CORRECT=linter_pass;
 fi
 
-if ! linting_is_correct;
+if ! ${LINTING_IS_CORRECT};
 then
   echo "Aborted - fix the issues reported by the linter.";
 
