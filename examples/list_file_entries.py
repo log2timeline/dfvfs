@@ -1,13 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Script to recursively calculate a message digest hash for every file."""
-
-# If you update this script make sure to update the corresponding wiki page
-# as well: https://github.com/log2timeline/dfvfs/wiki/Development
+"""Script to list file entries."""
 
 from __future__ import print_function
 import argparse
-import hashlib
 import logging
 import os
 import stat
@@ -21,8 +17,8 @@ from dfvfs.resolver import resolver
 from dfvfs.volume import tsk_volume_system
 
 
-class RecursiveHasher(object):
-  """Class that recursively calculates message digest hashes of files."""
+class FileEntryLister(object):
+  """Class that lists file entries."""
 
   # Class constant that defines the default read buffer size.
   _READ_BUFFER_SIZE = 32768
@@ -30,45 +26,6 @@ class RecursiveHasher(object):
   # For context see: http://en.wikipedia.org/wiki/Byte
   _UNITS_1000 = [u'B', u'kB', u'MB', u'GB', u'TB', u'EB', u'ZB', u'YB']
   _UNITS_1024 = [u'B', u'KiB', u'MiB', u'GiB', u'TiB', u'EiB', u'ZiB', u'YiB']
-
-  def _CalculateHashFileEntry(self, file_entry):
-    """Calculates a message digest hash of the data of the file entry.
-
-    Args:
-      file_entry: the file entry (instance of dfvfs.FileEntry).
-    """
-    hash_context = hashlib.md5()
-    file_object = file_entry.GetFileObject()
-
-    data = file_object.read(self._READ_BUFFER_SIZE)
-    while data:
-      hash_context.update(data)
-      data = file_object.read(self._READ_BUFFER_SIZE)
-
-    file_object.close()
-    return hash_context.hexdigest()
-
-  def _CalculateHashesFileEntry(
-      self, file_system, file_entry, parent_full_path, output_writer):
-    """Recursive calculates hashes starting with the file entry.
-
-    Args:
-      file_system: the file system (instance of dfvfs.FileSystem).
-      file_entry: the file entry (instance of dfvfs.FileEntry).
-      parent_full_path: the full path of the parent file entry.
-      output_writer: the output writer (instance of StdoutWriter).
-    """
-    # Since every file system implementation can have their own path
-    # segment separator we are using JoinPath to be platform and file system
-    # type independent.
-    full_path = file_system.JoinPath([parent_full_path, file_entry.name])
-    if file_entry.IsFile():
-      hash_value = self._CalculateHashFileEntry(file_entry)
-      output_writer.WriteFileHash(full_path, hash_value)
-
-    for sub_file_entry in file_entry.sub_file_entries:
-      self._CalculateHashesFileEntry(
-          file_system, sub_file_entry, full_path, output_writer)
 
   def _GetHumanReadableSize(self, size):
     """Retrieves a human readable string of the size.
@@ -240,8 +197,28 @@ class RecursiveHasher(object):
 
     return path_spec
 
-  def CalculateHashes(self, base_path_spec, output_writer):
-    """Recursive calculates hashes starting with the base path specification.
+  def _ListFileEntry(
+      self, file_system, file_entry, parent_full_path, output_writer):
+    """Lists a file entry.
+
+    Args:
+      file_system: the file system (instance of dfvfs.FileSystem).
+      file_entry: the file entry (instance of dfvfs.FileEntry).
+      parent_full_path: the full path of the parent file entry.
+      output_writer: the output writer (instance of StdoutWriter).
+    """
+    # Since every file system implementation can have their own path
+    # segment separator we are using JoinPath to be platform and file system
+    # type independent.
+    full_path = file_system.JoinPath([parent_full_path, file_entry.name])
+    if file_entry.IsFile():
+      output_writer.WriteFileEntry(full_path)
+
+    for sub_file_entry in file_entry.sub_file_entries:
+      self._ListFileEntry(file_system, sub_file_entry, full_path, output_writer)
+
+  def ListFileEntries(self, base_path_spec, output_writer):
+    """Lists file entries in the base path specification.
 
     Args:
       base_path_spec: the base path specification (instance of dfvfs.PathSpec).
@@ -255,7 +232,7 @@ class RecursiveHasher(object):
               base_path_spec.comparable))
       return
 
-    self._CalculateHashesFileEntry(file_system, file_entry, u'', output_writer)
+    self._ListFileEntry(file_system, file_entry, u'', output_writer)
 
   def GetBasePathSpec(self, source_path):
     """Determines the base path specification.
@@ -333,9 +310,7 @@ class RecursiveHasher(object):
             u'types.').format(source_path))
 
       if not type_indicators:
-        logging.warning((
-            u'Unable to find a supported file system, calculating digest hash '
-            u'of file: {0:s} instead.').format(source_path))
+        logging.warning(u'Unable to find a supported file system.')
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=source_path)
 
@@ -367,14 +342,13 @@ class StdoutWriter(object):
     """Closes the output writer object."""
     pass
 
-  def WriteFileHash(self, path, hash_value):
-    """Writes the file path and hash to stdout.
+  def WriteFileEntry(self, path):
+    """Writes the file path to stdout.
 
     Args:
       path: the path of the file.
-      hash_value: the message digest hash calculated over the file data.
     """
-    print(u'{0:s}\t{1:s}'.format(hash_value, path))
+    print(u'{0:s}'.format(path))
 
 
 def Main():
@@ -384,8 +358,7 @@ def Main():
     A boolean containing True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
-      'Calculates a message digest hash for every file in a directory or '
-      'storage media image.'))
+      'Lists file entries in a directory or storage media image.'))
 
   argument_parser.add_argument(
       'source', nargs='?', action='store', metavar='image.raw',
@@ -412,12 +385,12 @@ def Main():
     return False
 
   return_value = True
-  recursive_hasher = RecursiveHasher()
+  file_entry_lister = FileEntryLister()
 
   try:
-    base_path_spec = recursive_hasher.GetBasePathSpec(options.source)
+    base_path_spec = file_entry_lister.GetBasePathSpec(options.source)
 
-    recursive_hasher.CalculateHashes(base_path_spec, output_writer)
+    file_entry_lister.ListFileEntries(base_path_spec, output_writer)
 
     print(u'')
     print(u'Completed.')
