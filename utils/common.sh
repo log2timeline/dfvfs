@@ -247,7 +247,10 @@ local_repo_in_sync_with_origin()
 # Function to check if the local repo is in sync with the upstream
 local_repo_in_sync_with_upstream()
 {
-  git fetch upstream master >/dev/null 2>&1;
+  # Fetch the entire upstream repo information not only that of
+  # the master branch. Otherwise the information about the current upstream
+  # HEAD is not updated.
+  git fetch upstream >/dev/null 2>&1;
 
   if test $? -ne 0;
   then
