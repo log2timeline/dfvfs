@@ -32,25 +32,22 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
 
     test_path = os.path.abspath(test_file).encode(u'utf8')
 
-    # Do not use u'' or b'' we need native string objects here
-    # otherwise the strings will be formatted with a prefix and
-    # are not a valid JSON string.
     self._json_dict = {
-        '__type__': 'PathSpec',
-        'type_indicator': 'TSK',
-        'location': '/a_directory/another_file',
-        'inode': 16,
-        'parent': {
-            '__type__': 'PathSpec',
-            'type_indicator': 'VSHADOW',
-            'store_index': 1,
-            'parent': {
-                '__type__': 'PathSpec',
-                'type_indicator': 'QCOW',
-                'parent': {
-                    '__type__': 'PathSpec',
-                    'type_indicator': 'OS',
-                    'location': test_path
+        u'__type__': u'PathSpec',
+        u'type_indicator': u'TSK',
+        u'location': u'/a_directory/another_file',
+        u'inode': 16,
+        u'parent': {
+            u'__type__': u'PathSpec',
+            u'type_indicator': u'VSHADOW',
+            u'store_index': 1,
+            u'parent': {
+                u'__type__': u'PathSpec',
+                u'type_indicator': u'QCOW',
+                u'parent': {
+                    u'__type__': u'PathSpec',
+                    u'type_indicator': u'OS',
+                    u'location': test_path
                 }
             }
         }
@@ -58,7 +55,10 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
 
   def testReadSerialized(self):
     """Test the read serialized functionality."""
-    serialized = u'{0!s}'.format(self._json_dict).replace(u'\'', u'"')
+    # We use json.dumps to make sure the dict does not serialize into
+    # an invalid JSON string e.g. one that contains string prefixes
+    # like b'' or u''.
+    serialized = json.dumps(self._json_dict)
     path_spec = serializer.JsonPathSpecSerializer.ReadSerialized(serialized)
     self.assertEqual(path_spec.comparable, self._tsk_path_spec.comparable)
 
@@ -67,8 +67,8 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
     serialized = serializer.JsonPathSpecSerializer.WriteSerialized(
         self._tsk_path_spec)
 
-    # We need to compare dicts since we cannot determine the order
-    # of values in the string.
+    # We use json.loads here to compare dicts since we cannot pre-determine
+    # the actual order of values in the JSON string.
     json_dict = json.loads(serialized)
     self.assertEqual(json_dict, self._json_dict)
 
