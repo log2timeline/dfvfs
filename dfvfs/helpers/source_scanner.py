@@ -317,7 +317,10 @@ class SourceScanner(object):
               scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
       if scan_node.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
-        file_system_scan_node = None
+        if getattr(scan_node.path_spec, u'location', None) == u'/':
+          file_system_scan_node = None
+        else:
+          file_system_scan_node = scan_node
 
         # For VSS add a scan node for the current volume.
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
@@ -326,12 +329,13 @@ class SourceScanner(object):
             if not scan_context.HasScanNode(path_spec):
               file_system_scan_node = scan_context.AddScanNode(
                   path_spec, scan_node)
+              scan_context.file_system_found = True
             else:
               file_system_scan_node = scan_context.GetScanNode(path_spec)
 
         # Determine the path specifications of the sub file entries.
         file_entry = resolver.Resolver.OpenFileEntry(
-            source_path_spec, resolver_context=self._resolver_context)
+            scan_node.path_spec, resolver_context=self._resolver_context)
 
         for sub_file_entry in file_entry.sub_file_entries:
           if not scan_context.HasScanNode(sub_file_entry.path_spec):
@@ -360,15 +364,18 @@ class SourceScanner(object):
             scan_context.last_scan_node = scan_node
             return scan_context
 
-        # In case we detected a VSS without snapshots.
         if file_entry.number_of_sub_file_entries == 0:
           scan_context.last_scan_node = file_system_scan_node
-          return scan_context
+          if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+            # In case we detected a VSS without snapshots we already have
+            # scanned for the file system.
+            return scan_context
+          break
 
       elif scan_node.type_indicator in (
           definitions.ENCRYPTED_VOLUME_TYPE_INDICATORS):
         file_object = resolver.Resolver.OpenFileObject(
-            source_path_spec, resolver_context=self._resolver_context)
+            scan_node.path_spec, resolver_context=self._resolver_context)
 
         # If the encrypted volume could not be opened we need more information
         # to determine the next layer.
