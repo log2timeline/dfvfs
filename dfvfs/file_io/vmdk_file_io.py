@@ -84,7 +84,7 @@ class VmdkFile(file_object_io.FileObjectIO):
         kwargs['parent'] = parent_path_spec.parent
 
       extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
-        parent_path_spec.type_indicator, **kwargs)
+          parent_path_spec.type_indicator, **kwargs)
 
       if not file_system.FileEntryExistsByPathSpec(extent_data_file_path_spec):
         break

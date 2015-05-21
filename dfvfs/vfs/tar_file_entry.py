@@ -34,7 +34,7 @@ class TarDirectory(file_entry.Directory):
       # the location string. If not the file tar info refers to is not in
       # the same directory. Note that the tar info name does not have the
       # leading path separator as the location string does.
-      if (not path or not path.startswith(location[1:])):
+      if not path or not path.startswith(location[1:]):
         continue
 
       _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
