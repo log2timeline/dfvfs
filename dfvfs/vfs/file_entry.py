@@ -145,7 +145,7 @@ class FileEntry(object):
       if sub_file_entry.name == name:
         return sub_file_entry
 
-      if (not case_sensitive and sub_file_entry.name.lower() == name_lower):
+      if not case_sensitive and sub_file_entry.name.lower() == name_lower:
         if not matching_sub_file_entry:
           matching_sub_file_entry = sub_file_entry
 

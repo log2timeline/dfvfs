@@ -7,6 +7,20 @@ EXIT_SUCCESS=0;
 FALSE=1;
 TRUE=0;
 
+GIT_URL="https://github.com/log2timeline/dfvfs.git";
+
+# Function to check if curl is available.
+have_curl()
+{
+  CURL=`which curl 2>/dev/null`;
+
+  if ! test -z "${CURL}";
+  then
+    return ${TRUE};
+  fi
+  return ${FALSE};
+}
+
 # Function to check for double status codes rietveld does not seem to handle
 # these correctly.
 have_double_git_status_codes()
@@ -20,18 +34,6 @@ have_double_git_status_codes()
   return ${FALSE};
 }
 
-# Function to check if we have "git cl" or that we should use upload.py instead.
-have_git_cl()
-{
-  DUMMY=`git cl 2> /dev/null`;
-
-  if test $? -eq 0;
-  then
-    return ${TRUE};
-  fi
-  return ${FALSE};
-}
-
 # Function to check if we are on the master branch.
 have_master_branch()
 {
@@ -39,6 +41,30 @@ have_master_branch()
   get_current_branch "BRANCH";
 
   if test "${BRANCH}" = "master";
+  then
+    return ${TRUE};
+  fi
+  return ${FALSE};
+}
+
+# Function to check if we have the correct remote origin defined.
+have_remote_origin()
+{
+  REMOTE=`git remote -v | grep 'origin' | awk '{ print $2 }' | sort | uniq`;
+
+  if test "${REMOTE}" = "${GIT_URL}";
+  then
+    return ${TRUE};
+  fi
+  return ${FALSE};
+}
+
+# Function to check if we have the correct remote upstream defined.
+have_remote_upstream()
+{
+  REMOTE=`git remote -v | grep 'upstream' | awk '{ print $2 }' | sort | uniq`;
+
+  if test "${REMOTE}" = "${GIT_URL}";
   then
     return ${TRUE};
   fi
@@ -107,28 +133,28 @@ linting_is_correct()
 
   LINTER="pylint --rcfile=utils/pylintrc"
 
-  echo "Running changes by pylint.";
+  echo "Running linter on changed files.";
 
   for FILE in ${FILES};
   do
     if test "${FILE}" = "setup.py" || test "${FILE}" = "utils/upload.py";
     then
-      echo "  -- Skipping: ${FILE} --"
+      echo "Skipping: ${FILE}";
       continue
     fi
 
-    if test `echo ${FILE} | tail -c8` == "_pb2.py";
+    if test `echo ${FILE} | tail -c8` = "_pb2.py";
     then
-      echo "Skipping compiled protobufs: ${FILE}"
+      echo "Skipping: ${FILE}";
       continue
     fi
 
-    echo "  -- Checking: ${FILE} --"
+    echo "Checking: ${FILE}";
     ${LINTER} "${FILE}"
 
     if test $? -ne 0;
     then
-      echo "Fix linter errors before proceeding."
+      echo "Fix linter errors before proceeding.";
       return ${FALSE};
     fi
   done
@@ -143,10 +169,58 @@ linting_is_correct()
   return ${TRUE};
 }
 
+# Function to check if the linting is correct.
+linter_pass()
+{
+  echo "Running linter.";
+
+  LINTER="pylint --rcfile=utils/pylintrc";
+  RESULT=${TRUE};
+
+  FILES=`git diff --name-only upstream/master | grep "\.py$"`;
+
+  for FILE in ${FILES};
+  do
+    if test "${FILE}" = "setup.py" || test "${FILE}" = "utils/upload.py";
+    then
+      echo "Skipping: ${FILE}";
+      continue
+    fi
+
+    if test `echo ${FILE} | tail -c8` = "_pb2.py";
+    then
+      echo "Skipping: ${FILE}";
+      continue
+    fi
+
+    if ! test -f "${FILE}";
+    then
+      echo "Skipping: ${FILE}";
+      continue
+    fi
+
+    echo "Checking: ${FILE}";
+    ${LINTER} "${FILE}";
+
+    if test $? -ne 0;
+    then
+      # TODO: allow lint all before erroring.
+      echo "Fix linter errors before proceeding.";
+      return ${FALSE};
+    fi
+  done
+
+  if test $? -ne 0;
+  then
+    RESULT=${FALSE};
+  fi
+  return ${RESULT};
+}
+
 # Function to check if the local repo is in sync with the origin.
 local_repo_in_sync_with_origin()
 {
-  git fetch
+  git fetch origin master >/dev/null 2>&1;
 
   if test $? -ne 0;
   then
@@ -159,6 +233,36 @@ local_repo_in_sync_with_origin()
   if test $? -ne 0;
   then
     echo "Unable to determine if local repo is in sync with origin.";
+
+    exit ${EXIT_FAILURE};
+  fi
+
+  if test ${NUMBER_OF_CHANGES} -eq 0;
+  then
+    return ${TRUE};
+  fi
+  return ${FALSE};
+}
+
+# Function to check if the local repo is in sync with the upstream
+local_repo_in_sync_with_upstream()
+{
+  # Fetch the entire upstream repo information not only that of
+  # the master branch. Otherwise the information about the current upstream
+  # HEAD is not updated.
+  git fetch upstream >/dev/null 2>&1;
+
+  if test $? -ne 0;
+  then
+    echo "Unable to fetch updates from upstream";
+
+    exit ${EXIT_FAILURE};
+  fi
+  NUMBER_OF_CHANGES=`git log HEAD..upstream/master --oneline | wc -l`;
+
+  if test $? -ne 0;
+  then
+    echo "Unable to determine if local repo is in sync with upstream";
 
     exit ${EXIT_FAILURE};
   fi
