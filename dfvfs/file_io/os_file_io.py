@@ -81,7 +81,7 @@ class OSFile(file_io.FileIO):
         stat_info = os.stat(location)
       except OSError as exception:
         raise IOError(u'Unable to open file with error: {0:s}.'.format(
-             exception))
+            exception))
 
       # In case the libsmdev check is not able to detect the device also use
       # the stat information.

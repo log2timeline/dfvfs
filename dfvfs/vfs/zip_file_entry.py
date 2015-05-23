@@ -31,7 +31,7 @@ class ZipDirectory(file_entry.Directory):
     for zip_info in zip_file.infolist():
       path = zip_info.filename
 
-      if (not path or not path.startswith(location[1:])):
+      if not path or not path.startswith(location[1:]):
         continue
 
       _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
@@ -209,5 +209,5 @@ class ZipFileEntry(file_entry.FileEntry):
         return
 
       zip_file = self._file_system.GetZipFile()
-      self._zip_info =  zip_file.getinfo(location[1:])
+      self._zip_info = zip_file.getinfo(location[1:])
     return self._zip_info

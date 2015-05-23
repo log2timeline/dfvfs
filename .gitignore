@@ -1,4 +1,4 @@
-# Files to ignore by git
+# Files to ignore by git.
 
 # Back-up files
 *~
@@ -11,12 +11,12 @@
 # Specific auto-generated build files
 /__pycache__
 /build
-/dist
 /dfvfs.egg-info
+/dist
 
-# Test files
+# Code review files
+/.review
+
+# Test coverage files
 .coverage
 tests-coverage.txt
-
-# Project specific files
-._code_review_number

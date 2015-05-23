@@ -36,7 +36,7 @@ class EncodedStreamResolverHelper(resolver_helper.ResolverHelper):
       The file system object (instance of vfs.EncodedStreamFileSystem).
     """
     return dfvfs.vfs.encoded_stream_file_system.EncodedStreamFileSystem(
-      resolver_context)
+        resolver_context)
 
 
 # Register the resolver helpers with the resolver.
