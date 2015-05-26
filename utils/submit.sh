@@ -170,25 +170,30 @@ fi
 
 URL_CODEREVIEW="https://codereview.appspot.com";
 
-# Get the description of the change list.
-
-# This will convert newlines into spaces.
-CODEREVIEW=`curl -s ${URL_CODEREVIEW}/api/${CL_NUMBER}`;
-
-DESCRIPTION=`echo ${CODEREVIEW} | sed 's/^.*"subject":"\(.*\)","created.*$/\1/'`;
-
-if test -z "${DESCRIPTION}" || test "${DESCRIPTION}" = "${CODEREVIEW}";
-then
-  echo "Submit aborted - unable to find change list with number: ${CL_NUMBER}.";
-
-  exit ${EXIT_FAILURE};
-fi
-
-COMMIT_DESCRIPTION="Code review: ${CL_NUMBER}: ${DESCRIPTION}";
-echo "Submitting ${COMMIT_DESCRIPTION}";
-
 if ${HAVE_REMOTE_ORIGIN};
 then
+  # Get the description of the change list.
+
+  # This will convert newlines into spaces.
+  CODEREVIEW=`curl -s ${URL_CODEREVIEW}/api/${CL_NUMBER}`;
+
+  DESCRIPTION=`echo ${CODEREVIEW} | sed 's/^.*"subject":"\(.*\)","created.*$/\1/'`;
+
+  if test -z "${DESCRIPTION}" || test "${DESCRIPTION}" = "${CODEREVIEW}";
+  then
+    echo "Submit aborted - unable to find change list with number: ${CL_NUMBER}.";
+
+    exit ${EXIT_FAILURE};
+  fi
+
+  COMMIT_DESCRIPTION="Code review: ${CL_NUMBER}: ${DESCRIPTION}";
+  echo "Submitting ${COMMIT_DESCRIPTION}";
+
+  # Need to change the status on codereview before commit.
+  python utils/upload.py \
+      --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} --send_mail -i ${CL_NUMBER} \
+      -m "Code Submitted." -t "Submitted." -y;
+
   if test -f "utils/update_version.sh";
   then
     . utils/update_version.sh
@@ -216,10 +221,6 @@ then
     exit ${EXIT_FAILURE};
   fi
 fi
-
-python utils/upload.py \
-    --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} --send_mail -i ${CL_NUMBER} \
-    -m "Code Submitted." -t "Submitted." -y;
 
 if test -f "${CODEREVIEW_COOKIES}";
 then
