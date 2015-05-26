@@ -28,7 +28,7 @@ fi
 # Determine if we have the master repo as origin.
 HAVE_REMOTE_ORIGIN=have_remote_origin;
 
-if test $# -ne 3:
+if test $# -ne 3;
 then
   echo "Usage: ./${SCRIPTNAME} CL_NUMBER USERNAME BRANCH";
   echo "";
