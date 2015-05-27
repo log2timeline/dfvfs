@@ -4,10 +4,12 @@
 
 from __future__ import print_function
 import argparse
+import getpass
 import logging
 import os
 import sys
 
+from dfvfs.credentials import manager as credentials_manager
 from dfvfs.helpers import source_scanner
 from dfvfs.lib import definitions
 
@@ -18,20 +20,16 @@ class SourceAnalyzer(object):
   # Class constant that defines the default read buffer size.
   _READ_BUFFER_SIZE = 32768
 
-  def __init__(self, auto_recurse=True, next_layer_input=True):
+  def __init__(self, auto_recurse=True):
     """Initializes the source analyzer object.
 
     Args:
       auto_recurse: optional boolean value to indicate if the scan should
                     automatically recurse as far as possible. The default
                     is True.
-      next_layer_input: optional boolean value to indicate if the scan should
-                        return if it needs input about the next layer. The
-                        default is True.
     """
     super(SourceAnalyzer, self).__init__()
     self._auto_recurse = auto_recurse
-    self._next_layer_input = next_layer_input
     self._scanner = source_scanner.SourceScanner()
 
   def Analyze(self, source_path, output_writer):
@@ -51,58 +49,87 @@ class SourceAnalyzer(object):
 
     scan_context = source_scanner.SourceScannerContext()
     scan_path_spec = None
-    scan_level = 0
+    scan_step = 0
 
     scan_context.OpenSourcePath(source_path)
 
-    while scan_context.updated:
-      scan_context = self._scanner.Scan(
+    while True:
+      self._scanner.Scan(
           scan_context, auto_recurse=self._auto_recurse,
-          next_layer_input=self._next_layer_input,
           scan_path_spec=scan_path_spec)
 
+      if not scan_context.updated:
+        break
+
       if not self._auto_recurse:
-        output_writer.WriteScanContext(scan_context, scan_level=scan_level)
-      scan_level += 1
+        output_writer.WriteScanContext(scan_context, scan_step=scan_step)
+      scan_step += 1
 
       # The source is a directory or file.
       if scan_context.source_type in [
           scan_context.SOURCE_TYPE_DIRECTORY, scan_context.SOURCE_TYPE_FILE]:
         break
 
-      if not scan_context.last_scan_node:
-        break
-
-      # The source scanner found a file system.
-      if scan_context.last_scan_node.type_indicator in [
-          definitions.TYPE_INDICATOR_TSK]:
-        break
-
-      # The source scanner found a BitLocker encrypted volume and we need
+      # The source scanner found an encrypted volume and we need
       # a credential to unlock the volume.
-      if scan_context.last_scan_node.type_indicator in [
-          definitions.TYPE_INDICATOR_BDE]:
-        # TODO: ask for password.
-        raise RuntimeError(
-            u'BitLocker encrypted volume not yet supported.')
+      for locked_scan_node in scan_context.locked_scan_nodes:
+        credentials = credentials_manager.CredentialsManager.GetCredentials(
+            locked_scan_node.path_spec)
 
-      elif scan_context.last_scan_node.type_indicator in (
-          definitions.VOLUME_SYSTEM_TYPE_INDICATORS):
-        if not not self._auto_recurse:
-          break
+        # TODO: print volume description.
+        if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+          output_writer.WriteLine(u'Found a BitLocker encrypted volume.')
+        else:
+          output_writer.WriteLine(u'Found an encrypted volume.')
 
-      elif scan_context.last_scan_node.type_indicator not in (
-          definitions.STORAGE_MEDIA_IMAGE_TYPE_INDICATORS):
-        raise RuntimeError(
-            u'Unsupported volume system found in source: {0:s}.'.format(
-                source_path))
+        credentials_list = list(credentials.CREDENTIALS)
+        credentials_list.append(u'skip')
 
-      scan_path_spec = scan_context.last_scan_node.path_spec
+        # TODO: check which credentials are available.
+        output_writer.WriteLine(u'Supported credentials:')
+        output_writer.WriteLine(u'')
+        for index, name in enumerate(credentials_list):
+          output_writer.WriteLine(u'  {0:d}. {1:s}'.format(index, name))
+        output_writer.WriteLine(u'')
 
-    if not scan_context.file_system_found:
-      raise RuntimeError(
-          u'No supported file system found in source: {0:s}.'.format(
-              source_path))
+        result = False
+        while not result:
+          output_writer.WriteString(
+              u'Select a credential to unlock the volume: ')
+          # TODO: add an input reader.
+          input_line = sys.stdin.readline()
+          input_line = input_line.strip()
+
+          if input_line in credentials_list:
+            credential_identifier = input_line
+          else:
+            try:
+              credential_identifier = int(input_line, 10)
+              credential_identifier = credentials_list[credential_identifier]
+            except (IndexError, ValueError):
+              output_writer.WriteLine(
+                  u'Unsupported credential: {0:s}'.format(input_line))
+              continue
+
+          if credential_identifier == u'skip':
+            break
+
+          credential_data = getpass.getpass(u'Enter credential data: ')
+          output_writer.WriteLine(u'')
+
+          result = self._scanner.Unlock(
+              scan_context, locked_scan_node.path_spec, credential_identifier,
+              credential_data)
+
+          if not result:
+            output_writer.WriteLine(u'Unable to unlock volume.')
+            output_writer.WriteLine(u'')
+
+      if not self._auto_recurse:
+        scan_node = scan_context.GetUnscannedScanNode()
+        if not scan_node:
+          return
+        scan_path_spec = scan_node.path_spec
 
     if self._auto_recurse:
       output_writer.WriteScanContext(scan_context)
@@ -123,17 +150,25 @@ class StdoutWriter(object):
     """Closes the output writer object."""
     pass
 
-  def WriteScanContext(self, scan_context, scan_level=None):
+  def WriteLine(self, line):
+    """Writes a line of text to stdout.
+
+    Args:
+      line: line of text without a new line indicator.
+    """
+    print(line)
+
+  def WriteScanContext(self, scan_context, scan_step=None):
     """Writes the source scanner context to stdout.
 
     Args:
       scan_context: the source scanner context (instance of
                     SourceScannerContext).
-      scan_level: optional integer indicating the scan level. The default
-                  is None.
+      scan_step: optional integer indicating the scan step. The default
+                 is None.
     """
-    if scan_level is not None:
-      print(u'Scan level: {0:d}'.format(scan_level))
+    if scan_step is not None:
+      print(u'Scan step: {0:d}'.format(scan_step))
 
     print(u'Source type\t\t: {0:s}'.format(scan_context.source_type))
     print(u'')
@@ -149,8 +184,8 @@ class StdoutWriter(object):
       scan_node: the scan node (instance of SourceScanNode).
       indentation: optional indentation string. The default is an empty
                    string.
-      scan_level: optional integer indicating the scan level. The default
-                  is None.
+      scan_step: optional integer indicating the scan step. The default
+                 is None.
     """
     if not scan_node:
       return
@@ -180,6 +215,14 @@ class StdoutWriter(object):
     for sub_scan_node in scan_node.sub_nodes:
       self.WriteScanNode(sub_scan_node, indentation=indentation)
 
+  def WriteString(self, string):
+    """Writes a string of text to stdout.
+
+    Args:
+      line: string of text.
+    """
+    print(string, end=u'')
+
 
 def Main():
   """The main program function.
@@ -201,12 +244,6 @@ def Main():
       action=u'store_true', default=False, help=(
           u'Indicate that the source scanner should not auto-recurse.'))
 
-  argument_parser.add_argument(
-      u'--no-next-layer-input', u'--no_next_layer_input',
-      dest=u'no_next_layer_input', action=u'store_true', default=False, help=(
-          u'Indicate that the source scanner should not return for next layer '
-          u'input.'))
-
   options = argument_parser.parse_args()
 
   if not options.source:
@@ -227,9 +264,7 @@ def Main():
     return False
 
   return_value = True
-  source_analyzer = SourceAnalyzer(
-      auto_recurse=not options.no_auto_recurse,
-      next_layer_input=not options.no_next_layer_input)
+  source_analyzer = SourceAnalyzer(auto_recurse=not options.no_auto_recurse)
 
   try:
     source_analyzer.Analyze(options.source, output_writer)
