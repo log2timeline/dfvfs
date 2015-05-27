@@ -11,7 +11,16 @@ PYTHON3_DEPENDENCIES="libbde-python3 libewf-python3 libfsntfs-python3 libfwnt-py
 # Exit on error.
 set -e;
 
-if test `uname -s` = "Linux";
+if test `uname -s` = 'Darwin';
+then
+	git clone https://github.com/log2timeline/l2tdevtools.git;
+
+	mv l2tdevtools ../;
+	mkdir dependencies;
+
+	PYTHONPATH=../l2tdevtools ../l2tdevtools/tools/update.py --download-directory=dependencies --preset=dfvfs;
+
+elif test `uname -s` = "Linux";
 then
 	sudo add-apt-repository ppa:gift/dev -y;
 	sudo apt-get update -q;
