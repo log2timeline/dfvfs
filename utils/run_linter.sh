@@ -15,7 +15,7 @@ fi
 
 if ! linting_is_correct;
 then
-  echo "Aborted - fix the issues reported by the linter.";
+  echo "Linting aborted - fix the reported issues.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -27,15 +27,16 @@ if ! ${HAVE_REMOTE_ORIGIN};
 then
   if ! have_remote_upstream;
   then
-    echo "Review upload aborted - missing upstream.";
+    echo "Linting aborted - missing upstream.";
     echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
 
     exit ${EXIT_FAILURE};
   fi
+  git fetch upstream;
 
   if ! linter_pass;
   then
-    echo "Aborted - fix the issues reported by the linter.";
+    echo "Linting aborted - fix the reported issues.";
 
     exit ${EXIT_FAILURE};
   fi
