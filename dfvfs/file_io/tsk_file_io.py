@@ -6,7 +6,6 @@ import os
 import pytsk3
 
 from dfvfs.file_io import file_io
-from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
@@ -23,6 +22,7 @@ class TSKFile(file_io.FileIO):
     self._current_offset = 0
     self._file_system = None
     self._size = 0
+    self._tsk_attribute = None
     self._tsk_file = None
 
   def _Close(self):
@@ -31,6 +31,7 @@ class TSKFile(file_io.FileIO):
     Raises:
       IOError: if the close failed.
     """
+    self._tsk_attribute = None
     self._tsk_file = None
 
     self._file_system.Close()
@@ -59,42 +60,60 @@ class TSKFile(file_io.FileIO):
         path_spec, resolver_context=self._resolver_context)
 
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self._tsk_file = file_entry.GetTSKFile()
+    tsk_attribute = None
+    tsk_file = file_entry.GetTSKFile()
 
     # Note that because pytsk3.File does not explicitly defines info
     # we need to check if the attribute exists and has a value other
     # than None.
-    if getattr(self._tsk_file, u'info', None) is None:
+    if getattr(tsk_file, u'info', None) is None:
       raise IOError(u'Missing attribute info in file (pytsk3.File).')
 
     # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
     # we need to check if the attribute exists and has a value other
     # than None.
-    if getattr(self._tsk_file.info, u'meta', None) is None:
+    if getattr(tsk_file.info, u'meta', None) is None:
       raise IOError(
           u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines size
     # we need to check if the attribute exists.
-    if not hasattr(self._tsk_file.info.meta, u'size'):
+    if not hasattr(tsk_file.info.meta, u'size'):
       raise IOError(
           u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines type
     # we need to check if the attribute exists.
-    if not hasattr(self._tsk_file.info.meta, u'type'):
+    if not hasattr(tsk_file.info.meta, u'type'):
       raise IOError(
           u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
     if data_stream:
-      # TODO: add data stream support.
-      raise errors.PathSpecError(u'Data stream not yet supported.')
+      for attribute in tsk_file:
+        if getattr(attribute, u'info', None) is None:
+          continue
 
-    elif self._tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
+        attribute_name = getattr(attribute.name, u'type', None)
+        attribute_type = getattr(attribute.info, u'type', None)
+        if (attribute_name == data_stream and
+            attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA):
+          tsk_attribute = attribute
+
+        if tsk_attribute is None:
+          raise IOError(u'Unable to open data stream: {0:s}.'.format(
+              data_stream))
+
+    elif tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
       raise IOError(u'Not a regular file.')
 
     self._current_offset = 0
-    self._size = self._tsk_file.info.meta.size
+    self._tsk_attribute = tsk_attribute
+    self._tsk_file = tsk_file
+
+    if self._tsk_attribute:
+      self._size = self._tsk_attribute.info.meta.size
+    else:
+      self._size = self._tsk_file.info.meta.size
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -129,7 +148,12 @@ class TSKFile(file_io.FileIO):
     if size is None or self._current_offset + size > self._size:
       size = self._size - self._current_offset
 
-    data = self._tsk_file.read_random(self._current_offset, size)
+    if self._tsk_attribute:
+      data = self._tsk_file.read_random(
+          self._current_offset, size, self._tsk_attribute.info.type,
+          self._tsk_attribute.info.id)
+    else:
+      data = self._tsk_file.read_random(self._current_offset, size)
 
     # It is possible the that returned data size is not the same as the
     # requested data size. At this layer we don't care and this discrepancy

@@ -13,6 +13,7 @@ class Factory(object):
       u'identifier',
       u'inode',
       u'location',
+      u'mft_attribute',
       u'mft_entry',
       u'part_index',
       u'range_offset',

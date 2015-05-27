@@ -1,13 +1,44 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) file entry implementation."""
 
+import copy
+
 import pytsk3
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import tsk_path_spec
+from dfvfs.resolver import resolver
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
+
+
+class TSKDataStream(file_entry.DataStream):
+  """Class that implements a data stream object using pyfsntfs."""
+
+  def __init__(self, file_entry_object, tsk_attribute):
+    """Initializes the directory object.
+
+    Args:
+      file_entry_object: the file entry object (instance of vfs.NFTSFileEntry).
+      tsk_attribute: the TSK attribute object (instance of pytsk3.Attribute).
+    """
+    super(TSKDataStream, self).__init__(file_entry_object)
+    self._tsk_attribute = tsk_attribute
+
+  @property
+  def name(self):
+    """The name."""
+    if self._tsk_attribute:
+      return self._tsk_attribute.info.name
+    return u''
+
+  def GetFileObject(self):
+    """Retrieves the file-like object (instance of file_io.FileIO) or None."""
+    if self._tsk_attribute:
+      return self._file_entry.GetFileObject(
+          data_stream_name=self._tsk_attribute.info.name)
+    return self._file_entry.GetFileObject()
 
 
 class TSKDirectory(file_entry.Directory):
@@ -132,10 +163,35 @@ class TSKFileEntry(file_entry.FileEntry):
     super(TSKFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
-    self._link = None
     self._name = None
     self._parent_inode = parent_inode
     self._tsk_file = tsk_file
+
+  def _GetDataStreams(self):
+    """Retrieves the data streams.
+
+    Returns:
+      A list of data stream objects (instances of vfs.NTFSDataStream).
+
+    Raises:
+      BackEndError: when the tsk File .info or .info.meta attribute is missing.
+    """
+    if self._data_streams is None:
+      tsk_file = self.GetTSKFile()
+      if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
+        raise errors.BackEndError(u'Missing tsk File .info or .info.meta.')
+
+      self._data_streams = []
+      for tsk_attribute in tsk_file:
+        if getattr(tsk_attribute, u'info', None) is None:
+          continue
+
+        attribute_type = getattr(tsk_attribute.info, u'type', None)
+        if attribute_type != pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA:
+          self._data_streams.append(
+              TSKDataStream(self, tsk_attribute))
+
+    return self._data_streams
 
   def _GetDirectory(self):
     """Retrieves the directory object (instance of TSKDirectory)."""
@@ -146,6 +202,47 @@ class TSKFileEntry(file_entry.FileEntry):
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
       return TSKDirectory(self._file_system, self.path_spec)
     return
+
+  def _GetLink(self):
+    """Retrieves the link."""
+    if self._link is None:
+      self._link = u''
+
+      if not self.IsLink():
+        return self._link
+
+      tsk_file = self.GetTSKFile()
+
+      # Note that because pytsk3.File does not explicitly defines info
+      # we need to check if the attribute exists and has a value other
+      # than None.
+      if getattr(tsk_file, u'info', None) is None:
+        return self._link
+
+      # If pytsk3.FS_Info.open() was used file.info has an attribute meta
+      # (pytsk3.TSK_FS_META) that contains the link.
+      if getattr(tsk_file.info, u'meta', None) is None:
+        return self._link
+
+      # Note that the SleuthKit does not expose NTFS
+      # IO_REPARSE_TAG_MOUNT_POINT or IO_REPARSE_TAG_SYMLINK as a link.
+      link = getattr(tsk_file.info.meta, u'link', None)
+
+      if link is None:
+        return self._link
+
+      # pytsk3 returns a UTF-8 encoded byte string without a leading
+      # path segment separator.
+      try:
+        link = u'{0:s}{1:s}'.format(
+            self._file_system.PATH_SEPARATOR, link.decode(u'utf8'))
+      except UnicodeError:
+        raise errors.BackEndError(
+            u'pytsk3 returned a non UTF-8 formatted link.')
+
+      self._link = link
+
+    return self._link
 
   def _GetStat(self):
     """Retrieves the stat object.
@@ -232,45 +329,6 @@ class TSKFileEntry(file_entry.FileEntry):
     return stat_object
 
   @property
-  def link(self):
-    """The full path of the linked file entry."""
-    if self._link is None:
-      self._link = u''
-
-      if not self.IsLink():
-        return self._link
-
-      tsk_file = self.GetTSKFile()
-
-      # Note that because pytsk3.File does not explicitly defines info
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(tsk_file, u'info', None) is None:
-        return self._link
-
-      # If pytsk3.FS_Info.open() was used file.info has an attribute meta
-      # (pytsk3.TSK_FS_META) that contains the link.
-      if getattr(tsk_file.info, u'meta', None) is None:
-        return self._link
-
-      link = getattr(tsk_file.info.meta, u'link', None)
-
-      if link is None:
-        return self._link
-
-      # pytsk3 returns a UTF-8 encoded byte string without a leading
-      # path segment separator.
-      try:
-        link = u'{0:s}{1:s}'.format(
-            self._file_system.PATH_SEPARATOR, link.decode(u'utf8'))
-      except UnicodeError:
-        raise errors.BackEndError(
-            u'pytsk3 returned a non UTF-8 formatted link.')
-
-      self._link = link
-    return self._link
-
-  @property
   def name(self):
     """The name of the file entry, which does not include the full path.
 
@@ -316,9 +374,28 @@ class TSKFileEntry(file_entry.FileEntry):
       for path_spec in self._directory.entries:
         yield TSKFileEntry(self._resolver_context, self._file_system, path_spec)
 
+  def GetFileObject(self, data_stream_name=u''):
+    """Retrieves the file-like object.
+
+    Args:
+      data_stream_name: optional data stream name. The default is
+                        an empty string which represents the default
+                        data stream.
+
+    Returns:
+      A file-like object (instance of file_io.FileIO) or None.
+    """
+    path_spec = copy.deepcopy(self.path_spec)
+    if data_stream_name:
+      setattr(path_spec, u'data_stream', data_stream_name)
+
+    return resolver.Resolver.OpenFileObject(
+        self.path_spec, resolver_context=self._resolver_context)
+
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link."""
-    if not self.link:
+    link = self._GetLink()
+    if not link:
       return
 
     # TODO: is there a way to determine the link inode number here?
@@ -326,10 +403,10 @@ class TSKFileEntry(file_entry.FileEntry):
 
     parent_path_spec = getattr(self.path_spec, u'parent', None)
     path_spec = tsk_path_spec.TSKPathSpec(
-        location=self.link, parent=parent_path_spec)
+        location=link, parent=parent_path_spec)
 
     root_inode = self._file_system.GetRootInode()
-    if (self.link == self._file_system.LOCATION_ROOT or
+    if (link == self._file_system.LOCATION_ROOT or
         (link_inode is not None and root_inode is not None and
          link_inode == root_inode)):
       is_root = True

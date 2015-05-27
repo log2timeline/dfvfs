@@ -34,6 +34,8 @@ class TSKFileTest(test_lib.ImageFileTestCase):
     """Test the read functionality."""
     self._TestRead(self._os_path_spec)
 
+  # TODO: add ADS test.
+
 
 if __name__ == '__main__':
   unittest.main()

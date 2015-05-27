@@ -10,6 +10,7 @@ import urllib2
 LIBYAL_DEPENDENCIES = {
     u'pybde': 20140531,
     u'pyewf': 20131210,
+    u'pyfsntfs': 20150510,
     u'pyqcow': 20131204,
     u'pysigscan': 20150114,
     u'pysmdev': 20140428,

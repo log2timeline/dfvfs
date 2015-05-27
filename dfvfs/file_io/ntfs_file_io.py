@@ -1,50 +1,49 @@
 # -*- coding: utf-8 -*-
-"""The file object file-like object implementation."""
+"""The NTFS file-like object implementation."""
 
-import abc
 import os
 
+import pyfsntfs
+
 from dfvfs.file_io import file_io
+from dfvfs.resolver import resolver
 
 
-class FileObjectIO(file_io.FileIO):
-  """Base class for file object-based file-like object."""
+if pyfsntfs.get_version() < '20150510':
+  raise ImportWarning('NTFSFile requires at least pyfsntfs 20150510.')
 
-  def __init__(self, resolver_context, file_object=None):
+
+class NTFSFile(file_io.FileIO):
+  """Class that implements a file-like object using pyfsntfs."""
+
+  def __init__(self, resolver_context):
     """Initializes the file-like object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_object: optional file-like object. The default is None.
     """
-    super(FileObjectIO, self).__init__(resolver_context)
-    self._file_object = file_object
-    self._size = None
-
-    if file_object:
-      self._file_object_set_in_init = True
-    else:
-      self._file_object_set_in_init = False
+    super(NTFSFile, self).__init__(resolver_context)
+    self._file_system = None
+    self._fsntfs_data_stream = None
+    self._fsntfs_file_entry = None
 
   def _Close(self):
     """Closes the file-like object.
 
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
-
     Raises:
       IOError: if the close failed.
     """
-    if not self._file_object_set_in_init:
-      self._file_object.close()
-      self._file_object = None
+    self._fsntfs_data_stream = None
+    self._fsntfs_file_entry = None
+
+    self._file_system.Close()
+    self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of path.PathSpec).
                  The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
@@ -54,29 +53,35 @@ class FileObjectIO(file_io.FileIO):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not self._file_object_set_in_init and not path_spec:
+    if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
-    if self._file_object_set_in_init:
-      return
+    data_stream = getattr(path_spec, u'data_stream', None)
 
-    self._file_object = self._OpenFileObject(path_spec)
-    if not self._file_object:
-      raise IOError(u'Unable to open missing file-like object.')
+    self._file_system = resolver.Resolver.OpenFileSystem(
+        path_spec, resolver_context=self._resolver_context)
 
-  @abc.abstractmethod
-  def _OpenFileObject(self, path_spec):
-    """Opens the file-like object defined by path specification.
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    if not file_entry:
+      raise IOError(u'Unable to open file entry.')
 
-    Args:
-      path_spec: the path specification (instance of path.PathSpec).
+    fsntfs_data_stream = None
+    fsntfs_file_entry = file_entry.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise IOError(u'Unable to open NTFS file entry.')
 
-    Returns:
-      A file-like object.
+    if data_stream:
+      fsntfs_data_stream = fsntfs_file_entry.get_data_stream_by_name(
+          data_stream)
+      if not fsntfs_data_stream:
+        raise IOError(u'Unable to open data stream: {0:s}.'.format(
+            data_stream))
 
-    Raises:
-      PathSpecError: if the path specification is incorrect.
-    """
+    elif not fsntfs_file_entry.has_default_data_stream():
+      raise IOError(u'Missing default data stream.')
+
+    self._fsntfs_data_stream = fsntfs_data_stream
+    self._fsntfs_file_entry = fsntfs_file_entry
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -100,7 +105,9 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._file_object.read(size=size)
+    if self._fsntfs_data_stream:
+      return self._fsntfs_data_stream.read(size=size)
+    return self._fsntfs_file_entry.read(size=size)
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks an offset within the file-like object.
@@ -116,7 +123,10 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    self._file_object.seek(offset, whence)
+    if self._fsntfs_data_stream:
+      self._fsntfs_data_stream.seek(offset, whence)
+    else:
+      self._fsntfs_file_entry.seek(offset, whence)
 
   def get_offset(self):
     """Returns the current offset into the file-like object.
@@ -127,9 +137,9 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not hasattr(self._file_object, u'get_offset'):
-      return self._file_object.tell()
-    return self._file_object.get_offset()
+    if self._fsntfs_data_stream:
+      return self._fsntfs_data_stream.get_offset()
+    return self._fsntfs_file_entry.get_offset()
 
   def get_size(self):
     """Returns the size of the file-like object.
@@ -140,12 +150,6 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if not hasattr(self._file_object, u'get_size'):
-      if not self._size:
-        current_offset = self.get_offset()
-        self.seek(0, os.SEEK_END)
-        self._size = self.get_offset()
-        self.seek(current_offset, os.SEEK_SET)
-      return self._size
-
-    return self._file_object.get_size()
+    if self._fsntfs_data_stream:
+      return self._fsntfs_data_stream.get_size()
+    return self._fsntfs_file_entry.get_size()
