@@ -144,6 +144,8 @@ fi
 
 if ! ${HAVE_REMOTE_ORIGIN};
 then
+  git push;
+
   DESCRIPTION="";
   get_last_change_description "DESCRIPTION";
 

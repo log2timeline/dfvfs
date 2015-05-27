@@ -192,6 +192,8 @@ then
 
   TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
 
+  git push;
+
   python utils/upload.py \
       --oauth2 ${BROWSER_PARAM} \
       --send_mail -r ${REVIEWERS} --cc log2timeline-dev@googlegroups.com \
