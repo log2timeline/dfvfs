@@ -104,6 +104,7 @@ then
 
     exit ${EXIT_FAILURE};
   fi
+  git fetch upstream;
 
   if have_master_branch;
   then
@@ -180,6 +181,16 @@ fi
 
 if ! ${HAVE_REMOTE_ORIGIN};
 then
+  git push;
+
+  if test $? -ne 0;
+  then
+    echo "Unable to push to origin";
+    echo "";
+
+    exit ${EXIT_FAILURE};
+  fi
+
   DESCRIPTION="";
   get_last_change_description "DESCRIPTION";
 
@@ -216,12 +227,13 @@ then
 
   POST_DATA="{
   \"title\": \"${DESCRIPTION}\",
-  \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL})/\",
+  \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL}/)\",
   \"head\": \"${ORGANIZATION}:${BRANCH}\",
   \"base\": \"master\"
 }";
 
-  curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls?access_token=${ACCESS_TOKEN};
+  echo "Creating pull request.";
+  curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls?access_token=${ACCESS_TOKEN} >/dev/null;
 
   if test $? -ne 0;
   then
@@ -282,7 +294,7 @@ then
   echo ${CL} > ${CL_FILENAME};
 
   echo "";
-  echo "Saved code review number for future updates/submits.";
+  echo "Saved code review number for future updates.";
 fi
 
 exit ${EXIT_SUCCESS};
