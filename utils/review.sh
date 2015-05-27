@@ -104,6 +104,7 @@ then
 
     exit ${EXIT_FAILURE};
   fi
+  git fetch upstream;
 
   if have_master_branch;
   then
