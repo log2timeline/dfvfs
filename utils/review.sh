@@ -217,7 +217,7 @@ then
 
   POST_DATA="{
   \"title\": \"${DESCRIPTION}\",
-  \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL})/\",
+  \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL}/)\",
   \"head\": \"${ORGANIZATION}:${BRANCH}\",
   \"base\": \"master\"
 }";
