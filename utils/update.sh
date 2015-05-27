@@ -146,6 +146,14 @@ if ! ${HAVE_REMOTE_ORIGIN};
 then
   git push;
 
+  if test $? -ne 0;
+  then
+    echo "Unable to push to origin";
+    echo "";
+  
+    exit ${EXIT_FAILURE};
+  fi
+
   DESCRIPTION="";
   get_last_change_description "DESCRIPTION";
 
