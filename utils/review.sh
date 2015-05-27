@@ -222,7 +222,8 @@ then
   \"base\": \"master\"
 }";
 
-  curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls?access_token=${ACCESS_TOKEN};
+  echo "Creating pull request.";
+  curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls?access_token=${ACCESS_TOKEN} >/dev/null;
 
   if test $? -ne 0;
   then
@@ -283,7 +284,7 @@ then
   echo ${CL} > ${CL_FILENAME};
 
   echo "";
-  echo "Saved code review number for future updates/submits.";
+  echo "Saved code review number for future updates.";
 fi
 
 exit ${EXIT_SUCCESS};
