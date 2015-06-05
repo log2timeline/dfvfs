@@ -43,7 +43,7 @@ fi
 
 CL_NUMBER=$1;
 USERNAME=$2;
-BRANCH=$3;
+FEATURE_BRANCH=$3;
 
 GITHUB_URL="https://github.com/${USERNAME}/dfvfs.git";
 
@@ -82,11 +82,11 @@ then
   fi
 fi
 
-git pull --squash ${GITHUB_URL} ${BRANCH}
+git pull --squash ${GITHUB_URL} ${FEATURE_BRANCH}
 
 if test $? -ne 0;
 then
-  echo "Submit aborted - unable to 'git pull ${GITHUB_URL} ${BRANCH}'.";
+  echo "Submit aborted - unable to 'git pull ${GITHUB_URL} ${FEATURE_BRANCH}'.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -133,7 +133,7 @@ fi
 # This will convert newlines into spaces.
 GITHUB_USERINFO=`curl -s https://api.github.com/users/${USERNAME}`;
 
-FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name":"\(.*\)","company*$/\1/'`;
+FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name":"\(.*\)", "company*$/\1/'`;
 
 if test -z "${FULLNAME}" || test "${FULLNAME}" = "${GITHUB_USERINFO}";
 then
