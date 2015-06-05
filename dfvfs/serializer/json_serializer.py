@@ -57,6 +57,10 @@ class _PathSpecJsonDecoder(json.JSONDecoder):
     if type_indicator:
       del json_dict[u'type_indicator']
 
+    # Convert row_condition back to a tuple.
+    if u'row_condition' in json_dict:
+      json_dict[u'row_condition'] = tuple(json_dict[u'row_condition'])
+
     return path_spec_factory.Factory.NewPathSpec(type_indicator, **json_dict)
 
 
@@ -102,7 +106,11 @@ class _PathSpecJsonEncoder(json.JSONEncoder):
     for property_name in path_spec_factory.Factory.PROPERTY_NAMES:
       property_value = getattr(path_spec_object, property_name, None)
       if property_value is not None:
-        json_dict[property_name] = property_value
+        # Convert row_condition tuple to a list
+        if property_name == u'row_condition':
+          json_dict[property_name] = list(property_value)
+        else:
+          json_dict[property_name] = property_value
 
     if path_spec_object.HasParent():
       json_dict[u'parent'] = self.default(path_spec_object.parent)
