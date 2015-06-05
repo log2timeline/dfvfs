@@ -28,6 +28,7 @@ try:
 except ImportError:
   pass
 
+from dfvfs.resolver import sqlite_blob_resolver_helper
 from dfvfs.resolver import tar_resolver_helper
 
 try:
