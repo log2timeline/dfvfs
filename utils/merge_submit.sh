@@ -133,7 +133,7 @@ fi
 # This will convert newlines into spaces.
 GITHUB_USERINFO=`curl -s https://api.github.com/users/${USERNAME}`;
 
-FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name":"\(.*\)", "company*$/\1/'`;
+FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name": "\(.*\)", "company.*$/\1/'`;
 
 if test -z "${FULLNAME}" || test "${FULLNAME}" = "${GITHUB_USERINFO}";
 then
