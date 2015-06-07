@@ -10,6 +10,35 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
   """Class that implements a protobuf path specification serializer object."""
 
   @classmethod
+  def ReadSerializedRowCondtion(cls, proto):
+    """Reads a row_condition from serialized form.
+
+    Args:
+      proto: a protobuf object (instance of transmission_pb2.RowCondition)
+             containing the serialized form.
+
+    Returns:
+      A row_condition tuple (left_operand, operator, right_operand).
+
+    Raises:
+      RuntimeError: when proto is not of type: transmission_pb2.RowCondition.
+    """
+    if not isinstance(proto, transmission_pb2.RowCondition):
+      raise RuntimeError(u'Unsupported serialized type.')
+
+    left_operand = u''
+    operator = u''
+    right_operand = u''
+    for proto_attribute, value in proto.ListFields():
+      if proto_attribute.name == u'left_operand':
+        left_operand = value
+      elif proto_attribute.name == u'operator':
+        operator = value
+      elif proto_attribute.name == u'right_operand':
+        right_operand = value
+    return left_operand, operator, right_operand
+
+  @classmethod
   def ReadSerializedObject(cls, proto):
     """Reads a path specification from serialized form.
 
@@ -37,6 +66,8 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
         type_indicator = value
       elif proto_attribute.name == 'parent':
         kwargs['parent'] = cls.ReadSerializedObject(value)
+      elif proto_attribute.name == 'row_condition':
+        kwargs['row_condition'] = cls.ReadSerializedRowCondtion(value)
       elif proto_attribute.name in path_spec_factory.Factory.PROPERTY_NAMES:
         kwargs[proto_attribute.name] = value
 
@@ -80,7 +111,13 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
       if hasattr(path_spec, property_name):
         property_value = getattr(path_spec, property_name, None)
         if property_value is not None:
-          setattr(serialized, property_name, property_value)
+          # Convert row_condition tuple to transmission_pb2.RowCondition
+          if property_name == 'row_condition':
+            serialized.row_condition.left_operand = property_value[0]
+            serialized.row_condition.operator = property_value[1]
+            serialized.row_condition.right_operand = property_value[2]
+          else:
+            setattr(serialized, property_name, property_value)
 
     return serialized
 

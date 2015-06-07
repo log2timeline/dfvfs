@@ -22,6 +22,8 @@ class SQLiteBlobFile(file_io.FileIO):
   _HAS_TABLE_QUERY = (
       u'SELECT name FROM sqlite_master WHERE type = "table"')
 
+  _NUMBER_OF_ROWS_QUERY = u'SELECT COUNT(*) FROM {0:s}'
+
   _OPERATORS = frozenset([u'==', u'=', u'IS'])
 
   def __init__(self, resolver_context):
@@ -35,6 +37,7 @@ class SQLiteBlobFile(file_io.FileIO):
     self._connection = None
     self._current_offset = 0
     self._cursor = None
+    self._number_of_rows = None
     self._size = 0
     self._temp_file_path = u''
 
@@ -157,9 +160,10 @@ class SQLiteBlobFile(file_io.FileIO):
             u'(column_name, operator, value).'))
 
     row_index = getattr(path_spec, u'row_index', None)
-    if row_condition is None and row_index is None:
-      raise errors.PathSpecError(
-          u'Path specification missing row condition and row index.')
+    if row_index is not None:
+      if not isinstance(row_index, (int, long)):
+        raise errors.PathSpecError(
+            u'Unsupported row_index not of integer type.')
 
     if self._connection:
       raise IOError(u'Connection already set.')
@@ -187,23 +191,28 @@ class SQLiteBlobFile(file_io.FileIO):
     file_object.close()
 
     self._connection = sqlite3.connect(self._temp_file_path)
+    self._connection.text_factory = bytes
     self._cursor = self._connection.cursor()
 
     # Sanity check the table and column names.
     if not self._HasTable(table_name):
+      self._connection.close()
       raise IOError(u'Missing table: {0:s}'.format(table_name))
 
     if not self._HasColumn(table_name, column_name):
+      self._connection.close()
       raise IOError(u'Missing column: {0:s} in table: {1:s}'.format(
           column_name, table_name))
 
     if row_condition:
       if not self._HasColumn(table_name, row_condition[0]):
+        self._connection.close()
         raise IOError(
             u'Missing row condition column: {0:s} in table: {1:s}'.format(
                 row_condition[0], table_name))
 
       if row_condition[1] not in self._OPERATORS:
+        self._connection.close()
         raise IOError(
             u'Unsupported row condition operator: {0:s}.'.format(
                 row_condition[1]))
@@ -234,11 +243,27 @@ class SQLiteBlobFile(file_io.FileIO):
             u'Unable to open blob in table: {0:s} and column: {1:s} '
             u'for row: {2:d}.').format(table_name, column_name, row_index)
 
+      self._Close()
       raise IOError(error_string)
 
     self._blob = rows[0][0]
     self._current_offset = 0
     self._size = len(self._blob)
+
+    # Get number of rows for this table
+    self._cursor.execute(self._NUMBER_OF_ROWS_QUERY.format(table_name))
+    self._number_of_rows = int(self._cursor.fetchone()[0])
+
+  def GetNumberOfRows(self):
+    """Returns the number of rows the table has.
+
+    Raises:
+      IOError: if the file-like object has not been opened.
+    """
+    if not self._connection:
+      raise IOError(u'Not opened.')
+
+    return self._number_of_rows
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.

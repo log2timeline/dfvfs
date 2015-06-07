@@ -39,5 +39,28 @@ message PathSpec {
 
   // Optional store index e.g. used by VSS.
   optional int32 store_index = 11;
+
+  // Optional table name e.g. used by SQLite Blob
+  optional string table_name = 12;
+
+  // Optional column name e.g. used by SQLite Blob
+  optional string column_name = 13;
+
+  // Optional row condition e.g. used by SQLite Blob
+  optional RowCondition row_condition = 14;
+
+  // Optional row index e.g. used by SQLite Blob
+  optional int32 row_index = 15;
 };
 
+// Components of the row condition tuple used by SQLite Blob
+message RowCondition {
+  // Required left_operand used by SQLite Blob row condition
+  required string left_operand = 1;
+
+  // Required operator used by SQLite Blob row condition
+  required string operator = 2;
+
+  // Required right_operand used by SQLite blob row condition
+  required string right_operand = 3;
+};
