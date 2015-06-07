@@ -181,7 +181,9 @@ fi
 
 if ! ${HAVE_REMOTE_ORIGIN};
 then
-  git push;
+  get_current_branch "BRANCH";
+
+  git push --set-upstream origin ${BRANCH};
 
   if test $? -ne 0;
   then
