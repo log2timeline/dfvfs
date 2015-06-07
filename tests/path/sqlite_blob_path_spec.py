@@ -42,16 +42,6 @@ class SQLiteBlobPathSpecTest(test_lib.PathSpecTestCase):
 
     with self.assertRaises(ValueError):
       _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=u'test_table', column_name=u'test_column', row_index=None,
-          parent=self._path_spec)
-
-    with self.assertRaises(ValueError):
-      _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=u'test_table', column_name=u'test_column',
-          row_condition=None, parent=self._path_spec)
-
-    with self.assertRaises(ValueError):
-      _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
           table_name=u'test_table', column_name=u'test_column',
           row_condition=u'identifier == 0', parent=self._path_spec)
 
