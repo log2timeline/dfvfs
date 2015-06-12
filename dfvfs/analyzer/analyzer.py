@@ -181,22 +181,26 @@ class Analyzer(object):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=resolver_context)
     scan_state = pysigscan.scan_state()
-    scanner_object.scan_file_object(scan_state, file_object)
 
-    for scan_result in scan_state.scan_results:
-      format_specification = specification_store.GetSpecificationBySignature(
-          scan_result.identifier)
+    try:
+      scanner_object.scan_file_object(scan_state, file_object)
 
-      if format_specification.identifier not in type_indicator_list:
-        type_indicator_list.append(format_specification.identifier)
+      for scan_result in scan_state.scan_results:
+        format_specification = specification_store.GetSpecificationBySignature(
+            scan_result.identifier)
 
-    for analyzer_helper in remainder_list:
-      result = analyzer_helper.AnalyzeFileObject(file_object)
+        if format_specification.identifier not in type_indicator_list:
+          type_indicator_list.append(format_specification.identifier)
 
-      if result is not None:
-        type_indicator_list.append(result)
+      for analyzer_helper in remainder_list:
+        result = analyzer_helper.AnalyzeFileObject(file_object)
 
-    file_object.close()
+        if result is not None:
+          type_indicator_list.append(result)
+
+    finally:
+      file_object.close()
+
     return type_indicator_list
 
   @classmethod
