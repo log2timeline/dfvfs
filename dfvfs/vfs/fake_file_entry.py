@@ -19,7 +19,7 @@ class FakeDirectory(file_entry.Directory):
     Yields:
       A path specification (instance of path.FakePathSpec).
     """
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
@@ -28,7 +28,7 @@ class FakeDirectory(file_entry.Directory):
     for path, _ in paths.iteritems():
       # Determine if the start of the path is similar to the location string.
       # If not the file the path refers to is not in the same directory.
-      if (not path or not path.startswith(location)):
+      if not path or not path.startswith(location):
         continue
 
       _, suffix = self._file_system.GetPathSegmentAndSuffix(location, path)
@@ -74,7 +74,7 @@ class FakeFileEntry(file_entry.FileEntry):
 
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat)."""
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
@@ -86,7 +86,7 @@ class FakeFileEntry(file_entry.FileEntry):
     if not self.IsLink():
       return u''
 
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return u''
 
@@ -96,7 +96,7 @@ class FakeFileEntry(file_entry.FileEntry):
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, 'location', None)
+      location = getattr(self.path_spec, u'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
     return self._name
@@ -121,7 +121,7 @@ class FakeFileEntry(file_entry.FileEntry):
     if not self.IsFile():
       raise IOError(u'Cannot open non-file.')
 
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
@@ -132,7 +132,7 @@ class FakeFileEntry(file_entry.FileEntry):
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 

@@ -19,7 +19,7 @@ class TextFile(object):
   # The maximum allowed size of the read buffer.
   _MAXIMUM_READ_BUFFER_SIZE = 16 * 1024 * 1024
 
-  def __init__(self, file_object, end_of_line='\n'):
+  def __init__(self, file_object, end_of_line=b'\n'):
     """Initializes the text file.
 
     Args:
@@ -31,7 +31,7 @@ class TextFile(object):
     self._file_object = file_object
     self._file_object_size = file_object.get_size()
     self._end_of_line = end_of_line
-    self._lines_buffer = ''
+    self._lines_buffer = b''
     self._lines_buffer_offset = 0
     self._lines_buffer_size = 0
     self._current_offset = 0
@@ -79,7 +79,7 @@ class TextFile(object):
       raise ValueError(u'Invalid maximum size value exceeds maximum.')
 
     if self._lines_buffer_offset >= self._file_object_size:
-      return ''
+      return b''
 
     if maximum_size is None:
       read_size = self._MAXIMUM_READ_BUFFER_SIZE
@@ -91,7 +91,7 @@ class TextFile(object):
 
     if read_size > self._lines_buffer_size:
       data = self._lines_buffer
-      self._lines_buffer = ''
+      self._lines_buffer = b''
 
       # Read the remaining requested data and a full lines buffer at once.
       read_size -= self._lines_buffer_size
@@ -155,7 +155,7 @@ class TextFile(object):
         next_offset == self._file_object_size):
       line = self._lines_buffer
       self._lines_buffer_size = 0
-      self._lines_buffer = ''
+      self._lines_buffer = b''
 
       return line
     elif (self._end_of_line not in self._lines_buffer and
@@ -165,7 +165,7 @@ class TextFile(object):
       result, separator, lines_data = lines_data.partition(self._end_of_line)
 
       if lines_data:
-        self._lines_buffer = ''.join([lines_data, self._lines_buffer])
+        self._lines_buffer = b''.join([lines_data, self._lines_buffer])
         self._lines_buffer_size = len(self._lines_buffer)
 
     else:
@@ -173,7 +173,7 @@ class TextFile(object):
           self._end_of_line)
       self._lines_buffer_size -= len(result + separator)
 
-    line = ''.join([result, separator])
+    line = b''.join([result, separator])
     self._current_offset += len(line)
 
     return line

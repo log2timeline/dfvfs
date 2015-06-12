@@ -99,8 +99,8 @@ class Factory(object):
 
     # An empty parent will cause parentless path specifications to raise
     # so we conveniently remove it here.
-    if 'parent' in kwargs and kwargs['parent'] is None:
-      del kwargs['parent']
+    if u'parent' in kwargs and kwargs[u'parent'] is None:
+      del kwargs[u'parent']
 
     path_spec_type = cls._path_spec_types[type_indicator]
     return path_spec_type(**kwargs)

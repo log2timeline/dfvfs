@@ -30,9 +30,9 @@ def _RawGlobPathSpecWithAlphabeticalSchema(
     while len(segment_letters) < segment_length:
       segment_index, remainder = divmod(segment_index, 26)
       if upper_case:
-        segment_letters.append(chr(ord('A') + remainder))
+        segment_letters.append(chr(ord(u'A') + remainder))
       else:
-        segment_letters.append(chr(ord('a') + remainder))
+        segment_letters.append(chr(ord(u'a') + remainder))
 
     # Reverse the segment letters list to form the extension.
     segment_letters = u''.join(segment_letters[::-1])
@@ -43,9 +43,9 @@ def _RawGlobPathSpecWithAlphabeticalSchema(
     # keyword arguments and raise.
     kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-    kwargs['location'] = segment_location
+    kwargs[u'location'] = segment_location
     if parent_path_spec.parent is not None:
-      kwargs['parent'] = parent_path_spec.parent
+      kwargs[u'parent'] = parent_path_spec.parent
 
     segment_path_spec = path_spec_factory.Factory.NewPathSpec(
         parent_path_spec.type_indicator, **kwargs)
@@ -84,9 +84,9 @@ def _RawGlobPathSpecWithNumericSchema(
     # keyword arguments and raise.
     kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-    kwargs['location'] = segment_location
+    kwargs[u'location'] = segment_location
     if parent_path_spec.parent is not None:
-      kwargs['parent'] = parent_path_spec.parent
+      kwargs[u'parent'] = parent_path_spec.parent
 
     segment_path_spec = path_spec_factory.Factory.NewPathSpec(
         parent_path_spec.type_indicator, **kwargs)
@@ -122,7 +122,7 @@ def RawGlobPathSpec(file_system, path_spec):
 
   parent_path_spec = path_spec.parent
 
-  parent_location = getattr(parent_path_spec, 'location', None)
+  parent_location = getattr(parent_path_spec, u'location', None)
   if not parent_location:
     raise errors.PathSpecError(
         u'Unsupported parent path specification without location.')
@@ -133,7 +133,7 @@ def RawGlobPathSpec(file_system, path_spec):
 
   if not dot:
     filename_prefix = segment_extension
-    segment_extension = ''
+    segment_extension = u''
 
   segment_extension_length = len(segment_extension)
 
@@ -323,12 +323,12 @@ def RawGlobPathSpec(file_system, path_spec):
         # keyword arguments and raise.
         kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-        kwargs['location'] = segment_location
+        kwargs[u'location'] = segment_location
         if parent_path_spec.parent is not None:
-          kwargs['parent'] = parent_path_spec.parent
+          kwargs[u'parent'] = parent_path_spec.parent
 
         segment_path_spec = path_spec_factory.Factory.NewPathSpec(
-          parent_path_spec.type_indicator, **kwargs)
+            parent_path_spec.type_indicator, **kwargs)
 
         if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
           raise errors.PathSpecError(

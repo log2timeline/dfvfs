@@ -342,7 +342,7 @@ class FileSystemSearcher(object):
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         file_system.type_indicator):
-      if not hasattr(mount_point, 'location'):
+      if not hasattr(mount_point, u'location'):
         raise errors.PathSpecError(
             u'Mount point path specification missing location.')
 
@@ -438,7 +438,7 @@ class FileSystemSearcher(object):
     Raises:
       PathSpecError: if the path specification is incorrect.
     """
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
 
@@ -448,7 +448,7 @@ class FileSystemSearcher(object):
         raise errors.PathSpecError(
             u'Path specification does not contain mount point.')
     else:
-      if not hasattr(path_spec, 'parent'):
+      if not hasattr(path_spec, u'parent'):
         raise errors.PathSpecError(u'Path specification missing parent.')
 
       if path_spec.parent != self._mount_point:

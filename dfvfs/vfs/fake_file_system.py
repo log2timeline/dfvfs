@@ -119,7 +119,7 @@ class FakeFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if location is None or location not in self._paths:
       return False
@@ -146,7 +146,7 @@ class FakeFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
     if location is None:
       return
 

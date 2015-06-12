@@ -26,7 +26,7 @@ def EwfGlobPathSpec(file_system, path_spec):
 
   parent_path_spec = path_spec.parent
 
-  parent_location = getattr(parent_path_spec, 'location', None)
+  parent_location = getattr(parent_path_spec, u'location', None)
   if not parent_location:
     raise errors.PathSpecError(
         u'Unsupported parent path specification without location.')
@@ -38,9 +38,9 @@ def EwfGlobPathSpec(file_system, path_spec):
   if (segment_extension_length not in [3, 4] or
       not segment_extension.endswith(u'01') or (
           segment_extension_length == 3 and
-          segment_extension_start not in ['E', 'e', 's']) or (
-          segment_extension_length == 4 and
-          not segment_extension.startswith(u'Ex'))):
+          segment_extension_start not in [u'E', u'e', u's']) or (
+              segment_extension_length == 4 and
+              not segment_extension.startswith(u'Ex'))):
     raise errors.PathSpecError((
         u'Unsupported parent path specification invalid segment file '
         u'extension: {0:s}').format(segment_extension))
@@ -55,12 +55,12 @@ def EwfGlobPathSpec(file_system, path_spec):
     # keyword arguments and raise.
     kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-    kwargs['location'] = segment_location
+    kwargs[u'location'] = segment_location
     if parent_path_spec.parent is not None:
-      kwargs['parent'] = parent_path_spec.parent
+      kwargs[u'parent'] = parent_path_spec.parent
 
     segment_path_spec = path_spec_factory.Factory.NewPathSpec(
-      parent_path_spec.type_indicator, **kwargs)
+        parent_path_spec.type_indicator, **kwargs)
 
     if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
       break
@@ -79,10 +79,10 @@ def EwfGlobPathSpec(file_system, path_spec):
     else:
       segment_index = segment_number - 100
 
-      if segment_extension_start in ['e', 's']:
-        letter_offset = ord('a')
+      if segment_extension_start in [u'e', u's']:
+        letter_offset = ord(u'a')
       else:
-        letter_offset = ord('A')
+        letter_offset = ord(u'A')
 
       segment_index, remainder = divmod(segment_index, 26)
       third_letter = chr(letter_offset + remainder)
@@ -91,7 +91,7 @@ def EwfGlobPathSpec(file_system, path_spec):
       second_letter = chr(letter_offset + remainder)
 
       first_letter = chr(ord(segment_extension_start) + segment_index)
-      if first_letter in ['[', '{']:
+      if first_letter in [u'[', u'{']:
         raise RuntimeError(u'Unsupported number of segment files.')
 
       if segment_extension_length == 3:

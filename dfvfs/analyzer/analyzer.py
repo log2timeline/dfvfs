@@ -3,13 +3,13 @@
 
 import pysigscan
 
+from dfvfs import dependencies
 from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 
 
-if pysigscan.get_version() < '20150114':
-  raise ImportWarning('Analyzer requires at least pysigscan 20150114.')
+dependencies.CheckModuleVersion(u'pysigscan')
 
 
 class Analyzer(object):

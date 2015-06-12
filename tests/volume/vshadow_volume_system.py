@@ -16,7 +16,7 @@ class VShadowVolumeSystemTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -58,25 +58,25 @@ class VShadowVolumeSystemTest(unittest.TestCase):
     self.assertNotEqual(volume, None)
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 4)
-    self.assertEqual(volume.identifier, 'vss2')
+    self.assertEqual(volume.identifier, u'vss2')
 
-    expected_value = '600f0b6d-5bdf-11e3-9d6c-005056c00008'
-    volume_attribute = volume.GetAttribute('identifier')
+    expected_value = u'600f0b6d-5bdf-11e3-9d6c-005056c00008'
+    volume_attribute = volume.GetAttribute(u'identifier')
     self.assertNotEqual(volume_attribute, None)
     self.assertEqual(volume_attribute.value, expected_value)
 
-    expected_value = '18f1ac6e-959d-436f-bdcc-e797a729e290'
-    volume_attribute = volume.GetAttribute('copy_identifier')
+    expected_value = u'18f1ac6e-959d-436f-bdcc-e797a729e290'
+    volume_attribute = volume.GetAttribute(u'copy_identifier')
     self.assertNotEqual(volume_attribute, None)
     self.assertEqual(volume_attribute.value, expected_value)
 
-    expected_value = '8438a0ee-0f06-443b-ac0c-2905647ca5d6'
-    volume_attribute = volume.GetAttribute('copy_set_identifier')
+    expected_value = u'8438a0ee-0f06-443b-ac0c-2905647ca5d6'
+    volume_attribute = volume.GetAttribute(u'copy_set_identifier')
     self.assertNotEqual(volume_attribute, None)
     self.assertEqual(volume_attribute.value, expected_value)
 
     expected_value = 130305262689190583
-    volume_attribute = volume.GetAttribute('creation_time')
+    volume_attribute = volume.GetAttribute(u'creation_time')
     self.assertNotEqual(volume_attribute, None)
     self.assertEqual(volume_attribute.value, expected_value)
 
