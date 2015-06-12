@@ -257,7 +257,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._compressed_stream_scanner, cls._compressed_stream_store,
-        cls._compressed_stream_remainder_list, path_spec, 
+        cls._compressed_stream_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod
@@ -285,7 +285,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._file_system_scanner, cls._file_system_store,
-        cls._file_system_remainder_list, path_spec, 
+        cls._file_system_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod
@@ -314,7 +314,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._storage_media_image_scanner, cls._storage_media_image_store,
-        cls._storage_media_image_remainder_list, path_spec, 
+        cls._storage_media_image_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod
@@ -342,7 +342,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._volume_system_scanner, cls._volume_system_store,
-        cls._volume_system_remainder_list, path_spec, 
+        cls._volume_system_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod
