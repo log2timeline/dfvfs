@@ -19,7 +19,7 @@ class DataRangeTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog')
+    test_file = os.path.join(u'test_data', u'syslog')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._data_range_path_spec = data_range_path_spec.DataRangePathSpec(
         range_offset=167, range_size=1080, parent=self._os_path_spec)

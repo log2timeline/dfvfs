@@ -3,14 +3,14 @@
 
 import pyewf
 
+from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.lib import ewf
 from dfvfs.resolver import resolver
 
 
-if pyewf.get_version() < '20131210':
-  raise ImportWarning('EwfFile requires at least pyewf 20131210.')
+dependencies.CheckModuleVersion(u'pyewf')
 
 
 class EwfFile(file_object_io.FileObjectIO):

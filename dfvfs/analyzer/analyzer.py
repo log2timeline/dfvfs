@@ -3,13 +3,13 @@
 
 import pysigscan
 
+from dfvfs import dependencies
 from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 
 
-if pysigscan.get_version() < '20150114':
-  raise ImportWarning('Analyzer requires at least pysigscan 20150114.')
+dependencies.CheckModuleVersion(u'pysigscan')
 
 
 class Analyzer(object):
@@ -181,22 +181,26 @@ class Analyzer(object):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=resolver_context)
     scan_state = pysigscan.scan_state()
-    scanner_object.scan_file_object(scan_state, file_object)
 
-    for scan_result in scan_state.scan_results:
-      format_specification = specification_store.GetSpecificationBySignature(
-          scan_result.identifier)
+    try:
+      scanner_object.scan_file_object(scan_state, file_object)
 
-      if format_specification.identifier not in type_indicator_list:
-        type_indicator_list.append(format_specification.identifier)
+      for scan_result in scan_state.scan_results:
+        format_specification = specification_store.GetSpecificationBySignature(
+            scan_result.identifier)
 
-    for analyzer_helper in remainder_list:
-      result = analyzer_helper.AnalyzeFileObject(file_object)
+        if format_specification.identifier not in type_indicator_list:
+          type_indicator_list.append(format_specification.identifier)
 
-      if result is not None:
-        type_indicator_list.append(result)
+      for analyzer_helper in remainder_list:
+        result = analyzer_helper.AnalyzeFileObject(file_object)
 
-    file_object.close()
+        if result is not None:
+          type_indicator_list.append(result)
+
+    finally:
+      file_object.close()
+
     return type_indicator_list
 
   @classmethod
@@ -253,7 +257,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._compressed_stream_scanner, cls._compressed_stream_store,
-        cls._compressed_stream_remainder_list, path_spec, 
+        cls._compressed_stream_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod
@@ -281,7 +285,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._file_system_scanner, cls._file_system_store,
-        cls._file_system_remainder_list, path_spec, 
+        cls._file_system_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod
@@ -310,7 +314,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._storage_media_image_scanner, cls._storage_media_image_store,
-        cls._storage_media_image_remainder_list, path_spec, 
+        cls._storage_media_image_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod
@@ -338,7 +342,7 @@ class Analyzer(object):
 
     return cls._GetTypeIndicators(
         cls._volume_system_scanner, cls._volume_system_store,
-        cls._volume_system_remainder_list, path_spec, 
+        cls._volume_system_remainder_list, path_spec,
         resolver_context=resolver_context)
 
   @classmethod

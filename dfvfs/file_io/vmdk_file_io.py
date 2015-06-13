@@ -3,14 +3,14 @@
 
 import pyvmdk
 
+from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 
 
-if pyvmdk.get_version() < '20140421':
-  raise ImportWarning('VmdkFile requires at least pyvmdk 20140421.')
+dependencies.CheckModuleVersion(u'pyvmdk')
 
 
 class VmdkFile(file_object_io.FileObjectIO):
@@ -35,7 +35,7 @@ class VmdkFile(file_object_io.FileObjectIO):
 
     parent_path_spec = path_spec.parent
 
-    parent_location = getattr(parent_path_spec, 'location', None)
+    parent_location = getattr(parent_path_spec, u'location', None)
     if not parent_location:
       raise errors.PathSpecError(
           u'Unsupported parent path specification without location.')
@@ -79,9 +79,9 @@ class VmdkFile(file_object_io.FileObjectIO):
       # keyword arguments and raise.
       kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-      kwargs['location'] = extent_data_file_location
+      kwargs[u'location'] = extent_data_file_location
       if parent_path_spec.parent is not None:
-        kwargs['parent'] = parent_path_spec.parent
+        kwargs[u'parent'] = parent_path_spec.parent
 
       extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
           parent_path_spec.type_indicator, **kwargs)
