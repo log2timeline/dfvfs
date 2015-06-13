@@ -6,6 +6,7 @@ import pyvshadow
 # This is necessary to prevent a circular import.
 import dfvfs.vfs.vshadow_file_entry
 
+from dfvfs import dependencies
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import vshadow
@@ -14,9 +15,7 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
 
 
-if pyvshadow.get_version() < '20131209':
-  raise ImportWarning(
-      'VShadowFileSystem requires at least pyvshadow 20131209.')
+dependencies.CheckModuleVersion(u'pyvshadow')
 
 
 class VShadowFileSystem(file_system.FileSystem):
@@ -87,7 +86,7 @@ class VShadowFileSystem(file_system.FileSystem):
     # The virtual root file has not corresponding store index but
     # should have a location.
     if store_index is None:
-      location = getattr(path_spec, 'location', None)
+      location = getattr(path_spec, u'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
     return (store_index >= 0 and
@@ -107,7 +106,7 @@ class VShadowFileSystem(file_system.FileSystem):
     # The virtual root file has not corresponding store index but
     # should have a location.
     if store_index is None:
-      location = getattr(path_spec, 'location', None)
+      location = getattr(path_spec, u'location', None)
       if location is None or location != self.LOCATION_ROOT:
         return
       return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(

@@ -77,7 +77,7 @@ class ZipFileSystem(file_system.FileSystem):
       Boolean indicating if the file entry exists.
     """
     zip_info = None
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
@@ -103,7 +103,7 @@ class ZipFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.ZipFileEntry) or None.
     """
     zip_info = None
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):

@@ -16,7 +16,7 @@ from dfvfs.vfs import os_file_entry
 class OSFileSystem(file_system.FileSystem):
   """Class that implements an operating system file system object."""
 
-  if platform.system() == 'Windows':
+  if platform.system() == u'Windows':
     PATH_SEPARATOR = u'\\'
   else:
     PATH_SEPARATOR = u'/'
@@ -58,13 +58,13 @@ class OSFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if location is None:
       return False
 
     is_device = False
-    if platform.system() == 'Windows':
+    if platform.system() == u'Windows':
       # Windows does not support running os.path.exists on device files
       # so we use libsmdev to do the check.
       try:
@@ -100,11 +100,11 @@ class OSFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    if platform.system() == 'Windows':
+    if platform.system() == u'Windows':
       # Return the root with the drive letter of the volume the current
       # working directory is on.
       location = os.getcwd()
-      location, _, _ = location.partition('\\')
+      location, _, _ = location.partition(u'\\')
       location = u'{0:s}\\'.format(location)
     else:
       location = u'/'
@@ -129,7 +129,7 @@ class OSFileSystem(file_system.FileSystem):
     # segment correctly.
     first_path_segment = None
 
-    if path_segments and platform.system() == 'Windows':
+    if path_segments and platform.system() == u'Windows':
       # Check if the first path segment contains a "special" path definition.
       first_path_segment = path_segments[0]
       first_path_segment_length = len(first_path_segment)

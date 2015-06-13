@@ -24,11 +24,11 @@ class SQLiteBlobDirectory(file_entry.Directory):
       AccessError: if the access to list the directory was denied.
       BackEndError: if the directory could not be listed.
     """
-    table_name = getattr(self.path_spec, 'table_name', None)
+    table_name = getattr(self.path_spec, u'table_name', None)
     if table_name is None:
       return
 
-    column_name = getattr(self.path_spec, 'column_name', None)
+    column_name = getattr(self.path_spec, u'column_name', None)
     if column_name is None:
       return
 

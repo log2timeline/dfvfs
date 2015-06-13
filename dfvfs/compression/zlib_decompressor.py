@@ -42,7 +42,7 @@ class ZlibDecompressor(decompressor.Decompressor):
     try:
       uncompressed_data = self._zlib_decompressor.decompress(compressed_data)
       remaining_compressed_data = getattr(
-          self._zlib_decompressor, 'unused_data', b'')
+          self._zlib_decompressor, u'unused_data', b'')
 
     except zlib.error as exception:
       raise errors.BackEndError((

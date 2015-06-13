@@ -15,7 +15,7 @@ class TSKVolumeSystemTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join('test_data', 'tsk_volume_system.raw')
+    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
@@ -50,15 +50,15 @@ class TSKVolumeSystemTest(unittest.TestCase):
     self.assertNotEqual(volume, None)
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 2)
-    self.assertEqual(volume.identifier, 'p2')
+    self.assertEqual(volume.identifier, u'p2')
 
     expected_value = 6
-    volume_attribute = volume.GetAttribute('address')
+    volume_attribute = volume.GetAttribute(u'address')
     self.assertNotEqual(volume_attribute, None)
     self.assertEqual(volume_attribute.value, expected_value)
 
     expected_value = u'Linux (0x83)'
-    volume_attribute = volume.GetAttribute('description')
+    volume_attribute = volume.GetAttribute(u'description')
     self.assertNotEqual(volume_attribute, None)
     self.assertEqual(volume_attribute.value, expected_value)
 

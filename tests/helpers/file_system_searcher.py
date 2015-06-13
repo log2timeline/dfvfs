@@ -79,7 +79,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -100,7 +100,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -114,7 +114,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -135,7 +135,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -153,7 +153,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       if not first_path_spec:
         first_path_spec = path_spec
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -177,7 +177,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -193,7 +193,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -225,7 +225,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     for path_spec in path_spec_generator:
       if not first_path_spec:
         first_path_spec = path_spec
-      locations.append(getattr(path_spec, 'location', u''))
+      locations.append(getattr(path_spec, u'location', u''))
 
     self.assertEqual(sorted(locations), expected_locations)
 
