@@ -23,11 +23,11 @@ class VShadowDirectory(file_entry.Directory):
       A path specification (instance of path.VShadowPathSpec).
     """
     # Only the virtual root file has directory entries.
-    store_index = getattr(self.path_spec, 'store_index', None)
+    store_index = getattr(self.path_spec, u'store_index', None)
     if store_index is not None:
       return
 
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None or location != self._file_system.LOCATION_ROOT:
       return
 
@@ -120,11 +120,11 @@ class VShadowFileEntry(file_entry.FileEntry):
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, 'location', None)
+      location = getattr(self.path_spec, u'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
       else:
-        store_index = getattr(self.path_spec, 'store_index', None)
+        store_index = getattr(self.path_spec, u'store_index', None)
         if store_index is not None:
           self._name = u'vss{0:d}'.format(store_index + 1)
         else:

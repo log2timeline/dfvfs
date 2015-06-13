@@ -3,14 +3,14 @@
 
 import pybde
 
+from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import bde
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
-if pybde.get_version() < '20140531':
-  raise ImportWarning('BdeFile requires at least pybde 20140531.')
+dependencies.CheckModuleVersion(u'pybde')
 
 
 class BdeFile(file_object_io.FileObjectIO):

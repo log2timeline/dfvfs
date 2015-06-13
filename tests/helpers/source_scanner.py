@@ -17,7 +17,7 @@ from dfvfs.resolver import resolver
 class SourceScannerTest(unittest.TestCase):
   """The unit test for the source scanner object."""
 
-  _BDE_PASSWORD = 'bde-TEST'
+  _BDE_PASSWORD = u'bde-TEST'
 
   maxDiff = None
 
@@ -184,7 +184,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self.assertEqual(len(scan_context.last_scan_node.sub_nodes), 0)
 
-    test_file = os.path.join('test_data', 'nosuchfile.raw')
+    test_file = os.path.join(u'test_data', u'nosuchfile.raw')
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 

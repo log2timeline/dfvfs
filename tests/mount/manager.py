@@ -21,7 +21,7 @@ class MountPointManagerTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'image.qcow2')
+    test_file = os.path.join(u'test_data', u'image.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
 
@@ -43,7 +43,7 @@ class MountPointManagerTest(unittest.TestCase):
 
     parent_path_spec = mount_path_spec.MountPathSpec(identifier=u'C')
     path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', parent=parent_path_spec)
+        location=u'/passwords.txt', parent=parent_path_spec)
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
@@ -53,7 +53,7 @@ class MountPointManagerTest(unittest.TestCase):
 
     parent_path_spec = mount_path_spec.MountPathSpec(identifier=u'D')
     path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', parent=parent_path_spec)
+        location=u'/passwords.txt', parent=parent_path_spec)
 
     with self.assertRaises(errors.MountPointError):
       file_object = resolver.Resolver.OpenFileObject(

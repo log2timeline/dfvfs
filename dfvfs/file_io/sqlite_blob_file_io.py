@@ -232,7 +232,7 @@ class SQLiteBlobFile(file_io.FileIO):
     if len(rows) != 1 or len(rows[0]) != 1:
       if row_condition:
         row_condition_string = u' '.join([
-            '{0!s}'.format(value) for value in row_condition])
+            u'{0!s}'.format(value) for value in row_condition])
         error_string = (
             u'Unable to open blob in table: {0:s} and column: {1:s} '
             u'where: {2:s}.').format(
