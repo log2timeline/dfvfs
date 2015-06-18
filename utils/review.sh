@@ -15,7 +15,8 @@ BRANCH="";
 
 if test -e ".review" && ! test -d ".review";
 then
-  echo "Invalid source tree: .review exists but is not a directory.";
+  echo "Unable to find common scripts (utils/common.sh).";
+  echo "This script can only be run from the root of the source directory.";
 
   exit ${EXIT_FAILURE};
 fi
