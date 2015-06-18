@@ -55,7 +55,7 @@ class SourceScanNode(object):
       The sub scan node object (instance of SourceScanNode) or None.
     """
     for sub_node in self.sub_nodes:
-      sub_node_location = getattr(sub_node.path_spec, 'location', u'')
+      sub_node_location = getattr(sub_node.path_spec, u'location', u'')
       if location == sub_node_location:
         return sub_node
 
@@ -449,7 +449,7 @@ class SourceScanner(object):
     """
     volume_identifiers = []
     for volume in volume_system.volumes:
-      volume_identifier = getattr(volume, 'identifier', None)
+      volume_identifier = getattr(volume, u'identifier', None)
       if volume_identifier:
         volume_identifiers.append(volume_identifier)
 

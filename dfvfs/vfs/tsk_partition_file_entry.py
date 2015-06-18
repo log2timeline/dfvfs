@@ -22,13 +22,13 @@ class TSKPartitionDirectory(file_entry.Directory):
       A path specification (instance of path.TSKPartitionPathSpec).
     """
     # Only the virtual root file has directory entries.
-    part_index = getattr(self.path_spec, 'part_index', None)
-    start_offset = getattr(self.path_spec, 'start_offset', None)
+    part_index = getattr(self.path_spec, u'part_index', None)
+    start_offset = getattr(self.path_spec, u'start_offset', None)
 
     if part_index is not None or start_offset is not None:
       return
 
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None or location != self._file_system.LOCATION_ROOT:
       return
 
@@ -45,17 +45,17 @@ class TSKPartitionDirectory(file_entry.Directory):
 
       if tsk_partition.TSKVsPartIsAllocated(tsk_vs_part):
         partition_index += 1
-        kwargs['location'] = u'/p{0:d}'.format(partition_index)
+        kwargs[u'location'] = u'/p{0:d}'.format(partition_index)
 
-      kwargs['part_index'] = part_index
+      kwargs[u'part_index'] = part_index
       part_index += 1
 
       start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
 
       if start_sector is not None:
-        kwargs['start_offset'] = start_sector * bytes_per_sector
+        kwargs[u'start_offset'] = start_sector * bytes_per_sector
 
-      kwargs['parent'] = self.path_spec.parent
+      kwargs[u'parent'] = self.path_spec.parent
 
       yield tsk_partition_path_spec.TSKPartitionPathSpec(**kwargs)
 
@@ -147,7 +147,7 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     if self._name is None:
       # Directory entries without a location in the path specification
       # are not given a name for now.
-      location = getattr(self.path_spec, 'location', None)
+      location = getattr(self.path_spec, u'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
       else:

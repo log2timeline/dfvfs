@@ -11,7 +11,7 @@ class WindowsPathResolver(object):
   """Resolver object for Windows paths."""
 
   _PATH_SEPARATOR = u'\\'
-  _PATH_EXPANSION_VARIABLE = re.compile('^[%][^%]+[%]$')
+  _PATH_EXPANSION_VARIABLE = re.compile(r'^[%][^%]+[%]$')
 
   def __init__(self, file_system, mount_point, drive_letter=u'C'):
     """Initializes the Windows path helper.
@@ -37,7 +37,7 @@ class WindowsPathResolver(object):
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         file_system.type_indicator):
-      if not hasattr(mount_point, 'location'):
+      if not hasattr(mount_point, u'location'):
         raise errors.PathSpecError(
             u'Mount point path specification missing location.')
 
@@ -145,10 +145,10 @@ class WindowsPathResolver(object):
         return None, None
 
       # Ignore empty path segments or path segments containing a single dot.
-      if not path_segment or path_segment == '.':
+      if not path_segment or path_segment == u'.':
         continue
 
-      if path_segment == '..':
+      if path_segment == u'..':
         # Only allow to traverse back up to the mount point.
         if number_of_expanded_path_segments > 0:
           _ = expanded_path_segments.pop()
@@ -186,7 +186,7 @@ class WindowsPathResolver(object):
     Raises:
       PathSpecError: if the path specification is incorrect.
     """
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
 
@@ -196,7 +196,7 @@ class WindowsPathResolver(object):
         raise errors.PathSpecError(
             u'Path specification does not contain mount point.')
     else:
-      if not hasattr(path_spec, 'parent'):
+      if not hasattr(path_spec, u'parent'):
         raise errors.PathSpecError(u'Path specification missing parent.')
 
       if path_spec.parent != self._mount_point:
@@ -237,10 +237,10 @@ class WindowsPathResolver(object):
     # and raise.
     kwargs = path_spec_factory.Factory.GetProperties(path_spec)
 
-    kwargs['location'] = location
+    kwargs[u'location'] = location
     if not path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         self._file_system.type_indicator):
-      kwargs['parent'] = self._mount_point
+      kwargs[u'parent'] = self._mount_point
 
     return path_spec_factory.Factory.NewPathSpec(
         self._file_system.type_indicator, **kwargs)

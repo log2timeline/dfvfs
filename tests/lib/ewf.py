@@ -50,16 +50,16 @@ class GlobEwfFileTest(unittest.TestCase):
         segment_index, remainder = divmod(segment_index, 26)
 
         if extension[0].islower():
-          third_letter = chr(ord('a') + remainder)
+          third_letter = chr(ord(u'a') + remainder)
         else:
-          third_letter = chr(ord('A') + remainder)
+          third_letter = chr(ord(u'A') + remainder)
 
         segment_index, remainder = divmod(segment_index, 26)
 
         if extension[0].islower():
-          second_letter = chr(ord('a') + remainder)
+          second_letter = chr(ord(u'a') + remainder)
         else:
-          second_letter = chr(ord('A') + remainder)
+          second_letter = chr(ord(u'A') + remainder)
 
         first_letter = chr(ord(extension[0]) + segment_index)
         if extension[1] == u'x':

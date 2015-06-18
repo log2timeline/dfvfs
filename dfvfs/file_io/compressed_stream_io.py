@@ -118,7 +118,7 @@ class CompressedStream(file_io.FileIO):
         raise errors.PathSpecError(
             u'Unsupported path specification without parent.')
 
-      self._compression_method = getattr(path_spec, 'compression_method', None)
+      self._compression_method = getattr(path_spec, u'compression_method', None)
 
       if self._compression_method is None:
         raise errors.PathSpecError(

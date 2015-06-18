@@ -50,7 +50,7 @@ class FakeFile(file_io.FileIO):
     if path_spec.HasParent():
       raise errors.PathSpecError(u'Unsupported path specification with parent.')
 
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
 
@@ -85,7 +85,7 @@ class FakeFile(file_io.FileIO):
               self._current_offset))
 
     if self._file_data is None or self._current_offset >= self._size:
-      return ''
+      return b''
 
     if size is None:
       size = self._size

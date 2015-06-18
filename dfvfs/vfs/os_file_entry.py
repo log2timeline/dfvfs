@@ -31,7 +31,7 @@ class OSDirectory(file_entry.Directory):
       AccessError: if the access to list the directory was denied.
       BackEndError: if the directory could not be listed.
     """
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
@@ -96,7 +96,7 @@ class OSFileEntry(file_entry.FileEntry):
     Returns:
       Stat object (instance of VFSStat) or None if no location is set.
     """
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
@@ -107,7 +107,7 @@ class OSFileEntry(file_entry.FileEntry):
 
     # Windows does not support running os.stat on device files so we use
     # libsmdev to do an initial check.
-    if platform.system() == 'Windows':
+    if platform.system() == u'Windows':
       try:
         is_windows_device = pysmdev.check_device(location)
       except IOError:
@@ -182,7 +182,7 @@ class OSFileEntry(file_entry.FileEntry):
       if not self.IsLink():
         return self._link
 
-      location = getattr(self.path_spec, 'location', None)
+      location = getattr(self.path_spec, u'location', None)
       if location is None:
         return self._link
 
@@ -194,7 +194,7 @@ class OSFileEntry(file_entry.FileEntry):
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, 'location', None)
+      location = getattr(self.path_spec, u'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
     return self._name
@@ -219,7 +219,7 @@ class OSFileEntry(file_entry.FileEntry):
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 

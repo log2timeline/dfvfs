@@ -42,7 +42,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -56,7 +56,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testGetStat(self):
     """Test the get stat functionality."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -69,7 +69,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -86,7 +86,7 @@ class OSFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    test_file = os.path.join('test_data', 'testdir_os')
+    test_file = os.path.join(u'test_data', u'testdir_os')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
