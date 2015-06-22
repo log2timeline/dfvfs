@@ -32,7 +32,7 @@ class FakeFileSystemTest(unittest.TestCase):
     self.assertNotEqual(file_system, None)
 
     file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file1.txt', file_data='FILE1')
+        u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
 
     file_system.Open(path_spec=self._fake_path_spec)
 
@@ -52,7 +52,7 @@ class FakeFileSystemTest(unittest.TestCase):
     self.assertNotEqual(file_system, None)
 
     file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file1.txt', file_data='FILE1')
+        u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
 
     file_system.Open(path_spec=self._fake_path_spec)
 

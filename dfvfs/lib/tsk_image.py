@@ -26,8 +26,8 @@ class TSKFileSystemImage(pytsk3.Img_Info):
     # of pylint complain also setting type to RAW or EXTERNAL to make sure
     # Img_Info does not do detection.
     tsk_img_type = getattr(
-        pytsk3, 'TSK_IMG_TYPE_EXTERNAL', pytsk3.TSK_IMG_TYPE_RAW)
-    pytsk3.Img_Info.__init__(self, url='', type=tsk_img_type)
+        pytsk3, u'TSK_IMG_TYPE_EXTERNAL', pytsk3.TSK_IMG_TYPE_RAW)
+    pytsk3.Img_Info.__init__(self, url=b'', type=tsk_img_type)
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the pytsk3.Img_Info object interface.

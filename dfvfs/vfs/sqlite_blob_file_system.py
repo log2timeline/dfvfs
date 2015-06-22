@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
-"""The zip file system implementation."""
-
-import zipfile
-
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.zip_file_entry
+"""The SQLite blob file system implementation."""
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import zip_path_spec
+from dfvfs.path import sqlite_blob_path_spec
 from dfvfs.resolver import resolver
+from dfvfs.vfs import sqlite_blob_file_entry
 from dfvfs.vfs import file_system
 
 
-class ZipFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using zipfile."""
+class SQLiteBlobFileSystem(file_system.FileSystem):
+  """Class that implements a file system object using SQLite blob."""
 
-  LOCATION_ROOT = u'/'
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
 
   def __init__(self, resolver_context):
     """Initializes the file system object.
@@ -25,9 +20,9 @@ class ZipFileSystem(file_system.FileSystem):
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
     """
-    super(ZipFileSystem, self).__init__(resolver_context)
+    super(SQLiteBlobFileSystem, self).__init__(resolver_context)
     self._file_object = None
-    self._zip_file = None
+    self._number_of_rows = None
 
   def _Close(self):
     """Closes the file system object.
@@ -35,11 +30,9 @@ class ZipFileSystem(file_system.FileSystem):
     Raises:
       IOError: if the close failed.
     """
-    self._zip_file.close()
-    self._zip_file = None
-
     self._file_object.close()
     self._file_object = None
+    self._number_of_rows = None
 
   def _Open(self, path_spec=None, mode='rb'):
     """Opens the file system object defined by path specification.
@@ -62,10 +55,7 @@ class ZipFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    zip_file = zipfile.ZipFile(file_object, 'r')
-
     self._file_object = file_object
-    self._zip_file = zip_file
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -76,22 +66,17 @@ class ZipFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    zip_info = None
-    location = getattr(path_spec, u'location', None)
-
-    if (location is None or
-        not location.startswith(self.LOCATION_ROOT)):
-      return
-
-    if len(location) == 1:
-      return True
-
+    # All checks for correct path spec is done in SQLiteBlobFile.
+    # Therefore, attempt to open the path specification and
+    # check if errors occurred.
     try:
-      zip_info = self._zip_file.getinfo(location[1:])
-    except KeyError:
-      pass
+      file_object = resolver.Resolver.OpenFileObject(
+          path_spec, resolver_context=self._resolver_context)
+    except (errors.AccessError, errors.PathSpecError, IOError, ValueError):
+      return False
 
-    return zip_info is not None
+    file_object.close()
+    return True
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -100,44 +85,39 @@ class ZipFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.ZipFileEntry) or None.
+      A file entry (instance of vfs.FileEntry) or None.
     """
-    zip_info = None
-    location = getattr(path_spec, u'location', None)
+    row_index = getattr(path_spec, u'row_index', None)
+    row_condition = getattr(path_spec, u'row_condition', None)
 
-    if (location is None or
-        not location.startswith(self.LOCATION_ROOT)):
-      return
-
-    if len(location) == 1:
-      return dfvfs.vfs.zip_file_entry.ZipFileEntry(
+    # If no row_index or row_condition is provided, return a directory.
+    if row_index is None and row_condition is None:
+      return sqlite_blob_file_entry.SQLiteBlobFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
-
-    try:
-      zip_info = self._zip_file.getinfo(location[1:])
-    except KeyError:
-      pass
-
-    if zip_info is None:
-      return
-    return dfvfs.vfs.zip_file_entry.ZipFileEntry(
-        self._resolver_context, self, path_spec, zip_info=zip_info)
+    else:
+      return sqlite_blob_file_entry.SQLiteBlobFileEntry(
+          self._resolver_context, self, path_spec)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      A file entry (instance of vfs.FileEntry) or None.
     """
-    path_spec = zip_path_spec.ZipPathSpec(
-        location=self.LOCATION_ROOT, parent=self._path_spec.parent)
+    path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
+        table_name=self._path_spec.table_name,
+        column_name=self._path_spec.column_name,
+        parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
 
-  def GetZipFile(self):
-    """Retrieves the zip file object.
+  def GetNumberOfRows(self, path_spec):
+    """Returns the number of rows the table has."""
+    if self._number_of_rows is not None:
+      return self._number_of_rows
 
-    Returns:
-      The zip file object (instance of zipfile.ZipFile).
-    """
-    return self._zip_file
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
+    self._number_of_rows = file_object.GetNumberOfRows()
+    file_object.close()
+    return self._number_of_rows

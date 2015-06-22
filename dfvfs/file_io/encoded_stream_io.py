@@ -116,7 +116,7 @@ class EncodedStream(file_io.FileIO):
         raise errors.PathSpecError(
             u'Unsupported path specification without parent.')
 
-      self._encoding_method = getattr(path_spec, 'encoding_method', None)
+      self._encoding_method = getattr(path_spec, u'encoding_method', None)
 
       if self._encoding_method is None:
         raise errors.PathSpecError(

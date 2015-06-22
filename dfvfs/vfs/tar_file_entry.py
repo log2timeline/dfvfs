@@ -20,7 +20,7 @@ class TarDirectory(file_entry.Directory):
     Yields:
       A path specification (instance of path.TarPathSpec).
     """
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self._file_system.PATH_SEPARATOR)):
@@ -101,19 +101,19 @@ class TarFileEntry(file_entry.FileEntry):
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = getattr(tar_info, 'size', None)
+    stat_object.size = getattr(tar_info, u'size', None)
 
     # Date and time stat information.
-    stat_object.mtime = getattr(tar_info, 'mtime', None)
+    stat_object.mtime = getattr(tar_info, u'mtime', None)
 
     # Ownership and permissions stat information.
-    stat_object.mode = getattr(tar_info, 'mode', None)
-    stat_object.uid = getattr(tar_info, 'uid', None)
-    stat_object.gid = getattr(tar_info, 'gid', None)
+    stat_object.mode = getattr(tar_info, u'mode', None)
+    stat_object.uid = getattr(tar_info, u'uid', None)
+    stat_object.gid = getattr(tar_info, u'gid', None)
 
     # TODO: implement support for:
-    # stat_object.uname = getattr(tar_info, 'uname', None)
-    # stat_object.gname = getattr(tar_info, 'gname', None)
+    # stat_object.uname = getattr(tar_info, u'uname', None)
+    # stat_object.gname = getattr(tar_info, u'gname', None)
 
     # File entry type stat information.
 
@@ -158,7 +158,7 @@ class TarFileEntry(file_entry.FileEntry):
     if tar_info is None:
       return u''
 
-    path = getattr(tar_info, 'name', None)
+    path = getattr(tar_info, u'name', None)
     if path is not None:
       try:
         path = path.decode(self._file_system.encoding)
@@ -178,7 +178,7 @@ class TarFileEntry(file_entry.FileEntry):
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
-    location = getattr(self.path_spec, 'location', None)
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
@@ -188,7 +188,7 @@ class TarFileEntry(file_entry.FileEntry):
     if parent_location == u'':
       parent_location = self._file_system.PATH_SEPARATOR
 
-    parent_path_spec = getattr(self.path_spec, 'parent', None)
+    parent_path_spec = getattr(self.path_spec, u'parent', None)
     path_spec = tar_path_spec.TarPathSpec(
         location=parent_location, parent=parent_path_spec)
     return TarFileEntry(self._resolver_context, self._file_system, path_spec)
@@ -203,7 +203,7 @@ class TarFileEntry(file_entry.FileEntry):
       ValueError: if the path specification is incorrect.
     """
     if not self._tar_info:
-      location = getattr(self.path_spec, 'location', None)
+      location = getattr(self.path_spec, u'location', None)
       if location is None:
         raise ValueError(u'Path specification missing location.')
 

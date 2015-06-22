@@ -333,6 +333,37 @@ def CheckDependencies(latest_version_check=False):
   return check_result
 
 
+def CheckModuleVersion(module_name):
+  """Checks the version requirements of a module.
+
+  Args:
+    module_name: the name of the module.
+
+  Raises:
+    ImportError: if the module does not exists or does not meet
+                 the version requirements.
+  """
+  # TODO: add support for non libyal dependencies.
+  if module_name not in LIBYAL_DEPENDENCIES:
+    return
+
+  try:
+    module_object = map(__import__, [module_name])[0]
+  except ImportError:
+    raise
+
+  module_version = module_object.get_version()
+  try:
+    module_version = int(module_version, 10)
+  except ValueError:
+    raise ImportError(u'Unable to determine version of module {0:s}')
+
+  if module_version < LIBYAL_DEPENDENCIES[module_name]:
+    raise ImportError(
+        u'Module {0:s} is too old, minimum required version {1!s}'.format(
+            module_name, module_version))
+
+
 def GetInstallRequires():
   """Returns the install_requires for setup.py"""
   install_requires = []

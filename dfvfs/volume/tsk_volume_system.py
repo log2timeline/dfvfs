@@ -27,13 +27,14 @@ class TSKVolume(volume_system.Volume):
     """Extracts attributes and extents from the volume."""
     tsk_vs_part = self._file_entry.GetTSKVsPart()
 
-    tsk_addr = getattr(tsk_vs_part, 'addr', None)
+    tsk_addr = getattr(tsk_vs_part, u'addr', None)
     if tsk_addr is not None:
-      self._AddAttribute(volume_system.VolumeAttribute('address', tsk_addr))
+      self._AddAttribute(volume_system.VolumeAttribute(u'address', tsk_addr))
 
-    tsk_desc = getattr(tsk_vs_part, 'desc', None)
+    tsk_desc = getattr(tsk_vs_part, u'desc', None)
     if tsk_desc is not None:
-      self._AddAttribute(volume_system.VolumeAttribute('description', tsk_desc))
+      self._AddAttribute(volume_system.VolumeAttribute(
+          u'description', tsk_desc))
 
     start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
     number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(tsk_vs_part)

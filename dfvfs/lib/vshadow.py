@@ -8,10 +8,10 @@ def VShadowPathSpecGetStoreIndex(path_spec):
   Args:
     path_spec: the path specification (instance of path.PathSpec).
   """
-  store_index = getattr(path_spec, 'store_index', None)
+  store_index = getattr(path_spec, u'store_index', None)
 
   if store_index is None:
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if location is None or not location.startswith(u'/vss'):
       return
