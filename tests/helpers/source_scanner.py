@@ -31,8 +31,7 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -52,9 +51,7 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_path_spec = scan_context.last_scan_node.sub_nodes[6].path_spec
 
-    scan_context = self._source_scanner.Scan(
-        scan_context, scan_path_spec=scan_path_spec)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context, scan_path_spec=scan_path_spec)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -67,8 +64,7 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -88,9 +84,7 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_path_spec = scan_context.last_scan_node.sub_nodes[1].path_spec
 
-    scan_context = self._source_scanner.Scan(
-        scan_context, scan_path_spec=scan_path_spec)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context, scan_path_spec=scan_path_spec)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -103,8 +97,7 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -116,8 +109,7 @@ class SourceScannerTest(unittest.TestCase):
     resolver.Resolver.key_chain.SetCredential(
         scan_context.last_scan_node.path_spec, u'password', self._BDE_PASSWORD)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -130,8 +122,7 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_DIRECTORY)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -144,8 +135,7 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_FILE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -158,8 +148,7 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_FILE)
     self.assertNotEqual(scan_context.last_scan_node, None)
@@ -172,8 +161,7 @@ class SourceScannerTest(unittest.TestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
-    scan_context = self._source_scanner.Scan(scan_context)
-    self.assertNotEqual(scan_context, None)
+    self._source_scanner.Scan(scan_context)
     self.assertEqual(
         scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
     self.assertNotEqual(scan_context.last_scan_node, None)
