@@ -664,7 +664,6 @@ class SourceScanner(object):
       type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
           source_path_spec, resolver_context=self._resolver_context)
     except (IOError, RuntimeError) as exception:
-      print "P", source_path_spec.comparable
       raise errors.BackEndError((
           u'Unable to process source path specification with error: '
           u'{0:s}').format(exception))

@@ -97,6 +97,7 @@ class SourceAnalyzer(object):
           output_writer.WriteString(
               u'Select a credential to unlock the volume: ')
           # TODO: add an input reader.
+          # TODO: support numeric input e.g. 3 is skip.
           input_line = sys.stdin.readline()
           input_line = input_line.strip()
 
