@@ -399,11 +399,13 @@ class SourceScanner(object):
               scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
       if scan_node.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
-        # For VSS add a scan node for the current volume.
+        # For VSS add a scan node for the current volume. The current volume
+        # is considered part of the VSS to prevent the a clash of the location
+        # of the actual VSS volume system.
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
           path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
           if path_spec:
-            _ = scan_context.AddScanNode(path_spec, scan_node.parent_node)
+            _ = scan_context.AddScanNode(path_spec, scan_node)
 
         # Determine the path specifications of the sub file entries.
         file_entry = resolver.Resolver.OpenFileEntry(
