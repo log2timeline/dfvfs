@@ -11,7 +11,6 @@ from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
-from dfvfs.resolver import resolver
 
 
 class SourceScannerTest(unittest.TestCase):
