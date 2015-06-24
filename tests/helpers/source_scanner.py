@@ -64,8 +64,7 @@ class SourceScannerTest(unittest.TestCase):
       if getattr(scan_node.path_spec, u'location', None) == u'/':
         break
 
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     scan_context = source_scanner.SourceScannerContext()
@@ -77,24 +76,29 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_QCOW)
+    self.assertEqual(len(scan_node.sub_nodes), 2)
 
-    self.assertEqual(len(scan_node.sub_nodes), 3)
-
-    for scan_node in scan_node.sub_nodes[1].sub_nodes:
-      if getattr(scan_node.path_spec, u'location', None) == u'/':
-        break
+    scan_node = scan_node.sub_nodes[0]
 
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
+    self.assertEqual(len(scan_node.sub_nodes), 2)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
+    # By default the file system inside a VSS volume is not scanned.
+    self.assertEqual(len(scan_node.sub_nodes), 0)
+
+    self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
 
     for scan_node in scan_node.sub_nodes:
       if getattr(scan_node.path_spec, u'location', None) == u'/':
         break
 
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
     test_file = os.path.join(u'test_data', u'bdetogo.raw')
     scan_context = source_scanner.SourceScannerContext()
@@ -106,21 +110,28 @@ class SourceScannerTest(unittest.TestCase):
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_BDE)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
-    resolver.Resolver.key_chain.SetCredential(
-        scan_node.path_spec, u'password', self._BDE_PASSWORD)
+    for scan_node in scan_node.sub_nodes:
+      if getattr(scan_node.path_spec, u'location', None) == None:
+        break
 
-    self._source_scanner.Scan(scan_context)
-    self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
-
-    scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_BDE)
+    self.assertEqual(len(scan_node.sub_nodes), 0)
+
+    self._source_scanner.Unlock(
+        scan_context, scan_node.path_spec, u'password', self._BDE_PASSWORD)
+
+    self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    for scan_node in scan_node.sub_nodes:
+      if getattr(scan_node.path_spec, u'location', None) == u'/':
+        break
+
     self.assertNotEqual(scan_node.path_spec, None)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
     test_file = os.path.join(u'test_data', u'testdir_os')
     scan_context = source_scanner.SourceScannerContext()
@@ -175,10 +186,9 @@ class SourceScannerTest(unittest.TestCase):
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
     self.assertNotEqual(scan_node.path_spec, None)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
-    self.assertEqual(len(scan_context.sub_nodes), 0)
+    self.assertEqual(len(scan_node.sub_nodes), 0)
 
     test_file = os.path.join(u'test_data', u'nosuchfile.raw')
     scan_context = source_scanner.SourceScannerContext()

@@ -342,6 +342,8 @@ class SourceScanner(object):
     if not scan_node:
       raise ValueError(u'Invalid scan node.')
 
+    scan_path_spec = scan_node.path_spec
+
     if not scan_node.IsSystemLevel():
       system_level_file_entry = None
 
@@ -353,8 +355,7 @@ class SourceScanner(object):
         raise errors.BackEndError(u'Unable to open file entry.')
 
       if system_level_file_entry.IsDirectory():
-        scan_context.SetSourceType(
-            scan_context.SOURCE_TYPE_DIRECTORY)
+        scan_context.SetSourceType(scan_context.SOURCE_TYPE_DIRECTORY)
         return
 
       source_path_spec = self.ScanForStorageMediaImage(scan_node.path_spec)
@@ -362,8 +363,7 @@ class SourceScanner(object):
         scan_node.scanned = True
         scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
-        scan_context.SetSourceType(
-            scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+        scan_context.SetSourceType(scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
         if not auto_recurse:
           return
@@ -399,13 +399,11 @@ class SourceScanner(object):
               scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
       if scan_node.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
-        # For VSS add a scan node for the current volume. The current volume
-        # is considered part of the VSS to prevent the a clash of the location
-        # of the actual VSS volume system.
+        # For VSS add a scan node for the current volume.
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
           path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
           if path_spec:
-            _ = scan_context.AddScanNode(path_spec, scan_node)
+            _ = scan_context.AddScanNode(path_spec, scan_node.parent_node)
 
         # Determine the path specifications of the sub file entries.
         file_entry = resolver.Resolver.OpenFileEntry(
@@ -466,7 +464,7 @@ class SourceScanner(object):
     # Since scanning for file systems in VSS snapshot volumes can
     # be expensive we only do this when explicitly asked for.
     elif (scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW and
-          auto_recurse):
+          auto_recurse and scan_node.path_spec != scan_path_spec):
       pass
 
     elif scan_node.type_indicator not in (
@@ -528,7 +526,7 @@ class SourceScanner(object):
                     SourceScannerContext).
       auto_recurse: optional boolean value to indicate if the scan should
                     automatically recurse as far as possible. The default
-                    is False.
+                    is True.
       scan_path_spec: optional path specification (instance of path.PathSpec)
                       to indicate where the source scanner should continue
                       scanning. The default is None which indicates the
