@@ -18,25 +18,6 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
-  def AnalyzeFileObject(self, file_object):
-    """Retrieves the format specification.
-
-    Args:
-      file_object: a file-like object (instance of file_io.FileIO).
-
-    Returns:
-      The type indicator if the file-like object contains a supported format
-      or None otherwise.
-    """
-    tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
-
-    try:
-      _ = pytsk3.FS_Info(tsk_image_object)
-    except IOError:
-      return
-
-    return self.type_indicator
-
   def GetFormatSpecification(self):
     """Retrieves the format specification."""
     format_specification = specification.FormatSpecification(
