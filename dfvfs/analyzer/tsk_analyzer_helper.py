@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) format analyzer helper implementation."""
 
-import pytsk3
-
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
 from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
-from dfvfs.lib import tsk_image
 
 
 class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
