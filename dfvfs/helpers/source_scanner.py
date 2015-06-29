@@ -141,11 +141,15 @@ class SourceScannerContext(object):
     return scan_node
 
   def HasFileSystemScanNodes(self):
-    """Determines if a file system were detected during the scan."""
+    """Determines if a file system was detected during the scan."""
     return self._file_system_scan_nodes != {}
 
   def HasLockedScanNodes(self):
-    """Determines if a locked scan node was detected during the scan."""
+    """Determines if a locked scan node was detected during the scan.
+
+    A locked scan node is e.g. an encrypted volume for which a credential,
+    e.g. password, to unlock the volume is not available.
+    """
     return self._locked_scan_nodes != {}
 
   def HasScanNode(self, path_spec):
@@ -193,6 +197,9 @@ class SourceScannerContext(object):
 
   def IsLockedScanNode(self, path_spec):
     """Determines if a scan node is locked.
+
+    A locked scan node is e.g. an encrypted volume for which a credential,
+    e.g. password, to unlock the volume is not available.
 
     Args:
       path_spec: the path specification (instance of path.PathSpec)

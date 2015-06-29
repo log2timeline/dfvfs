@@ -70,8 +70,8 @@ class SourceAnalyzer(object):
           scan_context.SOURCE_TYPE_DIRECTORY, scan_context.SOURCE_TYPE_FILE]:
         break
 
-      # The source scanner found an encrypted volume and we need
-      # a credential to unlock the volume.
+      # The source scanner found a locked volume, e.g. an encrypted volume,
+      # and we need a credential to unlock the volume.
       for locked_scan_node in scan_context.locked_scan_nodes:
         credentials = credentials_manager.CredentialsManager.GetCredentials(
             locked_scan_node.path_spec)
