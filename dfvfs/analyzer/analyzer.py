@@ -113,7 +113,7 @@ class Analyzer(object):
       A scanner object (instance of pysigscan.scanner).
     """
     scanner_object = pysigscan.scanner()
-    scanner_object.set_scan_buffer_size(self._SCAN_BUFFER_SIZE)
+    scanner_object.set_scan_buffer_size(cls._SCAN_BUFFER_SIZE)
 
     for format_specification in specification_store.specifications:
       for signature in format_specification.signatures:
