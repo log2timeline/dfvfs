@@ -40,9 +40,9 @@ fi
 
 FEATURE_BRANCH=$1;
 
-if ! ${HAVE_REMOTE_ORIGIN};
+if ${HAVE_REMOTE_ORIGIN};
 then
-  echo "Submit aborted - invalid origin";
+  echo "Close aborted - invalid origin";
 
   exit ${EXIT_FAILURE};
 
