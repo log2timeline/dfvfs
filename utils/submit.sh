@@ -14,7 +14,8 @@ CL_FILENAME="";
 
 if ! test -f "utils/common.sh";
 then
-  echo "Missing common functions, are you in the wrong directory?";
+  echo "Unable to find common scripts (utils/common.sh).";
+  echo "This script can only be run from the root of the source directory.";
 
   exit ${EXIT_FAILURE};
 fi
