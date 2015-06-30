@@ -45,6 +45,9 @@ class CredentialsManager(object):
       The credentials (instance of credentials.Credentials) or None if the path
       specification has no credentials support.
     """
+    if not path_spec:
+      return
+
     return cls._credentials.get(path_spec.type_indicator, None)
 
   @classmethod

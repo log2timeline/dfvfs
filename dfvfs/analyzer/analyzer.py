@@ -15,6 +15,8 @@ dependencies.CheckModuleVersion(u'pysigscan')
 class Analyzer(object):
   """Class that implements the VFS format analyzer."""
 
+  _SCAN_BUFFER_SIZE = 33 * 1024
+
   _analyzer_helpers = {}
 
   # The archive format category analyzer helpers that do not have
@@ -111,6 +113,7 @@ class Analyzer(object):
       A scanner object (instance of pysigscan.scanner).
     """
     scanner_object = pysigscan.scanner()
+    scanner_object.set_scan_buffer_size(cls._SCAN_BUFFER_SIZE)
 
     for format_specification in specification_store.specifications:
       for signature in format_specification.signatures:
