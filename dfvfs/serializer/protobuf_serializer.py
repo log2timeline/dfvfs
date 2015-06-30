@@ -53,7 +53,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
       RuntimeError: when proto is not of type: transmission_pb2.PathSpec.
     """
     if not isinstance(proto, transmission_pb2.PathSpec):
-      raise RuntimeError('Unsupported serialized type.')
+      raise RuntimeError(u'Unsupported serialized type.')
 
     # Note that we don't want to set the keyword arguments when not used because
     # the path specification base class will check for unused keyword arguments
@@ -62,12 +62,12 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
     kwargs = {}
 
     for proto_attribute, value in proto.ListFields():
-      if proto_attribute.name == 'type_indicator':
+      if proto_attribute.name == u'type_indicator':
         type_indicator = value
-      elif proto_attribute.name == 'parent':
-        kwargs['parent'] = cls.ReadSerializedObject(value)
-      elif proto_attribute.name == 'row_condition':
-        kwargs['row_condition'] = cls.ReadSerializedRowCondtion(value)
+      elif proto_attribute.name == u'parent':
+        kwargs[u'parent'] = cls.ReadSerializedObject(value)
+      elif proto_attribute.name == u'row_condition':
+        kwargs[u'row_condition'] = cls.ReadSerializedRowCondtion(value)
       elif proto_attribute.name in path_spec_factory.Factory.PROPERTY_NAMES:
         kwargs[proto_attribute.name] = value
 
@@ -112,7 +112,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
         property_value = getattr(path_spec, property_name, None)
         if property_value is not None:
           # Convert row_condition tuple to transmission_pb2.RowCondition
-          if property_name == 'row_condition':
+          if property_name == u'row_condition':
             serialized.row_condition.left_operand = property_value[0]
             serialized.row_condition.operator = property_value[1]
             serialized.row_condition.right_operand = property_value[2]

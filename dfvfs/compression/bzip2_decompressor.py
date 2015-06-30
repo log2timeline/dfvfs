@@ -35,7 +35,7 @@ class Bzip2Decompressor(decompressor.Decompressor):
     try:
       uncompressed_data = self._bz2_decompressor.decompress(compressed_data)
       remaining_compressed_data = getattr(
-          self._bz2_decompressor, 'unused_data', b'')
+          self._bz2_decompressor, u'unused_data', b'')
 
     except (EOFError, IOError) as exception:
       raise errors.BackEndError((

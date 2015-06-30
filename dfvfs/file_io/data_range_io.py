@@ -151,7 +151,7 @@ class DataRange(file_io.FileIO):
               self._current_offset))
 
     if self._current_offset >= self._range_size:
-      return ''
+      return b''
 
     if size is None:
       size = self._range_size

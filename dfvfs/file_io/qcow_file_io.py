@@ -3,13 +3,13 @@
 
 import pyqcow
 
+from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
-if pyqcow.get_version() < '20131204':
-  raise ImportWarning('QcowFile requires at least pyqcow 20131204.')
+dependencies.CheckModuleVersion(u'pyqcow')
 
 
 class QcowFile(file_object_io.FileObjectIO):

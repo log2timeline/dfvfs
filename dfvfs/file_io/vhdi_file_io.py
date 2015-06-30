@@ -3,13 +3,13 @@
 
 import pyvhdi
 
+from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
-if pyvhdi.get_version() < '20131210':
-  raise ImportWarning('VhdiFile requires at least pyvhdi 20131210.')
+dependencies.CheckModuleVersion(u'pyvhdi')
 
 
 class VhdiFile(file_object_io.FileObjectIO):

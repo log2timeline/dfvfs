@@ -14,14 +14,14 @@ class FakeFileTest(unittest.TestCase):
   """The unit test for the operating systesm file-like object."""
 
   _FILE_DATA1 = (
-      'place,user,password\n'
-      'bank,joesmith,superrich\n'
-      'alarm system,-,1234\n'
-      'treasure chest,-,1111\n'
-      'uber secret laire,admin,admin\n')
+      b'place,user,password\n'
+      b'bank,joesmith,superrich\n'
+      b'alarm system,-,1234\n'
+      b'treasure chest,-,1111\n'
+      b'uber secret laire,admin,admin\n')
 
   _FILE_DATA2 = (
-      'This is another file.\n')
+      b'This is another file.\n')
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -52,20 +52,20 @@ class FakeFileTest(unittest.TestCase):
     self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
-    self.assertEqual(file_object.read(5), 'other')
+    self.assertEqual(file_object.read(5), b'other')
     self.assertEqual(file_object.get_offset(), 15)
 
     file_object.seek(-10, os.SEEK_END)
-    self.assertEqual(file_object.read(5), 'her f')
+    self.assertEqual(file_object.read(5), b'her f')
 
     file_object.seek(2, os.SEEK_CUR)
-    self.assertEqual(file_object.read(2), 'e.')
+    self.assertEqual(file_object.read(2), b'e.')
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
     file_object.seek(300, os.SEEK_SET)
     self.assertEqual(file_object.get_offset(), 300)
-    self.assertEqual(file_object.read(2), '')
+    self.assertEqual(file_object.read(2), b'')
 
     with self.assertRaises(IOError):
       file_object.seek(-10, os.SEEK_SET)
@@ -90,11 +90,11 @@ class FakeFileTest(unittest.TestCase):
     read_buffer = file_object.read()
 
     expected_buffer = (
-        'place,user,password\n'
-        'bank,joesmith,superrich\n'
-        'alarm system,-,1234\n'
-        'treasure chest,-,1111\n'
-        'uber secret laire,admin,admin\n')
+        b'place,user,password\n'
+        b'bank,joesmith,superrich\n'
+        b'alarm system,-,1234\n'
+        b'treasure chest,-,1111\n'
+        b'uber secret laire,admin,admin\n')
 
     self.assertEqual(read_buffer, expected_buffer)
 

@@ -13,7 +13,7 @@ from dfvfs.vfs import os_file_system
 
 def TestPlatformSystem():
   """Test function to emulate platform.system() == 'Windows'"""
-  return 'Windows'
+  return u'Windows'
 
 
 class OSFileSystemTest(unittest.TestCase):
