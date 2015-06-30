@@ -504,7 +504,6 @@ class SourceScanner(object):
     # again.
     if not scan_node.scanned:
       scan_node.scanned = True
-      scan_context.updated = True
 
     return
 
