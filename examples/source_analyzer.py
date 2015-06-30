@@ -30,7 +30,7 @@ class SourceAnalyzer(object):
     """
     super(SourceAnalyzer, self).__init__()
     self._auto_recurse = auto_recurse
-    self._scanner = source_scanner.SourceScanner()
+    self._source_scanner = source_scanner.SourceScanner()
 
   def _PromptUserForEncryptedVolumeCredential(
       self, scan_context, locked_scan_node, output_writer):
@@ -86,7 +86,7 @@ class SourceAnalyzer(object):
       credential_data = getpass.getpass(u'Enter credential data: ')
       output_writer.WriteLine(u'')
 
-      result = self._scanner.Unlock(
+      result = self._source_scanner.Unlock(
           scan_context, locked_scan_node.path_spec, credential_identifier,
           credential_data)
 
@@ -116,7 +116,7 @@ class SourceAnalyzer(object):
     scan_context.OpenSourcePath(source_path)
 
     while True:
-      self._scanner.Scan(
+      self._source_scanner.Scan(
           scan_context, auto_recurse=self._auto_recurse,
           scan_path_spec=scan_path_spec)
 
