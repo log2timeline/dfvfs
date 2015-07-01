@@ -6,7 +6,6 @@ EXIT_MISSING_ARGS=2;
 EXIT_SUCCESS=0;
 
 SCRIPTNAME=`basename $0`;
-CODEREVIEW_COOKIES="${HOME}/.codereview_upload_cookies";
 
 BROWSER_PARAM="";
 CL_NUMBER="";
@@ -15,7 +14,8 @@ CL_FILENAME="";
 
 if ! test -f "utils/common.sh";
 then
-  echo "Missing common functions, are you in the wrong directory?";
+  echo "Unable to find common scripts (utils/common.sh).";
+  echo "This script can only be run from the root of the source directory.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -87,79 +87,42 @@ fi
 
 if ! ${HAVE_REMOTE_ORIGIN};
 then
-  if ! have_remote_upstream;
-  then
-    echo "Submit aborted - missing upstream.";
-    echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
+  echo "Submit aborted - no need to use the submit script. Instead use";
+  echo "the update script to update the code review or the close script";
+  echo "to close the code review after it has been submitted by one of";
+  echo "the git repository maintainers.";
 
-    exit ${EXIT_FAILURE};
-  fi
-  git fetch upstream;
+  exit ${EXIT_FAILURE};
+fi
 
-  if have_master_branch;
-  then
-    echo "Submit aborted - current branch is master.";
+if ! have_master_branch;
+then
+  echo "Submit aborted - current branch is not master.";
 
-    exit ${EXIT_FAILURE};
-  fi
+  exit ${EXIT_FAILURE};
+fi
 
-  if have_uncommitted_changes;
-  then
-    echo "Submit aborted - detected uncommitted changes.";
+if have_double_git_status_codes;
+then
+  echo "Submit aborted - detected double git status codes."
+  echo "Run: 'git stash && git stash pop'.";
 
-    exit ${EXIT_FAILURE};
-  fi
+  exit ${EXIT_FAILURE};
+fi
 
-  if ! local_repo_in_sync_with_upstream;
-  then
-    echo "Local repo out of sync with upstream: running 'git pull upstream master'.":
-    git pull upstream master
+if ! local_repo_in_sync_with_origin;
+then
+  echo "Submit aborted - local repo out of sync with origin."
+  echo "Run: 'git stash && git pull && git stash pop'.";
 
-    if test $? -ne 0;
-    then
-      echo "Submit aborted - unable to run: 'git pull upstream master'.";
+  exit ${EXIT_FAILURE};
+fi
 
-      exit ${EXIT_FAILURE};
-    fi
-  fi
+if ! linting_is_correct;
+then
+  echo "Submit aborted - fix the issues reported by the linter.";
 
-  if ! linter_pass;
-  then
-    echo "Submit aborted - fix the issues reported by the linter.";
-
-    exit ${EXIT_FAILURE};
-  fi
-
-else
-  if ! have_master_branch;
-  then
-    echo "Submit aborted - current branch is not master.";
-
-    exit ${EXIT_FAILURE};
-  fi
-
-  if have_double_git_status_codes;
-  then
-    echo "Submit aborted - detected double git status codes."
-    echo "Run: 'git stash && git stash pop'.";
-
-    exit ${EXIT_FAILURE};
-  fi
-
-  if ! local_repo_in_sync_with_origin;
-  then
-    echo "Submit aborted - local repo out of sync with origin."
-    echo "Run: 'git stash && git pull && git stash pop'.";
-
-    exit ${EXIT_FAILURE};
-  fi
-
-  if ! linting_is_correct;
-  then
-    echo "Submit aborted - fix the issues reported by the linter.";
-
-    exit ${EXIT_FAILURE};
-  fi
+  exit ${EXIT_FAILURE};
 fi
 
 if ! tests_pass;
@@ -171,57 +134,56 @@ fi
 
 URL_CODEREVIEW="https://codereview.appspot.com";
 
-if ${HAVE_REMOTE_ORIGIN};
+# Get the description of the change list.
+
+# This will convert newlines into spaces.
+CODEREVIEW=`curl -s ${URL_CODEREVIEW}/api/${CL_NUMBER}`;
+
+DESCRIPTION=`echo ${CODEREVIEW} | sed 's/^.*"subject":"\(.*\)","created.*$/\1/'`;
+
+if test -z "${DESCRIPTION}" || test "${DESCRIPTION}" = "${CODEREVIEW}";
 then
-  # Get the description of the change list.
+  echo "Submit aborted - unable to find change list with number: ${CL_NUMBER}.";
 
-  # This will convert newlines into spaces.
-  CODEREVIEW=`curl -s ${URL_CODEREVIEW}/api/${CL_NUMBER}`;
-
-  DESCRIPTION=`echo ${CODEREVIEW} | sed 's/^.*"subject":"\(.*\)","created.*$/\1/'`;
-
-  if test -z "${DESCRIPTION}" || test "${DESCRIPTION}" = "${CODEREVIEW}";
-  then
-    echo "Submit aborted - unable to find change list with number: ${CL_NUMBER}.";
-
-    exit ${EXIT_FAILURE};
-  fi
-
-  COMMIT_DESCRIPTION="Code review: ${CL_NUMBER}: ${DESCRIPTION}";
-  echo "Submitting ${COMMIT_DESCRIPTION}";
-
-  # Need to change the status on codereview before commit.
-  python utils/upload.py \
-      --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} --send_mail -i ${CL_NUMBER} \
-      -m "Code Submitted." -t "Submitted." -y;
-
-  if test -f "utils/update_version.sh";
-  then
-    . utils/update_version.sh
-  fi
-
-  # Check if we need to set --cache.
-  STATUS_CODES=`git status -s | cut -b1,2 | sed 's/\s//g' | sort | uniq`;
-
-  CACHE_PARAM="";
-  for STATUS_CODE in ${STATUS_CODES};
-  do
-    if test "${STATUS_CODE}" = "A";
-    then
-      CACHE_PARAM="--cache";
-    fi
-  done
-
-  git commit -a -m "${COMMIT_DESCRIPTION}";
-  git push
-
-  if test $? -ne 0;
-  then
-    echo "Submit aborted - unable to run: 'git push'.";
-
-    exit ${EXIT_FAILURE};
-  fi
+  exit ${EXIT_FAILURE};
 fi
+
+COMMIT_DESCRIPTION="Code review: ${CL_NUMBER}: ${DESCRIPTION}";
+echo "Submitting ${COMMIT_DESCRIPTION}";
+
+# Need to change the status on codereview before commit.
+python utils/upload.py \
+    --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} --send_mail -i ${CL_NUMBER} \
+    -m "Code Submitted." -t "Submitted." -y;
+
+if test -f "utils/update_version.sh";
+then
+  . utils/update_version.sh
+fi
+
+# Check if we need to set --cache.
+STATUS_CODES=`git status -s | cut -b1,2 | sed 's/\s//g' | sort | uniq`;
+
+CACHE_PARAM="";
+for STATUS_CODE in ${STATUS_CODES};
+do
+  if test "${STATUS_CODE}" = "A";
+  then
+    CACHE_PARAM="--cache";
+  fi
+done
+
+git commit -a -m "${COMMIT_DESCRIPTION}";
+git push
+
+if test $? -ne 0;
+then
+  echo "Submit aborted - unable to run: 'git push'.";
+
+  exit ${EXIT_FAILURE};
+fi
+
+CODEREVIEW_COOKIES="${HOME}/.codereview_upload_cookies";
 
 if test -f "${CODEREVIEW_COOKIES}";
 then
