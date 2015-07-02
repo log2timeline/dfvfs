@@ -129,7 +129,7 @@ class SourceAnalyzer(object):
 
       # The source is a directory or file.
       if scan_context.source_type in [
-          scan_context.SOURCE_TYPE_DIRECTORY, scan_context.SOURCE_TYPE_FILE]:
+          definitions.SOURCE_TYPE_DIRECTORY, definitions.SOURCE_TYPE_FILE]:
         break
 
       # The source scanner found a locked volume, e.g. an encrypted volume,

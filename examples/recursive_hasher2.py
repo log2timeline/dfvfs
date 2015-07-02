@@ -294,7 +294,7 @@ class RecursiveHasher(object):
 
       # The source is a directory or file.
       if scan_context.source_type in [
-          scan_context.SOURCE_TYPE_DIRECTORY, scan_context.SOURCE_TYPE_FILE]:
+          definitions.SOURCE_TYPE_DIRECTORY, definitions.SOURCE_TYPE_FILE]:
         break
 
       if not scan_context.last_scan_node:
