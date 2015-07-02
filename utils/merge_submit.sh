@@ -11,7 +11,8 @@ CL_NUMBER="";
 
 if ! test -f "utils/common.sh";
 then
-  echo "Missing common functions, are you in the wrong directory?";
+  echo "Unable to find common scripts (utils/common.sh).";
+  echo "This script can only be run from the root of the source directory.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -133,7 +134,7 @@ fi
 # This will convert newlines into spaces.
 GITHUB_USERINFO=`curl -s https://api.github.com/users/${USERNAME}`;
 
-FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name":"\(.*\)", "company*$/\1/'`;
+FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name": "\(.*\)", "company.*$/\1/'`;
 
 if test -z "${FULLNAME}" || test "${FULLNAME}" = "${GITHUB_USERINFO}";
 then
