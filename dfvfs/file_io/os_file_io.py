@@ -74,7 +74,7 @@ class OSFile(file_io.FileIO):
 
       # Note that exception.message no longer works in Python 3.
       exception_string = str(exception)
-      if not isinstance(exception_string, types.UNICODE_TYPE)
+      if not isinstance(exception_string, types.UNICODE_TYPE):
         exception_string = types.UNICODE_TYPE(
             exception_string, errors=u'replace')
 
