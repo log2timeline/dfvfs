@@ -9,7 +9,7 @@ import pysmdev
 from dfvfs import dependencies
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
-from dfvfs.lib import types
+from dfvfs.lib import py2to3
 
 
 dependencies.CheckModuleVersion(u'pysmdev')
@@ -74,8 +74,8 @@ class OSFile(file_io.FileIO):
 
       # Note that exception.message no longer works in Python 3.
       exception_string = str(exception)
-      if not isinstance(exception_string, types.UNICODE_TYPE):
-        exception_string = types.UNICODE_TYPE(
+      if not isinstance(exception_string, py2to3.UNICODE_TYPE):
+        exception_string = py2to3.UNICODE_TYPE(
             exception_string, errors=u'replace')
 
       if u' access denied ' in exception_string:

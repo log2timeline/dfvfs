@@ -8,7 +8,7 @@ import pysmdev
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import types
+from dfvfs.lib import py2to3
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_system
 from dfvfs.vfs import os_file_entry
@@ -77,8 +77,8 @@ class OSFileSystem(file_system.FileSystem):
 
         # Note that exception.message no longer works in Python 3.
         exception_string = str(exception)
-        if not isinstance(exception_string, types.UNICODE_TYPE):
-          exception_string = types.UNICODE_TYPE(
+        if not isinstance(exception_string, py2to3.UNICODE_TYPE):
+          exception_string = py2to3.UNICODE_TYPE(
               exception_string, errors=u'replace')
 
         if u' access denied ' in exception_string:
