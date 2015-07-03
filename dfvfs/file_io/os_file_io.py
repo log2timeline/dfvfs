@@ -73,7 +73,11 @@ class OSFile(file_io.FileIO):
       # AccessError instead.
 
       # Note that exception.message no longer works in Python 3.
-      exception_string = types.UNICODE_TYPE(exception, errors=u'replace')
+      exception_string = str(exception)
+      if not isinstance(exception_string, types.UNICODE_TYPE)
+        exception_string = types.UNICODE_TYPE(
+            exception_string, errors=u'replace')
+
       if u' access denied ' in exception_string:
         raise errors.AccessError(
             u'Access denied to file: {0:s} with error: {1:s}'.format(

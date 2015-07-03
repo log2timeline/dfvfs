@@ -76,7 +76,11 @@ class OSFileSystem(file_system.FileSystem):
         # return true.
 
         # Note that exception.message no longer works in Python 3.
-        exception_string = types.UNICODE_TYPE(exception, errors=u'replace')
+        exception_string = str(exception)
+        if not isinstance(exception_string, types.UNICODE_TYPE)
+          exception_string = types.UNICODE_TYPE(
+              exception_string, errors=u'replace')
+
         if u' access denied ' in exception_string:
           is_device = True
 
