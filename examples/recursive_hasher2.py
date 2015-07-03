@@ -33,7 +33,7 @@ class RecursiveHasher(object):
   def __init__(self):
     """Initializes the recursive hasher object."""
     super(RecursiveHasher, self).__init__()
-    self._scanner = source_scanner.SourceScanner()
+    self._source_scanner = source_scanner.SourceScanner()
 
   def _CalculateHashFileEntry(self, file_entry):
     """Calculates a message digest hash of the data of the file entry.
@@ -131,7 +131,8 @@ class RecursiveHasher(object):
     volume_system = tsk_volume_system.TSKVolumeSystem()
     volume_system.Open(scan_context.last_scan_node.path_spec)
 
-    volume_identifiers = self._scanner.GetVolumeIdentifiers(volume_system)
+    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
+        volume_system)
 
     if not volume_identifiers:
       logging.warning(u'No supported partitions found.')
@@ -202,7 +203,8 @@ class RecursiveHasher(object):
     volume_system = vshadow_volume_system.VShadowVolumeSystem()
     volume_system.Open(scan_context.last_scan_node.path_spec)
 
-    volume_identifiers = self._scanner.GetVolumeIdentifiers(volume_system)
+    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
+        volume_system)
 
     if not volume_identifiers:
       return
@@ -289,8 +291,7 @@ class RecursiveHasher(object):
     scan_context.OpenSourcePath(source_path)
 
     while True:
-      scan_context = self._scanner.Scan(
-          scan_context, scan_path_spec=scan_path_spec)
+      self._source_scanner.Scan(scan_context, scan_path_spec=scan_path_spec)
 
       # The source is a directory or file.
       if scan_context.source_type in [
