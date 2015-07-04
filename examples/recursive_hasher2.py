@@ -189,12 +189,16 @@ class RecursiveHasher(object):
   def _ParseVSSStoresString(self, vss_stores):
     """Parses the user specified VSS stores string.
 
+    A range of stores can be defined as: 3..5. Multiple stores can
+    be defined as: 1,3,5 (a list of comma separated values). Ranges
+    and lists can also be combined as: 1,3..5. The first store is 1.
+    All stores can be defined as "all".
+
     Args:
       vss_stores: a string containing the VSS stores.
-                  Where 1 represents the first store.
 
     Returns:
-      The list of VSS stores.
+      A list containing the individual VSS stores numbers or the string "all".
 
     Raises:
       BadConfigOption: if the VSS stores option is invalid.
@@ -248,7 +252,7 @@ class RecursiveHasher(object):
                    of dfvfs.Credentials).
 
     Returns:
-      A boolean value indicating the volume was unlocked.
+      A boolean value indicating whether the volume was unlocked.
     """
     # TODO: print volume description.
     if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
@@ -601,7 +605,7 @@ class RecursiveHasher(object):
       source_path: the source path.
 
     Returns:
-      A list of path specification (instances of dfvfs.PathSpec).
+      A list of path specifications (instances of dfvfs.PathSpec).
 
     Raises:
       RuntimeError: if the source path does not exists, or if the source path
