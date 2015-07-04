@@ -627,8 +627,8 @@ class RecursiveHasher(object):
           u'Unable to scan source with error: {0:s}.'.format(exception))
 
     if scan_context.source_type not in [
-        scan_context.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
-        scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE]:
+        definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
+        definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE]:
       scan_node = scan_context.GetRootScanNode()
       return [scan_node.path_spec]
 
