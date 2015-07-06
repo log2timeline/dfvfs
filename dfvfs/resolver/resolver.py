@@ -128,6 +128,8 @@ class Resolver(object):
       specification could not be resolved or has no file system object.
 
     Raises:
+      AccessError: if the access to open the file system was denied.
+      BackEndError: if the file system cannot be opened.
       KeyError: if resolver helper object is not set for the corresponding
                 type indicator.
       PathSpecError: if the path specification is incorrect.
@@ -160,7 +162,14 @@ class Resolver(object):
       resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
       file_system = resolver_helper.NewFileSystem(resolver_context)
 
-    file_system.Open(path_spec=path_spec)
+    try:
+      file_system.Open(path_spec=path_spec)
+    except (errors.AccessError, errors.PathSpecError):
+      raise
+    except (IOError, ValueError) as exception:
+      raise errors.BackEndError(
+          u'Unable to open file system with error: {0:s}'.format(exception))
+
     return file_system
 
   @classmethod
