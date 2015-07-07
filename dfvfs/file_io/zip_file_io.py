@@ -72,11 +72,16 @@ class ZipFile(file_io.FileIO):
     if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
-    self._file_system = resolver.Resolver.OpenFileSystem(
+    file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
-    self._zip_file = self._file_system.GetZipFile()
 
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    if not file_entry:
+      file_system.Close()
+      raise IOError(u'Unable to retrieve file entry.')
+
+    self._file_system = file_system
+    self._zip_file = self._file_system.GetZipFile()
     self._zip_info = file_entry.GetZipInfo()
 
     self._current_offset = 0

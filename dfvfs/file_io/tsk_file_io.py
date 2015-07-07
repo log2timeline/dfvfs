@@ -55,10 +55,15 @@ class TSKFile(file_io.FileIO):
 
     data_stream = getattr(path_spec, u'data_stream', None)
 
-    self._file_system = resolver.Resolver.OpenFileSystem(
+    file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
 
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    if not file_entry:
+      file_system.Close()
+      raise IOError(u'Unable to retrieve file entry.')
+
+    self._file_system = file_system
     self._tsk_file = file_entry.GetTSKFile()
 
     # Note that because pytsk3.File does not explicitly defines info
