@@ -50,7 +50,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
@@ -71,7 +71,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
@@ -105,7 +105,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
@@ -138,7 +138,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_DIRECTORY)
+        scan_context.source_type, definitions.SOURCE_TYPE_DIRECTORY)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
@@ -152,7 +152,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_FILE)
+        scan_context.source_type, definitions.SOURCE_TYPE_FILE)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
@@ -166,7 +166,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_FILE)
+        scan_context.source_type, definitions.SOURCE_TYPE_FILE)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)
@@ -180,7 +180,7 @@ class SourceScannerTest(unittest.TestCase):
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
-        scan_context.source_type, scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertNotEqual(scan_node, None)

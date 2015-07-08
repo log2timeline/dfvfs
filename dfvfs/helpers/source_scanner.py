@@ -82,10 +82,13 @@ class SourceScanNode(object):
 class SourceScannerContext(object):
   """Class that defines contextual information for the source scanner."""
 
-  SOURCE_TYPE_DIRECTORY = u'directory'
-  SOURCE_TYPE_FILE = u'file'
-  SOURCE_TYPE_STORAGE_MEDIA_DEVICE = u'storage media device'
-  SOURCE_TYPE_STORAGE_MEDIA_IMAGE = u'storage media image'
+  # Keep for backwards compatibility reasons.
+  SOURCE_TYPE_DIRECTORY = definitions.SOURCE_TYPE_DIRECTORY
+  SOURCE_TYPE_FILE = definitions.SOURCE_TYPE_FILE
+  SOURCE_TYPE_STORAGE_MEDIA_DEVICE = (
+      definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+  SOURCE_TYPE_STORAGE_MEDIA_IMAGE = (
+      definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
   def __init__(self):
     """Initializes the source scanner context object."""
@@ -217,7 +220,7 @@ class SourceScannerContext(object):
       A boolean if the source type is or is not a directory or None if not set.
     """
     if self.source_type:
-      return self.source_type == self.SOURCE_TYPE_DIRECTORY
+      return self.source_type == definitions.SOURCE_TYPE_DIRECTORY
 
   def IsSourceTypeFile(self):
     """Determines if the source type is a file.
@@ -226,7 +229,7 @@ class SourceScannerContext(object):
       A boolean if the source type is or is not a file or None if not set.
     """
     if self.source_type:
-      return self.source_type == self.SOURCE_TYPE_FILE
+      return self.source_type == definitions.SOURCE_TYPE_FILE
 
   def LockScanNode(self, path_spec):
     """Marks a scan node as locked.
@@ -362,7 +365,7 @@ class SourceScanner(object):
         raise errors.BackEndError(u'Unable to open file entry.')
 
       if system_level_file_entry.IsDirectory():
-        scan_context.SetSourceType(scan_context.SOURCE_TYPE_DIRECTORY)
+        scan_context.SetSourceType(definitions.SOURCE_TYPE_DIRECTORY)
         return
 
       source_path_spec = self.ScanForStorageMediaImage(scan_node.path_spec)
@@ -370,7 +373,7 @@ class SourceScanner(object):
         scan_node.scanned = True
         scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
-        scan_context.SetSourceType(scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+        scan_context.SetSourceType(definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
         if not auto_recurse:
           return
@@ -400,10 +403,10 @@ class SourceScanner(object):
 
         if system_level_file_entry and system_level_file_entry.IsDevice():
           scan_context.SetSourceType(
-              scan_context.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+              definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
         else:
           scan_context.SetSourceType(
-              scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+              definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
       if scan_node.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
         # For VSS add a scan node for the current volume.
@@ -485,9 +488,9 @@ class SourceScanner(object):
           scan_node = scan_context.RemoveScanNode(scan_node.path_spec)
 
           # Make sure to override the previously assigned source type.
-          scan_context.source_type = scan_context.SOURCE_TYPE_FILE
+          scan_context.source_type = definitions.SOURCE_TYPE_FILE
         else:
-          scan_context.SetSourceType(scan_context.SOURCE_TYPE_FILE)
+          scan_context.SetSourceType(definitions.SOURCE_TYPE_FILE)
 
       elif not scan_context.HasScanNode(source_path_spec):
         scan_node.scanned = True
@@ -495,16 +498,15 @@ class SourceScanner(object):
 
         if system_level_file_entry and system_level_file_entry.IsDevice():
           scan_context.SetSourceType(
-              scan_context.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+              definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
         else:
           scan_context.SetSourceType(
-              scan_context.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+              definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     # If all scans failed mark the scan node as scanned so we do not scan it
     # again.
     if not scan_node.scanned:
       scan_node.scanned = True
-      scan_context.updated = True
 
     return
 
