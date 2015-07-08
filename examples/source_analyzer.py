@@ -30,7 +30,69 @@ class SourceAnalyzer(object):
     """
     super(SourceAnalyzer, self).__init__()
     self._auto_recurse = auto_recurse
-    self._scanner = source_scanner.SourceScanner()
+    self._source_scanner = source_scanner.SourceScanner()
+
+  def _PromptUserForEncryptedVolumeCredential(
+      self, scan_context, locked_scan_node, output_writer):
+    """Prompts the user to provide a credential for an encrypted volume.
+
+    Args:
+      scan_context: the source scanner context (instance of
+                    SourceScannerContext).
+      locked_scan_node: the locked scan node (instance of SourceScanNode).
+      output_writer: the output writer (instance of StdoutWriter).
+    """
+    credentials = credentials_manager.CredentialsManager.GetCredentials(
+        locked_scan_node.path_spec)
+
+    # TODO: print volume description.
+    if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+      output_writer.WriteLine(u'Found a BitLocker encrypted volume.')
+    else:
+      output_writer.WriteLine(u'Found an encrypted volume.')
+
+    credentials_list = list(credentials.CREDENTIALS)
+    credentials_list.append(u'skip')
+
+    # TODO: check which credentials are available.
+    output_writer.WriteLine(u'Supported credentials:')
+    output_writer.WriteLine(u'')
+    for index, name in enumerate(credentials_list):
+      output_writer.WriteLine(u'  {0:d}. {1:s}'.format(index, name))
+    output_writer.WriteLine(u'')
+
+    result = False
+    while not result:
+      output_writer.WriteString(
+          u'Select a credential to unlock the volume: ')
+      # TODO: add an input reader.
+      input_line = sys.stdin.readline()
+      input_line = input_line.strip()
+
+      if input_line in credentials_list:
+        credential_identifier = input_line
+      else:
+        try:
+          credential_identifier = int(input_line, 10)
+          credential_identifier = credentials_list[credential_identifier]
+        except (IndexError, ValueError):
+          output_writer.WriteLine(
+              u'Unsupported credential: {0:s}'.format(input_line))
+          continue
+
+      if credential_identifier == u'skip':
+        break
+
+      credential_data = getpass.getpass(u'Enter credential data: ')
+      output_writer.WriteLine(u'')
+
+      result = self._source_scanner.Unlock(
+          scan_context, locked_scan_node.path_spec, credential_identifier,
+          credential_data)
+
+      if not result:
+        output_writer.WriteLine(u'Unable to unlock volume.')
+        output_writer.WriteLine(u'')
 
   def Analyze(self, source_path, output_writer):
     """Analyzes the source.
@@ -54,7 +116,7 @@ class SourceAnalyzer(object):
     scan_context.OpenSourcePath(source_path)
 
     while True:
-      self._scanner.Scan(
+      self._source_scanner.Scan(
           scan_context, auto_recurse=self._auto_recurse,
           scan_path_spec=scan_path_spec)
 
@@ -67,64 +129,14 @@ class SourceAnalyzer(object):
 
       # The source is a directory or file.
       if scan_context.source_type in [
-          scan_context.SOURCE_TYPE_DIRECTORY, scan_context.SOURCE_TYPE_FILE]:
+          definitions.SOURCE_TYPE_DIRECTORY, definitions.SOURCE_TYPE_FILE]:
         break
 
       # The source scanner found a locked volume, e.g. an encrypted volume,
       # and we need a credential to unlock the volume.
       for locked_scan_node in scan_context.locked_scan_nodes:
-        credentials = credentials_manager.CredentialsManager.GetCredentials(
-            locked_scan_node.path_spec)
-
-        # TODO: print volume description.
-        if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-          output_writer.WriteLine(u'Found a BitLocker encrypted volume.')
-        else:
-          output_writer.WriteLine(u'Found an encrypted volume.')
-
-        credentials_list = list(credentials.CREDENTIALS)
-        credentials_list.append(u'skip')
-
-        # TODO: check which credentials are available.
-        output_writer.WriteLine(u'Supported credentials:')
-        output_writer.WriteLine(u'')
-        for index, name in enumerate(credentials_list):
-          output_writer.WriteLine(u'  {0:d}. {1:s}'.format(index, name))
-        output_writer.WriteLine(u'')
-
-        result = False
-        while not result:
-          output_writer.WriteString(
-              u'Select a credential to unlock the volume: ')
-          # TODO: add an input reader.
-          # TODO: support numeric input e.g. 3 is skip.
-          input_line = sys.stdin.readline()
-          input_line = input_line.strip()
-
-          if input_line in credentials_list:
-            credential_identifier = input_line
-          else:
-            try:
-              credential_identifier = int(input_line, 10)
-              credential_identifier = credentials_list[credential_identifier]
-            except (IndexError, ValueError):
-              output_writer.WriteLine(
-                  u'Unsupported credential: {0:s}'.format(input_line))
-              continue
-
-          if credential_identifier == u'skip':
-            break
-
-          credential_data = getpass.getpass(u'Enter credential data: ')
-          output_writer.WriteLine(u'')
-
-          result = self._scanner.Unlock(
-              scan_context, locked_scan_node.path_spec, credential_identifier,
-              credential_data)
-
-          if not result:
-            output_writer.WriteLine(u'Unable to unlock volume.')
-            output_writer.WriteLine(u'')
+        self._PromptUserForEncryptedVolumeCredential(
+            scan_context, locked_scan_node, output_writer)
 
       if not self._auto_recurse:
         scan_node = scan_context.GetUnscannedScanNode()
