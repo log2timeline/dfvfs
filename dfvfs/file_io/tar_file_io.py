@@ -58,11 +58,16 @@ class TarFile(file_io.FileIO):
     if not path_spec:
       raise ValueError(u'Missing path specfication.')
 
-    self._file_system = resolver.Resolver.OpenFileSystem(
+    file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
-    tar_file = self._file_system.GetTarFile()
 
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    if not file_entry:
+      file_system.Close()
+      raise IOError(u'Unable to retrieve file entry.')
+
+    self._file_system = file_system
+    tar_file = self._file_system.GetTarFile()
     tar_info = file_entry.GetTarInfo()
 
     self._tar_ext_file = tar_file.extractfile(tar_info)
