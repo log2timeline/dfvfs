@@ -26,24 +26,26 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
       raise errors.BackEndError(
           u'Unable to open gzip file: {0:s}.'.format(self.path_spec.comparable))
 
-    stat_object = vfs_stat.VFSStat()
+    try:
+      stat_object = vfs_stat.VFSStat()
 
-    # File data stat information.
-    stat_object.size = gzip_file.uncompressed_data_size
+      # File data stat information.
+      stat_object.size = gzip_file.uncompressed_data_size
 
-    # Date and time stat information.
-    stat_object.mtime = gzip_file.modification_time
+      # Date and time stat information.
+      stat_object.mtime = gzip_file.modification_time
 
-    # Ownership and permissions stat information.
+      # Ownership and permissions stat information.
 
-    # File entry type stat information.
-    stat_object.type = stat_object.TYPE_FILE
+      # File entry type stat information.
+      stat_object.type = stat_object.TYPE_FILE
 
-    # Other stat information.
-    # gzip_file.comment
-    # gzip_file.operating_system
-    # gzip_file.original_filename
+      # Other stat information.
+      # gzip_file.comment
+      # gzip_file.operating_system
+      # gzip_file.original_filename
 
-    gzip_file.close()
+    finally:
+      gzip_file.close()
 
     return stat_object

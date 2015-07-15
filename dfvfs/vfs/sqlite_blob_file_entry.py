@@ -58,14 +58,18 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           u'Unable to open blob file: {0:s}.'.format(self.path_spec.comparable))
 
-    stat_object = vfs_stat.VFSStat()
+    try:
+      stat_object = vfs_stat.VFSStat()
 
-    # The root file entry is virtual and should have type directory.
-    if self._is_virtual:
-      stat_object.type = stat_object.TYPE_DIRECTORY
-    else:
-      stat_object.type = stat_object.TYPE_FILE
-      stat_object.size = blob_file.get_size()
+      # The root file entry is virtual and should have type directory.
+      if self._is_virtual:
+        stat_object.type = stat_object.TYPE_DIRECTORY
+      else:
+        stat_object.type = stat_object.TYPE_FILE
+        stat_object.size = blob_file.get_size()
+
+    finally:
+      blob_file.close()
 
     return stat_object
 
