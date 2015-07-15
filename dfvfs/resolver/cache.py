@@ -17,9 +17,6 @@ class ObjectsCacheValue(object):
     self._reference_count = 0
     self.vfs_object = vfs_object
 
-  def __repr__(self):
-    return '%d' % self._reference_count
-
   @property
   def reference_count(self):
     """The reference count."""
