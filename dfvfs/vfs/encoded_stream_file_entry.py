@@ -27,20 +27,22 @@ class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
           u'Unable to open encoded stream: {0:s}.'.format(
               self.path_spec.comparable))
 
-    stat_object = vfs_stat.VFSStat()
+    try:
+      stat_object = vfs_stat.VFSStat()
 
-    # File data stat information.
-    stat_object.size = encoded_stream.get_size()
+      # File data stat information.
+      stat_object.size = encoded_stream.get_size()
 
-    # Date and time stat information.
+      # Date and time stat information.
 
-    # Ownership and permissions stat information.
+      # Ownership and permissions stat information.
 
-    # File entry type stat information.
-    stat_object.type = stat_object.TYPE_FILE
+      # File entry type stat information.
+      stat_object.type = stat_object.TYPE_FILE
 
-    # Other stat information.
+      # Other stat information.
 
-    encoded_stream.close()
+    finally:
+      encoded_stream.close()
 
     return stat_object
