@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Functionality to check for the availability and version of dependencies."""
 
+from __future__ import print_function
 import re
 import urllib2
 
@@ -141,7 +142,7 @@ def CheckLibyal(libyal_python_modules, latest_version_check=False):
     try:
       module_object = map(__import__, [module_name])[0]
     except ImportError:
-      print u'[FAILURE]\tmissing: {0:s}.'.format(module_name)
+      print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
       result = False
       continue
 
@@ -163,31 +164,31 @@ def CheckLibyal(libyal_python_modules, latest_version_check=False):
           latest_version = None
 
       if not latest_version:
-        print (
+        print(
             u'Unable to determine latest version of {0:s} ({1:s}).\n').format(
                 libyal_name, module_name)
         latest_version = None
         connection_error = True
 
     if module_version is not None and installed_version < module_version:
-      print (
+      print((
           u'[FAILURE]\t{0:s} ({1:s}) version: {2:d} is too old, {3:d} or '
           u'later required.').format(
-              libyal_name, module_name, installed_version, module_version)
+              libyal_name, module_name, installed_version, module_version))
       result = False
 
     elif latest_version and installed_version != latest_version:
-      print (
+      print((
           u'[INFO]\t\t{0:s} ({1:s}) version: {2:d} installed, '
           u'version: {3:d} available.').format(
-              libyal_name, module_name, installed_version, latest_version)
+              libyal_name, module_name, installed_version, latest_version))
 
     else:
-      print u'[OK]\t\t{0:s} ({1:s}) version: {2:d}'.format(
-          libyal_name, module_name, installed_version)
+      print(u'[OK]\t\t{0:s} ({1:s}) version: {2:d}'.format(
+          libyal_name, module_name, installed_version))
 
   if connection_error:
-    print (
+    print(
         u'[INFO] to check for the latest versions this script needs Internet '
         u'access.')
 
@@ -216,7 +217,7 @@ def CheckPythonModule(
   try:
     module_object = map(__import__, [module_name])[0]
   except ImportError:
-    print u'[FAILURE]\tmissing: {0:s}.'.format(module_name)
+    print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
     return False
 
   if version_attribute_name and minimum_version:
@@ -232,22 +233,22 @@ def CheckPythonModule(
     minimum_version_map = map(int, split_regex.split(minimum_version))
 
     if module_version_map < minimum_version_map:
-      print (
+      print((
           u'[FAILURE]\t{0:s} version: {1:s} is too old, {2:s} or later '
-          u'required.').format(module_name, module_version, minimum_version)
+          u'required.').format(module_name, module_version, minimum_version))
       return False
 
     if maximum_version:
       maximum_version_map = map(int, split_regex.split(maximum_version))
       if module_version_map > maximum_version_map:
-        print (
+        print((
             u'[FAILURE]\t{0:s} version: {1:s} is too recent, {2:s} or earlier '
-            u'required.').format(module_name, module_version, maximum_version)
+            u'required.').format(module_name, module_version, maximum_version))
         return False
 
-    print u'[OK]\t\t{0:s} version: {1:s}'.format(module_name, module_version)
+    print(u'[OK]\t\t{0:s} version: {1:s}'.format(module_name, module_version))
   else:
-    print u'[OK]\t\t{0:s}'.format(module_name)
+    print(u'[OK]\t\t{0:s}'.format(module_name))
 
   return True
 
@@ -266,7 +267,7 @@ def CheckPytsk(module_name, minimum_version_libtsk, minimum_version_pytsk):
   try:
     module_object = map(__import__, [module_name])[0]
   except ImportError:
-    print u'[FAILURE]\tmissing: {0:s}.'.format(module_name)
+    print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
     return False
 
   module_version = module_object.TSK_VERSION_STR
@@ -276,27 +277,27 @@ def CheckPytsk(module_name, minimum_version_libtsk, minimum_version_pytsk):
   module_version_map = map(int, module_version.split(u'.'))
   minimum_version_map = map(int, minimum_version_libtsk.split(u'.'))
   if module_version_map < minimum_version_map:
-    print (
+    print((
         u'[FAILURE]\tSleuthKit (libtsk) version: {0:s} is too old, {1:s} or '
-        u'later required.').format(module_version, minimum_version_libtsk)
+        u'later required.').format(module_version, minimum_version_libtsk))
     return False
 
-  print u'[OK]\t\tSleuthKit version: {0:s}'.format(module_version)
+  print(u'[OK]\t\tSleuthKit version: {0:s}'.format(module_version))
 
   if not hasattr(module_object, u'get_version'):
-    print u'[FAILURE]\t{0:s} is too old, {1:s} or later required.'.format(
-        module_name, minimum_version_pytsk)
+    print(u'[FAILURE]\t{0:s} is too old, {1:s} or later required.'.format(
+        module_name, minimum_version_pytsk))
     return False
 
   module_version = module_object.get_version()
   if module_version < minimum_version_pytsk:
-    print (
+    print((
         u'[FAILURE]\t{0:s} version: {1:s} is too old, {2:s} or later '
         u'required.').format(
-            module_name, module_version, minimum_version_pytsk)
+            module_name, module_version, minimum_version_pytsk))
     return False
 
-  print u'[OK]\t\t{0:s} version: {1:s}'.format(module_name, module_version)
+  print(u'[OK]\t\t{0:s} version: {1:s}'.format(module_name, module_version))
 
   return True
 
@@ -312,7 +313,7 @@ def CheckDependencies(latest_version_check=False):
   Returns:
     True if the dependencies are available, False otherwise.
   """
-  print u'Checking availability and versions of dfvfs dependencies.'
+  print(u'Checking availability and versions of dfvfs dependencies.')
   check_result = True
 
   for values in PYTHON_DEPENDENCIES:
@@ -329,7 +330,7 @@ def CheckDependencies(latest_version_check=False):
   if not libyal_check_result:
     check_result = False
 
-  print u''
+  print(u'')
   return check_result
 
 
