@@ -187,11 +187,7 @@ class Analyzer(object):
 
     try:
       scanner_object.scan_file_object(scan_state, file_object)
-    except IOError:
-      file_object.close()
-      raise
 
-    try:
       for scan_result in scan_state.scan_results:
         format_specification = specification_store.GetSpecificationBySignature(
             scan_result.identifier)
