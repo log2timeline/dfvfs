@@ -76,6 +76,7 @@ class FileEntry(object):
   def __del__(self):
     """Cleans up the file entry object."""
     self._file_system.Close()
+    self._file_system = None
 
   @abc.abstractmethod
   def _GetDirectory(self):

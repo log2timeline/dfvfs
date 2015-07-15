@@ -145,10 +145,12 @@ class GzipFile(file_object_io.FileObjectIO):
     gzip_file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    self._ReadFileHeader(gzip_file_object)
-    self._ReadFileFooter(gzip_file_object)
+    try:
+      self._ReadFileHeader(gzip_file_object)
+      self._ReadFileFooter(gzip_file_object)
 
-    gzip_file_object.close()
+    finally:
+      gzip_file_object.close()
 
     path_spec_data_range = data_range_path_spec.DataRangePathSpec(
         range_offset=self._compressed_data_offset,
