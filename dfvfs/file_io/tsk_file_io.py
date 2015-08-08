@@ -64,32 +64,35 @@ class TSKFile(file_io.FileIO):
       file_system.Close()
       raise IOError(u'Unable to retrieve file entry.')
 
-    self._file_system = file_system
-    self._tsk_file = file_entry.GetTSKFile()
+    tsk_file = file_entry.GetTSKFile()
     tsk_attribute = None
 
     # Note that because pytsk3.File does not explicitly defines info
     # we need to check if the attribute exists and has a value other
     # than None.
     if getattr(tsk_file, u'info', None) is None:
+      file_system.Close()
       raise IOError(u'Missing attribute info in file (pytsk3.File).')
 
     # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
     # we need to check if the attribute exists and has a value other
     # than None.
     if getattr(tsk_file.info, u'meta', None) is None:
+      file_system.Close()
       raise IOError(
           u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines size
     # we need to check if the attribute exists.
     if not hasattr(tsk_file.info.meta, u'size'):
+      file_system.Close()
       raise IOError(
           u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines type
     # we need to check if the attribute exists.
     if not hasattr(tsk_file.info.meta, u'type'):
+      file_system.Close()
       raise IOError(
           u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
@@ -105,13 +108,16 @@ class TSKFile(file_io.FileIO):
           tsk_attribute = attribute
 
         if tsk_attribute is None:
+          file_system.Close()
           raise IOError(u'Unable to open data stream: {0:s}.'.format(
               data_stream))
 
     elif tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
+      file_system.Close()
       raise IOError(u'Not a regular file.')
 
     self._current_offset = 0
+    self._file_system = file_system
     self._tsk_attribute = tsk_attribute
     self._tsk_file = tsk_file
 
