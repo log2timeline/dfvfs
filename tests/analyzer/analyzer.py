@@ -18,7 +18,7 @@ class AnalyzerTest(unittest.TestCase):
 
   def testGetArchiveTypeIndicators(self):
     """Function to test the get archive type indicators function."""
-    test_file = os.path.join('test_data', 'syslog.tar')
+    test_file = os.path.join(u'test_data', u'syslog.tar')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_TAR]
@@ -26,7 +26,7 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-    test_file = os.path.join('test_data', 'syslog.zip')
+    test_file = os.path.join(u'test_data', u'syslog.zip')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_ZIP]
@@ -36,7 +36,7 @@ class AnalyzerTest(unittest.TestCase):
 
   def testGetCompressedStreamTypeIndicators(self):
     """Function to test the get compressed stream type indicators function."""
-    test_file = os.path.join('test_data', 'syslog.gz')
+    test_file = os.path.join(u'test_data', u'syslog.gz')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_GZIP]
@@ -46,7 +46,7 @@ class AnalyzerTest(unittest.TestCase):
 
   def testGetCompressedArchiveTypeIndicators(self):
     """Function to test the get compressed archive type indicators function."""
-    test_file = os.path.join('test_data', 'syslog.tgz')
+    test_file = os.path.join(u'test_data', u'syslog.tgz')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_GZIP]
@@ -63,7 +63,7 @@ class AnalyzerTest(unittest.TestCase):
 
   def testGetFileSystemTypeIndicators(self):
     """Function to test the get file system type indicators function."""
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -77,7 +77,7 @@ class AnalyzerTest(unittest.TestCase):
 
   def testGetStorageMediaImageTypeIndicators(self):
     """Function to test the get image type indicators function."""
-    test_file = os.path.join('test_data', 'image.E01')
+    test_file = os.path.join(u'test_data', u'image.E01')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_EWF]
@@ -85,7 +85,7 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-    test_file = os.path.join('test_data', 'image.qcow2')
+    test_file = os.path.join(u'test_data', u'image.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_QCOW]
@@ -93,7 +93,7 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-    test_file = os.path.join('test_data', 'image.vhd')
+    test_file = os.path.join(u'test_data', u'image.vhd')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_VHDI]
@@ -101,7 +101,7 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-    test_file = os.path.join('test_data', 'image.vmdk')
+    test_file = os.path.join(u'test_data', u'image.vmdk')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_VMDK]
@@ -109,7 +109,7 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-    test_file = os.path.join('test_data', 'mactime.body')
+    test_file = os.path.join(u'test_data', u'mactime.body')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = []
@@ -119,7 +119,7 @@ class AnalyzerTest(unittest.TestCase):
 
   def testGetVolumeSystemTypeIndicators(self):
     """Function to test the get volume system type indicators function."""
-    test_file = os.path.join('test_data', 'tsk_volume_system.raw')
+    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_TSK_PARTITION]
@@ -127,7 +127,7 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-    test_file = os.path.join('test_data', 'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
 
@@ -136,7 +136,7 @@ class AnalyzerTest(unittest.TestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-    test_file = os.path.join('test_data', 'bdetogo.raw')
+    test_file = os.path.join(u'test_data', u'bdetogo.raw')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_BDE]

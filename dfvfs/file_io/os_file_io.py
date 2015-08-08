@@ -6,12 +6,13 @@ import os
 
 import pysmdev
 
+from dfvfs import dependencies
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 
 
-if pysmdev.get_version() < '20140428':
-  raise ImportWarning('OSFile requires at least pysmdev 20140428.')
+dependencies.CheckModuleVersion(u'pysmdev')
 
 
 class OSFile(file_io.FileIO):
@@ -56,7 +57,7 @@ class OSFile(file_io.FileIO):
     if path_spec.HasParent():
       raise errors.PathSpecError(u'Unsupported path specification with parent.')
 
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if location is None:
       raise errors.PathSpecError(u'Path specification missing location.')
@@ -70,10 +71,17 @@ class OSFile(file_io.FileIO):
       # will return '[Error 87] The parameter is incorrect' we check here
       # if pysmdev exception message contains ' access denied ' and raise
       # AccessError instead.
-      if u' access denied ' in exception.message:
+
+      # Note that exception.message no longer works in Python 3.
+      exception_string = str(exception)
+      if not isinstance(exception_string, py2to3.UNICODE_TYPE):
+        exception_string = py2to3.UNICODE_TYPE(
+            exception_string, errors=u'replace')
+
+      if u' access denied ' in exception_string:
         raise errors.AccessError(
             u'Access denied to file: {0:s} with error: {1:s}'.format(
-                location, exception))
+                location, exception_string))
       is_device = False
 
     if not is_device:

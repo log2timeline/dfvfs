@@ -23,15 +23,15 @@ class FakeFileEntryTest(unittest.TestCase):
         u'/test_data/testdir_fake',
         file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file1.txt', file_data='FILE1')
+        u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file2.txt', file_data='FILE2')
+        u'/test_data/testdir_fake/file2.txt', file_data=b'FILE2')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file3.txt', file_data='FILE3')
+        u'/test_data/testdir_fake/file3.txt', file_data=b'FILE3')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file4.txt', file_data='FILE4')
+        u'/test_data/testdir_fake/file4.txt', file_data=b'FILE4')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file5.txt', file_data='FILE5')
+        u'/test_data/testdir_fake/file5.txt', file_data=b'FILE5')
 
     self._file_system.AddFileEntry(
         u'/test_data/testdir_fake/link1.txt',
@@ -74,7 +74,7 @@ class FakeFileEntryTest(unittest.TestCase):
     self.assertNotEqual(file_object, None)
 
     file_data = file_object.read()
-    self.assertEqual(file_data, 'FILE1')
+    self.assertEqual(file_data, b'FILE1')
 
     file_object.close()
 

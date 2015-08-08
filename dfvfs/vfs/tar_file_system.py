@@ -19,7 +19,7 @@ class TarFileSystem(file_system.FileSystem):
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
-  def __init__(self, resolver_context, encoding='utf-8'):
+  def __init__(self, resolver_context, encoding=u'utf-8'):
     """Initializes the file system object.
 
     Args:
@@ -81,7 +81,7 @@ class TarFileSystem(file_system.FileSystem):
       Boolean indicating if the file entry exists.
     """
     tar_info = None
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
@@ -107,7 +107,7 @@ class TarFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.TarFileEntry) or None.
     """
     tar_info = None
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):

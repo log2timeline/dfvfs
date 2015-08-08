@@ -39,11 +39,8 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
       ValueError: when table_name, column_name, row_condition and row_index,
                   or parent is not set.
     """
-    if (not table_name or not column_name or not parent or (
-        row_condition is None and row_index is None)):
-      raise ValueError((
-          u'Missing table_name, column_name, row_index and row_index, '
-          u'or parent value.'))
+    if not table_name or not column_name or not parent:
+      raise ValueError(u'Missing table_name, column_name or parent value.')
 
     if (row_condition and (
         not isinstance(row_condition, tuple) or len(row_condition) != 3)):

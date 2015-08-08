@@ -70,8 +70,8 @@ class RecursiveHasher(object):
       self._CalculateHashesFileEntry(
           file_system, sub_file_entry, full_path, output_writer)
 
-  def _GetHumanReadableSize(self, size):
-    """Retrieves a human readable string of the size.
+  def _FormatHumanReadableSize(self, size):
+    """Formats the size as a human readable string.
 
     Args:
       size: The size in bytes.
@@ -130,7 +130,7 @@ class RecursiveHasher(object):
 
     volume_identifiers = []
     for volume in volume_system.volumes:
-      volume_identifier = getattr(volume, 'identifier', None)
+      volume_identifier = getattr(volume, u'identifier', None)
       if volume_identifier:
         volume_identifiers.append(volume_identifier)
 
@@ -156,7 +156,7 @@ class RecursiveHasher(object):
       print(
           u'{0:s}\t\t{1:d} (0x{1:08x})\t{2:s}'.format(
               volume.identifier, volume_extent.offset,
-              self._GetHumanReadableSize(volume_extent.size)))
+              self._FormatHumanReadableSize(volume_extent.size)))
 
     print(u'')
 
@@ -384,13 +384,14 @@ def Main():
     A boolean containing True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
-      'Calculates a message digest hash for every file in a directory or '
-      'storage media image.'))
+      u'Calculates a message digest hash for every file in a directory or '
+      u'storage media image.'))
 
   argument_parser.add_argument(
-      'source', nargs='?', action='store', metavar='image.raw',
-      default=None, help=('path of the directory or filename of a storage '
-                          'media image containing the file.'))
+      u'source', nargs=u'?', action=u'store', metavar=u'image.raw',
+      default=None, help=(
+          u'path of the directory or filename of a storage media image '
+          u'containing the file.'))
 
   options = argument_parser.parse_args()
 

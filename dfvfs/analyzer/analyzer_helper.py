@@ -8,7 +8,7 @@ class AnalyzerHelper(object):
   @property
   def format_categories(self):
     """The format categories."""
-    format_categories = getattr(self, 'FORMAT_CATEGORIES', None)
+    format_categories = getattr(self, u'FORMAT_CATEGORIES', None)
     if format_categories is None:
       raise NotImplementedError(
           u'Invalid analyzer helper missing format categories.')
@@ -17,7 +17,7 @@ class AnalyzerHelper(object):
   @property
   def type_indicator(self):
     """The type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
           u'Invalid analyzer helper missing type indicator.')
@@ -41,7 +41,7 @@ class AnalyzerHelper(object):
     # Note: not using NotImplementedError here since pylint then will complain
     # derived classes will need to implement the method, which should not
     # be the the case.
-    raise RuntimeError('Missing implemention to analyze file object.')
+    raise RuntimeError(u'Missing implemention to analyze file object.')
 
   def GetFormatSpecification(self):
     """Retrieves the format specification.

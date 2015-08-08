@@ -16,9 +16,9 @@ def GetTSKVsPartByPathSpec(tsk_volume, path_spec):
     pytsk3.TSK_VS_PART_INFO) and the partition index. The partition index
     is None when not available. The function return or (None, None) on error.
   """
-  location = getattr(path_spec, 'location', None)
-  part_index = getattr(path_spec, 'part_index', None)
-  start_offset = getattr(path_spec, 'start_offset', None)
+  location = getattr(path_spec, u'location', None)
+  part_index = getattr(path_spec, u'part_index', None)
+  start_offset = getattr(path_spec, u'start_offset', None)
   partition_index = None
 
   if part_index is None:
@@ -93,8 +93,8 @@ def TSKVolumeGetBytesPerSector(tsk_volume):
   # Note that because pytsk3.Volume_Info does not explicitly defines info
   # we need to check if the attribute exists and has a value other
   # than None. Default to 512 otherwise.
-  if hasattr(tsk_volume, 'info') and tsk_volume.info is not None:
-    block_size = getattr(tsk_volume.info, 'block_size', 512)
+  if hasattr(tsk_volume, u'info') and tsk_volume.info is not None:
+    block_size = getattr(tsk_volume.info, u'block_size', 512)
   else:
     block_size = 512
 
@@ -113,7 +113,7 @@ def TSKVsPartGetNumberOfSectors(tsk_vs_part):
   """
   # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
   # len we need to check if the attribute exists.
-  return getattr(tsk_vs_part, 'len', None)
+  return getattr(tsk_vs_part, u'len', None)
 
 
 def TSKVsPartGetStartSector(tsk_vs_part):
@@ -128,7 +128,7 @@ def TSKVsPartGetStartSector(tsk_vs_part):
   """
   # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
   # start we need to check if the attribute exists.
-  return getattr(tsk_vs_part, 'start', None)
+  return getattr(tsk_vs_part, u'start', None)
 
 
 def TSKVsPartIsAllocated(tsk_vs_part):
@@ -144,7 +144,7 @@ def TSKVsPartIsAllocated(tsk_vs_part):
   # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
   # flags need to check if the attribute exists.
   # The flags are an instance of TSK_VS_PART_FLAG_ENUM.
-  tsk_vs_part_flags = getattr(tsk_vs_part, 'flags', None)
+  tsk_vs_part_flags = getattr(tsk_vs_part, u'flags', None)
 
   return (tsk_vs_part_flags is not None and
           tsk_vs_part_flags == pytsk3.TSK_VS_PART_FLAG_ALLOC)

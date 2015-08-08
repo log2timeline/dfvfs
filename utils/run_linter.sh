@@ -4,9 +4,10 @@
 EXIT_FAILURE=1;
 EXIT_SUCCESS=0;
 
-if [ ! -f "utils/common.sh" ];
+if ! test -f "utils/common.sh";
 then
-  echo "Missing common functions, are you in the wrong directory?";
+  echo "Unable to find common scripts (utils/common.sh).";
+  echo "This script can only be run from the root of the source directory.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -15,7 +16,7 @@ fi
 
 if ! linting_is_correct;
 then
-  echo "Aborted - fix the issues reported by the linter.";
+  echo "Linting aborted - fix the reported issues.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -27,15 +28,16 @@ if ! ${HAVE_REMOTE_ORIGIN};
 then
   if ! have_remote_upstream;
   then
-    echo "Review upload aborted - missing upstream.";
+    echo "Linting aborted - missing upstream.";
     echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
 
     exit ${EXIT_FAILURE};
   fi
+  git fetch upstream;
 
   if ! linter_pass;
   then
-    echo "Aborted - fix the issues reported by the linter.";
+    echo "Linting aborted - fix the reported issues.";
 
     exit ${EXIT_FAILURE};
   fi

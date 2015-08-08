@@ -8,6 +8,7 @@ import pysmdev
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_system
 from dfvfs.vfs import os_file_entry
@@ -16,7 +17,7 @@ from dfvfs.vfs import os_file_entry
 class OSFileSystem(file_system.FileSystem):
   """Class that implements an operating system file system object."""
 
-  if platform.system() == 'Windows':
+  if platform.system() == u'Windows':
     PATH_SEPARATOR = u'\\'
   else:
     PATH_SEPARATOR = u'/'
@@ -58,13 +59,13 @@ class OSFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    location = getattr(path_spec, 'location', None)
+    location = getattr(path_spec, u'location', None)
 
     if location is None:
       return False
 
     is_device = False
-    if platform.system() == 'Windows':
+    if platform.system() == u'Windows':
       # Windows does not support running os.path.exists on device files
       # so we use libsmdev to do the check.
       try:
@@ -73,7 +74,14 @@ class OSFileSystem(file_system.FileSystem):
         # Since pysmdev will raise IOError when it has no access to the device
         # we check if the exception message contains ' access denied ' and
         # return true.
-        if u' access denied ' in exception.message:
+
+        # Note that exception.message no longer works in Python 3.
+        exception_string = str(exception)
+        if not isinstance(exception_string, py2to3.UNICODE_TYPE):
+          exception_string = py2to3.UNICODE_TYPE(
+              exception_string, errors=u'replace')
+
+        if u' access denied ' in exception_string:
           is_device = True
 
     if not is_device and not os.path.exists(location):
@@ -100,11 +108,11 @@ class OSFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    if platform.system() == 'Windows':
+    if platform.system() == u'Windows':
       # Return the root with the drive letter of the volume the current
       # working directory is on.
       location = os.getcwd()
-      location, _, _ = location.partition('\\')
+      location, _, _ = location.partition(u'\\')
       location = u'{0:s}\\'.format(location)
     else:
       location = u'/'
@@ -129,7 +137,7 @@ class OSFileSystem(file_system.FileSystem):
     # segment correctly.
     first_path_segment = None
 
-    if path_segments and platform.system() == 'Windows':
+    if path_segments and platform.system() == u'Windows':
       # Check if the first path segment contains a "special" path definition.
       first_path_segment = path_segments[0]
       first_path_segment_length = len(first_path_segment)

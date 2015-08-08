@@ -11,7 +11,8 @@ CL_NUMBER="";
 
 if ! test -f "utils/common.sh";
 then
-  echo "Missing common functions, are you in the wrong directory?";
+  echo "Unable to find common scripts (utils/common.sh).";
+  echo "This script can only be run from the root of the source directory.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -43,7 +44,7 @@ fi
 
 CL_NUMBER=$1;
 USERNAME=$2;
-BRANCH=$3;
+FEATURE_BRANCH=$3;
 
 GITHUB_URL="https://github.com/${USERNAME}/dfvfs.git";
 
@@ -82,11 +83,11 @@ then
   fi
 fi
 
-git pull --squash ${GITHUB_URL} ${BRANCH}
+git pull --squash ${GITHUB_URL} ${FEATURE_BRANCH}
 
 if test $? -ne 0;
 then
-  echo "Submit aborted - unable to 'git pull ${GITHUB_URL} ${BRANCH}'.";
+  echo "Submit aborted - unable to 'git pull ${GITHUB_URL} ${FEATURE_BRANCH}'.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -121,7 +122,7 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-EMAIL_ADDRESS=`echo ${CODEREVIEW} | sed 's/^.*"owner_email":"\(.*\)","private*$/\1/'`;
+EMAIL_ADDRESS=`echo ${CODEREVIEW} | sed 's/^.*"owner_email":"\(.*\)","private.*$/\1/'`;
 
 if test -z "${EMAIL_ADDRESS}" || test "${EMAIL_ADDRESS}" = "${CODEREVIEW}";
 then
@@ -133,7 +134,7 @@ fi
 # This will convert newlines into spaces.
 GITHUB_USERINFO=`curl -s https://api.github.com/users/${USERNAME}`;
 
-FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name":"\(.*\)","company*$/\1/'`;
+FULLNAME=`echo ${GITHUB_USERINFO} | sed 's/^.*"name": "\(.*\)", "company.*$/\1/'`;
 
 if test -z "${FULLNAME}" || test "${FULLNAME}" = "${GITHUB_USERINFO}";
 then

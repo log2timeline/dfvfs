@@ -24,13 +24,13 @@ class VShadowVolume(volume_system.Volume):
     vshadow_store = self._file_entry.GetVShadowStore()
 
     self._AddAttribute(volume_system.VolumeAttribute(
-        'identifier', vshadow_store.identifier))
+        u'identifier', vshadow_store.identifier))
     self._AddAttribute(volume_system.VolumeAttribute(
-        'copy_identifier', vshadow_store.copy_identifier))
+        u'copy_identifier', vshadow_store.copy_identifier))
     self._AddAttribute(volume_system.VolumeAttribute(
-        'copy_set_identifier', vshadow_store.copy_set_identifier))
+        u'copy_set_identifier', vshadow_store.copy_set_identifier))
     self._AddAttribute(volume_system.VolumeAttribute(
-        'creation_time', vshadow_store.get_creation_time_as_integer()))
+        u'creation_time', vshadow_store.get_creation_time_as_integer()))
 
     self._extents.append(volume_system.VolumeExtent(
         0, vshadow_store.volume_size))

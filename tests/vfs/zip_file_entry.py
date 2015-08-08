@@ -18,7 +18,7 @@ class ZipFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join('test_data', 'syslog.zip')
+    test_file = os.path.join(u'test_data', u'syslog.zip')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location=u'/', parent=self._os_path_spec)
