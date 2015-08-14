@@ -30,14 +30,18 @@ class TSKDataStream(file_entry.DataStream):
   def name(self):
     """The name."""
     if self._tsk_attribute:
-      return self._tsk_attribute.info.name
+      # The value of the attribute name will be None for the default
+      # data stream.
+      return self._tsk_attribute.info.name or u''
     return u''
 
   def GetFileObject(self):
     """Retrieves the file-like object (instance of file_io.FileIO) or None."""
     if self._tsk_attribute:
-      return self._file_entry.GetFileObject(
-          data_stream_name=self._tsk_attribute.info.name)
+      # The value of the attribute name will be None for the default
+      # data stream.
+      data_stream_name = self._tsk_attribute.info.name or u''
+      return self._file_entry.GetFileObject(data_stream_name=data_stream_name)
     return self._file_entry.GetFileObject()
 
 
@@ -171,7 +175,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the data streams.
 
     Returns:
-      A list of data stream objects (instances of vfs.NTFSDataStream).
+      A list of data stream objects (instances of vfs.TSKDataStream).
 
     Raises:
       BackEndError: when the tsk File .info or .info.meta attribute is missing.
@@ -187,9 +191,8 @@ class TSKFileEntry(file_entry.FileEntry):
           continue
 
         attribute_type = getattr(tsk_attribute.info, u'type', None)
-        if attribute_type != pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA:
-          self._data_streams.append(
-              TSKDataStream(self, tsk_attribute))
+        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA:
+          self._data_streams.append(TSKDataStream(self, tsk_attribute))
 
     return self._data_streams
 

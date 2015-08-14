@@ -78,6 +78,9 @@ class NTFSFileSystem(file_system.FileSystem):
 
     Returns:
       Boolean indicating if the file entry exists.
+
+    Raises:
+      BackEndError: if the file entry cannot be opened.
     """
     # Opening a file by MFT entry is faster than opening a file by location.
     # However we need the index of the corresponding $FILE_NAME MFT attribute.
@@ -92,8 +95,8 @@ class NTFSFileSystem(file_system.FileSystem):
       elif location is not None:
         fsntfs_file_entry = self._fsntfs_volume.get_file_entry_by_path(location)
 
-    except IOError:
-      pass
+    except IOError as exception:
+      raise errors.BackEndError(exception)
 
     return fsntfs_file_entry is not None
 
@@ -105,6 +108,9 @@ class NTFSFileSystem(file_system.FileSystem):
 
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
+
+    Raises:
+      BackEndError: if the file entry cannot be opened.
     """
     # Opening a file by MFT entry is faster than opening a file by location.
     # However we need the index of the corresponding $FILE_NAME MFT attribute.
@@ -126,8 +132,8 @@ class NTFSFileSystem(file_system.FileSystem):
       elif location is not None:
         fsntfs_file_entry = self._fsntfs_volume.get_file_entry_by_path(location)
 
-    except IOError:
-      pass
+    except IOError as exception:
+      raise errors.BackEndError(exception)
 
     if fsntfs_file_entry is None:
       return

@@ -24,7 +24,7 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     format_specification.AddNewSignature(b'\x55\xaa', offset=510)
 
     # NTFS file system signature.
-    format_specification.AddNewSignature(b'NTFS    ', offset=3)
+    # format_specification.AddNewSignature(b'NTFS    ', offset=3)
 
     # HFS boot block signature.
     format_specification.AddNewSignature(b'LK', offset=0)
