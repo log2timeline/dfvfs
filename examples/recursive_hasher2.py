@@ -684,7 +684,7 @@ class StdoutWriter(object):
       path: the path of the file.
       hash_value: the message digest hash calculated over the file data.
     """
-    print(u'{0:s}\t{1:s}'.format(hash_value, path))
+    print(u'{0:s}\t{1:s}'.format(hash_value, path).encode(u'utf-8'))
 
 
 def Main():
