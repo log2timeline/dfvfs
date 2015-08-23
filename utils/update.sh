@@ -9,6 +9,7 @@ SCRIPTNAME=`basename $0`;
 
 BROWSER_PARAM="";
 CL_NUMBER="";
+DIFFBASE="upstream/master";
 
 if ! test -f "utils/common.sh";
 then
@@ -26,6 +27,12 @@ HAVE_REMOTE_ORIGIN=have_remote_origin;
 while test $# -gt 0;
 do
   case $1 in
+  --diffbase )
+    shift;
+    DIFFBASE=$1;
+    shift;
+    ;;
+
   --nobrowser | --no-browser | --no_browser )
     BROWSER_PARAM="--no_oauth2_webbrowser";
     shift;
@@ -67,6 +74,9 @@ then
   echo "             If no CL number is provided the value is read from the";
   echo "             corresponding file in: .review/";
   echo "";
+  echo "  --diffbase: the name of the branch to use as diffbase for the CL.";
+  echo "              The default is upstream/master";
+  echo "";
   echo "  --nobrowser: forces upload.py not to open a separate browser";
   echo "               process to obtain OAuth2 credentials for Rietveld";
   echo "               (https://codereview.appspot.com).";
@@ -80,7 +90,7 @@ then
   if ! have_remote_upstream;
   then
     echo "Update aborted - missing upstream.";
-    echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
+    echo "Run: 'git remote add upstream https://github.com/log2timeline/${PROJECT_NAME}.git'";
 
     exit ${EXIT_FAILURE};
   fi
@@ -111,9 +121,17 @@ then
 
       exit ${EXIT_FAILURE};
     fi
+    git push -f
+
+    if test $? -ne 0;
+    then
+      echo "Review aborted - unable to run: 'git push -f' after update with upstream.";
+
+      exit ${EXIT_FAILURE};
+    fi
   fi
 
-  if ! linter_pass;
+  if ! linting_is_correct_remote_upstream;
   then
     echo "Update aborted - fix the issues reported by the linter.";
 
@@ -128,7 +146,7 @@ else
     exit ${EXIT_FAILURE};
   fi
 
-  if ! linting_is_correct;
+  if ! linting_is_correct_remote_origin;
   then
     echo "Update aborted - fix the issues reported by the linter.";
 
@@ -160,7 +178,7 @@ then
 
   python utils/upload.py \
       --oauth2 ${BROWSER_PARAM} -i ${CL_NUMBER} -m "Code updated." \
-      -t "${DESCRIPTION}" -y -- upstream/master;
+      -t "${DESCRIPTION}" -y -- ${DIFFBASE};
 
 else
   CACHE_PARAM="";
