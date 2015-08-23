@@ -31,21 +31,43 @@ class RecursiveHasher(object):
   _UNITS_1000 = [u'B', u'kB', u'MB', u'GB', u'TB', u'EB', u'ZB', u'YB']
   _UNITS_1024 = [u'B', u'KiB', u'MiB', u'GiB', u'TiB', u'EiB', u'ZiB', u'YiB']
 
-  def _CalculateHashFileEntry(self, file_entry):
+  def _CalculateHashFileEntry(self, file_entry, data_stream_name):
     """Calculates a message digest hash of the data of the file entry.
 
     Args:
       file_entry: the file entry (instance of dfvfs.FileEntry).
+      data_stream_name: the data stream name.
+
+    Returns:
+      A binary string containing the digest hash or None.
     """
     hash_context = hashlib.md5()
-    file_object = file_entry.GetFileObject()
 
-    data = file_object.read(self._READ_BUFFER_SIZE)
-    while data:
-      hash_context.update(data)
+    try:
+      file_object = file_entry.GetFileObject(data_stream_name=data_stream_name)
+    except IOError:
+      logging.warning(
+          u'Unable to open path specification:\n{0:s}'.format(
+              file_entry.path_spec.comparable))
+      return
+
+    if not file_object:
+      return
+
+    try:
       data = file_object.read(self._READ_BUFFER_SIZE)
+      while data:
+        hash_context.update(data)
+        data = file_object.read(self._READ_BUFFER_SIZE)
+    except IOError:
+      logging.warning(
+          u'Unable to read from path specification:\n{0:s}'.format(
+              file_entry.path_spec.comparable))
+      return
 
-    file_object.close()
+    finally:
+      file_object.close()
+
     return hash_context.hexdigest()
 
   def _CalculateHashesFileEntry(
@@ -62,9 +84,15 @@ class RecursiveHasher(object):
     # segment separator we are using JoinPath to be platform and file system
     # type independent.
     full_path = file_system.JoinPath([parent_full_path, file_entry.name])
-    if file_entry.IsFile():
-      hash_value = self._CalculateHashFileEntry(file_entry)
-      output_writer.WriteFileHash(full_path, hash_value)
+    for data_stream in file_entry.data_streams:
+      hash_value = self._CalculateHashFileEntry(file_entry, data_stream.name)
+
+      if data_stream.name:
+        display_path = u'{0:s}:{1:s}'.format(full_path, data_stream.name)
+      else:
+        display_path = full_path
+
+      output_writer.WriteFileHash(display_path, hash_value)
 
     for sub_file_entry in file_entry.sub_file_entries:
       self._CalculateHashesFileEntry(

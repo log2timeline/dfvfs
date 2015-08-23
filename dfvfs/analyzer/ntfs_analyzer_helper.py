@@ -25,6 +25,14 @@ class NTFSAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
     return format_specification
 
+  def IsEnabled(self):
+    """Determines if the analyzer helper is enabled.
+
+    Returns:
+      A boolean value to indicate the analyzer helper is enabled.
+    """
+    return definitions.PREFERRED_NTFS_BACK_END == self.TYPE_INDICATOR
+
 
 # Register the analyzer helpers with the analyzer.
 analyzer.Analyzer.RegisterHelper(NTFSAnalyzerHelper())

@@ -285,7 +285,17 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     Returns:
       A file-like object (instance of file_io.FileIO) or None.
+
+    Raises:
+      BackEndError: when the pyfsntfs file entry is missing.
     """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    if not data_stream_name and not fsntfs_file_entry.has_default_data_stream():
+      return
+
     path_spec = copy.deepcopy(self.path_spec)
     if data_stream_name:
       setattr(path_spec, u'data_stream', data_stream_name)

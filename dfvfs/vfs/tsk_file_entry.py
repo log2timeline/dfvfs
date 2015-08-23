@@ -115,6 +115,11 @@ class TSKDirectory(file_entry.Directory):
       # we need to check if the attribute exists and has a value other
       # than None.
       if getattr(tsk_directory_entry.info, u'name', None) is not None:
+        # Ignore file entries marked as "unallocated".
+        flags = getattr(tsk_directory_entry.info.name, u'flags', 0)
+        if int(flags) & pytsk3.TSK_FS_NAME_FLAG_UNALLOC:
+          continue
+
         directory_entry = getattr(tsk_directory_entry.info.name, u'name', u'')
 
         # pytsk3 returns a UTF-8 encoded byte string.
@@ -388,6 +393,11 @@ class TSKFileEntry(file_entry.FileEntry):
     Returns:
       A file-like object (instance of file_io.FileIO) or None.
     """
+    data_stream_names = [
+       data_stream.name for data_stream in self._GetDataStreams()]
+    if data_stream_name not in data_stream_names:
+      return
+
     path_spec = copy.deepcopy(self.path_spec)
     if data_stream_name:
       setattr(path_spec, u'data_stream', data_stream_name)

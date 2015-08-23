@@ -148,7 +148,10 @@ class Analyzer(object):
     specification_store = specification.FormatSpecificationStore()
     remainder_list = []
 
-    for analyzer_helper in cls._analyzer_helpers.itervalues():
+    for analyzer_helper in iter(cls._analyzer_helpers.values()):
+      if not analyzer_helper.IsEnabled():
+        continue
+
       if format_category in analyzer_helper.format_categories:
         format_specification = analyzer_helper.GetFormatSpecification()
 
