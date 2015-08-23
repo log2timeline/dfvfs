@@ -17,10 +17,8 @@ install:
   - cmd: copy C:\Projects\sqlite3.dll C:\Python27\DLLs\
   - cmd: git clone https://github.com/log2timeline/l2tdevtools.git && move l2tdevtools ..\
   - cmd: mkdir dependencies && set PYTHONPATH=..\l2tdevtools && "%PYTHON%\\python.exe" ..\l2tdevtools\tools\update.py --download-directory dependencies --machine-type x86 construct protobuf pybde pyewf pyqcow pysigscan pysmdev pysmraw python-gflags pyvhdi pyvmdk pyvshadow pytsk3 six
-  - cmd: dir C:\
-  - cmd: dir C:\Python*
-  - cmd: dir C:\Python27-x64\lib\site-packages
-  - cmd: dir "%PYTHON%\\lib\\site-packages"
+  - cmd: msiexec.exe /i dependencies\pyolecf-20150630.1.win32-py2.7.msi /log test.log /q
+  - cmd: type test.log
 
 build: off
 
