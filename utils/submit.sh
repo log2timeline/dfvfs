@@ -118,7 +118,7 @@ then
   exit ${EXIT_FAILURE};
 fi
 
-if ! linting_is_correct;
+if ! linting_is_correct_remote_origin;
 then
   echo "Submit aborted - fix the issues reported by the linter.";
 
