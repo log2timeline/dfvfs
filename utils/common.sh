@@ -1,5 +1,5 @@
 #!/bin/bash
-# A small script that contains common functions for code review checks.
+# Script that contains common functions for code review checks.
 
 EXIT_FAILURE=1;
 EXIT_SUCCESS=0;
@@ -7,7 +7,8 @@ EXIT_SUCCESS=0;
 FALSE=1;
 TRUE=0;
 
-GIT_URL="https://github.com/log2timeline/dfvfs.git";
+export PROJECT_NAME="dfvfs";
+export GIT_URL="https://github.com/log2timeline/${PROJECT_NAME}.git";
 
 # Function to check if curl is available.
 have_curl()
@@ -100,6 +101,26 @@ have_uncommitted_changes_with_append_status()
   return ${RESULT};
 }
 
+# Function to generate the API documentation.
+generate_api_documentation()
+{
+  which sphinx-apidoc >/dev/null 2>&1;
+
+  if test $? -ne ${EXIT_SUCCESS};
+  then
+    echo "WARNING: missing sphinx-apidoc - unable to update API documentation.";
+
+    return ${FALSE};
+  fi
+
+  echo "Updating API documentation.";
+  sphinx-apidoc -f -o ./docs "./${PROJECT_NAME}";
+
+  git add ./docs;
+
+  return ${TRUE};
+}
+
 # Function to retrieve the name of the current branch.
 get_current_branch()
 {
@@ -107,7 +128,7 @@ get_current_branch()
   eval "$1='${RESULT}'";
 }
 
-# Function to retrieve the desciption of the last committed change.
+# Function to retrieve the description of the last committed change.
 get_last_change_description()
 {
   RESULT=`git log | head -n5 | tail -n1 | sed 's/^[ ]*//'`;
@@ -115,7 +136,8 @@ get_last_change_description()
 }
 
 # Function to check if the linting of the changes is correct.
-linting_is_correct()
+# Version for usage with remote origin.
+linting_is_correct_remote_origin()
 {
   # Examples of the output of "git status -s"
   # If a file is added:
@@ -131,6 +153,19 @@ linting_is_correct()
   # First find all files that need linter
   FILES=`git status -s | grep -v "^?" | awk "{ ${AWK_SCRIPT} }" | grep "\.py$"`;
 
+  # Determine the current pylint version.
+  PYLINT_VERSION=`pylint --version 2> /dev/null | awk '/pylint/ {print $2}' | rev | cut -c2- | rev`;
+
+  # Check if pylint version is < 1.4.0
+  # The following sed operation mimics 'sort -V' since it is not available on Mac OS X
+  RESULT=`echo -e "${PYLINT_VERSION}\n1.3.99" | sed 's/^[0-9]\./0&/; s/\.\([0-9]\)$/.0\1/; s/\.\([0-9]\)\./.0\1./g;s/\.\([0-9]\)\./.0\1./g' | sort | sed 's/^0// ; s/\.0/./g' | head -n1`;
+
+  if test "${RESULT}" = "${PYLINT_VERSION}";
+  then
+    echo "pylint verion 1.4.0 or later required.";
+
+    exit ${EXIT_FAILURE};
+  fi
   LINTER="pylint --rcfile=utils/pylintrc"
 
   echo "Running linter on changed files.";
@@ -170,8 +205,22 @@ linting_is_correct()
 }
 
 # Function to check if the linting is correct.
-linter_pass()
+# Version for usage with remote upstream
+linting_is_correct_remote_upstream()
 {
+  # Determine the current pylint version.
+  PYLINT_VERSION=`pylint --version 2> /dev/null | awk '/pylint/ {print $2}' | rev | cut -c2- | rev`;
+
+  # Check if pylint version is < 1.4.0
+  # The following sed operation mimics 'sort -V' since it is not available on Mac OS X
+  RESULT=`echo -e "${PYLINT_VERSION}\n1.3.99" | sed 's/^[0-9]\./0&/; s/\.\([0-9]\)$/.0\1/; s/\.\([0-9]\)\./.0\1./g;s/\.\([0-9]\)\./.0\1./g' | sort | sed 's/^0// ; s/\.0/./g' | head -n1`;
+
+  if test "${RESULT}" = "${PYLINT_VERSION}";
+  then
+    echo "pylint verion 1.4.0 or later required.";
+
+    exit ${EXIT_FAILURE};
+  fi
   echo "Running linter.";
 
   LINTER="pylint --rcfile=utils/pylintrc";
@@ -206,6 +255,7 @@ linter_pass()
     then
       # TODO: allow lint all before erroring.
       echo "Fix linter errors before proceeding.";
+
       return ${FALSE};
     fi
   done

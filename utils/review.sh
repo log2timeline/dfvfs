@@ -12,18 +12,20 @@ BROWSER_PARAM="";
 USE_CL_FILE=1;
 CL_FILENAME="";
 BRANCH="";
+DIFFBASE="upstream/master";
+SHOW_HELP=0;
 
 if test -e ".review" && ! test -d ".review";
 then
-  echo "Unable to find common scripts (utils/common.sh).";
-  echo "This script can only be run from the root of the source directory.";
+  echo "Invalid source tree: .review exists but is not a directory.";
 
   exit ${EXIT_FAILURE};
 fi
 
 if ! test -f "utils/common.sh";
 then
-  echo "Missing common functions, are you in the wrong directory?";
+  echo "Unable to find common scripts (utils/common.sh).";
+  echo "This script can only be run from the root of the source directory.";
 
   exit ${EXIT_FAILURE};
 fi
@@ -61,6 +63,12 @@ HAVE_REMOTE_ORIGIN=have_remote_origin;
 while test $# -gt 0;
 do
   case $1 in
+  --diffbase )
+    shift;
+    DIFFBASE=$1;
+    shift;
+    ;;
+
   --nobrowser | --no-browser | --no_browser )
     BROWSER_PARAM="--no_oauth2_webbrowser";
     shift;
@@ -71,6 +79,11 @@ do
     shift;
     ;;
 
+  -h | --help )
+    SHOW_HELP=1;
+    shift;
+    ;;
+
   *)
     REVIEWERS=$1;
     shift
@@ -78,12 +91,12 @@ do
   esac
 done
 
-if test -z "${REVIEWERS}";
+if test ${SHOW_HELP} -ne 0;
 then
-  echo "Usage: ./${SCRIPTNAME} [--nobrowser] [--noclfile] REVIEWERS";
+  echo "Usage: ./${SCRIPTNAME} [--nobrowser] [--noclfile]";
   echo "";
-  echo "  REVIEWERS: the email address of the reviewers that are registered"
-  echo "             with: Rietveld (https://codereview.appspot.com)";
+  echo "  --diffbase: the name of the branch to use as diffbase for the CL.";
+  echo "              The default is upstream/master";
   echo "";
   echo "  --nobrowser: forces upload.py not to open a separate browser";
   echo "               process to obtain OAuth2 credentials for Rietveld";
@@ -93,15 +106,25 @@ then
   echo "              stored in .review/";
   echo "";
 
-  exit ${EXIT_MISSING_ARGS};
+  exit ${EXIT_SUCCESS};
 fi
+
+if ! test -z ${REVIEWERS};
+then
+  echo "The need to explicitly pass reviewers to this script has been removed.";
+  echo "The script now defaults to the maintainers.";
+  echo "";
+fi
+
+REVIEWERS="kiddi@kiddaland.net,joachim.metz@gmail.com,onager@deerpie.com";
+CC="log2timeline-dev@googlegroups.com";
 
 if ! ${HAVE_REMOTE_ORIGIN};
 then
   if ! have_remote_upstream;
   then
     echo "Review aborted - missing upstream.";
-    echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
+    echo "Run: 'git remote add upstream https://github.com/log2timeline/${PROJECT_NAME}.git'";
 
     exit ${EXIT_FAILURE};
   fi
@@ -132,9 +155,17 @@ then
 
       exit ${EXIT_FAILURE};
     fi
+    git push -f
+
+    if test $? -ne 0;
+    then
+      echo "Review aborted - unable to run: 'git push -f' after update with upstream.";
+
+      exit ${EXIT_FAILURE};
+    fi
   fi
 
-  if ! linter_pass;
+  if ! linting_is_correct_remote_upstream;
   then
     echo "Review aborted - fix the issues reported by the linter.";
 
@@ -150,7 +181,7 @@ else
     exit ${EXIT_FAILURE};
   fi
 
-  if ! linting_is_correct;
+  if ! linting_is_correct_remote_origin;
   then
     echo "Review aborted - fix the issues reported by the linter.";
 
@@ -190,25 +221,44 @@ then
   then
     echo "Unable to push to origin";
     echo "";
-
+  
     exit ${EXIT_FAILURE};
   fi
 
   DESCRIPTION="";
   get_last_change_description "DESCRIPTION";
 
-  if ! test -z "${BROWSER_PARAM}";
+  echo "Automatic generated description of code review request:";
+  echo "${DESCRIPTION}";
+  echo "";
+
+  echo "Hit enter to use the automatic description or enter an alternative";
+  echo "description of code review request:";
+  read INPUT_DESCRIPTION
+
+  if ! test -z "${INPUT_DESCRIPTION}";
   then
-    echo "You need to visit: https://codereview.appspot.com/get-access-token";
-    echo "and copy+paste the access token to the window (no prompt)";
+    DESCRIPTION=${INPUT_DESCRIPTION};
   fi
 
-  TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
+  if ! test -z "${BROWSER_PARAM}";
+  then
+    echo "Upload server: codereview.appspot.com (change with -s/--server)";
+    echo "Go to the following link in your browser:";
+    echo "";
+    echo "    https://codereview.appspot.com/get-access-token";
+    echo "";
+    echo "and copy the access token.";
+    echo "";
+    echo -n "Enter access token: ";
+  fi
+
+  TEMP_FILE=`mktemp .tmp_${PROJECT_NAME}_code_review.XXXXXX`;
 
   python utils/upload.py \
       --oauth2 ${BROWSER_PARAM} \
-      --send_mail -r ${REVIEWERS} --cc log2timeline-dev@googlegroups.com \
-      -t "${DESCRIPTION}" -y -- upstream/master | tee ${TEMP_FILE};
+      --send_mail -r ${REVIEWERS} --cc ${CC} \
+      -t "${DESCRIPTION}" -y -- ${DIFFBASE} | tee ${TEMP_FILE};
 
   CL=`cat ${TEMP_FILE} | grep codereview.appspot.com | awk -F '/' '/created/ {print $NF}'`;
   cat ${TEMP_FILE};
@@ -229,14 +279,14 @@ then
   ORGANIZATION=`git remote -v | grep 'origin' | sed 's?^.*https://github.com/\([^/]*\)/.*$?\1?' | sort | uniq`;
 
   POST_DATA="{
-  \"title\": \"${DESCRIPTION}\",
+  \"title\": \"${CL}: ${DESCRIPTION}\",
   \"body\": \"[Code review: ${CL}: ${DESCRIPTION}](https://codereview.appspot.com/${CL}/)\",
   \"head\": \"${ORGANIZATION}:${BRANCH}\",
   \"base\": \"master\"
 }";
 
   echo "Creating pull request.";
-  curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/dfvfs/pulls?access_token=${ACCESS_TOKEN} >/dev/null;
+  curl -s --data "${POST_DATA}" https://api.github.com/repos/log2timeline/${PROJECT_NAME}/pulls?access_token=${ACCESS_TOKEN} >/dev/null;
 
   if test $? -ne 0;
   then
@@ -247,7 +297,7 @@ then
   fi
 
 else
-  echo -n "Short description of code review request: ";
+  echo "Enter a description of code review request:";
   read DESCRIPTION
 
   # Check if we need to set --cache.
@@ -264,15 +314,21 @@ else
 
   if ! test -z "${BROWSER_PARAM}";
   then
-    echo "You need to visit: https://codereview.appspot.com/get-access-token";
-    echo "and copy+paste the access token to the window (no prompt)";
+    echo "Upload server: codereview.appspot.com (change with -s/--server)";
+    echo "Go to the following link in your browser:";
+    echo "";
+    echo "    https://codereview.appspot.com/get-access-token";
+    echo "";
+    echo "and copy the access token.";
+    echo "";
+    echo -n "Enter access token: ";
   fi
 
-  TEMP_FILE=`mktemp .tmp_dfvfs_code_review.XXXXXX`;
+  TEMP_FILE=`mktemp .tmp_${PROJECT_NAME}_code_review.XXXXXX`;
 
   python utils/upload.py \
       --oauth2 ${BROWSER_PARAM} ${CACHE_PARAM} \
-      --send_mail -r ${REVIEWERS} --cc log2timeline-dev@googlegroups.com \
+      --send_mail -r ${REVIEWERS} --cc ${CC} \
       -m "${DESCRIPTION}" -t "${DESCRIPTION}" -y | tee ${TEMP_FILE};
 
   CL=`cat ${TEMP_FILE} | grep codereview.appspot.com | awk -F '/' '/created/ {print $NF}'`;
