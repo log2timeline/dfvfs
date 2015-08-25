@@ -23,3 +23,9 @@ involved with these projects:
 * Python and modules
 * the SleuthKit
 * pytsk
+
+Test data:
+
+* the contents of the *.exe and *.exe.mui files on bdetogo.raw has been
+  filled with 0-byte values.
+
