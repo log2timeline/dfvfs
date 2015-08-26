@@ -45,10 +45,11 @@ class RecursiveHasher(object):
 
     try:
       file_object = file_entry.GetFileObject(data_stream_name=data_stream_name)
-    except IOError:
-      logging.warning(
-          u'Unable to open path specification:\n{0:s}'.format(
-              file_entry.path_spec.comparable))
+    except IOError as exception:
+      logging.warning((
+          u'Unable to open path specification:\n{0:s}'
+          u'with error: {1:s}').format(
+              file_entry.path_spec.comparable, exception))
       return
 
     if not file_object:
@@ -59,10 +60,11 @@ class RecursiveHasher(object):
       while data:
         hash_context.update(data)
         data = file_object.read(self._READ_BUFFER_SIZE)
-    except IOError:
-      logging.warning(
-          u'Unable to read from path specification:\n{0:s}'.format(
-              file_entry.path_spec.comparable))
+    except IOError as exception:
+      logging.warning((
+          u'Unable to read from path specification:\n{0:s}'
+          u'with error: {1:s}').format(
+              file_entry.path_spec.comparable, exception))
       return
 
     finally:

@@ -301,7 +301,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       setattr(path_spec, u'data_stream', data_stream_name)
 
     return resolver.Resolver.OpenFileObject(
-        self.path_spec, resolver_context=self._resolver_context)
+        path_spec, resolver_context=self._resolver_context)
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link."""

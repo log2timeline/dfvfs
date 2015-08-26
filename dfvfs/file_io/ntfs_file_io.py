@@ -71,7 +71,7 @@ class NTFSFile(file_io.FileIO):
       raise IOError(u'Unable to open NTFS file entry.')
 
     if data_stream:
-      fsntfs_data_stream = fsntfs_file_entry.get_data_stream_by_name(
+      fsntfs_data_stream = fsntfs_file_entry.get_alternate_data_stream_by_name(
           data_stream)
       if not fsntfs_data_stream:
         raise IOError(u'Unable to open data stream: {0:s}.'.format(
