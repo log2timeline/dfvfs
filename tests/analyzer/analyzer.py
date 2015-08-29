@@ -69,7 +69,7 @@ class AnalyzerTest(unittest.TestCase):
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=path_spec)
 
-    expected_type_indicators = [definitions.TYPE_INDICATOR_NTFS]
+    expected_type_indicators = [definitions.PREFERRED_NTFS_BACK_END]
     type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)

@@ -97,7 +97,8 @@ class SourceScannerTest(unittest.TestCase):
       if getattr(scan_node.path_spec, u'location', None) == u'/':
         break
 
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_NTFS)
+    expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
+    self.assertEqual(scan_node.type_indicator, expected_type_indicator)
 
     test_file = os.path.join(u'test_data', u'bdetogo.raw')
     scan_context = source_scanner.SourceScannerContext()
@@ -206,7 +207,9 @@ class SourceScannerTest(unittest.TestCase):
 
     path_spec = self._source_scanner.ScanForFileSystem(source_path_spec)
     self.assertNotEqual(path_spec, None)
-    self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_NTFS)
+
+    expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
+    self.assertEqual(path_spec.type_indicator, expected_type_indicator)
 
     test_file = os.path.join(u'test_data', u'mactime.body')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
