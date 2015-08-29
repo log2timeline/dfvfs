@@ -101,16 +101,17 @@ class TSKFile(file_io.FileIO):
         if getattr(attribute, u'info', None) is None:
           continue
 
-        attribute_name = getattr(attribute.name, u'type', None)
+        attribute_name = getattr(attribute.info, u'name', u'')
         attribute_type = getattr(attribute.info, u'type', None)
         if (attribute_name == data_stream and
             attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA):
           tsk_attribute = attribute
+          break
 
-        if tsk_attribute is None:
-          file_system.Close()
-          raise IOError(u'Unable to open data stream: {0:s}.'.format(
-              data_stream))
+      if tsk_attribute is None:
+        file_system.Close()
+        raise IOError(u'Unable to open data stream: {0:s}.'.format(
+            data_stream))
 
     elif tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
       file_system.Close()
@@ -122,7 +123,7 @@ class TSKFile(file_io.FileIO):
     self._tsk_file = tsk_file
 
     if self._tsk_attribute:
-      self._size = self._tsk_attribute.info.meta.size
+      self._size = self._tsk_attribute.info.size
     else:
       self._size = self._tsk_file.info.meta.size
 

@@ -394,7 +394,7 @@ class TSKFileEntry(file_entry.FileEntry):
       A file-like object (instance of file_io.FileIO) or None.
     """
     data_stream_names = [
-       data_stream.name for data_stream in self._GetDataStreams()]
+        data_stream.name for data_stream in self._GetDataStreams()]
     if data_stream_name not in data_stream_names:
       return
 
@@ -403,7 +403,7 @@ class TSKFileEntry(file_entry.FileEntry):
       setattr(path_spec, u'data_stream', data_stream_name)
 
     return resolver.Resolver.OpenFileObject(
-        self.path_spec, resolver_context=self._resolver_context)
+        path_spec, resolver_context=self._resolver_context)
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link."""
