@@ -190,7 +190,13 @@ class FileEntry(object):
 
     Returns:
       A data stream (an instance of vfs.DataStream) or None.
+
+    Raises:
+      ValueError: if the name is not string.
     """
+    if not isinstance(name, basestring):
+      raise ValueError(u'Name is not a string.')
+
     name_lower = name.lower()
     matching_data_stream = None
 
@@ -214,7 +220,13 @@ class FileEntry(object):
 
     Returns:
       A boolean to indicate the file entry has the data stream.
+
+    Raises:
+      ValueError: if the name is not string.
     """
+    if not isinstance(name, basestring):
+      raise ValueError(u'Name is not a string.')
+
     name_lower = name.lower()
 
     for data_stream in self._GetDataStreams():
