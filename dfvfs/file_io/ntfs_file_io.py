@@ -5,6 +5,7 @@ import os
 
 import pyfsntfs
 
+from dfvfs import dependencies
 from dfvfs.file_io import file_io
 from dfvfs.resolver import resolver
 
