@@ -181,7 +181,7 @@ class FileEntry(object):
     return type_indicator
 
   def GetDataStream(self, name, case_sensitive=True):
-    """Retrieves a sub file entry by name.
+    """Retrieves a data stream by name.
 
     Args:
       name: the name of the data stream.
@@ -203,6 +203,30 @@ class FileEntry(object):
           matching_data_stream = data_stream
 
     return matching_data_stream
+
+  def HasDataStream(self, name, case_sensitive=True):
+    """Determines if the file entry has specific data stream.
+
+    Args:
+      name: the name of the data stream.
+      case_sentitive: optional boolean value to indicate if the name is
+                      case sensitive. The default is True.
+
+    Returns:
+      A boolean to indicate the file entry has the data stream.
+    """
+    name_lower = name.lower()
+    matching_data_stream = None
+
+    for data_stream in self._GetDataStreams():
+      if data_stream.name == name:
+        return data_stream
+
+      if not case_sensitive and data_stream.name.lower() == name_lower:
+        if not matching_data_stream:
+          matching_data_stream = data_stream
+
+    return matching_data_stream is not None
 
   def GetFileObject(self, data_stream_name=u''):
     """Retrieves the file-like object.
