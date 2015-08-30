@@ -113,7 +113,8 @@ class TSKFile(file_io.FileIO):
         raise IOError(u'Unable to open data stream: {0:s}.'.format(
             data_stream))
 
-    elif tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG:
+    if (not tsk_attribute and
+        tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG):
       file_system.Close()
       raise IOError(u'Not a regular file.')
 

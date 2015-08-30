@@ -216,7 +216,6 @@ class FileEntry(object):
       A boolean to indicate the file entry has the data stream.
     """
     name_lower = name.lower()
-    matching_data_stream = None
 
     for data_stream in self._GetDataStreams():
       if data_stream.name == name:

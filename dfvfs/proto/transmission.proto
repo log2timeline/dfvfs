@@ -51,6 +51,9 @@ message PathSpec {
 
   // Optional row index e.g. used by SQLite Blob
   optional int32 row_index = 15;
+
+  // Optional data stream string.
+  optional string data_stream = 16;
 };
 
 // Components of the row condition tuple used by SQLite Blob

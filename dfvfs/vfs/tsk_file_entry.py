@@ -36,11 +36,21 @@ class TSKDataStream(file_entry.DataStream):
     return u''
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO) or None."""
+    """Retrieves the file-like object (instance of file_io.FileIO) or None.
+
+    Raises:
+      BackEndError: when the data stream name cannot be decoded properly.
+    """
     if self._tsk_attribute:
       # The value of the attribute name will be None for the default
+      # data stream. In dfvfs we use an empty string for the default
       # data stream.
       data_stream_name = self._tsk_attribute.info.name or u''
+      try:
+        data_stream_name = data_stream_name.decode(u'utf8')
+      except UnicodeError:
+        raise errors.BackEndError(u'Unable to decode data stream name.')
+
       return self._file_entry.GetFileObject(data_stream_name=data_stream_name)
     return self._file_entry.GetFileObject()
 
@@ -190,14 +200,35 @@ class TSKFileEntry(file_entry.FileEntry):
       if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
         raise errors.BackEndError(u'Missing tsk File .info or .info.meta.')
 
-      self._data_streams = []
-      for tsk_attribute in tsk_file:
-        if getattr(tsk_attribute, u'info', None) is None:
-          continue
+      ftype = getattr(
+          tsk_file.info.fs_info, u'ftype', pytsk3.TSK_FS_TYPE_UNSUPP)
+      if ftype in [pytsk3.TSK_FS_TYPE_HFS, pytsk3.TSK_FS_TYPE_HFS_DETECT]:
+        known_data_attribute_types = [
+            pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,
+            pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA]
 
-        attribute_type = getattr(tsk_attribute.info, u'type', None)
-        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA:
-          self._data_streams.append(TSKDataStream(self, tsk_attribute))
+      elif ftype in [pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_NTFS_DETECT]:
+        known_data_attribute_types = [pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA]
+
+      else:
+        known_data_attribute_types = None
+
+      self._data_streams = []
+
+      if not known_data_attribute_types:
+        tsk_fs_meta_type = getattr(
+            tsk_file.info.meta, u'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
+        if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
+          self._data_streams.append(TSKDataStream(self, None))
+
+      else:
+        for tsk_attribute in tsk_file:
+          if getattr(tsk_attribute, u'info', None) is None:
+            continue
+
+          attribute_type = getattr(tsk_attribute.info, u'type', None)
+          if attribute_type in known_data_attribute_types:
+            self._data_streams.append(TSKDataStream(self, tsk_attribute))
 
     return self._data_streams
 

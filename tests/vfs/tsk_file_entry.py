@@ -172,14 +172,13 @@ class TSKFileEntryTest(unittest.TestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertNotEqual(file_entry, None)
 
-    # On non-NTFS file systems data streams is currently not supported.
-    self.assertEqual(file_entry.number_of_data_streams, 0)
+    self.assertEqual(file_entry.number_of_data_streams, 1)
 
     data_stream_names = []
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [])
+    self.assertEqual(data_stream_names, [u''])
 
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=12, location=u'/a_directory',
@@ -187,7 +186,6 @@ class TSKFileEntryTest(unittest.TestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertNotEqual(file_entry, None)
 
-    # On non-NTFS file systems data streams is currently not supported.
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
     data_stream_names = []
@@ -206,8 +204,7 @@ class TSKFileEntryTest(unittest.TestCase):
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
-    # On non-NTFS file systems data streams is currently not supported.
-    self.assertEqual(data_stream, None)
+    self.assertNotEqual(data_stream, None)
 
 
 class TSKFileEntryTestNTFS(unittest.TestCase):
