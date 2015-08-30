@@ -220,13 +220,12 @@ class FileEntry(object):
 
     for data_stream in self._GetDataStreams():
       if data_stream.name == name:
-        return data_stream
+        return True
 
       if not case_sensitive and data_stream.name.lower() == name_lower:
-        if not matching_data_stream:
-          matching_data_stream = data_stream
+        return True
 
-    return matching_data_stream is not None
+    return False
 
   def GetFileObject(self, data_stream_name=u''):
     """Retrieves the file-like object.
