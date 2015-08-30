@@ -9,8 +9,7 @@ from dfvfs.file_io import file_io
 from dfvfs.resolver import resolver
 
 
-if pyfsntfs.get_version() < '20150510':
-  raise ImportWarning('NTFSFile requires at least pyfsntfs 20150510.')
+dependencies.CheckModuleVersion(u'pyfsntfs')
 
 
 class NTFSFile(file_io.FileIO):

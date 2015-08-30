@@ -52,8 +52,14 @@ message PathSpec {
   // Optional row index e.g. used by SQLite Blob
   optional int32 row_index = 15;
 
-  // Optional data stream string.
+  // Optional data stream string e.g. used by NTFS.
   optional string data_stream = 16;
+
+  // Optional MFT attribute e.g. used by NTFS.
+  optional uint32 mft_attribute = 17;
+
+  // Optional MFT entry e.g. used by NTFS.
+  optional uint64 mft_entry = 18;
 };
 
 // Components of the row condition tuple used by SQLite Blob
