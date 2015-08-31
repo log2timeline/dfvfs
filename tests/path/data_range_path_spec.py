@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.path import data_range_path_spec
+
 from tests.path import test_lib
 
 
