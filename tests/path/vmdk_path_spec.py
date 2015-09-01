@@ -4,8 +4,9 @@
 
 import unittest
 
-from tests.path import test_lib
 from dfvfs.path import vmdk_path_spec
+
+from tests.path import test_lib
 
 
 class VmdkPathSpecTest(test_lib.PathSpecTestCase):

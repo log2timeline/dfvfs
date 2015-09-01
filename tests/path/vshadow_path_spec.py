@@ -4,8 +4,9 @@
 
 import unittest
 
-from tests.path import test_lib
 from dfvfs.path import vshadow_path_spec
+
+from tests.path import test_lib
 
 
 class VShadowPathSpecTest(test_lib.PathSpecTestCase):

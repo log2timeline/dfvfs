@@ -4,8 +4,9 @@
 
 import unittest
 
-from tests.path import test_lib
 from dfvfs.path import zip_path_spec
+
+from tests.path import test_lib
 
 
 class ZipPathSpecTest(test_lib.PathSpecTestCase):
