@@ -4,8 +4,9 @@
 
 import unittest
 
-from tests.path import test_lib
 from dfvfs.path import vhdi_path_spec
+
+from tests.path import test_lib
 
 
 class VhdiPathSpecTest(test_lib.PathSpecTestCase):

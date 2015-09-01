@@ -6,6 +6,7 @@ import platform
 import unittest
 
 from dfvfs.path import os_path_spec
+
 from tests.path import test_lib
 
 
