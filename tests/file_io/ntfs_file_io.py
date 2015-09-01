@@ -116,7 +116,33 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
 
     file_object.close()
 
-  # TODO: add ADS test.
+  def testReadADS(self):
+    """Test the read functionality on an alternate data stream (ADS)."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        data_stream=u'$SDS', location=u'\\$Secure', mft_attribute=2,
+        mft_entry=9, parent=self._qcow_path_spec)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+
+    expected_buffer = (
+        b'H\n\x80\xb9\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+
+    read_buffer = file_object.read(size=16)
+    self.assertEqual(read_buffer, expected_buffer)
+
+    file_object.seek(00040000, os.SEEK_SET)
+
+    read_buffer = file_object.read(size=16)
+    self.assertEqual(read_buffer, expected_buffer)
+
+    file_object.seek(0x000401a0, os.SEEK_SET)
+
+    expected_buffer = (
+        b'\xc3\xb4\xb1\x34\x03\x01\x00\x00\xa0\x01\x00\x00\x00\x00\x00\x00')
+
+    read_buffer = file_object.read(size=16)
+    self.assertEqual(read_buffer, expected_buffer)
 
 
 if __name__ == '__main__':

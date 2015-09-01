@@ -21,7 +21,7 @@ class NTFSDataStream(file_entry.DataStream):
     """Initializes the directory object.
 
     Args:
-      file_entry_object: the file entry object (instance of vfs.NFTSFileEntry).
+      file_entry_object: the file entry object (instance of NFTSFileEntry).
       fsntfs_data_stream: the NTFS data stream object (instance of
                           pyfsntfs.data_stream).
     """
@@ -36,7 +36,11 @@ class NTFSDataStream(file_entry.DataStream):
     return u''
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO) or None."""
+    """Retrieves the file-like object.
+
+    Returns:
+      A file-like object (instance of FileIO) or None.
+    """
     if self._fsntfs_data_stream:
       return self._file_entry.GetFileObject(
           data_stream_name=self._fsntfs_data_stream.name)
@@ -101,7 +105,7 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of vfs.FileSystem).
+      file_system: the file system object (instance of FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
@@ -121,10 +125,10 @@ class NTFSFileEntry(file_entry.FileEntry):
     """Retrieves the data streams.
 
     Returns:
-      A list of data stream objects (instances of vfs.NTFSDataStream).
+      A list of data stream objects (instances of NTFSDataStream).
 
     Raises:
-      BackEndError: when the pyfsntfs file entry is missing.
+      BackEndError: if the pyfsntfs file entry is missing.
     """
     if self._data_streams is None:
       fsntfs_file_entry = self.GetNTFSFileEntry()
@@ -142,10 +146,13 @@ class NTFSFileEntry(file_entry.FileEntry):
     return self._data_streams
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of NTFSDirectory).
+    """Retrieves the directory.
+
+    Returns:
+      A the directory object (instance of NTFSDirectory) or None.
 
     Raises:
-      BackEndError: when the pyfsntfs file entry is missing.
+      BackEndError: if the pyfsntfs file entry is missing.
     """
     fsntfs_file_entry = self.GetNTFSFileEntry()
     if not fsntfs_file_entry:
@@ -156,20 +163,39 @@ class NTFSFileEntry(file_entry.FileEntry):
     return
 
   def _GetLink(self):
-    """Retrieves the link."""
+    """Retrieves the link.
+
+    Returns:
+      A string containing the path of the linked file.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
     if self._link is None:
-      # TODO: implement.
-      raise errors.BackEndError(u'Link not yet supported.')
+      self._link = u''
+
+      if not self.IsLink():
+        return self._link
+
+      fsntfs_file_entry = self.GetNTFSFileEntry()
+      if not fsntfs_file_entry:
+        raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+      link = fsntfs_file_entry.reparse_point_print_name
+
+      # Strip off the drive letter, we assume the link within the same volume.
+      _, _, self._link = link.rpartition(u':')
+
     return self._link
 
   def _GetStat(self):
     """Retrieves the stat object.
 
     Returns:
-      The stat object (instance of vfs.VFSStat).
+      The stat object (instance of VFSStat).
 
     Raises:
-      BackEndError: when the pyfsntfs file entry is missing.
+      BackEndError: if the pyfsntfs file entry is missing.
     """
     fsntfs_file_entry = self.GetNTFSFileEntry()
     if not fsntfs_file_entry:
@@ -249,7 +275,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     """The name of the file entry, which does not include the full path.
 
     Raises:
-      BackEndError: when the pyfsntfs file entry is missing.
+      BackEndError: if the pyfsntfs file entry is missing.
     """
     fsntfs_file_entry = self.GetNTFSFileEntry()
     if not fsntfs_file_entry:
@@ -266,7 +292,7 @@ class NTFSFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.FileEntry)."""
+    """The sub file entries (generator of instance of NTFSFileEntry)."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -284,10 +310,10 @@ class NTFSFileEntry(file_entry.FileEntry):
                         data stream.
 
     Returns:
-      A file-like object (instance of file_io.FileIO) or None.
+      A file-like object (instance of FileIO) or None.
 
     Raises:
-      BackEndError: when the pyfsntfs file entry is missing.
+      BackEndError: if the pyfsntfs file entry is missing.
     """
     fsntfs_file_entry = self.GetNTFSFileEntry()
     if not fsntfs_file_entry:
@@ -296,6 +322,8 @@ class NTFSFileEntry(file_entry.FileEntry):
     if not data_stream_name and not fsntfs_file_entry.has_default_data_stream():
       return
 
+    # Make sure to make the changes on a copy of the path specification, so we
+    # do not alter self.path_spec.
     path_spec = copy.deepcopy(self.path_spec)
     if data_stream_name:
       setattr(path_spec, u'data_stream', data_stream_name)
@@ -304,7 +332,11 @@ class NTFSFileEntry(file_entry.FileEntry):
         path_spec, resolver_context=self._resolver_context)
 
   def GetLinkedFileEntry(self):
-    """Retrieves the linked file entry, e.g. for a symbolic link."""
+    """Retrieves the linked file entry, e.g. for a symbolic link.
+
+    Returns:
+      The linked file entry (instance of NTFSFileEntry) or None.
+    """
     link = self._GetLink()
     if not link:
       return
@@ -329,7 +361,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     """Retrieves the NTFS file entry object (instance of pyfsntfs.file_entry).
 
     Raises:
-      PathSpecError: when the path specification is missing location and
+      PathSpecError: if the path specification is missing location and
                      MFT entry.
     """
     if not self._fsntfs_file_entry:
@@ -353,8 +385,11 @@ class NTFSFileEntry(file_entry.FileEntry):
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
 
+    Returns:
+      The parent file entry (instance of NTFSFileEntry) or None.
+
     Raises:
-      BackEndError: when the pyfsntfs file entry is missing.
+      BackEndError: if the pyfsntfs file entry is missing.
     """
     fsntfs_file_entry = self.GetNTFSFileEntry()
     if not fsntfs_file_entry:
@@ -376,12 +411,13 @@ class NTFSFileEntry(file_entry.FileEntry):
       parent_file_reference = fsntfs_file_entry.get_parent_file_reference()
 
     if parent_file_reference is None:
-      return None
+      return
 
     parent_mft_entry = parent_file_reference & 0xffffffffffff
 
     parent_path_spec = getattr(self.path_spec, u'parent', None)
-    # TODO: mft_attribute.
+    # TODO: determine and pass the mft_attribute of the parent
+    # for a faster resolve of the file entry.
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=parent_location, mft_entry=parent_mft_entry,
         parent=parent_path_spec)

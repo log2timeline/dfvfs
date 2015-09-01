@@ -20,7 +20,7 @@ class TSKDataStream(file_entry.DataStream):
     """Initializes the directory object.
 
     Args:
-      file_entry_object: the file entry object (instance of vfs.NFTSFileEntry).
+      file_entry_object: the file entry object (instance of NFTSFileEntry).
       tsk_attribute: the TSK attribute object (instance of pytsk3.Attribute).
     """
     super(TSKDataStream, self).__init__(file_entry_object)
@@ -36,10 +36,13 @@ class TSKDataStream(file_entry.DataStream):
     return u''
 
   def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO) or None.
+    """Retrieves the file-like object.
+
+    Returns:
+      A file-like object (instance of FileIO) or None.
 
     Raises:
-      BackEndError: when the data stream name cannot be decoded properly.
+      BackEndError: if the data stream name cannot be decoded properly.
     """
     if self._tsk_attribute:
       # The value of the attribute name will be None for the default
@@ -167,7 +170,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of vfs.FileSystem).
+      file_system: the file system object (instance of FileSystem).
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
@@ -190,10 +193,10 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the data streams.
 
     Returns:
-      A list of data stream objects (instances of vfs.TSKDataStream).
+      A list of data stream objects (instances of TSKDataStream).
 
     Raises:
-      BackEndError: when the tsk File .info or .info.meta attribute is missing.
+      BackEndError: if the tsk File .info or .info.meta attribute is missing.
     """
     if self._data_streams is None:
       tsk_file = self.GetTSKFile()
@@ -233,7 +236,11 @@ class TSKFileEntry(file_entry.FileEntry):
     return self._data_streams
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of TSKDirectory)."""
+    """Retrieves the directory.
+
+    Returns:
+      A the directory object (instance of TSKDirectory) or None.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 
@@ -243,7 +250,11 @@ class TSKFileEntry(file_entry.FileEntry):
     return
 
   def _GetLink(self):
-    """Retrieves the link."""
+    """Retrieves the link.
+
+    Returns:
+      A string containing the path of the linked file.
+    """
     if self._link is None:
       self._link = u''
 
@@ -287,10 +298,10 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the stat object.
 
     Returns:
-      The stat object (instance of vfs.VFSStat).
+      The stat object (instance of VFSStat).
 
     Raises:
-      BackEndError: when the tsk File .info or .info.meta attribute is missing.
+      BackEndError: if the tsk File .info or .info.meta attribute is missing.
     """
     tsk_file = self.GetTSKFile()
     if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
@@ -372,7 +383,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """The name of the file entry, which does not include the full path.
 
     Raises:
-      BackEndError: when the pytsk3 returns a non UTF-8 formatted name.
+      BackEndError: if pytsk3 returns a non UTF-8 formatted name.
     """
     if self._name is None:
       tsk_file = self.GetTSKFile()
@@ -405,7 +416,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.FileEntry)."""
+    """The sub file entries (generator of instance of TSKFileEntry)."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -422,7 +433,7 @@ class TSKFileEntry(file_entry.FileEntry):
                         data stream.
 
     Returns:
-      A file-like object (instance of file_io.FileIO) or None.
+      A file-like object (instance of FileIO) or None.
     """
     data_stream_names = [
         data_stream.name for data_stream in self._GetDataStreams()]
@@ -437,7 +448,11 @@ class TSKFileEntry(file_entry.FileEntry):
         path_spec, resolver_context=self._resolver_context)
 
   def GetLinkedFileEntry(self):
-    """Retrieves the linked file entry, e.g. for a symbolic link."""
+    """Retrieves the linked file entry, e.g. for a symbolic link.
+
+    Returns:
+      The linked file entry (instance of TSKFileEntry) or None.
+    """
     link = self._GetLink()
     if not link:
       return
@@ -461,7 +476,11 @@ class TSKFileEntry(file_entry.FileEntry):
         self._resolver_context, self._file_system, path_spec, is_root=is_root)
 
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
+    """Retrieves the parent file entry.
+
+    Returns:
+      The parent file entry (instance of TSKFileEntry) or None.
+    """
     location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
@@ -487,10 +506,13 @@ class TSKFileEntry(file_entry.FileEntry):
         self._resolver_context, self._file_system, path_spec, is_root=is_root)
 
   def GetTSKFile(self):
-    """Retrieves the SleuthKit file object (instance of pytsk3.File).
+    """Retrieves the SleuthKit file object.
+
+    Returns:
+      The SleuthKit file object (instance of pytsk3.File).
 
     Raises:
-      PathSpecError: when the path specification is missing inode and location.
+      PathSpecError: if the path specification is missing inode and location.
     """
     if not self._tsk_file:
       # Opening a file by inode number is faster than opening a file

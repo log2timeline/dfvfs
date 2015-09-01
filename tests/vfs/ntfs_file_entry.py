@@ -49,7 +49,7 @@ class NTFSFileEntryTest(unittest.TestCase):
 
   def testGetLinkedFileEntry(self):
     """Test the get linked file entry functionality."""
-    # TODO: implement.
+    # TODO: need a test image with a link to test.
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
