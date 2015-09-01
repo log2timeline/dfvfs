@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.path import bde_path_spec
+
 from tests.path import test_lib
 
 

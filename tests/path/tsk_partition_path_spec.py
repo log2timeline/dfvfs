@@ -4,8 +4,9 @@
 
 import unittest
 
-from tests.path import test_lib
 from dfvfs.path import tsk_partition_path_spec
+
+from tests.path import test_lib
 
 
 class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
