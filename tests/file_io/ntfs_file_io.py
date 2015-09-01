@@ -131,7 +131,7 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
     read_buffer = file_object.read(size=16)
     self.assertEqual(read_buffer, expected_buffer)
 
-    file_object.seek(00040000, os.SEEK_SET)
+    file_object.seek(0x00040000, os.SEEK_SET)
 
     read_buffer = file_object.read(size=16)
     self.assertEqual(read_buffer, expected_buffer)

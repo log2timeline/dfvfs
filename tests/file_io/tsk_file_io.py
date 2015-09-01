@@ -5,6 +5,7 @@
 import os
 import unittest
 
+from dfvfs.file_io import tsk_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_path_spec
@@ -39,12 +40,11 @@ class TSKFileTest(test_lib.ImageFileTestCase):
   def testReadADS(self):
     """Test the read functionality on an alternate data stream (ADS)."""
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
-    os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=os_path_spec)
-    path_spec = ntfs_path_spec.NTFSPathSpec(
-        data_stream=u'$SDS', inode=9, location=u'\\$Secure',
-        parent=qcow_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
+    path_spec = tsk_path_spec.TSKPathSpec(
+        data_stream=u'$SDS', inode=9, location=u'\\$Secure', parent=path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
 
@@ -54,7 +54,7 @@ class TSKFileTest(test_lib.ImageFileTestCase):
     read_buffer = file_object.read(size=16)
     self.assertEqual(read_buffer, expected_buffer)
 
-    file_object.seek(00040000, os.SEEK_SET)
+    file_object.seek(0x00040000, os.SEEK_SET)
 
     read_buffer = file_object.read(size=16)
     self.assertEqual(read_buffer, expected_buffer)

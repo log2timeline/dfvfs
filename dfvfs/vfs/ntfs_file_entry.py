@@ -172,19 +172,19 @@ class NTFSFileEntry(file_entry.FileEntry):
       BackEndError: if the pyfsntfs file entry is missing.
     """
     if self._link is None:
-      self._link = u''
-
-      if not self.IsLink():
-        return self._link
-
       fsntfs_file_entry = self.GetNTFSFileEntry()
       if not fsntfs_file_entry:
         raise errors.BackEndError(u'Missing pyfsntfs file entry.')
 
-      link = fsntfs_file_entry.reparse_point_print_name
+      self._link = u''
+      if not self._IsLink(fsntfs_file_entry.file_attribute_flags):
+        return self._link
 
-      # Strip off the drive letter, we assume the link within the same volume.
-      _, _, self._link = link.rpartition(u':')
+      link = fsntfs_file_entry.reparse_point_print_name
+      if link:
+        # Strip off the drive letter, we assume the link is within
+        # the same volume.
+        _, _, self._link = link.rpartition(u':')
 
     return self._link
 
