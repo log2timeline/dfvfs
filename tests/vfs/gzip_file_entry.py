@@ -45,7 +45,6 @@ class GzipFileEntryTest(unittest.TestCase):
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
-
     self.assertNotEqual(file_entry, None)
 
     parent_file_entry = file_entry.GetParentFileEntry()
@@ -55,6 +54,7 @@ class GzipFileEntryTest(unittest.TestCase):
   def testGetStat(self):
     """Test the get stat functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
+    self.assertNotEqual(file_entry, None)
 
     stat_object = file_entry.GetStat()
 
@@ -64,6 +64,7 @@ class GzipFileEntryTest(unittest.TestCase):
   def testIsFunctions(self):
     """Test the Is? functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
+    self.assertNotEqual(file_entry, None)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -79,7 +80,6 @@ class GzipFileEntryTest(unittest.TestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
-
     self.assertNotEqual(file_entry, None)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 0)
@@ -94,6 +94,36 @@ class GzipFileEntryTest(unittest.TestCase):
         len(sub_file_entry_names), len(expected_sub_file_entry_names))
     self.assertEqual(
         sorted(sub_file_entry_names), expected_sub_file_entry_names)
+
+  def testDataStreams(self):
+    """Test the data streams functionality."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
+    self.assertNotEqual(file_entry, None)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [u''])
+
+  def testGetDataStream(self):
+    """Test the retrieve data streams functionality."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
+    self.assertNotEqual(file_entry, None)
+
+    data_stream_name = u''
+    data_stream = file_entry.GetDataStream(data_stream_name)
+    self.assertNotEqual(data_stream, None)
+    self.assertEqual(data_stream.name, data_stream_name)
+
+    file_object = data_stream.GetFileObject()
+    self.assertNotEqual(file_object, None)
+    file_object.close()
+
+    data_stream = file_entry.GetDataStream(u'bogus')
+    self.assertEqual(data_stream, None)
 
 
 if __name__ == '__main__':

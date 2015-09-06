@@ -584,12 +584,21 @@ class SourceScanner(object):
     if not type_indicators:
       return
 
+    type_indicator = type_indicators[0]
     if len(type_indicators) > 1:
-      raise errors.BackEndError(
-          u'Unsupported source found more than one file system types.')
+      if definitions.PREFERRED_NTFS_BACK_END not in type_indicators:
+        raise errors.BackEndError(
+            u'Unsupported source found more than one file system types.')
+
+      type_indicator = definitions.PREFERRED_NTFS_BACK_END
+
+    # TODO: determine root location from file system or path specification.
+    if type_indicator == definitions.TYPE_INDICATOR_NTFS:
+      return path_spec_factory.Factory.NewPathSpec(
+          type_indicator, location=u'\\', parent=source_path_spec)
 
     return path_spec_factory.Factory.NewPathSpec(
-        type_indicators[0], location=u'/', parent=source_path_spec)
+        type_indicator, location=u'/', parent=source_path_spec)
 
   def ScanForStorageMediaImage(self, source_path_spec):
     """Scans the path specification for a supported storage media image format.

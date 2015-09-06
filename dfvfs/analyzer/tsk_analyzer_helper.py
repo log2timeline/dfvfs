@@ -23,8 +23,9 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     # FAT volume header signature.
     format_specification.AddNewSignature(b'\x55\xaa', offset=510)
 
-    # NTFS file system signature.
-    format_specification.AddNewSignature(b'NTFS    ', offset=3)
+    if definitions.PREFERRED_NTFS_BACK_END == self.TYPE_INDICATOR:
+      # NTFS file system signature.
+      format_specification.AddNewSignature(b'NTFS    ', offset=3)
 
     # HFS boot block signature.
     format_specification.AddNewSignature(b'LK', offset=0)

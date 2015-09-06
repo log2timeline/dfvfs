@@ -4,6 +4,7 @@ from dfvfs.analyzer import bde_analyzer_helper
 from dfvfs.analyzer import bzip2_analyzer_helper
 from dfvfs.analyzer import ewf_analyzer_helper
 from dfvfs.analyzer import gzip_analyzer_helper
+from dfvfs.analyzer import ntfs_analyzer_helper
 from dfvfs.analyzer import qcow_analyzer_helper
 from dfvfs.analyzer import tar_analyzer_helper
 

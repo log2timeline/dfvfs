@@ -115,8 +115,12 @@ class ZipFileEntry(file_entry.FileEntry):
     # TODO: move this to a timelib equivalent.
     zip_info_date_time = getattr(zip_info, u'date_time', None)
     if zip_info_date_time:
-      stat_object.mtime = date_time.PosixTimestamp.FromTimeElements(
-          zip_info_date_time)
+      date_time_values = date_time.TimeElements(zip_info_date_time)
+
+      stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+      if stat_time is not None:
+        stat_object.mtime = stat_time
+        stat_object.mtime_nano = stat_time_nano
 
     # Ownership and permissions stat information.
     if zip_info is not None:

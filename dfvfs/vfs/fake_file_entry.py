@@ -112,14 +112,25 @@ class FakeFileEntry(file_entry.FileEntry):
         yield FakeFileEntry(
             self._resolver_context, self._file_system, path_spec)
 
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FakeFile).
+  def GetFileObject(self, data_stream_name=u''):
+    """Retrieves the file-like object.
+
+    Args:
+      data_stream_name: optional data stream name. The default is
+                        an empty string which represents the default
+                        data stream.
+
+    Returns:
+      A file-like object (instance of file_io.FileIO) or None.
 
     Raises:
       IOError: if the file entry is not a file.
     """
     if not self.IsFile():
       raise IOError(u'Cannot open non-file.')
+
+    if data_stream_name:
+      return
 
     location = getattr(self.path_spec, u'location', None)
     if location is None:

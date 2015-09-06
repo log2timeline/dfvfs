@@ -32,11 +32,13 @@ class BdeFileEntry(root_only_file_entry.RootOnlyFileEntry):
     stat_object.size = bde_volume.get_size()
 
     # Date and time stat information.
-    timestamp = date_time.PosixTimestamp.FromFiletime(
+    date_time_values = date_time.Filetime(
         bde_volume.get_creation_time_as_integer())
 
-    if timestamp is not None:
-      stat_object.crtime = timestamp
+    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    if stat_time is not None:
+      stat_object.crtime = stat_time
+      stat_object.crtime_nano = stat_time_nano
 
     # Ownership and permissions stat information.
 

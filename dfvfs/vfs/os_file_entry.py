@@ -74,7 +74,6 @@ class OSFileEntry(file_entry.FileEntry):
     super(OSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=False)
-    self._link = None
     self._name = None
 
   def _GetDirectory(self):
@@ -86,6 +85,23 @@ class OSFileEntry(file_entry.FileEntry):
         self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
       return OSDirectory(self._file_system, self.path_spec)
     return
+
+  def _GetLink(self):
+    """Retrieves the link."""
+    if self._link is None:
+      self._link = u''
+
+      if not self.IsLink():
+        return self._link
+
+      location = getattr(self.path_spec, 'location', None)
+      if location is None:
+        return self._link
+
+      self._link = os.readlink(location)
+      self._link = os.path.abspath(self._link)
+
+    return self._link
 
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat).
@@ -211,10 +227,11 @@ class OSFileEntry(file_entry.FileEntry):
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link."""
-    if not self.link:
+    link = self._GetLink()
+    if not link:
       return
 
-    path_spec = os_path_spec.OSPathSpec(location=self.link)
+    path_spec = os_path_spec.OSPathSpec(location=link)
     return OSFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetParentFileEntry(self):

@@ -85,6 +85,22 @@ class TarFileEntry(file_entry.FileEntry):
       return TarDirectory(self._file_system, self.path_spec)
     return
 
+  def _GetLink(self):
+    """Retrieves the link.
+
+    Raises:
+      BackEndError: when the tar info is missing in a non-virtual file entry.
+    """
+    if self._link is None:
+      tar_info = self.GetTarInfo()
+      if not self._is_virtual and tar_info is None:
+        raise errors.BackEndError(
+            u'Missing tar info in non-virtual file entry.')
+
+      self._link = tar_info.linkname
+
+    return self._link
+
   def _GetStat(self):
     """Retrieves the stat object.
 
@@ -134,7 +150,6 @@ class TarFileEntry(file_entry.FileEntry):
     # CHRTYPE, BLKTYPE, GNUTYPE_SPARSE
 
     # Other stat information.
-    # tar_info.linkname
     # tar_info.pax_headers
 
     return stat_object
