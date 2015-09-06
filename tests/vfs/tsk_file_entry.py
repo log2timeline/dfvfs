@@ -226,12 +226,23 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
+  def testAttributes(self):
+    """Test the attributes functionality."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=38, location=test_location, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertNotEqual(file_entry, None)
+
+    self.assertEqual(file_entry.number_of_attributes, 4)
+
   def testDataStream(self):
     """Test the data streams functionality."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=32, location=test_location, parent=self._qcow_path_spec)
+        inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertNotEqual(file_entry, None)
 
@@ -272,7 +283,7 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
     self.assertEqual(sorted(data_stream_names), sorted([u'', u'$Config']))
 
   def testGetDataStream(self):
-    """Test the retrieve data streams functionality."""
+    """Test the retrieve data stream functionality."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(

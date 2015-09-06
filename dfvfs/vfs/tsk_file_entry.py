@@ -13,11 +13,29 @@ from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
 
 
+class TSKAttribute(file_entry.Attribute):
+  """Class that implements an attribute object using pytsk3."""
+
+  def __init__(self, tsk_attribute):
+    """Initializes the attribute object.
+
+    Args:
+      tsk_attribute: the TSK attribute object (instance of pytsk3.Attribute).
+    """
+    super(TSKAttribute, self).__init__()
+    self._tsk_attribute = tsk_attribute
+
+  @property
+  def attribute_type(self):
+    """The attribute type."""
+    return getattr(self._tsk_attribute.info, u'type', None)
+
+
 class TSKDataStream(file_entry.DataStream):
-  """Class that implements a data stream object using pyfsntfs."""
+  """Class that implements a data stream object using pytks3."""
 
   def __init__(self, file_entry_object, tsk_attribute):
-    """Initializes the directory object.
+    """Initializes the data stream object.
 
     Args:
       file_entry_object: the file entry object (instance of NFTSFileEntry).
@@ -117,11 +135,8 @@ class TSKDirectory(file_entry.Directory):
       if directory_entry_inode == inode:
         continue
 
-      # TODO: need better file system support.
       # On non-NTFS file systems ignore inode 0.
-      ftype = tsk_directory_entry.info.fs_info.ftype
-      if directory_entry_inode == 0 and ftype not in [
-          pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_NTFS_DETECT]:
+      if directory_entry_inode == 0 and not self._file_system.IsNTFS():
         continue
 
       # Note that because pytsk3.TSK_FS_FILE does not explicitly defines name
@@ -189,6 +204,33 @@ class TSKFileEntry(file_entry.FileEntry):
     self._parent_inode = parent_inode
     self._tsk_file = tsk_file
 
+  def _GetAttributes(self):
+    """Retrieves the attributes.
+
+    Returns:
+      A list of attribute objects (instances of Attribute).
+
+    Raises:
+      BackEndError: if the TSK File .info or .info.meta attribute is missing.
+    """
+    if self._attributes is None:
+      tsk_file = self.GetTSKFile()
+      if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
+        raise errors.BackEndError(u'Missing TSK File .info or .info.meta.')
+
+      self._attributes = []
+
+      for tsk_attribute in tsk_file:
+        if getattr(tsk_attribute, u'info', None) is None:
+          continue
+
+        # At the moment there is no way to expose the attribute data
+        # from pytsk3.
+        attribute_object = TSKAttribute(tsk_attribute)
+        self._attributes.append(attribute_object)
+
+    return self._attributes
+
   def _GetDataStreams(self):
     """Retrieves the data streams.
 
@@ -196,21 +238,19 @@ class TSKFileEntry(file_entry.FileEntry):
       A list of data stream objects (instances of TSKDataStream).
 
     Raises:
-      BackEndError: if the tsk File .info or .info.meta attribute is missing.
+      BackEndError: if the TSK File .info or .info.meta attribute is missing.
     """
     if self._data_streams is None:
       tsk_file = self.GetTSKFile()
       if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
-        raise errors.BackEndError(u'Missing tsk File .info or .info.meta.')
+        raise errors.BackEndError(u'Missing TSK File .info or .info.meta.')
 
-      ftype = getattr(
-          tsk_file.info.fs_info, u'ftype', pytsk3.TSK_FS_TYPE_UNSUPP)
-      if ftype in [pytsk3.TSK_FS_TYPE_HFS, pytsk3.TSK_FS_TYPE_HFS_DETECT]:
+      if self._file_system.IsHFS():
         known_data_attribute_types = [
             pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,
             pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA]
 
-      elif ftype in [pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_NTFS_DETECT]:
+      elif self._file_system.IsNTFS():
         known_data_attribute_types = [pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA]
 
       else:
@@ -301,11 +341,11 @@ class TSKFileEntry(file_entry.FileEntry):
       The stat object (instance of VFSStat).
 
     Raises:
-      BackEndError: if the tsk File .info or .info.meta attribute is missing.
+      BackEndError: if the TSK File .info or .info.meta attribute is missing.
     """
     tsk_file = self.GetTSKFile()
     if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
-      raise errors.BackEndError(u'Missing tsk File .info or .info.meta.')
+      raise errors.BackEndError(u'Missing TSK File .info or .info.meta.')
 
     stat_object = vfs_stat.VFSStat()
 

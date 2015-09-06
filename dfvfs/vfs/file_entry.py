@@ -10,14 +10,27 @@ import abc
 from dfvfs.resolver import resolver
 
 
+class Attribute(object):
+  """Class that implements the VFS attribute interface."""
+
+  @property
+  def type_indicator(self):
+    """The type indicator."""
+    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
+    if type_indicator is None:
+      raise NotImplementedError(
+          u'Invalid attribute missing type indicator.')
+    return type_indicator
+
+
 class DataStream(object):
   """Class that implements the VFS data stream interface."""
 
   def __init__(self, file_entry_object):
-    """Initializes the directory object.
+    """Initializes the data stream object.
 
     Args:
-      file_entry_object: the file entry object (instance of vfs.FileEntry).
+      file_entry_object: the file entry object (instance of FileEntry).
     """
     super(DataStream, self).__init__()
     self._file_entry = file_entry_object
@@ -39,8 +52,8 @@ class Directory(object):
     """Initializes the directory object.
 
     Args:
-      file_system: the file system object (instance of vfs.FileSystem).
-      path_spec: the path specification object (instance of path.PathSpec).
+      file_system: the file system object (instance of FileSystem).
+      path_spec: the path specification object (instance of PathSpec).
     """
     super(Directory, self).__init__()
     self._entries = None
@@ -55,12 +68,12 @@ class Directory(object):
        a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.PathSpec).
+      A path specification (instance of PathSpec).
     """
 
   @property
   def entries(self):
-    """The entries (generator of instance of path.OSPathSpec)."""
+    """The entries (generator of instance of OSPathSpec)."""
     for entry in self._EntriesGenerator():
       yield entry
 
@@ -74,9 +87,9 @@ class FileEntry(object):
     """Initializes the file entry object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of vfs.FileSystem).
-      path_spec: the path specification object (instance of path.PathSpec).
+      resolver_context: the resolver context (instance of Context).
+      file_system: the file system object (instance of FileSystem).
+      path_spec: the path specification object (instance of PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
                The default is False.
@@ -85,6 +98,7 @@ class FileEntry(object):
                   system. The default is False.
     """
     super(FileEntry, self).__init__()
+    self._attributes = None
     self._data_streams = None
     self._directory = None
     self._file_system = file_system
@@ -102,11 +116,22 @@ class FileEntry(object):
     self._file_system.Close()
     self._file_system = None
 
+  def _GetAttributes(self):
+    """Retrieves the attributes.
+
+    Returns:
+      A list of attribute objects (instances of Attribute).
+    """
+    if self._attributes is None:
+      self._attributes = []
+
+    return self._attributes
+
   def _GetDataStreams(self):
     """Retrieves the data streams.
 
     Returns:
-      A list of data stream objects (instances of vfs.DataStream).
+      A list of data stream objects (instances of DataStream).
     """
     if self._data_streams is None:
       if self._directory is None:
@@ -123,7 +148,7 @@ class FileEntry(object):
 
   @abc.abstractmethod
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of vfs.Directory)."""
+    """Retrieves the directory object (instance of Directory)."""
 
   def _GetLink(self):
     """Retrieves the link."""
@@ -133,11 +158,16 @@ class FileEntry(object):
 
   @abc.abstractmethod
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object (instance of VFSStat)."""
+
+  @property
+  def attributes(self):
+    """The attributes (generator of instance of Attribute)."""
+    return self._GetAttributes()
 
   @property
   def data_streams(self):
-    """The data streams (generator of instance of vfs.DataStream)."""
+    """The data streams (generator of instance of DataStream)."""
     return self._GetDataStreams()
 
   @property
@@ -148,6 +178,12 @@ class FileEntry(object):
   @abc.abstractproperty
   def name(self):
     """The name of the file entry, which does not include the full path."""
+
+  @property
+  def number_of_attributes(self):
+    """The number of attributes."""
+    attributes = self._GetAttributes()
+    return len(attributes)
 
   @property
   def number_of_data_streams(self):
@@ -169,7 +205,7 @@ class FileEntry(object):
 
   @abc.abstractproperty
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.FileEntry)."""
+    """The sub file entries (generator of instance of FileEntry)."""
 
   @property
   def type_indicator(self):
@@ -177,7 +213,7 @@ class FileEntry(object):
     type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid file system missing type indicator.')
+          u'Invalid file entry missing type indicator.')
     return type_indicator
 
   def GetDataStream(self, name, case_sensitive=True):
@@ -189,7 +225,7 @@ class FileEntry(object):
                       case sensitive. The default is True.
 
     Returns:
-      A data stream (an instance of vfs.DataStream) or None.
+      A data stream (an instance of DataStream) or None.
 
     Raises:
       ValueError: if the name is not string.
@@ -256,7 +292,7 @@ class FileEntry(object):
         self.path_spec, resolver_context=self._resolver_context)
 
   def GetFileSystem(self):
-    """Retrieves the file system (instance of vfs.FileSystem)."""
+    """Retrieves the file system (instance of FileSystem)."""
     return self._file_system
 
   def GetLinkedFileEntry(self):
@@ -276,7 +312,7 @@ class FileEntry(object):
                       case sensitive. The default is True.
 
     Returns:
-      A file entry (an instance of vfs.FileEntry) or None.
+      A file entry (an instance of FileEntry) or None.
     """
     name_lower = name.lower()
     matching_sub_file_entry = None
@@ -292,7 +328,7 @@ class FileEntry(object):
     return matching_sub_file_entry
 
   def GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
+    """Retrieves the stat object (instance of VFSStat)."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     return self._stat_object
