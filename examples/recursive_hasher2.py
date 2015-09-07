@@ -17,6 +17,7 @@ from dfvfs.credentials import manager as credentials_manager
 from dfvfs.helpers import source_scanner
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
@@ -540,6 +541,12 @@ class RecursiveHasher(object):
     # Get the first node where where we need to decide what to process.
     scan_node = volume_scan_node
     while len(scan_node.sub_nodes) == 1:
+      # Make sure that we prompt the user about VSS selection.
+      if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+        location = getattr(scan_node.path_spec, u'location', None)
+        if location == u'/':
+          break
+
       scan_node = scan_node.sub_nodes[0]
 
     # The source scanner found an encrypted volume and we need
@@ -549,7 +556,7 @@ class RecursiveHasher(object):
           scan_context, scan_node, base_path_specs)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-      self._ScanVolumeScanNodeVSS(scan_context, scan_node, base_path_specs)
+      self._ScanVolumeScanNodeVSS(scan_node, base_path_specs)
 
     elif scan_node.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS:
       base_path_specs.append(scan_node.path_spec)
@@ -579,12 +586,10 @@ class RecursiveHasher(object):
       self._ScanVolume(scan_context, volume_scan_node, base_path_specs)
 
   def _ScanVolumeScanNodeVSS(
-      self, scan_context, volume_scan_node, base_path_specs):
+      self, volume_scan_node, base_path_specs):
     """Scans a VSS volume scan node for volume and file systems.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
       volume_scan_node: the volume scan node (instance of dfvfs.ScanNode).
       base_path_specs: a list of source path specification (instances
                        of dfvfs.PathSpec).
@@ -592,6 +597,11 @@ class RecursiveHasher(object):
     Raises:
       SourceScannerError: if a VSS sub scan node scannot be retrieved.
     """
+    # Do not scan inside individual VSS store scan nodes.
+    location = getattr(volume_scan_node.path_spec, u'location', None)
+    if location != u'/':
+      return
+
     vss_store_identifiers = self._GetVSSStoreIdentifiers(volume_scan_node)
 
     self._vss_stores = list(vss_store_identifiers)
@@ -606,9 +616,17 @@ class RecursiveHasher(object):
             u'Scan node missing for VSS store identifier: {0:d}.'.format(
                 vss_store_identifier))
 
-      self._source_scanner.Scan(
-          scan_context, scan_path_spec=sub_scan_node.path_spec)
-      self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
+      # We "optimize" here for user experience, ideally we would scan for
+      # a file system instead of hard coding a TSK child path specification.
+      path_spec = path_spec_factory.Factory.NewPathSpec(
+          definitions.TYPE_INDICATOR_TSK, location=u'/',
+          parent=sub_scan_node.path_spec)
+      base_path_specs.append(path_spec)
+
+      # TODO: look into building VSS store on demand.
+      # self._source_scanner.Scan(
+      #     scan_context, scan_path_spec=sub_scan_node.path_spec)
+      # self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
 
   def CalculateHashes(self, base_path_specs, output_writer):
     """Recursive calculates hashes starting with the base path specification.
