@@ -12,9 +12,10 @@ then
   exit ${EXIT_FAILURE};
 fi
 
+# Exports GIT_URL and PROJECT_NAME.
 . utils/common.sh
 
-if ! linting_is_correct;
+if ! linting_is_correct_remote_origin;
 then
   echo "Linting aborted - fix the reported issues.";
 
@@ -29,13 +30,13 @@ then
   if ! have_remote_upstream;
   then
     echo "Linting aborted - missing upstream.";
-    echo "Run: 'git remote add upstream https://github.com/log2timeline/dfvfs.git'";
+    echo "Run: 'git remote add upstream https://github.com/log2timeline/${PROJECT_NAME}.git'";
 
     exit ${EXIT_FAILURE};
   fi
   git fetch upstream;
 
-  if ! linter_pass;
+  if ! linting_is_correct_remote_upstream;
   then
     echo "Linting aborted - fix the reported issues.";
 
