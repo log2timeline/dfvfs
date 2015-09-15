@@ -30,6 +30,7 @@ class TSKFileSystem(file_system.FileSystem):
     super(TSKFileSystem, self).__init__(resolver_context)
     self._file_object = None
     self._tsk_file_system = None
+    self._tsk_fs_type = None
 
   def _Close(self):
     """Closes the file system object.
@@ -153,6 +154,23 @@ class TSKFileSystem(file_system.FileSystem):
     """
     return self._tsk_file_system
 
+  def GetFsType(self):
+    """Retrieves the file system type.
+
+    Returns:
+      The SleuthKit file system type (instance of pytsk3.TSK_FS_TYPE_ENUM).
+    """
+    if self._tsk_fs_type is None:
+      self._tsk_fs_type = pytsk3.TSK_FS_TYPE_UNSUPP
+      if (not self._tsk_file_system or
+          not hasattr(self._tsk_file_system, u'info')):
+        return self._tsk_fs_type
+
+      self._tsk_fs_type = getattr(
+          self._tsk_file_system.info, u'ftype', pytsk3.TSK_FS_TYPE_UNSUPP)
+
+    return self._tsk_fs_type
+
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
 
@@ -170,3 +188,23 @@ class TSKFileSystem(file_system.FileSystem):
 
     path_spec = tsk_path_spec.TSKPathSpec(**kwargs)
     return self.GetFileEntryByPathSpec(path_spec)
+
+  def IsHFS(self):
+    """Determines if the file system is HFS, HFS+ or HFSX.
+
+    Returns:
+      A boolean value indicating the file system is HFS.
+    """
+    tsk_fs_type = self.GetFsType()
+    return tsk_fs_type in [
+        pytsk3.TSK_FS_TYPE_HFS, pytsk3.TSK_FS_TYPE_HFS_DETECT]
+
+  def IsNTFS(self):
+    """Determines if the file system is NTFS.
+
+    Returns:
+      A boolean value indicating the file system is NTFS.
+    """
+    tsk_fs_type = self.GetFsType()
+    return tsk_fs_type in [
+        pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_NTFS_DETECT]

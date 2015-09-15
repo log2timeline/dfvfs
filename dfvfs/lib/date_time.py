@@ -41,6 +41,9 @@ class Filetime(DateTimeValues):
   The FILETIME is a 64-bit integer that contains the number of 100th nano
   seconds since 1601-01-01 00:00:00. Technically FILETIME is a structure
   that consists of 2 x 32-bit integers and is presumed to be unsigned.
+
+  Attributes:
+    timestamp: the FILETIME timestamp.
   """
 
   # The difference between Jan 1, 1601 and Jan 1, 1970 in seconds.
@@ -54,7 +57,7 @@ class Filetime(DateTimeValues):
       timestamp: the FILETIME timestamp.
     """
     super(Filetime, self).__init__()
-    self._timestamp = timestamp
+    self.timestamp = timestamp
 
   def CopyToStatObject(self):
     """Copies the timestamp to a stat object timestamp.
@@ -64,15 +67,14 @@ class Filetime(DateTimeValues):
       and an integer containing the remainder in 100 nano seconds or
       None on error.
     """
-    if self._timestamp < 0:
+    if self.timestamp < 0:
       return None, None
 
-    timestamp, _ = divmod(self._timestamp, 10)
-    timestamp, micro_seconds = divmod(timestamp, 1000000)
+    timestamp, remainder = divmod(self.timestamp, 10000000)
     timestamp -= self._FILETIME_TO_POSIX_BASE
     if timestamp > self._INT64_MAX:
       return None, None
-    return timestamp, micro_seconds
+    return timestamp, remainder
 
 
 class PosixTimestamp(DateTimeValues):
@@ -82,18 +84,24 @@ class PosixTimestamp(DateTimeValues):
   seconds since 1970-01-01 00:00:00 (also known as the POSIX epoch).
   Negative values represent date and times predating the POSIX epoch.
 
-  The POSIX timestamp was initialliy 32-bit though 64-bit variants
+  The POSIX timestamp was initially 32-bit though 64-bit variants
   are known to be used.
+
+  Attributes:
+    timestamp: the POSIX timestamp.
+    micro_seconds: the number of micro seconds
   """
 
-  def __init__(self, timestamp):
+  def __init__(self, timestamp, micro_seconds=0):
     """Initializes the POSIX timestamp object.
 
     Args:
       timestamp: the FILETIME timestamp.
+      micro_seconds: optional number of micro seconds.
     """
     super(PosixTimestamp, self).__init__()
-    self._timestamp = timestamp
+    self.micro_seconds = micro_seconds
+    self.timestamp = timestamp
 
   def CopyToStatObject(self):
     """Copies the timestamp to a stat object timestamp.
@@ -103,7 +111,7 @@ class PosixTimestamp(DateTimeValues):
       and an integer containing the remainder in 100 nano seconds or
       None on error.
     """
-    return self._posix_time, 0
+    return self.timestamp, self.micro_seconds * 10
 
 
 class TimeElements(DateTimeValues):
