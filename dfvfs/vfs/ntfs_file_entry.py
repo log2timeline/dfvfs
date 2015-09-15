@@ -14,6 +14,9 @@ from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
 
 
+_FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
+
+
 class NTFSAttribute(file_entry.Attribute):
   """Class that implements an attribute object using pyfsntfs."""
 
@@ -203,8 +206,9 @@ class NTFSDirectory(file_entry.Directory):
       if directory_entry in [u'.', u'..']:
         continue
 
+      file_reference = fsntfs_sub_file_entry.file_reference
       directory_entry_mft_entry = (
-          fsntfs_sub_file_entry.file_reference & 0xffffffffffff)
+          file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
 
       if location == self._file_system.PATH_SEPARATOR:
         directory_entry = self._file_system.JoinPath([directory_entry])
@@ -409,7 +413,8 @@ class NTFSFileEntry(file_entry.FileEntry):
       stat_object.type = stat_object.TYPE_FILE
 
     # Other stat information.
-    stat_object.ino = fsntfs_file_entry.file_reference & 0xffffffffffff
+    stat_object.ino = (
+        fsntfs_file_entry.file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
     stat_object.fs_type = u'NTFS'
 
     stat_object.is_allocated = fsntfs_file_entry.is_allocated()
@@ -568,7 +573,8 @@ class NTFSFileEntry(file_entry.FileEntry):
     if parent_file_reference is None:
       return
 
-    parent_mft_entry = parent_file_reference & 0xffffffffffff
+    parent_mft_entry = (
+        parent_file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
 
     parent_path_spec = getattr(self.path_spec, u'parent', None)
     # TODO: determine and pass the mft_attribute of the parent
