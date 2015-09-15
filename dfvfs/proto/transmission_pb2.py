@@ -11,7 +11,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = descriptor.FileDescriptor(
   name='dfvfs/proto/transmission.proto',
   package='transmission',
-  serialized_pb='\n\x1e\x64\x66vfs/proto/transmission.proto\x12\x0ctransmission\"\xf3\x02\n\x08PathSpec\x12&\n\x06parent\x18\x01 \x01(\x0b\x32\x16.transmission.PathSpec\x12\x16\n\x0etype_indicator\x18\x02 \x02(\t\x12\x1a\n\x12\x63ompression_method\x18\x03 \x01(\t\x12\x12\n\nidentifier\x18\x04 \x01(\t\x12\r\n\x05inode\x18\x05 \x01(\x04\x12\x10\n\x08location\x18\x06 \x01(\t\x12\x12\n\npart_index\x18\x07 \x01(\x05\x12\x14\n\x0crange_offset\x18\x08 \x01(\x04\x12\x12\n\nrange_size\x18\t \x01(\x04\x12\x14\n\x0cstart_offset\x18\n \x01(\x04\x12\x13\n\x0bstore_index\x18\x0b \x01(\x05\x12\x12\n\ntable_name\x18\x0c \x01(\t\x12\x13\n\x0b\x63olumn_name\x18\r \x01(\t\x12\x31\n\rrow_condition\x18\x0e \x01(\x0b\x32\x1a.transmission.RowCondition\x12\x11\n\trow_index\x18\x0f \x01(\x05\"M\n\x0cRowCondition\x12\x14\n\x0cleft_operand\x18\x01 \x02(\t\x12\x10\n\x08operator\x18\x02 \x02(\t\x12\x15\n\rright_operand\x18\x03 \x02(\t')
+  serialized_pb='\n\x1e\x64\x66vfs/proto/transmission.proto\x12\x0ctransmission\"\xb2\x03\n\x08PathSpec\x12&\n\x06parent\x18\x01 \x01(\x0b\x32\x16.transmission.PathSpec\x12\x16\n\x0etype_indicator\x18\x02 \x02(\t\x12\x1a\n\x12\x63ompression_method\x18\x03 \x01(\t\x12\x12\n\nidentifier\x18\x04 \x01(\t\x12\r\n\x05inode\x18\x05 \x01(\x04\x12\x10\n\x08location\x18\x06 \x01(\t\x12\x12\n\npart_index\x18\x07 \x01(\x05\x12\x14\n\x0crange_offset\x18\x08 \x01(\x04\x12\x12\n\nrange_size\x18\t \x01(\x04\x12\x14\n\x0cstart_offset\x18\n \x01(\x04\x12\x13\n\x0bstore_index\x18\x0b \x01(\x05\x12\x12\n\ntable_name\x18\x0c \x01(\t\x12\x13\n\x0b\x63olumn_name\x18\r \x01(\t\x12\x31\n\rrow_condition\x18\x0e \x01(\x0b\x32\x1a.transmission.RowCondition\x12\x11\n\trow_index\x18\x0f \x01(\x05\x12\x13\n\x0b\x64\x61ta_stream\x18\x10 \x01(\t\x12\x15\n\rmft_attribute\x18\x11 \x01(\r\x12\x11\n\tmft_entry\x18\x12 \x01(\x04\"M\n\x0cRowCondition\x12\x14\n\x0cleft_operand\x18\x01 \x02(\t\x12\x10\n\x08operator\x18\x02 \x02(\t\x12\x15\n\rright_operand\x18\x03 \x02(\t')
 
 
 
@@ -128,6 +128,27 @@ _PATHSPEC = descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    descriptor.FieldDescriptor(
+      name='data_stream', full_name='transmission.PathSpec.data_stream', index=15,
+      number=16, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='mft_attribute', full_name='transmission.PathSpec.mft_attribute', index=16,
+      number=17, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='mft_entry', full_name='transmission.PathSpec.mft_entry', index=17,
+      number=18, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -138,7 +159,7 @@ _PATHSPEC = descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=49,
-  serialized_end=420,
+  serialized_end=483,
 )
 
 
@@ -179,8 +200,8 @@ _ROWCONDITION = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=422,
-  serialized_end=499,
+  serialized_start=485,
+  serialized_end=562,
 )
 
 _PATHSPEC.fields_by_name['parent'].message_type = _PATHSPEC

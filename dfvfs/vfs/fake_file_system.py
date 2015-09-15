@@ -88,11 +88,16 @@ class FakeFileSystem(file_system.FileSystem):
       stat_object.size = len(file_data)
 
     # Date and time stat information.
-    timestamp = date_time.PosixTimestamp.GetNow()
+    date_time_values = date_time.FakeDateTimeValues()
 
-    stat_object.atime = timestamp
-    stat_object.ctime = timestamp
-    stat_object.mtime = timestamp
+    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    if stat_time is not None:
+      stat_object.atime = stat_time
+      stat_object.atime_nano = stat_time_nano
+      stat_object.ctime = stat_time
+      stat_object.ctime_nano = stat_time_nano
+      stat_object.mtime = stat_time
+      stat_object.mtime_nano = stat_time_nano
 
     # Ownership and permissions stat information.
 
