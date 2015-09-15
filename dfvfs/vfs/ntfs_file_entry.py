@@ -17,11 +17,136 @@ from dfvfs.vfs import vfs_stat
 _FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
 
 
+class NTFSAttribute(file_entry.Attribute):
+  """Class that implements an attribute object using pyfsntfs."""
+
+  def __init__(self, fsntfs_attribute):
+    """Initializes the attribute object.
+
+    Args:
+      fsntfs_attribute: the NTFS attribute object (instance of
+                        pyfsntfs.attribute).
+    """
+    super(NTFSAttribute, self).__init__()
+    self._fsntfs_attribute = fsntfs_attribute
+
+  @property
+  def attribute_type(self):
+    """The attribute type."""
+    return self._fsntfs_attribute.attribute_type
+
+
+class FileNameNTFSAttribute(NTFSAttribute):
+  """Class that implements a $FILE_NAME attribute object."""
+
+  TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME
+
+  @property
+  def access_time(self):
+    """The access time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_access_time_as_integer())
+
+  @property
+  def creation_time(self):
+    """The creation time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_creation_time_as_integer())
+
+  @property
+  def entry_modification_time(self):
+    """The entry modification time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_entry_modification_time_as_integer())
+
+  @property
+  def file_attribute_flags(self):
+    """The file attribute flags."""
+    return self._fsntfs_attribute.file_attribute_flags
+
+  @property
+  def modification_time(self):
+    """The modification time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_modification_time_as_integer())
+
+  @property
+  def name(self):
+    """The name."""
+    return self._fsntfs_attribute.name
+
+  @property
+  def parent_file_reference(self):
+    """The parent file refrence."""
+    return self._fsntfs_attribute.parent_file_reference
+
+
+class ObjectIdentifierNTFSAttribute(NTFSAttribute):
+  """Class that implements a $OBJECT_ID attribute object."""
+
+  TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_OBJECT_ID
+
+  @property
+  def droid_file_identifier(self):
+    """The droid file identifier (an UUID string or None)."""
+    return self._fsntfs_attribute.droid_file_identifier
+
+
+class StandardInformationNTFSAttribute(NTFSAttribute):
+  """Class that implements a $STANDARD_INFORMATION attribute object."""
+
+  TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_STANDARD_INFORMATION
+
+  @property
+  def access_time(self):
+    """The access time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_access_time_as_integer())
+
+  @property
+  def creation_time(self):
+    """The creation time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_creation_time_as_integer())
+
+  @property
+  def entry_modification_time(self):
+    """The entry modification time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_entry_modification_time_as_integer())
+
+  @property
+  def file_attribute_flags(self):
+    """The file attribute flags."""
+    return self._fsntfs_attribute.file_attribute_flags
+
+  @property
+  def modification_time(self):
+    """The modification time (instance of Filetime)."""
+    return date_time.Filetime(
+        self._fsntfs_attribute.get_modification_time_as_integer())
+
+  @property
+  def owner_identifier(self):
+    """The owner identifier."""
+    return self._fsntfs_attribute.owner_identifier
+
+  @property
+  def security_identifier(self):
+    """The security identifier."""
+    return self._fsntfs_attribute.security_identifier
+
+  @property
+  def update_sequence_number(self):
+    """The update sequence number."""
+    return self._fsntfs_attribute.update_sequence_number
+
+
 class NTFSDataStream(file_entry.DataStream):
   """Class that implements a data stream object using pyfsntfs."""
 
   def __init__(self, file_entry_object, fsntfs_data_stream):
-    """Initializes the directory object.
+    """Initializes the data stream object.
 
     Args:
       file_entry_object: the file entry object (instance of NFTSFileEntry).
@@ -102,6 +227,12 @@ class NTFSFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_NTFS
 
+  _ATTRIBUTE_TYPE_CLASS_MAPPINGS = {
+      0x00000010: StandardInformationNTFSAttribute,
+      0x00000030: FileNameNTFSAttribute,
+      0x00000040: ObjectIdentifierNTFSAttribute,
+  }
+
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False, fsntfs_file_entry=None):
@@ -124,6 +255,30 @@ class NTFSFileEntry(file_entry.FileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._fsntfs_file_entry = fsntfs_file_entry
+
+  def _GetAttributes(self):
+    """Retrieves the attributes.
+
+    Returns:
+      A list of attribute objects (instances of Attribute).
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    if self._attributes is None:
+      fsntfs_file_entry = self.GetNTFSFileEntry()
+      if not fsntfs_file_entry:
+        raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+      self._attributes = []
+      for fsntfs_attribute in fsntfs_file_entry.attributes:
+        attribute_class = self._ATTRIBUTE_TYPE_CLASS_MAPPINGS.get(
+            fsntfs_attribute.attribute_type, NTFSAttribute)
+
+        attribute_object = attribute_class(fsntfs_attribute)
+        self._attributes.append(attribute_object)
+
+    return self._attributes
 
   def _GetDataStreams(self):
     """Retrieves the data streams.

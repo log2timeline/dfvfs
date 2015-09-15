@@ -5,6 +5,7 @@
 import os
 import unittest
 
+from dfvfs.lib import definitions
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
@@ -170,6 +171,52 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
+  def testAttributes(self):
+    """Test the attributes functionality."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertNotEqual(file_entry, None)
+
+    self.assertEqual(file_entry.number_of_attributes, 4)
+
+    attributes = list(file_entry.attributes)
+    attribute = attributes[0]
+
+    self.assertEqual(
+        attribute.type_indicator,
+        definitions.ATTRIBUTE_TYPE_NTFS_STANDARD_INFORMATION)
+
+    self.assertNotEqual(attribute.access_time, None)
+    self.assertNotEqual(attribute.creation_time, None)
+    self.assertNotEqual(attribute.modification_time, None)
+    self.assertNotEqual(attribute.entry_modification_time, None)
+
+    stat_time, stat_time_nano = attribute.modification_time.CopyToStatObject()
+    self.assertEqual(stat_time, 1386052509)
+    self.assertEqual(stat_time_nano, 5179783)
+
+    attribute = attributes[1]
+
+    self.assertEqual(
+        attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
+
+    self.assertNotEqual(attribute.access_time, None)
+    self.assertNotEqual(attribute.creation_time, None)
+    self.assertNotEqual(attribute.modification_time, None)
+    self.assertNotEqual(attribute.entry_modification_time, None)
+
+    stat_time, stat_time_nano = attribute.access_time.CopyToStatObject()
+    self.assertEqual(stat_time, 1386052509)
+    self.assertEqual(stat_time_nano, 5023783)
+
+    attribute = attributes[2]
+
+    self.assertEqual(
+        attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
+
   def testDataStream(self):
     """Test the data streams functionality."""
     test_location = (
@@ -216,7 +263,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(sorted(data_stream_names), sorted([u'', u'$Config']))
 
   def testGetDataStream(self):
-    """Test the retrieve data streams functionality."""
+    """Test the retrieve data stream functionality."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
