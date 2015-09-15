@@ -34,7 +34,6 @@ then
 
     exit ${EXIT_FAILURE};
   fi
-  git fetch upstream;
 
   if ! linting_is_correct_remote_upstream;
   then

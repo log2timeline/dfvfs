@@ -1,0 +1,439 @@
+# -*- coding: utf-8 -*-
+"""The NTFS file entry implementation."""
+
+import copy
+
+import pyfsntfs
+
+from dfvfs.lib import date_time
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
+from dfvfs.path import ntfs_path_spec
+from dfvfs.resolver import resolver
+from dfvfs.vfs import file_entry
+from dfvfs.vfs import vfs_stat
+
+
+_FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
+
+
+class NTFSDataStream(file_entry.DataStream):
+  """Class that implements a data stream object using pyfsntfs."""
+
+  def __init__(self, file_entry_object, fsntfs_data_stream):
+    """Initializes the directory object.
+
+    Args:
+      file_entry_object: the file entry object (instance of NFTSFileEntry).
+      fsntfs_data_stream: the NTFS data stream object (instance of
+                          pyfsntfs.data_stream).
+    """
+    super(NTFSDataStream, self).__init__(file_entry_object)
+    self._fsntfs_data_stream = fsntfs_data_stream
+
+  @property
+  def name(self):
+    """The name."""
+    if self._fsntfs_data_stream:
+      return self._fsntfs_data_stream.name
+    return u''
+
+  def GetFileObject(self):
+    """Retrieves the file-like object.
+
+    Returns:
+      A file-like object (instance of FileIO) or None.
+    """
+    if self._fsntfs_data_stream:
+      return self._file_entry.GetFileObject(
+          data_stream_name=self._fsntfs_data_stream.name)
+    return self._file_entry.GetFileObject()
+
+
+class NTFSDirectory(file_entry.Directory):
+  """Class that implements a directory object using pyfsntfs."""
+
+  def _EntriesGenerator(self):
+    """Retrieves directory entries.
+
+       Since a directory can contain a vast number of entries using
+       a generator is more memory efficient.
+
+    Yields:
+      A path specification (instance of path.NTFSPathSpec).
+    """
+    # Opening a file by MFT entry is faster than opening a file by location.
+    location = getattr(self.path_spec, u'location', None)
+    mft_entry = getattr(self.path_spec, u'mft_entry', None)
+
+    fsntfs_volume = self._file_system.GetNTFSVolume()
+    if mft_entry is not None:
+      fsntfs_file_entry = fsntfs_volume.get_file_entry(mft_entry)
+    elif location is not None:
+      fsntfs_file_entry = fsntfs_volume.get_file_entry_by_path(location)
+    else:
+      return
+
+    for fsntfs_sub_file_entry in fsntfs_file_entry.sub_file_entries:
+      directory_entry = fsntfs_sub_file_entry.name
+
+      # Ignore references to self or parent.
+      if directory_entry in [u'.', u'..']:
+        continue
+
+      file_reference = fsntfs_sub_file_entry.file_reference
+      directory_entry_mft_entry = (
+          file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
+
+      if location == self._file_system.PATH_SEPARATOR:
+        directory_entry = self._file_system.JoinPath([directory_entry])
+      else:
+        directory_entry = self._file_system.JoinPath([
+            location, directory_entry])
+
+      yield ntfs_path_spec.NTFSPathSpec(
+          location=directory_entry,
+          mft_attribute=fsntfs_sub_file_entry.name_attribute_index,
+          mft_entry=directory_entry_mft_entry, parent=self.path_spec.parent)
+
+
+class NTFSFileEntry(file_entry.FileEntry):
+  """Class that implements a file entry object using pyfsntfs."""
+
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_NTFS
+
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False, fsntfs_file_entry=None):
+    """Initializes the file entry object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+      file_system: the file system object (instance of FileSystem).
+      path_spec: the path specification (instance of path.PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+               The default is False.
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system. The default is False.
+      fsntfs_file_entry: optional file entry object (instance of
+                         pyfsntfs.file_entry). The default is None.
+    """
+    super(NTFSFileEntry, self).__init__(
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
+    self._fsntfs_file_entry = fsntfs_file_entry
+
+  def _GetDataStreams(self):
+    """Retrieves the data streams.
+
+    Returns:
+      A list of data stream objects (instances of NTFSDataStream).
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    if self._data_streams is None:
+      fsntfs_file_entry = self.GetNTFSFileEntry()
+      if not fsntfs_file_entry:
+        raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+      self._data_streams = []
+      if fsntfs_file_entry.has_default_data_stream():
+        self._data_streams.append(NTFSDataStream(self, None))
+
+      for fsntfs_data_stream in fsntfs_file_entry.alternate_data_streams:
+        self._data_streams.append(
+            NTFSDataStream(self, fsntfs_data_stream))
+
+    return self._data_streams
+
+  def _GetDirectory(self):
+    """Retrieves the directory.
+
+    Returns:
+      A the directory object (instance of NTFSDirectory) or None.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    if fsntfs_file_entry.number_of_sub_file_entries > 0:
+      return NTFSDirectory(self._file_system, self.path_spec)
+    return
+
+  def _GetLink(self):
+    """Retrieves the link.
+
+    Returns:
+      A string containing the path of the linked file.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    if self._link is None:
+      fsntfs_file_entry = self.GetNTFSFileEntry()
+      if not fsntfs_file_entry:
+        raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+      self._link = u''
+      if not self._IsLink(fsntfs_file_entry.file_attribute_flags):
+        return self._link
+
+      link = fsntfs_file_entry.reparse_point_print_name
+      if link:
+        # Strip off the drive letter, we assume the link is within
+        # the same volume.
+        _, _, self._link = link.rpartition(u':')
+
+    return self._link
+
+  def _GetStat(self):
+    """Retrieves the stat object.
+
+    Returns:
+      The stat object (instance of VFSStat).
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    stat_object = vfs_stat.VFSStat()
+
+    # File data stat information.
+    if fsntfs_file_entry.has_default_data_stream():
+      stat_object.size = fsntfs_file_entry.get_size()
+
+    # Date and time stat information.
+    date_time_values = date_time.Filetime(
+        fsntfs_file_entry.get_access_time_as_integer())
+
+    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    if stat_time is not None:
+      stat_object.atime = stat_time
+      stat_object.atime_nan = stat_time_nano
+
+    date_time_values = date_time.Filetime(
+        fsntfs_file_entry.get_creation_time_as_integer())
+
+    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    if stat_time is not None:
+      stat_object.crtime = stat_time
+      stat_object.crtime_nano = stat_time_nano
+
+    date_time_values = date_time.Filetime(
+        fsntfs_file_entry.get_modification_time_as_integer())
+
+    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    if stat_time is not None:
+      stat_object.mtime = stat_time
+      stat_object.mtime_nano = stat_time_nano
+
+    date_time_values = date_time.Filetime(
+        fsntfs_file_entry.get_entry_modification_time_as_integer())
+
+    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    if stat_time is not None:
+      stat_object.ctime = stat_time
+      stat_object.ctime_nano = stat_time_nano
+
+    # Ownership and permissions stat information.
+    # TODO: stat_object.mode
+    # TODO: stat_object.uid
+    # TODO: stat_object.gid
+
+    # File entry type stat information.
+    if self._IsLink(fsntfs_file_entry.file_attribute_flags):
+      stat_object.type = stat_object.TYPE_LINK
+    elif fsntfs_file_entry.has_directory_entries_index():
+      stat_object.type = stat_object.TYPE_DIRECTORY
+    else:
+      stat_object.type = stat_object.TYPE_FILE
+
+    # Other stat information.
+    stat_object.ino = (
+        fsntfs_file_entry.file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
+    stat_object.fs_type = u'NTFS'
+
+    stat_object.is_allocated = fsntfs_file_entry.is_allocated()
+
+    return stat_object
+
+  def _IsLink(self, file_attribute_flags):
+    """Determines if a file entry is a link.
+
+    Args:
+      file_attribute_flags: the file attribute flags.
+    """
+    return bool(
+        file_attribute_flags & pyfsntfs.file_attribute_flags.REPARSE_POINT)
+
+  @property
+  def name(self):
+    """The name of the file entry, which does not include the full path.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    # The root directory file name is typically '.', dfVFS however uses ''.
+    if self._is_root:
+      return u''
+
+    mft_attribute = getattr(self.path_spec, u'mft_attribute', None)
+    if mft_attribute is not None:
+      return fsntfs_file_entry.get_name_by_attribute_index(mft_attribute)
+    return fsntfs_file_entry.get_name()
+
+  @property
+  def sub_file_entries(self):
+    """The sub file entries (generator of instance of NTFSFileEntry)."""
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield NTFSFileEntry(
+            self._resolver_context, self._file_system, path_spec)
+
+  def GetFileObject(self, data_stream_name=u''):
+    """Retrieves the file-like object.
+
+    Args:
+      data_stream_name: optional data stream name. The default is
+                        an empty string which represents the default
+                        data stream.
+
+    Returns:
+      A file-like object (instance of FileIO) or None.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    if not data_stream_name and not fsntfs_file_entry.has_default_data_stream():
+      return
+
+    # Make sure to make the changes on a copy of the path specification, so we
+    # do not alter self.path_spec.
+    path_spec = copy.deepcopy(self.path_spec)
+    if data_stream_name:
+      setattr(path_spec, u'data_stream', data_stream_name)
+
+    return resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
+
+  def GetLinkedFileEntry(self):
+    """Retrieves the linked file entry, e.g. for a symbolic link.
+
+    Returns:
+      The linked file entry (instance of NTFSFileEntry) or None.
+    """
+    link = self._GetLink()
+    if not link:
+      return
+
+    # TODO: is there a way to determine the MFT entry here?
+    link_mft_entry = None
+
+    parent_path_spec = getattr(self.path_spec, u'parent', None)
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=link, parent=parent_path_spec)
+
+    if (link == self._file_system.LOCATION_ROOT or
+        link_mft_entry == self._file_system.MFT_ENTRY_ROOT_DIRECTORY):
+      is_root = True
+    else:
+      is_root = False
+
+    return NTFSFileEntry(
+        self._resolver_context, self._file_system, path_spec, is_root=is_root)
+
+  def GetNTFSFileEntry(self):
+    """Retrieves the NTFS file entry object (instance of pyfsntfs.file_entry).
+
+    Raises:
+      PathSpecError: if the path specification is missing location and
+                     MFT entry.
+    """
+    if not self._fsntfs_file_entry:
+      # Opening a file by MFT entry is faster than opening a file by location.
+      # However we need the index of the corresponding $FILE_NAME MFT attribute.
+      location = getattr(self.path_spec, u'location', None)
+      mft_attribute = getattr(self.path_spec, u'mft_attribute', None)
+      mft_entry = getattr(self.path_spec, u'mft_entry', None)
+
+      fsntfs_volume = self._file_system.GetNTFSVolume()
+      if mft_attribute is not None and mft_entry is not None:
+        self._fsntfs_file_entry = fsntfs_volume.get_file_entry(mft_entry)
+      elif location is not None:
+        self._fsntfs_file_entry = fsntfs_volume.get_file_entry_by_path(location)
+      else:
+        raise errors.PathSpecError(
+            u'Path specification missing location and MFT entry.')
+
+    return self._fsntfs_file_entry
+
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry.
+
+    Returns:
+      The parent file entry (instance of NTFSFileEntry) or None.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    location = getattr(self.path_spec, u'location', None)
+    if location is not None:
+      parent_location = self._file_system.DirnamePath(location)
+      if parent_location == u'':
+        parent_location = self._file_system.PATH_SEPARATOR
+
+    parent_file_reference = None
+    mft_attribute = getattr(self.path_spec, u'mft_attribute', None)
+    if mft_attribute is not None:
+      parent_file_reference = (
+          fsntfs_file_entry.get_parent_file_reference_by_attribute_index(
+              mft_attribute))
+    else:
+      parent_file_reference = fsntfs_file_entry.get_parent_file_reference()
+
+    if parent_file_reference is None:
+      return
+
+    parent_mft_entry = (
+        parent_file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
+
+    parent_path_spec = getattr(self.path_spec, u'parent', None)
+    # TODO: determine and pass the mft_attribute of the parent
+    # for a faster resolve of the file entry.
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=parent_location, mft_entry=parent_mft_entry,
+        parent=parent_path_spec)
+
+    # TODO: handle parent correctly use attribute index?
+    if (parent_location == self._file_system.LOCATION_ROOT or
+        parent_mft_entry == self._file_system.MFT_ENTRY_ROOT_DIRECTORY):
+      is_root = True
+    else:
+      is_root = False
+
+    return NTFSFileEntry(
+        self._resolver_context, self._file_system, path_spec, is_root=is_root)

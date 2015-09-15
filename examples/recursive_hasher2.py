@@ -37,21 +37,45 @@ class RecursiveHasher(object):
     super(RecursiveHasher, self).__init__()
     self._source_scanner = source_scanner.SourceScanner()
 
-  def _CalculateHashFileEntry(self, file_entry):
+  def _CalculateHashFileEntry(self, file_entry, data_stream_name):
     """Calculates a message digest hash of the data of the file entry.
 
     Args:
       file_entry: the file entry (instance of dfvfs.FileEntry).
+      data_stream_name: the data stream name.
+
+    Returns:
+      A binary string containing the digest hash or None.
     """
     hash_context = hashlib.md5()
-    file_object = file_entry.GetFileObject()
 
-    data = file_object.read(self._READ_BUFFER_SIZE)
-    while data:
-      hash_context.update(data)
+    try:
+      file_object = file_entry.GetFileObject(data_stream_name=data_stream_name)
+    except IOError as exception:
+      logging.warning((
+          u'Unable to open path specification:\n{0:s}'
+          u'with error: {1:s}').format(
+              file_entry.path_spec.comparable, exception))
+      return
+
+    if not file_object:
+      return
+
+    try:
       data = file_object.read(self._READ_BUFFER_SIZE)
+      while data:
+        hash_context.update(data)
+        data = file_object.read(self._READ_BUFFER_SIZE)
+    except IOError as exception:
+      logging.warning((
+          u'Unable to read from path specification:\n{0:s}'
+          u'with error: {1:s}').format(
+              file_entry.path_spec.comparable, exception))
+      return
 
-    file_object.close()
+    finally:
+      file_object.close()
+
     return hash_context.hexdigest()
 
   def _CalculateHashesFileEntry(
@@ -68,10 +92,18 @@ class RecursiveHasher(object):
     # segment separator we are using JoinPath to be platform and file system
     # type independent.
     full_path = file_system.JoinPath([parent_full_path, file_entry.name])
-    if file_entry.IsFile():
-      hash_value = self._CalculateHashFileEntry(file_entry)
+    for data_stream in file_entry.data_streams:
+      hash_value = self._CalculateHashFileEntry(file_entry, data_stream.name)
+      if not hash_value:
+        hash_value = 'N/A'
+
       # TODO: print volume.
-      output_writer.WriteFileHash(full_path, hash_value)
+      if data_stream.name:
+        display_path = u'{0:s}:{1:s}'.format(full_path, data_stream.name)
+      else:
+        display_path = full_path
+
+      output_writer.WriteFileHash(display_path, hash_value)
 
     for sub_file_entry in file_entry.sub_file_entries:
       self._CalculateHashesFileEntry(
@@ -665,6 +697,16 @@ class RecursiveHasher(object):
 class StdoutWriter(object):
   """Class that defines a stdout output writer."""
 
+  def __init__(self, encoding=u'utf-8'):
+    """Initializes the output writer object.
+
+    Args:
+      encoding: optional input encoding. The default is "utf-8".
+    """
+    super(StdoutWriter, self).__init__()
+    self._encoding = encoding
+    self._errors = u'strict'
+
   def Open(self):
     """Opens the output writer object.
 
@@ -684,7 +726,24 @@ class StdoutWriter(object):
       path: the path of the file.
       hash_value: the message digest hash calculated over the file data.
     """
-    print(u'{0:s}\t{1:s}'.format(hash_value, path))
+    string = u'{0:s}\t{1:s}'.format(hash_value, path)
+
+    try:
+      # Note that encode() will first convert string into a Unicode string
+      # if necessary.
+      encoded_string = string.encode(self._encoding, errors=self._errors)
+    except UnicodeEncodeError:
+      if self._errors == u'strict':
+        logging.error(
+            u'Unable to properly write output due to encoding error. '
+            u'Switching to error tolerant encoding which can result in '
+            u'non Basic Latin (C0) characters to be replaced with "?" or '
+            u'"\\ufffd".')
+        self._errors = u'replace'
+
+      encoded_string = string.encode(self._encoding, errors=self._errors)
+
+    print(encoded_string)
 
 
 def Main():
