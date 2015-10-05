@@ -43,7 +43,7 @@ class TSKPathSpec(path_spec.PathSpec):
     """Comparable representation of the path specification."""
     string_parts = []
 
-    if self.data_stream is not None:
+    if self.data_stream:
       string_parts.append(u'data stream: {0:s}'.format(self.data_stream))
     if self.inode is not None:
       string_parts.append(u'inode: {0:d}'.format(self.inode))
