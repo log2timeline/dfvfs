@@ -48,7 +48,7 @@ class NTFSPathSpec(path_spec.PathSpec):
     """Comparable representation of the path specification."""
     string_parts = []
 
-    if self.data_stream is not None:
+    if self.data_stream:
       string_parts.append(u'data stream: {0:s}'.format(self.data_stream))
     if self.location is not None:
       string_parts.append(u'location: {0:s}'.format(self.location))
