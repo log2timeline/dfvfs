@@ -27,7 +27,7 @@ class DataStream(object):
   """Class that implements the VFS data stream interface."""
 
   # The data stream object should not have a reference to its
-  # file entry since that will create cyclic references.
+  # file entry since that will create a cyclic reference.
 
   @property
   def name(self):

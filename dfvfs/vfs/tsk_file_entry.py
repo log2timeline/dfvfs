@@ -454,7 +454,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """
     data_stream_names = [
         data_stream.name for data_stream in self._GetDataStreams()]
-    if data_stream_name not in data_stream_names:
+    if data_stream_name and data_stream_name not in data_stream_names:
       return
 
     path_spec = copy.deepcopy(self.path_spec)
