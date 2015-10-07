@@ -145,15 +145,14 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
 class NTFSDataStream(file_entry.DataStream):
   """Class that implements a data stream object using pyfsntfs."""
 
-  def __init__(self, file_entry_object, fsntfs_data_stream):
+  def __init__(self, fsntfs_data_stream):
     """Initializes the data stream object.
 
     Args:
-      file_entry_object: the file entry object (instance of NFTSFileEntry).
       fsntfs_data_stream: the NTFS data stream object (instance of
                           pyfsntfs.data_stream).
     """
-    super(NTFSDataStream, self).__init__(file_entry_object)
+    super(NTFSDataStream, self).__init__()
     self._fsntfs_data_stream = fsntfs_data_stream
 
   @property
@@ -162,17 +161,6 @@ class NTFSDataStream(file_entry.DataStream):
     if self._fsntfs_data_stream:
       return self._fsntfs_data_stream.name
     return u''
-
-  def GetFileObject(self):
-    """Retrieves the file-like object.
-
-    Returns:
-      A file-like object (instance of FileIO) or None.
-    """
-    if self._fsntfs_data_stream:
-      return self._file_entry.GetFileObject(
-          data_stream_name=self._fsntfs_data_stream.name)
-    return self._file_entry.GetFileObject()
 
 
 class NTFSDirectory(file_entry.Directory):
@@ -296,11 +284,10 @@ class NTFSFileEntry(file_entry.FileEntry):
 
       self._data_streams = []
       if fsntfs_file_entry.has_default_data_stream():
-        self._data_streams.append(NTFSDataStream(self, None))
+        self._data_streams.append(NTFSDataStream(None))
 
       for fsntfs_data_stream in fsntfs_file_entry.alternate_data_streams:
-        self._data_streams.append(
-            NTFSDataStream(self, fsntfs_data_stream))
+        self._data_streams.append(NTFSDataStream(fsntfs_data_stream))
 
     return self._data_streams
 

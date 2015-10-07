@@ -276,10 +276,6 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertNotEqual(data_stream, None)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    file_object = data_stream.GetFileObject()
-    self.assertNotEqual(file_object, None)
-    file_object.close()
-
     data_stream = file_entry.GetDataStream(u'bogus')
     self.assertEqual(data_stream, None)
 
@@ -293,10 +289,6 @@ class NTFSFileEntryTest(unittest.TestCase):
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertNotEqual(data_stream, None)
     self.assertEqual(data_stream.name, data_stream_name)
-
-    file_object = data_stream.GetFileObject()
-    self.assertNotEqual(file_object, None)
-    file_object.close()
 
 
 if __name__ == '__main__':
