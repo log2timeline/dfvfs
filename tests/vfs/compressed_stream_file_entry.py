@@ -128,10 +128,6 @@ class CompressedStreamFileEntryTest(unittest.TestCase):
     self.assertNotEqual(data_stream, None)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    file_object = data_stream.GetFileObject()
-    self.assertNotEqual(file_object, None)
-    file_object.close()
-
     data_stream = file_entry.GetDataStream(u'bogus')
     self.assertEqual(data_stream, None)
 

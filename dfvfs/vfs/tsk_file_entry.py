@@ -34,14 +34,13 @@ class TSKAttribute(file_entry.Attribute):
 class TSKDataStream(file_entry.DataStream):
   """Class that implements a data stream object using pytks3."""
 
-  def __init__(self, file_entry_object, tsk_attribute):
+  def __init__(self, tsk_attribute):
     """Initializes the data stream object.
 
     Args:
-      file_entry_object: the file entry object (instance of NFTSFileEntry).
       tsk_attribute: the TSK attribute object (instance of pytsk3.Attribute).
     """
-    super(TSKDataStream, self).__init__(file_entry_object)
+    super(TSKDataStream, self).__init__()
     self._tsk_attribute = tsk_attribute
 
   @property
@@ -52,28 +51,6 @@ class TSKDataStream(file_entry.DataStream):
       # data stream.
       return self._tsk_attribute.info.name or u''
     return u''
-
-  def GetFileObject(self):
-    """Retrieves the file-like object.
-
-    Returns:
-      A file-like object (instance of FileIO) or None.
-
-    Raises:
-      BackEndError: if the data stream name cannot be decoded properly.
-    """
-    if self._tsk_attribute:
-      # The value of the attribute name will be None for the default
-      # data stream. In dfvfs we use an empty string for the default
-      # data stream.
-      data_stream_name = self._tsk_attribute.info.name or u''
-      try:
-        data_stream_name = data_stream_name.decode(u'utf8')
-      except UnicodeError:
-        raise errors.BackEndError(u'Unable to decode data stream name.')
-
-      return self._file_entry.GetFileObject(data_stream_name=data_stream_name)
-    return self._file_entry.GetFileObject()
 
 
 class TSKDirectory(file_entry.Directory):
@@ -262,7 +239,7 @@ class TSKFileEntry(file_entry.FileEntry):
         tsk_fs_meta_type = getattr(
             tsk_file.info.meta, u'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
         if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
-          self._data_streams.append(TSKDataStream(self, None))
+          self._data_streams.append(TSKDataStream(None))
 
       else:
         for tsk_attribute in tsk_file:
@@ -271,7 +248,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
           attribute_type = getattr(tsk_attribute.info, u'type', None)
           if attribute_type in known_data_attribute_types:
-            self._data_streams.append(TSKDataStream(self, tsk_attribute))
+            self._data_streams.append(TSKDataStream(tsk_attribute))
 
     return self._data_streams
 
@@ -477,7 +454,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """
     data_stream_names = [
         data_stream.name for data_stream in self._GetDataStreams()]
-    if data_stream_name not in data_stream_names:
+    if data_stream_name and data_stream_name not in data_stream_names:
       return
 
     path_spec = copy.deepcopy(self.path_spec)
