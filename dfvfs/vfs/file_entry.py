@@ -26,23 +26,13 @@ class Attribute(object):
 class DataStream(object):
   """Class that implements the VFS data stream interface."""
 
-  def __init__(self, file_entry_object):
-    """Initializes the data stream object.
-
-    Args:
-      file_entry_object: the file entry object (instance of FileEntry).
-    """
-    super(DataStream, self).__init__()
-    self._file_entry = file_entry_object
+  # The data stream object should not have a reference to its
+  # file entry since that will create a cyclic reference.
 
   @property
   def name(self):
     """The name."""
     return u''
-
-  def GetFileObject(self):
-    """Retrieves the file-like object (instance of file_io.FileIO) or None."""
-    return self._file_entry.GetFileObject()
 
 
 class Directory(object):
@@ -142,7 +132,7 @@ class FileEntry(object):
       # It is assumed that directory and link file entries typically
       # do not have data streams.
       if not self._directory and not self.link:
-        self._data_streams.append(DataStream(self))
+        self._data_streams.append(DataStream())
 
     return self._data_streams
 
