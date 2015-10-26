@@ -107,9 +107,12 @@ class Resolver(object):
             u'Resolver helper object not set for type indicator: '
             u'{0:s}.').format(path_spec.type_indicator))
 
-      resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
-      # TODO: add support for fake file system to pass file data.
-      file_object = resolver_helper.NewFileObject(resolver_context)
+      if path_spec.type_indicator != definitions.TYPE_INDICATOR_FAKE:
+        resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
+        file_object = resolver_helper.NewFileObject(resolver_context)
+
+      else:
+        # TODO: add support for fake file system to pass file data.
 
     file_object.open(path_spec=path_spec)
     return file_object

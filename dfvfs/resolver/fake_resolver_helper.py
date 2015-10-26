@@ -15,17 +15,6 @@ class FakeResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
-
-    Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-
-    Returns:
-      The file-like object (instance of file_io.FileIO).
-    """
-    return dfvfs.file_io.fake_file_io.FakeFile(resolver_context, b'')
-
   def NewFileSystem(self, resolver_context):
     """Creates a new file system object.
 
