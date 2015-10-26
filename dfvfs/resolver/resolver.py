@@ -108,6 +108,7 @@ class Resolver(object):
             u'{0:s}.').format(path_spec.type_indicator))
 
       resolver_helper = cls._resolver_helpers[path_spec.type_indicator]
+      # TODO: add support for fake file system to pass file data.
       file_object = resolver_helper.NewFileObject(resolver_context)
 
     file_object.open(path_spec=path_spec)
