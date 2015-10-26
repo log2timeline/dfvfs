@@ -3,11 +3,11 @@ Upstream-Name: dfvfs
 Source: https://github.com/log2timeline/dfvfs/
 
 Files: *
-Copyright: 2013 The dfVFS Project Authors.
+Copyright: 2013 The dfVFS project authors.
 License: Apache-2.0
 
 Files: debian/*
-Copyright: 2013 The dfVFS Project Authors.
+Copyright: 2013 The dfVFS project authors.
 License: Apache-2.0
 
 License: Apache-2.0
