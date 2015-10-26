@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) resolver helper object interface."""
 
-import abc
-
 
 class ResolverHelper(object):
   """Class that implements the resolver helper object interface."""
@@ -16,7 +14,7 @@ class ResolverHelper(object):
           u'Invalid resolver helper missing type indicator.')
     return type_indicator
 
-  def NewFileObject(self, resolver_context):
+  def NewFileObject(self, unused_resolver_context):
     """Creates a new file-like object.
 
     Args:
