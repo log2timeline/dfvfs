@@ -14,7 +14,7 @@ class EncodedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
 
   def __init__(self, resolver_context):
-    """Initializes the file system object.
+    """Initializes a file system object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).

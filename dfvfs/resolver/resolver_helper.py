@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) resolver helper object interface."""
 
-import abc
-
 
 class ResolverHelper(object):
   """Class that implements the resolver helper object interface."""
@@ -16,8 +14,7 @@ class ResolverHelper(object):
           u'Invalid resolver helper missing type indicator.')
     return type_indicator
 
-  @abc.abstractmethod
-  def NewFileObject(self, resolver_context):
+  def NewFileObject(self, unused_resolver_context):
     """Creates a new file-like object.
 
     Args:
@@ -25,7 +22,14 @@ class ResolverHelper(object):
 
     Returns:
       The file-like object (instance of file_io.FileIO).
+
+    Raises:
+      RuntimeError: if there is no implementation to create a file-like object.
     """
+    # Note: not using NotImplementedError or @abc.abstractmethod here since
+    # pylint then will complain derived classes will need to implement
+    # abstract methods, which should not be the the case.
+    raise RuntimeError(u'Missing implemention to create file object.')
 
   def NewFileSystem(self, unused_resolver_context):
     """Creates a new file system object.
@@ -35,6 +39,10 @@ class ResolverHelper(object):
 
     Returns:
       The file system object (instance of vfs.FileSystem).
+
+    Raises:
+      RuntimeError: if there is no implementation to create a file system
+                    object.
     """
     # Note: not using NotImplementedError or @abc.abstractmethod here since
     # pylint then will complain derived classes will need to implement

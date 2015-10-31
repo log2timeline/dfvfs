@@ -18,7 +18,7 @@ class FakeFileSystem(file_system.FileSystem):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
   def __init__(self, resolver_context):
-    """Initializes the file system object.
+    """Initializes a file system object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
