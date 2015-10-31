@@ -253,6 +253,8 @@ class WindowsPathResolver(object):
             %-characters, e.g. SystemRoot as in %SystemRoot%.
       value: the value of the environment variable.
     """
-    value = self._PathStripPrefix(value)
+    if isinstance(value, basestring):
+      value = self._PathStripPrefix(value)
+
     if value is not None:
       self._environment_variables[name.upper()] = value
