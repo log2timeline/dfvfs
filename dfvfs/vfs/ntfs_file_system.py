@@ -62,10 +62,14 @@ class NTFSFileSystem(file_system.FileSystem):
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
 
-    file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
-    fsnfts_volume = pyfsntfs.volume()
-    fsnfts_volume.open_file_object(file_object)
+    try:
+      file_object = resolver.Resolver.OpenFileObject(
+          path_spec.parent, resolver_context=self._resolver_context)
+      fsnfts_volume = pyfsntfs.volume()
+      fsnfts_volume.open_file_object(file_object)
+    except:
+      file_object.close()
+      raise
 
     self._file_object = file_object
     self._fsntfs_volume = fsnfts_volume

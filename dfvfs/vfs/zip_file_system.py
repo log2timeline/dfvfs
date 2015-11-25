@@ -62,7 +62,11 @@ class ZipFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    zip_file = zipfile.ZipFile(file_object, 'r')
+    try:
+      zip_file = zipfile.ZipFile(file_object, 'r')
+    except:
+      file_object.close()
+      raise
 
     self._file_object = file_object
     self._zip_file = zip_file

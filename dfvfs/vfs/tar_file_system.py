@@ -64,9 +64,13 @@ class TarFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    # Explicitly tell tarfile not to use compression. Compression should be
-    # handled by the file-like object.
-    tar_file = tarfile.open(mode='r:', fileobj=file_object)
+    try:
+      # Explicitly tell tarfile not to use compression. Compression should be
+      # handled by the file-like object.
+      tar_file = tarfile.open(mode='r:', fileobj=file_object)
+    except:
+      file_object.close()
+      raise
 
     self._file_object = file_object
     self._tar_file = tar_file

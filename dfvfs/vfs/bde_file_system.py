@@ -61,8 +61,12 @@ class BdeFileSystem(root_only_file_system.RootOnlyFileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    bde.BdeVolumeOpen(
-        bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
+    try:
+      bde.BdeVolumeOpen(
+          bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
+    except:
+      file_object.close()
+      raise
 
     self._bde_volume = bde_volume
     self._file_object = file_object
