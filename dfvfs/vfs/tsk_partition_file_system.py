@@ -62,8 +62,13 @@ class TSKPartitionFileSystem(file_system.FileSystem):
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
-    tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
-    tsk_volume = pytsk3.Volume_Info(tsk_image_object)
+
+    try:
+      tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
+      tsk_volume = pytsk3.Volume_Info(tsk_image_object)
+    except:
+      file_object.close()
+      raise
 
     self._file_object = file_object
     self._tsk_volume = tsk_volume
