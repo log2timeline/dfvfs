@@ -25,11 +25,12 @@ LIBYAL_DEPENDENCIES = {
 PYTHON_DEPENDENCIES = [
     (u'construct', u'__version__', u'2.5.2', None),
     (u'google.protobuf', u'', u'', None),
-    (u'six', u'__version__', u'1.1.0', None),
-    (u'sqlite3', u'sqlite_version', u'3.7.8', None)]
+    (u'six', u'__version__', u'1.1.0', None)]
+
+_VERSION_SPLIT_REGEX = re.compile(r'\.|\-')
 
 
-def DownloadPageContent(download_url):
+def _DownloadPageContent(download_url):
   """Downloads the page content.
 
   Args:
@@ -42,14 +43,36 @@ def DownloadPageContent(download_url):
     return
 
   url_object = urllib2.urlopen(download_url)
-
-  if url_object.code != 200:
+  if not url_object or url_object.code != 200:
     return
 
   return url_object.read()
 
 
-def GetLibyalGithubReleasesLatestVersion(library_name):
+def _ImportPythonModule(module_name):
+  """Imports a Python module.
+
+  Args:
+    module_name: the name of the module.
+
+  Returns:
+    The Python module object (instance of module) or None
+    if the module cannot be imported.
+  """
+  try:
+    module_object = map(__import__, [module_name])[0]
+  except ImportError:
+    return
+
+  # If the module name contains dots get the upper most module object.
+  if u'.' in module_name:
+    for submodule_name in module_name.split(u'.')[1:]:
+      module_object = getattr(module_object, submodule_name, None)
+
+  return module_object
+
+
+def _GetLibyalGithubReleasesLatestVersion(library_name):
   """Retrieves the latest version number of a libyal library on GitHub releases.
 
   Args:
@@ -62,7 +85,7 @@ def GetLibyalGithubReleasesLatestVersion(library_name):
   download_url = (
       u'https://github.com/libyal/{0:s}/releases').format(library_name)
 
-  page_content = DownloadPageContent(download_url)
+  page_content = _DownloadPageContent(download_url)
   if not page_content:
     return 0
 
@@ -82,7 +105,7 @@ def GetLibyalGithubReleasesLatestVersion(library_name):
 
 
 # TODO: Remove when Google Drive support is no longer needed.
-def GetLibyalGoogleDriveLatestVersion(library_name):
+def _GetLibyalGoogleDriveLatestVersion(library_name):
   """Retrieves the latest version number of a libyal library on Google Drive.
 
   Args:
@@ -94,7 +117,7 @@ def GetLibyalGoogleDriveLatestVersion(library_name):
   """
   download_url = u'https://code.google.com/p/{0:s}/'.format(library_name)
 
-  page_content = DownloadPageContent(download_url)
+  page_content = _DownloadPageContent(download_url)
   if not page_content:
     return 0
 
@@ -107,7 +130,7 @@ def GetLibyalGoogleDriveLatestVersion(library_name):
   if not matches or len(matches) != 1:
     return 0
 
-  page_content = DownloadPageContent(matches[0])
+  page_content = _DownloadPageContent(matches[0])
   if not page_content:
     return 0
 
@@ -124,7 +147,7 @@ def GetLibyalGoogleDriveLatestVersion(library_name):
   return int(max(matches))
 
 
-def CheckLibyal(libyal_python_modules, latest_version_check=False):
+def _CheckLibyal(libyal_python_modules, latest_version_check=False):
   """Checks the availability of libyal libraries.
 
   Args:
@@ -140,9 +163,8 @@ def CheckLibyal(libyal_python_modules, latest_version_check=False):
   connection_error = False
   result = True
   for module_name, module_version in sorted(libyal_python_modules.items()):
-    try:
-      module_object = map(__import__, [module_name])[0]
-    except ImportError:
+    module_object = _ImportPythonModule(module_name)
+    if not module_object:
       print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
       result = False
       continue
@@ -154,20 +176,20 @@ def CheckLibyal(libyal_python_modules, latest_version_check=False):
     latest_version = None
     if latest_version_check:
       try:
-        latest_version = GetLibyalGithubReleasesLatestVersion(libyal_name)
+        latest_version = _GetLibyalGithubReleasesLatestVersion(libyal_name)
       except urllib2.URLError:
         latest_version = None
 
       if not latest_version:
         try:
-          latest_version = GetLibyalGoogleDriveLatestVersion(libyal_name)
+          latest_version = _GetLibyalGoogleDriveLatestVersion(libyal_name)
         except urllib2.URLError:
           latest_version = None
 
       if not latest_version:
         print(
-            u'Unable to determine latest version of {0:s} ({1:s}).\n').format(
-                libyal_name, module_name)
+            u'Unable to determine latest version of {0:s} ({1:s}).\n'.format(
+                libyal_name, module_name))
         latest_version = None
         connection_error = True
 
@@ -189,14 +211,14 @@ def CheckLibyal(libyal_python_modules, latest_version_check=False):
           libyal_name, module_name, installed_version))
 
   if connection_error:
-    print(
+    print((
         u'[INFO] to check for the latest versions this script needs Internet '
-        u'access.')
+        u'access.'))
 
   return result
 
 
-def CheckPythonModule(
+def _CheckPythonModule(
     module_name, version_attribute_name, minimum_version,
     maximum_version=None):
   """Checks the availability of a Python module.
@@ -215,59 +237,58 @@ def CheckPythonModule(
     True if the Python module is available and conforms to the minimum required
     version. False otherwise.
   """
-  try:
-    module_object = map(__import__, [module_name])[0]
-  except ImportError:
+  module_object = _ImportPythonModule(module_name)
+  if not module_object:
     print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
     return False
 
-  if version_attribute_name and minimum_version:
-    module_version = getattr(module_object, version_attribute_name, None)
-
-    if not module_version:
-      return False
-
-    # Split the version string and convert every digit into an integer.
-    # A string compare of both version strings will yield an incorrect result.
-    split_regex = re.compile(r'\.|\-')
-    module_version_map = map(int, split_regex.split(module_version))
-    minimum_version_map = map(int, split_regex.split(minimum_version))
-
-    if module_version_map < minimum_version_map:
-      print((
-          u'[FAILURE]\t{0:s} version: {1:s} is too old, {2:s} or later '
-          u'required.').format(module_name, module_version, minimum_version))
-      return False
-
-    if maximum_version:
-      maximum_version_map = map(int, split_regex.split(maximum_version))
-      if module_version_map > maximum_version_map:
-        print((
-            u'[FAILURE]\t{0:s} version: {1:s} is too recent, {2:s} or earlier '
-            u'required.').format(module_name, module_version, maximum_version))
-        return False
-
-    print(u'[OK]\t\t{0:s} version: {1:s}'.format(module_name, module_version))
-  else:
+  if not version_attribute_name or not minimum_version:
     print(u'[OK]\t\t{0:s}'.format(module_name))
+    return True
+
+  module_version = getattr(module_object, version_attribute_name, None)
+  if not module_version:
+    print((
+        u'[FAILURE]\tunable to determine version information '
+        u'for: {0:s}').format(module_name))
+    return False
+
+  # Split the version string and convert every digit into an integer.
+  # A string compare of both version strings will yield an incorrect result.
+  module_version_map = map(int, _VERSION_SPLIT_REGEX.split(module_version))
+  minimum_version_map = map(int, _VERSION_SPLIT_REGEX.split(minimum_version))
+
+  if module_version_map < minimum_version_map:
+    print((
+        u'[FAILURE]\t{0:s} version: {1:s} is too old, {2:s} or later '
+        u'required.').format(module_name, module_version, minimum_version))
+    return False
+
+  if maximum_version:
+    maximum_version_map = map(int, _VERSION_SPLIT_REGEX.split(maximum_version))
+    if module_version_map > maximum_version_map:
+      print((
+          u'[FAILURE]\t{0:s} version: {1:s} is too recent, {2:s} or earlier '
+          u'required.').format(module_name, module_version, maximum_version))
+      return False
+
+  print(u'[OK]\t\t{0:s} version: {1:s}'.format(module_name, module_version))
 
   return True
 
 
-def CheckPytsk(module_name, minimum_version_libtsk, minimum_version_pytsk):
+def _CheckPytsk():
   """Checks the availability of pytsk.
-
-  Args:
-    module_name: the name of the module.
-    minimum_version_libtsk: the minimum required version of libtsk.
-    minimum_version_pytsk: the minimum required version of pytsk.
 
   Returns:
     True if the pytsk Python module is available, False otherwise.
   """
-  try:
-    module_object = map(__import__, [module_name])[0]
-  except ImportError:
+  module_name = u'pytsk3'
+  minimum_version_libtsk = u'4.1.2'
+  minimum_version_pytsk = u'20140506'
+
+  module_object = _ImportPythonModule(module_name)
+  if not module_object:
     print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
     return False
 
@@ -303,6 +324,42 @@ def CheckPytsk(module_name, minimum_version_libtsk, minimum_version_pytsk):
   return True
 
 
+def _CheckSqlite3():
+  """Checks the availability of sqlite3.
+
+  Returns:
+    True if the sqlite3 Python module is available, False otherwise.
+  """
+  module_name = u'pysqlite2.dbapi2'
+  minimum_version = u'3.7.8'
+
+  module_object = _ImportPythonModule(module_name)
+  if not module_object:
+    module_name = u'sqlite3'
+
+  module_object = _ImportPythonModule(module_name)
+  if not module_object:
+    print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
+    return False
+
+  module_version = getattr(module_object, u'sqlite_version', None)
+  if not module_version:
+    return False
+
+  # Split the version string and convert every digit into an integer.
+  # A string compare of both version strings will yield an incorrect result.
+  module_version_map = map(int, _VERSION_SPLIT_REGEX.split(module_version))
+  minimum_version_map = map(int, _VERSION_SPLIT_REGEX.split(minimum_version))
+
+  if module_version_map < minimum_version_map:
+    print((
+        u'[FAILURE]\t{0:s} version: {1:s} is too old, {2:s} or later '
+        u'required.').format(module_name, module_version, minimum_version))
+    return False
+
+  return True
+
+
 def CheckDependencies(latest_version_check=False):
   """Checks the availability of the dependencies.
 
@@ -318,14 +375,17 @@ def CheckDependencies(latest_version_check=False):
   check_result = True
 
   for values in PYTHON_DEPENDENCIES:
-    if not CheckPythonModule(
+    if not _CheckPythonModule(
         values[0], values[1], values[2], maximum_version=values[3]):
       check_result = False
 
-  if not CheckPytsk(u'pytsk3', u'4.1.2', u'20140506'):
+  if not _CheckSqlite3():
     check_result = False
 
-  libyal_check_result = CheckLibyal(
+  if not _CheckPytsk():
+    check_result = False
+
+  libyal_check_result = _CheckLibyal(
       LIBYAL_DEPENDENCIES, latest_version_check=latest_version_check)
 
   if not libyal_check_result:
@@ -374,7 +434,9 @@ def GetInstallRequires():
     module_version = values[2]
 
     # Map the import name to the pypi name.
-    if module_name == u'sqlite3':
+    if module_name == u'yaml':
+      module_name = u'PyYAML'
+    elif module_name == u'sqlite3':
       # Override the pysqlite version since it does not match
       # the sqlite3 version.
       module_name = u'pysqlite'

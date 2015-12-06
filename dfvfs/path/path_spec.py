@@ -22,7 +22,8 @@ class PathSpec(object):
       ValueError: when there are unused keyword arguments.
     """
     if kwargs:
-      raise ValueError(u'Unused keyword arguments.')
+      raise ValueError(u'Unused keyword arguments: {0:s}.'.format(
+          u', '.join(kwargs)))
 
     super(PathSpec, self).__init__()
     self.parent = parent

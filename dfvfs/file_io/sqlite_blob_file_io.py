@@ -4,7 +4,10 @@
 import os
 import tempfile
 
-import sqlite3
+try:
+  from pysqlite2 import dbapi2 as sqlite3
+except ImportError:
+  import sqlite3
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
