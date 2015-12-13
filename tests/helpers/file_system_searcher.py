@@ -17,6 +17,7 @@ from dfvfs.vfs import tsk_file_system
 
 class FileSystemSearcherTest(unittest.TestCase):
   """The unit test for the file system searcher object."""
+
   maxDiff = None
 
   def setUp(self):
