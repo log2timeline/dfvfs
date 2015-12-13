@@ -27,7 +27,7 @@ class TarFileSystemTest(unittest.TestCase):
     file_system = tar_file_system.TarFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tar_path_spec)
+    file_system.Open(self._tar_path_spec)
 
     file_system.Close()
 
@@ -36,7 +36,7 @@ class TarFileSystemTest(unittest.TestCase):
     file_system = tar_file_system.TarFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tar_path_spec)
+    file_system.Open(self._tar_path_spec)
 
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
@@ -53,7 +53,7 @@ class TarFileSystemTest(unittest.TestCase):
     file_system = tar_file_system.TarFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tar_path_spec)
+    file_system.Open(self._tar_path_spec)
 
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
@@ -75,7 +75,7 @@ class TarFileSystemTest(unittest.TestCase):
     file_system = tar_file_system.TarFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tar_path_spec)
+    file_system.Open(self._tar_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

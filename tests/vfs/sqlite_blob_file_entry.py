@@ -29,7 +29,7 @@ class SqliteBlobFileEntryTest(unittest.TestCase):
 
     self._file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
-    self._file_system.Open(path_spec=self._sqlite_blob_path_spec)
+    self._file_system.Open(self._sqlite_blob_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

@@ -25,7 +25,7 @@ class TSKFileEntryTest(unittest.TestCase):
         location=u'/', parent=self._os_path_spec)
 
     self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._tsk_path_spec)
+    self._file_system.Open(self._tsk_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -220,7 +220,7 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
         location=u'\\', parent=self._qcow_path_spec)
 
     self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._tsk_path_spec)
+    self._file_system.Open(self._tsk_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

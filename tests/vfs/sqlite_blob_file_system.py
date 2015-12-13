@@ -32,11 +32,11 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._sqlite_blob_path_spec)
+    file_system.Open(self._sqlite_blob_path_spec)
 
     file_system.Close()
 
-    file_system.Open(path_spec=self._sqlite_blob_path_spec_2)
+    file_system.Open(self._sqlite_blob_path_spec_2)
 
     file_system.Close()
 
@@ -46,7 +46,7 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._sqlite_blob_path_spec)
+    file_system.Open(self._sqlite_blob_path_spec)
 
     self.assertTrue(file_system.FileEntryExistsByPathSpec(
         self._sqlite_blob_path_spec))
@@ -62,7 +62,7 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._sqlite_blob_path_spec)
+    file_system.Open(self._sqlite_blob_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(self._sqlite_blob_path_spec)
 
@@ -83,7 +83,7 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._sqlite_blob_path_spec)
+    file_system.Open(self._sqlite_blob_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

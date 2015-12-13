@@ -41,7 +41,7 @@ class FakeFileEntryTest(unittest.TestCase):
     self._test_file = u'/test_data/testdir_fake'
 
     self._fake_path_spec = fake_path_spec.FakePathSpec(location=u'/')
-    self._file_system.Open(path_spec=self._fake_path_spec)
+    self._file_system.Open(self._fake_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

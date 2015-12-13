@@ -28,7 +28,7 @@ class BdeFileEntryTest(unittest.TestCase):
         self._bde_path_spec, u'password', self._BDE_PASSWORD)
 
     self._file_system = bde_file_system.BdeFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._bde_path_spec)
+    self._file_system.Open(self._bde_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

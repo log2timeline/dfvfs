@@ -31,7 +31,7 @@ class BdeFileSystemTest(unittest.TestCase):
     file_system = bde_file_system.BdeFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._bde_path_spec)
+    file_system.Open(self._bde_path_spec)
 
     file_system.Close()
 
@@ -40,7 +40,7 @@ class BdeFileSystemTest(unittest.TestCase):
     file_system = bde_file_system.BdeFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._bde_path_spec)
+    file_system.Open(self._bde_path_spec)
 
     self.assertTrue(file_system.FileEntryExistsByPathSpec(self._bde_path_spec))
 
@@ -51,7 +51,7 @@ class BdeFileSystemTest(unittest.TestCase):
     file_system = bde_file_system.BdeFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._bde_path_spec)
+    file_system.Open(self._bde_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(self._bde_path_spec)
 
@@ -65,7 +65,7 @@ class BdeFileSystemTest(unittest.TestCase):
     file_system = bde_file_system.BdeFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._bde_path_spec)
+    file_system.Open(self._bde_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
