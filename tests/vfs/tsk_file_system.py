@@ -27,7 +27,7 @@ class TSKFileSystemTest(unittest.TestCase):
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_path_spec)
+    file_system.Open(self._tsk_path_spec)
 
     file_system.Close()
 
@@ -36,7 +36,7 @@ class TSKFileSystemTest(unittest.TestCase):
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_path_spec)
+    file_system.Open(self._tsk_path_spec)
 
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=15, location=u'/password.txt', parent=self._os_path_spec)
@@ -53,7 +53,7 @@ class TSKFileSystemTest(unittest.TestCase):
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_path_spec)
+    file_system.Open(self._tsk_path_spec)
 
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
 
@@ -83,7 +83,7 @@ class TSKFileSystemTest(unittest.TestCase):
     file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_path_spec)
+    file_system.Open(self._tsk_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

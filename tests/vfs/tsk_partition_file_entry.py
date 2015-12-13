@@ -26,7 +26,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
 
     self._file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context)
-    self._file_system.Open(path_spec=self._tsk_partition_path_spec)
+    self._file_system.Open(self._tsk_partition_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

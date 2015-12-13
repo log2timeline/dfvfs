@@ -27,7 +27,7 @@ class ZipFileSystemTest(unittest.TestCase):
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._zip_path_spec)
+    file_system.Open(self._zip_path_spec)
 
     file_system.Close()
 
@@ -36,7 +36,7 @@ class ZipFileSystemTest(unittest.TestCase):
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._zip_path_spec)
+    file_system.Open(self._zip_path_spec)
 
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
@@ -53,7 +53,7 @@ class ZipFileSystemTest(unittest.TestCase):
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._zip_path_spec)
+    file_system.Open(self._zip_path_spec)
 
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
@@ -75,7 +75,7 @@ class ZipFileSystemTest(unittest.TestCase):
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._zip_path_spec)
+    file_system.Open(self._zip_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

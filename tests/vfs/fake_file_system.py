@@ -22,7 +22,7 @@ class FakeFileSystemTest(unittest.TestCase):
     file_system = fake_file_system.FakeFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._fake_path_spec)
+    file_system.Open(self._fake_path_spec)
 
     file_system.Close()
 
@@ -34,7 +34,7 @@ class FakeFileSystemTest(unittest.TestCase):
     file_system.AddFileEntry(
         u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
 
-    file_system.Open(path_spec=self._fake_path_spec)
+    file_system.Open(self._fake_path_spec)
 
     path_spec = fake_path_spec.FakePathSpec(
         location=u'/test_data/testdir_fake/file1.txt')
@@ -54,7 +54,7 @@ class FakeFileSystemTest(unittest.TestCase):
     file_system.AddFileEntry(
         u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
 
-    file_system.Open(path_spec=self._fake_path_spec)
+    file_system.Open(self._fake_path_spec)
 
     path_spec = fake_path_spec.FakePathSpec(
         location=u'/test_data/testdir_fake/file1.txt')
@@ -76,7 +76,7 @@ class FakeFileSystemTest(unittest.TestCase):
     file_system = fake_file_system.FakeFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._fake_path_spec)
+    file_system.Open(self._fake_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

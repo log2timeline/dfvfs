@@ -24,7 +24,7 @@ class TarFileEntryTest(unittest.TestCase):
         location=u'/syslog', parent=self._os_path_spec)
 
     self._file_system = tar_file_system.TarFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._tar_path_spec)
+    self._file_system.Open(self._tar_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

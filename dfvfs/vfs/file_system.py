@@ -39,12 +39,11 @@ class FileSystem(object):
     """
 
   @abc.abstractmethod
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, path_spec, mode='rb'):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
+      path_spec: a path specification (instance of path.PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -205,12 +204,11 @@ class FileSystem(object):
     return u'{0:s}{1:s}'.format(
         self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
 
-  def Open(self, path_spec=None, mode='rb'):
+  def Open(self, path_spec, mode='rb'):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
+      path_spec: a path specification (instance of path.PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -225,8 +223,11 @@ class FileSystem(object):
     if mode != 'rb':
       raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
 
+    if not path_spec:
+      raise ValueError(u'Missing path specification.')
+
     if not self._is_open:
-      self._Open(path_spec=path_spec, mode=mode)
+      self._Open(path_spec, mode=mode)
       self._is_open = True
       self._path_spec = path_spec
 

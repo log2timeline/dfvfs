@@ -43,7 +43,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_partition_path_spec)
+    file_system.Open(self._tsk_partition_path_spec)
 
     file_system.Close()
 
@@ -53,7 +53,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_partition_path_spec)
+    file_system.Open(self._tsk_partition_path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/', parent=self._os_path_spec)
@@ -91,7 +91,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_partition_path_spec)
+    file_system.Open(self._tsk_partition_path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/', parent=self._os_path_spec)
@@ -147,7 +147,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._tsk_partition_path_spec)
+    file_system.Open(self._tsk_partition_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

@@ -27,7 +27,7 @@ class NTFSFileEntryTest(unittest.TestCase):
         location=u'\\', parent=self._qcow_path_spec)
 
     self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._ntfs_path_spec)
+    self._file_system.Open(self._ntfs_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

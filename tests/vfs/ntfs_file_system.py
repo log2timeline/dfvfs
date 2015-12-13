@@ -29,7 +29,7 @@ class NTFSFileSystemTest(unittest.TestCase):
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._ntfs_path_spec)
+    file_system.Open(self._ntfs_path_spec)
 
     file_system.Close()
 
@@ -38,7 +38,7 @@ class NTFSFileSystemTest(unittest.TestCase):
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._ntfs_path_spec)
+    file_system.Open(self._ntfs_path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\password.txt', mft_attribute=1, mft_entry=41,
@@ -56,7 +56,7 @@ class NTFSFileSystemTest(unittest.TestCase):
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._ntfs_path_spec)
+    file_system.Open(self._ntfs_path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
@@ -87,7 +87,7 @@ class NTFSFileSystemTest(unittest.TestCase):
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._ntfs_path_spec)
+    file_system.Open(self._ntfs_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

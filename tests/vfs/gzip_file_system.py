@@ -26,7 +26,7 @@ class GzipFileSystemTest(unittest.TestCase):
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._gzip_path_spec)
+    file_system.Open(self._gzip_path_spec)
 
     file_system.Close()
 
@@ -35,7 +35,7 @@ class GzipFileSystemTest(unittest.TestCase):
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._gzip_path_spec)
+    file_system.Open(self._gzip_path_spec)
 
     self.assertTrue(file_system.FileEntryExistsByPathSpec(self._gzip_path_spec))
 
@@ -46,7 +46,7 @@ class GzipFileSystemTest(unittest.TestCase):
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._gzip_path_spec)
+    file_system.Open(self._gzip_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
@@ -60,7 +60,7 @@ class GzipFileSystemTest(unittest.TestCase):
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._gzip_path_spec)
+    file_system.Open(self._gzip_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

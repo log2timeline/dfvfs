@@ -163,7 +163,7 @@ class Resolver(object):
       file_system = resolver_helper.NewFileSystem(resolver_context)
 
     try:
-      file_system.Open(path_spec=path_spec)
+      file_system.Open(path_spec)
     except (errors.AccessError, errors.PathSpecError):
       raise
     except (IOError, ValueError) as exception:

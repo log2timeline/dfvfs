@@ -99,7 +99,7 @@ class FileEntry(object):
     self._stat_object = None
     self.path_spec = path_spec
 
-    self._file_system.Open(path_spec=path_spec)
+    self._file_system.Open(path_spec)
 
   def __del__(self):
     """Cleans up the file entry object."""
