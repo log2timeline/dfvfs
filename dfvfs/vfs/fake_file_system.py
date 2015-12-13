@@ -115,6 +115,17 @@ class FakeFileSystem(file_system.FileSystem):
 
     self._paths[path] = (stat_object, path_data)
 
+  def FileEntryExistsByPath(self, path):
+    """Determines if a file entry for a path exists.
+
+    Args:
+      path: the path of the file entry.
+
+    Returns:
+      Boolean indicating if the file entry exists.
+    """
+    return path and path in self._paths
+
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
 
@@ -125,10 +136,7 @@ class FakeFileSystem(file_system.FileSystem):
       Boolean indicating if the file entry exists.
     """
     location = getattr(path_spec, u'location', None)
-
-    if location is None or location not in self._paths:
-      return False
-    return True
+    return self.FileEntryExistsByPath(location)
 
   def GetDataByPath(self, path):
     """Retrieves the data associated to a path.
