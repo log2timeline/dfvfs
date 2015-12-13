@@ -24,7 +24,7 @@ class ZipFileEntryTest(unittest.TestCase):
         location=u'/', parent=self._os_path_spec)
 
     self._file_system = zip_file_system.ZipFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._zip_path_spec)
+    self._file_system.Open(self._zip_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

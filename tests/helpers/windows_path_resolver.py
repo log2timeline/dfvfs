@@ -35,7 +35,7 @@ class WindowsPathResolverTest(unittest.TestCase):
 
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context)
-    self._tsk_file_system.Open(path_spec=self._tsk_path_spec)
+    self._tsk_file_system.Open(self._tsk_path_spec)
 
   def testResolvePathDirectory(self):
     """Test the resolve path function on a mount point directory."""

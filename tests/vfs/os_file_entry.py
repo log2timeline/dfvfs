@@ -21,7 +21,7 @@ class OSFileEntryTest(unittest.TestCase):
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     self._file_system = os_file_system.OSFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._os_path_spec)
+    self._file_system.Open(self._os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

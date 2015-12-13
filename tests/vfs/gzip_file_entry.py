@@ -23,7 +23,7 @@ class GzipFileEntryTest(unittest.TestCase):
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
 
     self._file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
-    self._file_system.Open(path_spec=self._gzip_path_spec)
+    self._file_system.Open(self._gzip_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

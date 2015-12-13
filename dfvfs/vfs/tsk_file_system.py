@@ -43,12 +43,11 @@ class TSKFileSystem(file_system.FileSystem):
     self._file_object.close()
     self._file_object = None
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, path_spec, mode='rb'):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
+      path_spec: a path specification (instance of path.PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

@@ -36,7 +36,7 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context)
-    self._tsk_file_system.Open(path_spec=self._tsk_path_spec)
+    self._tsk_file_system.Open(self._tsk_path_spec)
 
   def testFind(self):
     """Test the Find() function."""

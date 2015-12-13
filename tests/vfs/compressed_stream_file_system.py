@@ -31,7 +31,7 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._compressed_stream_path_spec)
+    file_system.Open(self._compressed_stream_path_spec)
 
     file_system.Close()
 
@@ -41,7 +41,7 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._compressed_stream_path_spec)
+    file_system.Open(self._compressed_stream_path_spec)
 
     self.assertTrue(file_system.FileEntryExistsByPathSpec(
         self._compressed_stream_path_spec))
@@ -54,7 +54,7 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._compressed_stream_path_spec)
+    file_system.Open(self._compressed_stream_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(
         self._compressed_stream_path_spec)
@@ -70,7 +70,7 @@ class CompressedStreamFileSystemTest(unittest.TestCase):
         self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._compressed_stream_path_spec)
+    file_system.Open(self._compressed_stream_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 

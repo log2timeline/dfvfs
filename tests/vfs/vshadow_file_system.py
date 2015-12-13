@@ -52,7 +52,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._vshadow_path_spec)
+    file_system.Open(self._vshadow_path_spec)
 
     file_system.Close()
 
@@ -61,7 +61,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._vshadow_path_spec)
+    file_system.Open(self._vshadow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
@@ -94,7 +94,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._vshadow_path_spec)
+    file_system.Open(self._vshadow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
@@ -142,7 +142,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
     self.assertNotEqual(file_system, None)
 
-    file_system.Open(path_spec=self._vshadow_path_spec)
+    file_system.Open(self._vshadow_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
