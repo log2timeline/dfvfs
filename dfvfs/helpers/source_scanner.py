@@ -373,7 +373,12 @@ class SourceScanner(object):
         scan_node.scanned = True
         scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
-        scan_context.SetSourceType(definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+        if system_level_file_entry.IsDevice():
+          scan_context.SetSourceType(
+              definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+        else:
+          scan_context.SetSourceType(
+              definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
         if not auto_recurse:
           return
