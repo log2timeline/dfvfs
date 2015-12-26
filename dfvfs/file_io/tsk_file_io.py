@@ -103,8 +103,10 @@ class TSKFile(file_io.FileIO):
 
         attribute_name = getattr(attribute.info, u'name', u'')
         attribute_type = getattr(attribute.info, u'type', None)
-        if (attribute_name == data_stream and
-            attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA):
+        if attribute_name == data_stream and attribute_type in (
+            pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,
+            pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA,
+            pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA):
           tsk_attribute = attribute
           break
 
