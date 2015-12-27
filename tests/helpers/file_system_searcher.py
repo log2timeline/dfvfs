@@ -160,6 +160,27 @@ class FileSystemSearcherTest(unittest.TestCase):
     test_relative_path = searcher.GetRelativePath(first_path_spec)
     self.assertEqual(test_relative_path, u'/password.txt')
 
+    # Find all the file entries with a location glob.
+    find_spec1 = file_system_searcher.FindSpec(
+        location_glob=u'/*/$RmMetadata')
+    find_spec2 = file_system_searcher.FindSpec(
+        location_glob=[u'$Extend', u'$RmMetadata', u'*', u'*.blf'])
+    find_spec3 = file_system_searcher.FindSpec(
+        location_glob=u'/PASSWORD.TXT')
+    path_spec_generator = searcher.Find(
+        find_specs=[find_spec1, find_spec2, find_spec3])
+    self.assertIsNotNone(path_spec_generator)
+
+    expected_locations = [
+        u'/$Extend/$RmMetadata',
+        u'/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
+
+    locations = []
+    for path_spec in path_spec_generator:
+      locations.append(getattr(path_spec, u'location', u''))
+
+    self.assertEqual(locations, expected_locations)
+
     # Find all the file entries with a location regular expression.
     find_spec1 = file_system_searcher.FindSpec(
         location_regex=r'/.*/\$RmMetadata')
@@ -174,6 +195,21 @@ class FileSystemSearcherTest(unittest.TestCase):
     expected_locations = [
         u'/$Extend/$RmMetadata',
         u'/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
+
+    locations = []
+    for path_spec in path_spec_generator:
+      locations.append(getattr(path_spec, u'location', u''))
+
+    self.assertEqual(locations, expected_locations)
+
+    # Find all the file entries with a case insensitive location glob.
+    find_spec = file_system_searcher.FindSpec(
+        location_glob=u'/PASSWORD.TXT', case_sensitive=False)
+    path_spec_generator = searcher.Find(find_specs=[find_spec])
+    self.assertIsNotNone(path_spec_generator)
+
+    expected_locations = [
+        u'/password.txt']
 
     locations = []
     for path_spec in path_spec_generator:
@@ -197,7 +233,45 @@ class FileSystemSearcherTest(unittest.TestCase):
 
     self.assertEqual(locations, expected_locations)
 
-    # Find all the file entries with a location.
+    # Find all the file entries with a location glob.
+    searcher = file_system_searcher.FileSystemSearcher(
+        self._os_file_system, self._os_path_spec)
+
+    location = u'{0:s}syslog.*'.format(os.path.sep)
+    find_spec = file_system_searcher.FindSpec(
+        location_glob=location, case_sensitive=False)
+    path_spec_generator = searcher.Find(find_specs=[find_spec])
+    self.assertIsNotNone(path_spec_generator)
+
+    expected_locations = sorted([
+        os.path.join(self._os_path, u'syslog.base16'),
+        os.path.join(self._os_path, u'syslog.base32'),
+        os.path.join(self._os_path, u'syslog.base64'),
+        os.path.join(self._os_path, u'syslog.bz2'),
+        os.path.join(self._os_path, u'syslog.db'),
+        os.path.join(self._os_path, u'syslog.gz'),
+        os.path.join(self._os_path, u'syslog.tar'),
+        os.path.join(self._os_path, u'syslog.tgz'),
+        os.path.join(self._os_path, u'syslog.Z'),
+        os.path.join(self._os_path, u'syslog.zip'),
+        os.path.join(self._os_path, u'syslog.zlib')])
+
+    locations = []
+    first_path_spec = None
+    for path_spec in path_spec_generator:
+      if not first_path_spec:
+        first_path_spec = path_spec
+      locations.append(getattr(path_spec, u'location', u''))
+
+    self.assertEqual(sorted(locations), expected_locations)
+
+    _, path_separator, relative_path = locations[0].rpartition(os.path.sep)
+    expected_relative_path = u'{0:s}{1:s}'.format(
+        path_separator, relative_path)
+    test_relative_path = searcher.GetRelativePath(first_path_spec)
+    self.assertEqual(test_relative_path, expected_relative_path)
+
+    # Find all the file entries with a location regular expression.
     searcher = file_system_searcher.FileSystemSearcher(
         self._os_file_system, self._os_path_spec)
 
