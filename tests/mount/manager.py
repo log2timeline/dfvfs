@@ -33,7 +33,7 @@ class MountPointManagerTest(unittest.TestCase):
     self.assertEqual(mount_point_path_spec, self._qcow_path_spec)
 
     mount_point_path_spec = manager.MountPointManager.GetMountPoint(u'D')
-    self.assertEqual(mount_point_path_spec, None)
+    self.assertIsNone(mount_point_path_spec)
 
     manager.MountPointManager.DeregisterMountPoint(u'C')
 
@@ -47,7 +47,7 @@ class MountPointManagerTest(unittest.TestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    self.assertNotEqual(file_object, None)
+    self.assertIsNotNone(file_object)
     self.assertEqual(file_object.get_size(), 116)
     file_object.close()
 

@@ -16,7 +16,7 @@ class EwfPathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification initialization."""
     path_spec = ewf_path_spec.EwfPathSpec(parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = ewf_path_spec.EwfPathSpec(parent=None)
@@ -28,7 +28,7 @@ class EwfPathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification comparable property."""
     path_spec = ewf_path_spec.EwfPathSpec(parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',

@@ -35,18 +35,18 @@ class TarFileEntryTest(unittest.TestCase):
     file_entry = tar_file_entry.TarFileEntry(
         self._resolver_context, self._file_system, self._tar_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertNotEqual(parent_file_entry, None)
+    self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, u'')
 
@@ -55,11 +55,11 @@ class TarFileEntryTest(unittest.TestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
@@ -67,7 +67,7 @@ class TarFileEntryTest(unittest.TestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -83,7 +83,7 @@ class TarFileEntryTest(unittest.TestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -101,9 +101,9 @@ class TarFileEntryTest(unittest.TestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 1)
 
@@ -123,7 +123,7 @@ class TarFileEntryTest(unittest.TestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 1)
 
@@ -136,7 +136,7 @@ class TarFileEntryTest(unittest.TestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
@@ -151,15 +151,15 @@ class TarFileEntryTest(unittest.TestCase):
     path_spec = tar_path_spec.TarPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
     data_stream = file_entry.GetDataStream(u'bogus')
-    self.assertEqual(data_stream, None)
+    self.assertIsNone(data_stream)
 
 
 if __name__ == '__main__':

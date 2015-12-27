@@ -17,7 +17,7 @@ class ZipPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/test', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = zip_path_spec.ZipPathSpec(location=u'/test', parent=None)
@@ -34,7 +34,7 @@ class ZipPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/test', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',

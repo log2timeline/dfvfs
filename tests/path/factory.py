@@ -35,7 +35,7 @@ class FactoryTest(unittest.TestCase):
     test_path_spec = factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=u'/test')
 
-    self.assertNotEqual(test_path_spec, None)
+    self.assertIsNotNone(test_path_spec)
 
   def testIsSystemLevelTypeIndicator(self):
     """Tests the IsSystemLevelTypeIndicator function."""

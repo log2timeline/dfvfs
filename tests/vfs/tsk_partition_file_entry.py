@@ -52,7 +52,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
         self._resolver_context, self._file_system,
         self._tsk_partition_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
@@ -60,22 +60,22 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertEqual(parent_file_entry, None)
+    self.assertIsNone(parent_file_entry)
 
   def testGetStat(self):
     """Test the get stat functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
@@ -83,7 +83,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -99,7 +99,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -117,7 +117,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 7)
 
@@ -137,7 +137,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 1)
 
@@ -150,7 +150,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
@@ -165,15 +165,15 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
     data_stream = file_entry.GetDataStream(u'bogus')
-    self.assertEqual(data_stream, None)
+    self.assertIsNone(data_stream)
 
 
 if __name__ == '__main__':

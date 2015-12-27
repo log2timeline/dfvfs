@@ -24,7 +24,7 @@ class GzipFileSystemTest(unittest.TestCase):
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._gzip_path_spec)
 
@@ -33,7 +33,7 @@ class GzipFileSystemTest(unittest.TestCase):
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._gzip_path_spec)
 
@@ -44,13 +44,13 @@ class GzipFileSystemTest(unittest.TestCase):
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._gzip_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'')
 
     file_system.Close()
@@ -58,13 +58,13 @@ class GzipFileSystemTest(unittest.TestCase):
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._gzip_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'')
 
     file_system.Close()

@@ -30,7 +30,7 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
     """Test the open and close functionality."""
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._sqlite_blob_path_spec)
 
@@ -44,7 +44,7 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
     """Test the file entry exists by path specification functionality."""
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._sqlite_blob_path_spec)
 
@@ -60,19 +60,19 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
     """Test the get entry by path specification functionality."""
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._sqlite_blob_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(self._sqlite_blob_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'WHERE name == \'mmssms.db\'')
 
     file_entry = file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec_2)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'OFFSET 2')
 
     file_system.Close()
@@ -81,13 +81,13 @@ class SqliteBlobFileSystemTest(unittest.TestCase):
     """Test the get root file entry functionality."""
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._sqlite_blob_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'myblobs.blobs')
 
     file_system.Close()

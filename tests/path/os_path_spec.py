@@ -22,7 +22,7 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
     path_spec = os_path_spec.OSPathSpec(location=test_location)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = os_path_spec.OSPathSpec(
@@ -40,7 +40,7 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
     path_spec = os_path_spec.OSPathSpec(location=test_location)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: OS, location: {0:s}'.format(test_location),
@@ -57,7 +57,7 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
     path_spec = os_path_spec.OSPathSpec(location=test_location)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertTrue(path_spec.IsSystemLevel())
 
 

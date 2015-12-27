@@ -47,7 +47,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
         u'/$AttrDef',
@@ -87,7 +87,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         file_entry_types=[definitions.FILE_ENTRY_TYPE_DIRECTORY])
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
         u'/',
@@ -108,7 +108,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         file_entry_types=[definitions.FILE_ENTRY_TYPE_LINK])
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = []
 
@@ -127,7 +127,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         location=u'/PASSWORD.TXT')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
         u'/$Extend/$RmMetadata',
@@ -143,7 +143,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         location=u'/PASSWORD.TXT', case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
         u'/password.txt']
@@ -169,7 +169,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         location_regex=u'/PASSWORD.TXT')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
         u'/$Extend/$RmMetadata',
@@ -186,7 +186,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         location_regex=u'/PASSWORD.TXT', case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
         u'/password.txt']
@@ -205,7 +205,7 @@ class FileSystemSearcherTest(unittest.TestCase):
     find_spec = file_system_searcher.FindSpec(
         location_regex=location, case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
-    self.assertNotEqual(path_spec_generator, None)
+    self.assertIsNotNone(path_spec_generator)
 
     expected_locations = sorted([
         os.path.join(self._os_path, u'syslog.base16'),

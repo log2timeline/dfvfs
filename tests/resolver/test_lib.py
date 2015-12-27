@@ -44,7 +44,7 @@ class ResolverHelperTestCase(unittest.TestCase):
     """
     file_object = resolver_helper_object.NewFileObject(self._resolver_context)
 
-    self.assertNotEqual(file_object, None)
+    self.assertIsNotNone(file_object)
 
   def _TestNewFileSystem(self, resolver_helper_object):
     """Tests the NewFileSystem function.
@@ -55,7 +55,7 @@ class ResolverHelperTestCase(unittest.TestCase):
     """
     file_system = resolver_helper_object.NewFileSystem(self._resolver_context)
 
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
   def _TestNewFileSystemRaisesRuntimeError(self, resolver_helper_object):
     """Tests the NewFileSystem function raises a RuntimeError.
@@ -78,6 +78,6 @@ class ResolverHelperTestCase(unittest.TestCase):
     file_object = resolver_helper_object.OpenFileObject(
         path_spec, self._resolver_context)
 
-    self.assertNotEqual(file_object, None)
+    self.assertIsNotNone(file_object)
 
     file_object.close()
