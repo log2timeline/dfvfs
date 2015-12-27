@@ -180,6 +180,20 @@ class WindowsPathResolverTest(unittest.TestCase):
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
+    # Test resolving multi path segment environment variables.
+    path_resolver = windows_path_resolver.WindowsPathResolver(
+        self._os_file_system, self._os_path_spec)
+
+    expected_path = os.path.join(
+        os.getcwd(), u'test_data', u'testdir_os', u'subdir1', u'file6.txt')
+
+    path_resolver.SetEnvironmentVariable(u'Test', u'C:\\testdir_os\\subdir1')
+
+    windows_path = u'%Test%\\file6.txt'
+    path_spec = path_resolver.ResolvePath(windows_path)
+    self.assertIsNotNone(path_spec)
+    self.assertEqual(path_spec.location, expected_path)
+
 
 if __name__ == '__main__':
   unittest.main()
