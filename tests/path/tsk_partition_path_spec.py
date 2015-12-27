@@ -17,27 +17,27 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p2', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         start_offset=0x2000, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p2', part_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = tsk_partition_path_spec.TSKPartitionPathSpec(parent=None)
@@ -51,7 +51,7 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -63,7 +63,7 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p2', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -75,7 +75,7 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -87,7 +87,7 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         start_offset=0x2000, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -99,7 +99,7 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p2', part_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',

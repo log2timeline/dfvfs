@@ -27,7 +27,7 @@ class OSFileSystemTest(unittest.TestCase):
     """Test the intialize functionality."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
@@ -49,14 +49,14 @@ class OSFileSystemTest(unittest.TestCase):
         location=os.path.join(u'test_data', u'testdir_os', u'file1.txt'))
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'file1.txt')
 
     path_spec = os_path_spec.OSPathSpec(
         location=os.path.join(u'test_data', u'testdir_os', u'file6.txt'))
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertEqual(file_entry, None)
+    self.assertIsNone(file_entry)
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
@@ -72,7 +72,7 @@ class OSFileSystemTest(unittest.TestCase):
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, expected_location)
 
   def testJoinPathWindows(self):

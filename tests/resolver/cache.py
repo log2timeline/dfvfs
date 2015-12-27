@@ -21,7 +21,7 @@ class ObjectsCacheValueTest(unittest.TestCase):
     vfs_object = TestVFSObject()
 
     cache_value = cache.ObjectsCacheValue(vfs_object)
-    self.assertNotEqual(cache_value, None)
+    self.assertIsNotNone(cache_value)
 
     # pylint: disable=protected-access
     self.assertEqual(cache_value._reference_count, 0)
@@ -59,7 +59,7 @@ class ObjectsCacheTest(unittest.TestCase):
   def testCache(self):
     """Tests the cache functionality."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEqual(cache_object, None)
+    self.assertIsNotNone(cache_object)
 
     # pylint: disable=protected-access
     self.assertEqual(len(cache_object._values), 0)
@@ -77,7 +77,7 @@ class ObjectsCacheTest(unittest.TestCase):
   def testCacheFull(self):
     """Tests if the CacheFullError is raised."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEqual(cache_object, None)
+    self.assertIsNotNone(cache_object)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
@@ -90,7 +90,7 @@ class ObjectsCacheTest(unittest.TestCase):
   def testEmpty(self):
     """Tests the Empty method."""
     cache_object = cache.ObjectsCache(5)
-    self.assertNotEqual(cache_object, None)
+    self.assertIsNotNone(cache_object)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
@@ -111,7 +111,7 @@ class ObjectsCacheTest(unittest.TestCase):
   def testGetObject(self):
     """Tests the GetObject method."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEqual(cache_object, None)
+    self.assertIsNotNone(cache_object)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
@@ -121,7 +121,7 @@ class ObjectsCacheTest(unittest.TestCase):
   def testGetCacheValueByObjectGetCacheValueByObject(self):
     """Tests the GetCacheValueByObject method."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEqual(cache_object, None)
+    self.assertIsNotNone(cache_object)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
@@ -133,7 +133,7 @@ class ObjectsCacheTest(unittest.TestCase):
   def testGrabAndRelease(self):
     """Tests the GrabObject and ReleaseObject methods."""
     cache_object = cache.ObjectsCache(1)
-    self.assertNotEqual(cache_object, None)
+    self.assertIsNotNone(cache_object)
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
     _, cache_value = cache_object.GetCacheValueByObject(self._vfs_object)

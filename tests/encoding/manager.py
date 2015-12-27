@@ -55,7 +55,7 @@ class EncodingManagerTest(unittest.TestCase):
     self.assertIsInstance(decoder_object, base16_decoder.Base16Decoder)
 
     decoder_object = manager.EncodingManager.GetDecoder(u'bogus')
-    self.assertEqual(decoder_object, None)
+    self.assertIsNone(decoder_object)
 
 
 if __name__ == '__main__':

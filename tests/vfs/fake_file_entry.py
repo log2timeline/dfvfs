@@ -53,25 +53,25 @@ class FakeFileEntryTest(unittest.TestCase):
     file_entry = fake_file_entry.FakeFileEntry(
         self._resolver_context, self._file_system, path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetFileObject(self):
     """Test the get file object functionality."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     file_object = file_entry.GetFileObject()
 
-    self.assertNotEqual(file_object, None)
+    self.assertIsNotNone(file_object)
 
     file_data = file_object.read()
     self.assertEqual(file_data, b'FILE1')
@@ -83,11 +83,11 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertNotEqual(parent_file_entry, None)
+    self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, u'testdir_fake')
 
@@ -96,11 +96,11 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
@@ -108,7 +108,7 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -124,7 +124,7 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -140,7 +140,7 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -158,7 +158,7 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.link, u'/test_data/testdir_fake/file1.txt')
 
@@ -166,7 +166,7 @@ class FakeFileEntryTest(unittest.TestCase):
     """Test the sub file entries iteration functionality."""
     path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 6)
 
@@ -188,7 +188,7 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 1)
 
@@ -201,7 +201,7 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
@@ -214,7 +214,7 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
@@ -229,15 +229,15 @@ class FakeFileEntryTest(unittest.TestCase):
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
     data_stream = file_entry.GetDataStream(u'bogus')
-    self.assertEqual(data_stream, None)
+    self.assertIsNone(data_stream)
 
 
 if __name__ == '__main__':

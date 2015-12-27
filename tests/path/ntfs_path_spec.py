@@ -16,27 +16,27 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\test', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         data_stream=u'test', location=u'\\test', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         mft_entry=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         mft_attribute=3, mft_entry=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\test', mft_entry=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = ntfs_path_spec.NTFSPathSpec(location=u'\\test', parent=None)
@@ -56,7 +56,7 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\test', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -68,7 +68,7 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         data_stream=u'test', location=u'\\test', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -80,7 +80,7 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         mft_entry=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -92,7 +92,7 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         mft_attribute=3, mft_entry=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -104,7 +104,7 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\test', mft_entry=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',

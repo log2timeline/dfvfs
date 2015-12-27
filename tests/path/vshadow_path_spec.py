@@ -16,22 +16,22 @@ class VShadowPathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification initialization."""
     path_spec = vshadow_path_spec.VShadowPathSpec(parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/vss2', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/vss2', store_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = vshadow_path_spec.VShadowPathSpec(parent=None)
@@ -44,7 +44,7 @@ class VShadowPathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification comparable property."""
     path_spec = vshadow_path_spec.VShadowPathSpec(parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -56,7 +56,7 @@ class VShadowPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/vss2', parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -68,7 +68,7 @@ class VShadowPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
@@ -80,7 +80,7 @@ class VShadowPathSpecTest(test_lib.PathSpecTestCase):
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/vss2', store_index=1, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',

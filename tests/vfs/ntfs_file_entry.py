@@ -38,7 +38,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     file_entry = ntfs_file_entry.NTFSFileEntry(
         self._resolver_context, self._file_system, self._ntfs_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
@@ -46,7 +46,7 @@ class NTFSFileEntryTest(unittest.TestCase):
         mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetLinkedFileEntry(self):
     """Test the get linked file entry functionality."""
@@ -60,11 +60,11 @@ class NTFSFileEntryTest(unittest.TestCase):
         location=test_location, mft_attribute=2, mft_entry=38,
         parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertNotEqual(parent_file_entry, None)
+    self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, u'System Volume Information')
 
@@ -75,11 +75,11 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=38, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
     self.assertEqual(stat_object.size, 65536)
 
@@ -90,7 +90,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=38, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -107,7 +107,7 @@ class NTFSFileEntryTest(unittest.TestCase):
         location=u'\\System Volume Information', mft_entry=36,
         parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -123,7 +123,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -141,7 +141,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 15)
 
@@ -178,7 +178,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=38, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_attributes, 4)
 
@@ -189,10 +189,10 @@ class NTFSFileEntryTest(unittest.TestCase):
         attribute.type_indicator,
         definitions.ATTRIBUTE_TYPE_NTFS_STANDARD_INFORMATION)
 
-    self.assertNotEqual(attribute.access_time, None)
-    self.assertNotEqual(attribute.creation_time, None)
-    self.assertNotEqual(attribute.modification_time, None)
-    self.assertNotEqual(attribute.entry_modification_time, None)
+    self.assertIsNotNone(attribute.access_time)
+    self.assertIsNotNone(attribute.creation_time)
+    self.assertIsNotNone(attribute.modification_time)
+    self.assertIsNotNone(attribute.entry_modification_time)
 
     stat_time, stat_time_nano = attribute.modification_time.CopyToStatObject()
     self.assertEqual(stat_time, 1386052509)
@@ -203,10 +203,10 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(
         attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
 
-    self.assertNotEqual(attribute.access_time, None)
-    self.assertNotEqual(attribute.creation_time, None)
-    self.assertNotEqual(attribute.modification_time, None)
-    self.assertNotEqual(attribute.entry_modification_time, None)
+    self.assertIsNotNone(attribute.access_time)
+    self.assertIsNotNone(attribute.creation_time)
+    self.assertIsNotNone(attribute.modification_time)
+    self.assertIsNotNone(attribute.entry_modification_time)
 
     stat_time, stat_time_nano = attribute.access_time.CopyToStatObject()
     self.assertEqual(stat_time, 1386052509)
@@ -224,7 +224,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=38, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 1)
 
@@ -238,7 +238,7 @@ class NTFSFileEntryTest(unittest.TestCase):
         location=u'\\System Volume Information', mft_entry=36,
         parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
@@ -252,7 +252,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=28, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 2)
 
@@ -269,25 +269,25 @@ class NTFSFileEntryTest(unittest.TestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=38, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
     data_stream = file_entry.GetDataStream(u'bogus')
-    self.assertEqual(data_stream, None)
+    self.assertIsNone(data_stream)
 
     test_location = u'\\$Extend\\$RmMetadata\\$Repair'
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=28, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u'$Config'
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
 

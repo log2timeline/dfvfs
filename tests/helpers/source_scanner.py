@@ -53,7 +53,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
-    self.assertNotEqual(scan_node, None)
+    self.assertIsNotNone(scan_node)
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
 
@@ -74,7 +74,7 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
-    self.assertNotEqual(scan_node, None)
+    self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_QCOW)
     self.assertEqual(len(scan_node.sub_nodes), 2)
 
@@ -109,14 +109,14 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
-    self.assertNotEqual(scan_node, None)
+    self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
     for scan_node in scan_node.sub_nodes:
       if getattr(scan_node.path_spec, u'location', None) == None:
         break
 
-    self.assertNotEqual(scan_node, None)
+    self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_BDE)
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
@@ -130,7 +130,7 @@ class SourceScannerTest(unittest.TestCase):
       if getattr(scan_node.path_spec, u'location', None) == u'/':
         break
 
-    self.assertNotEqual(scan_node.path_spec, None)
+    self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
     test_file = os.path.join(u'test_data', u'testdir_os')
@@ -142,8 +142,8 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.source_type, definitions.SOURCE_TYPE_DIRECTORY)
 
     scan_node = self._GetTestScanNode(scan_context)
-    self.assertNotEqual(scan_node, None)
-    self.assertNotEqual(scan_node.path_spec, None)
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
@@ -156,8 +156,8 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.source_type, definitions.SOURCE_TYPE_FILE)
 
     scan_node = self._GetTestScanNode(scan_context)
-    self.assertNotEqual(scan_node, None)
-    self.assertNotEqual(scan_node.path_spec, None)
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
@@ -170,8 +170,8 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.source_type, definitions.SOURCE_TYPE_FILE)
 
     scan_node = self._GetTestScanNode(scan_context)
-    self.assertNotEqual(scan_node, None)
-    self.assertNotEqual(scan_node.path_spec, None)
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
@@ -184,8 +184,8 @@ class SourceScannerTest(unittest.TestCase):
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
     scan_node = self._GetTestScanNode(scan_context)
-    self.assertNotEqual(scan_node, None)
-    self.assertNotEqual(scan_node.path_spec, None)
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
     self.assertEqual(len(scan_node.sub_nodes), 0)
@@ -206,7 +206,7 @@ class SourceScannerTest(unittest.TestCase):
         store_index=1, parent=source_path_spec)
 
     path_spec = self._source_scanner.ScanForFileSystem(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
     self.assertEqual(path_spec.type_indicator, expected_type_indicator)
@@ -215,7 +215,7 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForFileSystem(source_path_spec)
-    self.assertEqual(path_spec, None)
+    self.assertIsNone(path_spec)
 
   def testScanForStorageMediaImage(self):
     """Test the ScanForStorageMediaImage() function."""
@@ -223,28 +223,28 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
     test_file = os.path.join(u'test_data', u'image.raw.000')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
     test_file = os.path.join(u'test_data', u'image.E01')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_EWF)
 
     test_file = os.path.join(u'test_data', u'image.qcow2')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_QCOW)
 
@@ -252,7 +252,7 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
 
@@ -260,7 +260,7 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VMDK)
 
@@ -268,7 +268,7 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
-    self.assertEqual(path_spec, None)
+    self.assertIsNone(path_spec)
 
   def testScanForVolumeSystem(self):
     """Test the ScanForVolumeSystem() function."""
@@ -276,7 +276,7 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
 
@@ -285,7 +285,7 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = qcow_path_spec.QcowPathSpec(parent=source_path_spec)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
 
@@ -293,14 +293,14 @@ class SourceScannerTest(unittest.TestCase):
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_BDE)
 
     test_file = os.path.join(u'test_data', u'mactime.body')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
-    self.assertEqual(path_spec, None)
+    self.assertIsNone(path_spec)
 
 
 if __name__ == '__main__':

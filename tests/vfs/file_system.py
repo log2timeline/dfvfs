@@ -19,7 +19,7 @@ class FileSystemTest(unittest.TestCase):
     """Test the intialize functionality."""
     test_file_system = file_system.FileSystem(self._resolver_context)
 
-    self.assertNotEqual(test_file_system, None)
+    self.assertIsNotNone(test_file_system)
 
   def testJoinPath(self):
     """Test the join path functionality."""

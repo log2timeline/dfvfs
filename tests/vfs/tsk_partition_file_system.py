@@ -41,7 +41,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
     """Test the open and close functionality."""
     file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._tsk_partition_path_spec)
 
@@ -51,7 +51,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
     """Test the file entry exists by path specification functionality."""
     file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._tsk_partition_path_spec)
 
@@ -89,7 +89,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
     """Test the get entry by path specification functionality."""
     file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._tsk_partition_path_spec)
 
@@ -97,47 +97,47 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
         location=u'/', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=3, parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'p2')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p2', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'p2')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=9, parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertEqual(file_entry, None)
+    self.assertIsNone(file_entry)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p0', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertEqual(file_entry, None)
+    self.assertIsNone(file_entry)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=u'/p9', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertEqual(file_entry, None)
+    self.assertIsNone(file_entry)
 
     file_system.Close()
 
@@ -145,13 +145,13 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
     """Test the get root file entry functionality."""
     file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._tsk_partition_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'')
 
     file_system.Close()

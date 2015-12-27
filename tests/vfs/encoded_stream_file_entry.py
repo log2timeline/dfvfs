@@ -40,38 +40,38 @@ class EncodedStreamFileEntryTest(unittest.TestCase):
     file_entry = encoded_stream_file_entry.EncodedStreamFileEntry(
         self._resolver_context, self._file_system,
         self._encoded_stream_path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encoded_stream_path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encoded_stream_path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
-    self.assertEqual(parent_file_entry, None)
+    self.assertIsNone(parent_file_entry)
 
   def testGetStat(self):
     """Test the get stat functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encoded_stream_path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     stat_object = file_entry.GetStat()
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encoded_stream_path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertTrue(file_entry.IsVirtual())
@@ -88,7 +88,7 @@ class EncodedStreamFileEntryTest(unittest.TestCase):
     """Test the sub file entries iteration functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encoded_stream_path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 0)
 

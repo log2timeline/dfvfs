@@ -32,7 +32,7 @@ class GzipFileTest(test_lib.SylogTestCase):
     self.assertEqual(file_object.modification_time, 0x501416d7)
     self.assertEqual(file_object.operating_system, 0x03)
     self.assertEqual(file_object.original_filename, u'syslog.1')
-    self.assertEqual(file_object.comment, None)
+    self.assertIsNone(file_object.comment)
 
     file_object.close()
 
