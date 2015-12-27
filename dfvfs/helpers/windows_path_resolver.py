@@ -140,7 +140,9 @@ class WindowsPathResolver(object):
 
     number_of_expanded_path_segments = 0
 
-    for path_segment in path.split(self._PATH_SEPARATOR):
+    search_path_segments = path.split(self._PATH_SEPARATOR)
+    while search_path_segments:
+      path_segment = search_path_segments.pop(0)
       if file_entry is None:
         return None, None
 
@@ -151,7 +153,7 @@ class WindowsPathResolver(object):
       if path_segment == u'..':
         # Only allow to traverse back up to the mount point.
         if number_of_expanded_path_segments > 0:
-          _ = expanded_path_segments.pop()
+          _ = expanded_path_segments.pop(0)
           number_of_expanded_path_segments -= 1
           file_entry = file_entry.GetParentFileEntry()
         continue
@@ -160,6 +162,15 @@ class WindowsPathResolver(object):
           self._PATH_EXPANSION_VARIABLE.match(path_segment)):
         path_segment = self._environment_variables.get(
             path_segment[1:-1].upper(), path_segment)
+
+        if self._PATH_SEPARATOR in path_segment:
+          # The expanded path segment itself can consist of multiple
+          # path segments, hence we need to split it and prepend it to
+          # the search path segments list.
+          path_segments = path_segment.split(self._PATH_SEPARATOR)
+          path_segments.extend(search_path_segments)
+          search_path_segments = path_segments
+          path_segment = search_path_segments.pop(0)
 
       sub_file_entry = file_entry.GetSubFileEntryByName(
           path_segment, case_sensitive=False)
