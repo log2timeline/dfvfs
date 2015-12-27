@@ -55,34 +55,34 @@ class VShadowVolumeSystemTest(unittest.TestCase):
 
     volume = volume_system.GetVolumeByIndex(1)
 
-    self.assertNotEqual(volume, None)
+    self.assertIsNotNone(volume)
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 4)
     self.assertEqual(volume.identifier, u'vss2')
 
     expected_value = u'600f0b6d-5bdf-11e3-9d6c-005056c00008'
     volume_attribute = volume.GetAttribute(u'identifier')
-    self.assertNotEqual(volume_attribute, None)
+    self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 
     expected_value = u'18f1ac6e-959d-436f-bdcc-e797a729e290'
     volume_attribute = volume.GetAttribute(u'copy_identifier')
-    self.assertNotEqual(volume_attribute, None)
+    self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 
     expected_value = u'8438a0ee-0f06-443b-ac0c-2905647ca5d6'
     volume_attribute = volume.GetAttribute(u'copy_set_identifier')
-    self.assertNotEqual(volume_attribute, None)
+    self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 
     expected_value = 130305262689190583
     volume_attribute = volume.GetAttribute(u'creation_time')
-    self.assertNotEqual(volume_attribute, None)
+    self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 
     volume = volume_system.GetVolumeByIndex(7)
 
-    self.assertEqual(volume, None)
+    self.assertIsNone(volume)
 
 
 if __name__ == '__main__':

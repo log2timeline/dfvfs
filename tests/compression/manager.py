@@ -56,7 +56,7 @@ class CompressionManagerTest(unittest.TestCase):
         decompressor_object, zlib_decompressor.ZlibDecompressor)
 
     decompressor_object = manager.CompressionManager.GetDecompressor(u'bogus')
-    self.assertEqual(decompressor_object, None)
+    self.assertIsNone(decompressor_object)
 
 
 if __name__ == '__main__':

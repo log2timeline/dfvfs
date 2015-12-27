@@ -16,7 +16,7 @@ class FakePathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification initialization."""
     path_spec = fake_path_spec.FakePathSpec(location=u'/test')
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = fake_path_spec.FakePathSpec(location=u'/test', parent=self._path_spec)
@@ -28,7 +28,7 @@ class FakePathSpecTest(test_lib.PathSpecTestCase):
     """Tests the path specification comparable property."""
     path_spec = fake_path_spec.FakePathSpec(location=u'/test')
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: FAKE, location: /test',
@@ -40,7 +40,7 @@ class FakePathSpecTest(test_lib.PathSpecTestCase):
     """Tests the IsSystemLevel function."""
     path_spec = fake_path_spec.FakePathSpec(location=u'/test')
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
     self.assertTrue(path_spec.IsSystemLevel())
 
 

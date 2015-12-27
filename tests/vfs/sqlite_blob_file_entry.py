@@ -40,36 +40,36 @@ class SqliteBlobFileEntryTest(unittest.TestCase):
     file_entry = sqlite_blob_file_entry.SQLiteBlobFileEntry(
         self._resolver_context, self._file_system, self._sqlite_blob_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     file_entry = sqlite_blob_file_entry.SQLiteBlobFileEntry(
         self._resolver_context, self._file_system,
         self._sqlite_blob_path_spec_2)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec_2)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertNotEqual(parent_file_entry, None)
+    self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, u'myblobs.blobs')
 
@@ -80,7 +80,7 @@ class SqliteBlobFileEntryTest(unittest.TestCase):
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
     self.assertEqual(stat_object.size, 110592)
 
@@ -89,7 +89,7 @@ class SqliteBlobFileEntryTest(unittest.TestCase):
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
     self.assertEqual(stat_object.size, 11)
 
@@ -114,7 +114,7 @@ class SqliteBlobFileEntryTest(unittest.TestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 4)
 

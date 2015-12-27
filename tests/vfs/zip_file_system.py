@@ -25,7 +25,7 @@ class ZipFileSystemTest(unittest.TestCase):
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._zip_path_spec)
 
@@ -34,7 +34,7 @@ class ZipFileSystemTest(unittest.TestCase):
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._zip_path_spec)
 
@@ -51,7 +51,7 @@ class ZipFileSystemTest(unittest.TestCase):
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._zip_path_spec)
 
@@ -59,27 +59,27 @@ class ZipFileSystemTest(unittest.TestCase):
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'syslog')
 
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/bogus', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertEqual(file_entry, None)
+    self.assertIsNone(file_entry)
 
     file_system.Close()
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._zip_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'')
 
     file_system.Close()

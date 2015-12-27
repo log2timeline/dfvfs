@@ -36,25 +36,25 @@ class TSKFileEntryTest(unittest.TestCase):
     file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
   def testGetLinkedFileEntry(self):
     """Test the get linked file entry functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=13, location=u'/a_link', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     linked_file_entry = file_entry.GetLinkedFileEntry()
 
-    self.assertNotEqual(linked_file_entry, None)
+    self.assertIsNotNone(linked_file_entry)
 
     self.assertEqual(linked_file_entry.name, u'another_file')
 
@@ -64,11 +64,11 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
 
-    self.assertNotEqual(parent_file_entry, None)
+    self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, u'a_directory')
 
@@ -78,11 +78,11 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     stat_object = file_entry.GetStat()
 
-    self.assertNotEqual(stat_object, None)
+    self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
@@ -91,7 +91,7 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -108,7 +108,7 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=12, location=u'/a_directory',
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertFalse(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -124,7 +124,7 @@ class TSKFileEntryTest(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertTrue(file_entry.IsRoot())
     self.assertFalse(file_entry.IsVirtual())
@@ -142,7 +142,7 @@ class TSKFileEntryTest(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 5)
 
@@ -170,7 +170,7 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 1)
 
@@ -184,7 +184,7 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=12, location=u'/a_directory',
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
@@ -200,11 +200,11 @@ class TSKFileEntryTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
 
 
 class TSKFileEntryTestNTFS(unittest.TestCase):
@@ -233,7 +233,7 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_attributes, 4)
 
@@ -244,7 +244,7 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 1)
 
@@ -258,7 +258,7 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
         inode=36, location=u'\\System Volume Information',
         parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 0)
 
@@ -272,7 +272,7 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=28, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_data_streams, 2)
 
@@ -289,25 +289,25 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
     data_stream = file_entry.GetDataStream(u'bogus')
-    self.assertEqual(data_stream, None)
+    self.assertIsNone(data_stream)
 
     test_location = u'\\$Extend\\$RmMetadata\\$Repair'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=28, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
 
     data_stream_name = u'$Config'
     data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertNotEqual(data_stream, None)
+    self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
 

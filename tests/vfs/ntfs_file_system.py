@@ -27,7 +27,7 @@ class NTFSFileSystemTest(unittest.TestCase):
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._ntfs_path_spec)
 
@@ -36,7 +36,7 @@ class NTFSFileSystemTest(unittest.TestCase):
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._ntfs_path_spec)
 
@@ -54,7 +54,7 @@ class NTFSFileSystemTest(unittest.TestCase):
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._ntfs_path_spec)
 
@@ -63,7 +63,7 @@ class NTFSFileSystemTest(unittest.TestCase):
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     # There is no way to determine the file_entry.name without a location string
     # in the path_spec or retrieving the file_entry from its parent.
 
@@ -71,27 +71,27 @@ class NTFSFileSystemTest(unittest.TestCase):
         location=u'\\password.txt', mft_entry=41, parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'password.txt')
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\bogus.txt', mft_entry=19, parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertEqual(file_entry, None)
+    self.assertIsNone(file_entry)
 
     file_system.Close()
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self.assertNotEqual(file_system, None)
+    self.assertIsNotNone(file_system)
 
     file_system.Open(self._ntfs_path_spec)
 
     file_entry = file_system.GetRootFileEntry()
 
-    self.assertNotEqual(file_entry, None)
+    self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'')
 
     file_system.Close()

@@ -17,7 +17,7 @@ class DataRangePathSpecTest(test_lib.PathSpecTestCase):
     path_spec = data_range_path_spec.DataRangePathSpec(
         range_offset=0x2000, range_size=0x1000, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
       _ = data_range_path_spec.DataRangePathSpec(
@@ -41,7 +41,7 @@ class DataRangePathSpecTest(test_lib.PathSpecTestCase):
     path_spec = data_range_path_spec.DataRangePathSpec(
         range_offset=0x2000, range_size=0x1000, parent=self._path_spec)
 
-    self.assertNotEqual(path_spec, None)
+    self.assertIsNotNone(path_spec)
 
     expected_comparable = u'\n'.join([
         u'type: TEST',
