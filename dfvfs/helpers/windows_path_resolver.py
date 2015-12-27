@@ -163,13 +163,14 @@ class WindowsPathResolver(object):
         path_segment = self._environment_variables.get(
             path_segment[1:-1].upper(), path_segment)
 
-        # The expanded path segment itself can consist of multiple
-        # path segments, hence we need to split it and prepend it to
-        # the search path segments list.
-        path_segments = path_segment.split(self._PATH_SEPARATOR)
-        path_segments.extend(search_path_segments)
-        search_path_segments = path_segments
-        path_segment = search_path_segments.pop(0)
+        if self._PATH_SEPARATOR in path_segment:
+          # The expanded path segment itself can consist of multiple
+          # path segments, hence we need to split it and prepend it to
+          # the search path segments list.
+          path_segments = path_segment.split(self._PATH_SEPARATOR)
+          path_segments.extend(search_path_segments)
+          search_path_segments = path_segments
+          path_segment = search_path_segments.pop(0)
 
       sub_file_entry = file_entry.GetSubFileEntryByName(
           path_segment, case_sensitive=False)
