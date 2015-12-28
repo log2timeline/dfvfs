@@ -35,7 +35,7 @@ class CompressedStreamFileEntryTest(unittest.TestCase):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
-  def testIntialize(self):
+  def testInitialize(self):
     """Test the initialize functionality."""
     file_entry = compressed_stream_file_entry.CompressedStreamFileEntry(
         self._resolver_context, self._file_system,

@@ -10,6 +10,7 @@ class Factory(object):
       u'compression_method',
       u'data_stream',
       u'encoding_method',
+      u'encryption_method',
       u'identifier',
       u'inode',
       u'location',
