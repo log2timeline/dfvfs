@@ -19,13 +19,12 @@ class FindSpec(object):
 
     Args:
       file_entry_types: Optional file entry types list or None to indicate
-                        no preference. The default is None.
+                        no preference.
       is_allocated: Optional boolean value to indicate the file entry should
                     be allocated, where None represents no preference.
-                    The default is True.
       location: Optional location string or list of location segments, or None
                 to indicate no preference. The location should be defined
-                relative to the root of the file system. The default is None.
+                relative to the root of the file system.
                 Note that the string will be split into segments based on the
                 file system specific path segment separator.
       location_regex: Optional location regular expression string or list of
@@ -36,7 +35,7 @@ class FindSpec(object):
                       segments based on the file system specific path segment
                       separator.
       case_sensitive: Optional boolean value to indicate string matches should
-                      be case sensitive. The default is true.
+                      be case sensitive.
 
     Raises:
       TypeError: if the location or location_regex type is not supported.

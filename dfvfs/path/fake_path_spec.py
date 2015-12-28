@@ -18,7 +18,7 @@ class FakePathSpec(location_path_spec.LocationPathSpec):
        Note that the fake path specification cannot have a parent.
 
     Args:
-      location: optional location string e.g. /opt/dfvfs. The default is None.
+      location: optional location string e.g. /opt/dfvfs.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

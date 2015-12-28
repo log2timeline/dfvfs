@@ -18,9 +18,8 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
 
     Args:
       location: optional zip file internal location string prefixed with a path
-                separator character. The default is None.
+                separator character.
       parent: optional parent path specification (instance of PathSpec).
-              The default None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification
 

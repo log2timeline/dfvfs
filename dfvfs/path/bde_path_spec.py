@@ -18,7 +18,6 @@ class BdePathSpec(path_spec.PathSpec):
 
     Args:
       parent: optional parent path specification (instance of PathSpec).
-              The default is None.
 
     Raises:
       ValueError: when parent is not set.

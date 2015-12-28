@@ -46,7 +46,7 @@ class GzipFile(file_object_io.FileObjectIO):
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_object: optional file-like object. The default is None.
+      file_object: optional file-like object.
 
     Raises:
       ValueError: when file_object is set.
@@ -137,7 +137,6 @@ class GzipFile(file_object_io.FileObjectIO):
 
     Args:
       path_spec: optional the path specification (instance of path.PathSpec).
-                 The default is None.
 
     Returns:
       A file-like object.

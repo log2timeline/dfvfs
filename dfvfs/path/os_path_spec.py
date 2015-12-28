@@ -21,7 +21,7 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
 
     Args:
       location: optional operating specific location string e.g. /opt/dfvfs or
-                C:\\Opt\\dfvfs. The default is None.
+                C:\\Opt\\dfvfs.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

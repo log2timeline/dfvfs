@@ -19,11 +19,10 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
        Note that the TSK partition path specification must have a parent.
 
     Args:
-      location: optional location string. The default is None.
-      part_index: optional part index. The default is None.
-      start_offset: optional start offset. The default is None.
+      location: optional location string.
+      part_index: optional part index.
+      start_offset: optional start offset.
       parent: optional parent path specification (instance of PathSpec).
-              The default is None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification
 

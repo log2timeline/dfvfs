@@ -24,7 +24,7 @@ class TarFileSystem(file_system.FileSystem):
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      encoding: optional file entry name encoding. The default is 'utf-8'.
+      encoding: optional file entry name encoding.
     """
     super(TarFileSystem, self).__init__(resolver_context)
     self._file_object = None

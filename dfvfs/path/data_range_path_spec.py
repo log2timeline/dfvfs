@@ -18,11 +18,8 @@ class DataRangePathSpec(path_spec.PathSpec):
 
     Args:
       range_offset: optional start offset of the data range.
-                    The default is None.
       range_size: optional size of the data range.
-                  The default is None.
       parent: optional parent path specification (instance of PathSpec).
-              The default is None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

@@ -17,10 +17,9 @@ class VShadowPathSpec(path_spec.PathSpec):
        Note that the VSS path specification must have a parent.
 
     Args:
-      location: optional location string. The default is None.
-      store_index: optional store index. The default is None.
+      location: optional location string.
+      store_index: optional store index.
       parent: optional parent path specification (instance of PathSpec).
-              The default is None.
 
     Raises:
       ValueError: when parent is not set.

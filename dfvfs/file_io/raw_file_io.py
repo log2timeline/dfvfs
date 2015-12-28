@@ -21,7 +21,7 @@ class RawFile(file_object_io.FileObjectIO):
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_object: optional file-like object. The default is None.
+      file_object: optional file-like object.
 
     Raises:
       ValueError: when file_object is set.

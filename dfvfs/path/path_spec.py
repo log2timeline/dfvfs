@@ -42,8 +42,7 @@ class PathSpec(object):
        This is a convenince function for constructing comparables.
 
     Args:
-      sub_comparable_string: the sub comparable string. The default is
-                             an empty string.
+      sub_comparable_string: the sub comparable string.
 
     Returns:
       A string containing the comparable.

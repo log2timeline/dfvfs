@@ -69,7 +69,6 @@ class OSFileEntry(file_entry.FileEntry):
       path_spec: the path specification object (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
-               The default is False.
     """
     super(OSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
