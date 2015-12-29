@@ -177,8 +177,7 @@ class StdoutWriter(object):
     Args:
       scan_context: the source scanner context (instance of
                     SourceScannerContext).
-      scan_step: optional integer indicating the scan step. The default
-                 is None.
+      scan_step: optional integer indicating the scan step.
     """
     if scan_step is not None:
       print(u'Scan step: {0:d}'.format(scan_step))
@@ -195,10 +194,8 @@ class StdoutWriter(object):
 
     Args:
       scan_node: the scan node (instance of SourceScanNode).
-      indentation: optional indentation string. The default is an empty
-                   string.
-      scan_step: optional integer indicating the scan step. The default
-                 is None.
+      indentation: optional indentation string.
+      scan_step: optional integer indicating the scan step.
     """
     if not scan_node:
       return
