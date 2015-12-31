@@ -15,7 +15,7 @@ class FileObjectIO(file_io.FileIO):
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_object: optional file-like object. The default is None.
+      file_object: optional file-like object.
     """
     super(FileObjectIO, self).__init__(resolver_context)
     self._file_object = file_object
@@ -45,7 +45,6 @@ class FileObjectIO(file_io.FileIO):
 
     Args:
       path_spec: optional the path specification (instance of path.PathSpec).
-                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

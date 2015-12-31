@@ -18,9 +18,7 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
 
     Args:
       encoding_method: optional method used to the encode the data.
-                       The default is None.
       parent: optional parent path specification (instance of PathSpec).
-              The default is None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

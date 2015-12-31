@@ -82,10 +82,9 @@ class FileEntry(object):
       path_spec: the path specification object (instance of PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
-               The default is False.
       is_virtual: optional boolean value to indicate if the file entry is
                   a virtual file entry emulated by the corresponding file
-                  system. The default is False.
+                  system.
     """
     super(FileEntry, self).__init__()
     self._attributes = None
@@ -212,7 +211,7 @@ class FileEntry(object):
     Args:
       name: the name of the data stream.
       case_sentitive: optional boolean value to indicate if the name is
-                      case sensitive. The default is True.
+                      case sensitive.
 
     Returns:
       A data stream (an instance of DataStream) or None.
@@ -242,7 +241,7 @@ class FileEntry(object):
     Args:
       name: the name of the data stream.
       case_sentitive: optional boolean value to indicate if the name is
-                      case sensitive. The default is True.
+                      case sensitive.
 
     Returns:
       A boolean to indicate the file entry has the data stream.
@@ -299,7 +298,7 @@ class FileEntry(object):
     Args:
       name: the name of the file entry.
       case_sentitive: optional boolean value to indicate if the name is
-                      case sensitive. The default is True.
+                      case sensitive.
 
     Returns:
       A file entry (an instance of FileEntry) or None.

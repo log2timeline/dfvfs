@@ -155,7 +155,6 @@ def _CheckLibyal(libyal_python_modules, latest_version_check=False):
                            the key and version as the value.
     latest_version_check: optional boolean value to indicate if the project
                           site should be checked for the latest version.
-                          The default is False.
 
   Returns:
     True if the libyal libraries are available, False otherwise.
@@ -371,7 +370,6 @@ def CheckDependencies(latest_version_check=False):
   Args:
     latest_version_check: Optional boolean value to indicate if the project
                           site should be checked for the latest version.
-                          The default is False.
 
   Returns:
     True if the dependencies are available, False otherwise.

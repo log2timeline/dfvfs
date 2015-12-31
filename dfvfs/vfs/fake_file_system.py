@@ -59,11 +59,8 @@ class FakeFileSystem(file_system.FileSystem):
     Args:
       path: the path of the file entry.
       file_entry_type: optional type of the file entry object.
-                       The default is file (definitions.FILE_ENTRY_TYPE_FILE).
       file_data: optional data of the fake file-like object.
-                 The default is None.
       link_data: optional link data of the fake file entry object.
-                 The default is None.
 
     Raises:
       KeyError: if the path already exists.

@@ -76,9 +76,8 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
       path_spec: the path specification (instance of path.PathSpec).
       is_virtual: optional boolean value to indicate if the file entry is
                   a virtual file entry emulated by the corresponding file
-                  system. The default is False.
+                  system.
       tar_info: optional tar info object (instance of tarfile.TarInfo).
-                The default is None.
     """
     super(TSKPartitionFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,

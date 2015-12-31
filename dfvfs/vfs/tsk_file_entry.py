@@ -166,13 +166,11 @@ class TSKFileEntry(file_entry.FileEntry):
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
-               The default is False.
       is_virtual: optional boolean value to indicate if the file entry is
                   a virtual file entry emulated by the corresponding file
-                  system. The default is False.
+                  system.
       tsk_file: optional file object (instance of pytsk3.File).
-                The default is None.
-      parent_inode: optional parent inode number. The default is None.
+      parent_inode: optional parent inode number.
     """
     super(TSKFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
