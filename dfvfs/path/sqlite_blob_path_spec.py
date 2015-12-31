@@ -20,18 +20,13 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
 
     Args:
       table_name: optional name of the table in which the blob is stored.
-                  The default is None.
       column_name: optional name of the column in which the blob is stored.
-                   The default is None.
       row_condition: optional condition of the row in which the blob is stored.
                      The condition is a tuple in the form:
                      (column_name, operator, value).
-                     The condition must yield a single result. The default is
-                     None.
+                     The condition must yield a single result.
       row_index: optional index of the row in which the blob is stored.
-                 The default is None.
       parent: optional parent path specification (instance of PathSpec).
-              The default None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification
 

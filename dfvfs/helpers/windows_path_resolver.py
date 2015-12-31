@@ -26,7 +26,7 @@ class WindowsPathResolver(object):
       mount_point: the mount point path specification (instance of
                    path.PathSpec).
       drive_letter: optional string that contains the drive letter used by
-                    the file system. The default is C.
+                    the file system.
 
     Raises:
       PathSpecError: if the mount point path specification is incorrect.
@@ -111,7 +111,7 @@ class WindowsPathResolver(object):
     Args:
       path: the Windows path to resolve.
       expand_variables: optional value to indicate path variables should be
-                        expanded or not. The default is to expand (True).
+                        expanded or not.
 
     Returns:
       A tuple of the path in file system specific format and the matching path
@@ -231,7 +231,7 @@ class WindowsPathResolver(object):
     Args:
       path: the Windows path to resolve.
       expand_variables: optional value to indicate path variables should be
-                        expanded or not. The default is to expand (True).
+                        expanded or not.
 
     Returns:
       The path specification (instance of path.PathSpec) in file system

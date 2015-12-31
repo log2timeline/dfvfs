@@ -11,7 +11,7 @@ class LocationPathSpec(path_spec.PathSpec):
     """Initializes the path specification object.
 
     Args:
-      location: optional location string. The default is None.
+      location: optional location string.
       parent: optional parent path specification (instance of PathSpec),
               default is None.
       kwargs: a dictionary of keyword arguments dependending on the path

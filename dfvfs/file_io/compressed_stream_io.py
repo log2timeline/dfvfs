@@ -25,7 +25,7 @@ class CompressedStream(file_io.FileIO):
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
       compression_method: optional method used to the compress the data.
-      file_object: optional parent file-like object. The default is None.
+      file_object: optional parent file-like object.
 
     Raises:
       ValueError: if file_object provided but compression_method is not.
@@ -101,7 +101,6 @@ class CompressedStream(file_io.FileIO):
 
     Args:
       path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

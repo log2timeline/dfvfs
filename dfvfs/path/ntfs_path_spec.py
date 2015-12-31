@@ -21,13 +21,11 @@ class NTFSPathSpec(path_spec.PathSpec):
     Args:
       data_stream: optional data stream name. The default is None, which
                    indicates the default data stream.
-      location: optional location string. The default is None.
+      location: optional location string.
       mft_attribute: optional $FILE_NAME MFT attribute index. The default
                      is None. The first attribute is indicated by 0.
-      mft_entry: optional MFT entry. The default is None. The first entry
-                 is indicated by 0.
+      mft_entry: optional MFT entry. The first entry is indicated by 0.
       parent: optional parent path specification (instance of PathSpec),
-              The default is None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification
 

@@ -18,9 +18,7 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
 
     Args:
       compression_method: optional method used to the compress the data.
-                          The default is None.
       parent: optional parent path specification (instance of PathSpec).
-              The default is None.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

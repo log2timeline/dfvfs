@@ -35,7 +35,6 @@ class FakeFile(file_io.FileIO):
 
     Args:
       path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

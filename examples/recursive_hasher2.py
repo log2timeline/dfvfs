@@ -701,7 +701,7 @@ class StdoutWriter(object):
     """Initializes the output writer object.
 
     Args:
-      encoding: optional input encoding. The default is "utf-8".
+      encoding: optional input encoding.
     """
     super(StdoutWriter, self).__init__()
     self._encoding = encoding

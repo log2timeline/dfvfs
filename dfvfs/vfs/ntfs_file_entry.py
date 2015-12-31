@@ -232,12 +232,11 @@ class NTFSFileEntry(file_entry.FileEntry):
       path_spec: the path specification (instance of path.PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
-               The default is False.
       is_virtual: optional boolean value to indicate if the file entry is
                   a virtual file entry emulated by the corresponding file
-                  system. The default is False.
+                  system.
       fsntfs_file_entry: optional file entry object (instance of
-                         pyfsntfs.file_entry). The default is None.
+                         pyfsntfs.file_entry).
     """
     super(NTFSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
