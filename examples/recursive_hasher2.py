@@ -616,7 +616,7 @@ class RecursiveHasher(object):
             u'Scan node missing for VSS store identifier: {0:d}.'.format(
                 vss_store_identifier))
 
-      # We "optimize" here for user experience, ideally we would scan for
+      # We "optimize" here for user experience, alternatively we could scan for
       # a file system instead of hard coding a TSK child path specification.
       path_spec = path_spec_factory.Factory.NewPathSpec(
           definitions.TYPE_INDICATOR_TSK, location=u'/',

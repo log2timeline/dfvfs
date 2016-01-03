@@ -5,6 +5,7 @@
 from __future__ import print_function
 import argparse
 import getpass
+import locale
 import logging
 import os
 import sys
@@ -30,7 +31,34 @@ class SourceAnalyzer(object):
     """
     super(SourceAnalyzer, self).__init__()
     self._auto_recurse = auto_recurse
+    self._encode_errors = u'strict'
+    self._preferred_encoding = locale.getpreferredencoding()
     self._source_scanner = source_scanner.SourceScanner()
+
+  def _EncodeString(self, string):
+    """Encodes a string in the preferred encoding.
+
+    Returns:
+      A byte string containing the encoded string.
+    """
+    try:
+      # Note that encode() will first convert string into a Unicode string
+      # if necessary.
+      encoded_string = string.encode(
+          self._preferred_encoding, errors=self._encode_errors)
+    except UnicodeEncodeError:
+      if self._encode_errors == u'strict':
+        logging.error(
+            u'Unable to properly write output due to encoding error. '
+            u'Switching to error tolerant encoding which can result in '
+            u'non Basic Latin (C0) characters to be replaced with "?" or '
+            u'"\\ufffd".')
+        self._encode_errors = u'replace'
+
+      encoded_string = string.encode(
+          self._preferred_encoding, errors=self._encode_errors)
+
+    return encoded_string
 
   def _PromptUserForEncryptedVolumeCredential(
       self, scan_context, locked_scan_node, output_writer):
@@ -83,7 +111,13 @@ class SourceAnalyzer(object):
       if credential_identifier == u'skip':
         break
 
-      credential_data = getpass.getpass(u'Enter credential data: ')
+      getpass_string = u'Enter credential data: '
+      if sys.platform.startswith(u'win') and sys.version_info[0] < 3:
+        # For Python 2 on Windows getpass (win_getpass) requires an encoded
+        # byte string. For Python 3 we need it to be a Unicode string.
+        getpass_string = self._EncodeString(getpass_string)
+
+      credential_data = getpass.getpass(getpass_string)
       output_writer.WriteLine(u'')
 
       result = self._source_scanner.Unlock(
