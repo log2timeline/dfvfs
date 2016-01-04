@@ -120,7 +120,7 @@ class CodeReviewHelper(CLIHelper):
               issue_number, exception))
       return False
 
-    if url_object.code != 200:
+    if url_object.code not in (200, 201):
       logging.error((
           u'Failed publish to codereview issue: {0!s} with status code: '
           u'{1:d}').format(issue_number, url_object.code))
