@@ -185,16 +185,22 @@ class CodeReviewHelper(CLIHelper):
       An integer containing the code review number or None.
     """
     reviewers = list(self._REVIEWERS)
+    reviewers_cc = list(self._REVIEWERS_CC)
 
-    # Remove self from reviewers list.
     try:
-      list_index = reviewers.index(self._email_address)
-      reviewers.pop(list_index)
+      # Remove self from reviewers list.
+      reviewers.remove(self._email_address)
     except ValueError:
       pass
 
-    reviewers = u','.join(self._REVIEWERS)
-    reviewers_cc = u','.join(self._REVIEWERS_CC)
+    try:
+      # Remove self from reviewers CC list.
+      reviewers_cc.remove(self._email_address)
+    except ValueError:
+      pass
+
+    reviewers = u','.join(reviewers)
+    reviewers_cc = u','.join(reviewers_cc)
 
     command = u'{0:s} {1:s} --oauth2'.format(
         sys.executable, self._upload_py_path)
