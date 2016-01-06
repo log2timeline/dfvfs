@@ -20,29 +20,29 @@ class FindSpec(object):
     """Initializes the find specification object.
 
     Args:
-      file_entry_types: Optional file entry types list or None to indicate
+      file_entry_types: optional file entry types list or None to indicate
                         no preference.
-      is_allocated: Optional boolean value to indicate the file entry should
+      is_allocated: optional boolean value to indicate the file entry should
                     be allocated, where None represents no preference.
-      location: Optional location string or list of location segments, or None
+      location: optional location string or list of location segments, or None
                 to indicate no preference. The location should be defined
                 relative to the root of the file system.
                 Note that the string will be split into segments based on the
                 file system specific path segment separator.
-      location_glob: Optional location glob string or list of location glob
+      location_glob: optional location glob string or list of location glob
                      segments, or None to indicate no preference. The location
                      glob should be defined relative to the root of the file
                      system. The default is None. Note that the string will be
                      split into segments based on the file system specific
                      path segment separator.
-      location_regex: Optional location regular expression string or list of
+      location_regex: optional location regular expression string or list of
                       location regular expression segments, or None to indicate
                       no preference. The location regular expression should be
                       defined relative to the root of the file system. The
                       default is None. Note that the string will be split into
                       segments based on the file system specific path segment
                       separator.
-      case_sensitive: Optional boolean value to indicate string matches should
+      case_sensitive: optional boolean value to indicate string matches should
                       be case sensitive.
 
     Raises:
