@@ -42,8 +42,8 @@ class Factory(object):
     """
     type_indicator = path_spec_type.TYPE_INDICATOR
     if type_indicator not in cls._path_spec_types:
-      raise KeyError((
-          u'Path specification type: {0:s} not set.').format(type_indicator))
+      raise KeyError(
+          u'Path specification type: {0:s} not set.'.format(type_indicator))
 
     del cls._path_spec_types[type_indicator]
 
@@ -97,8 +97,8 @@ class Factory(object):
       KeyError: if path specification is not registered.
     """
     if type_indicator not in cls._path_spec_types:
-      raise KeyError((
-          u'Path specification type: {0:s} not set.').format(type_indicator))
+      raise KeyError(
+          u'Path specification type: {0:s} not set.'.format(type_indicator))
 
     # An empty parent will cause parentless path specifications to raise
     # so we conveniently remove it here.
@@ -120,8 +120,8 @@ class Factory(object):
     """
     type_indicator = path_spec_type.TYPE_INDICATOR
     if type_indicator in cls._path_spec_types:
-      raise KeyError((
-          u'Path specification type: {0:s} already set.').format(
+      raise KeyError(
+          u'Path specification type: {0:s} already set.'.format(
               type_indicator))
 
     cls._path_spec_types[type_indicator] = path_spec_type
