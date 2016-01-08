@@ -489,10 +489,13 @@ class GitHelper(CLIHelper):
         u'git log HEAD..upstream/master --oneline')
     return exit_code == 0 and not output
 
-  def CommitToOriginInNameOf(self, author, description):
+  def CommitToOriginInNameOf(
+      self, codereview_issue_number, author, description):
     """Commits changes in name of an author to the master branch of origin.
 
     Args:
+      codereview_issue_number: an integer or string containing the codereview
+                               issue number.
       author: string containing the full name and email address of the author.
               E.g. "Full Name <email.address@example.com>".
       description: string containing the description of the commit.
@@ -500,8 +503,10 @@ class GitHelper(CLIHelper):
     Returns:
       A boolean indicating the changes were committed to the git repo.
     """
-    command = u'git commit -a --author="{0:s}" -m "{1:s}"'.format(
-        author, description)
+    command = (
+        u'git commit -a --author="{0:s}" '
+        u'-m "Code review: {1:s}: {2:s}"').format(
+            author, codereview_issue_number, description)
     exit_code, _, _ = self.RunCommand(command)
     if exit_code != 0:
       return False
@@ -643,7 +648,6 @@ class GitHelper(CLIHelper):
     """Forces a push of the active branch of the git repo to origin.
 
     Args:
-    Args:
       branch: name of the feature branch.
       force: optional boolean value to indicate the push should be forced.
 
@@ -775,8 +779,7 @@ class GitHubHelper(object):
               codereview_issue_number, exception))
       return False
 
-    if url_object.code != 200:
-      # TODO: determine why this is failing while PR is created.
+    if url_object.code not in (200, 201):
       logging.error(
           u'Failed creating pull request: {0!s} with status code: {1:d}'.format(
               codereview_issue_number, url_object.code))
@@ -1558,7 +1561,7 @@ class ReviewHelper(object):
       readthedocs_helper.TriggerBuild()
 
     if not self._git_helper.CommitToOriginInNameOf(
-        self._merge_author, self._merge_description):
+        codereview_issue_number, self._merge_author, self._merge_description):
       print(u'Unable to commit changes.')
       self._git_helper.DropUncommittedChanges()
       return False
