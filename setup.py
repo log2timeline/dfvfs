@@ -68,12 +68,13 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    packages=find_packages('.', exclude=[u'examples', u'tests', u'tests.*']),
+    packages=find_packages('.', exclude=[
+        'examples', 'tests', 'tests.*', 'utils']),
     package_dir={
         'dfvfs': 'dfvfs'
     },
     data_files=[
         ('share/doc/dfvfs', [
-            u'AUTHORS', u'ACKNOWLEDGEMENTS', u'LICENSE', u'README']),
+            'AUTHORS', 'ACKNOWLEDGEMENTS', 'LICENSE', 'README']),
     ],
 )
