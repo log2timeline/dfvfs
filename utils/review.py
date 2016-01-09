@@ -1444,7 +1444,7 @@ class ReviewHelper(object):
 
     create_github_origin = u'{0:s}:{1:s}'.format(
         git_origin, self._active_branch)
-    if self._github_helper.CreatePullRequest(
+    if not self._github_helper.CreatePullRequest(
         github_access_token, codereview_issue_number, create_github_origin,
         description):
       print(u'Unable to create pull request.')
