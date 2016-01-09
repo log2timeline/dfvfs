@@ -8,7 +8,7 @@ from dfvfs.vfs import root_only_file_entry
 from dfvfs.vfs import vfs_stat
 
 
-class BdeFileEntry(root_only_file_entry.RootOnlyFileEntry):
+class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
   """Class that implements a file entry object using BDE."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
@@ -22,7 +22,7 @@ class BdeFileEntry(root_only_file_entry.RootOnlyFileEntry):
     Raises:
       BackEndError: when the BDE file is missing.
     """
-    bde_volume = self._file_system.GetBdeVolume()
+    bde_volume = self._file_system.GetBDEVolume()
     if bde_volume is None:
       raise errors.BackEndError(u'Missing BDE volume.')
 
