@@ -6,7 +6,7 @@ from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
-class EwfPathSpec(path_spec.PathSpec):
+class EWFPathSpec(path_spec.PathSpec):
   """Class that implements the EWF image path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_EWF
@@ -27,7 +27,7 @@ class EwfPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(EwfPathSpec, self).__init__(parent=parent, **kwargs)
+    super(EWFPathSpec, self).__init__(parent=parent, **kwargs)
 
   @property
   def comparable(self):
@@ -36,4 +36,4 @@ class EwfPathSpec(path_spec.PathSpec):
 
 
 # Register the path specification with the factory.
-factory.Factory.RegisterPathSpec(EwfPathSpec)
+factory.Factory.RegisterPathSpec(EWFPathSpec)

@@ -5,7 +5,7 @@ from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 
 
-def EwfGlobPathSpec(file_system, path_spec):
+def EWFGlobPathSpec(file_system, path_spec):
   """Globs for path specifications according to the EWF naming schema.
 
   Args:
