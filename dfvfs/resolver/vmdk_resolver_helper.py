@@ -9,7 +9,7 @@ from dfvfs.resolver import resolver
 from dfvfs.resolver import resolver_helper
 
 
-class VmdkResolverHelper(resolver_helper.ResolverHelper):
+class VMDKResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the VMDK image resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VMDK
@@ -23,8 +23,8 @@ class VmdkResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file-like object (instance of file_io.FileIO).
     """
-    return dfvfs.file_io.vmdk_file_io.VmdkFile(resolver_context)
+    return dfvfs.file_io.vmdk_file_io.VMDKFile(resolver_context)
 
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(VmdkResolverHelper())
+resolver.Resolver.RegisterHelper(VMDKResolverHelper())

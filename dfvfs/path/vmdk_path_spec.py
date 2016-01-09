@@ -6,7 +6,7 @@ from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
-class VmdkPathSpec(path_spec.PathSpec):
+class VMDKPathSpec(path_spec.PathSpec):
   """Class that implements the VMDK image path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VMDK
@@ -27,7 +27,7 @@ class VmdkPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(VmdkPathSpec, self).__init__(parent=parent, **kwargs)
+    super(VMDKPathSpec, self).__init__(parent=parent, **kwargs)
 
   @property
   def comparable(self):
@@ -36,4 +36,4 @@ class VmdkPathSpec(path_spec.PathSpec):
 
 
 # Register the path specification with the factory.
-factory.Factory.RegisterPathSpec(VmdkPathSpec)
+factory.Factory.RegisterPathSpec(VMDKPathSpec)

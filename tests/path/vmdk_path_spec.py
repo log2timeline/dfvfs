@@ -9,24 +9,24 @@ from dfvfs.path import vmdk_path_spec
 from tests.path import test_lib
 
 
-class VmdkPathSpecTest(test_lib.PathSpecTestCase):
+class VMDKPathSpecTest(test_lib.PathSpecTestCase):
   """Tests for the VMDK image path specification implementation."""
 
   def testInitialize(self):
     """Tests the path specification initialization."""
-    path_spec = vmdk_path_spec.VmdkPathSpec(parent=self._path_spec)
+    path_spec = vmdk_path_spec.VMDKPathSpec(parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = vmdk_path_spec.VmdkPathSpec(parent=None)
+      _ = vmdk_path_spec.VMDKPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = vmdk_path_spec.VmdkPathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      _ = vmdk_path_spec.VMDKPathSpec(parent=self._path_spec, bogus=u'BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
-    path_spec = vmdk_path_spec.VmdkPathSpec(parent=self._path_spec)
+    path_spec = vmdk_path_spec.VMDKPathSpec(parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
