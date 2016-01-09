@@ -50,7 +50,7 @@ def _DownloadPageContent(download_url):
   if not download_url:
     return
 
-  url_object = urllib2.urlopen(download_url)
+  url_object = urlopen(download_url)
   if not url_object or url_object.code != 200:
     return
 
@@ -97,6 +97,8 @@ def _GetLibyalGithubReleasesLatestVersion(library_name):
   if not page_content:
     return 0
 
+  page_content = page_content.decode(u'utf-8')
+
   # The format of the project download URL is:
   # /libyal/{project name}/releases/download/{git tag}/
   # {project name}{status-}{version}.tar.gz
@@ -129,6 +131,8 @@ def _GetLibyalGoogleDriveLatestVersion(library_name):
   if not page_content:
     return 0
 
+  page_content = page_content.decode(u'utf-8')
+
   # The format of the library downloads URL is:
   # https://googledrive.com/host/{random string}/
   expression_string = (
@@ -141,6 +145,8 @@ def _GetLibyalGoogleDriveLatestVersion(library_name):
   page_content = _DownloadPageContent(matches[0])
   if not page_content:
     return 0
+
+  page_content = page_content.decode(u'utf-8')
 
   # The format of the library download URL is:
   # /host/{random string}/{library name}-{status-}{version}.tar.gz
@@ -184,13 +190,13 @@ def _CheckLibyal(libyal_python_modules, latest_version_check=False):
     if latest_version_check:
       try:
         latest_version = _GetLibyalGithubReleasesLatestVersion(libyal_name)
-      except urllib2.URLError:
+      except urllib_error.URLError:
         latest_version = None
 
       if not latest_version:
         try:
           latest_version = _GetLibyalGoogleDriveLatestVersion(libyal_name)
-        except urllib2.URLError:
+        except urllib_error.URLError:
           latest_version = None
 
       if not latest_version:
