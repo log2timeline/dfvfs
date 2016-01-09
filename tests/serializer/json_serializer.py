@@ -22,7 +22,7 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join(u'test_data', u'image.qcow2')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
         parent=self._os_path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._qcow_path_spec)

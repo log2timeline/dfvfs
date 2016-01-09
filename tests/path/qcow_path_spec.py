@@ -9,24 +9,24 @@ from dfvfs.path import qcow_path_spec
 from tests.path import test_lib
 
 
-class QcowPathSpecTest(test_lib.PathSpecTestCase):
+class QCOWPathSpecTest(test_lib.PathSpecTestCase):
   """Tests for the QCOW image path specification implementation."""
 
   def testInitialize(self):
     """Tests the path specification initialization."""
-    path_spec = qcow_path_spec.QcowPathSpec(parent=self._path_spec)
+    path_spec = qcow_path_spec.QCOWPathSpec(parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = qcow_path_spec.QcowPathSpec(parent=None)
+      _ = qcow_path_spec.QCOWPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = qcow_path_spec.QcowPathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      _ = qcow_path_spec.QCOWPathSpec(parent=self._path_spec, bogus=u'BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
-    path_spec = qcow_path_spec.QcowPathSpec(parent=self._path_spec)
+    path_spec = qcow_path_spec.QCOWPathSpec(parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 

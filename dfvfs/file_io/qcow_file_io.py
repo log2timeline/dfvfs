@@ -12,7 +12,7 @@ from dfvfs.resolver import resolver
 dependencies.CheckModuleVersion(u'pyqcow')
 
 
-class QcowFile(file_object_io.FileObjectIO):
+class QCOWFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object using pyqcow."""
 
   def _OpenFileObject(self, path_spec):
