@@ -74,7 +74,11 @@ class TarFileEntry(file_entry.FileEntry):
     self._tar_info = tar_info
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of TarDirectory)."""
+    """Retrieves a directory.
+
+    Returns:
+      A directory object (instance of Directory) or None.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 

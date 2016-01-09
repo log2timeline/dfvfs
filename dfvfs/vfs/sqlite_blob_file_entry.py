@@ -110,7 +110,11 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     return self._file_system.GetNumberOfRows(self.path_spec)
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of SQLiteBlobDirectory)."""
+    """Retrieves a directory.
+
+    Returns:
+      A directory object (instance of Directory).
+    """
     return SQLiteBlobDirectory(self._file_system, self.path_spec)
 
   def GetParentFileEntry(self):

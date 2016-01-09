@@ -81,7 +81,11 @@ class ZipFileEntry(file_entry.FileEntry):
     self._zip_info = zip_info
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of ZipDirectory)."""
+    """Retrieves a directory.
+
+    Returns:
+      A directory object (instance of Directory) or None.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 

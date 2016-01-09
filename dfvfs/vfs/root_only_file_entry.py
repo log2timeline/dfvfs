@@ -10,7 +10,11 @@ class RootOnlyFileEntry(file_entry.FileEntry):
   """Class that implements a root only file entry object."""
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of vfs.Directory)."""
+    """Retrieves a directory.
+
+    Returns:
+      None to indicate there is no directory.
+    """
     return
 
   @abc.abstractmethod

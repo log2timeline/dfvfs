@@ -85,7 +85,11 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     self._name = None
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of TSKPartitionDirectory)."""
+    """Retrieves a directory.
+
+    Returns:
+      A directory object (instance of Directory) or None.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 
