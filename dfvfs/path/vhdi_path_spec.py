@@ -6,7 +6,7 @@ from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
-class VhdiPathSpec(path_spec.PathSpec):
+class VHDIPathSpec(path_spec.PathSpec):
   """Class that implements the VHD image path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
@@ -27,7 +27,7 @@ class VhdiPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(VhdiPathSpec, self).__init__(parent=parent, **kwargs)
+    super(VHDIPathSpec, self).__init__(parent=parent, **kwargs)
 
   @property
   def comparable(self):
@@ -36,4 +36,4 @@ class VhdiPathSpec(path_spec.PathSpec):
 
 
 # Register the path specification with the factory.
-factory.Factory.RegisterPathSpec(VhdiPathSpec)
+factory.Factory.RegisterPathSpec(VHDIPathSpec)

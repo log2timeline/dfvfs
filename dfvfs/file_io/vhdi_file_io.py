@@ -12,7 +12,7 @@ from dfvfs.resolver import resolver
 dependencies.CheckModuleVersion(u'pyvhdi')
 
 
-class VhdiFile(file_object_io.FileObjectIO):
+class VHDIFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object using pyvhdi."""
 
   def _OpenFileObject(self, path_spec):
