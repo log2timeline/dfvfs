@@ -17,7 +17,7 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
   def __init__(self, location=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the operating system path specification cannot have a parent.
+    Note that the operating system path specification cannot have a parent.
 
     Args:
       location: optional operating specific location string e.g. /opt/dfvfs or

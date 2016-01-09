@@ -7,17 +7,21 @@ from dfvfs.path import path_spec
 
 
 class MountPathSpec(path_spec.PathSpec):
-  """Class that implements the mount path specification."""
+  """Class that implements the mount path specification.
+
+  Attributes:
+    identifier: string containing the identifier of the mount point.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_MOUNT
 
   def __init__(self, identifier, **kwargs):
     """Initializes the path specification object.
 
-       Note that the mount path specification cannot have a parent.
+    Note that the mount path specification cannot have a parent.
 
     Args:
-      identifier: the identifier of the mount point.
+      identifier: string containing the identifier of the mount point.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

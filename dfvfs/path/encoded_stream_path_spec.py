@@ -7,17 +7,22 @@ from dfvfs.path import path_spec
 
 
 class EncodedStreamPathSpec(path_spec.PathSpec):
-  """Class that implements the encoded stream path specification."""
+  """Class that implements the encoded stream path specification.
+
+  Attributes:
+    encoding_method: string containing the method used to the encode the data.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
 
   def __init__(self, encoding_method=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the encoded stream path specification must have a parent.
+    Note that the encoded stream path specification must have a parent.
 
     Args:
-      encoding_method: optional method used to the encode the data.
+      encoding_method: optional string containing the method used to the encode
+                       the data.
       parent: optional parent path specification (instance of PathSpec).
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.

@@ -5,13 +5,17 @@ from dfvfs.path import path_spec
 
 
 class LocationPathSpec(path_spec.PathSpec):
-  """Base class for location-based path specifications."""
+  """Base class for location-based path specifications.
+
+  Attributes:
+    location: string containing the location.
+  """
 
   def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
     Args:
-      location: optional location string.
+      location: optional string containing the location.
       parent: optional parent path specification (instance of PathSpec),
               default is None.
       kwargs: a dictionary of keyword arguments dependending on the path

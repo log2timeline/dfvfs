@@ -14,7 +14,7 @@ class BDEPathSpec(path_spec.PathSpec):
   def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the BDE path specification must have a parent.
+    Note that the BDE path specification must have a parent.
 
     Args:
       parent: optional parent path specification (instance of PathSpec).

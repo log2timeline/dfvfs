@@ -7,18 +7,23 @@ from dfvfs.path import path_spec
 
 
 class VShadowPathSpec(path_spec.PathSpec):
-  """Class that implements the VSS path specification."""
+  """Class that implements the VSS path specification.
+
+  Attributes:
+    location: string containing the location.
+    store_index: integer containing the store index.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, location=None, store_index=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the VSS path specification must have a parent.
+    Note that the VSS path specification must have a parent.
 
     Args:
-      location: optional location string.
-      store_index: optional store index.
+      location: optional string containing the location.
+      store_index: optional integer containing the store index.
       parent: optional parent path specification (instance of PathSpec).
 
     Raises:
