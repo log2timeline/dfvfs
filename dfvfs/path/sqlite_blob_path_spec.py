@@ -71,12 +71,14 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
 
     string_parts.append(u'table name: {0:s}'.format(self.table_name))
     string_parts.append(u'column name: {0:s}'.format(self.column_name))
+
     if self.row_condition is not None:
       row_condition_string = u' '.join([
           u'{0!s}'.format(value) for value in self.row_condition])
       string_parts.append(u'row condition: "{0:s}"'.format(
           row_condition_string))
-    else:
+
+    if self.row_index is not None:
       string_parts.append(u'row index: {0:d}'.format(self.row_index))
 
     return self._GetComparable(sub_comparable_string=u', '.join(string_parts))

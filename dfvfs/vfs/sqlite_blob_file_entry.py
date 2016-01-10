@@ -11,6 +11,16 @@ from dfvfs.vfs import vfs_stat
 class SQLiteBlobDirectory(file_entry.Directory):
   """Class that implements a SQLite blob directory object."""
 
+  def __init__(self, file_system, path_spec):
+    """Initializes the directory object.
+
+    Args:
+      file_system: the file system object (instance of FileSystem).
+      path_spec: the path specification object (instance of PathSpec).
+    """
+    super(SQLiteBlobDirectory, self).__init__(file_system, path_spec)
+    self._number_of_entries = None
+
   def _EntriesGenerator(self):
     """Retrieves directory entries.
 
@@ -32,8 +42,21 @@ class SQLiteBlobDirectory(file_entry.Directory):
     if column_name is None:
       return
 
-    number_of_rows = self._file_system.GetNumberOfRows(self.path_spec)
-    for row_index in range(0, number_of_rows):
+    if self._number_of_entries is None:
+      # Open the first entry to determine how many entries we have.
+      # TODO: change this when there is a move this to a central temp file
+      # manager. https://github.com/log2timeline/dfvfs/issues/92
+      path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
+          table_name=table_name, column_name=column_name, row_index=0,
+          parent=self.path_spec.parent)
+
+      sub_file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+      if not file_entry:
+        self._number_of_entries = 0
+      else:
+        self._number_of_entries = sub_file_entry.GetNumberOfRows()
+
+    for row_index in range(0, self._number_of_entries):
       yield sqlite_blob_path_spec.SQLiteBlobPathSpec(
           table_name=table_name, column_name=column_name, row_index=row_index,
           parent=self.path_spec.parent)
@@ -51,25 +74,24 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
       The stat object (instance of vfs.VFSStat).
 
     Raises:
-      BackEndError: when the SQLite blob is missing.
+      BackEndError: when the SQLite blob file-like object is missing.
     """
-    blob_file = self.GetFileObject()
-    if not blob_file:
-      raise errors.BackEndError(
-          u'Unable to open blob file: {0:s}.'.format(self.path_spec.comparable))
+    stat_object = vfs_stat.VFSStat()
 
-    try:
-      stat_object = vfs_stat.VFSStat()
+    # The root file entry is virtual and should have type directory.
+    if self._is_virtual:
+      stat_object.type = stat_object.TYPE_DIRECTORY
+    else:
+      file_object = self.GetFileObject()
+      if not file_object:
+        raise errors.BackEndError(
+            u'Unable to retrieve SQLite blob file-like object.')
 
-      # The root file entry is virtual and should have type directory.
-      if self._is_virtual:
-        stat_object.type = stat_object.TYPE_DIRECTORY
-      else:
+      try:
         stat_object.type = stat_object.TYPE_FILE
-        stat_object.size = blob_file.get_size()
-
-    finally:
-      blob_file.close()
+        stat_object.size = file_object.get_size()
+      finally:
+        file_object.close()
 
     return stat_object
 
@@ -104,27 +126,56 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
         yield SQLiteBlobFileEntry(
             self._resolver_context, self._file_system, path_spec)
 
-  @property
-  def number_of_sub_file_entries(self):
-    """The number of sub file entries."""
-    return self._file_system.GetNumberOfRows(self.path_spec)
-
   def _GetDirectory(self):
     """Retrieves a directory.
 
     Returns:
       A directory object (instance of Directory) or None.
     """
-    return SQLiteBlobDirectory(self._file_system, self.path_spec)
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+
+    if (self._stat_object and
+        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
+      return SQLiteBlobDirectory(self._file_system, self.path_spec)
+    return
+
+  def GetNumberOfRows(self):
+    """Retrieves the number of rows of the table.
+
+    Returns:
+      An integer containing the number of rows.
+
+    Raises:
+      BackEndError: when the SQLite blob file-like object is missing.
+    """
+    file_object = self.GetFileObject()
+    if not file_object:
+      raise errors.BackEndError(
+          u'Unable to retrieve SQLite blob file-like object.')
+
+    try:
+      # TODO: move this function out of SQLiteBlobFile.
+      self._number_of_entries = file_object.GetNumberOfRows()
+    finally:
+      file_object.close()
+
+    return self._number_of_entries
 
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
+    """Retrieves the parent file entry.
+
+    Returns:
+      The parent file entry (instance of FileEntry) or None.
+    """
     # If the file entry is a sub entry, return the SQLite blob directory.
-    if not self._is_virtual:
-      path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=self.path_spec.table_name,
-          column_name=self.path_spec.column_name,
-          parent=self.path_spec.parent)
-      return SQLiteBlobFileEntry(
-          self._resolver_context, self._file_system,
-          path_spec, is_root=True, is_virtual=True)
+    if self._is_virtual:
+      return
+
+    path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
+        table_name=self.path_spec.table_name,
+        column_name=self.path_spec.column_name,
+        parent=self.path_spec.parent)
+    return SQLiteBlobFileEntry(
+        self._resolver_context, self._file_system,
+        path_spec, is_root=True, is_virtual=True)

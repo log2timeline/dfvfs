@@ -2,31 +2,16 @@
 """The SQlite blob file-like object."""
 
 import os
-import tempfile
-
-try:
-  from pysqlite2 import dbapi2 as sqlite3
-except ImportError:
-  import sqlite3
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3
+from dfvfs.lib import sqlite_database
 from dfvfs.resolver import resolver
 
 
 class SQLiteBlobFile(file_io.FileIO):
   """Class that implements a file-like object using sqlite."""
-
-  _COPY_BUFFER_SIZE = 65536
-  _HEADER_SIGNATURE = b'SQLite format 3'
-
-  _HAS_COLUMN_QUERY = u'PRAGMA table_info("{0:s}")'
-
-  _HAS_TABLE_QUERY = (
-      u'SELECT name FROM sqlite_master WHERE type = "table"')
-
-  _NUMBER_OF_ROWS_QUERY = u'SELECT COUNT(*) FROM {0:s}'
 
   _OPERATORS = frozenset([u'==', u'=', u'IS'])
 
@@ -38,12 +23,10 @@ class SQLiteBlobFile(file_io.FileIO):
     """
     super(SQLiteBlobFile, self).__init__(resolver_context)
     self._blob = None
-    self._connection = None
-    self._current_offset = 0
-    self._cursor = None
+    self._database_object = None
     self._number_of_rows = None
     self._size = 0
-    self._temp_file_path = u''
+    self._table_name = None
 
   def _Close(self):
     """Closes the file-like object.
@@ -51,81 +34,13 @@ class SQLiteBlobFile(file_io.FileIO):
     Raises:
       IOError: if the close failed.
     """
-    if self._connection:
-      self._cursor = None
-      self._connection.close()
-      self._connection = None
+    if self._database_object:
+      self._database_object.Close()
 
     self._blob = None
     self._current_offset = 0
     self._size = 0
-
-    # TODO: move this to a central temp file manager and have it track errors.
-    try:
-      os.remove(self._temp_file_path)
-    except (OSError, IOError):
-      pass
-
-    self._temp_file_path = u''
-
-  def _HasColumn(self, table_name, column_name):
-    """Determines if a specific column exists.
-
-    Args:
-      table_name: the table name.
-      column_name: the column name.
-
-    Returns:
-      True if the column exists, false otheriwse.
-
-    Raises:
-      IOError: if the data base is not opened.
-    """
-    if not self._connection:
-      raise IOError(u'Not opened.')
-
-    if not column_name:
-      return False
-
-    column_name = column_name.lower()
-    self._cursor.execute(self._HAS_COLUMN_QUERY.format(table_name))
-
-    for row in self._cursor.fetchall():
-      # As a sanity check we compare the column name in Python instead of
-      # passing it as part of the SQL query.
-      if row[1] and row[1].lower() == column_name:
-        return True
-
-    return False
-
-  def _HasTable(self, table_name):
-    """Determines if a specific table exists.
-
-    Args:
-      table_name: the table name.
-
-    Returns:
-      True if the table exists, false otheriwse.
-
-    Raises:
-      IOError: if the data base is not opened.
-    """
-    if not self._connection:
-      raise IOError(u'Not opened.')
-
-    if not table_name:
-      return False
-
-    table_name = table_name.lower()
-    self._cursor.execute(self._HAS_TABLE_QUERY)
-
-    for row in self._cursor.fetchall():
-      # As a sanity check we compare the table name in Python instead of
-      # passing it as part of the SQL query.
-      if row[0] and row[0].lower() == table_name:
-        return True
-
-    return False
+    self._table_name = None
 
   def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
@@ -168,72 +83,60 @@ class SQLiteBlobFile(file_io.FileIO):
         raise errors.PathSpecError(
             u'Unsupported row_index not of integer type.')
 
-    if self._connection:
-      raise IOError(u'Connection already set.')
+    if not row_condition and row_index is None:
+      raise errors.PathSpecError(
+          u'Path specification requires either a row_condition or row_index.')
 
-    # Since pysqlite3 does not provide an exclusive read-only mode and
-    # cannot interact with a file-like object directly we make a temporary
-    # copy. Before making a copy we check the header signature.
+    if self._database_object:
+      raise IOError(u'Database file already set.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    file_object.seek(0, os.SEEK_SET)
-    data = file_object.read(len(self._HEADER_SIGNATURE))
-
-    if data != self._HEADER_SIGNATURE:
+    try:
+      database_object = sqlite_database.SQLiteDatabaseFile()
+      database_object.Open(file_object)
+    finally:
       file_object.close()
-      raise IOError(u'Unsupported SQLite database signature.')
-
-    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-      self._temp_file_path = temp_file.name
-      while data:
-        temp_file.write(data)
-        data = file_object.read(self._COPY_BUFFER_SIZE)
-
-    file_object.close()
-
-    self._connection = sqlite3.connect(self._temp_file_path)
-    self._connection.text_factory = bytes
-    self._cursor = self._connection.cursor()
 
     # Sanity check the table and column names.
-    if not self._HasTable(table_name):
-      self._connection.close()
-      raise IOError(u'Missing table: {0:s}'.format(table_name))
+    error_string = u''
+    if not database_object.HasTable(table_name):
+      error_string = u'Missing table: {0:s}'.format(table_name)
 
-    if not self._HasColumn(table_name, column_name):
-      self._connection.close()
-      raise IOError(u'Missing column: {0:s} in table: {1:s}'.format(
-          column_name, table_name))
+    elif not database_object.HasColumn(table_name, column_name):
+      error_string = u'Missing column: {0:s} in table: {1:s}'.format(
+          column_name, table_name)
 
-    if row_condition:
-      if not self._HasColumn(table_name, row_condition[0]):
-        self._connection.close()
-        raise IOError(
-            u'Missing row condition column: {0:s} in table: {1:s}'.format(
-                row_condition[0], table_name))
-
-      if row_condition[1] not in self._OPERATORS:
-        self._connection.close()
-        raise IOError(
-            u'Unsupported row condition operator: {0:s}.'.format(
-                row_condition[1]))
-
-      query = u'SELECT {0:s} FROM {1:s} WHERE {2:s} {3:s} ?'.format(
-          column_name, table_name, row_condition[0], row_condition[1])
-      self._cursor.execute(query, (row_condition[2], ))
-
-    else:
+    elif not row_condition:
       query = u'SELECT {0:s} FROM {1:s} LIMIT 1 OFFSET {2:d}'.format(
           column_name, table_name, row_index)
-      self._cursor.execute(query)
+      rows = database_object.Query(query)
+
+    elif not database_object.HasColumn(table_name, row_condition[0]):
+      error_string = (
+          u'Missing row condition column: {0:s} in table: {1:s}'.format(
+              row_condition[0], table_name))
+
+    elif row_condition[1] not in self._OPERATORS:
+      error_string = (
+          u'Unsupported row condition operator: {0:s}.'.format(
+              row_condition[1]))
+
+    else:
+      query = u'SELECT {0:s} FROM {1:s} WHERE {2:s} {3:s} ?'.format(
+          column_name, table_name, row_condition[0], row_condition[1])
+      rows = database_object.Query(query, parameters=(row_condition[2], ))
 
     # Make sure the query returns a single row, using cursor.rowcount
     # is not reliable for this purpose.
-    rows = self._cursor.fetchall()
     if len(rows) != 1 or len(rows[0]) != 1:
-      if row_condition:
+      if not row_condition:
+        error_string = (
+            u'Unable to open blob in table: {0:s} and column: {1:s} '
+            u'for row: {2:d}.').format(table_name, column_name, row_index)
+
+      else:
         row_condition_string = u' '.join([
             u'{0!s}'.format(value) for value in row_condition])
         error_string = (
@@ -241,30 +144,33 @@ class SQLiteBlobFile(file_io.FileIO):
             u'where: {2:s}.').format(
                 table_name, column_name, row_condition_string)
 
-      else:
-        error_string = (
-            u'Unable to open blob in table: {0:s} and column: {1:s} '
-            u'for row: {2:d}.').format(table_name, column_name, row_index)
-
-      self._Close()
+    if error_string:
+      database_object.Close()
       raise IOError(error_string)
 
     self._blob = rows[0][0]
     self._current_offset = 0
+    self._database_object = database_object
     self._size = len(self._blob)
+    self._table_name = table_name
 
-    # Get number of rows for this table
-    self._cursor.execute(self._NUMBER_OF_ROWS_QUERY.format(table_name))
-    self._number_of_rows = int(self._cursor.fetchone()[0])
-
+  # TODO: remove this when there is a move this to a central temp file
+  # manager. https://github.com/log2timeline/dfvfs/issues/92
   def GetNumberOfRows(self):
-    """Returns the number of rows the table has.
+    """Retrieves the number of rows of the table.
+
+    Returns:
+      An integer containing the number of rows.
 
     Raises:
       IOError: if the file-like object has not been opened.
     """
-    if not self._connection:
+    if not self._database_object:
       raise IOError(u'Not opened.')
+
+    if self._number_of_rows is None:
+      self._number_of_rows = self._database_object.GetNumberOfRows(
+          self._table_name)
 
     return self._number_of_rows
 
@@ -287,7 +193,7 @@ class SQLiteBlobFile(file_io.FileIO):
     Raises:
       IOError: if the read failed.
     """
-    if not self._connection:
+    if not self._database_object:
       raise IOError(u'Not opened.')
 
     if self._current_offset < 0:
@@ -316,7 +222,7 @@ class SQLiteBlobFile(file_io.FileIO):
     Raises:
       IOError: if the seek failed.
     """
-    if not self._connection:
+    if not self._database_object:
       raise IOError(u'Not opened.')
 
     if whence == os.SEEK_CUR:
@@ -337,7 +243,7 @@ class SQLiteBlobFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
-    if not self._connection:
+    if not self._database_object:
       raise IOError(u'Not opened.')
 
     return self._current_offset
@@ -348,7 +254,7 @@ class SQLiteBlobFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
-    if not self._connection:
+    if not self._database_object:
       raise IOError(u'Not opened.')
 
     return self._size
