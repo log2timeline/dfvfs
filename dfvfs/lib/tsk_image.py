@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for the SleuthKit (TSK) image support."""
+"""Helper functions for SleuthKit (TSK) image support."""
 
 import os
 import pytsk3
@@ -12,7 +12,7 @@ class TSKFileSystemImage(pytsk3.Img_Info):
     """Initializes the image object.
 
     Args:
-      file_object: the file-like object (instance of file_io.FileIO).
+      file_object: the file-like object (instance of FileIO).
 
     Raises:
       ValueError: if the file-like object is invalid.

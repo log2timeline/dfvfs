@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for the RAW storage media image support."""
+"""Helper functions for RAW storage media image support."""
 
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory

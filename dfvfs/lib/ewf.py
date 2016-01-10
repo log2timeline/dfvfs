@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for the EWF image support."""
+"""Helper functions for EWF image support."""
 
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory

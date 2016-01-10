@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for the SleuthKit (TSK) partition support."""
+"""Helper functions for SleuthKit (TSK) partition support."""
 
 import pytsk3
 
