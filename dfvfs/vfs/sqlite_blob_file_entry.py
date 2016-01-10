@@ -113,7 +113,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      A directory object (instance of Directory).
+      A directory object (instance of Directory) or None.
     """
     return SQLiteBlobDirectory(self._file_system, self.path_spec)
 
