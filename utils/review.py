@@ -983,6 +983,8 @@ class ProjectHelper(object):
         version_string = u'__version__ = \'{0:s}\''.format(date_version)
         lines[line_index] = version_string
 
+    version_file_contents = u'\n'.join(lines)
+
     try:
       version_file_contents = version_file_contents.encode(u'utf-8')
     except UnicodeEncodeError as exception:
@@ -1304,7 +1306,8 @@ class ReviewHelper(object):
             self._command.title()))
         return False
 
-    if self._command not in ('lint', 'test'):
+    if self._command not in (
+        u'lint', u'test', u'update-version', u'update_version'):
       if self._git_helper.CheckHasUncommittedChanges():
         print(u'{0:s} aborted - detected uncommitted changes.'.format(
             self._command.title()))
@@ -1336,7 +1339,14 @@ class ReviewHelper(object):
     Returns:
       A boolean value to indicate if the state is sane.
     """
-    if self._command in (u'create', u'close', u'update'):
+    if self._command == u'close':
+      if not self._git_helper.SynchronizeWithUpstream():
+        print((
+            u'{0:s} aborted - unable to synchronize with '
+            u'upstream/master.').format(self._command.title()))
+        return False
+
+    elif self._command in (u'create', u'update'):
       if not self._git_helper.CheckSynchronizedWithUpstream():
         if not self._git_helper.SynchronizeWithUpstream():
           print((
@@ -1714,6 +1724,22 @@ class ReviewHelper(object):
 
     return True
 
+  def UpdateVersion(self):
+    """Updates the version.
+
+    Returns:
+      A boolean value to indicate if the version update was successful.
+    """
+    if not self._project_helper.UpdateVersionFile():
+      print(u'Unable to update version file.')
+      return False
+
+    if not self._project_helper.UpdateDpkgChangelogFile():
+      print(u'Unable to update dpkg changelog file.')
+      return False
+
+    return False
+
 
 def Main():
   argument_parser = argparse.ArgumentParser(
@@ -1783,6 +1809,9 @@ def Main():
 
   commands_parser.add_parser(u'update')
 
+  commands_parser.add_parser(u'update-version')
+  commands_parser.add_parser(u'update_version')
+
   options = argument_parser.parse_args()
 
   codereview_issue_number = None
@@ -1845,27 +1874,26 @@ def Main():
   if not review_helper.Test():
     return False
 
+  result = False
   if options.command == u'create':
-    if not review_helper.Create():
-      return False
+    result = review_helper.Create()
 
   elif options.command == u'close':
-    if not review_helper.Close():
-      return False
+    result = review_helper.Close()
 
   elif options.command == u'merge':
-    if not review_helper.Merge(codereview_issue_number):
-      return False
+    result = review_helper.Merge(codereview_issue_number)
 
   elif options.command == u'open':
-    if not review_helper.Open(codereview_issue_number):
-      return False
+    result = review_helper.Open(codereview_issue_number)
 
   elif options.command == u'update':
-    if not review_helper.Update():
-      return False
+    result = review_helper.Update()
 
-  return True
+  elif options.command in (u'update-version', u'update_version'):
+    result = review_helper.UpdateVersion()
+
+  return result
 
 
 if __name__ == u'__main__':
