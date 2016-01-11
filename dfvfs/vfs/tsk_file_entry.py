@@ -251,10 +251,10 @@ class TSKFileEntry(file_entry.FileEntry):
     return self._data_streams
 
   def _GetDirectory(self):
-    """Retrieves the directory.
+    """Retrieves a directory.
 
     Returns:
-      A the directory object (instance of TSKDirectory) or None.
+      A directory object (instance of Directory) or None.
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()

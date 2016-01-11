@@ -14,7 +14,7 @@ class VShadowVolume(volume_system.Volume):
     """Initializes the volume object.
 
     Args:
-      file_entry: the VSS file entry object (instance of vfs.VShadowFileEntry).
+      file_entry: a VSS file entry object (instance of FileEntry).
     """
     super(VShadowVolume, self).__init__(file_entry.name)
     self._file_entry = file_entry
@@ -34,6 +34,16 @@ class VShadowVolume(volume_system.Volume):
 
     self._extents.append(volume_system.VolumeExtent(
         0, vshadow_store.volume_size))
+
+  def HasExternalData(self):
+    """Determines if the volume has external stored data.
+
+    Returns:
+      A boolean to indicate the volume has external stored data.
+    """
+    vshadow_store = self._file_entry.GetVShadowStore()
+
+    return not vshadow_store.has_in_volume_data()
 
 
 class VShadowVolumeSystem(volume_system.VolumeSystem):

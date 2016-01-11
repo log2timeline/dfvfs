@@ -65,7 +65,11 @@ class VShadowFileEntry(file_entry.FileEntry):
     self._name = None
 
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of VShadowDirectory)."""
+    """Retrieves a directory.
+
+    Returns:
+      A directory object (instance of Directory) or None.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
 
@@ -148,10 +152,34 @@ class VShadowFileEntry(file_entry.FileEntry):
     return
 
   def GetVShadowStore(self):
-    """Retrieves the VSS store object (instance of pyvshadow.store)."""
+    """Retrieves a VSS store.
+
+    Returns:
+      A VSS store object (instance of pyvshadow.store).
+    """
     store_index = vshadow.VShadowPathSpecGetStoreIndex(self.path_spec)
     if store_index is None:
       return
 
     vshadow_volume = self._file_system.GetVShadowVolume()
     return vshadow_volume.get_store(store_index)
+
+  def HasExternalData(self):
+    """Determines if the file entry has external stored data.
+
+    Returns:
+      A boolean to indicate the file entry has external data.
+
+    Raises:
+      BackEndError: when the vshadow store is missing in a non-virtual
+                    file entry.
+    """
+    vshadow_store = self.GetVShadowStore()
+    if not self._is_virtual and vshadow_store is None:
+      raise errors.BackEndError(
+          u'Missing vshadow store in non-virtual file entry.')
+
+    if vshadow_store is None:
+      return False
+
+    return not vshadow_store.has_in_volume_data()
