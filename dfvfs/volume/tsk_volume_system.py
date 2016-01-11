@@ -15,9 +15,8 @@ class TSKVolume(volume_system.Volume):
     """Initializes the volume object.
 
     Args:
-      file_entry: the TSK partition file entry object (instance of
-                  vfs.TSKPartitionFileEntry).
-      bytes_per_sector: the number of bytes per sector.
+      file_entry: a TSK partition file entry object (instance of FileEntry).
+      bytes_per_sector: an integer containing number of bytes per sector.
     """
     super(TSKVolume, self).__init__(file_entry.name)
     self._file_entry = file_entry

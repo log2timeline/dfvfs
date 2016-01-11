@@ -263,6 +263,14 @@ class FileEntry(object):
 
     return False
 
+  def HasExternalData(self):
+    """Determines if the file entry has external stored data.
+
+    Returns:
+      A boolean to indicate the file entry has external stored data.
+    """
+    return False
+
   def GetFileObject(self, data_stream_name=u''):
     """Retrieves the file-like object.
 

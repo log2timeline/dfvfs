@@ -132,6 +132,14 @@ class Volume(object):
 
     return self._attributes[identifier]
 
+  def HasExternalData(self):
+    """Determines if the volume has external stored data.
+
+    Returns:
+      A boolean to indicate the volume has external stored data.
+    """
+    return False
+
 
 class VolumeSystem(object):
   """The VFS volume system interface."""
@@ -157,7 +165,7 @@ class VolumeSystem(object):
     if volume.identifier in self._volumes:
       raise KeyError(
           u'Volume object already set for volume identifier: {0:s}'.format(
-             volume.identifier))
+              volume.identifier))
 
     self._volumes[volume.identifier] = volume
     self._volume_identifiers.append(volume.identifier)

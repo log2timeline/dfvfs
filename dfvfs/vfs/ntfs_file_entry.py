@@ -291,10 +291,10 @@ class NTFSFileEntry(file_entry.FileEntry):
     return self._data_streams
 
   def _GetDirectory(self):
-    """Retrieves the directory.
+    """Retrieves a directory.
 
     Returns:
-      A the directory object (instance of NTFSDirectory) or None.
+      A directory object (instance of Directory) or None.
 
     Raises:
       BackEndError: if the pyfsntfs file entry is missing.

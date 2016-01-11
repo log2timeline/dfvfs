@@ -255,7 +255,7 @@ class SourceScannerContext(object):
     source_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=source_path)
 
-    _ = self.AddScanNode(source_path_spec, None)
+    self.AddScanNode(source_path_spec, None)
 
   def RemoveScanNode(self, path_spec):
     """Removes a scan node of a certain path specifiation.
@@ -418,7 +418,7 @@ class SourceScanner(object):
         if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
           path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
           if path_spec:
-            _ = scan_context.AddScanNode(path_spec, scan_node.parent_node)
+            scan_context.AddScanNode(path_spec, scan_node.parent_node)
 
         # Determine the path specifications of the sub file entries.
         file_entry = resolver.Resolver.OpenFileEntry(
@@ -453,7 +453,7 @@ class SourceScanner(object):
           if scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
             path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
             if path_spec:
-              _ = scan_context.AddScanNode(path_spec, scan_node.parent_node)
+              scan_context.AddScanNode(path_spec, scan_node.parent_node)
 
       if not auto_recurse and scan_context.updated:
         return

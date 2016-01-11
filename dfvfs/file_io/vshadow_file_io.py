@@ -64,7 +64,13 @@ class VShadowFile(file_io.FileIO):
           u'Unable to retrieve VSS store: {0:d} from path '
           u'specification.').format(store_index))
 
-    self._vshadow_store = vshadow_volume.get_store(store_index)
+    vshadow_store = vshadow_volume.get_store(store_index)
+    if not vshadow_store.has_in_volume_data():
+      raise IOError((
+          u'Unable to open VSS store: {0:d} without in-volume stored '
+          u'data.').format(store_index))
+
+    self._vshadow_store = vshadow_store
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
