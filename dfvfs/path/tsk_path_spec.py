@@ -7,7 +7,14 @@ from dfvfs.path import path_spec
 
 
 class TSKPathSpec(path_spec.PathSpec):
-  """Class that implements the SleuthKit (TSK) path specification."""
+  """Class that implements the SleuthKit (TSK) path specification.
+
+  Attributes:
+    data_stream: string containing the data stream name, where None indicates
+                 the default data stream.
+    inode: integer containing the inode.
+    location: string containing the location.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
@@ -15,13 +22,13 @@ class TSKPathSpec(path_spec.PathSpec):
       self, data_stream=None, inode=None, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the TSK path specification must have a parent.
+    Note that the TSK path specification must have a parent.
 
     Args:
-      data_stream: optional data stream name. The default is None, which
+      data_stream: optional string containing the data stream name, where None
                    indicates the default data stream.
-      inode: optional inode.
-      location: optional location string.
+      inode: optional integer containing the inode.
+      location: optional string containing the location.
       parent: optional parent path specification (instance of PathSpec),
       kwargs: a dictionary of keyword arguments dependending on the path
               specification

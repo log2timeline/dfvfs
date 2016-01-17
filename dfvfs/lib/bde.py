@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Helper function for the BitLocker Drive Encryption (BDE) support."""
+"""Helper function for BitLocker Drive Encryption (BDE) support."""
 
 
-def BdeVolumeOpen(bde_volume, path_spec, file_object, key_chain):
+def BDEVolumeOpen(bde_volume, path_spec, file_object, key_chain):
   """Opens the BDE volume using the path specification.
 
   Args:

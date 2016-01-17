@@ -7,7 +7,7 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class VmdkAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+class VMDKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   """Class that implements the VMDK analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
@@ -33,4 +33,4 @@ class VmdkAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(VmdkAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(VMDKAnalyzerHelper())

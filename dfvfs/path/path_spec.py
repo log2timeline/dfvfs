@@ -5,7 +5,11 @@ import abc
 
 
 class PathSpec(object):
-  """Class that implements the path specification object interface."""
+  """Class that implements the path specification object interface.
+
+  Attributes:
+    parent: parent path specification (instance of PathSpec).
+  """
 
   _IS_SYSTEM_LEVEL = False
 
@@ -13,8 +17,7 @@ class PathSpec(object):
     """Initializes the path specification object.
 
     Args:
-      parent: optional parent path specification (instance of PathSpec),
-              default is None.
+      parent: optional parent path specification (instance of PathSpec).
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

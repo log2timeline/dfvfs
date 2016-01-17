@@ -13,7 +13,7 @@ from dfvfs.vfs import bde_file_entry
 from dfvfs.vfs import bde_file_system
 
 
-class BdeFileEntryTest(unittest.TestCase):
+class BDEFileEntryTest(unittest.TestCase):
   """The unit test for the BDE file entry object."""
 
   _BDE_PASSWORD = u'bde-TEST'
@@ -23,11 +23,11 @@ class BdeFileEntryTest(unittest.TestCase):
     self._resolver_context = context.Context()
     test_file = os.path.join(u'test_data', u'bdetogo.raw')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._bde_path_spec = bde_path_spec.BdePathSpec(parent=path_spec)
+    self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._bde_path_spec, u'password', self._BDE_PASSWORD)
 
-    self._file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    self._file_system = bde_file_system.BDEFileSystem(self._resolver_context)
     self._file_system.Open(self._bde_path_spec)
 
   def tearDown(self):
@@ -36,7 +36,7 @@ class BdeFileEntryTest(unittest.TestCase):
 
   def testIntialize(self):
     """Test the initialize functionality."""
-    file_entry = bde_file_entry.BdeFileEntry(
+    file_entry = bde_file_entry.BDEFileEntry(
         self._resolver_context, self._file_system, self._bde_path_spec)
     self.assertIsNotNone(file_entry)
 

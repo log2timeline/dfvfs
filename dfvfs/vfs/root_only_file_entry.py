@@ -13,7 +13,7 @@ class RootOnlyFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      None to indicate there is no directory.
+      A directory object (instance of Directory) or None.
     """
     return
 

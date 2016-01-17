@@ -7,7 +7,7 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class VhdiAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+class VHDIAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   """Class that implements the VHDI analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
@@ -31,4 +31,4 @@ class VhdiAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(VhdiAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(VHDIAnalyzerHelper())

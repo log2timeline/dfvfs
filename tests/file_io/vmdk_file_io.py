@@ -10,15 +10,15 @@ from dfvfs.path import vmdk_path_spec
 from tests.file_io import test_lib
 
 
-class VmdkFileTest(test_lib.ImageFileTestCase):
+class VMDKFileTest(test_lib.ImageFileTestCase):
   """The unit test for the VMDK image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(VmdkFileTest, self).setUp()
+    super(VMDKFileTest, self).setUp()
     test_file = os.path.join(u'test_data', u'image.vmdk')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vmdk_path_spec = vmdk_path_spec.VmdkPathSpec(parent=path_spec)
+    self._vmdk_path_spec = vmdk_path_spec.VMDKPathSpec(parent=path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""

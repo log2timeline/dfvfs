@@ -7,7 +7,7 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class EwfAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+class EWFAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   """Class that implements the EWF analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
@@ -32,4 +32,4 @@ class EwfAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(EwfAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(EWFAnalyzerHelper())

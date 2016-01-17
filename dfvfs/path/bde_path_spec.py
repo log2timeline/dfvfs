@@ -6,7 +6,7 @@ from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
-class BdePathSpec(path_spec.PathSpec):
+class BDEPathSpec(path_spec.PathSpec):
   """Class that implements the BDE path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
@@ -14,7 +14,7 @@ class BdePathSpec(path_spec.PathSpec):
   def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the BDE path specification must have a parent.
+    Note that the BDE path specification must have a parent.
 
     Args:
       parent: optional parent path specification (instance of PathSpec).
@@ -25,7 +25,7 @@ class BdePathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(BdePathSpec, self).__init__(parent=parent, **kwargs)
+    super(BDEPathSpec, self).__init__(parent=parent, **kwargs)
 
   @property
   def comparable(self):
@@ -34,4 +34,4 @@ class BdePathSpec(path_spec.PathSpec):
 
 
 # Register the path specification with the factory.
-factory.Factory.RegisterPathSpec(BdePathSpec)
+factory.Factory.RegisterPathSpec(BDEPathSpec)

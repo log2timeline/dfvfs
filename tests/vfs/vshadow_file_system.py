@@ -20,7 +20,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     self._resolver_context = context.Context()
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=self._qcow_path_spec)
 

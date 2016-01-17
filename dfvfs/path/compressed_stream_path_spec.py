@@ -7,17 +7,23 @@ from dfvfs.path import path_spec
 
 
 class CompressedStreamPathSpec(path_spec.PathSpec):
-  """Class that implements the compressed stream path specification."""
+  """Class that implements the compressed stream path specification.
+
+  Attributes:
+    compression_method: string containing the method used to the compress
+                        the data.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
   def __init__(self, compression_method=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the compressed stream path specification must have a parent.
+    Note that the compressed stream path specification must have a parent.
 
     Args:
-      compression_method: optional method used to the compress the data.
+      compression_method: optional string containing the method used to
+                          the compress the data.
       parent: optional parent path specification (instance of PathSpec).
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.

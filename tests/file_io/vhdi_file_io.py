@@ -10,15 +10,15 @@ from dfvfs.path import vhdi_path_spec
 from tests.file_io import test_lib
 
 
-class VhdiFileTest(test_lib.ImageFileTestCase):
+class VHDIFileTest(test_lib.ImageFileTestCase):
   """The unit test for the VHD image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(VhdiFileTest, self).setUp()
+    super(VHDIFileTest, self).setUp()
     test_file = os.path.join(u'test_data', u'image.vhd')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VhdiPathSpec(parent=path_spec)
+    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(parent=path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""

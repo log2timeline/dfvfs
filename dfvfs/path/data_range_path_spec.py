@@ -7,18 +7,24 @@ from dfvfs.path import path_spec
 
 
 class DataRangePathSpec(path_spec.PathSpec):
-  """Class that implements the data range path specification."""
+  """Class that implements the data range path specification.
+
+  Attributes:
+    range_offset: integer containing the start offset of the data range.
+    range_size: integer containing the size of the data range.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_DATA_RANGE
 
   def __init__(self, range_offset=None, range_size=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the data range path specification must have a parent.
+    Note that the data range path specification must have a parent.
 
     Args:
-      range_offset: optional start offset of the data range.
-      range_size: optional size of the data range.
+      range_offset: optional integer containing the start offset of the data
+                    range.
+      range_size: optional integer containing the size of the data range.
       parent: optional parent path specification (instance of PathSpec).
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.

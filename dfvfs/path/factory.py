@@ -22,7 +22,8 @@ class Factory(object):
       u'row_index',
       u'start_offset',
       u'store_index',
-      u'table_name'])
+      u'table_name',
+      u'volume_index'])
 
   _path_spec_types = {}
 

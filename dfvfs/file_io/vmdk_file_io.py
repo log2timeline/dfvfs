@@ -13,7 +13,7 @@ from dfvfs.resolver import resolver
 dependencies.CheckModuleVersion(u'pyvmdk')
 
 
-class VmdkFile(file_object_io.FileObjectIO):
+class VMDKFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object using pyvmdk."""
 
   def _OpenFileObject(self, path_spec):

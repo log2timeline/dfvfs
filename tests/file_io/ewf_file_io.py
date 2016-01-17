@@ -10,15 +10,15 @@ from dfvfs.path import os_path_spec
 from tests.file_io import test_lib
 
 
-class EwfFileTest(test_lib.ImageFileTestCase):
+class EWFFileTest(test_lib.ImageFileTestCase):
   """The unit test for the EWF image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(EwfFileTest, self).setUp()
+    super(EWFFileTest, self).setUp()
     test_file = os.path.join(u'test_data', u'image.E01')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._ewf_path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
+    self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -37,15 +37,15 @@ class EwfFileTest(test_lib.ImageFileTestCase):
     self._TestRead(self._ewf_path_spec)
 
 
-class SplitEwfFileTest(test_lib.PartitionedImageFileTestCase):
+class SplitEWFFileTest(test_lib.PartitionedImageFileTestCase):
   """The unit test for the split EWF image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(SplitEwfFileTest, self).setUp()
+    super(SplitEWFFileTest, self).setUp()
     test_file = os.path.join(u'test_data', u'image-split.E01')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._ewf_path_spec = ewf_path_spec.EwfPathSpec(parent=path_spec)
+    self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
   def testOpenClose(self):
     """Test the open and close functionality."""

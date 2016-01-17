@@ -9,7 +9,7 @@ from dfvfs.resolver import resolver
 from dfvfs.resolver import resolver_helper
 
 
-class EwfResolverHelper(resolver_helper.ResolverHelper):
+class EWFResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the EWF image resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_EWF
@@ -23,8 +23,8 @@ class EwfResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file-like object (instance of file_io.FileIO).
     """
-    return dfvfs.file_io.ewf_file_io.EwfFile(resolver_context)
+    return dfvfs.file_io.ewf_file_io.EWFFile(resolver_context)
 
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(EwfResolverHelper())
+resolver.Resolver.RegisterHelper(EWFResolverHelper())

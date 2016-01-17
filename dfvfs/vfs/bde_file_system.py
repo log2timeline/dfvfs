@@ -12,7 +12,7 @@ from dfvfs.vfs import bde_file_entry
 from dfvfs.vfs import root_only_file_system
 
 
-class BdeFileSystem(root_only_file_system.RootOnlyFileSystem):
+class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
   """Class that implements a file system object using BDE."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
@@ -23,7 +23,7 @@ class BdeFileSystem(root_only_file_system.RootOnlyFileSystem):
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
     """
-    super(BdeFileSystem, self).__init__(resolver_context)
+    super(BDEFileSystem, self).__init__(resolver_context)
     self._bde_volume = None
     self._file_object = None
 
@@ -61,7 +61,7 @@ class BdeFileSystem(root_only_file_system.RootOnlyFileSystem):
         path_spec.parent, resolver_context=self._resolver_context)
 
     try:
-      bde.BdeVolumeOpen(
+      bde.BDEVolumeOpen(
           bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
     except:
       file_object.close()
@@ -70,7 +70,7 @@ class BdeFileSystem(root_only_file_system.RootOnlyFileSystem):
     self._bde_volume = bde_volume
     self._file_object = file_object
 
-  def GetBdeVolume(self):
+  def GetBDEVolume(self):
     """Retrieves the BDE volume object.
 
     Returns:
@@ -87,7 +87,7 @@ class BdeFileSystem(root_only_file_system.RootOnlyFileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    return bde_file_entry.BdeFileEntry(
+    return bde_file_entry.BDEFileEntry(
         self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
 
   def GetRootFileEntry(self):
@@ -96,5 +96,5 @@ class BdeFileSystem(root_only_file_system.RootOnlyFileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    path_spec = bde_path_spec.BdePathSpec(parent=self._path_spec.parent)
+    path_spec = bde_path_spec.BDEPathSpec(parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)

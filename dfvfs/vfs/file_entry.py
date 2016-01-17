@@ -137,7 +137,11 @@ class FileEntry(object):
 
   @abc.abstractmethod
   def _GetDirectory(self):
-    """Retrieves the directory object (instance of Directory)."""
+    """Retrieves the directory.
+
+    Returns:
+      A directory object (instance of Directory) or None.
+    """
 
   def _GetLink(self):
     """Retrieves the link."""

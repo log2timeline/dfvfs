@@ -10,7 +10,7 @@ from dfvfs.resolver import resolver
 from dfvfs.resolver import resolver_helper
 
 
-class BdeResolverHelper(resolver_helper.ResolverHelper):
+class BDEResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the BDE volume resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
@@ -24,7 +24,7 @@ class BdeResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file-like object (instance of file_io.FileIO).
     """
-    return dfvfs.file_io.bde_file_io.BdeFile(resolver_context)
+    return dfvfs.file_io.bde_file_io.BDEFile(resolver_context)
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system object.
@@ -35,8 +35,8 @@ class BdeResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file system object (instance of vfs.FileSystem).
     """
-    return dfvfs.vfs.bde_file_system.BdeFileSystem(resolver_context)
+    return dfvfs.vfs.bde_file_system.BDEFileSystem(resolver_context)
 
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(BdeResolverHelper())
+resolver.Resolver.RegisterHelper(BDEResolverHelper())

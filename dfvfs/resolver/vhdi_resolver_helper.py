@@ -9,7 +9,7 @@ from dfvfs.resolver import resolver
 from dfvfs.resolver import resolver_helper
 
 
-class VhdiResolverHelper(resolver_helper.ResolverHelper):
+class VHDIResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the VHD image resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
@@ -23,8 +23,8 @@ class VhdiResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file-like object (instance of file_io.FileIO).
     """
-    return dfvfs.file_io.vhdi_file_io.VhdiFile(resolver_context)
+    return dfvfs.file_io.vhdi_file_io.VHDIFile(resolver_context)
 
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(VhdiResolverHelper())
+resolver.Resolver.RegisterHelper(VHDIResolverHelper())
