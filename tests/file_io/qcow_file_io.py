@@ -8,6 +8,7 @@ import unittest
 from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
+
 from tests.file_io import test_lib
 
 

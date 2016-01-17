@@ -35,7 +35,3 @@ class RootOnlyFileEntry(file_entry.FileEntry):
     # pylint: disable=unreachable
     return
     yield
-
-  def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
-    return

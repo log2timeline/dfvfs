@@ -1,79 +1,97 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the file entry implementation using the pyvshadow."""
+"""Tests for the file entry implementation using the pyvslvm."""
 
 import os
 import unittest
 
+from dfvfs.path import lvm_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
-from dfvfs.path import vshadow_path_spec
 from dfvfs.resolver import context
-from dfvfs.vfs import vshadow_file_entry
-from dfvfs.vfs import vshadow_file_system
+from dfvfs.vfs import lvm_file_entry
+from dfvfs.vfs import lvm_file_system
 
 
-class VShadowFileEntryTest(unittest.TestCase):
-  """The unit test for the VSS file entry object."""
+class LVMFileEntryTest(unittest.TestCase):
+  """The unit test for the LVM file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+    test_file = os.path.join(u'test_data', u'lvmtest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
-    self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
+    self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
         location=u'/', parent=self._qcow_path_spec)
 
-    self._file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._vshadow_path_spec)
+    self._file_system = lvm_file_system.LVMFileSystem(self._resolver_context)
+    self._file_system.Open(self._lvm_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
-  # qcowmount test_data/vsstest.qcow2 fuse/
-  # vshadowinfo fuse/qcow1
+  # qcowmount test_data/lvmtest.qcow2 fuse/
+  # vslvminfo fuse/qcow1
   #
-  # Volume Shadow Snapshot information:
-  #   Number of stores:	2
+  # Linux Logical Volume Manager (LVM) information:
+  # Volume Group (VG):
+  #   Name:                       vg_test
+  #   Identifier:                 kZ4S06-lhFY-G4cB-8OQx-SWVg-GrI6-1jEYEf
+  #   Sequence number:            3
+  #   Extent size:                4194304 bytes
+  #   Number of physical volumes: 1
+  #   Number of logical volumes:  2
   #
-  # Store: 1
-  #   ...
-  #   Identifier		: 600f0b69-5bdf-11e3-9d6c-005056c00008
-  #   Shadow copy set ID	: 0a4e3901-6abb-48fc-95c2-6ab9e38e9e71
-  #   Creation time		: Dec 03, 2013 06:35:09.736378700 UTC
-  #   Shadow copy ID		: 4e3c03c2-7bc6-4288-ad96-c1eac1a55f71
-  #   Volume size		: 1073741824 bytes
-  #   Attribute flags		: 0x00420009
+  # Physical Volume (PV): 1
+  #   Name:                       pv0
+  #   Identifier:                 btEzLa-i0aL-sfS8-Ae9P-QKGU-IhtA-CkpWm7
+  #   Device path:                /dev/loop1
+  #   Volume size:                16777216 bytes
   #
-  # Store: 2
-  #   Identifier		: 600f0b6d-5bdf-11e3-9d6c-005056c00008
-  #   Shadow copy set ID	: 8438a0ee-0f06-443b-ac0c-2905647ca5d6
-  #   Creation time		: Dec 03, 2013 06:37:48.919058300 UTC
-  #   Shadow copy ID		: 18f1ac6e-959d-436f-bdcc-e797a729e290
-  #   Volume size		: 1073741824 bytes
-  #   Attribute flags		: 0x00420009
+  # Logical Volume (LV): 1
+  #   Name:                       lv_test1
+  #   Identifier:                 ldAb7Y-GU1t-qDml-VkAp-qt46-0meR-qJS3vC
+  #   Number of segments:         1
+  #   Segment: 1
+  #     Offset:                   0x00000000 (0)
+  #     Size:                     8.0 MiB (8388608 bytes)
+  #     Number of stripes:        1
+  #     Stripe: 1
+  #       Physical volume:        pv0
+  #       Data area offset:       0x00000000 (0)
+  #
+  # Logical Volume (LV): 2
+  #   Name:                       lv_test2
+  #   Identifier:                 bJxmc8-JEMZ-jXT9-oVeY-40AY-ROro-mCO8Zz
+  #   Number of segments:         1
+  #   Segment: 1
+  #     Offset:                   0x00000000 (0)
+  #     Size:                     4.0 MiB (4194304 bytes)
+  #     Number of stripes:        1
+  #     Stripe: 1
+  #       Physical volume:        pv0
+  #       Data area offset:       0x00800000 (8388608)
 
   def testIntialize(self):
     """Test the initialize functionality."""
-    file_entry = vshadow_file_entry.VShadowFileEntry(
-        self._resolver_context, self._file_system, self._vshadow_path_spec)
+    file_entry = lvm_file_entry.LVMFileEntry(
+        self._resolver_context, self._file_system, self._lvm_path_spec)
 
     self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(
-        parent=self._qcow_path_spec, store_index=1)
+    path_spec = lvm_path_spec.LVMPathSpec(
+        parent=self._qcow_path_spec, volume_index=1)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNotNone(parent_file_entry)
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(
+    path_spec = lvm_path_spec.LVMPathSpec(
         location=u'/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -83,8 +101,8 @@ class VShadowFileEntryTest(unittest.TestCase):
 
   def testGetStat(self):
     """Test the get stat functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(
-        parent=self._qcow_path_spec, store_index=1)
+    path_spec = lvm_path_spec.LVMPathSpec(
+        parent=self._qcow_path_spec, volume_index=1)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -95,8 +113,8 @@ class VShadowFileEntryTest(unittest.TestCase):
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(
-        parent=self._qcow_path_spec, store_index=1)
+    path_spec = lvm_path_spec.LVMPathSpec(
+        parent=self._qcow_path_spec, volume_index=1)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -111,7 +129,7 @@ class VShadowFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(
+    path_spec = lvm_path_spec.LVMPathSpec(
         location=u'/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -129,14 +147,14 @@ class VShadowFileEntryTest(unittest.TestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(
+    path_spec = lvm_path_spec.LVMPathSpec(
         location=u'/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 2)
 
-    expected_sub_file_entry_names = [u'vss1', u'vss2']
+    expected_sub_file_entry_names = [u'lvm1', u'lvm2']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -149,8 +167,8 @@ class VShadowFileEntryTest(unittest.TestCase):
 
   def testDataStreams(self):
     """Test the data streams functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(
-        parent=self._qcow_path_spec, store_index=1)
+    path_spec = lvm_path_spec.LVMPathSpec(
+        parent=self._qcow_path_spec, volume_index=1)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -162,7 +180,7 @@ class VShadowFileEntryTest(unittest.TestCase):
 
     self.assertEqual(data_stream_names, [u''])
 
-    path_spec = vshadow_path_spec.VShadowPathSpec(
+    path_spec = lvm_path_spec.LVMPathSpec(
         location=u'/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -177,8 +195,8 @@ class VShadowFileEntryTest(unittest.TestCase):
 
   def testGetDataStream(self):
     """Test the retrieve data streams functionality."""
-    path_spec = vshadow_path_spec.VShadowPathSpec(
-        parent=self._qcow_path_spec, store_index=1)
+    path_spec = lvm_path_spec.LVMPathSpec(
+        parent=self._qcow_path_spec, volume_index=1)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
