@@ -18,7 +18,7 @@ class VShadowVolumeSystemTest(unittest.TestCase):
     """Sets up the needed objects used throughout the test."""
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
+    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
         location=u'/', parent=path_spec)
 

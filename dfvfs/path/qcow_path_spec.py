@@ -6,7 +6,7 @@ from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
-class QcowPathSpec(path_spec.PathSpec):
+class QCOWPathSpec(path_spec.PathSpec):
   """Class that implements the QCOW image path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_QCOW
@@ -14,7 +14,7 @@ class QcowPathSpec(path_spec.PathSpec):
   def __init__(self, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the QCOW path specification must have a parent.
+    Note that the QCOW path specification must have a parent.
 
     Args:
       parent: optional parent path specification (instance of PathSpec).
@@ -27,7 +27,7 @@ class QcowPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError(u'Missing parent value.')
 
-    super(QcowPathSpec, self).__init__(parent=parent, **kwargs)
+    super(QCOWPathSpec, self).__init__(parent=parent, **kwargs)
 
   @property
   def comparable(self):
@@ -36,4 +36,4 @@ class QcowPathSpec(path_spec.PathSpec):
 
 
 # Register the path specification with the factory.
-factory.Factory.RegisterPathSpec(QcowPathSpec)
+factory.Factory.RegisterPathSpec(QCOWPathSpec)

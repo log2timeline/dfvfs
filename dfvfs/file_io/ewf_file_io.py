@@ -13,7 +13,7 @@ from dfvfs.resolver import resolver
 dependencies.CheckModuleVersion(u'pyewf')
 
 
-class EwfFile(file_object_io.FileObjectIO):
+class EWFFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object using pyewf."""
 
   def __init__(self, resolver_context, file_object=None):
@@ -29,7 +29,7 @@ class EwfFile(file_object_io.FileObjectIO):
     if file_object:
       raise ValueError(u'File object value set.')
 
-    super(EwfFile, self).__init__(resolver_context)
+    super(EWFFile, self).__init__(resolver_context)
     self._file_objects = []
 
   def _Close(self):
@@ -43,7 +43,7 @@ class EwfFile(file_object_io.FileObjectIO):
       IOError: if the close failed.
     """
     # pylint: disable=protected-access
-    super(EwfFile, self)._Close()
+    super(EWFFile, self)._Close()
 
     for file_object in self._file_objects:
       file_object.close()
@@ -73,7 +73,7 @@ class EwfFile(file_object_io.FileObjectIO):
 
     # Note that we cannot use pyewf's glob function since it does not
     # handle the file system abstraction dfvfs provides.
-    segment_file_path_specs = ewf.EwfGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
     if not segment_file_path_specs:
       return
 

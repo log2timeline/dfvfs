@@ -14,7 +14,7 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
   def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the zip file path specification must have a parent.
+    Note that the zip file path specification must have a parent.
 
     Args:
       location: optional zip file internal location string prefixed with a path

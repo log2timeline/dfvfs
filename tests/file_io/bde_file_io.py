@@ -11,7 +11,7 @@ from dfvfs.resolver import resolver
 from tests.file_io import test_lib
 
 
-class BdeFileTest(test_lib.ImageFileTestCase):
+class BDEFileTest(test_lib.ImageFileTestCase):
   """The unit test for the BitLocker Drive Encryption (BDE) file-like object."""
 
   _BDE_PASSWORD = u'bde-TEST'
@@ -21,10 +21,10 @@ class BdeFileTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(BdeFileTest, self).setUp()
+    super(BDEFileTest, self).setUp()
     test_file = os.path.join(u'test_data', u'bdetogo.raw')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._bde_path_spec = bde_path_spec.BdePathSpec(parent=path_spec)
+    self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._bde_path_spec, u'password', self._BDE_PASSWORD)
 

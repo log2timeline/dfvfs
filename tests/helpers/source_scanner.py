@@ -201,7 +201,7 @@ class SourceScannerTest(unittest.TestCase):
     """Test the ScanForFileSystem() function."""
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    source_path_spec = qcow_path_spec.QcowPathSpec(parent=source_path_spec)
+    source_path_spec = qcow_path_spec.QCOWPathSpec(parent=source_path_spec)
     source_path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=source_path_spec)
 
@@ -282,7 +282,7 @@ class SourceScannerTest(unittest.TestCase):
 
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    source_path_spec = qcow_path_spec.QcowPathSpec(parent=source_path_spec)
+    source_path_spec = qcow_path_spec.QCOWPathSpec(parent=source_path_spec)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
     self.assertIsNotNone(path_spec)

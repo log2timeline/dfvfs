@@ -7,7 +7,17 @@ from dfvfs.path import path_spec
 
 
 class NTFSPathSpec(path_spec.PathSpec):
-  """Class that implements the NTFS path specification."""
+  """Class that implements the NTFS path specification.
+
+  Attributes:
+    data_stream: string containing the data stream name, where None indicates
+                 the default data stream.
+    location: string containing the location.
+    mft_attribute: integer containing the $FILE_NAME MFT attribute index. The
+                   first attribute is indicated by 0.
+    mft_entry: integer containing the MFT entry. The first entry is indicated
+               by 0.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_NTFS
 
@@ -16,15 +26,16 @@ class NTFSPathSpec(path_spec.PathSpec):
       mft_entry=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the NTFS path specification must have a parent.
+    Note that the NTFS path specification must have a parent.
 
     Args:
-      data_stream: optional data stream name. The default is None, which
-                   indicates the default data stream.
-      location: optional location string.
-      mft_attribute: optional $FILE_NAME MFT attribute index. The default
-                     is None. The first attribute is indicated by 0.
-      mft_entry: optional MFT entry. The first entry is indicated by 0.
+      data_stream: optional string containing the data stream name,
+                   where None indicates the default data stream.
+      location: optional string containing the location.
+      mft_attribute: optional integer containing the $FILE_NAME MFT
+                     attribute index. The first attribute is indicated by 0.
+      mft_entry: optional integer containing the MFT entry. The first entry
+                 is indicated by 0.
       parent: optional parent path specification (instance of PathSpec),
       kwargs: a dictionary of keyword arguments dependending on the path
               specification

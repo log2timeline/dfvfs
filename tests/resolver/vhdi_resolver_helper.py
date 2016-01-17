@@ -8,17 +8,17 @@ from dfvfs.resolver import vhdi_resolver_helper
 from tests.resolver import test_lib
 
 
-class VhdiResolverHelperTest(test_lib.ResolverHelperTestCase):
+class VHDIResolverHelperTest(test_lib.ResolverHelperTestCase):
   """Tests for the VHD image resolver helper implementation."""
 
   def testNewFileObject(self):
     """Tests the NewFileObject function."""
-    resolver_helper_object = vhdi_resolver_helper.VhdiResolverHelper()
+    resolver_helper_object = vhdi_resolver_helper.VHDIResolverHelper()
     self._TestNewFileObject(resolver_helper_object)
 
   def testNewFileSystem(self):
     """Tests the NewFileSystem function."""
-    resolver_helper_object = vhdi_resolver_helper.VhdiResolverHelper()
+    resolver_helper_object = vhdi_resolver_helper.VHDIResolverHelper()
     self._TestNewFileSystemRaisesRuntimeError(resolver_helper_object)
 
 

@@ -442,7 +442,7 @@ class GlobRawFileTest(unittest.TestCase):
     self.assertEqual(
         segment_file_path_specs, expected_segment_file_path_specs)
 
-  def testGlobRawVmdkExtension(self):
+  def testGlobRawVMDKExtension(self):
     """Test the glob function for a RAW VMDK extension scheme."""
     segment_filenames = [u'image-f001.vmdk']
     expected_segment_file_path_specs = []

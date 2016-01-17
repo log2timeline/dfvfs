@@ -7,26 +7,41 @@ from dfvfs.path import path_spec
 
 
 class SQLiteBlobPathSpec(path_spec.PathSpec):
-  """Class that implements the SQLite blob file path specification."""
+  """Class that implements the SQLite blob file path specification.
+
+  Attributes:
+    column_name: string containing the name of the column in which the blob
+                 is stored.
+    row_condition: condition of the row in which the blob is stored.
+                   The condition is a tuple in the form:
+                   (column_name, operator, value).
+                   The condition must yield a single result.
+    row_index: integer containing index of the row in which the blob is stored.
+    table_name: string containing the name of the table in which the blob
+                is stored.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
 
   def __init__(
-      self, table_name=None, column_name=None, row_condition=None,
-      row_index=None, parent=None, **kwargs):
+      self, column_name=None, parent=None, row_condition=None,
+      row_index=None, table_name=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the SQLite blob file path specification must have a parent.
+    Note that the SQLite blob file path specification must have a parent.
 
     Args:
-      table_name: optional name of the table in which the blob is stored.
-      column_name: optional name of the column in which the blob is stored.
+      column_name: optional string containing the name of the column in which
+                   the blob is stored.
+      parent: optional parent path specification (instance of PathSpec).
       row_condition: optional condition of the row in which the blob is stored.
                      The condition is a tuple in the form:
                      (column_name, operator, value).
                      The condition must yield a single result.
-      row_index: optional index of the row in which the blob is stored.
-      parent: optional parent path specification (instance of PathSpec).
+      row_index: optional integer containing index of the row in which the
+                 blob is stored.
+      table_name: optional string containing the name of the table in which
+                  the blob is stored.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification
 

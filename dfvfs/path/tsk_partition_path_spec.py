@@ -7,22 +7,28 @@ from dfvfs.path import path_spec
 
 
 class TSKPartitionPathSpec(path_spec.PathSpec):
-  """Class that implements the SleuthKit (TSK) partition path specification."""
+  """Class that implements the SleuthKit (TSK) partition path specification.
+
+  Attributes:
+    location: string containing the location.
+    part_index: integer containing the part index.
+    start_offset: integer containing the start offset.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
   def __init__(
-      self, location=None, part_index=None, start_offset=None, parent=None,
+      self, location=None, parent=None, part_index=None, start_offset=None,
       **kwargs):
     """Initializes the path specification object.
 
-       Note that the TSK partition path specification must have a parent.
+    Note that the TSK partition path specification must have a parent.
 
     Args:
-      location: optional location string.
-      part_index: optional part index.
-      start_offset: optional start offset.
+      location: optional string containing the location.
       parent: optional parent path specification (instance of PathSpec).
+      part_index: optional integer containing the part index.
+      start_offset: optional integer containing the start offset.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification
 

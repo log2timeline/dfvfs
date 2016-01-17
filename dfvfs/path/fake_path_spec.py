@@ -15,10 +15,10 @@ class FakePathSpec(location_path_spec.LocationPathSpec):
   def __init__(self, location=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the fake path specification cannot have a parent.
+    Note that the fake path specification cannot have a parent.
 
     Args:
-      location: optional location string e.g. /opt/dfvfs.
+      location: optional string containing the location e.g. /opt/dfvfs.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 

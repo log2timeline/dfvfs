@@ -13,7 +13,7 @@ from dfvfs.resolver import resolver
 dependencies.CheckModuleVersion(u'pybde')
 
 
-class BdeFile(file_object_io.FileObjectIO):
+class BDEFile(file_object_io.FileObjectIO):
   """Class that implements a file-like object using pybde."""
 
   def _OpenFileObject(self, path_spec):
@@ -35,7 +35,7 @@ class BdeFile(file_object_io.FileObjectIO):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
     bde_volume = pybde.volume()
-    bde.BdeVolumeOpen(
+    bde.BDEVolumeOpen(
         bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
     return bde_volume
 

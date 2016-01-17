@@ -7,7 +7,7 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class QcowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+class QCOWAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   """Class that implements the QCOW analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
@@ -33,4 +33,4 @@ class QcowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(QcowAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(QCOWAnalyzerHelper())

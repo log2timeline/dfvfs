@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for the Volume Shadow Snapshots (VSS) support."""
+"""Helper functions for Volume Shadow Snapshots (VSS) support."""
 
 
 def VShadowPathSpecGetStoreIndex(path_spec):

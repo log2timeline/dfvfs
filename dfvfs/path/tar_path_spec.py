@@ -14,7 +14,7 @@ class TarPathSpec(location_path_spec.LocationPathSpec):
   def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the tar file path specification must have a parent.
+    Note that the tar file path specification must have a parent.
 
     Args:
       location: optional tar file internal location string prefixed with a path

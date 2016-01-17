@@ -12,7 +12,7 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import bde_file_system
 
 
-class BdeFileSystemTest(unittest.TestCase):
+class BDEFileSystemTest(unittest.TestCase):
   """The unit test for the BDE file system object."""
 
   _BDE_PASSWORD = u'bde-TEST'
@@ -22,13 +22,13 @@ class BdeFileSystemTest(unittest.TestCase):
     self._resolver_context = context.Context()
     test_file = os.path.join(u'test_data', u'bdetogo.raw')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._bde_path_spec = bde_path_spec.BdePathSpec(parent=path_spec)
+    self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._bde_path_spec, u'password', self._BDE_PASSWORD)
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
-    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    file_system = bde_file_system.BDEFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
 
     file_system.Open(self._bde_path_spec)
@@ -37,7 +37,7 @@ class BdeFileSystemTest(unittest.TestCase):
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    file_system = bde_file_system.BDEFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
 
     file_system.Open(self._bde_path_spec)
@@ -48,7 +48,7 @@ class BdeFileSystemTest(unittest.TestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Test the get entry by path specification functionality."""
-    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    file_system = bde_file_system.BDEFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
 
     file_system.Open(self._bde_path_spec)
@@ -62,7 +62,7 @@ class BdeFileSystemTest(unittest.TestCase):
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    file_system = bde_file_system.BdeFileSystem(self._resolver_context)
+    file_system = bde_file_system.BDEFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
 
     file_system.Open(self._bde_path_spec)

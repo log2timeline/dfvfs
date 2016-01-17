@@ -9,7 +9,7 @@ from dfvfs.resolver import resolver
 from dfvfs.resolver import resolver_helper
 
 
-class QcowResolverHelper(resolver_helper.ResolverHelper):
+class QCOWResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the QCOW image resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_QCOW
@@ -23,8 +23,8 @@ class QcowResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       The file-like object (instance of file_io.FileIO).
     """
-    return dfvfs.file_io.qcow_file_io.QcowFile(resolver_context)
+    return dfvfs.file_io.qcow_file_io.QCOWFile(resolver_context)
 
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(QcowResolverHelper())
+resolver.Resolver.RegisterHelper(QCOWResolverHelper())

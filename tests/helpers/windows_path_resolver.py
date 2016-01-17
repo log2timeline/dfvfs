@@ -29,7 +29,7 @@ class WindowsPathResolverTest(unittest.TestCase):
 
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/', parent=self._qcow_path_spec)
 

@@ -7,7 +7,7 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class BdeAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+class BDEAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   """Class that implements the BDE analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
@@ -32,4 +32,4 @@ class BdeAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(BdeAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(BDEAnalyzerHelper())

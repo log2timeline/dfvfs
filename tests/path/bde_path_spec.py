@@ -9,24 +9,24 @@ from dfvfs.path import bde_path_spec
 from tests.path import test_lib
 
 
-class BdePathSpecTest(test_lib.PathSpecTestCase):
+class BDEPathSpecTest(test_lib.PathSpecTestCase):
   """Tests for the BDE path specification implementation."""
 
   def testInitialize(self):
     """Tests the path specification initialization."""
-    path_spec = bde_path_spec.BdePathSpec(parent=self._path_spec)
+    path_spec = bde_path_spec.BDEPathSpec(parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = bde_path_spec.BdePathSpec(parent=None)
+      _ = bde_path_spec.BDEPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = bde_path_spec.BdePathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      _ = bde_path_spec.BDEPathSpec(parent=self._path_spec, bogus=u'BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
-    path_spec = bde_path_spec.BdePathSpec(parent=self._path_spec)
+    path_spec = bde_path_spec.BDEPathSpec(parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 

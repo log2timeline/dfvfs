@@ -41,7 +41,7 @@ class TSKFileTest(test_lib.ImageFileTestCase):
     """Test the read functionality on an alternate data stream (ADS)."""
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QcowPathSpec(parent=path_spec)
+    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     path_spec = tsk_path_spec.TSKPathSpec(
         data_stream=u'$SDS', inode=9, location=u'\\$Secure', parent=path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
