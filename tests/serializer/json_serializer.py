@@ -30,7 +30,7 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._vshadow_path_spec)
 
-    test_path = os.path.abspath(test_file).encode(u'utf8')
+    test_path = os.path.abspath(test_file)
 
     self._json_dict = {
         u'__type__': u'PathSpec',

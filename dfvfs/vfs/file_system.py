@@ -199,7 +199,7 @@ class FileSystem(object):
         element for sublist in path_segments for element in sublist]
 
     # Remove empty path segments.
-    path_segments = filter(None, path_segments)
+    path_segments = list(filter(None, path_segments))
 
     return u'{0:s}{1:s}'.format(
         self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
@@ -249,4 +249,4 @@ class FileSystem(object):
       empty string.
     """
     # Split the path with the path separator and remove empty path segments.
-    return filter(None, path.split(self.PATH_SEPARATOR))
+    return list(filter(None, path.split(self.PATH_SEPARATOR)))

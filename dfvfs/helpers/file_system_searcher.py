@@ -6,6 +6,7 @@ import sre_constants
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 from dfvfs.path import factory as path_spec_factory
 
 
@@ -58,7 +59,7 @@ class FindSpec(object):
 
     # TODO: add support for globbing?
     if location is not None:
-      if isinstance(location, basestring):
+      if isinstance(location, py2to3.STRING_TYPES):
         self._location = location
       elif isinstance(location, list):
         self._location_segments = location
@@ -69,7 +70,7 @@ class FindSpec(object):
       self._is_regex = False
 
     elif location_regex is not None:
-      if isinstance(location_regex, basestring):
+      if isinstance(location_regex, py2to3.STRING_TYPES):
         self._location_regex = location_regex
       elif isinstance(location_regex, list):
         self._location_segments = location_regex
@@ -223,7 +224,7 @@ class FindSpec(object):
       segment_name = self._location_segments[search_depth - 1]
 
       if self._is_regex:
-        if isinstance(segment_name, basestring):
+        if isinstance(segment_name, py2to3.STRING_TYPES):
           # Allow '\n' to be matched by '.' and make '\w', '\W', '\b', '\B',
           # '\d', '\D', '\s' and '\S' Unicode safe.
           flags = re.DOTALL | re.UNICODE

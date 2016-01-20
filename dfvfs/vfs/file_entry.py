@@ -7,6 +7,7 @@ a directory or file system metadata.
 
 import abc
 
+from dfvfs.lib import py2to3
 from dfvfs.resolver import resolver
 
 
@@ -223,7 +224,7 @@ class FileEntry(object):
     Raises:
       ValueError: if the name is not string.
     """
-    if not isinstance(name, basestring):
+    if not isinstance(name, py2to3.STRING_TYPES):
       raise ValueError(u'Name is not a string.')
 
     name_lower = name.lower()
@@ -253,7 +254,7 @@ class FileEntry(object):
     Raises:
       ValueError: if the name is not string.
     """
-    if not isinstance(name, basestring):
+    if not isinstance(name, py2to3.STRING_TYPES):
       raise ValueError(u'Name is not a string.')
 
     name_lower = name.lower()

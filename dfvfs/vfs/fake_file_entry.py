@@ -25,7 +25,7 @@ class FakeDirectory(file_entry.Directory):
 
     paths = self._file_system.GetPaths()
 
-    for path, _ in paths.iteritems():
+    for path in iter(paths.keys()):
       # Determine if the start of the path is similar to the location string.
       # If not the file the path refers to is not in the same directory.
       if not path or not path.startswith(location):

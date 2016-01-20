@@ -1758,7 +1758,7 @@ def Main():
   # TODO: add option to directly pass code review issue number.
 
   argument_parser.add_argument(
-      u'--diffbase', dest=u'diffbase', action=u'store', type=unicode,
+      u'--diffbase', dest=u'diffbase', action=u'store', type=str,
       metavar=u'DIFFBASE', default=u'upstream/master', help=(
           u'The diffbase the default is upstream/master. This options is used '
           u'to indicate to what "base" the code changes are relative to and '

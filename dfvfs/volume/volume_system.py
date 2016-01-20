@@ -85,7 +85,7 @@ class Volume(object):
       self._Parse()
       self._is_parsed = True
 
-    return self._attributes.itervalues()
+    return iter(self._attributes.values())
 
   @property
   def extents(self):
@@ -208,7 +208,7 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
-    return self._volumes.itervalues()
+    return iter(self._volumes.values())
 
   def GetSectionByIndex(self, section_index):
     """Retrieves a specific section based on the index.
