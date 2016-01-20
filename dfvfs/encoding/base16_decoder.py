@@ -2,6 +2,7 @@
 """The base16 decoder object implementation."""
 
 import base64
+import binascii
 
 from dfvfs.encoding import decoder
 from dfvfs.encoding import manager
@@ -29,7 +30,7 @@ class Base16Decoder(decoder.Decoder):
     """
     try:
       decoded_data = base64.b16decode(encoded_data, casefold=False)
-    except TypeError as exception:
+    except (TypeError, binascii.Error) as exception:
       raise errors.BackEndError(
           u'Unable to decode base16 stream with error: {0:s}.'.format(
               exception))
