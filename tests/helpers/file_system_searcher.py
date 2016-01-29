@@ -289,6 +289,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         os.path.join(self._os_path, u'syslog.bz2'),
         os.path.join(self._os_path, u'syslog.db'),
         os.path.join(self._os_path, u'syslog.gz'),
+        os.path.join(self._os_path, u'syslog.rc4'),
         os.path.join(self._os_path, u'syslog.tar'),
         os.path.join(self._os_path, u'syslog.tgz'),
         os.path.join(self._os_path, u'syslog.Z'),
