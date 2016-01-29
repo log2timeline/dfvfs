@@ -11,6 +11,7 @@ except ImportError:
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 from dfvfs.resolver import resolver
 
 
@@ -163,7 +164,7 @@ class SQLiteBlobFile(file_io.FileIO):
 
     row_index = getattr(path_spec, u'row_index', None)
     if row_index is not None:
-      if not isinstance(row_index, (int, long)):
+      if not isinstance(row_index, py2to3.INTEGER_TYPES):
         raise errors.PathSpecError(
             u'Unsupported row_index not of integer type.')
 

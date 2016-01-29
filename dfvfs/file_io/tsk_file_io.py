@@ -100,7 +100,20 @@ class TSKFile(file_io.FileIO):
         if getattr(attribute, u'info', None) is None:
           continue
 
-        attribute_name = getattr(attribute.info, u'name', u'')
+        # The value of the attribute name will be None for the default
+        # data stream.
+        attribute_name = getattr(attribute.info, u'name', None)
+        if attribute_name is None:
+          attribute_name = u''
+
+        else:
+          try:
+            # pytsk3 returns an UTF-8 encoded byte string.
+            attribute_name = attribute_name.decode(u'utf8')
+          except UnicodeError:
+            # Continue here since we cannot represent the attribute name.
+            continue
+
         attribute_type = getattr(attribute.info, u'type', None)
         if attribute_name == data_stream and attribute_type in (
             pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,

@@ -187,6 +187,6 @@ class Resolver(object):
     if resolver_helper.type_indicator in cls._resolver_helpers:
       raise KeyError((
           u'Resolver helper object already set for type indicator: '
-          u'{0:s}.').format(resolver_helper.type_indicator))
+          u'{0!s}.').format(resolver_helper.type_indicator))
 
     cls._resolver_helpers[resolver_helper.type_indicator] = resolver_helper

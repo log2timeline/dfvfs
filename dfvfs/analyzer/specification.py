@@ -74,7 +74,7 @@ class FormatSpecificationStore(object):
   @property
   def specifications(self):
     """A specifications iterator object."""
-    return self._format_specifications.itervalues()
+    return iter(self._format_specifications.values())
 
   def AddNewSpecification(self, identifier):
     """Adds a new specification.

@@ -171,7 +171,7 @@ class ZipFile(file_io.FileIO):
 
       self._uncompressed_data_offset = 0
 
-    if (self > 0 and
+    if (size > 0 and
         self._uncompressed_data_offset + size <= self._uncompressed_data_size):
       slice_start_offset = self._uncompressed_data_offset
       slice_end_offset = slice_start_offset + size
