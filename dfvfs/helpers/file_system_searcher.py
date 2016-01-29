@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """A searcher to find file entries within a file system."""
 
+import fnmatch
 import re
 import sre_constants
 
@@ -15,7 +16,7 @@ class FindSpec(object):
 
   def __init__(
       self, file_entry_types=None, is_allocated=True, location=None,
-      location_regex=None, case_sensitive=True):
+      location_glob=None, location_regex=None, case_sensitive=True):
     """Initializes the find specification object.
 
     Args:
@@ -28,6 +29,12 @@ class FindSpec(object):
                 relative to the root of the file system.
                 Note that the string will be split into segments based on the
                 file system specific path segment separator.
+      location_glob: Optional location glob string or list of location glob
+                     segments, or None to indicate no preference. The location
+                     glob should be defined relative to the root of the file
+                     system. The default is None. Note that the string will be
+                     split into segments based on the file system specific
+                     path segment separator.
       location_regex: Optional location regular expression string or list of
                       location regular expression segments, or None to indicate
                       no preference. The location regular expression should be
@@ -39,25 +46,27 @@ class FindSpec(object):
                       be case sensitive.
 
     Raises:
-      TypeError: if the location or location_regex type is not supported.
-      ValueError: if both location and location_regex are set.
+      TypeError: if the location, location_glob or location_regex type
+                 is not supported.
+      ValueError: if the location, location_glob or location_regex arguments
+                  are used at the same time.
     """
-    if location is not None and location_regex is not None:
-      raise ValueError(
-          u'The location and location_regex arguments cannot be used at same '
-          u'time.')
+    if (location is not None and location_glob is not None and
+        location_regex is not None):
+      raise ValueError((
+          u'The location, location_glob and location_regex arguments cannot '
+          u'be used at same time.'))
 
     super(FindSpec, self).__init__()
     self._file_entry_types = file_entry_types
     self._is_allocated = is_allocated
     self._is_case_sensitive = case_sensitive
-    self._is_regex = None
+    self._is_regex = False
     self._location = None
     self._location_regex = None
     self._location_segments = None
     self._number_of_location_segments = 0
 
-    # TODO: add support for globbing?
     if location is not None:
       if isinstance(location, py2to3.STRING_TYPES):
         self._location = location
@@ -67,7 +76,28 @@ class FindSpec(object):
         raise TypeError(u'Unsupported location type: {0:s}.'.format(
             type(location)))
 
-      self._is_regex = False
+    elif location_glob is not None:
+      # fnmatch.translate() is used to convert a glob into a regular expression.
+      # The resulting regular expression has "\Z(?ms)" defined at its end,
+      # which needs to be removed and escapes the forward slash "/", which
+      # needs to be undone.
+      if isinstance(location_glob, basestring):
+        fnmatch_regex = fnmatch.translate(location_glob)
+        fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
+        fnmatch_regex = fnmatch_regex.replace(u'\\/', '/')
+        self._location_regex = fnmatch_regex
+      elif isinstance(location_glob, list):
+        self._location_segments = []
+        for location_segment in location_glob:
+          fnmatch_regex = fnmatch.translate(location_segment)
+          fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
+          fnmatch_regex = fnmatch_regex.replace(u'\\/', '/')
+          self._location_segments.append(fnmatch_regex)
+      else:
+        raise TypeError(u'Unsupported location_glob type: {0:s}.'.format(
+            type(location_glob)))
+
+      self._is_regex = True
 
     elif location_regex is not None:
       if isinstance(location_regex, py2to3.STRING_TYPES):
