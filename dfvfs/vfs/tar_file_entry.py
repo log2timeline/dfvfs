@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The tar file entry implementation."""
 
+import sys
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import tar_path_spec
@@ -176,7 +178,7 @@ class TarFileEntry(file_entry.FileEntry):
       return u''
 
     path = getattr(tar_info, u'name', None)
-    if path is not None:
+    if path is not None and sys.version_info[0] < 3:
       try:
         path = path.decode(self._file_system.encoding)
       except UnicodeDecodeError:

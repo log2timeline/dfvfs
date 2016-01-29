@@ -49,7 +49,14 @@ class TSKDataStream(file_entry.DataStream):
     if self._tsk_attribute:
       # The value of the attribute name will be None for the default
       # data stream.
-      return self._tsk_attribute.info.name or u''
+      attribute_name = getattr(self._tsk_attribute.info, u'name', None)
+      if attribute_name:
+        try:
+          # pytsk3 returns an UTF-8 encoded byte string.
+          return attribute_name.decode(u'utf8')
+        except UnicodeError:
+          pass
+
     return u''
 
 
@@ -127,8 +134,8 @@ class TSKDirectory(file_entry.Directory):
 
         directory_entry = getattr(tsk_directory_entry.info.name, u'name', u'')
 
-        # pytsk3 returns a UTF-8 encoded byte string.
         try:
+          # pytsk3 returns an UTF-8 encoded byte string.
           directory_entry = directory_entry.decode(u'utf8')
         except UnicodeError:
           # Continue here since we cannot represent the directory entry.
@@ -296,9 +303,9 @@ class TSKFileEntry(file_entry.FileEntry):
       if link is None:
         return self._link
 
-      # pytsk3 returns a UTF-8 encoded byte string without a leading
-      # path segment separator.
       try:
+        # pytsk3 returns an UTF-8 encoded byte string without a leading
+        # path segment separator.
         link = u'{0:s}{1:s}'.format(
             self._file_system.PATH_SEPARATOR, link.decode(u'utf8'))
       except UnicodeError:
@@ -415,8 +422,8 @@ class TSKFileEntry(file_entry.FileEntry):
       if getattr(tsk_file.info, u'name', None) is not None:
         name = getattr(tsk_file.info.name, u'name', None)
 
-        # pytsk3 returns a UTF-8 encoded byte string.
         try:
+          # pytsk3 returns an UTF-8 encoded byte string.
           self._name = name.decode(u'utf8')
         except UnicodeError:
           raise errors.BackEndError(

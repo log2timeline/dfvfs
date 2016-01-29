@@ -32,8 +32,13 @@ class TSKVolume(volume_system.Volume):
 
     tsk_desc = getattr(tsk_vs_part, u'desc', None)
     if tsk_desc is not None:
-      self._AddAttribute(volume_system.VolumeAttribute(
-          u'description', tsk_desc))
+      # pytsk3 returns an UTF-8 encoded byte string.
+      try:
+        tsk_desc = tsk_desc.decode(u'utf8')
+        self._AddAttribute(volume_system.VolumeAttribute(
+            u'description', tsk_desc))
+      except UnicodeError:
+        pass
 
     start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
     number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(tsk_vs_part)

@@ -1076,7 +1076,7 @@ class ReadTheDocsHelper(object):
       A boolean indicating the build was triggered.
     """
     readthedocs_url = u'https://readthedocs.org/build/{0:s}'.format(
-        self._project_name)
+        self._project)
 
     request = urllib2.Request(readthedocs_url)
 
@@ -1135,7 +1135,7 @@ class SphinxAPIDocHelper(CLIHelper):
 
   def UpdateAPIDocs(self):
     """Updates the API docs."""
-    command = u'sphinx-apidoc -f -o docs {0:s}'.format(self._project_name)
+    command = u'sphinx-apidoc -f -o docs {0:s}'.format(self._project)
     exit_code, output, _ = self.RunCommand(command)
     print(output)
 
@@ -1758,7 +1758,7 @@ def Main():
   # TODO: add option to directly pass code review issue number.
 
   argument_parser.add_argument(
-      u'--diffbase', dest=u'diffbase', action=u'store', type=unicode,
+      u'--diffbase', dest=u'diffbase', action=u'store', type=str,
       metavar=u'DIFFBASE', default=u'upstream/master', help=(
           u'The diffbase the default is upstream/master. This options is used '
           u'to indicate to what "base" the code changes are relative to and '

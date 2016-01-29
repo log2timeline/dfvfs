@@ -195,7 +195,7 @@ class OSFileSystem(file_system.FileSystem):
         element for sublist in path_segments for element in sublist]
 
     # Remove empty path segments.
-    path_segments = filter(None, path_segments)
+    path_segments = list(filter(None, path_segments))
 
     if first_path_segment is None:
       path = u'{0:s}{1:s}'.format(

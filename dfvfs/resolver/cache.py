@@ -89,9 +89,7 @@ class ObjectsCache(object):
 
     This method ignores the cache value reference count.
     """
-    # Since we're changing the self._values dict we cannot use iterkeys().
-    for identifier in self._values.keys():
-      del self._values[identifier]
+    self._values.clear()
 
   def GetCacheValue(self, identifier):
     """Retrieves the cache value based on the identifier.
@@ -122,7 +120,7 @@ class ObjectsCache(object):
     Raises:
       RuntimeError: if the cache value is missing.
     """
-    for identifier, cache_value in self._values.iteritems():
+    for identifier, cache_value in iter(self._values.items()):
       if not cache_value:
         raise RuntimeError(u'Missing cache value.')
 

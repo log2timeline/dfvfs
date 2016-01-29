@@ -2,6 +2,7 @@
 """The base32 decoder object implementation."""
 
 import base64
+import binascii
 
 from dfvfs.encoding import decoder
 from dfvfs.encoding import manager
@@ -29,9 +30,9 @@ class Base32Decoder(decoder.Decoder):
     """
     try:
       decoded_data = base64.b32decode(encoded_data, casefold=False)
-    except TypeError as exception:
+    except (TypeError, binascii.Error) as exception:
       raise errors.BackEndError(
-          u'Unable to decode base32 stream with error: {0:s}.'.format(
+          u'Unable to decode base32 stream with error: {0!s}.'.format(
               exception))
 
     return decoded_data, b''

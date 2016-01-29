@@ -4,6 +4,7 @@
 import re
 
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 from dfvfs.path import factory as path_spec_factory
 
 
@@ -264,7 +265,7 @@ class WindowsPathResolver(object):
             %-characters, e.g. SystemRoot as in %SystemRoot%.
       value: the value of the environment variable.
     """
-    if isinstance(value, basestring):
+    if isinstance(value, py2to3.STRING_TYPES):
       value = self._PathStripPrefix(value)
 
     if value is not None:

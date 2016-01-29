@@ -47,7 +47,7 @@ class ZlibDecompressor(decompressor.Decompressor):
     except zlib.error as exception:
       raise errors.BackEndError((
           u'Unable to decompress zlib compressed stream with error: '
-          u'{0:s}.').format(exception))
+          u'{0!s}.').format(exception))
 
     return uncompressed_data, remaining_compressed_data
 

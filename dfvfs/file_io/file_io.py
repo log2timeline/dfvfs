@@ -153,3 +153,11 @@ class FileIO(object):
     Raises:
       IOError: if the file-like object has not been opened.
     """
+
+  def seekable(self):
+    """Determines if a file-like object is seekable.
+
+    Returns:
+      True, since a file IO object will provide seek.
+    """
+    return True
