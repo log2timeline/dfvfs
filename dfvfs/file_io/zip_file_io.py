@@ -38,9 +38,9 @@ class ZipFile(file_io.FileIO):
   def _Close(self):
     """Closes the file-like object.
 
-       If the file-like object was passed in the init function
-       the data range file-like object does not control the file-like object
-       and should not actually close it.
+    If the file-like object was passed in the init function
+    the data range file-like object does not control the file-like object
+    and should not actually close it.
 
     Raises:
       IOError: if the close failed.
@@ -124,8 +124,8 @@ class ZipFile(file_io.FileIO):
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
 
-       The function will read a byte string of the specified size or
-       all of the remaining data if no size was specified.
+    The function will read a byte string of the specified size or
+    all of the remaining data if no size was specified.
 
     Args:
       size: optional integer value containing the number of bytes to read.

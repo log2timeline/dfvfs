@@ -32,19 +32,19 @@ class KeyChain(object):
     return credentials.get(identifier, None)
 
   def GetCredentials(self, path_spec):
-    """Retrieves the credentials from the key chain.
+    """Retrieves all credentials for the path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).
 
     Returns:
-      A dictionary containing the credential which is empty if the credentials
+      A dictionary containing the credentials which is empty if the credentials
       for the path specification are not set.
     """
     return self._credentials_per_path_spec.get(path_spec.comparable, {})
 
   def SetCredential(self, path_spec, identifier, data):
-    """Sets a specific credential in the key chain.
+    """Sets a specific credential for the path specification.
 
     Args:
       path_spec: the VFS path specification (instance of path.PathSpec).

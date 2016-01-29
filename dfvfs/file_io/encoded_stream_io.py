@@ -19,8 +19,8 @@ class EncodedStream(file_io.FileIO):
       self, resolver_context, encoding_method=None, file_object=None):
     """Initializes the file-like object.
 
-       If the file-like object is chained do not separately use the parent
-       file-like object.
+    If the file-like object is chained do not separately use the parent
+    file-like object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
@@ -54,9 +54,9 @@ class EncodedStream(file_io.FileIO):
   def _Close(self):
     """Closes the file-like object.
 
-       If the file-like object was passed in the init function
-       the encoded stream file-like object does not control
-       the file-like object and should not actually close it.
+    If the file-like object was passed in the init function
+    the encoded stream file-like object does not control
+    the file-like object and should not actually close it.
 
     Raises:
       IOError: if the close failed.
@@ -176,8 +176,8 @@ class EncodedStream(file_io.FileIO):
   def SetDecodedStreamSize(self, decoded_stream_size):
     """Sets the decoded stream size.
 
-       This function is used to set the decoded stream size if it can be
-       determined separately.
+    This function is used to set the decoded stream size if it can be
+    determined separately.
 
     Args:
       decoded_stream_size: the size of the decoded stream in bytes.
@@ -202,8 +202,8 @@ class EncodedStream(file_io.FileIO):
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
 
-       The function will read a byte string of the specified size or
-       all of the remaining data if no size was specified.
+    The function will read a byte string of the specified size or
+    all of the remaining data if no size was specified.
 
     Args:
       size: Optional integer value containing the number of bytes to read.

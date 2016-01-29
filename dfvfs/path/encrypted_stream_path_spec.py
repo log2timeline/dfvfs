@@ -14,13 +14,11 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
   def __init__(self, encryption_method=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
-       Note that the encrypted stream path specification must have a parent.
+    Note that the encrypted stream path specification must have a parent.
 
     Args:
       encryption_method: optional method used to the encrypt the data.
-                       The default is None.
       parent: optional parent path specification (instance of PathSpec).
-              The default is None.
       kwargs: a dictionary of keyword arguments depending on the path
               specification.
 

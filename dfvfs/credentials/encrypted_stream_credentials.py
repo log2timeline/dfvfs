@@ -6,7 +6,7 @@ from dfvfs.credentials import manager
 from dfvfs.lib import definitions
 
 
-class EncryptedStreamCredendials(credentials.Credentials):
+class EncryptedStreamCredentials(credentials.Credentials):
   """Class that implements the encrypted stream credentials object."""
 
   CREDENTIALS = frozenset([u'key'])
@@ -15,4 +15,4 @@ class EncryptedStreamCredendials(credentials.Credentials):
 
 
 # Register the resolver helpers with the resolver.
-manager.CredentialsManager.RegisterCredentials(EncryptedStreamCredendials())
+manager.CredentialsManager.RegisterCredentials(EncryptedStreamCredentials())

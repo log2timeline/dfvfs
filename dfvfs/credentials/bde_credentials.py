@@ -9,7 +9,7 @@ from dfvfs.lib import definitions
 # TODO: add means to set the credentials in the bde_volume using the helper?
 
 
-class BDECredendials(credentials.Credentials):
+class BDECredentials(credentials.Credentials):
   """Class that implements the BDE credentials object."""
 
   # TODO: add support for key_data credential, needs pybde update.
@@ -20,4 +20,4 @@ class BDECredendials(credentials.Credentials):
 
 
 # Register the resolver helpers with the resolver.
-manager.CredentialsManager.RegisterCredentials(BDECredendials())
+manager.CredentialsManager.RegisterCredentials(BDECredentials())

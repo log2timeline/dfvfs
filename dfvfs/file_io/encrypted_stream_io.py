@@ -19,13 +19,13 @@ class EncryptedStream(file_io.FileIO):
       self, resolver_context, encryption_method=None, file_object=None):
     """Initializes the file-like object.
 
-       If the file-like object is chained do not separately use the parent
-       file-like object.
+    If the file-like object is chained do not separately use the parent
+    file-like object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
       encryption_method: optional method used to the encrypt the data.
-      file_object: optional parent file-like object. The default is None.
+      file_object: optional parent file-like object.
 
     Raises:
       ValueError: if file_object provided but encryption_method is not.
@@ -55,9 +55,9 @@ class EncryptedStream(file_io.FileIO):
   def _Close(self):
     """Closes the file-like object.
 
-       If the file-like object was passed in the init function
-       the encrypted stream file-like object does not control
-       the file-like object and should not actually close it.
+    If the file-like object was passed in the init function
+    the encrypted stream file-like object does not control
+    the file-like object and should not actually close it.
 
     Raises:
       IOError: if the close failed.
@@ -112,7 +112,6 @@ class EncryptedStream(file_io.FileIO):
 
     Args:
       path_spec: optional path specification (instance of path.PathSpec).
-                 The default is None.
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -192,8 +191,8 @@ class EncryptedStream(file_io.FileIO):
   def SetDecryptedStreamSize(self, decrypted_stream_size):
     """Sets the decrypted stream size.
 
-       This function is used to set the decrypted stream size if it can be
-       determined separately.
+    This function is used to set the decrypted stream size if it can be
+    determined separately.
 
     Args:
       decrypted_stream_size: the size of the decrypted stream in bytes.
@@ -218,8 +217,8 @@ class EncryptedStream(file_io.FileIO):
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
 
-       The function will read a byte string of the specified size or
-       all of the remaining data if no size was specified.
+    The function will read a byte string of the specified size or
+    all of the remaining data if no size was specified.
 
     Args:
       size: Optional integer value containing the number of bytes to read.

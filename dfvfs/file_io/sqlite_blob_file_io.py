@@ -274,8 +274,8 @@ class SQLiteBlobFile(file_io.FileIO):
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
 
-       The function will read a byte string of the specified size or
-       all of the remaining data if no size was specified.
+    The function will read a byte string of the specified size or
+    all of the remaining data if no size was specified.
 
     Args:
       size: Optional integer value containing the number of bytes to read.

@@ -17,10 +17,10 @@ class WindowsPathResolver(object):
   def __init__(self, file_system, mount_point, drive_letter=u'C'):
     """Initializes the Windows path helper.
 
-       The mount point indicates a path specification where the Windows
-       file system is mounted. This can either be a path specification
-       into a storage media image or a directory accessible by the operating
-       system.
+    The mount point indicates a path specification where the Windows
+    file system is mounted. This can either be a path specification
+    into a storage media image or a directory accessible by the operating
+    system.
 
     Args:
       file_system: the file system object (instance of vfs.FileSystem).
@@ -105,9 +105,9 @@ class WindowsPathResolver(object):
   def _ResolvePath(self, path, expand_variables=True):
     """Resolves a Windows path in file system specific format.
 
-       This function will check if the individual path segments exists within
-       the file system. For this it will prefer the first case sensitive match
-       above a case insensitive match. If no match was found None is returned.
+    This function will check if the individual path segments exists within
+    the file system. For this it will prefer the first case sensitive match
+    above a case insensitive match. If no match was found None is returned.
 
     Args:
       path: the Windows path to resolve.
