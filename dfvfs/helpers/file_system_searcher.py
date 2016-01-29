@@ -79,8 +79,8 @@ class FindSpec(object):
     elif location_glob is not None:
       # fnmatch.translate() is used to convert a glob into a regular expression.
       # The resulting regular expression has "\Z(?ms)" defined at its end,
-      # which needs to be removed, # and escapes the forward slash "/",
-      # which needs to be undone.
+      # which needs to be removed and escapes the forward slash "/", which
+      # needs to be undone.
       if isinstance(location_glob, basestring):
         fnmatch_regex = fnmatch.translate(location_glob)
         fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
