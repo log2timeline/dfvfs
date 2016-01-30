@@ -288,6 +288,20 @@ class FindSpec(object):
 
     return True
 
+  def _SplitPath(self, path, path_separator):
+    """Splits the path into path segments.
+
+    Args:
+      path: a string containing the path.
+      path_separator: a string containing the path separator.
+
+    Returns:
+      A list of path segements without the root path segment, which is an
+      empty string.
+    """
+    # Split the path with the path separator and remove empty path segments.
+    return list(filter(None, path.split(path_separator)))
+
   def AtMaximumDepth(self, search_depth):
     """Determines if the find specification is at maximum depth.
 
@@ -310,10 +324,17 @@ class FindSpec(object):
       file_system: the file system object (instance of vfs.FileSystem).
     """
     if self._location is not None:
-      self._location_segments = file_system.SplitPath(self._location)
+      self._location_segments = self._SplitPath(
+          self._location, file_system.PATH_SEPARATOR)
 
     elif self._location_regex is not None:
-      self._location_segments = file_system.SplitPath(self._location_regex)
+      path_separator = file_system.PATH_SEPARATOR
+      if path_separator == u'\\':
+        # The backslash '\' is escaped within a regular expression.
+        path_separator = u'\\\\'
+
+      self._location_segments = self._SplitPath(
+          self._location_regex, path_separator)
 
     if self._location_segments is not None:
       self._number_of_location_segments = len(self._location_segments)
