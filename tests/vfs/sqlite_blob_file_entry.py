@@ -12,7 +12,7 @@ from dfvfs.vfs import sqlite_blob_file_entry
 from dfvfs.vfs import sqlite_blob_file_system
 
 
-class SqliteBlobFileEntryTest(unittest.TestCase):
+class SQLiteBlobFileEntryTest(unittest.TestCase):
   """The unit test for the sqlite blob file entry object."""
 
   def setUp(self):

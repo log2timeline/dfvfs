@@ -141,7 +141,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     return
 
   def GetNumberOfRows(self):
-    """Retrieves the number of rows of the table.
+    """Retrieves the number of rows in the table.
 
     Returns:
       An integer containing the number of rows.

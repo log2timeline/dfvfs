@@ -47,7 +47,7 @@ class VShadowFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specfication.')
+      raise ValueError(u'Missing path specification.')
 
     store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
     if store_index is None:

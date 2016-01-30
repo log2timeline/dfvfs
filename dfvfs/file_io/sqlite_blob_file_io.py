@@ -56,7 +56,7 @@ class SQLiteBlobFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specfication.')
+      raise ValueError(u'Missing path specification.')
 
     if not path_spec.HasParent():
       raise errors.PathSpecError(
@@ -130,7 +130,7 @@ class SQLiteBlobFile(file_io.FileIO):
 
     # Make sure the query returns a single row, using cursor.rowcount
     # is not reliable for this purpose.
-    if len(rows) != 1 or len(rows[0]) != 1:
+    if not error_string and (len(rows) != 1 or len(rows[0]) != 1):
       if not row_condition:
         error_string = (
             u'Unable to open blob in table: {0:s} and column: {1:s} '

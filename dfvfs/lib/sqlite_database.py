@@ -27,8 +27,10 @@ class SQLiteDatabaseFile(object):
   def __init__(self):
     """Initializes the database file object."""
     super(SQLiteDatabaseFile, self).__init__()
+    self._column_names_per_table = {}
     self._connection = None
     self._cursor = None
+    self._table_names = None
     self._temp_file_path = u''
 
   def Close(self):
@@ -52,7 +54,7 @@ class SQLiteDatabaseFile(object):
     self._temp_file_path = u''
 
   def GetNumberOfRows(self, table_name):
-    """Retrieves the number of rows of the table.
+    """Retrieves the number of rows in the table.
 
     Args:
       table_name: string containing the name of the table.
@@ -103,16 +105,22 @@ class SQLiteDatabaseFile(object):
     if not column_name:
       return False
 
+    table_name = table_name.lower()
+    column_names = self._column_names_per_table.get(table_name, None)
+    if column_names is None:
+      column_names = []
+
+      self._cursor.execute(self._HAS_COLUMN_QUERY.format(table_name))
+      for row in self._cursor.fetchall():
+        if not row[1]:
+          continue
+
+        column_names.append(row[1].lower())
+
+      self._column_names_per_table[table_name] = column_names
+
     column_name = column_name.lower()
-    self._cursor.execute(self._HAS_COLUMN_QUERY.format(table_name))
-
-    for row in self._cursor.fetchall():
-      # As a sanity check we compare the column name in Python instead of
-      # passing it as part of the SQL query.
-      if row[1] and row[1].lower() == column_name:
-        return True
-
-    return False
+    return column_name in column_names
 
   def HasTable(self, table_name):
     """Determines if a specific table exists.
@@ -132,16 +140,18 @@ class SQLiteDatabaseFile(object):
     if not table_name:
       return False
 
+    if self._table_names is None:
+      self._table_names = []
+
+      self._cursor.execute(self._HAS_TABLE_QUERY)
+      for row in self._cursor.fetchall():
+        if not row[0]:
+          continue
+
+        self._table_names.append(row[0].lower())
+
     table_name = table_name.lower()
-    self._cursor.execute(self._HAS_TABLE_QUERY)
-
-    for row in self._cursor.fetchall():
-      # As a sanity check we compare the table name in Python instead of
-      # passing it as part of the SQL query.
-      if row[0] and row[0].lower() == table_name:
-        return True
-
-    return False
+    return table_name in self._table_names
 
   def Open(self, file_object):
     """Opens the database file object.
@@ -188,7 +198,7 @@ class SQLiteDatabaseFile(object):
       A list of the rows (instances of sqlite3.Row) of the query results.
     """
     # TODO: catch Warning and return None.
-    # Note that we cannot pass parameters as a keyword arguement here.
+    # Note that we cannot pass parameters as a keyword argument here.
     # A parameters value of None is not supported.
     if parameters:
       self._cursor.execute(query, parameters)

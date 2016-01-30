@@ -10,7 +10,7 @@ from dfvfs.resolver import resolver
 from dfvfs.resolver import resolver_helper
 
 
-class SqliteBlobResolverHelper(resolver_helper.ResolverHelper):
+class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
   """Class that implements the SQLite blob resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
@@ -40,4 +40,4 @@ class SqliteBlobResolverHelper(resolver_helper.ResolverHelper):
 
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(SqliteBlobResolverHelper())
+resolver.Resolver.RegisterHelper(SQLiteBlobResolverHelper())

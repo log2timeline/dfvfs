@@ -55,7 +55,7 @@ class TarFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specfication.')
+      raise ValueError(u'Missing path specification.')
 
     file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)

@@ -52,7 +52,7 @@ class Factory(object):
 
   @classmethod
   def GetProperties(cls, path_spec):
-    """Retrieves a dictionary containing the path specfication properties.
+    """Retrieves a dictionary containing the path specification properties.
 
     Args:
       path_spec: a path specification (instance of path.PathSpec).
