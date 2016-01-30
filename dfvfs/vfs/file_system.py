@@ -92,7 +92,7 @@ class FileSystem(object):
   def DirnamePath(self, path):
     """Determines the directory name of the path.
 
-       The file system root is represented by an empty string.
+    The file system root is represented by an empty string.
 
     Args:
       path: a string containing the path.
@@ -146,8 +146,8 @@ class FileSystem(object):
   def GetPathSegmentAndSuffix(self, base_path, path):
     """Determines the path segment and suffix of the path.
 
-       None is returned if the path does not start with the base path and
-       an empty string if the path exactly matches the base path.
+    None is returned if the path does not start with the base path and
+    an empty string if the path exactly matches the base path.
 
     Args:
       base_path: a string containing the base path.

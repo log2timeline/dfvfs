@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The compressed stream file entry implementation."""
+"""The encoded stream file entry implementation."""
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -8,7 +8,7 @@ from dfvfs.vfs import vfs_stat
 
 
 class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
-  """Class that implements a compressed stream file entry object."""
+  """Class that implements an encoded stream file entry object."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
 
@@ -19,7 +19,7 @@ class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
       The stat object (instance of vfs.VFSStat).
 
     Raises:
-      BackEndError: when the compressed stream is missing.
+      BackEndError: when the encoded stream is missing.
     """
     encoded_stream = self.GetFileObject()
     if not encoded_stream:

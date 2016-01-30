@@ -16,6 +16,8 @@ from dfvfs.vfs import encoded_stream_file_system
 class EncodedStreamFileEntryTest(unittest.TestCase):
   """The unit test for the encoded stream file entry object."""
 
+  _RC4_KEY = b'rc4test'
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
@@ -35,7 +37,7 @@ class EncodedStreamFileEntryTest(unittest.TestCase):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
-  def testIntialize(self):
+  def testInitialize(self):
     """Test the initialize functionality."""
     file_entry = encoded_stream_file_entry.EncodedStreamFileEntry(
         self._resolver_context, self._file_system,

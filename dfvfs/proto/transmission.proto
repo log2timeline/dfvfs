@@ -13,7 +13,7 @@ message PathSpec {
   // The path specification type indicator.
   required string type_indicator = 2;
 
-  // Optional compression method e.g. used byt compressed stream.
+  // Optional compression method e.g. used by compressed stream.
   optional string compression_method = 3;
 
   // Optional unique identifier e.g. a GUID/UUID.
@@ -60,6 +60,9 @@ message PathSpec {
 
   // Optional MFT entry e.g. used by NTFS.
   optional uint64 mft_entry = 18;
+
+  // Optional encryption method e.g. used by encrypted stream.
+  optional string encryption_method = 3;
 };
 
 // Components of the row condition tuple used by SQLite Blob

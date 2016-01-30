@@ -34,7 +34,10 @@ class KeychainTest(unittest.TestCase):
 
     credential = keychain_object.GetCredential(
         bde_path_spec, u'password')
-    self.assertIsNotNone(credential)
+    self.assertEqual(credential, u'TEST')
+
+    credentials = keychain_object.GetCredentials(bde_path_spec)
+    self.assertEqual(credentials, {u'password': u'TEST'})
 
 
 if __name__ == '__main__':
