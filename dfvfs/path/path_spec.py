@@ -42,7 +42,7 @@ class PathSpec(object):
   def _GetComparable(self, sub_comparable_string=u''):
     """Retrieves the comparable representation.
 
-    This is a convenince function for constructing comparables.
+    This is a convenience function for constructing comparables.
 
     Args:
       sub_comparable_string: the sub comparable string.
