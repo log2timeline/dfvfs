@@ -9,6 +9,8 @@ try:
 except ImportError:
   import sqlite3
 
+from dfvfs.lib import py2to3
+
 
 class SQLiteDatabaseFile(object):
   """Class that implements a SQLite database file using a file-like object."""
@@ -76,7 +78,7 @@ class SQLiteDatabaseFile(object):
               table_name))
 
     number_of_rows = row[0]
-    if isinstance(number_of_rows, basestring):
+    if isinstance(number_of_rows, py2to3.STRING_TYPES):
       try:
         number_of_rows = int(number_of_rows, 10)
       except ValueError as exception:
@@ -115,7 +117,11 @@ class SQLiteDatabaseFile(object):
         if not row[1]:
           continue
 
-        column_names.append(row[1].lower())
+        row_column_name = row[1]
+        if isinstance(row_column_name, bytes):
+          row_column_name = row_column_name.decode(u'utf-8')
+
+        column_names.append(row_column_name.lower())
 
       self._column_names_per_table[table_name] = column_names
 
@@ -148,7 +154,11 @@ class SQLiteDatabaseFile(object):
         if not row[0]:
           continue
 
-        self._table_names.append(row[0].lower())
+        row_table_name = row[0]
+        if isinstance(row_table_name, bytes):
+          row_table_name = row_table_name.decode(u'utf-8')
+
+        self._table_names.append(row_table_name.lower())
 
     table_name = table_name.lower()
     return table_name in self._table_names

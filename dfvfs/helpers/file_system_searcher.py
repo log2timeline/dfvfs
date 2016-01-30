@@ -81,7 +81,7 @@ class FindSpec(object):
       # The resulting regular expression has "\Z(?ms)" defined at its end,
       # which needs to be removed and escapes the forward slash "/", which
       # needs to be undone.
-      if isinstance(location_glob, basestring):
+      if isinstance(location_glob, py2to3.STRING_TYPES):
         fnmatch_regex = fnmatch.translate(location_glob)
         fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
         fnmatch_regex = fnmatch_regex.replace(u'\\/', '/')
