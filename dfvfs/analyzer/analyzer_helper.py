@@ -26,7 +26,7 @@ class AnalyzerHelper(object):
   def AnalyzeFileObject(self, unused_file_object):
     """Retrieves the format specification.
 
-       This is the fall through implementation that raises a RuntimeError.
+    This is the fall through implementation that raises a RuntimeError.
 
     Args:
       unused_file_object: a file-like object (instance of file_io.FileIO).
@@ -46,7 +46,7 @@ class AnalyzerHelper(object):
   def GetFormatSpecification(self):
     """Retrieves the format specification.
 
-       This is the fall through implementation that returns None.
+    This is the fall through implementation that returns None.
 
     Returns:
       The format specification object (instance of FormatSpecification)

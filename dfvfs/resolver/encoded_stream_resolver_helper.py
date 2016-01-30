@@ -33,7 +33,7 @@ class EncodedStreamResolverHelper(resolver_helper.ResolverHelper):
       resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
-      The file system object (instance of vfs.EncodedStreamFileSystem).
+      The file system object (instance of vfs.FileSystem).
     """
     return dfvfs.vfs.encoded_stream_file_system.EncodedStreamFileSystem(
         resolver_context)

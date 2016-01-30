@@ -21,8 +21,8 @@ class OSDirectory(file_entry.Directory):
   def _EntriesGenerator(self):
     """Retrieves directory entries.
 
-       Since a directory can contain a vast number of entries using
-       a generator is more memory efficient.
+    Since a directory can contain a vast number of entries using
+    a generator is more memory efficient.
 
     Yields:
       A path specification (instance of path.OSPathSpec).

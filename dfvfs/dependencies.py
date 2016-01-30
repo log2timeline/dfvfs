@@ -32,6 +32,7 @@ LIBYAL_DEPENDENCIES = {
 # module_name, version_attribute_name, minimum_version, maximum_version
 PYTHON_DEPENDENCIES = [
     (u'construct', u'__version__', u'2.5.2', None),
+    (u'Crypto', u'__version__', u'2.6.0', None),
     (u'google.protobuf', u'', u'', None),
     (u'six', u'__version__', u'1.1.0', None)]
 

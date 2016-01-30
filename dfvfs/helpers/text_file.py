@@ -60,7 +60,7 @@ class TextFile(object):
   def _ReadLinesData(self, maximum_size=None):
     """Reads the lines data.
 
-       The number of reads are minimized by using a lines buffer.
+    The number of reads are minimized by using a lines buffer.
 
     Args:
       maximum_size: optional integer value that contains the maximum number of
@@ -131,13 +131,13 @@ class TextFile(object):
   def readline(self, size=None):
     """Reads a single line of text.
 
-       The functions reads one entire line from the file-like object.
-       A trailing end-of-line indicator (newline by default) is kept in the
-       string (but may be absent when a file ends with an incomplete line).
-       If the size argument is present and non-negative, it is a maximum byte
-       count (including the trailing end-of-line) and an incomplete line may
-       be returned. An empty string is returned only when end-of-file is
-       encountered immediately.
+    The functions reads one entire line from the file-like object.
+    A trailing end-of-line indicator (newline by default) is kept in the
+    string (but may be absent when a file ends with an incomplete line).
+    If the size argument is present and non-negative, it is a maximum byte
+    count (including the trailing end-of-line) and an incomplete line may
+    be returned. An empty string is returned only when end-of-file is
+    encountered immediately.
 
     Args:
       size: Optional integer value that contains the maximum string size
@@ -181,11 +181,11 @@ class TextFile(object):
   def readlines(self, sizehint=None):
     """Reads lines of text.
 
-       The function reads until EOF using readline() and return a list
-       containing the lines read. If the optional sizehint argument is
-       present, instead of reading up to EOF, whole lines totalling
-       approximately sizehint bytes (possibly after rounding up to
-       an internal buffer size) are read.
+    The function reads until EOF using readline() and return a list
+    containing the lines read. If the optional sizehint argument is
+    present, instead of reading up to EOF, whole lines totalling
+    approximately sizehint bytes (possibly after rounding up to
+    an internal buffer size) are read.
 
     Args:
       sizehint: optional integer value that contains the maximum byte size

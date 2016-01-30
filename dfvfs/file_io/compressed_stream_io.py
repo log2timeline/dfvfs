@@ -19,8 +19,8 @@ class CompressedStream(file_io.FileIO):
       self, resolver_context, compression_method=None, file_object=None):
     """Initializes the file-like object.
 
-       If the file-like object is chained do not separately use the parent
-       file-like object.
+    If the file-like object is chained do not separately use the parent
+    file-like object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
@@ -55,9 +55,9 @@ class CompressedStream(file_io.FileIO):
   def _Close(self):
     """Closes the file-like object.
 
-       If the file-like object was passed in the init function
-       the compressed stream file-like object does not control
-       the file-like object and should not actually close it.
+    If the file-like object was passed in the init function
+    the compressed stream file-like object does not control
+    the file-like object and should not actually close it.
 
     Raises:
       IOError: if the close failed.
@@ -181,8 +181,8 @@ class CompressedStream(file_io.FileIO):
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
 
-       The function will read a byte string of the specified size or
-       all of the remaining data if no size was specified.
+    The function will read a byte string of the specified size or
+    all of the remaining data if no size was specified.
 
     Args:
       size: Optional integer value containing the number of bytes to read.
@@ -279,7 +279,7 @@ class CompressedStream(file_io.FileIO):
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
-      offset += self._uncompressed_data_size
+      offset += self._uncompressed_stream_size
     elif whence != os.SEEK_SET:
       raise IOError(u'Unsupported whence.')
     if offset < 0:

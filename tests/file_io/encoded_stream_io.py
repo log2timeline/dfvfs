@@ -11,6 +11,7 @@ from dfvfs.lib import definitions
 from dfvfs.path import encoded_stream_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
+
 from tests.file_io import test_lib
 
 

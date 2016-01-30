@@ -2,7 +2,7 @@ language: python
 python:
   - "2.7"
 before_install:
-  - if test `uname -s` = 'Linux'; then sudo add-apt-repository ppa:gift/dev -y && sudo apt-get update -q && sudo apt-get install libbde-python libewf-python libfsntfs-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libtsk libvhdi-python libvmdk-python libvshadow-python python-construct python-coverage python-coveralls python-docopt python-protobuf python-six pytsk3; fi
+  - if test `uname -s` = 'Linux'; then sudo add-apt-repository ppa:gift/dev -y && sudo apt-get update -q && sudo apt-get install libbde-python libewf-python libfsntfs-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libtsk libvhdi-python libvmdk-python libvshadow-python python-construct python-coverage python-coveralls python-crypto python-docopt python-protobuf python-six pytsk3; fi
 script:
   - ./run_tests.py
   - ./setup.py build
