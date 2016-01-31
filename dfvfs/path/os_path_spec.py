@@ -26,8 +26,11 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
               specification.
 
     Raises:
-      ValueError: when parent is set.
+      ValueError: when location is not set or parent is set.
     """
+    if not location:
+      raise ValueError(u'Missing location value.')
+
     parent = None
     if u'parent' in kwargs:
       parent = kwargs[u'parent']

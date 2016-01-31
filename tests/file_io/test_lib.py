@@ -36,8 +36,6 @@ class ImageFileTestCase(unittest.TestCase):
     self.assertEqual(file_object.get_size(), 116)
     file_object.close()
 
-    # TODO: add a failing scenario.
-
   def _TestOpenCloseLocation(self, parent_path_spec):
     """Test the open and close functionality using a location.
 
@@ -51,8 +49,6 @@ class ImageFileTestCase(unittest.TestCase):
     file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 116)
     file_object.close()
-
-    # TODO: add a failing scenario.
 
   def _TestSeek(self, parent_path_spec):
     """Test the seek functionality.

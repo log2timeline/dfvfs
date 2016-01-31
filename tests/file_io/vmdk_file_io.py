@@ -5,6 +5,7 @@
 import os
 import unittest
 
+from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import vmdk_path_spec
 from tests.file_io import test_lib
@@ -17,8 +18,9 @@ class VMDKFileTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(VMDKFileTest, self).setUp()
     test_file = os.path.join(u'test_data', u'image.vmdk')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vmdk_path_spec = vmdk_path_spec.VMDKPathSpec(parent=path_spec)
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._vmdk_path_spec = vmdk_path_spec.VMDKPathSpec(
+        parent=self._os_path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -27,6 +29,13 @@ class VMDKFileTest(test_lib.ImageFileTestCase):
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
     self._TestOpenCloseLocation(self._vmdk_path_spec)
+
+    # Try open with a path specification that has no parent.
+    path_spec = vmdk_path_spec.VMDKPathSpec(parent=self._os_path_spec)
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
