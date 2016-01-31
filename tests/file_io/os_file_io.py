@@ -6,9 +6,13 @@ import os
 import unittest
 
 from dfvfs.file_io import os_file_io
+from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 
+
+# TODO: add tests that mock the device handling behavior.
+# TODO: add tests that mock the access denied behavior.
 
 class OSFileTest(unittest.TestCase):
   """The unit test for the operating systesm file-like object."""
@@ -30,11 +34,33 @@ class OSFileTest(unittest.TestCase):
     self.assertEqual(file_object.get_size(), 116)
     file_object.close()
 
-    # TODO: add a failing scenario.
+    # Try open without a path specification.
+    with self.assertRaises(ValueError):
+      file_object.open(path_spec=None)
+
+    # Try open with a path specification that has no location.
+    test_file = os.path.join(u'test_data', u'password.txt')
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec.location = None
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec=path_spec)
+
+    # Try open with a path specification that has a parent.
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec.parent = self._path_spec2
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec=path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
     file_object = os_file_io.OSFile(self._resolver_context)
+
+    # Try seek without the file object being open.
+    with self.assertRaises(IOError):
+      file_object.seek(0, os.SEEK_SET)
+
     file_object.open(path_spec=self._path_spec2)
 
     self.assertEqual(file_object.get_size(), 22)
@@ -72,6 +98,11 @@ class OSFileTest(unittest.TestCase):
   def testRead(self):
     """Test the read functionality."""
     file_object = os_file_io.OSFile(self._resolver_context)
+
+    # Try read without the file object being open.
+    with self.assertRaises(IOError):
+      file_object.read()
+
     file_object.open(path_spec=self._path_spec1)
 
     read_buffer = file_object.read()
@@ -88,6 +119,36 @@ class OSFileTest(unittest.TestCase):
     file_object.close()
 
     # TODO: add boundary scenarios.
+
+  def testGetOffset(self):
+    """Test the get offset functionality."""
+    file_object = os_file_io.OSFile(self._resolver_context)
+
+    # Try get_offset without the file object being open.
+    with self.assertRaises(IOError):
+      file_object.get_offset()
+
+    file_object.open(path_spec=self._path_spec1)
+
+    offset = file_object.get_offset()
+    self.assertEqual(offset, 0)
+
+    file_object.close()
+
+  def testGetSize(self):
+    """Test the get size functionality."""
+    file_object = os_file_io.OSFile(self._resolver_context)
+
+    # Try get_size without the file object being open.
+    with self.assertRaises(IOError):
+      file_object.get_size()
+
+    file_object.open(path_spec=self._path_spec1)
+
+    size = file_object.get_size()
+    self.assertEqual(size, 116)
+
+    file_object.close()
 
 
 if __name__ == '__main__':
