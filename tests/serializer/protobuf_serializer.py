@@ -31,7 +31,7 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
         u'inode': 16,
         u'location': u'/a_directory/another_file',
         u'parent': {
-            u'store_index': 1, 
+            u'store_index': 1,
             u'parent': {
                 u'parent': {
                     u'location': os.path.abspath(test_file)}

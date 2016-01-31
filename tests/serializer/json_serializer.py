@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the serializer object implementation using JSON."""
 
-import json
 import os
 import unittest
 
@@ -34,7 +33,7 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
         u'inode': 16,
         u'location': u'/a_directory/another_file',
         u'parent': {
-            u'store_index': 1, 
+            u'store_index': 1,
             u'parent': {
                 u'parent': {
                     u'location': os.path.abspath(test_file)}
