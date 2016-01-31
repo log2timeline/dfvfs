@@ -74,6 +74,24 @@ class PathSpec(object):
           u'Invalid path specification missing type indicator.')
     return type_indicator
 
+  def CopyToDict(self):
+    """Copies the path specification to a dictionary.
+
+    Returns:
+      A dictionary containing the path specification attributes.
+    """
+    path_spec_dict = {}
+    for attribute_name, attribute_value in iter(self.__dict__.items()):
+      if attribute_value is None:
+        continue
+
+      if attribute_name == u'parent':
+        attribute_value = attribute_value.CopyToDict()
+
+      path_spec_dict[attribute_name] = attribute_value
+
+    return path_spec_dict
+
   def HasParent(self):
     """Determines if the path specfication has a parent."""
     return self.parent is not None
