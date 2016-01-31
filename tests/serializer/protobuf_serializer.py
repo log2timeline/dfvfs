@@ -9,7 +9,6 @@ from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.path import vshadow_path_spec
-from dfvfs.proto import transmission_pb2
 from dfvfs.serializer import protobuf_serializer as serializer
 
 
@@ -28,36 +27,33 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._vshadow_path_spec)
 
-    test_path = os.path.abspath(test_file).encode(u'utf8')
-    test_path_length = len(test_path)
+    self._tsk_path_spec_dict = {
+        u'inode': 16,
+        u'location': u'/a_directory/another_file',
+        u'parent': {
+            u'store_index': 1, 
+            u'parent': {
+                u'parent': {
+                    u'location': os.path.abspath(test_file)}
+            }
+        }
+    }
 
-    if test_path_length < 228:
-      self._proto_string = (
-          b'\n{0:s}\n{1:s}\n{2:s}'
-          b'\x12\x02OS2{3:s}{4:s}'
-          b'\x12\x04QCOW'
-          b'\x12\x07VSHADOWX\x01'
-          b'\x12\x03TSK(\x102\x19/a_directory/another_file').format(
-              chr(test_path_length + 27), chr(test_path_length + 14),
-              chr(test_path_length + 6), chr(test_path_length), test_path)
+  def testReadAndWriteSerializedObject(self):
+    """Test the ReadSerializedObject and WriteSerializedObject functions."""
+    serialized_path_spec = (
+        serializer.ProtobufPathSpecSerializer.WriteSerializedObject(
+            self._tsk_path_spec))
 
-      self._proto = transmission_pb2.PathSpec()
-      self._proto.ParseFromString(self._proto_string)
+    self.assertIsNotNone(serialized_path_spec)
 
-  def testReadSerialized(self):
-    """Test the read serialized functionality."""
-    if self._proto:
-      path_spec = serializer.ProtobufPathSpecSerializer.ReadSerializedObject(
-          self._proto)
-      self.assertEqual(path_spec.comparable, self._tsk_path_spec.comparable)
+    path_spec = serializer.ProtobufPathSpecSerializer.ReadSerializedObject(
+        serialized_path_spec)
 
-  def testWriteSerialized(self):
-    """Test the write serialized functionality."""
-    if self._proto:
-      serialized = serializer.ProtobufPathSpecSerializer.WriteSerializedObject(
-          self._tsk_path_spec)
+    self.assertIsNotNone(path_spec)
 
-      self.assertEqual(serialized, self._proto)
+    path_spec_dict = path_spec.CopyToDict()
+    self.assertEqual(sorted(path_spec_dict), sorted(self._tsk_path_spec_dict))
 
 
 if __name__ == '__main__':

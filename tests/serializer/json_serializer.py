@@ -30,47 +30,32 @@ class JsonPathSpecSerializerTest(unittest.TestCase):
         inode=16, location=u'/a_directory/another_file',
         parent=self._vshadow_path_spec)
 
-    test_path = os.path.abspath(test_file)
-
-    self._json_dict = {
-        u'__type__': u'PathSpec',
-        u'type_indicator': u'TSK',
-        u'location': u'/a_directory/another_file',
+    self._tsk_path_spec_dict = {
         u'inode': 16,
+        u'location': u'/a_directory/another_file',
         u'parent': {
-            u'__type__': u'PathSpec',
-            u'type_indicator': u'VSHADOW',
-            u'store_index': 1,
+            u'store_index': 1, 
             u'parent': {
-                u'__type__': u'PathSpec',
-                u'type_indicator': u'QCOW',
                 u'parent': {
-                    u'__type__': u'PathSpec',
-                    u'type_indicator': u'OS',
-                    u'location': test_path
-                }
+                    u'location': os.path.abspath(test_file)}
             }
         }
     }
 
-  def testReadSerialized(self):
-    """Test the read serialized functionality."""
-    # We use json.dumps to make sure the dict does not serialize into
-    # an invalid JSON string e.g. one that contains string prefixes
-    # like b'' or u''.
-    serialized = json.dumps(self._json_dict)
-    path_spec = serializer.JsonPathSpecSerializer.ReadSerialized(serialized)
-    self.assertEqual(path_spec.comparable, self._tsk_path_spec.comparable)
-
-  def testWriteSerialized(self):
-    """Test the write serialized functionality."""
-    serialized = serializer.JsonPathSpecSerializer.WriteSerialized(
+  def testReadAndWriteSerialized(self):
+    """Test the ReadSerialized and WriteSerialized function."""
+    serialized_path_spec = serializer.JsonPathSpecSerializer.WriteSerialized(
         self._tsk_path_spec)
 
-    # We use json.loads here to compare dicts since we cannot pre-determine
-    # the actual order of values in the JSON string.
-    json_dict = json.loads(serialized)
-    self.assertEqual(json_dict, self._json_dict)
+    self.assertIsNotNone(serialized_path_spec)
+
+    path_spec = serializer.JsonPathSpecSerializer.ReadSerialized(
+        serialized_path_spec)
+
+    self.assertIsNotNone(path_spec)
+
+    path_spec_dict = path_spec.CopyToDict()
+    self.assertEqual(sorted(path_spec_dict), sorted(self._tsk_path_spec_dict))
 
 
 if __name__ == '__main__':
