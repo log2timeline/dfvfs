@@ -53,7 +53,9 @@ class ProtobufPathSpecSerializerTest(unittest.TestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec_dict = path_spec.CopyToDict()
-    self.assertEqual(sorted(path_spec_dict), sorted(self._tsk_path_spec_dict))
+    self.assertEqual(
+        sorted(path_spec_dict.items()),
+        sorted(self._tsk_path_spec_dict.items()))
 
 
 if __name__ == '__main__':

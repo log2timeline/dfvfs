@@ -5,6 +5,7 @@
 import os
 import unittest
 
+from dfvfs.lib import errors
 from dfvfs.path import bde_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import resolver
@@ -23,8 +24,8 @@ class BDEFileTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(BDEFileTest, self).setUp()
     test_file = os.path.join(u'test_data', u'bdetogo.raw')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=self._os_path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._bde_path_spec, u'password', self._BDE_PASSWORD)
 
@@ -35,6 +36,13 @@ class BDEFileTest(test_lib.ImageFileTestCase):
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
     self._TestOpenCloseLocation(self._bde_path_spec)
+
+    # Try open with a path specification that has no parent.
+    path_spec = bde_path_spec.BDEPathSpec(parent=self._os_path_spec)
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""

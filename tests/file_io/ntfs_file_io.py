@@ -6,6 +6,7 @@ import os
 import unittest
 
 from dfvfs.file_io import ntfs_file_io
+from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
@@ -24,8 +25,9 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
     super(NTFSFileTest, self).setUp()
     self._resolver_context = context.Context()
     test_file = os.path.join(u'test_data', u'vsstest.qcow2')
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
+        parent=self._os_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -50,7 +52,11 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
     self.assertEqual(file_object.get_size(), 116)
     file_object.close()
 
-    # TODO: add a failing scenario.
+    # Try open with a path specification that has no parent.
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
