@@ -294,7 +294,7 @@ def _CheckPythonModule(
   return True
 
 
-def _CheckPytsk():
+def _CheckPyTSK():
   """Checks the availability of pytsk.
 
   Returns:
@@ -341,7 +341,7 @@ def _CheckPytsk():
   return True
 
 
-def _CheckSqlite3():
+def _CheckSQLite3():
   """Checks the availability of sqlite3.
 
   Returns:
@@ -402,10 +402,10 @@ def CheckDependencies(latest_version_check=False):
         values[0], values[1], values[2], maximum_version=values[3]):
       check_result = False
 
-  if not _CheckSqlite3():
+  if not _CheckSQLite3():
     check_result = False
 
-  if not _CheckPytsk():
+  if not _CheckPyTSK():
     check_result = False
 
   libyal_check_result = _CheckLibyal(

@@ -70,7 +70,7 @@ class DataRange(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not self._file_object_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specfication.')
+      raise ValueError(u'Missing path specification.')
 
     if not self._file_object_set_in_init:
       if not path_spec.HasParent():

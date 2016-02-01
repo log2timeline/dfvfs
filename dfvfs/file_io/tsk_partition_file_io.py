@@ -42,7 +42,7 @@ class TSKPartitionFile(data_range_io.DataRange):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specfication.')
+      raise ValueError(u'Missing path specification.')
 
     if not path_spec.HasParent():
       raise errors.PathSpecError(

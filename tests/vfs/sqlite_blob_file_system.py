@@ -11,7 +11,7 @@ from dfvfs.resolver import context
 from dfvfs.vfs import sqlite_blob_file_system
 
 
-class SqliteBlobFileSystemTest(unittest.TestCase):
+class SQLiteBlobFileSystemTest(unittest.TestCase):
   """The unit test for the sqlite blob file system object."""
 
   def setUp(self):

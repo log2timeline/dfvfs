@@ -62,7 +62,7 @@ message PathSpec {
   optional uint64 mft_entry = 18;
 
   // Optional encryption method e.g. used by encrypted stream.
-  optional string encryption_method = 3;
+  optional string encryption_method = 19;
 };
 
 // Components of the row condition tuple used by SQLite Blob

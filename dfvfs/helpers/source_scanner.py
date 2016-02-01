@@ -75,7 +75,7 @@ class SourceScanNode(object):
         return result
 
   def IsSystemLevel(self):
-    """Determines if the path specfication is at system-level."""
+    """Determines if the path specification is at system-level."""
     return self.path_spec.IsSystemLevel()
 
 
