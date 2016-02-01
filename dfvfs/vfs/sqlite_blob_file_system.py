@@ -109,14 +109,3 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
         column_name=self._path_spec.column_name,
         parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
-
-  def GetNumberOfRows(self, path_spec):
-    """Returns the number of rows the table has."""
-    if self._number_of_rows is not None:
-      return self._number_of_rows
-
-    file_object = resolver.Resolver.OpenFileObject(
-        path_spec, resolver_context=self._resolver_context)
-    self._number_of_rows = file_object.GetNumberOfRows()
-    file_object.close()
-    return self._number_of_rows

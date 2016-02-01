@@ -12,7 +12,7 @@ from dfvfs.vfs import sqlite_blob_file_entry
 from dfvfs.vfs import sqlite_blob_file_system
 
 
-class SqliteBlobFileEntryTest(unittest.TestCase):
+class SQLiteBlobFileEntryTest(unittest.TestCase):
   """The unit test for the sqlite blob file entry object."""
 
   def setUp(self):
@@ -26,6 +26,9 @@ class SqliteBlobFileEntryTest(unittest.TestCase):
     self._sqlite_blob_path_spec_2 = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name=u'myblobs', column_name=u'blobs',
         row_index=2, parent=path_spec)
+    self._sqlite_blob_path_spec_directory = (
+        sqlite_blob_path_spec.SQLiteBlobPathSpec(
+            table_name=u'myblobs', column_name=u'blobs', parent=path_spec))
 
     self._file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
@@ -112,7 +115,9 @@ class SqliteBlobFileEntryTest(unittest.TestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._sqlite_blob_path_spec)
+        self._sqlite_blob_path_spec_directory)
+
+    self.assertTrue(file_entry.IsDirectory())
 
     self.assertIsNotNone(file_entry)
 

@@ -93,9 +93,9 @@ class PathSpec(object):
     return path_spec_dict
 
   def HasParent(self):
-    """Determines if the path specfication has a parent."""
+    """Determines if the path specification has a parent."""
     return self.parent is not None
 
   def IsSystemLevel(self):
-    """Determines if the path specfication is at system-level."""
+    """Determines if the path specification is at system-level."""
     return getattr(self, u'_IS_SYSTEM_LEVEL', False)

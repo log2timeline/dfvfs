@@ -51,7 +51,7 @@ class TSKFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specfication.')
+      raise ValueError(u'Missing path specification.')
 
     data_stream = getattr(path_spec, u'data_stream', None)
 
