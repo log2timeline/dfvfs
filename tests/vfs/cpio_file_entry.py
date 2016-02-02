@@ -1,30 +1,30 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the file entry implementation using the tarfile."""
+"""Tests for the file entry implementation using the CPIOArchiveFile."""
 
 import os
 import unittest
 
+from dfvfs.path import cpio_path_spec
 from dfvfs.path import os_path_spec
-from dfvfs.path import tar_path_spec
 from dfvfs.resolver import context
-from dfvfs.vfs import tar_file_entry
-from dfvfs.vfs import tar_file_system
+from dfvfs.vfs import cpio_file_entry
+from dfvfs.vfs import cpio_file_system
 
 
-class TARFileEntryTest(unittest.TestCase):
-  """The unit test for the TAR extracted file entry object."""
+class CPIOFileEntryTest(unittest.TestCase):
+  """The unit test for the CPIO extracted file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.tar')
+    test_file = os.path.join(u'test_data', u'syslog.bin.cpio')
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._tar_path_spec = tar_path_spec.TARPathSpec(
+    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
 
-    self._file_system = tar_file_system.TARFileSystem(self._resolver_context)
-    self._file_system.Open(self._tar_path_spec)
+    self._file_system = cpio_file_system.CPIOFileSystem(self._resolver_context)
+    self._file_system.Open(self._cpio_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -32,14 +32,14 @@ class TARFileEntryTest(unittest.TestCase):
 
   def testIntialize(self):
     """Test the initialize functionality."""
-    file_entry = tar_file_entry.TARFileEntry(
-        self._resolver_context, self._file_system, self._tar_path_spec)
+    file_entry = cpio_file_entry.CPIOFileEntry(
+        self._resolver_context, self._file_system, self._cpio_path_spec)
 
     self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
     """Test the get parent file entry functionality."""
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -52,7 +52,7 @@ class TARFileEntryTest(unittest.TestCase):
 
   def testGetStat(self):
     """Test the get stat functionality."""
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -64,7 +64,7 @@ class TARFileEntryTest(unittest.TestCase):
 
   def testIsFunctions(self):
     """Test the Is? functionality."""
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -80,7 +80,7 @@ class TARFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -98,7 +98,7 @@ class TARFileEntryTest(unittest.TestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -120,7 +120,7 @@ class TARFileEntryTest(unittest.TestCase):
 
   def testDataStreams(self):
     """Test the data streams functionality."""
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -133,7 +133,7 @@ class TARFileEntryTest(unittest.TestCase):
 
     self.assertEqual(data_stream_names, [u''])
 
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -148,7 +148,7 @@ class TARFileEntryTest(unittest.TestCase):
 
   def testGetDataStream(self):
     """Test the retrieve data streams functionality."""
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)

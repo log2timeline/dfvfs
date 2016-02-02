@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
-"""The TAR file system implementation."""
-
-import tarfile
+"""The CPIO file system implementation."""
 
 # This is necessary to prevent a circular import.
-import dfvfs.vfs.tar_file_entry
+import dfvfs.vfs.cpio_file_entry
 
+from dfvfs.lib import cpio
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import tar_path_spec
+from dfvfs.path import cpio_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
 
 
-class TARFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using tarfile."""
+class CPIOFileSystem(file_system.FileSystem):
+  """Class that implements a file system object using CPIOArchiveFile."""
 
   LOCATION_ROOT = u'/'
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_CPIO
 
   def __init__(self, resolver_context, encoding=u'utf-8'):
     """Initializes a file system object.
@@ -26,9 +25,9 @@ class TARFileSystem(file_system.FileSystem):
       resolver_context: the resolver context (instance of resolver.Context).
       encoding: optional file entry name encoding.
     """
-    super(TARFileSystem, self).__init__(resolver_context)
+    super(CPIOFileSystem, self).__init__(resolver_context)
+    self._cpio_archive_file = None
     self._file_object = None
-    self._tar_file = None
     self.encoding = encoding
 
   def _Close(self):
@@ -37,8 +36,8 @@ class TARFileSystem(file_system.FileSystem):
     Raises:
       IOError: if the close failed.
     """
-    self._tar_file.close()
-    self._tar_file = None
+    self._cpio_archive_file.Close()
+    self._cpio_archive_file = None
 
     self._file_object.close()
     self._file_object = None
@@ -63,16 +62,15 @@ class TARFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
+    cpio_archive_file = cpio.CPIOArchiveFile()
     try:
-      # Explicitly tell tarfile not to use compression. Compression should be
-      # handled by the file-like object.
-      tar_file = tarfile.open(mode='r:', fileobj=file_object)
+      cpio_archive_file.Open(file_object)
     except:
       file_object.close()
       raise
 
     self._file_object = file_object
-    self._tar_file = tar_file
+    self._cpio_archive_file = cpio_archive_file
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -83,7 +81,6 @@ class TARFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    tar_info = None
     location = getattr(path_spec, u'location', None)
 
     if (location is None or
@@ -93,12 +90,7 @@ class TARFileSystem(file_system.FileSystem):
     if len(location) == 1:
       return True
 
-    try:
-      tar_info = self._tar_file.getmember(location[1:])
-    except KeyError:
-      pass
-
-    return tar_info is not None
+    return self._cpio_archive_file.FileEntryExistsByPath(location[1:])
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -107,9 +99,9 @@ class TARFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of path.PathSpec).
 
     Returns:
-      A file entry (instance of vfs.TARFileEntry) or None.
+      A file entry (instance of vfs.CPIOFileEntry) or None.
     """
-    tar_info = None
+    cpio_archive_file_entry = None
     location = getattr(path_spec, u'location', None)
 
     if (location is None or
@@ -117,19 +109,17 @@ class TARFileSystem(file_system.FileSystem):
       return
 
     if len(location) == 1:
-      return dfvfs.vfs.tar_file_entry.TARFileEntry(
+      return dfvfs.vfs.cpio_file_entry.CPIOFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
-    try:
-      tar_info = self._tar_file.getmember(location[1:])
-    except KeyError:
-      pass
-
-    if tar_info is None:
+    cpio_archive_file_entry = self._cpio_archive_file.GetFileEntryByPath(
+        location[1:])
+    if cpio_archive_file_entry is None:
       return
-    return dfvfs.vfs.tar_file_entry.TARFileEntry(
-        self._resolver_context, self, path_spec, tar_info=tar_info)
+    return dfvfs.vfs.cpio_file_entry.CPIOFileEntry(
+        self._resolver_context, self, path_spec,
+        cpio_archive_file_entry=cpio_archive_file_entry)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -137,14 +127,14 @@ class TARFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry).
     """
-    path_spec = tar_path_spec.TARPathSpec(
+    path_spec = cpio_path_spec.CPIOPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
 
-  def GetTARFile(self):
-    """Retrieves the TAR file object.
+  def GetCPIOArchiveFile(self):
+    """Retrieves the CPIO archive file object.
 
     Returns:
-      The TAR file object (instance of tarfile.TARFile).
+      The CPIO archvie file object (instance of cpio.CPIOArchiveFile).
     """
-    return self._tar_file
+    return self._cpio_archive_file

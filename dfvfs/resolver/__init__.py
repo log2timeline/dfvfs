@@ -6,6 +6,7 @@ except ImportError:
   pass
 
 from dfvfs.resolver import compressed_stream_resolver_helper
+from dfvfs.resolver import cpio_resolver_helper
 from dfvfs.resolver import data_range_resolver_helper
 from dfvfs.resolver import encoded_stream_resolver_helper
 from dfvfs.resolver import encrypted_stream_resolver_helper
