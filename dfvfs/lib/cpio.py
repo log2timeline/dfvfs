@@ -137,7 +137,7 @@ class CPIOArchiveFile(object):
 
     file_offset += file_entry_struct_size
 
-    if self.file_format in (u'bin-big-endian', u'big-little-endian'):
+    if self.file_format in (u'bin-big-endian', u'bin-little-endian'):
       inode_number = file_entry_struct.inode_number
       mode = file_entry_struct.mode
       user_identifier = file_entry_struct.user_identifier
@@ -176,11 +176,9 @@ class CPIOArchiveFile(object):
 
     # TODO: should this be ASCII?
     path_string = path_string_data.decode(u'ascii')
+    path_string, _, _ = path_string.partition(u'\x00')
 
-    if path_string[-1] == u'\x00':
-      path_string = path_string[:-1]
-
-    if self.file_format in (u'bin-big-endian', u'big-little-endian'):
+    if self.file_format in (u'bin-big-endian', u'bin-little-endian'):
       padding_size = file_offset % 2
       if padding_size > 0:
         padding_size = 2 - padding_size
@@ -228,7 +226,9 @@ class CPIOArchiveFile(object):
         break
 
       if file_entry.path in self._file_entries:
-        self._file_entries[file_entry.path] = file_entry
+        continue
+
+      self._file_entries[file_entry.path] = file_entry
 
   def Close(self):
     """Closes the CPIO archive file."""
@@ -302,6 +302,8 @@ class CPIOArchiveFile(object):
     self._file_entries = {}
     self._file_object = file_object
     self._file_size = file_object.get_size()
+
+    self._ReadFileEntries()
 
   def ReadDataAtOffset(self, file_offset, size):
     """Reads a byte string from the file-like object at a specific offset.

@@ -32,7 +32,7 @@ class CPIODirectory(file_entry.Directory):
     for cpio_archive_file_entry in cpio_archive_file.GetFileEntries(
         path_prefix=location[1:]):
 
-      path = cpio_archive_file_entry.name
+      path = cpio_archive_file_entry.path
       if not path:
         continue
 
@@ -91,18 +91,10 @@ class CPIOFileEntry(file_entry.FileEntry):
     """Retrieves the link.
 
     Raises:
-      BackEndError: when the CPIO archive file entry is missing in
-                    a non-virtual file entry.
+      BackEndError: currently not supported.
     """
-    if self._link is None:
-      cpio_archive_file_entry = self.GetCPIOArchiveFileEntry()
-      if not self._is_virtual and cpio_archive_file_entry is None:
-        raise errors.BackEndError(
-            u'Missing CPIO archive file entry in non-virtual file entry.')
-
-      self._link = cpio_archive_file_entry.linkname
-
-    return self._link
+    raise errors.BackEndError(
+        u'CPIO archive file entry link currently not supported.')
 
   def _GetStat(self):
     """Retrieves the stat object.
@@ -122,15 +114,19 @@ class CPIOFileEntry(file_entry.FileEntry):
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = cpio_archive_file_entry.data_size
+    stat_object.size = getattr(cpio_archive_file_entry, u'data_size', None)
 
     # Date and time stat information.
-    stat_object.mtime = cpio_archive_file_entry.modification_time
+    stat_object.mtime = getattr(
+        cpio_archive_file_entry, u'modification_time', None)
 
     # Ownership and permissions stat information.
-    stat_object.mode = stat.S_IMODE(cpio_archive_file_entry.mode)
-    stat_object.uid = cpio_archive_file_entry.user_identifier
-    stat_object.gid = cpio_archive_file_entry.group_identifier
+    mode = getattr(cpio_archive_file_entry, u'mode', 0)
+    stat_object.mode = stat.S_IMODE(mode)
+    stat_object.uid = getattr(
+        cpio_archive_file_entry, u'user_identifier', None)
+    stat_object.gid = getattr(
+        cpio_archive_file_entry, u'group_identifier', None)
 
     # File entry type stat information.
 
@@ -138,19 +134,18 @@ class CPIOFileEntry(file_entry.FileEntry):
     # LINK and DIRECTORY in case of a symbolic link to a directory
     # dfVFS currently only supports one type so we need to check
     # for LINK first.
-    if stat.S_ISLNK(cpio_archive_file_entry.mode):
+    if stat.S_ISLNK(mode):
       stat_object.type = stat_object.TYPE_LINK
     # The root file entry is virtual and should have type directory.
-    elif self._is_virtual or stat.S_ISDIR(cpio_archive_file_entry.mode):
+    elif self._is_virtual or stat.S_ISDIR(mode):
       stat_object.type = stat_object.TYPE_DIRECTORY
-    elif stat.S_ISREG(cpio_archive_file_entry.mode):
+    elif stat.S_ISREG(mode):
       stat_object.type = stat_object.TYPE_FILE
-    elif (stat.S_ISCHR(cpio_archive_file_entry.mode) or
-          stat.S_ISBLK(cpio_archive_file_entry.mode)):
+    elif (stat.S_ISCHR(mode) or stat.S_ISBLK(mode)):
       stat_object.type = stat_object.TYPE_DEVICE
-    elif stat.S_ISFIFO(cpio_archive_file_entry.mode):
+    elif stat.S_ISFIFO(mode):
       stat_object.type = stat_object.TYPE_PIPE
-    elif stat.S_ISSOCK(cpio_archive_file_entry.mode):
+    elif stat.S_ISSOCK(mode):
       stat_object.type = stat_object.TYPE_SOCKET
 
     return stat_object
