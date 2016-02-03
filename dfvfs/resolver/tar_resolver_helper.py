@@ -38,5 +38,4 @@ class TarResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.tar_file_system.TarFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(TarResolverHelper())

@@ -38,5 +38,4 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.os_file_system.OSFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(OSResolverHelper())

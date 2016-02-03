@@ -38,5 +38,4 @@ class TSKResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.tsk_file_system.TSKFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(TSKResolverHelper())

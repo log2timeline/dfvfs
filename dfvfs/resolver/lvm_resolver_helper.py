@@ -38,5 +38,4 @@ class LVMResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.lvm_file_system.LVMFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(LVMResolverHelper())

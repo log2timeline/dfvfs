@@ -14,5 +14,4 @@ class EncryptedStreamCredentials(credentials.Credentials):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCRYPTED_STREAM
 
 
-# Register the resolver helpers with the resolver.
 manager.CredentialsManager.RegisterCredentials(EncryptedStreamCredentials())
