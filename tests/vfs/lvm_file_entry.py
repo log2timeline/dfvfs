@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the file entry implementation using the pyvslvm."""
+"""Tests for the file entry implementation using pyvslvm."""
 
 import os
 import unittest

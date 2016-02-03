@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the file entry implementation using the pyvshadow."""
+"""Tests for the file entry implementation using pyvshadow."""
 
 import os
 import unittest
