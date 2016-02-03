@@ -91,10 +91,26 @@ class CPIOFileEntry(file_entry.FileEntry):
     """Retrieves the link.
 
     Raises:
-      BackEndError: currently not supported.
+      BackEndError: when the CPIO archive file entry is missing in
+                    a non-virtual file entry.
     """
-    raise errors.BackEndError(
-        u'CPIO archive file entry link currently not supported.')
+    if self._link is None:
+      cpio_archive_file_entry = self.GetCPIOArchiveFileEntry()
+      if not self._is_virtual and cpio_archive_file_entry is None:
+        raise errors.BackEndError(
+            u'Missing CPIO archive file entry in non-virtual file entry.')
+
+      self._link = u''
+      if stat.S_ISLNK(cpio_archive_file_entry.mode): 
+        cpio_archive_file = self._file_system.GetCPIOArchiveFile()
+        link_data = cpio_archive_file.ReadDataAtOffset(
+            cpio_archive_file_entry.data_offset,
+            cpio_archive_file_entry.data_size)
+
+        # TODO: should this be ASCII?
+        self._link = link_data.decode(u'ascii')
+
+    return self._link
 
   def _GetStat(self):
     """Retrieves the stat object.
