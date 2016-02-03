@@ -169,7 +169,12 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
             self._resolver_context, self._file_system, path_spec)
 
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
+    """Retrieves the parent file entry.
+
+    Returns:
+      The parent file entry (instance of FileEntry) or None.
+    """
+    # TODO: implement https://github.com/log2timeline/dfvfs/issues/76.
     return
 
   def GetTSKVsPart(self):

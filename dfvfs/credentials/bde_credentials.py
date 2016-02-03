@@ -19,5 +19,4 @@ class BDECredentials(credentials.Credentials):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 
 
-# Register the resolver helpers with the resolver.
 manager.CredentialsManager.RegisterCredentials(BDECredentials())

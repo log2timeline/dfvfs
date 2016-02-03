@@ -26,5 +26,4 @@ class VMDKResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.file_io.vmdk_file_io.VMDKFile(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(VMDKResolverHelper())

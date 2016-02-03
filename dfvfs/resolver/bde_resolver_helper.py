@@ -38,5 +38,4 @@ class BDEResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.bde_file_system.BDEFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(BDEResolverHelper())

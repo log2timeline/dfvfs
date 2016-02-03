@@ -532,7 +532,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     """Retrieves the parent file entry.
 
     Returns:
-      The parent file entry (instance of NTFSFileEntry) or None.
+      The parent file entry (instance of FileEntry) or None.
 
     Raises:
       BackEndError: if the pyfsntfs file entry is missing.

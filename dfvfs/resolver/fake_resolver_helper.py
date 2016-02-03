@@ -15,5 +15,4 @@ class FakeResolverHelper(resolver_helper.ResolverHelper):
   # should raise RuntimeError.
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(FakeResolverHelper())

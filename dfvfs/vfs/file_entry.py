@@ -301,9 +301,13 @@ class FileEntry(object):
     """Retrieves the linked file entry, e.g. for a symbolic link."""
     return
 
-  @abc.abstractmethod
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
+    """Retrieves the root file entry.
+
+    Returns:
+      The parent file entry (instance of FileEntry) or None.
+    """
+    return
 
   def GetSubFileEntryByName(self, name, case_sensitive=True):
     """Retrieves a sub file entry by name.

@@ -38,5 +38,4 @@ class VShadowResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.vshadow_file_system.VShadowFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(VShadowResolverHelper())

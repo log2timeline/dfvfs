@@ -68,7 +68,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=1, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=1)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -76,7 +76,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=9, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=9)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -104,7 +104,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     self.assertEqual(file_entry.name, u'')
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=1, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=1)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -118,7 +118,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     self.assertEqual(file_entry.name, u'vss2')
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=9, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=9)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)

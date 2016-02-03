@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the partition file entry implementation using the pytsk3."""
+"""Tests for the partition file entry implementation using pytsk3."""
 
 import os
 import unittest

@@ -19,6 +19,11 @@ from dfvfs.resolver import fake_resolver_helper
 from dfvfs.resolver import gzip_resolver_helper
 
 try:
+  from dfvfs.resolver import lvm_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver import ntfs_resolver_helper
 except ImportError:
   pass

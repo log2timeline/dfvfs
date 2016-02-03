@@ -26,5 +26,4 @@ class EWFResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.file_io.ewf_file_io.EWFFile(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(EWFResolverHelper())

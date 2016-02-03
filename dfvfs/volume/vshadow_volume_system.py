@@ -32,8 +32,8 @@ class VShadowVolume(volume_system.Volume):
     self._AddAttribute(volume_system.VolumeAttribute(
         u'creation_time', vshadow_store.get_creation_time_as_integer()))
 
-    self._extents.append(volume_system.VolumeExtent(
-        0, vshadow_store.volume_size))
+    volume_extent = volume_system.VolumeExtent(0, vshadow_store.volume_size)
+    self._extents.append(volume_extent)
 
   def HasExternalData(self):
     """Determines if the volume has external stored data.
@@ -76,7 +76,6 @@ class VShadowVolumeSystem(volume_system.VolumeSystem):
       VolumeSystemError: if the VSS virtual file system could not be resolved.
     """
     self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
-
     if self._file_system is None:
       raise errors.VolumeSystemError(
           u'Unable to resolve file system from path specification.')

@@ -42,9 +42,10 @@ class TSKVolume(volume_system.Volume):
 
     start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
     number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(tsk_vs_part)
-    self._extents.append(volume_system.VolumeExtent(
+    volume_extent = volume_system.VolumeExtent(
         start_sector * self._bytes_per_sector,
-        number_of_sectors * self._bytes_per_sector))
+        number_of_sectors * self._bytes_per_sector)
+    self._extents.append(volume_extent)
 
 
 class TSKVolumeSystem(volume_system.VolumeSystem):
@@ -95,7 +96,6 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
                          be resolved.
     """
     self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
-
     if self._file_system is None:
       raise errors.VolumeSystemError(
           u'Unable to resolve file system from path specification.')

@@ -196,7 +196,11 @@ class TarFileEntry(file_entry.FileEntry):
         yield TarFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
+    """Retrieves the parent file entry.
+
+    Returns:
+      The parent file entry (instance of FileEntry) or None.
+    """
     location = getattr(self.path_spec, u'location', None)
     if location is None:
       return

@@ -38,5 +38,4 @@ class NTFSResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.ntfs_file_system.NTFSFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(NTFSResolverHelper())
