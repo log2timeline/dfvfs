@@ -226,6 +226,7 @@ class CPIOArchiveFile(object):
         break
 
       if file_entry.path in self._file_entries:
+        # TODO: alert on file entries with duplicate paths?
         continue
 
       self._file_entries[file_entry.path] = file_entry
