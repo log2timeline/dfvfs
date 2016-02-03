@@ -38,5 +38,4 @@ class GzipResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.gzip_file_system.GzipFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(GzipResolverHelper())

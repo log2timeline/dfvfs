@@ -26,7 +26,7 @@ class VShadowFileTest(unittest.TestCase):
   def testOpenClose(self):
     """Test the open and close functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=1, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=1)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -34,7 +34,7 @@ class VShadowFileTest(unittest.TestCase):
     file_object.close()
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=13, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=13)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
@@ -65,7 +65,7 @@ class VShadowFileTest(unittest.TestCase):
   def testSeek(self):
     """Test the seek functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=1, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=1)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -110,7 +110,7 @@ class VShadowFileTest(unittest.TestCase):
   def testRead(self):
     """Test the read functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=1, parent=self._qcow_path_spec)
+        parent=self._qcow_path_spec, store_index=1)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)

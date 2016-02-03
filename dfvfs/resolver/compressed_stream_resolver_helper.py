@@ -39,5 +39,4 @@ class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
         resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(CompressedStreamResolverHelper())

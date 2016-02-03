@@ -145,7 +145,11 @@ class FakeFileEntry(file_entry.FileEntry):
     return file_object
 
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
+    """Retrieves the root file entry.
+
+    Returns:
+      The parent file entry (instance of FileEntry) or None.
+    """
     location = getattr(self.path_spec, u'location', None)
     if location is None:
       return

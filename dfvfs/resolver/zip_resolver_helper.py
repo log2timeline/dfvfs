@@ -38,5 +38,4 @@ class ZipResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.vfs.zip_file_system.ZipFileSystem(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(ZipResolverHelper())

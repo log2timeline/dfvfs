@@ -46,8 +46,8 @@ class TSKVolumeSystemTest(unittest.TestCase):
     self.assertEqual(volume_system.number_of_volumes, 2)
 
     volume = volume_system.GetVolumeByIndex(1)
-
     self.assertIsNotNone(volume)
+
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 2)
     self.assertEqual(volume.identifier, u'p2')
@@ -63,7 +63,6 @@ class TSKVolumeSystemTest(unittest.TestCase):
     self.assertEqual(volume_attribute.value, expected_value)
 
     volume = volume_system.GetVolumeByIndex(7)
-
     self.assertIsNone(volume)
 
 

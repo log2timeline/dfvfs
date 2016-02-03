@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the file entry implementation using the pyfsntfs."""
+"""Tests for the file entry implementation using pyfsntfs."""
 
 import os
 import unittest

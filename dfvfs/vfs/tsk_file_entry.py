@@ -501,7 +501,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the parent file entry.
 
     Returns:
-      The parent file entry (instance of TSKFileEntry) or None.
+      The parent file entry (instance of FileEntry) or None.
     """
     location = getattr(self.path_spec, u'location', None)
     if location is None:

@@ -26,5 +26,4 @@ class RawResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.file_io.raw_file_io.RawFile(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(RawResolverHelper())

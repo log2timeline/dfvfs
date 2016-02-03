@@ -26,5 +26,4 @@ class VHDIResolverHelper(resolver_helper.ResolverHelper):
     return dfvfs.file_io.vhdi_file_io.VHDIFile(resolver_context)
 
 
-# Register the resolver helpers with the resolver.
 resolver.Resolver.RegisterHelper(VHDIResolverHelper())

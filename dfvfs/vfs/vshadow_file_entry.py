@@ -148,8 +148,16 @@ class VShadowFileEntry(file_entry.FileEntry):
             self._resolver_context, self._file_system, path_spec)
 
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
-    return
+    """Retrieves the parent file entry.
+
+    Returns:
+      The parent file entry (instance of FileEntry) or None.
+    """
+    store_index = vshadow.VShadowPathSpecGetStoreIndex(self.path_spec)
+    if store_index is None:
+      return
+
+    return self._file_system.GetRootFileEntry()
 
   def GetVShadowStore(self):
     """Retrieves a VSS store.

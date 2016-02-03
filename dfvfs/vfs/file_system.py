@@ -7,6 +7,7 @@ import abc
 class FileSystem(object):
   """Class that implements the VFS file system object interface."""
 
+  LOCATION_ROOT = u'/'
   PATH_SEPARATOR = u'/'
 
   def __init__(self, resolver_context):
