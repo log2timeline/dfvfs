@@ -102,7 +102,7 @@ class VShadowFile(file_io.FileIO):
     Args:
       offset: The offset to seek.
       whence: Optional value that indicates whether offset is an absolute
-              or relative position within the file. Default is SEEK_SET.
+              or relative position within the file.
 
     Raises:
       IOError: if the seek failed.
