@@ -101,7 +101,7 @@ class CPIOFileEntry(file_entry.FileEntry):
             u'Missing CPIO archive file entry in non-virtual file entry.')
 
       self._link = u''
-      if stat.S_ISLNK(cpio_archive_file_entry.mode): 
+      if stat.S_ISLNK(cpio_archive_file_entry.mode):
         cpio_archive_file = self._file_system.GetCPIOArchiveFile()
         link_data = cpio_archive_file.ReadDataAtOffset(
             cpio_archive_file_entry.data_offset,
@@ -157,7 +157,7 @@ class CPIOFileEntry(file_entry.FileEntry):
       stat_object.type = stat_object.TYPE_DIRECTORY
     elif stat.S_ISREG(mode):
       stat_object.type = stat_object.TYPE_FILE
-    elif (stat.S_ISCHR(mode) or stat.S_ISBLK(mode)):
+    elif stat.S_ISCHR(mode) or stat.S_ISBLK(mode):
       stat_object.type = stat_object.TYPE_DEVICE
     elif stat.S_ISFIFO(mode):
       stat_object.type = stat_object.TYPE_PIPE
