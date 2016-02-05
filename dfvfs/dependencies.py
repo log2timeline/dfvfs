@@ -37,6 +37,9 @@ PYTHON_DEPENDENCIES = [
     (u'google.protobuf', u'', u'', None),
     (u'six', u'__version__', u'1.1.0', None)]
 
+# Optional import for now.
+# (u'lzma', None, None, None),
+
 _VERSION_SPLIT_REGEX = re.compile(r'\.|\-')
 
 

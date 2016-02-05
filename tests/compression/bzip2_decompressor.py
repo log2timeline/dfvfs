@@ -9,12 +9,12 @@ from dfvfs.lib import errors
 from tests.compression import test_lib
 
 
-class Bzip2DecompressorTestCase(test_lib.DecompressorTestCase):
+class BZIP2DecompressorTestCase(test_lib.DecompressorTestCase):
   """Tests for the bzip2 decompressor object."""
 
   def testDecompress(self):
     """Tests the Decompress method."""
-    decompressor = bzip2_decompressor.Bzip2Decompressor()
+    decompressor = bzip2_decompressor.BZIP2Decompressor()
 
     compressed_data = (
         b'BZh91AY&SYa\x0e\xf5A\x00\x00\x02\x13\x80@\x01\x04\x00"`\x0c\x00 '
@@ -29,7 +29,7 @@ class Bzip2DecompressorTestCase(test_lib.DecompressorTestCase):
       _, _ = decompressor.Decompress(b'This is a test.')
 
     # Test to trigger bz2 raising IOError.
-    decompressor = bzip2_decompressor.Bzip2Decompressor()
+    decompressor = bzip2_decompressor.BZIP2Decompressor()
 
     with self.assertRaises(errors.BackEndError):
       _, _ = decompressor.Decompress(b'This is a test.')

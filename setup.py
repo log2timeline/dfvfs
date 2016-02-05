@@ -62,6 +62,7 @@ class BdistRPMCommand(bdist_rpm):
 
       elif line.startswith('Requires: '):
         if python_package == 'python3':
+          line = line.replace('python-backports-lzma', '')
           line = line.replace('python', 'python3')
 
       elif line.startswith('%description'):

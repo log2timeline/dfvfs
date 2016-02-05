@@ -7,7 +7,7 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class Bzip2AnalyzerHelper(analyzer_helper.AnalyzerHelper):
+class BZIP2AnalyzerHelper(analyzer_helper.AnalyzerHelper):
   """Class that implements the BZIP2 analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
@@ -30,4 +30,4 @@ class Bzip2AnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(Bzip2AnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(BZIP2AnalyzerHelper())
