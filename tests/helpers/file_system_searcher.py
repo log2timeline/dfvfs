@@ -260,6 +260,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         os.path.join(self._os_path, u'syslog.rc4'),
         os.path.join(self._os_path, u'syslog.tar'),
         os.path.join(self._os_path, u'syslog.tgz'),
+        os.path.join(self._os_path, u'syslog.xz'),
         os.path.join(self._os_path, u'syslog.Z'),
         os.path.join(self._os_path, u'syslog.zip'),
         os.path.join(self._os_path, u'syslog.zlib')])
@@ -310,6 +311,7 @@ class FileSystemSearcherTest(unittest.TestCase):
         os.path.join(self._os_path, u'syslog.rc4'),
         os.path.join(self._os_path, u'syslog.tar'),
         os.path.join(self._os_path, u'syslog.tgz'),
+        os.path.join(self._os_path, u'syslog.xz'),
         os.path.join(self._os_path, u'syslog.Z'),
         os.path.join(self._os_path, u'syslog.zip'),
         os.path.join(self._os_path, u'syslog.zlib')])
