@@ -224,6 +224,8 @@ class CodeReviewHelper(CLIHelper):
           u'\n')
       print(u'Enter access token:', end=u' ')
 
+      sys.stdout.flush()
+
     exit_code, output, _ = self.RunCommand(command)
     print(output)
 
@@ -233,9 +235,10 @@ class CodeReviewHelper(CLIHelper):
     issue_url_line_start = (
         u'Issue created. URL: http://codereview.appspot.com/')
     for line in output.split(b'\n'):
-      if line.startswith(issue_url_line_start):
+      if issue_url_line_start in line:
+        _, _, issue_number = line.rpartition(issue_url_line_start)
         try:
-          return int(line[len(issue_url_line_start):], 10)
+          return int(issue_number, 10)
         except ValueError:
           pass
 
@@ -934,7 +937,7 @@ class ProjectHelper(object):
     dpkg_maintainter = u'Log2Timeline <log2timeline-dev@googlegroups.com>'
     dpkg_date = time.strftime(u'%a, %d %b %Y %H:%M:%S %z')
     dpkg_changelog_content = u'\n'.join([
-        u'{0:s} ({1:s}-1) unstable; urgency=low'.format(
+        u'python-{0:s} ({1:s}-1) unstable; urgency=low'.format(
             project_name, project_version),
         u'',
         u'  * Auto-generated',
@@ -1265,7 +1268,8 @@ class ReviewHelper(object):
   """Class that defines review helper functions."""
 
   def __init__(
-      self, command, github_origin, feature_branch, diffbase, no_browser=False):
+      self, command, github_origin, feature_branch, diffbase, no_browser=False,
+      no_confirm=False):
     """Initializes a revies helper object.
 
     Args:
@@ -1276,6 +1280,8 @@ class ReviewHelper(object):
       no_browser: optional boolean value to indicate if the functionality
                   to use the webbrowser to get the OAuth token should be
                   disabled.
+      no_confirm: optional boolean value to indicate if the defaults should
+                  be applied without confirmation.
     """
     super(ReviewHelper, self).__init__()
     self._active_branch = None
@@ -1292,6 +1298,7 @@ class ReviewHelper(object):
     self._merge_author = None
     self._merge_description = None
     self._no_browser = no_browser
+    self._no_confirm = no_confirm
     self._project_helper = None
     self._project_name = None
     self._sphinxapidoc_helper = None
@@ -1438,10 +1445,13 @@ class ReviewHelper(object):
     print(last_commit_message)
     print(u'')
 
-    print(u'Enter a description for the code review or hit enter to use the')
-    print(u'automatic generated one:')
-    user_input = sys.stdin.readline()
-    user_input = user_input.strip()
+    if self._no_confirm:
+      user_input = None
+    else:
+      print(u'Enter a description for the code review or hit enter to use the')
+      print(u'automatic generated one:')
+      user_input = sys.stdin.readline()
+      user_input = user_input.strip()
 
     if not user_input:
       description = last_commit_message
@@ -1716,10 +1726,13 @@ class ReviewHelper(object):
     print(last_commit_message)
     print(u'')
 
-    print(u'Enter a description for the update or hit enter to use the')
-    print(u'automatic generated one:')
-    user_input = sys.stdin.readline()
-    user_input = user_input.strip()
+    if self._no_confirm:
+      user_input = None
+    else:
+      print(u'Enter a description for the update or hit enter to use the')
+      print(u'automatic generated one:')
+      user_input = sys.stdin.readline()
+      user_input = user_input.strip()
 
     if not user_input:
       description = last_commit_message
@@ -1769,6 +1782,12 @@ def Main():
       action=u'store_true', default=False, help=(
           u'disable the functionality to use the webbrowser to get the OAuth '
           u'token should be disabled.'))
+
+  argument_parser.add_argument(
+      u'--noconfirm', u'--no-confirm', u'--no_confirm', dest=u'no_confirm',
+      action=u'store_true', default=False, help=(
+          u'do not ask for confirmation apply defaults.\n'
+          u'WARNING: only use this when you are familiar with the defaults.'))
 
   commands_parser = argument_parser.add_subparsers(dest=u'command')
 
@@ -1863,7 +1882,8 @@ def Main():
 
   review_helper = ReviewHelper(
       options.command, github_origin, feature_branch,
-      options.diffbase, no_browser=options.no_browser)
+      options.diffbase, no_browser=options.no_browser,
+      no_confirm=options.no_confirm)
 
   if not review_helper.InitializeHelpers():
     return False
