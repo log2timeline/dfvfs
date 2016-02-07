@@ -7,7 +7,7 @@ from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 
-class TarAnalyzerHelper(analyzer_helper.AnalyzerHelper):
+class TARAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   """Class that implements the TAR analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
@@ -30,4 +30,4 @@ class TarAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 # Register the analyzer helpers with the analyzer.
-analyzer.Analyzer.RegisterHelper(TarAnalyzerHelper())
+analyzer.Analyzer.RegisterHelper(TARAnalyzerHelper())

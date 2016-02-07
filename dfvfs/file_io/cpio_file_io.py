@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The TAR extracted file-like object implementation."""
-
-# Note: that tarfile.ExFileObject is not POSIX compliant for seeking
-# beyond the file size, hence it is wrapped in an instance of file_io.FileIO.
+"""The CPIO extracted file-like object implementation."""
 
 import os
 
@@ -10,8 +7,8 @@ from dfvfs.file_io import file_io
 from dfvfs.resolver import resolver
 
 
-class TARFile(file_io.FileIO):
-  """Class that implements a file-like object using tarfile."""
+class CPIOFile(file_io.FileIO):
+  """Class that implements a file-like object using CPIOArchiveFile."""
 
   def __init__(self, resolver_context):
     """Initializes the file-like object.
@@ -19,11 +16,12 @@ class TARFile(file_io.FileIO):
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
     """
-    super(TARFile, self).__init__(resolver_context)
+    super(CPIOFile, self).__init__(resolver_context)
+    self._cpio_archive_file = None
+    self._cpio_archive_file_entry = None
     self._current_offset = 0
     self._file_system = None
     self._size = 0
-    self._tar_ext_file = None
 
   def _Close(self):
     """Closes the file-like object.
@@ -35,8 +33,8 @@ class TARFile(file_io.FileIO):
     Raises:
       IOError: if the close failed.
     """
-    self._tar_ext_file.close()
-    self._tar_ext_file = None
+    self._cpio_archive_file_entry = None
+    self._cpio_archive_file = None
 
     self._file_system.Close()
     self._file_system = None
@@ -66,13 +64,10 @@ class TARFile(file_io.FileIO):
       raise IOError(u'Unable to retrieve file entry.')
 
     self._file_system = file_system
-    tar_file = self._file_system.GetTARFile()
-    tar_info = file_entry.GetTARInfo()
-
-    self._tar_ext_file = tar_file.extractfile(tar_info)
+    self._cpio_archive_file = self._file_system.GetCPIOArchiveFile()
+    self._cpio_archive_file_entry = file_entry.GetCPIOArchiveFileEntry()
 
     self._current_offset = 0
-    self._size = tar_info.size
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -96,18 +91,17 @@ class TARFile(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    if self._current_offset < 0:
-      raise IOError(u'Invalid current offset value less than zero.')
-
-    if self._current_offset > self._size:
+    if self._current_offset >= self._cpio_archive_file_entry.data_size:
       return b''
 
-    if size is None or self._current_offset + size > self._size:
-      size = self._size - self._current_offset
+    file_offset = (
+        self._cpio_archive_file_entry.data_offset + self._current_offset)
 
-    self._tar_ext_file.seek(self._current_offset, os.SEEK_SET)
+    read_size = self._cpio_archive_file_entry.data_size - self._current_offset
+    if read_size > size:
+      read_size = size
 
-    data = self._tar_ext_file.read(size)
+    data = self._cpio_archive_file.ReadDataAtOffset(file_offset, read_size)
 
     # It is possible the that returned data size is not the same as the
     # requested data size. At this layer we don't care and this discrepancy
@@ -122,7 +116,7 @@ class TARFile(file_io.FileIO):
     Args:
       offset: the offset to seek.
       whence: optional value that indicates whether offset is an absolute
-              or relative position within the file.
+              or relative position within the file. Default is SEEK_SET.
 
     Raises:
       IOError: if the seek failed.
@@ -133,7 +127,7 @@ class TARFile(file_io.FileIO):
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
-      offset += self._size
+      offset += self._cpio_archive_file_entry.data_size
     elif whence != os.SEEK_SET:
       raise IOError(u'Unsupported whence.')
 
@@ -162,4 +156,4 @@ class TARFile(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._size
+    return self._cpio_archive_file_entry.data_size
