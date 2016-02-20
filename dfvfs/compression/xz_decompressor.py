@@ -4,6 +4,7 @@
 import lzma
 
 # Note we have to handle different versions of the lzma code.
+# pylint: disable=no-name-in-module
 try:
   from lzma import LZMAError
 except ImportError:
