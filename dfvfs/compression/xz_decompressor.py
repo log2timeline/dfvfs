@@ -3,6 +3,12 @@
 
 import lzma
 
+# Note we have to handle different versions of the lzma code.
+try:
+  from lzma import LZMAError
+except ImportError:
+  from lzma import error as LZMAError
+
 from dfvfs.compression import decompressor
 from dfvfs.compression import manager
 from dfvfs.lib import definitions
@@ -34,12 +40,14 @@ class XZDecompressor(decompressor.Decompressor):
       BackEndError: if the XZ compressed stream cannot be decompressed.
     """
     try:
+      # Note that we cannot use max_length=0 here due to different
+      # versions of the lzma code.
       uncompressed_data = self._lzma_decompressor.decompress(
-          compressed_data)
+          compressed_data, 0)
       remaining_compressed_data = getattr(
           self._lzma_decompressor, u'unused_data', b'')
 
-    except (EOFError, IOError, lzma.LZMAError) as exception:
+    except (EOFError, IOError, LZMAError) as exception:
       raise errors.BackEndError((
           u'Unable to decompress XZ compressed stream with error: '
           u'{0!s}.').format(exception))
