@@ -21,7 +21,7 @@ class EncryptedStreamFileSystemTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.base64')
+    test_file = os.path.join(u'test_data', u'syslog.rc4')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(

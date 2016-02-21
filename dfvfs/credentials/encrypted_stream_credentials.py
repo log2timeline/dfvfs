@@ -9,7 +9,7 @@ from dfvfs.lib import definitions
 class EncryptedStreamCredentials(credentials.Credentials):
   """Class that implements the encrypted stream credentials object."""
 
-  CREDENTIALS = frozenset([u'key'])
+  CREDENTIALS = frozenset([u'key', u'mode', u'initialization_vector'])
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCRYPTED_STREAM
 

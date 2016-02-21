@@ -18,7 +18,7 @@ class RC4Decrypter(decrypter.Decrypter):
 
     Args:
       key: optional binary string containing the key.
-      kwargs: a dictionary of keyword arguments dependending on the decrypter.
+      kwargs: a dictionary of keyword arguments depending on the decrypter.
 
     Raises:
       ValueError: when key is not set.
@@ -30,7 +30,7 @@ class RC4Decrypter(decrypter.Decrypter):
     self._rc4_cipher = ARC4.new(key)
 
   def Decrypt(self, encrypted_data):
-    """Decrypt the encrypted data.
+    """Decrypts the encrypted data.
 
     Args:
       encrypted_data: a byte string containing the encrypted data.
@@ -43,5 +43,4 @@ class RC4Decrypter(decrypter.Decrypter):
     return decrypted_data, b''
 
 
-# Register the decrypter with the encryption manager.
 manager.EncryptionManager.RegisterDecrypter(RC4Decrypter)

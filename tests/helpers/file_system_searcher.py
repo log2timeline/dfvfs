@@ -244,13 +244,16 @@ class FileSystemSearcherTest(unittest.TestCase):
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = sorted([
+        os.path.join(self._os_path, u'syslog.aes'),
         os.path.join(self._os_path, u'syslog.base16'),
         os.path.join(self._os_path, u'syslog.base32'),
         os.path.join(self._os_path, u'syslog.base64'),
         os.path.join(self._os_path, u'syslog.bin.cpio'),
+        os.path.join(self._os_path, u'syslog.blowfish'),
         os.path.join(self._os_path, u'syslog.bz2'),
         os.path.join(self._os_path, u'syslog.crc.cpio'),
         os.path.join(self._os_path, u'syslog.db'),
+        os.path.join(self._os_path, u'syslog.des3'),
         os.path.join(self._os_path, u'syslog.gz'),
         os.path.join(self._os_path, u'syslog.newc.cpio'),
         os.path.join(self._os_path, u'syslog.odc.cpio'),
@@ -291,13 +294,16 @@ class FileSystemSearcherTest(unittest.TestCase):
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = sorted([
+        os.path.join(self._os_path, u'syslog.aes'),
         os.path.join(self._os_path, u'syslog.base16'),
         os.path.join(self._os_path, u'syslog.base32'),
         os.path.join(self._os_path, u'syslog.base64'),
         os.path.join(self._os_path, u'syslog.bin.cpio'),
+        os.path.join(self._os_path, u'syslog.blowfish'),
         os.path.join(self._os_path, u'syslog.bz2'),
         os.path.join(self._os_path, u'syslog.crc.cpio'),
         os.path.join(self._os_path, u'syslog.db'),
+        os.path.join(self._os_path, u'syslog.des3'),
         os.path.join(self._os_path, u'syslog.gz'),
         os.path.join(self._os_path, u'syslog.newc.cpio'),
         os.path.join(self._os_path, u'syslog.odc.cpio'),

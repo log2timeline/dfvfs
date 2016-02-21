@@ -11,7 +11,7 @@ class Decrypter(object):
     """Initializes the decrypter object.
 
     Args:
-      kwargs: a dictionary of keyword arguments dependending on the decrypter.
+      kwargs: a dictionary of keyword arguments depending on the decrypter.
 
     Raises:
       ValueError: when there are unused keyword arguments.

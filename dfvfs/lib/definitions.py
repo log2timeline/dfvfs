@@ -12,7 +12,16 @@ ENCODING_METHOD_BASE32 = u'base32'
 ENCODING_METHOD_BASE64 = u'base64'
 
 # The encryption method definitions.
+ENCRYPTION_METHOD_AES = u'aes'
+ENCRYPTION_METHOD_BLOWFISH = u'blowfish'
+ENCRYPTION_METHOD_DES3 = u'des3'
 ENCRYPTION_METHOD_RC4 = u'rc4'
+
+# The encryption mode of operations.
+ENCRYPTION_MODE_CBC = u'cbc'
+ENCRYPTION_MODE_CFB = u'cfb'
+ENCRYPTION_MODE_ECB = u'ecb'
+ENCRYPTION_MODE_OFB = u'ofb'
 
 # The type indicator definitions.
 TYPE_INDICATOR_BDE = u'BDE'
