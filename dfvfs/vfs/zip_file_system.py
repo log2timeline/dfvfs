@@ -14,20 +14,26 @@ from dfvfs.vfs import file_system
 
 
 class ZipFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using zipfile."""
+  """Class that implements a file system object using zipfile.
+
+  Attributes:
+    encoding: string containing the file entry name encoding.
+  """
 
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, encoding=u'utf-8'):
     """Initializes a file system object.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
+      encoding: optional string containing file entry name encoding.
     """
     super(ZipFileSystem, self).__init__(resolver_context)
     self._file_object = None
     self._zip_file = None
+    self.encoding = encoding
 
   def _Close(self):
     """Closes the file system object.

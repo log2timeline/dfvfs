@@ -51,6 +51,8 @@ class ZipFileTest(test_lib.SylogTestCase):
 
     file_object.close()
 
+    # TODO: add tests for read > UNCOMPRESSED_DATA_BUFFER_SIZE
+
 
 if __name__ == '__main__':
   unittest.main()

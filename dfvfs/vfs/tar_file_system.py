@@ -14,7 +14,11 @@ from dfvfs.vfs import file_system
 
 
 class TARFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using tarfile."""
+  """Class that implements a file system object using tarfile.
+
+  Attributes:
+    encoding: string containing the file entry name encoding.
+  """
 
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
@@ -24,7 +28,7 @@ class TARFileSystem(file_system.FileSystem):
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      encoding: optional file entry name encoding.
+      encoding: optional string containing file entry name encoding.
     """
     super(TARFileSystem, self).__init__(resolver_context)
     self._file_object = None

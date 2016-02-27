@@ -99,6 +99,8 @@ class ZipFile(file_io.FileIO):
     self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
 
     self._uncompressed_data = b''
+    self._uncompressed_data_size = 0
+    self._uncompressed_data_offset = 0
 
     while uncompressed_data_offset > 0:
       self._ReadCompressedData(self._UNCOMPRESSED_DATA_BUFFER_SIZE)
@@ -156,10 +158,11 @@ class ZipFile(file_io.FileIO):
 
     uncompressed_data = b''
 
+    # Read in full blocks of uncompressed data.
     while self._uncompressed_data_offset + size > self._uncompressed_data_size:
       uncompressed_data = b''.join([
           uncompressed_data,
-          self._uncompressed_data[self._uncompressed_data_offset]])
+          self._uncompressed_data[self._uncompressed_data_offset:]])
 
       remaining_uncompressed_data_size = (
           self._uncompressed_data_size - self._uncompressed_data_offset)
@@ -171,6 +174,7 @@ class ZipFile(file_io.FileIO):
 
       self._uncompressed_data_offset = 0
 
+    # Read in partial block of uncompressed data.
     if (size > 0 and
         self._uncompressed_data_offset + size <= self._uncompressed_data_size):
       slice_start_offset = self._uncompressed_data_offset

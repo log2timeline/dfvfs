@@ -157,11 +157,11 @@ class FileSystem(object):
     Returns:
       A tuple containing the path segment and suffix string.
     """
-    if not path or not base_path or not path.startswith(base_path):
+    if path is None or base_path is None or not path.startswith(base_path):
       return None, None
 
     path_index = len(base_path)
-    if not base_path.endswith(self.PATH_SEPARATOR):
+    if base_path and not base_path.endswith(self.PATH_SEPARATOR):
       path_index += 1
 
     if path_index == len(path):
