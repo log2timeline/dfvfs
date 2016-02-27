@@ -7,14 +7,23 @@ import argparse
 import json
 import logging
 import os
+import re
 import shlex
 import subprocess
 import sys
 import time
-import urllib
-# Use urllib2 here since this code should be able to be used by a default
-# Python set up. Otherwise usage of requests is preferred.
-import urllib2
+
+# pylint: disable=no-name-in-module
+if sys.version_info[0] < 3:
+  # Use urllib2 here since this code should be able to be used by a default
+  # Python set up. Otherwise usage of requests is preferred.
+  import urllib as  urllib_parse
+  import urllib2 as urllib_error
+  import urllib2 as urllib_request
+else:
+  import urllib.error as urllib_error
+  import urllib.parse as urllib_parse
+  import urllib.request as urllib_request
 
 # Change PYTHONPATH to include utils.
 sys.path.insert(0, u'.')
@@ -76,15 +85,18 @@ class CodeReviewHelper(CLIHelper):
     self._upload_py_path = os.path.join(u'utils', u'upload.py')
     self._xsrf_token = None
 
-  def AddCommitMessage(self, issue_number, message):
-    """Adds a commit message to the code review message.
+  def AddMergeMessage(self, issue_number, message):
+    """Adds a merge message to the code review issue.
+
+    Where the merge is a commit to the main project git repository.
 
     Args:
       issue_number: an integer or string containing the codereview
                     issue number.
+      message: a string containing the message to add to the code review issue.
 
     Returns:
-      A boolean indicating the commit message was added to
+      A boolean indicating the merge message was added to
       the code review issue.
     """
     codereview_access_token = self.GetAccessToken()
@@ -95,7 +107,7 @@ class CodeReviewHelper(CLIHelper):
     codereview_url = b'https://codereview.appspot.com/{0!s}/publish'.format(
         issue_number)
 
-    post_data = urllib.urlencode({
+    post_data = urllib_parse.urlencode({
         u'add_as_reviewer': u'False',
         u'message': message,
         u'message_only': u'True',
@@ -103,7 +115,7 @@ class CodeReviewHelper(CLIHelper):
         u'send_mail': 'True',
         u'xsrf_token': xsrf_token})
 
-    request = urllib2.Request(codereview_url)
+    request = urllib_request.Request(codereview_url)
 
     # Add header: Authorization: OAuth <codereview access token>
     request.add_header(
@@ -113,8 +125,8 @@ class CodeReviewHelper(CLIHelper):
     request.add_data(post_data)
 
     try:
-      url_object = urllib2.urlopen(request)
-    except urllib2.HTTPError as exception:
+      url_object = urllib_request.urlopen(request)
+    except urllib_error.HTTPError as exception:
       logging.error(
           u'Failed publish to codereview issue: {0!s} with error: {1:s}'.format(
               issue_number, exception))
@@ -146,10 +158,10 @@ class CodeReviewHelper(CLIHelper):
     codereview_url = b'https://codereview.appspot.com/{0!s}/close'.format(
         issue_number)
 
-    post_data = urllib.urlencode({
+    post_data = urllib_parse.urlencode({
         u'xsrf_token': xsrf_token})
 
-    request = urllib2.Request(codereview_url)
+    request = urllib_request.Request(codereview_url)
 
     # Add header: Authorization: OAuth <codereview access token>
     request.add_header(
@@ -159,8 +171,8 @@ class CodeReviewHelper(CLIHelper):
     request.add_data(post_data)
 
     try:
-      url_object = urllib2.urlopen(request)
-    except urllib2.HTTPError as exception:
+      url_object = urllib_request.urlopen(request)
+    except urllib_error.HTTPError as exception:
       logging.error(
           u'Failed closing codereview issue: {0!s} with error: {1:s}'.format(
               issue_number, exception))
@@ -270,7 +282,7 @@ class CodeReviewHelper(CLIHelper):
 
       codereview_url = b'https://codereview.appspot.com/xsrf_token'
 
-      request = urllib2.Request(codereview_url)
+      request = urllib_request.Request(codereview_url)
 
       # Add header: Authorization: OAuth <codereview access token>
       request.add_header(
@@ -278,8 +290,8 @@ class CodeReviewHelper(CLIHelper):
       request.add_header(u'X-Requesting-XSRF-Token', u'1')
 
       try:
-        url_object = urllib2.urlopen(request)
-      except urllib2.HTTPError as exception:
+        url_object = urllib_request.urlopen(request)
+      except urllib_error.HTTPError as exception:
         logging.error(
             u'Failed retrieving codereview XSRF token with error: {0:s}'.format(
                 exception))
@@ -329,11 +341,11 @@ class CodeReviewHelper(CLIHelper):
     codereview_url = b'https://codereview.appspot.com/api/{0!s}'.format(
         issue_number)
 
-    request = urllib2.Request(codereview_url)
+    request = urllib_request.Request(codereview_url)
 
     try:
-      url_object = urllib2.urlopen(request)
-    except urllib2.HTTPError as exception:
+      url_object = urllib_request.urlopen(request)
+    except urllib_error.HTTPError as exception:
       logging.error(
           u'Failed querying codereview issue: {0!s} with error: {1:s}'.format(
               issue_number, exception))
@@ -769,14 +781,14 @@ class GitHubHelper(object):
         u'access_token={2:s}').format(
             self._organization, self._project, access_token)
 
-    request = urllib2.Request(github_url)
+    request = urllib_request.Request(github_url)
 
     # This will change the request into a POST.
     request.add_data(post_data)
 
     try:
-      url_object = urllib2.urlopen(request)
-    except urllib2.HTTPError as exception:
+      url_object = urllib_request.urlopen(request)
+    except urllib_error.HTTPError as exception:
       logging.error(
           u'Failed creating pull request: {0!s} with error: {1:s}'.format(
               codereview_issue_number, exception))
@@ -812,11 +824,11 @@ class GitHubHelper(object):
     """
     github_url = b'https://api.github.com/users/{0:s}'.format(username)
 
-    request = urllib2.Request(github_url)
+    request = urllib_request.Request(github_url)
 
     try:
-      url_object = urllib2.urlopen(request)
-    except urllib2.HTTPError as exception:
+      url_object = urllib_request.urlopen(request)
+    except urllib_error.HTTPError as exception:
       logging.error(
           u'Failed querying github user: {0:s} with error: {1:s}'.format(
               username, exception))
@@ -835,8 +847,8 @@ class GitHubHelper(object):
 class ProjectHelper(object):
   """Class that defines project helper functions."""
 
-  _SUPPORTED_PROJECTS = frozenset([
-      u'dfvfs', u'dfwinreg', u'l2tdevtools', u'plaso'])
+  SUPPORTED_PROJECTS = frozenset([
+      u'dfvfs', u'dfwinreg', u'l2tdevtools', u'l2tdocs', u'plaso'])
 
   def __init__(self):
     """Initializes a project helper object."""
@@ -878,26 +890,33 @@ class ProjectHelper(object):
 
     return version_file_contents
 
-  def GetName(self):
+  def GetName(self, path=None):
     """Retrieves the project name from the path of the script.
+
+    Args:
+      path: optional path to the script. If None, __file__ will be used instead.
 
     Returns:
       A string containing the project name or None.
     """
-    if not self._project_name:
-      project_name = os.path.abspath(__file__)
-      project_name = os.path.dirname(project_name)
-      project_name = os.path.dirname(project_name)
-      project_name = os.path.basename(project_name)
+    if self._project_name:
+      return self._project_name
 
-      if project_name not in self._SUPPORTED_PROJECTS:
-        logging.error(
-            u'Unsupported project name: {0:s}.'.format(project_name))
-        return
+    if not path:
+      path = os.path.abspath(__file__)
+    project_name = path
+    project_name = os.path.dirname(project_name)
+    project_name = os.path.dirname(project_name)
+    project_name = os.path.basename(project_name)
 
-      self._project_name = project_name
+    for supported_project_name in self.SUPPORTED_PROJECTS:
+      if supported_project_name in project_name:
+        self._project_name = supported_project_name
+        return self._project_name
 
-    return self._project_name
+    logging.error(
+        u'Unsupported project name: {0:s}.'.format(project_name))
+    return
 
   def GetVersion(self):
     """Retrieves the project version from the version file.
@@ -937,7 +956,7 @@ class ProjectHelper(object):
     dpkg_maintainter = u'Log2Timeline <log2timeline-dev@googlegroups.com>'
     dpkg_date = time.strftime(u'%a, %d %b %Y %H:%M:%S %z')
     dpkg_changelog_content = u'\n'.join([
-        u'python-{0:s} ({1:s}-1) unstable; urgency=low'.format(
+        u'{0:s} ({1:s}-1) unstable; urgency=low'.format(
             project_name, project_version),
         u'',
         u'  * Auto-generated',
@@ -1081,14 +1100,14 @@ class ReadTheDocsHelper(object):
     readthedocs_url = u'https://readthedocs.org/build/{0:s}'.format(
         self._project)
 
-    request = urllib2.Request(readthedocs_url)
+    request = urllib_request.Request(readthedocs_url)
 
     # This will change the request into a POST.
     request.add_data(b'')
 
     try:
-      url_object = urllib2.urlopen(request)
-    except urllib2.HTTPError as exception:
+      url_object = urllib_request.urlopen(request)
+    except urllib_error.HTTPError as exception:
       logging.error(
           u'Failed triggering build with error: {0:s}'.format(
               exception))
@@ -1232,6 +1251,8 @@ class ReviewFile(object):
   def Create(self, codereview_issue_number):
     """Creates a new review file.
 
+    If the .review directory does not exist, it will be created.
+
     Args:
       codereview_issue_number: an integer or string containing the codereview
                                issue number.
@@ -1239,6 +1260,8 @@ class ReviewFile(object):
     Returns:
       A boolean indicating the review file was created.
     """
+    if not os.path.exists(u'.review'):
+      os.mkdir(u'.review')
     with open(self._path, 'w') as file_object:
       file_object.write(u'{0!s}'.format(codereview_issue_number))
 
@@ -1267,10 +1290,13 @@ class ReviewFile(object):
 class ReviewHelper(object):
   """Class that defines review helper functions."""
 
+  _PROJECT_NAME_PREFIX_REGEX = re.compile(
+      r'\[({0:s})\] '.format(u'|'.join(ProjectHelper.SUPPORTED_PROJECTS)))
+
   def __init__(
       self, command, github_origin, feature_branch, diffbase, no_browser=False,
       no_confirm=False):
-    """Initializes a revies helper object.
+    """Initializes a review helper object.
 
     Args:
       command: string containing the command.
@@ -1458,8 +1484,13 @@ class ReviewHelper(object):
     else:
       description = user_input
 
+    # Prefix the description with the project name for code review to make it
+    # easier to distinguish between projects.
+    code_review_description = u'[{0:s}] {1:s}'.format(
+        self._project_name, description)
+
     codereview_issue_number = self._codereview_helper.CreateIssue(
-        self._diffbase, description)
+        self._diffbase, code_review_description)
     if not codereview_issue_number:
       print(u'{0:s} aborted - unable to create codereview issue.'.format(
           self._command.title()))
@@ -1523,6 +1554,9 @@ class ReviewHelper(object):
     Returns:
       A boolean value to indicate if the lint was successful.
     """
+    if self._project_name == u'l2tdocs':
+      return True
+
     if self._command not in (u'create', u'merge', u'lint', u'update'):
       return True
 
@@ -1601,12 +1635,12 @@ class ReviewHelper(object):
         u'To close the review and clean up the feature branch you can run: '
         u'python ./utils/review.py close {0:s}').format(
             self._fork_feature_branch)
-    self._codereview_helper.AddCommitMessage(
+    self._codereview_helper.AddMergeMessage(
         codereview_issue_number, commit_message)
 
     return True
 
-  def Opens(self, codereview_issue_number):
+  def Open(self, codereview_issue_number):
     """Opens a review.
 
     Args:
@@ -1653,6 +1687,11 @@ class ReviewHelper(object):
               self._command.title(), codereview_issue_number))
       return False
 
+    # When merging remove the project name ("[project]") prefix from
+    # the code review description.
+    self._merge_description = self._PROJECT_NAME_PREFIX_REGEX.sub(
+        u'', self._merge_description)
+
     merge_email_address = codereview_information.get(u'owner_email', None)
     if not merge_email_address:
       print((
@@ -1695,6 +1734,9 @@ class ReviewHelper(object):
     Returns:
       A boolean value to indicate if the test was successful.
     """
+    if self._project_name == u'l2tdocs':
+      return True
+
     if self._command not in (u'create', u'merge', u'test', u'update'):
       return True
 
@@ -1753,6 +1795,9 @@ class ReviewHelper(object):
     Returns:
       A boolean value to indicate if the version update was successful.
     """
+    if self._project_name == u'l2tdocs':
+      return True
+
     if not self._project_helper.UpdateVersionFile():
       print(u'Unable to update version file.')
       return False
