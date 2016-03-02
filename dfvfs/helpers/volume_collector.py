@@ -1,114 +1,32 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Script to recursively calculate a message digest hash for every file."""
-
-# If you update this script make sure to update the corresponding wiki page
-# as well: https://github.com/log2timeline/dfvfs/wiki/Development
+"""Classes to implement a Windows volume collector."""
 
 from __future__ import print_function
-import argparse
 import getpass
-import hashlib
-import logging
 import os
 import sys
 
 from dfvfs.credentials import manager as credentials_manager
-from dfvfs.helpers import source_scanner
-from dfvfs.lib import definitions
+from dfvfs.lib import definitions as definitions
 from dfvfs.lib import errors
+from dfvfs.helpers import source_scanner as source_scanner
+from dfvfs.helpers import windows_path_resolver as windows_path_resolver
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
 
 
-class RecursiveHasher(object):
-  """Class that recursively calculates message digest hashes of files."""
+class CollectorError(Exception):
+  """Class that defines collector errors."""
 
-  # Class constant that defines the default read buffer size.
-  _READ_BUFFER_SIZE = 32768
+
+class VolumeCollectorMediator(object):
+  """Class that defines a volume collector mediator."""
 
   # For context see: http://en.wikipedia.org/wiki/Byte
   _UNITS_1000 = [u'B', u'kB', u'MB', u'GB', u'TB', u'EB', u'ZB', u'YB']
   _UNITS_1024 = [u'B', u'KiB', u'MiB', u'GiB', u'TiB', u'EiB', u'ZiB', u'YiB']
-
-  def __init__(self):
-    """Initializes the recursive hasher object."""
-    super(RecursiveHasher, self).__init__()
-    self._source_scanner = source_scanner.SourceScanner()
-
-  def _CalculateHashFileEntry(self, file_entry, data_stream_name):
-    """Calculates a message digest hash of the data of the file entry.
-
-    Args:
-      file_entry: the file entry (instance of dfvfs.FileEntry).
-      data_stream_name: the data stream name.
-
-    Returns:
-      A binary string containing the digest hash or None.
-    """
-    hash_context = hashlib.md5()
-
-    try:
-      file_object = file_entry.GetFileObject(data_stream_name=data_stream_name)
-    except IOError as exception:
-      logging.warning((
-          u'Unable to open path specification:\n{0:s}'
-          u'with error: {1:s}').format(
-              file_entry.path_spec.comparable, exception))
-      return
-
-    if not file_object:
-      return
-
-    try:
-      data = file_object.read(self._READ_BUFFER_SIZE)
-      while data:
-        hash_context.update(data)
-        data = file_object.read(self._READ_BUFFER_SIZE)
-    except IOError as exception:
-      logging.warning((
-          u'Unable to read from path specification:\n{0:s}'
-          u'with error: {1:s}').format(
-              file_entry.path_spec.comparable, exception))
-      return
-
-    finally:
-      file_object.close()
-
-    return hash_context.hexdigest()
-
-  def _CalculateHashesFileEntry(
-      self, file_system, file_entry, parent_full_path, output_writer):
-    """Recursive calculates hashes starting with the file entry.
-
-    Args:
-      file_system: the file system (instance of dfvfs.FileSystem).
-      file_entry: the file entry (instance of dfvfs.FileEntry).
-      parent_full_path: the full path of the parent file entry.
-      output_writer: the output writer (instance of StdoutWriter).
-    """
-    # Since every file system implementation can have their own path
-    # segment separator we are using JoinPath to be platform and file system
-    # type independent.
-    full_path = file_system.JoinPath([parent_full_path, file_entry.name])
-    for data_stream in file_entry.data_streams:
-      hash_value = self._CalculateHashFileEntry(file_entry, data_stream.name)
-      if not hash_value:
-        hash_value = 'N/A'
-
-      # TODO: print volume.
-      if data_stream.name:
-        display_path = u'{0:s}:{1:s}'.format(full_path, data_stream.name)
-      else:
-        display_path = full_path
-
-      output_writer.WriteFileHash(display_path, hash_value)
-
-    for sub_file_entry in file_entry.sub_file_entries:
-      self._CalculateHashesFileEntry(
-          file_system, sub_file_entry, full_path, output_writer)
 
   def _FormatHumanReadableSize(self, size):
     """Formats the size as a human readable string.
@@ -146,78 +64,6 @@ class RecursiveHasher(object):
 
     return u'{0:s} / {1:s} ({2:d} B)'.format(
         size_string_1024, size_string_1000, size)
-
-  def _GetTSKPartitionIdentifiers(self, scan_node):
-    """Determines the TSK partition identifiers.
-
-    Args:
-      scan_node: the scan node (instance of dfvfs.ScanNode).
-
-    Returns:
-      A list of partition identifiers.
-
-    Raises:
-      RuntimeError: if the format of or within the source is not supported or
-                    the the scan node is invalid or if the volume for
-                    a specific identifier cannot be retrieved.
-    """
-    if not scan_node or not scan_node.path_spec:
-      raise RuntimeError(u'Invalid scan node.')
-
-    volume_system = tsk_volume_system.TSKVolumeSystem()
-    volume_system.Open(scan_node.path_spec)
-
-    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
-        volume_system)
-    if not volume_identifiers:
-      print(u'[WARNING] No partitions found.')
-      return
-
-    if len(volume_identifiers) == 1:
-      return volume_identifiers
-
-    try:
-      selected_volume_identifier = self._PromptUserForPartitionIdentifier(
-          volume_system, volume_identifiers)
-    except KeyboardInterrupt:
-      raise RuntimeError(u'File system scan aborted.')
-
-    if selected_volume_identifier == u'all':
-      return volume_identifiers
-
-    return [selected_volume_identifier]
-
-  def _GetVSSStoreIdentifiers(self, scan_node):
-    """Determines the VSS store identifiers.
-
-    Args:
-      scan_node: the scan node (instance of dfvfs.ScanNode).
-
-    Returns:
-      A list of VSS store identifiers.
-
-    Raises:
-      RuntimeError: if the format of or within the source
-                    is not supported or the the scan node is invalid.
-    """
-    if not scan_node or not scan_node.path_spec:
-      raise RuntimeError(u'Invalid scan node.')
-
-    volume_system = vshadow_volume_system.VShadowVolumeSystem()
-    volume_system.Open(scan_node.path_spec)
-
-    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
-        volume_system)
-    if not volume_identifiers:
-      return []
-
-    try:
-      selected_store_identifiers = self._PromptUserForVSSStoreIdentifiers(
-          volume_system, volume_identifiers)
-    except KeyboardInterrupt:
-      raise errors.UserAbort(u'File system scan aborted.')
-
-    return selected_store_identifiers
 
   def _ParseVSSStoresString(self, vss_stores):
     """Parses the user specified VSS stores string.
@@ -273,7 +119,8 @@ class RecursiveHasher(object):
 
     return sorted(stores)
 
-  def _PromptUserForEncryptedVolumeCredential(
+  # TODO: rename prompt to get to make mediator more generic.
+  def PromptUserForEncryptedVolumeCredential(
       self, scan_context, locked_scan_node, credentials):
     """Prompts the user to provide a credential for an encrypted volume.
 
@@ -344,16 +191,16 @@ class RecursiveHasher(object):
 
     return result
 
-  def _PromptUserForPartitionIdentifier(
+  def PromptUserForPartitionIdentifiers(
       self, volume_system, volume_identifiers):
-    """Prompts the user to provide a partition identifier.
+    """Prompts the user to provide a partition identifiers.
 
     Args:
       volume_system: The volume system (instance of dfvfs.TSKVolumeSystem).
       volume_identifiers: List of allowed volume identifiers.
 
     Returns:
-      A string containing the partition identifier or "all".
+      A list of strings containing the selected partition identifiers or None.
 
     Raises:
       FileSystemScannerError: if the source cannot be processed.
@@ -390,8 +237,10 @@ class RecursiveHasher(object):
         except ValueError:
           pass
 
-      if (selected_volume_identifier == u'all' or
-          selected_volume_identifier in volume_identifiers):
+      if selected_volume_identifier == u'all':
+        return volume_identifiers
+
+      if selected_volume_identifier in volume_identifiers:
         break
 
       print(u'')
@@ -400,10 +249,9 @@ class RecursiveHasher(object):
           u'with Ctrl^C.')
       print(u'')
 
-    return selected_volume_identifier
+    return [selected_volume_identifier]
 
-  def _PromptUserForVSSStoreIdentifiers(
-      self, volume_system, volume_identifiers):
+  def PromptUserForVSSStoreIdentifiers(self, volume_system, volume_identifiers):
     """Prompts the user to provide the VSS store identifiers.
 
     This method first checks for the preferred VSS stores and falls back
@@ -414,7 +262,7 @@ class RecursiveHasher(object):
       volume_identifiers: List of allowed volume identifiers.
 
     Returns:
-      The list of selected VSS store identifiers or None.
+      A list of integers containing the selected VSS store identifiers or None.
 
     Raises:
       SourceScannerError: if the source cannot be processed.
@@ -493,6 +341,96 @@ class RecursiveHasher(object):
       print(u'')
 
     return selected_vss_stores
+
+
+class VolumeCollector(object):
+  """Class that defines a volume collector."""
+
+  def __init__(self, mediator=None):
+    """Initializes the collector object.
+
+    Args:
+      mediator: a volume collector mediator (instance of
+                VolumeCollectorMediator) or None.
+    """
+    super(VolumeCollector, self).__init__()
+    self._mediator = mediator
+    self._source_scanner = source_scanner.SourceScanner()
+
+  def _GetTSKPartitionIdentifiers(self, scan_node):
+    """Determines the TSK partition identifiers.
+
+    Args:
+      scan_node: the scan node (instance of dfvfs.ScanNode).
+
+    Returns:
+      A list of partition identifiers.
+
+    Raises:
+      RuntimeError: if the format of or within the source is not supported or
+                    the the scan node is invalid or if the volume for
+                    a specific identifier cannot be retrieved.
+    """
+    if not scan_node or not scan_node.path_spec:
+      raise RuntimeError(u'Invalid scan node.')
+
+    volume_system = tsk_volume_system.TSKVolumeSystem()
+    volume_system.Open(scan_node.path_spec)
+
+    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
+        volume_system)
+    if not volume_identifiers:
+      print(u'[WARNING] No partitions found.')
+      return
+
+    if not self._mediator or len(volume_identifiers) == 1:
+      return volume_identifiers
+
+    try:
+      return self._mediator.PromptUserForPartitionIdentifier(
+          volume_system, volume_identifiers)
+    except KeyboardInterrupt:
+      raise RuntimeError(u'File system scan aborted.')
+
+  def _GetVSSStoreIdentifiers(self, scan_node):
+    """Determines the VSS store identifiers.
+
+    Args:
+      scan_node: the scan node (instance of dfvfs.ScanNode).
+
+    Returns:
+      A list of VSS store identifiers.
+
+    Raises:
+      RuntimeError: if the format of or within the source
+                    is not supported or the the scan node is invalid.
+    """
+    if not scan_node or not scan_node.path_spec:
+      raise RuntimeError(u'Invalid scan node.')
+
+    volume_system = vshadow_volume_system.VShadowVolumeSystem()
+    volume_system.Open(scan_node.path_spec)
+
+    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
+        volume_system)
+    if not self._mediator and not volume_identifiers:
+      return []
+
+    try:
+      return self._mediator.PromptUserForVSSStoreIdentifiers(
+          volume_system, volume_identifiers)
+    except KeyboardInterrupt:
+      raise errors.UserAbort(u'File system scan aborted.')
+
+  def _ScanFileSystem(self, path_resolver):
+    """Scans a file system for the Windows volume.
+
+    Args:
+      path_resolver: the path resolver (instance of dfvfs.WindowsPathResolver).
+
+    Returns:
+      True if the Windows directory was found, false otherwise.
+    """
 
   def _ScanVolume(self, scan_context, volume_scan_node, base_path_specs):
     """Scans the volume scan node for volume and file systems.
@@ -585,8 +523,7 @@ class RecursiveHasher(object):
           scan_context, scan_path_spec=volume_scan_node.path_spec)
       self._ScanVolume(scan_context, volume_scan_node, base_path_specs)
 
-  def _ScanVolumeScanNodeVSS(
-      self, volume_scan_node, base_path_specs):
+  def _ScanVolumeScanNodeVSS(self, volume_scan_node, base_path_specs):
     """Scans a VSS volume scan node for volume and file systems.
 
     Args:
@@ -628,45 +565,68 @@ class RecursiveHasher(object):
       #     scan_context, scan_path_spec=sub_scan_node.path_spec)
       # self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
 
-  def CalculateHashes(self, base_path_specs, output_writer):
-    """Recursive calculates hashes starting with the base path specification.
+
+class WindowsVolumeCollector(VolumeCollector):
+  """Class that defines a Windows volume collector."""
+
+  _WINDOWS_DIRECTORIES = frozenset([
+      u'C:\\Windows',
+      u'C:\\WINNT',
+      u'C:\\WTSRV',
+      u'C:\\WINNT35',
+  ])
+
+  def __init__(self):
+    """Initializes the collector object."""
+    super(WindowsVolumeCollector, self).__init__()
+    self._file_system = None
+    self._path_resolver = None
+    self._single_file = False
+    self._source_path = None
+    self._windows_directory = None
+
+  def _ScanFileSystem(self, path_resolver):
+    """Scans a file system for the Windows volume.
 
     Args:
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
-      output_writer: the output writer (instance of StdoutWriter).
+      path_resolver: the path resolver (instance of dfvfs.WindowsPathResolver).
+
+    Returns:
+      True if the Windows directory was found, false otherwise.
     """
-    for base_path_spec in base_path_specs:
-      file_system = resolver.Resolver.OpenFileSystem(base_path_spec)
-      file_entry = resolver.Resolver.OpenFileEntry(base_path_spec)
-      if file_entry is None:
-        logging.warning(
-            u'Unable to open base path specification:\n{0:s}'.format(
-                base_path_spec.comparable))
-        continue
+    result = False
 
-      self._CalculateHashesFileEntry(
-          file_system, file_entry, u'', output_writer)
+    for windows_path in self._WINDOWS_DIRECTORIES:
+      windows_path_spec = path_resolver.ResolvePath(windows_path)
 
-  def GetBasePathSpecs(self, source_path):
-    """Determines the base path specifications.
+      result = windows_path_spec is not None
+      if result:
+        self._windows_directory = windows_path
+        break
+
+    return result
+
+  def GetWindowsVolumePathSpec(self, source_path):
+    """Determines the file system path specification of the Windows volume.
 
     Args:
       source_path: the source path.
 
     Returns:
-      A list of path specifications (instances of dfvfs.PathSpec).
+      True if successful or False otherwise.
 
     Raises:
-      RuntimeError: if the source path does not exists, or if the source path
-                    is not a file or directory, or if the format of or within
-                    the source file is not supported.
+      CollectorError: if the source path does not exists, or if the source path
+                      is not a file or directory, or if the format of or within
+                      the source file is not supported.
     """
+    # Note that os.path.exists() does not support Windows device paths.
     if (not source_path.startswith(u'\\\\.\\') and
         not os.path.exists(source_path)):
-      raise RuntimeError(
+      raise CollectorError(
           u'No such device, file or directory: {0:s}.'.format(source_path))
 
+    self._source_path = source_path
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(source_path)
 
@@ -676,153 +636,86 @@ class RecursiveHasher(object):
       raise RuntimeError(
           u'Unable to scan source with error: {0:s}.'.format(exception))
 
-    if scan_context.source_type not in [
-        definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
-        definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE]:
-      scan_node = scan_context.GetRootScanNode()
-      return [scan_node.path_spec]
+    self._single_file = False
+    if scan_context.source_type == definitions.SOURCE_TYPE_FILE:
+      self._single_file = True
+      return True
 
-    # Get the first node where where we need to decide what to process.
+    windows_path_specs = []
     scan_node = scan_context.GetRootScanNode()
-    while len(scan_node.sub_nodes) == 1:
-      scan_node = scan_node.sub_nodes[0]
-
-    # The source scanner found a partition table and we need to determine
-    # which partition needs to be processed.
-    if scan_node.type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
-      partition_identifiers = None
+    if scan_context.source_type == definitions.SOURCE_TYPE_DIRECTORY:
+      windows_path_specs.append(scan_node.path_spec)
 
     else:
-      partition_identifiers = self._GetTSKPartitionIdentifiers(scan_node)
+      # Get the first node where where we need to decide what to process.
+      while len(scan_node.sub_nodes) == 1:
+        scan_node = scan_node.sub_nodes[0]
 
-    base_path_specs = []
-    if not partition_identifiers:
-      self._ScanVolume(scan_context, scan_node, base_path_specs)
+      # The source scanner found a partition table and we need to determine
+      # which partition needs to be processed.
+      if scan_node.type_indicator != (
+          definitions.TYPE_INDICATOR_TSK_PARTITION):
+        partition_identifiers = None
 
-    else:
-      for partition_identifier in partition_identifiers:
-        location = u'/{0:s}'.format(partition_identifier)
-        sub_scan_node = scan_node.GetSubNodeByLocation(location)
-        self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
+      else:
+        partition_identifiers = self._GetTSKPartitionIdentifiers(scan_node)
 
-    if not base_path_specs:
-      raise RuntimeError(
+      if not partition_identifiers:
+        self._ScanVolume(scan_context, scan_node, windows_path_specs)
+
+      else:
+        for partition_identifier in partition_identifiers:
+          location = u'/{0:s}'.format(partition_identifier)
+          sub_scan_node = scan_node.GetSubNodeByLocation(location)
+          self._ScanVolume(scan_context, sub_scan_node, windows_path_specs)
+
+    if not windows_path_specs:
+      raise CollectorError(
           u'No supported file system found in source.')
 
-    return base_path_specs
+    file_system_path_spec = windows_path_specs[0]
+    self._file_system = resolver.Resolver.OpenFileSystem(file_system_path_spec)
 
+    if file_system_path_spec.type_indicator == definitions.TYPE_INDICATOR_OS:
+      mount_point = file_system_path_spec
+    else:
+      mount_point = file_system_path_spec.parent
 
-class StdoutWriter(object):
-  """Class that defines a stdout output writer."""
+    self._path_resolver = windows_path_resolver.WindowsPathResolver(
+        self._file_system, mount_point)
 
-  def __init__(self, encoding=u'utf-8'):
-    """Initializes the output writer object.
+    # The source is a directory or single volume storage media image.
+    if not self._windows_directory:
+      if not self._ScanFileSystem(self._path_resolver):
+        return False
 
-    Args:
-      encoding: optional input encoding.
-    """
-    super(StdoutWriter, self).__init__()
-    self._encoding = encoding
-    self._errors = u'strict'
+    if not self._windows_directory:
+      return False
 
-  def Open(self):
-    """Opens the output writer object.
+    self._path_resolver.SetEnvironmentVariable(
+        u'SystemRoot', self._windows_directory)
+    self._path_resolver.SetEnvironmentVariable(
+        u'WinDir', self._windows_directory)
 
-    Returns:
-      A boolean containing True if successful or False if not.
-    """
     return True
 
-  def Close(self):
-    """Closes the output writer object."""
-    pass
-
-  def WriteFileHash(self, path, hash_value):
-    """Writes the file path and hash to stdout.
+  def OpenFile(self, windows_path):
+    """Opens the file specificed by the Windows path.
 
     Args:
-      path: the path of the file.
-      hash_value: the message digest hash calculated over the file data.
+      windows_path: the Windows path to the file.
+
+    Returns:
+      The file-like object (instance of dfvfs.FileIO) or None if
+      the file does not exist.
     """
-    string = u'{0:s}\t{1:s}'.format(hash_value, path)
+    if self._single_file:
+      # TODO: check name or move this into WindowsRegistryCollector.
+      path_spec = path_spec_factory.Factory.NewPathSpec(
+          definitions.TYPE_INDICATOR_OS, location=self._source_path)
+    else:
+      path_spec = self._path_resolver.ResolvePath(windows_path)
+      if path_spec is None:
+        return
 
-    try:
-      # Note that encode() will first convert string into a Unicode string
-      # if necessary.
-      encoded_string = string.encode(self._encoding, errors=self._errors)
-    except UnicodeEncodeError:
-      if self._errors == u'strict':
-        logging.error(
-            u'Unable to properly write output due to encoding error. '
-            u'Switching to error tolerant encoding which can result in '
-            u'non Basic Latin (C0) characters to be replaced with "?" or '
-            u'"\\ufffd".')
-        self._errors = u'replace'
-
-      encoded_string = string.encode(self._encoding, errors=self._errors)
-
-    print(encoded_string)
-
-
-def Main():
-  """The main program function.
-
-  Returns:
-    A boolean containing True if successful or False if not.
-  """
-  argument_parser = argparse.ArgumentParser(description=(
-      u'Calculates a message digest hash for every file in a directory or '
-      u'storage media image.'))
-
-  argument_parser.add_argument(
-      u'source', nargs=u'?', action=u'store', metavar=u'image.raw',
-      default=None, help=(
-          u'path of the directory or filename of a storage media image '
-          u'containing the file.'))
-
-  options = argument_parser.parse_args()
-
-  if not options.source:
-    print(u'Source value is missing.')
-    print(u'')
-    argument_parser.print_help()
-    print(u'')
-    return False
-
-  logging.basicConfig(
-      level=logging.INFO, format=u'[%(levelname)s] %(message)s')
-
-  output_writer = StdoutWriter()
-
-  if not output_writer.Open():
-    print(u'Unable to open output writer.')
-    print(u'')
-    return False
-
-  return_value = True
-  recursive_hasher = RecursiveHasher()
-
-  try:
-    base_path_specs = recursive_hasher.GetBasePathSpecs(options.source)
-
-    recursive_hasher.CalculateHashes(base_path_specs, output_writer)
-
-    print(u'')
-    print(u'Completed.')
-
-  except KeyboardInterrupt:
-    return_value = False
-
-    print(u'')
-    print(u'Aborted by user.')
-
-  output_writer.Close()
-
-  return return_value
-
-
-if __name__ == '__main__':
-  if not Main():
-    sys.exit(1)
-  else:
-    sys.exit(0)
+    return resolver.Resolver.OpenFileObject(path_spec)
