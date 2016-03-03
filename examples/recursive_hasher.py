@@ -9,17 +9,13 @@ from __future__ import print_function
 import argparse
 import hashlib
 import logging
-import os
 import sys
 
-from dfvfs.helpers import source_scanner
-from dfvfs.helpers import volume_collector
-from dfvfs.lib import definitions
-from dfvfs.lib import errors
+from dfvfs.helpers import volume_scanner
 from dfvfs.resolver import resolver
 
 
-class RecursiveHasher(volume_collector.VolumeCollector):
+class RecursiveHasher(volume_scanner.VolumeScanner):
   """Class that recursively calculates message digest hashes of files."""
 
   # Class constant that defines the default read buffer size.
@@ -117,69 +113,6 @@ class RecursiveHasher(volume_collector.VolumeCollector):
       self._CalculateHashesFileEntry(
           file_system, file_entry, u'', output_writer)
 
-  def GetBasePathSpecs(self, source_path):
-    """Determines the base path specifications.
-
-    Args:
-      source_path: the source path.
-
-    Returns:
-      A list of path specifications (instances of dfvfs.PathSpec).
-
-    Raises:
-      RuntimeError: if the source path does not exists, or if the source path
-                    is not a file or directory, or if the format of or within
-                    the source file is not supported.
-    """
-    if (not source_path.startswith(u'\\\\.\\') and
-        not os.path.exists(source_path)):
-      raise RuntimeError(
-          u'No such device, file or directory: {0:s}.'.format(source_path))
-
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(source_path)
-
-    try:
-      self._source_scanner.Scan(scan_context)
-    except (errors.BackEndError, ValueError) as exception:
-      raise RuntimeError(
-          u'Unable to scan source with error: {0:s}.'.format(exception))
-
-    if scan_context.source_type not in [
-        definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
-        definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE]:
-      scan_node = scan_context.GetRootScanNode()
-      return [scan_node.path_spec]
-
-    # Get the first node where where we need to decide what to process.
-    scan_node = scan_context.GetRootScanNode()
-    while len(scan_node.sub_nodes) == 1:
-      scan_node = scan_node.sub_nodes[0]
-
-    # The source scanner found a partition table and we need to determine
-    # which partition needs to be processed.
-    if scan_node.type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
-      partition_identifiers = None
-
-    else:
-      partition_identifiers = self._GetTSKPartitionIdentifiers(scan_node)
-
-    base_path_specs = []
-    if not partition_identifiers:
-      self._ScanVolume(scan_context, scan_node, base_path_specs)
-
-    else:
-      for partition_identifier in partition_identifiers:
-        location = u'/{0:s}'.format(partition_identifier)
-        sub_scan_node = scan_node.GetSubNodeByLocation(location)
-        self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
-
-    if not base_path_specs:
-      raise RuntimeError(
-          u'No supported file system found in source.')
-
-    return base_path_specs
-
 
 class StdoutWriter(object):
   """Class that defines a stdout output writer."""
@@ -269,7 +202,7 @@ def Main():
     return False
 
   return_value = True
-  mediator = volume_collector.VolumeCollectorMediator()
+  mediator = volume_scanner.VolumeScannerMediator()
   recursive_hasher = RecursiveHasher(mediator=mediator)
 
   try:

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Classes to implement a Windows volume collector."""
+"""Classes to implement volume scanners."""
 
 from __future__ import print_function
 import getpass
+import locale
+import logging
 import os
 import sys
 
@@ -17,16 +19,44 @@ from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
 
 
-class CollectorError(Exception):
-  """Class that defines collector errors."""
-
-
-class VolumeCollectorMediator(object):
-  """Class that defines a volume collector mediator."""
+# TODO: move this to a separate file and add tests?
+class VolumeScannerMediator(object):
+  """Class that defines a volume scanner mediator."""
 
   # For context see: http://en.wikipedia.org/wiki/Byte
   _UNITS_1000 = [u'B', u'kB', u'MB', u'GB', u'TB', u'EB', u'ZB', u'YB']
   _UNITS_1024 = [u'B', u'KiB', u'MiB', u'GiB', u'TiB', u'EiB', u'ZiB', u'YiB']
+
+  def __init__(self):
+    """Initializes the scanner mediator object."""
+    super(VolumeScannerMediator, self).__init__()
+    self._encode_errors = u'strict'
+    self._preferred_encoding = locale.getpreferredencoding()
+
+  def _EncodeString(self, string):
+    """Encodes a string in the preferred encoding.
+
+    Returns:
+      A byte string containing the encoded string.
+    """
+    try:
+      # Note that encode() will first convert string into a Unicode string
+      # if necessary.
+      encoded_string = string.encode(
+          self._preferred_encoding, errors=self._encode_errors)
+    except UnicodeEncodeError:
+      if self._encode_errors == u'strict':
+        logging.error(
+            u'Unable to properly write output due to encoding error. '
+            u'Switching to error tolerant encoding which can result in '
+            u'non Basic Latin (C0) characters to be replaced with "?" or '
+            u'"\\ufffd".')
+        self._encode_errors = u'replace'
+
+      encoded_string = string.encode(
+          self._preferred_encoding, errors=self._encode_errors)
+
+    return encoded_string
 
   def _FormatHumanReadableSize(self, size):
     """Formats the size as a human readable string.
@@ -80,7 +110,7 @@ class VolumeCollectorMediator(object):
       A list containing the individual VSS stores numbers or the string "all".
 
     Raises:
-      BadConfigOption: if the VSS stores option is invalid.
+      ValueError: if the VSS stores option is invalid.
     """
     if not vss_stores:
       return []
@@ -98,8 +128,8 @@ class VolumeCollectorMediator(object):
           first_store = int(first_store, 10)
           last_store = int(last_store, 10)
         except ValueError:
-          raise errors.BadConfigOption(
-              u'Invalid VSS store range: {0:s}.'.format(vss_store_range))
+          raise ValueError(u'Invalid VSS store range: {0:s}.'.format(
+              vss_store_range))
 
         for store_number in range(first_store, last_store + 1):
           if store_number not in stores:
@@ -111,8 +141,8 @@ class VolumeCollectorMediator(object):
         try:
           store_number = int(vss_store_range, 10)
         except ValueError:
-          raise errors.BadConfigOption(
-              u'Invalid VSS store range: {0:s}.'.format(vss_store_range))
+          raise ValueError(u'Invalid VSS store range: {0:s}.'.format(
+              vss_store_range))
 
         if store_number not in stores:
           stores.append(store_number)
@@ -121,10 +151,11 @@ class VolumeCollectorMediator(object):
 
   # TODO: rename prompt to get to make mediator more generic.
   def PromptUserForEncryptedVolumeCredential(
-      self, scan_context, locked_scan_node, credentials):
+      self, source_scanner_object, scan_context, locked_scan_node, credentials):
     """Prompts the user to provide a credential for an encrypted volume.
 
     Args:
+      source_scanner_object: the source scanner (instance of SourceScanner).
       scan_context: the source scanner context (instance of
                     SourceScannerContext).
       locked_scan_node: the locked scan node (instance of SourceScanNode).
@@ -171,7 +202,13 @@ class VolumeCollectorMediator(object):
       if credential_type == u'skip':
         break
 
-      credential_data = getpass.getpass(u'Enter credential data: ')
+      getpass_string = u'Enter credential data: '
+      if sys.platform.startswith(u'win') and sys.version_info[0] < 3:
+        # For Python 2 on Windows getpass (win_getpass) requires an encoded
+        # byte string. For Python 3 we need it to be a Unicode string.
+        getpass_string = self._EncodeString(getpass_string)
+
+      credential_data = getpass.getpass(getpass_string)
       print(u'')
 
       if credential_type == u'key':
@@ -181,7 +218,7 @@ class VolumeCollectorMediator(object):
           print(u'Unsupported credential data.')
           continue
 
-      result = self._source_scanner.Unlock(
+      result = source_scanner_object.Unlock(
           scan_context, locked_scan_node.path_spec, credential_type,
           credential_data)
 
@@ -203,7 +240,7 @@ class VolumeCollectorMediator(object):
       A list of strings containing the selected partition identifiers or None.
 
     Raises:
-      FileSystemScannerError: if the source cannot be processed.
+      ScannerError: if the source cannot be processed.
     """
     print(u'The following partitions were found:')
     print(u'Identifier\tOffset (in bytes)\tSize (in bytes)')
@@ -211,7 +248,7 @@ class VolumeCollectorMediator(object):
     for volume_identifier in sorted(volume_identifiers):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
-        raise errors.FileSystemScannerError(
+        raise errors.ScannerError(
             u'Volume missing for identifier: {0:s}.'.format(volume_identifier))
 
       volume_extent = volume.extents[0]
@@ -265,13 +302,13 @@ class VolumeCollectorMediator(object):
       A list of integers containing the selected VSS store identifiers or None.
 
     Raises:
-      SourceScannerError: if the source cannot be processed.
+      ScannerError: if the source cannot be processed.
     """
     normalized_volume_identifiers = []
     for volume_identifier in volume_identifiers:
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
-        raise errors.SourceScannerError(
+        raise errors.ScannerError(
             u'Volume missing for identifier: {0:s}.'.format(volume_identifier))
 
       try:
@@ -289,7 +326,7 @@ class VolumeCollectorMediator(object):
         for volume_identifier in volume_identifiers:
           volume = volume_system.GetVolumeByIdentifier(volume_identifier)
           if not volume:
-            raise errors.SourceScannerError(
+            raise errors.ScannerError(
                 u'Volume missing for identifier: {0:s}.'.format(
                     volume_identifier))
 
@@ -324,7 +361,7 @@ class VolumeCollectorMediator(object):
 
       try:
         selected_vss_stores = self._ParseVSSStoresString(selected_vss_stores)
-      except errors.BadConfigOption:
+      except ValueError:
         selected_vss_stores = []
 
       if selected_vss_stores == [u'all']:
@@ -343,17 +380,17 @@ class VolumeCollectorMediator(object):
     return selected_vss_stores
 
 
-class VolumeCollector(object):
-  """Class that defines a volume collector."""
+class VolumeScanner(object):
+  """Class that defines a volume scanner."""
 
   def __init__(self, mediator=None):
-    """Initializes the collector object.
+    """Initializes the scanner object.
 
     Args:
-      mediator: a volume collector mediator (instance of
-                VolumeCollectorMediator) or None.
+      mediator: a volume scanner mediator (instance of
+                VolumeScannerMediator) or None.
     """
-    super(VolumeCollector, self).__init__()
+    super(VolumeScanner, self).__init__()
     self._mediator = mediator
     self._source_scanner = source_scanner.SourceScanner()
 
@@ -367,12 +404,12 @@ class VolumeCollector(object):
       A list of partition identifiers.
 
     Raises:
-      RuntimeError: if the format of or within the source is not supported or
+      ScannerError: if the format of or within the source is not supported or
                     the the scan node is invalid or if the volume for
                     a specific identifier cannot be retrieved.
     """
     if not scan_node or not scan_node.path_spec:
-      raise RuntimeError(u'Invalid scan node.')
+      raise errors.ScannerError(u'Invalid scan node.')
 
     volume_system = tsk_volume_system.TSKVolumeSystem()
     volume_system.Open(scan_node.path_spec)
@@ -390,7 +427,7 @@ class VolumeCollector(object):
       return self._mediator.PromptUserForPartitionIdentifier(
           volume_system, volume_identifiers)
     except KeyboardInterrupt:
-      raise RuntimeError(u'File system scan aborted.')
+      raise errors.ScannerError(u'File system scan aborted.')
 
   def _GetVSSStoreIdentifiers(self, scan_node):
     """Determines the VSS store identifiers.
@@ -402,11 +439,11 @@ class VolumeCollector(object):
       A list of VSS store identifiers.
 
     Raises:
-      RuntimeError: if the format of or within the source
+      ScannerError: if the format of or within the source
                     is not supported or the the scan node is invalid.
     """
     if not scan_node or not scan_node.path_spec:
-      raise RuntimeError(u'Invalid scan node.')
+      raise errors.ScannerError(u'Invalid scan node.')
 
     volume_system = vshadow_volume_system.VShadowVolumeSystem()
     volume_system.Open(scan_node.path_spec)
@@ -443,11 +480,11 @@ class VolumeCollector(object):
                        of dfvfs.PathSpec).
 
     Raises:
-      RuntimeError: if the format of or within the source
+      ScannerError: if the format of or within the source
                     is not supported or the the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
-      raise RuntimeError(u'Invalid or missing volume scan node.')
+      raise errors.ScannerError(u'Invalid or missing volume scan node.')
 
     if len(volume_scan_node.sub_nodes) == 0:
       self._ScanVolumeScanNode(scan_context, volume_scan_node, base_path_specs)
@@ -470,11 +507,11 @@ class VolumeCollector(object):
                        of dfvfs.PathSpec).
 
     Raises:
-      RuntimeError: if the format of or within the source
+      ScannerError: if the format of or within the source
                     is not supported or the the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
-      raise RuntimeError(u'Invalid or missing volume scan node.')
+      raise errors.ScannerError(u'Invalid or missing volume scan node.')
 
     # Get the first node where where we need to decide what to process.
     scan_node = volume_scan_node
@@ -516,7 +553,7 @@ class VolumeCollector(object):
           volume_scan_node.path_spec)
 
       result = self._PromptUserForEncryptedVolumeCredential(
-          scan_context, volume_scan_node, credentials)
+          self._source_scanner, scan_context, volume_scan_node, credentials)
 
     if result:
       self._source_scanner.Scan(
@@ -532,7 +569,7 @@ class VolumeCollector(object):
                        of dfvfs.PathSpec).
 
     Raises:
-      SourceScannerError: if a VSS sub scan node scannot be retrieved.
+      ScannerError: if a VSS sub scan node scannot be retrieved.
     """
     # Do not scan inside individual VSS store scan nodes.
     location = getattr(volume_scan_node.path_spec, u'location', None)
@@ -549,7 +586,7 @@ class VolumeCollector(object):
       location = u'/vss{0:d}'.format(vss_store_identifier)
       sub_scan_node = volume_scan_node.GetSubNodeByLocation(location)
       if not sub_scan_node:
-        raise errors.SourceScannerError(
+        raise errors.ScannerError(
             u'Scan node missing for VSS store identifier: {0:d}.'.format(
                 vss_store_identifier))
 
@@ -565,9 +602,72 @@ class VolumeCollector(object):
       #     scan_context, scan_path_spec=sub_scan_node.path_spec)
       # self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
 
+  def GetBasePathSpecs(self, source_path):
+    """Determines the base path specifications.
 
-class WindowsVolumeCollector(VolumeCollector):
-  """Class that defines a Windows volume collector."""
+    Args:
+      source_path: a string containing the source path.
+
+    Returns:
+      A list of path specifications (instances of dfvfs.PathSpec).
+
+    Raises:
+      ScannerError: if the source path does not exists, or if the source path
+                    is not a file or directory, or if the format of or within
+                    the source file is not supported.
+    """
+    if (not source_path.startswith(u'\\\\.\\') and
+        not os.path.exists(source_path)):
+      raise errors.ScannerError(
+          u'No such device, file or directory: {0:s}.'.format(source_path))
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(source_path)
+
+    try:
+      self._source_scanner.Scan(scan_context)
+    except (errors.BackEndError, ValueError) as exception:
+      raise errors.ScannerError(
+          u'Unable to scan source with error: {0:s}.'.format(exception))
+
+    if scan_context.source_type not in [
+        definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
+        definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE]:
+      scan_node = scan_context.GetRootScanNode()
+      return [scan_node.path_spec]
+
+    # Get the first node where where we need to decide what to process.
+    scan_node = scan_context.GetRootScanNode()
+    while len(scan_node.sub_nodes) == 1:
+      scan_node = scan_node.sub_nodes[0]
+
+    # The source scanner found a partition table and we need to determine
+    # which partition needs to be processed.
+    if scan_node.type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
+      partition_identifiers = None
+
+    else:
+      partition_identifiers = self._GetTSKPartitionIdentifiers(scan_node)
+
+    base_path_specs = []
+    if not partition_identifiers:
+      self._ScanVolume(scan_context, scan_node, base_path_specs)
+
+    else:
+      for partition_identifier in partition_identifiers:
+        location = u'/{0:s}'.format(partition_identifier)
+        sub_scan_node = scan_node.GetSubNodeByLocation(location)
+        self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
+
+    if not base_path_specs:
+      raise errors.ScannerError(
+          u'No supported file system found in source.')
+
+    return base_path_specs
+
+
+class WindowsVolumeScanner(VolumeScanner):
+  """Class that defines a Windows volume scanner."""
 
   _WINDOWS_DIRECTORIES = frozenset([
       u'C:\\Windows',
@@ -576,9 +676,14 @@ class WindowsVolumeCollector(VolumeCollector):
       u'C:\\WINNT35',
   ])
 
-  def __init__(self):
-    """Initializes the collector object."""
-    super(WindowsVolumeCollector, self).__init__()
+  def __init__(self, mediator=None):
+    """Initializes the scanner object.
+
+    Args:
+      mediator: a volume scanner mediator (instance of
+                VolumeScannerMediator) or None.
+    """
+    super(WindowsVolumeScanner, self).__init__(mediator=mediator)
     self._file_system = None
     self._path_resolver = None
     self._single_file = False
@@ -606,24 +711,45 @@ class WindowsVolumeCollector(VolumeCollector):
 
     return result
 
-  def GetWindowsVolumePathSpec(self, source_path):
-    """Determines the file system path specification of the Windows volume.
+  def OpenFile(self, windows_path):
+    """Opens the file specificed by the Windows path.
 
     Args:
-      source_path: the source path.
+      windows_path: the Windows path to the file.
 
     Returns:
-      True if successful or False otherwise.
+      The file-like object (instance of dfvfs.FileIO) or None if
+      the file does not exist.
+    """
+    if self._single_file:
+      # TODO: check name or move this into WindowsRegistryCollector.
+      path_spec = path_spec_factory.Factory.NewPathSpec(
+          definitions.TYPE_INDICATOR_OS, location=self._source_path)
+    else:
+      path_spec = self._path_resolver.ResolvePath(windows_path)
+      if path_spec is None:
+        return
+
+    return resolver.Resolver.OpenFileObject(path_spec)
+
+  def ScanForWindowsVolume(self, source_path):
+    """Scans for a Windows volume.
+
+    Args:
+      source_path: a string containing the source path.
+
+    Returns:
+      A boolean value indicating if a Windows volume was found.
 
     Raises:
-      CollectorError: if the source path does not exists, or if the source path
-                      is not a file or directory, or if the format of or within
-                      the source file is not supported.
+      ScannerError: if the source path does not exists, or if the source path
+                    is not a file or directory, or if the format of or within
+                    the source file is not supported.
     """
     # Note that os.path.exists() does not support Windows device paths.
     if (not source_path.startswith(u'\\\\.\\') and
         not os.path.exists(source_path)):
-      raise CollectorError(
+      raise errors.ScannerError(
           u'No such device, file or directory: {0:s}.'.format(source_path))
 
     self._source_path = source_path
@@ -633,7 +759,7 @@ class WindowsVolumeCollector(VolumeCollector):
     try:
       self._source_scanner.Scan(scan_context)
     except (errors.BackEndError, ValueError) as exception:
-      raise RuntimeError(
+      raise errors.ScannerError(
           u'Unable to scan source with error: {0:s}.'.format(exception))
 
     self._single_file = False
@@ -670,8 +796,7 @@ class WindowsVolumeCollector(VolumeCollector):
           self._ScanVolume(scan_context, sub_scan_node, windows_path_specs)
 
     if not windows_path_specs:
-      raise CollectorError(
-          u'No supported file system found in source.')
+      raise errors.ScannerError(u'No supported file system found in source.')
 
     file_system_path_spec = windows_path_specs[0]
     self._file_system = resolver.Resolver.OpenFileSystem(file_system_path_spec)
@@ -698,24 +823,3 @@ class WindowsVolumeCollector(VolumeCollector):
         u'WinDir', self._windows_directory)
 
     return True
-
-  def OpenFile(self, windows_path):
-    """Opens the file specificed by the Windows path.
-
-    Args:
-      windows_path: the Windows path to the file.
-
-    Returns:
-      The file-like object (instance of dfvfs.FileIO) or None if
-      the file does not exist.
-    """
-    if self._single_file:
-      # TODO: check name or move this into WindowsRegistryCollector.
-      path_spec = path_spec_factory.Factory.NewPathSpec(
-          definitions.TYPE_INDICATOR_OS, location=self._source_path)
-    else:
-      path_spec = self._path_resolver.ResolvePath(windows_path)
-      if path_spec is None:
-        return
-
-    return resolver.Resolver.OpenFileObject(path_spec)
