@@ -9,10 +9,10 @@ import os
 import sys
 
 from dfvfs.credentials import manager as credentials_manager
-from dfvfs.lib import definitions as definitions
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.helpers import source_scanner as source_scanner
-from dfvfs.helpers import windows_path_resolver as windows_path_resolver
+from dfvfs.helpers import source_scanner
+from dfvfs.helpers import windows_path_resolver
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import tsk_volume_system
@@ -424,7 +424,7 @@ class VolumeScanner(object):
       return volume_identifiers
 
     try:
-      return self._mediator.PromptUserForPartitionIdentifier(
+      return self._mediator.PromptUserForPartitionIdentifiers(
           volume_system, volume_identifiers)
     except KeyboardInterrupt:
       raise errors.ScannerError(u'File system scan aborted.')
@@ -459,15 +459,22 @@ class VolumeScanner(object):
     except KeyboardInterrupt:
       raise errors.UserAbort(u'File system scan aborted.')
 
-  def _ScanFileSystem(self, path_resolver):
-    """Scans a file system for the Windows volume.
+  def _ScanFileSystem(self, file_system_scan_node, base_path_specs):
+    """Scans a file system scan node for file systems.
 
     Args:
-      path_resolver: the path resolver (instance of dfvfs.WindowsPathResolver).
+      file_system_scan_node: the file system scan node (instance of
+                             dfvfs.ScanNode).
+      base_path_specs: a list of source path specification (instances
+                       of dfvfs.PathSpec).
 
-    Returns:
-      True if the Windows directory was found, false otherwise.
+    Raises:
+      ScannerError: if the scan node is invalid.
     """
+    if not file_system_scan_node or not file_system_scan_node.path_spec:
+      raise errors.ScannerError(u'Invalid or missing file system scan node.')
+
+    base_path_specs.append(scan_node.path_spec)
 
   def _ScanVolume(self, scan_context, volume_scan_node, base_path_specs):
     """Scans the volume scan node for volume and file systems.
@@ -534,7 +541,7 @@ class VolumeScanner(object):
       self._ScanVolumeScanNodeVSS(scan_node, base_path_specs)
 
     elif scan_node.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS:
-      base_path_specs.append(scan_node.path_spec)
+      self._ScanFileSystem(scan_node, base_path_specs)
 
   def _ScanVolumeScanNodeEncrypted(
       self, scan_context, volume_scan_node, base_path_specs):
@@ -600,7 +607,7 @@ class VolumeScanner(object):
       # TODO: look into building VSS store on demand.
       # self._source_scanner.Scan(
       #     scan_context, scan_path_spec=sub_scan_node.path_spec)
-      # self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
+      # self._ScanFileSystem(sub_scan_node, base_path_specs)
 
   def GetBasePathSpecs(self, source_path):
     """Determines the base path specifications.
@@ -690,17 +697,48 @@ class WindowsVolumeScanner(VolumeScanner):
     self._source_path = None
     self._windows_directory = None
 
-  def _ScanFileSystem(self, path_resolver):
-    """Scans a file system for the Windows volume.
+  def _ScanFileSystem(self, file_system_scan_node, base_path_specs):
+    """Scans a file system scan node for file systems.
+
+    This method checks if the file system contains a known Windows directory.
 
     Args:
-      path_resolver: the path resolver (instance of dfvfs.WindowsPathResolver).
+      file_system_scan_node: the file system scan node (instance of
+                             dfvfs.ScanNode).
+      base_path_specs: a list of source path specification (instances
+                       of dfvfs.PathSpec).
+
+    Raises:
+      ScannerError: if the scan node is invalid.
+    """
+    if not file_system_scan_node or not file_system_scan_node.path_spec:
+      raise errors.ScannerError(u'Invalid or missing file system scan node.')
+
+    file_system = resolver.Resolver.OpenFileSystem(
+        file_system_scan_node.path_spec)
+    if not file_system:
+      return
+
+    try:
+      path_resolver = windows_path_resolver.WindowsPathResolver(
+          file_system, file_system_scan_node.path_spec.parent)
+
+      if self._ScanFileSystemForWindowsDirectory(path_resolver):
+        base_path_specs.append(file_system_scan_node.path_spec)
+
+    finally:
+      file_system.Close()
+
+  def _ScanFileSystemForWindowsDirectory(self, path_resolver):
+    """Scans a file system for a known Windows directory.
+
+    Args:
+      path_resolver: the path resolver (instance of WindowsPathResolver).
 
     Returns:
-      True if the Windows directory was found, false otherwise.
+      A boolean value to indicate if a known Windows directory was found.
     """
     result = False
-
     for windows_path in self._WINDOWS_DIRECTORIES:
       windows_path_spec = path_resolver.ResolvePath(windows_path)
 
@@ -753,6 +791,8 @@ class WindowsVolumeScanner(VolumeScanner):
           u'No such device, file or directory: {0:s}.'.format(source_path))
 
     self._source_path = source_path
+
+    # TODO: reuse functionality of VolumeScanner
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(source_path)
 
@@ -762,39 +802,13 @@ class WindowsVolumeScanner(VolumeScanner):
       raise errors.ScannerError(
           u'Unable to scan source with error: {0:s}.'.format(exception))
 
+    # TODO: move single file support out of this class?
     self._single_file = False
     if scan_context.source_type == definitions.SOURCE_TYPE_FILE:
       self._single_file = True
       return True
 
-    windows_path_specs = []
-    scan_node = scan_context.GetRootScanNode()
-    if scan_context.source_type == definitions.SOURCE_TYPE_DIRECTORY:
-      windows_path_specs.append(scan_node.path_spec)
-
-    else:
-      # Get the first node where where we need to decide what to process.
-      while len(scan_node.sub_nodes) == 1:
-        scan_node = scan_node.sub_nodes[0]
-
-      # The source scanner found a partition table and we need to determine
-      # which partition needs to be processed.
-      if scan_node.type_indicator != (
-          definitions.TYPE_INDICATOR_TSK_PARTITION):
-        partition_identifiers = None
-
-      else:
-        partition_identifiers = self._GetTSKPartitionIdentifiers(scan_node)
-
-      if not partition_identifiers:
-        self._ScanVolume(scan_context, scan_node, windows_path_specs)
-
-      else:
-        for partition_identifier in partition_identifiers:
-          location = u'/{0:s}'.format(partition_identifier)
-          sub_scan_node = scan_node.GetSubNodeByLocation(location)
-          self._ScanVolume(scan_context, sub_scan_node, windows_path_specs)
-
+    windows_path_specs = self.GetBasePathSpecs(source_path)
     if not windows_path_specs:
       raise errors.ScannerError(u'No supported file system found in source.')
 
@@ -811,8 +825,7 @@ class WindowsVolumeScanner(VolumeScanner):
 
     # The source is a directory or single volume storage media image.
     if not self._windows_directory:
-      if not self._ScanFileSystem(self._path_resolver):
-        return False
+      self._ScanFileSystemForWindowsDirectory(self._path_resolver)
 
     if not self._windows_directory:
       return False
