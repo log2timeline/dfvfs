@@ -474,7 +474,7 @@ class VolumeScanner(object):
     if not file_system_scan_node or not file_system_scan_node.path_spec:
       raise errors.ScannerError(u'Invalid or missing file system scan node.')
 
-    base_path_specs.append(scan_node.path_spec)
+    base_path_specs.append(file_system_scan_node.path_spec)
 
   def _ScanVolume(self, scan_context, volume_scan_node, base_path_specs):
     """Scans the volume scan node for volume and file systems.
