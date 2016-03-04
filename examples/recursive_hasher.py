@@ -207,6 +207,10 @@ def Main():
 
   try:
     base_path_specs = recursive_hasher.GetBasePathSpecs(options.source)
+    if not base_path_specs:
+      print(u'No supported file system found in source.')
+      print(u'')
+      return False
 
     recursive_hasher.CalculateHashes(base_path_specs, output_writer)
 

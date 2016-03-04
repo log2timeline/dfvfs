@@ -666,10 +666,6 @@ class VolumeScanner(object):
         sub_scan_node = scan_node.GetSubNodeByLocation(location)
         self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
 
-    if not base_path_specs:
-      raise errors.ScannerError(
-          u'No supported file system found in source.')
-
     return base_path_specs
 
 
@@ -810,7 +806,7 @@ class WindowsVolumeScanner(VolumeScanner):
 
     windows_path_specs = self.GetBasePathSpecs(source_path)
     if not windows_path_specs:
-      raise errors.ScannerError(u'No supported file system found in source.')
+      return False
 
     file_system_path_spec = windows_path_specs[0]
     self._file_system = resolver.Resolver.OpenFileSystem(file_system_path_spec)
