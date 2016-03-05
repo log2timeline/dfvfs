@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Classes to implement volume scanners."""
 
-from __future__ import print_function
 import abc
 import os
 
@@ -86,7 +85,9 @@ class VolumeScanner(object):
     """
     super(VolumeScanner, self).__init__()
     self._mediator = mediator
+    self._source_path = None
     self._source_scanner = source_scanner.SourceScanner()
+    self._source_type = None
 
   def _GetTSKPartitionIdentifiers(self, scan_node):
     """Determines the TSK partition identifiers.
@@ -111,8 +112,7 @@ class VolumeScanner(object):
     volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
         volume_system)
     if not volume_identifiers:
-      print(u'[WARNING] No partitions found.')
-      return
+      raise errors.ScannerError(u'No partitions found.')
 
     if not self._mediator or len(volume_identifiers) == 1:
       return volume_identifiers
@@ -317,6 +317,7 @@ class VolumeScanner(object):
                     is not a file or directory, or if the format of or within
                     the source file is not supported.
     """
+    # Note that os.path.exists() does not support Windows device paths.
     if (not source_path.startswith(u'\\\\.\\') and
         not os.path.exists(source_path)):
       raise errors.ScannerError(
@@ -331,7 +332,10 @@ class VolumeScanner(object):
       raise errors.ScannerError(
           u'Unable to scan source with error: {0:s}.'.format(exception))
 
-    if scan_context.source_type not in [
+    self._source_path = source_path
+    self._source_type = scan_context.source_type
+
+    if self._source_type not in [
         definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
         definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE]:
       scan_node = scan_context.GetRootScanNode()
@@ -383,8 +387,6 @@ class WindowsVolumeScanner(VolumeScanner):
     super(WindowsVolumeScanner, self).__init__(mediator=mediator)
     self._file_system = None
     self._path_resolver = None
-    self._single_file = False
-    self._source_path = None
     self._windows_directory = None
 
   def _ScanFileSystem(self, file_system_scan_node, base_path_specs):
@@ -449,14 +451,9 @@ class WindowsVolumeScanner(VolumeScanner):
       The file-like object (instance of dfvfs.FileIO) or None if
       the file does not exist.
     """
-    if self._single_file:
-      # TODO: check name or move this into WindowsRegistryCollector.
-      path_spec = path_spec_factory.Factory.NewPathSpec(
-          definitions.TYPE_INDICATOR_OS, location=self._source_path)
-    else:
-      path_spec = self._path_resolver.ResolvePath(windows_path)
-      if path_spec is None:
-        return
+    path_spec = self._path_resolver.ResolvePath(windows_path)
+    if path_spec is None:
+      return
 
     return resolver.Resolver.OpenFileObject(path_spec)
 
@@ -474,32 +471,9 @@ class WindowsVolumeScanner(VolumeScanner):
                     is not a file or directory, or if the format of or within
                     the source file is not supported.
     """
-    # Note that os.path.exists() does not support Windows device paths.
-    if (not source_path.startswith(u'\\\\.\\') and
-        not os.path.exists(source_path)):
-      raise errors.ScannerError(
-          u'No such device, file or directory: {0:s}.'.format(source_path))
-
-    self._source_path = source_path
-
-    # TODO: reuse functionality of VolumeScanner
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(source_path)
-
-    try:
-      self._source_scanner.Scan(scan_context)
-    except (errors.BackEndError, ValueError) as exception:
-      raise errors.ScannerError(
-          u'Unable to scan source with error: {0:s}.'.format(exception))
-
-    # TODO: move single file support out of this class?
-    self._single_file = False
-    if scan_context.source_type == definitions.SOURCE_TYPE_FILE:
-      self._single_file = True
-      return True
-
     windows_path_specs = self.GetBasePathSpecs(source_path)
-    if not windows_path_specs:
+    if (not windows_path_specs or
+        self._source_type == definitions.SOURCE_TYPE_FILE):
       return False
 
     file_system_path_spec = windows_path_specs[0]
