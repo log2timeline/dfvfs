@@ -19,26 +19,6 @@ class VolumeScannerMediator(object):
   """Class that defines a volume scanner mediator."""
 
   @abc.abstractmethod
-  def GetEncryptedVolumeCredential(
-      self, source_scanner_object, scan_context, locked_scan_node, credentials):
-    """Retrieves a credential for an encrypted volume.
-
-    This method can be used to prompt the user to provide encrypted volume
-    credentials.
-
-    Args:
-      source_scanner_object: the source scanner (instance of SourceScanner).
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      locked_scan_node: the locked scan node (instance of SourceScanNode).
-      credentials: the credentials supported by the locked scan node (instance
-                   of dfvfs.Credentials).
-
-    Returns:
-      A boolean value indicating whether the volume was unlocked.
-    """
-
-  @abc.abstractmethod
   def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves partition identifiers.
 
@@ -70,6 +50,26 @@ class VolumeScannerMediator(object):
 
     Raises:
       ScannerError: if the source cannot be processed.
+    """
+
+  @abc.abstractmethod
+  def UnlockEncryptedVolume(
+      self, source_scanner_object, scan_context, locked_scan_node, credentials):
+    """Unlocks an encrypted volume.
+
+    This method can be used to prompt the user to provide encrypted volume
+    credentials.
+
+    Args:
+      source_scanner_object: the source scanner (instance of SourceScanner).
+      scan_context: the source scanner context (instance of
+                    SourceScannerContext).
+      locked_scan_node: the locked scan node (instance of SourceScanNode).
+      credentials: the credentials supported by the locked scan node (instance
+                   of dfvfs.Credentials).
+
+    Returns:
+      A boolean value indicating whether the volume was unlocked.
     """
 
 

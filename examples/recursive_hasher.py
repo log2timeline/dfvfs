@@ -49,7 +49,7 @@ class RecursiveHasherVolumeScannerMediator(
         logging.error(
             u'Unable to properly write output due to encoding error. '
             u'Switching to error tolerant encoding which can result in '
-            u'non Basic Latin (C0) characters to be replaced with "?" or '
+            u'non Basic Latin (C0) characters being replaced with "?" or '
             u'"\\ufffd".')
         self._encode_errors = u'replace'
 
@@ -148,87 +148,6 @@ class RecursiveHasherVolumeScannerMediator(
           stores.append(store_number)
 
     return sorted(stores)
-
-  def GetEncryptedVolumeCredential(
-      self, source_scanner_object, scan_context, locked_scan_node, credentials):
-    """Retrieves a credential for an encrypted volume.
-
-    This method can be used to prompt the user to provide encrypted volume
-    credentials.
-
-    Args:
-      source_scanner_object: the source scanner (instance of SourceScanner).
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      locked_scan_node: the locked scan node (instance of SourceScanNode).
-      credentials: the credentials supported by the locked scan node (instance
-                   of dfvfs.Credentials).
-
-    Returns:
-      A boolean value indicating whether the volume was unlocked.
-    """
-    # TODO: print volume description.
-    if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-      print(u'Found a BitLocker encrypted volume.')
-    else:
-      print(u'Found an encrypted volume.')
-
-    credentials_list = list(credentials.CREDENTIALS)
-    credentials_list.append(u'skip')
-
-    print(u'Supported credentials:')
-    print(u'')
-    for index, name in enumerate(credentials_list):
-      print(u'  {0:d}. {1:s}'.format(index, name))
-    print(u'')
-    print(u'Note that you can abort with Ctrl^C.')
-    print(u'')
-
-    result = False
-    while not result:
-      print(u'Select a credential to unlock the volume: ', end=u'')
-      # TODO: add an input reader.
-      input_line = sys.stdin.readline()
-      input_line = input_line.strip()
-
-      if input_line in credentials_list:
-        credential_type = input_line
-      else:
-        try:
-          credential_type = int(input_line, 10)
-          credential_type = credentials_list[credential_type]
-        except (IndexError, ValueError):
-          print(u'Unsupported credential: {0:s}'.format(input_line))
-          continue
-
-      if credential_type == u'skip':
-        break
-
-      getpass_string = u'Enter credential data: '
-      if sys.platform.startswith(u'win') and sys.version_info[0] < 3:
-        # For Python 2 on Windows getpass (win_getpass) requires an encoded
-        # byte string. For Python 3 we need it to be a Unicode string.
-        getpass_string = self._EncodeString(getpass_string)
-
-      credential_data = getpass.getpass(getpass_string)
-      print(u'')
-
-      if credential_type == u'key':
-        try:
-          credential_data = credential_data.decode(u'hex')
-        except TypeError:
-          print(u'Unsupported credential data.')
-          continue
-
-      result = source_scanner_object.Unlock(
-          scan_context, locked_scan_node.path_spec, credential_type,
-          credential_data)
-
-      if not result:
-        print(u'Unable to unlock volume.')
-        print(u'')
-
-    return result
 
   def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves partition identifiers.
@@ -380,6 +299,87 @@ class RecursiveHasherVolumeScannerMediator(
       print(u'')
 
     return selected_vss_stores
+
+  def UnlockEncryptedVolume(
+      self, source_scanner_object, scan_context, locked_scan_node, credentials):
+    """Unlocks an encrypted volume.
+
+    This method can be used to prompt the user to provide encrypted volume
+    credentials.
+
+    Args:
+      source_scanner_object: the source scanner (instance of SourceScanner).
+      scan_context: the source scanner context (instance of
+                    SourceScannerContext).
+      locked_scan_node: the locked scan node (instance of SourceScanNode).
+      credentials: the credentials supported by the locked scan node (instance
+                   of dfvfs.Credentials).
+
+    Returns:
+      A boolean value indicating whether the volume was unlocked.
+    """
+    # TODO: print volume description.
+    if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+      print(u'Found a BitLocker encrypted volume.')
+    else:
+      print(u'Found an encrypted volume.')
+
+    credentials_list = list(credentials.CREDENTIALS)
+    credentials_list.append(u'skip')
+
+    print(u'Supported credentials:')
+    print(u'')
+    for index, name in enumerate(credentials_list):
+      print(u'  {0:d}. {1:s}'.format(index, name))
+    print(u'')
+    print(u'Note that you can abort with Ctrl^C.')
+    print(u'')
+
+    result = False
+    while not result:
+      print(u'Select a credential to unlock the volume: ', end=u'')
+      # TODO: add an input reader.
+      input_line = sys.stdin.readline()
+      input_line = input_line.strip()
+
+      if input_line in credentials_list:
+        credential_type = input_line
+      else:
+        try:
+          credential_type = int(input_line, 10)
+          credential_type = credentials_list[credential_type]
+        except (IndexError, ValueError):
+          print(u'Unsupported credential: {0:s}'.format(input_line))
+          continue
+
+      if credential_type == u'skip':
+        break
+
+      getpass_string = u'Enter credential data: '
+      if sys.platform.startswith(u'win') and sys.version_info[0] < 3:
+        # For Python 2 on Windows getpass (win_getpass) requires an encoded
+        # byte string. For Python 3 we need it to be a Unicode string.
+        getpass_string = self._EncodeString(getpass_string)
+
+      credential_data = getpass.getpass(getpass_string)
+      print(u'')
+
+      if credential_type == u'key':
+        try:
+          credential_data = credential_data.decode(u'hex')
+        except TypeError:
+          print(u'Unsupported credential data.')
+          continue
+
+      result = source_scanner_object.Unlock(
+          scan_context, locked_scan_node.path_spec, credential_type,
+          credential_data)
+
+      if not result:
+        print(u'Unable to unlock volume.')
+        print(u'')
+
+    return result
 
 
 class RecursiveHasher(volume_scanner.VolumeScanner):
