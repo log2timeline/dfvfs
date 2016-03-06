@@ -64,7 +64,7 @@ class SQLiteBlobFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
 
@@ -77,7 +77,7 @@ class SQLiteBlobFileEntryTest(unittest.TestCase):
     self.assertEqual(parent_file_entry.name, u'myblobs.blobs')
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
 
@@ -97,7 +97,7 @@ class SQLiteBlobFileEntryTest(unittest.TestCase):
     self.assertEqual(stat_object.size, 11)
 
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
 

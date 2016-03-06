@@ -90,7 +90,7 @@ class VShadowFileSystemTest(unittest.TestCase):
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = vshadow_file_system.VShadowFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
 

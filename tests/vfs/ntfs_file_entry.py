@@ -34,14 +34,14 @@ class NTFSFileEntryTest(unittest.TestCase):
     self._file_system.Close()
 
   def testIntialize(self):
-    """Test the initialize functionality."""
+    """Tests the initialize functionality."""
     file_entry = ntfs_file_entry.NTFSFileEntry(
         self._resolver_context, self._file_system, self._ntfs_path_spec)
 
     self.assertIsNotNone(file_entry)
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
         mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -49,11 +49,11 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
   def testGetLinkedFileEntry(self):
-    """Test the get linked file entry functionality."""
+    """Tests the GetLinkedFileEntry function."""
     # TODO: need a test image with a link to test.
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -69,7 +69,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(parent_file_entry.name, u'System Volume Information')
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -80,11 +80,21 @@ class NTFSFileEntryTest(unittest.TestCase):
     stat_object = file_entry.GetStat()
 
     self.assertIsNotNone(stat_object)
+    self.assertEqual(stat_object.fs_type, u'NTFS')
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
     self.assertEqual(stat_object.size, 65536)
 
+    self.assertEqual(stat_object.atime, 1386052509)
+    self.assertEqual(stat_object.atime_nano, 5023783)
+    self.assertEqual(stat_object.ctime, 1386052509)
+    self.assertEqual(stat_object.ctime_nano, 5179783)
+    self.assertEqual(stat_object.crtime, 1386052509)
+    self.assertEqual(stat_object.crtime_nano, 5023783)
+    self.assertEqual(stat_object.mtime, 1386052509)
+    self.assertEqual(stat_object.mtime_nano, 5179783)
+
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(

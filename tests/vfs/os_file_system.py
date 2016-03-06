@@ -42,7 +42,7 @@ class OSFileSystemTest(unittest.TestCase):
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     path_spec = os_path_spec.OSPathSpec(

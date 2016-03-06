@@ -49,7 +49,7 @@ class TARFileSystemTest(unittest.TestCase):
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = tar_file_system.TARFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
 

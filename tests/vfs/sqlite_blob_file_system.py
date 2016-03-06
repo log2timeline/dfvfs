@@ -57,7 +57,7 @@ class SQLiteBlobFileSystemTest(unittest.TestCase):
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
     self.assertIsNotNone(file_system)

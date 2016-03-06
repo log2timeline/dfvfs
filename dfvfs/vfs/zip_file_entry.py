@@ -122,7 +122,7 @@ class ZipFileEntry(file_entry.FileEntry):
 
     # File data stat information.
     if zip_info is not None:
-      stat_object.size = getattr(zip_info, u'size', None)
+      stat_object.size = getattr(zip_info, u'file_size', None)
 
     # Date and time stat information.
     # TODO: move this to a timelib equivalent.
