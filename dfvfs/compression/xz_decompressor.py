@@ -3,7 +3,7 @@
 
 import lzma
 
-# Note we have to handle different versions of the lzma code.
+# Different versions of lzma define LZMAError in different places.
 # pylint: disable=no-name-in-module
 try:
   from lzma import LZMAError
