@@ -4,6 +4,8 @@
 # The compression method definitions.
 COMPRESSION_METHOD_BZIP2 = u'bzip2'
 COMPRESSION_METHOD_DEFLATE = u'deflate'
+COMPRESSION_METHOD_LZMA = u'lzma'
+COMPRESSION_METHOD_XZ = u'xz'
 COMPRESSION_METHOD_ZLIB = u'zlib'
 
 # The encoding method definitions.

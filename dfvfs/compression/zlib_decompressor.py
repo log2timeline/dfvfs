@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The bzip2 decompressor object implementation."""
+"""The zlib and DEFLATE decompressor object implementations."""
 
 import zlib
 
@@ -62,6 +62,5 @@ class DeflateDecompressor(ZlibDecompressor):
     super(DeflateDecompressor, self).__init__(window_size=-zlib.MAX_WBITS)
 
 
-# Register the decompressor with the compression manager.
 manager.CompressionManager.RegisterDecompressors([
     DeflateDecompressor, ZlibDecompressor])
