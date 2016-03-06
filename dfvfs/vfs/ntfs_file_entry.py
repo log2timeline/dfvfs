@@ -359,7 +359,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     stat_time, stat_time_nano = date_time_values.CopyToStatObject()
     if stat_time is not None:
       stat_object.atime = stat_time
-      stat_object.atime_nan = stat_time_nano
+      stat_object.atime_nano = stat_time_nano
 
     date_time_values = date_time.Filetime(
         fsntfs_file_entry.get_creation_time_as_integer())
