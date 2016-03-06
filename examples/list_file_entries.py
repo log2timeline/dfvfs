@@ -358,12 +358,13 @@ def Main():
     A boolean containing True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
-      'Lists file entries in a directory or storage media image.'))
+      u'Lists file entries in a directory or storage media image.'))
 
   argument_parser.add_argument(
-      'source', nargs='?', action='store', metavar='image.raw',
-      default=None, help=('path of the directory or filename of a storage '
-                          'media image containing the file.'))
+      u'source', nargs=u'?', action=u'store', metavar=u'image.raw',
+      default=None, help=(
+          u'path of the directory or filename of a storage media image '
+          u'containing the file.'))
 
   options = argument_parser.parse_args()
 
