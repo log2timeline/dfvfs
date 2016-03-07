@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The fake file system implementation."""
 
-from dfvfs.lib import date_time
+from dfvfs.dfdatetime import fake_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import fake_path_spec
@@ -84,7 +84,7 @@ class FakeFileSystem(file_system.FileSystem):
       stat_object.size = len(file_data)
 
     # Date and time stat information.
-    date_time_values = date_time.FakeDateTimeValues()
+    date_time_values = fake_time.FakeTime()
 
     stat_time, stat_time_nano = date_time_values.CopyToStatObject()
     if stat_time is not None:

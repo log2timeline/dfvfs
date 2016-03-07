@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) file entry implementation."""
 
-from dfvfs.lib import date_time
+from dfvfs.dfdatetime import posix_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import lvm
@@ -105,7 +105,7 @@ class LVMFileEntry(file_entry.FileEntry):
       # timestamp = vslvm_logical_volume.get_creation_time_as_integer()
       timestamp = None
       if timestamp is not None:
-        date_time_values = date_time.PosixTimestamp(timestamp)
+        date_time_values = posix_time.PosixTimestamp(timestamp)
 
         stat_time, stat_time_nano = date_time_values.CopyToStatObject()
         if stat_time is not None:
