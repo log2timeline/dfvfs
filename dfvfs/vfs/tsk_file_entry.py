@@ -445,7 +445,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
     # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
     # 1 nano seconds precision.
-    if stat_time_nano is not None and pytsk3.TSK_VERSION_NUM >= 0x040200ff: 
+    if stat_time_nano is not None and pytsk3.TSK_VERSION_NUM >= 0x040200ff:
       stat_time_nano /= 100
 
     return stat_time, stat_time_nano
