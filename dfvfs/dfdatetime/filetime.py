@@ -177,7 +177,7 @@ class Filetime(interface.DateTimeValues):
       if time_string[10] != u' ':
         raise ValueError(u'Invalid time string.')
 
-      hours, minutes, seconds, microseconds, timezone_offset = (
+      hours, minutes, seconds, micro_seconds, timezone_offset = (
           self._CopyTimeFromString(time_string[11:], time_string_length - 11))
 
     self.timestamp = int(calendar.timegm((
