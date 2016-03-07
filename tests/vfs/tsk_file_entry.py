@@ -13,8 +13,8 @@ from dfvfs.vfs import tsk_file_entry
 from dfvfs.vfs import tsk_file_system
 
 
-class TSKFileEntryTest(unittest.TestCase):
-  """The unit test for the SleuthKit (TSK) file entry object."""
+class TSKFileEntryTestExt2(unittest.TestCase):
+  """The unit test for the SleuthKit (TSK) file entry object on ext2."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -47,8 +47,9 @@ class TSKFileEntryTest(unittest.TestCase):
 
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
+    test_location = u'/a_link'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=13, location=u'/a_link', parent=self._os_path_spec)
+        inode=13, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -60,9 +61,9 @@ class TSKFileEntryTest(unittest.TestCase):
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
+    test_location = u'/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location=u'/a_directory/another_file',
-        parent=self._os_path_spec)
+        inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -74,9 +75,9 @@ class TSKFileEntryTest(unittest.TestCase):
 
   def testGetStat(self):
     """Tests the GetStat function."""
+    test_location = u'/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location=u'/a_directory/another_file',
-        parent=self._os_path_spec)
+        inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -97,13 +98,11 @@ class TSKFileEntryTest(unittest.TestCase):
     self.assertEqual(stat_object.mtime, 1337961563)
     self.assertEqual(stat_object.mtime_nano, 0)
 
-    # TODO: add tests for GetStat for other TSK file system back-ends.
-
   def testIsFunctions(self):
     """Test the Is? functions."""
+    test_location = u'/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location=u'/a_directory/another_file',
-        parent=self._os_path_spec)
+        inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -118,9 +117,9 @@ class TSKFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
+    test_location = u'/a_directory'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=12, location=u'/a_directory',
-        parent=self._os_path_spec)
+        inode=12, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -180,9 +179,9 @@ class TSKFileEntryTest(unittest.TestCase):
 
   def testDataStreams(self):
     """Test the data streams functionality."""
+    test_location = u'/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location=u'/a_directory/another_file',
-        parent=self._os_path_spec)
+        inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -194,9 +193,9 @@ class TSKFileEntryTest(unittest.TestCase):
 
     self.assertEqual(data_stream_names, [u''])
 
+    test_location = u'/a_directory'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=12, location=u'/a_directory',
-        parent=self._os_path_spec)
+        inode=12, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -210,15 +209,22 @@ class TSKFileEntryTest(unittest.TestCase):
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
+    test_location = u'/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location=u'/a_directory/another_file',
-        parent=self._os_path_spec)
+        inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
     data_stream_name = u''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
+
+
+class TSKFileEntryTestHFS(unittest.TestCase):
+  """The unit test for the SleuthKit (TSK) file entry object on HFS."""
+
+  # TODO: implement.
+
 
 
 class TSKFileEntryTestNTFS(unittest.TestCase):
@@ -239,6 +245,34 @@ class TSKFileEntryTestNTFS(unittest.TestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+
+  def testGetStat(self):
+    """Tests the GetStat function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=38, location=test_location, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_object = file_entry.GetStat()
+
+    self.assertIsNotNone(stat_object)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 65536)
+
+    self.assertEqual(stat_object.mode, 365)
+    self.assertEqual(stat_object.uid, 0)
+    self.assertEqual(stat_object.gid, 0)
+
+    self.assertEqual(stat_object.atime, 1386052509)
+    self.assertEqual(stat_object.atime_nano, 5023783)
+    self.assertEqual(stat_object.ctime, 1386052509)
+    self.assertEqual(stat_object.ctime_nano, 5179783)
+    self.assertEqual(stat_object.crtime, 1386052509)
+    self.assertEqual(stat_object.crtime_nano, 5023783)
+    self.assertEqual(stat_object.mtime, 1386052509)
+    self.assertEqual(stat_object.mtime_nano, 5179783)
 
   def testAttributes(self):
     """Test the attributes functionality."""
