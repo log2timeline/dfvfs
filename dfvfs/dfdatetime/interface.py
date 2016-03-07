@@ -7,6 +7,81 @@ import abc
 class DateTimeValues(object):
   """Class that defines the date time values interface."""
 
+  _DAYS_PER_MONTH = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
+  def _CopyDateFromString(self, date_string, date_string_length):
+    """Copies a date from a string.
+
+    Args:
+      date_string: a string containing a date value formatted as:
+                   YYYY-MM-DD
+      date_string_length: an integer containing the length of the date string.
+
+    Returns:
+      A tuple of integers containing year, month, day of month.
+
+    Raises:
+      ValueError: if the date string is invalid or not supported.
+    """
+    # The date string should at least contain 'YYYY-MM-DD'.
+    if (date_string_length < 10 or date_string[4] != u'-' or
+        date_string[7] != u'-'):
+      raise ValueError(u'Invalid date string.')
+
+    try:
+      year = int(date_string[0:4], 10)
+    except ValueError:
+      raise ValueError(u'Unable to parse year.')
+
+    try:
+      month = int(date_string[5:7], 10)
+    except ValueError:
+      raise ValueError(u'Unable to parse month.')
+
+    try:
+      day_of_month = int(date_string[8:10], 10)
+    except ValueError:
+      raise ValueError(u'Unable to parse day of month.')
+
+    days_per_month = self._GetDaysPerMonth(year, month)
+    if day_of_month not in range(1, days_per_month):
+      raise ValueError(u'Day of month value out of bounds.')
+
+    return year, month, day_of_month
+
+  def _GetDaysPerMonth(self, year, month):
+    """Retrieves the number of days in a month of a specific year.
+
+    Args:
+      year: an integer containing the year.
+      month: an integer containing the month ranging from 1 to 12.
+
+    Returns:
+      An integer containing the number of days in the month.
+
+    Raises:
+      ValueError: if the month value is out of bounds.
+    """
+    if month not in range(1, 13):
+      raise ValueError(u'Month value out of bounds.')
+
+    days_per_month = self._DAYS_PER_MONTH[month - 1]
+    if month == 2 and self._IsLeapYear(year):
+      days_per_month += 1
+
+    return days_per_month
+
+  def _IsLeapYear(self, year):
+    """Determines if a year is a leap year.
+
+    Args:
+      year: an integer containing the year.
+
+    Returns:
+      A boolean value indicating if the year is a leap year.
+    """
+    return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+
   @abc.abstractmethod
   def CopyToStatObject(self):
     """Copies the timestamp to a stat object timestamp.

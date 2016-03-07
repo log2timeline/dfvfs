@@ -32,100 +32,62 @@ class Filetime(interface.DateTimeValues):
     super(Filetime, self).__init__()
     self.timestamp = timestamp
 
-  # TODO: move parts of this method into base class.
-  def CopyFromString(self, time_string):
-    """Copies a FILETIME from a string containing a date and time value.
+  def _CopyTimeFromString(self, time_string, time_string_length):
+    """Copies a time from a string.
 
     Args:
-      time_string: A string containing a date and time value formatted as:
-                   YYYY-MM-DD hh:mm:ss.######[+-]##:##
+      time_string: a string containing a time value formatted as:
+                   hh:mm:ss.######[+-]##:##
                    Where # are numeric digits ranging from 0 to 9 and the
-                   seconds fraction can be either 3 or 6 digits. The time
-                   of day, seconds fraction and timezone offset are optional.
-                   The default timezone is UTC.
+                   seconds fraction can be either 3 or 6 digits. The seconds
+                   fraction and timezone offset are optional.
+      time_string_length: an integer containing the length of the time string.
 
     Returns:
-      An integer containing the timestamp.
+      A tuple of integers containing hours, minutes, seconds, microseconds,
+      timezone offset in seconds.
 
     Raises:
       ValueError: if the time string is invalid or not supported.
     """
-    if not time_string:
-      raise ValueError(u'Invalid time string.')
-
-    time_string_length = len(time_string)
-
-    # The time string should at least contain 'YYYY-MM-DD'.
-    if (time_string_length < 10 or time_string[4] != u'-' or
-        time_string[7] != u'-'):
-      raise ValueError(u'Invalid time string.')
-
-    # If a time of day is specified the time string it should at least
-    # contain 'YYYY-MM-DD hh:mm:ss'.
-    if (time_string_length > 10 and (
-        time_string_length < 19 or time_string[10] != u' ' or
-        time_string[13] != u':' or time_string[16] != u':')):
+    # The time string should at least contain 'hh:mm:ss'.
+    if (time_string_length < 8 or time_string[2] != u':' or
+        time_string[5] != u':'):
       raise ValueError(u'Invalid time string.')
 
     try:
-      year = int(time_string[0:4], 10)
+      hours = int(time_string[0:2], 10)
     except ValueError:
-      raise ValueError(u'Unable to parse year.')
+      raise ValueError(u'Unable to parse hours.')
+
+    if hours not in range(0, 24):
+      raise ValueError(u'Hours value out of bounds.')
 
     try:
-      month = int(time_string[5:7], 10)
+      minutes = int(time_string[3:5], 10)
     except ValueError:
-      raise ValueError(u'Unable to parse month.')
+      raise ValueError(u'Unable to parse minutes.')
 
-    if month not in range(1, 13):
-      raise ValueError(u'Month value out of bounds.')
+    if minutes not in range(0, 60):
+      raise ValueError(u'Minutes value out of bounds.')
 
     try:
-      day_of_month = int(time_string[8:10], 10)
+      seconds = int(time_string[6:8], 10)
     except ValueError:
-      raise ValueError(u'Unable to parse day of month.')
+      raise ValueError(u'Unable to parse day of seconds.')
 
-    if day_of_month not in range(1, 32):
-      raise ValueError(u'Day of month value out of bounds.')
-
-    hours = 0
-    minutes = 0
-    seconds = 0
-
-    if time_string_length > 10:
-      try:
-        hours = int(time_string[11:13], 10)
-      except ValueError:
-        raise ValueError(u'Unable to parse hours.')
-
-      if hours not in range(0, 24):
-        raise ValueError(u'Hours value out of bounds.')
-
-      try:
-        minutes = int(time_string[14:16], 10)
-      except ValueError:
-        raise ValueError(u'Unable to parse minutes.')
-
-      if minutes not in range(0, 60):
-        raise ValueError(u'Minutes value out of bounds.')
-
-      try:
-        seconds = int(time_string[17:19], 10)
-      except ValueError:
-        raise ValueError(u'Unable to parse day of seconds.')
-
-      if seconds not in range(0, 60):
-        raise ValueError(u'Seconds value out of bounds.')
+    if seconds not in range(0, 60):
+      raise ValueError(u'Seconds value out of bounds.')
 
     micro_seconds = 0
     timezone_offset = 0
 
-    if time_string_length > 19:
-      if time_string[19] != u'.':
-        timezone_index = 19
+    if time_string_length > 8:
+      if time_string[8] != u'.':
+        timezone_index = 8
       else:
-        for timezone_index in range(19, time_string_length):
-          if time_string[timezone_index] in [u'+', u'-']:
+        for timezone_index in range(8, time_string_length):
+          if time_string[timezone_index] in (u'+', u'-'):
             break
 
           # The calculation that follow rely on the timezone index to point
@@ -133,13 +95,13 @@ class Filetime(interface.DateTimeValues):
           if timezone_index == time_string_length - 1:
             timezone_index += 1
 
-      if timezone_index > 19:
-        fraction_of_seconds_length = timezone_index - 20
-        if fraction_of_seconds_length not in [3, 6]:
+      if timezone_index > 8:
+        fraction_of_seconds_length = timezone_index - 9
+        if fraction_of_seconds_length not in (3, 6):
           raise ValueError(u'Invalid time string.')
 
         try:
-          micro_seconds = int(time_string[20:timezone_index], 10)
+          micro_seconds = int(time_string[9:timezone_index], 10)
         except ValueError:
           raise ValueError(u'Unable to parse fraction of seconds.')
 
@@ -174,6 +136,49 @@ class Filetime(interface.DateTimeValues):
           raise ValueError(u'Unable to parse timezone minutes offset.')
 
         timezone_offset *= 60
+
+    return hours, minutes, seconds, micro_seconds, timezone_offset
+
+  # TODO: move parts of this method into base class.
+  def CopyFromString(self, time_string):
+    """Copies a FILETIME from a string containing a date and time value.
+
+    Args:
+      time_string: a string containing a date and time value formatted as:
+                   YYYY-MM-DD hh:mm:ss.######[+-]##:##
+                   Where # are numeric digits ranging from 0 to 9 and the
+                   seconds fraction can be either 3 or 6 digits. The time
+                   of day, seconds fraction and timezone offset are optional.
+                   The default timezone is UTC.
+
+    Returns:
+      An integer containing the timestamp.
+
+    Raises:
+      ValueError: if the time string is invalid or not supported.
+    """
+    if not time_string:
+      raise ValueError(u'Invalid time string.')
+
+    time_string_length = len(time_string)
+
+    year, month, day_of_month = self._CopyDateFromString(
+        time_string, time_string_length)
+
+    hours = 0
+    minutes = 0
+    seconds = 0
+    micro_seconds = 0
+    timezone_offset = 0
+
+    if time_string_length > 10:
+      # If a time of day is specified the time string it should at least
+      # contain 'YYYY-MM-DD hh:mm:ss'.
+      if time_string[10] != u' ':
+        raise ValueError(u'Invalid time string.')
+
+      hours, minutes, seconds, microseconds, timezone_offset = (
+          self._CopyTimeFromString(time_string[11:], time_string_length - 11))
 
     self.timestamp = int(calendar.timegm((
         year, month, day_of_month, hours, minutes, seconds)))

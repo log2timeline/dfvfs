@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the Filetime timestamp implementation."""
+"""Tests for the FILETIME timestamp implementation."""
 
 import unittest
 
@@ -8,7 +8,7 @@ from dfvfs.dfdatetime import filetime
 
 
 class FiletimeTest(unittest.TestCase):
-  """Tests for the Filetime timestamp object."""
+  """Tests for the FILETIME timestamp object."""
 
   def testCopyFromString(self):
     """Tests the CopyFromString function."""
