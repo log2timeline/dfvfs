@@ -356,10 +356,12 @@ class TSKFileEntry(file_entry.FileEntry):
         tsk_file.info.meta, u'mtime_nano', None)
 
     # Ownership and permissions stat information.
+    mode = getattr(tsk_file.info.meta, u'mode', None)
+    if mode is not None:
+      # We need to cast mode to an int since it is of type
+      # pytsk3.TSK_FS_META_MODE_ENUM.
+      stat_object.mode = int(mode)
 
-    # We need to cast mode to an int since it is of type
-    # pytsk3.TSK_FS_META_MODE_ENUM.
-    stat_object.mode = int(getattr(tsk_file.info.meta, u'mode', None))
     stat_object.uid = getattr(tsk_file.info.meta, u'uid', None)
     stat_object.gid = getattr(tsk_file.info.meta, u'gid', None)
 
