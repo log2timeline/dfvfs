@@ -79,7 +79,7 @@ class FakeFileEntryTest(unittest.TestCase):
     file_object.close()
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -92,7 +92,7 @@ class FakeFileEntryTest(unittest.TestCase):
     self.assertEqual(parent_file_entry.name, u'testdir_fake')
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -102,9 +102,16 @@ class FakeFileEntryTest(unittest.TestCase):
 
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 5)
+
+    # The date and time values are in a seconds precision and
+    # cannot be predetermined.
+    self.assertNotEqual(stat_object.atime, 0)
+    self.assertNotEqual(stat_object.ctime, 0)
+    self.assertNotEqual(stat_object.mtime, 0)
 
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -225,7 +232,7 @@ class FakeFileEntryTest(unittest.TestCase):
     self.assertEqual(data_stream_names, [])
 
   def testGetDataStream(self):
-    """Test the retrieve data streams functionality."""
+    """Tests the GetDataStream function."""
     test_file = u'/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)

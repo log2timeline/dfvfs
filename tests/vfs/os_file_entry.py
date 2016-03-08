@@ -41,7 +41,7 @@ class OSFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -54,7 +54,7 @@ class OSFileEntryTest(unittest.TestCase):
     self.assertEqual(parent_file_entry.name, u'testdir_os')
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -64,9 +64,16 @@ class OSFileEntryTest(unittest.TestCase):
 
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 6)
+
+    # The date and time values are in a seconds precision and
+    # cannot be predetermined.
+    self.assertNotEqual(stat_object.atime, 0)
+    self.assertNotEqual(stat_object.ctime, 0)
+    self.assertNotEqual(stat_object.mtime, 0)
 
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -148,7 +155,7 @@ class OSFileEntryTest(unittest.TestCase):
     self.assertEqual(data_stream_names, [])
 
   def testGetDataStream(self):
-    """Test the retrieve data streams functionality."""
+    """Tests the GetDataStream function."""
     test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)

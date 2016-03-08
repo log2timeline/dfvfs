@@ -42,7 +42,7 @@ class GzipFileSystemTest(unittest.TestCase):
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
 

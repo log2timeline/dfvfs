@@ -55,7 +55,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -67,7 +67,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     self.assertIsNone(parent_file_entry)
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -77,9 +77,10 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
 
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 512)
 
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -161,7 +162,7 @@ class TSKPartitionFileEntryTest(unittest.TestCase):
     self.assertEqual(data_stream_names, [])
 
   def testGetDataStream(self):
-    """Test the retrieve data streams functionality."""
+    """Tests the GetDataStream function."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=1, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)

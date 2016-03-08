@@ -54,7 +54,7 @@ class EncryptedStreamFileSystemTest(unittest.TestCase):
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = encrypted_stream_file_system.EncryptedStreamFileSystem(
         self._resolver_context)
     self.assertIsNotNone(file_system)

@@ -39,14 +39,14 @@ class TSKFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
 
   def testGetLinkedFileEntry(self):
-    """Test the get linked file entry functionality."""
+    """Tests the GetLinkedFileEntry function."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=13, location=u'/a_link', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -59,7 +59,7 @@ class TSKFileEntryTest(unittest.TestCase):
     self.assertEqual(linked_file_entry.name, u'another_file')
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
@@ -73,7 +73,7 @@ class TSKFileEntryTest(unittest.TestCase):
     self.assertEqual(parent_file_entry.name, u'a_directory')
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
@@ -84,9 +84,23 @@ class TSKFileEntryTest(unittest.TestCase):
 
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 22)
+
+    self.assertEqual(stat_object.mode, 384)
+    self.assertEqual(stat_object.uid, 151107)
+    self.assertEqual(stat_object.gid, 5000)
+
+    self.assertEqual(stat_object.atime, 1337961563)
+    self.assertEqual(stat_object.atime_nano, 0)
+    self.assertEqual(stat_object.ctime, 1337961563)
+    self.assertEqual(stat_object.ctime_nano, 0)
+    self.assertEqual(stat_object.mtime, 1337961563)
+    self.assertEqual(stat_object.mtime_nano, 0)
+
+    # TODO: add tests for GetStat for other TSK file system back-ends.
 
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)
@@ -195,7 +209,7 @@ class TSKFileEntryTest(unittest.TestCase):
     self.assertEqual(data_stream_names, [])
 
   def testGetDataStream(self):
-    """Test the retrieve data streams functionality."""
+    """Tests the GetDataStream function."""
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=u'/a_directory/another_file',
         parent=self._os_path_spec)

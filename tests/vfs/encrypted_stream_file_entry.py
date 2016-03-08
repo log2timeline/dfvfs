@@ -54,7 +54,7 @@ class EncryptedStreamFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encrypted_stream_path_spec)
     self.assertIsNotNone(file_entry)
@@ -63,7 +63,7 @@ class EncryptedStreamFileEntryTest(unittest.TestCase):
     self.assertIsNone(parent_file_entry)
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encrypted_stream_path_spec)
     self.assertIsNotNone(file_entry)
@@ -71,9 +71,10 @@ class EncryptedStreamFileEntryTest(unittest.TestCase):
     stat_object = file_entry.GetStat()
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 1247)
 
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encrypted_stream_path_spec)
     self.assertIsNotNone(file_entry)

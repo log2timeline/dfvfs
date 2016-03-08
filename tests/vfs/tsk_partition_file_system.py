@@ -86,7 +86,7 @@ class TSKPartitionFileSystemTest(unittest.TestCase):
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context)
     self.assertIsNotNone(file_system)

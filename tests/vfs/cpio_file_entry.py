@@ -38,7 +38,7 @@ class CPIOFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
   def testGetParentFileEntry(self):
-    """Test the get parent file entry functionality."""
+    """Tests the GetParentFileEntry function."""
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -51,7 +51,7 @@ class CPIOFileEntryTest(unittest.TestCase):
     self.assertEqual(parent_file_entry.name, u'')
 
   def testGetStat(self):
-    """Test the get stat functionality."""
+    """Tests the GetStat function."""
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -61,9 +61,17 @@ class CPIOFileEntryTest(unittest.TestCase):
 
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 1247)
+
+    self.assertEqual(stat_object.mode, 436)
+    self.assertEqual(stat_object.uid, 1000)
+    self.assertEqual(stat_object.gid, 1000)
+
+    self.assertEqual(stat_object.mtime, 1432702913)
+    self.assertFalse(hasattr(stat_object, u'mtime_nano'))
 
   def testIsFunctions(self):
-    """Test the Is? functionality."""
+    """Test the Is? functions."""
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -147,7 +155,7 @@ class CPIOFileEntryTest(unittest.TestCase):
     self.assertEqual(data_stream_names, [])
 
   def testGetDataStream(self):
-    """Test the retrieve data streams functionality."""
+    """Tests the GetDataStream function."""
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)

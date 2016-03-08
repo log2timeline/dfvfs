@@ -49,7 +49,7 @@ class EncodedStreamFileSystemTest(unittest.TestCase):
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_system = encoded_stream_file_system.EncodedStreamFileSystem(
         self._resolver_context)
     self.assertIsNotNone(file_system)
