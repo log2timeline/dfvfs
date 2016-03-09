@@ -130,7 +130,7 @@ class ZipFileEntry(file_entry.FileEntry):
     if zip_info_date_time:
       date_time_values = time_elements.TimeElements(zip_info_date_time)
 
-      stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+      stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.mtime = stat_time
         stat_object.mtime_nano = stat_time_nano

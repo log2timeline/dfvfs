@@ -204,7 +204,8 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(attribute.modification_time)
     self.assertIsNotNone(attribute.entry_modification_time)
 
-    stat_time, stat_time_nano = attribute.modification_time.CopyToStatObject()
+    stat_time, stat_time_nano = (
+        attribute.modification_time.CopyToStatTimeTuple())
     self.assertEqual(stat_time, 1386052509)
     self.assertEqual(stat_time_nano, 5179783)
 
@@ -218,7 +219,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(attribute.modification_time)
     self.assertIsNotNone(attribute.entry_modification_time)
 
-    stat_time, stat_time_nano = attribute.access_time.CopyToStatObject()
+    stat_time, stat_time_nano = attribute.access_time.CopyToStatTimeTuple()
     self.assertEqual(stat_time, 1386052509)
     self.assertEqual(stat_time_nano, 5023783)
 

@@ -86,7 +86,7 @@ class FakeFileSystem(file_system.FileSystem):
     # Date and time stat information.
     date_time_values = fake_time.FakeTime()
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.atime = stat_time
       stat_object.atime_nano = stat_time_nano

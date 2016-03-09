@@ -38,13 +38,13 @@ class FiletimeTest(unittest.TestCase):
     filetime_object.CopyFromString(u'1601-01-02 00:00:00')
     self.assertEqual(filetime_object.timestamp, expected_timestamp)
 
-  def testCopyToStatObject(self):
-    """Tests the CopyToStatObject function."""
+  def testCopyToStatTimeTuple(self):
+    """Tests the CopyToStatTimeTuple function."""
     filetime_object = filetime.Filetime()
     filetime_object.CopyFromString(u'2010-08-12 21:06:31.546875+01:00')
 
     expected_stat_time_tuple = (1281643591, 5468750)
-    stat_time_tuple = filetime_object.CopyToStatObject()
+    stat_time_tuple = filetime_object.CopyToStatTimeTuple()
     self.assertEqual(stat_time_tuple, expected_stat_time_tuple)
 
 

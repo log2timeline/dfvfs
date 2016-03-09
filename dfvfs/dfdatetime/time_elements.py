@@ -18,12 +18,12 @@ class TimeElements(interface.DateTimeValues):
     super(TimeElements, self).__init__()
     self._time_elements_tuple = time_elements_tuple
 
-  def CopyToStatObject(self):
-    """Copies the timestamp to a stat object timestamp.
+  def CopyToStatTimeTuple(self):
+    """Copies the timestamp to a stat timestamp tuple.
 
     Returns:
       A tuple of an integer containing a POSIX timestamp in seconds
       and an integer containing the remainder in 100 nano seconds or
-      None on error.
+      Currently the remainder will always be 0.
     """
     return calendar.timegm(self._time_elements_tuple), 0

@@ -192,8 +192,8 @@ class DateTimeValues(object):
     return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
 
   @abc.abstractmethod
-  def CopyToStatObject(self):
-    """Copies the timestamp to a stat object timestamp.
+  def CopyToStatTimeTuple(self):
+    """Copies the timestamp to a stat timestamp tuple.
 
     Returns:
       A tuple of an integer containing a POSIX timestamp in seconds

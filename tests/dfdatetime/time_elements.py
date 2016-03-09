@@ -10,13 +10,13 @@ from dfvfs.dfdatetime import time_elements
 class PosixTimeTest(unittest.TestCase):
   """Tests for the POSIX timestamp object."""
 
-  def testCopyToStatObject(self):
-    """Tests the CopyToStatObject function."""
+  def testCopyToStatTimeTuple(self):
+    """Tests the CopyToStatTimeTuple function."""
     time_elements_object = time_elements.TimeElements(
         (2010, 8, 12, 20, 6, 31))
 
     expected_stat_time_tuple = (1281643591, 0)
-    stat_time_tuple = time_elements_object.CopyToStatObject()
+    stat_time_tuple = time_elements_object.CopyToStatTimeTuple()
     self.assertEqual(stat_time_tuple, expected_stat_time_tuple)
 
 

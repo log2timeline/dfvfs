@@ -335,37 +335,37 @@ class TSKFileEntry(file_entry.FileEntry):
     stat_object.size = getattr(tsk_file.info.meta, u'size', None)
 
     # Date and time stat information.
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatObject(
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
         tsk_file, u'atime')
     if stat_time is not None:
       stat_object.atime = stat_time
       stat_object.atime_nano = stat_time_nano
 
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatObject(
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
         tsk_file, u'bkup')
     if stat_time is not None:
       stat_object.bkup = stat_time
       stat_object.bkup_nano = stat_time_nano
 
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatObject(
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
         tsk_file, u'ctime')
     if stat_time is not None:
       stat_object.ctime = stat_time
       stat_object.ctime_nano = stat_time_nano
 
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatObject(
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
         tsk_file, u'crtime')
     if stat_time is not None:
       stat_object.crtime = stat_time
       stat_object.crtime_nano = stat_time_nano
 
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatObject(
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
         tsk_file, u'dtime')
     if stat_time is not None:
       stat_object.dtime = stat_time
       stat_object.dtime_nano = stat_time_nano
 
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatObject(
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
         tsk_file, u'mtime')
     if stat_time is not None:
       stat_object.mtime = stat_time
@@ -421,8 +421,8 @@ class TSKFileEntry(file_entry.FileEntry):
 
     return stat_object
 
-  def _TSKFileTimeCopyToStatObject(self, tsk_file, time_value):
-    """Copies a SleuthKit file object time value to a stat object timestamp.
+  def _TSKFileTimeCopyToStatTimeTuple(self, tsk_file, time_value):
+    """Copies a SleuthKit file object time value to a stat timestamp tuple.
 
     Args:
       tsk_file: a SleuthKit file object (instance of pytsk3.File).

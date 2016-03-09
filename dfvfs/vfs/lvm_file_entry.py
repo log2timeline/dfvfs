@@ -107,7 +107,7 @@ class LVMFileEntry(file_entry.FileEntry):
       if timestamp is not None:
         date_time_values = posix_time.PosixTimestamp(timestamp)
 
-        stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+        stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
         if stat_time is not None:
           stat_object.crtime = stat_time
           stat_object.crtime_nano = stat_time_nano

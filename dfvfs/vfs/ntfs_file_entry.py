@@ -356,7 +356,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     timestamp = fsntfs_file_entry.get_access_time_as_integer()
     date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.atime = stat_time
       stat_object.atime_nano = stat_time_nano
@@ -364,7 +364,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     timestamp = fsntfs_file_entry.get_creation_time_as_integer()
     date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.crtime = stat_time
       stat_object.crtime_nano = stat_time_nano
@@ -372,7 +372,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     timestamp = fsntfs_file_entry.get_modification_time_as_integer()
     date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.mtime = stat_time
       stat_object.mtime_nano = stat_time_nano
@@ -380,7 +380,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     timestamp = fsntfs_file_entry.get_entry_modification_time_as_integer()
     date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.ctime = stat_time
       stat_object.ctime_nano = stat_time_nano

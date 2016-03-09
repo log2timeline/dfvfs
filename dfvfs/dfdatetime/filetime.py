@@ -78,8 +78,8 @@ class Filetime(interface.DateTimeValues):
     self.timestamp = (self.timestamp * 1000000) + micro_seconds
     self.timestamp *= 10
 
-  def CopyToStatObject(self):
-    """Copies the timestamp to a stat object timestamp.
+  def CopyToStatTimeTuple(self):
+    """Copies the timestamp to a stat timestamp tuple.
 
     Returns:
       A tuple of an integer containing a POSIX timestamp in seconds

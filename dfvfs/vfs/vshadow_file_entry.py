@@ -104,7 +104,7 @@ class VShadowFileEntry(file_entry.FileEntry):
       timestamp = vshadow_store.get_creation_time_as_integer()
       date_time_values = filetime.Filetime(timestamp=timestamp)
 
-      stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+      stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.crtime = stat_time
         stat_object.crtime_nano = stat_time_nano
