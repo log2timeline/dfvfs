@@ -335,25 +335,41 @@ class TSKFileEntry(file_entry.FileEntry):
     stat_object.size = getattr(tsk_file.info.meta, u'size', None)
 
     # Date and time stat information.
-    stat_object.atime = getattr(tsk_file.info.meta, u'atime', None)
-    stat_object.atime_nano = getattr(
-        tsk_file.info.meta, u'atime_nano', None)
-    stat_object.bkup_time = getattr(
-        tsk_file.info.meta, u'bkup_time', None)
-    stat_object.bkup_time_nano = getattr(
-        tsk_file.info.meta, u'bkup_time_nano', None)
-    stat_object.ctime = getattr(tsk_file.info.meta, u'ctime', None)
-    stat_object.ctime_nano = getattr(
-        tsk_file.info.meta, u'ctime_nano', None)
-    stat_object.crtime = getattr(tsk_file.info.meta, u'crtime', None)
-    stat_object.crtime_nano = getattr(
-        tsk_file.info.meta, u'crtime_nano', None)
-    stat_object.dtime = getattr(tsk_file.info.meta, u'dtime', None)
-    stat_object.dtime_nano = getattr(
-        tsk_file.info.meta, u'dtime_nano', None)
-    stat_object.mtime = getattr(tsk_file.info.meta, u'mtime', None)
-    stat_object.mtime_nano = getattr(
-        tsk_file.info.meta, u'mtime_nano', None)
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
+        tsk_file, u'atime')
+    if stat_time is not None:
+      stat_object.atime = stat_time
+      stat_object.atime_nano = stat_time_nano
+
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
+        tsk_file, u'bkup')
+    if stat_time is not None:
+      stat_object.bkup = stat_time
+      stat_object.bkup_nano = stat_time_nano
+
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
+        tsk_file, u'ctime')
+    if stat_time is not None:
+      stat_object.ctime = stat_time
+      stat_object.ctime_nano = stat_time_nano
+
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
+        tsk_file, u'crtime')
+    if stat_time is not None:
+      stat_object.crtime = stat_time
+      stat_object.crtime_nano = stat_time_nano
+
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
+        tsk_file, u'dtime')
+    if stat_time is not None:
+      stat_object.dtime = stat_time
+      stat_object.dtime_nano = stat_time_nano
+
+    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
+        tsk_file, u'mtime')
+    if stat_time is not None:
+      stat_object.mtime = stat_time
+      stat_object.mtime_nano = stat_time_nano
 
     # Ownership and permissions stat information.
     mode = getattr(tsk_file.info.meta, u'mode', None)
@@ -404,6 +420,35 @@ class TSKFileEntry(file_entry.FileEntry):
       stat_object.is_allocated = False
 
     return stat_object
+
+  def _TSKFileTimeCopyToStatTimeTuple(self, tsk_file, time_value):
+    """Copies a SleuthKit file object time value to a stat timestamp tuple.
+
+    Args:
+      tsk_file: a SleuthKit file object (instance of pytsk3.File).
+      time_value: a string containing the name of the time value.
+
+    Returns:
+      A tuple of an integer containing a POSIX timestamp in seconds
+      and an integer containing the remainder in 100 nano seconds or
+      None on error.
+
+    Raises:
+      BackEndError: if the TSK File .info or .info.meta attribute is missing.
+    """
+    if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
+      raise errors.BackEndError(u'Missing TSK File .info or .info.meta.')
+
+    time_value_nano = u'{0:s}_nano'.format(time_value)
+    stat_time = getattr(tsk_file.info.meta, time_value, None)
+    stat_time_nano = getattr(tsk_file.info.meta, time_value_nano, None)
+
+    # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
+    # 1 nano seconds precision.
+    if stat_time_nano is not None and pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      stat_time_nano /= 100
+
+    return stat_time, stat_time_nano
 
   @property
   def name(self):

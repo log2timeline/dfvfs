@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The zip file entry implementation."""
 
-from dfvfs.lib import date_time
+from dfvfs.dfdatetime import time_elements
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3
@@ -128,9 +128,9 @@ class ZipFileEntry(file_entry.FileEntry):
     # TODO: move this to a timelib equivalent.
     zip_info_date_time = getattr(zip_info, u'date_time', None)
     if zip_info_date_time:
-      date_time_values = date_time.TimeElements(zip_info_date_time)
+      date_time_values = time_elements.TimeElements(zip_info_date_time)
 
-      stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+      stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.mtime = stat_time
         stat_object.mtime_nano = stat_time_nano

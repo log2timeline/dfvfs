@@ -5,7 +5,7 @@ import copy
 
 import pyfsntfs
 
-from dfvfs.lib import date_time
+from dfvfs.dfdatetime import filetime
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
@@ -44,20 +44,20 @@ class FileNameNTFSAttribute(NTFSAttribute):
   @property
   def access_time(self):
     """The access time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_access_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_access_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def creation_time(self):
     """The creation time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_creation_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_creation_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def entry_modification_time(self):
     """The entry modification time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_entry_modification_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_entry_modification_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def file_attribute_flags(self):
@@ -67,8 +67,8 @@ class FileNameNTFSAttribute(NTFSAttribute):
   @property
   def modification_time(self):
     """The modification time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_modification_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_modification_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def name(self):
@@ -100,20 +100,20 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
   @property
   def access_time(self):
     """The access time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_access_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_access_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def creation_time(self):
     """The creation time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_creation_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_creation_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def entry_modification_time(self):
     """The entry modification time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_entry_modification_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_entry_modification_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def file_attribute_flags(self):
@@ -123,8 +123,8 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
   @property
   def modification_time(self):
     """The modification time (instance of Filetime)."""
-    return date_time.Filetime(
-        self._fsntfs_attribute.get_modification_time_as_integer())
+    timestamp = self._fsntfs_attribute.get_modification_time_as_integer()
+    return filetime.Filetime(timestamp=timestamp)
 
   @property
   def owner_identifier(self):
@@ -353,34 +353,34 @@ class NTFSFileEntry(file_entry.FileEntry):
       stat_object.size = fsntfs_file_entry.get_size()
 
     # Date and time stat information.
-    date_time_values = date_time.Filetime(
-        fsntfs_file_entry.get_access_time_as_integer())
+    timestamp = fsntfs_file_entry.get_access_time_as_integer()
+    date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.atime = stat_time
       stat_object.atime_nano = stat_time_nano
 
-    date_time_values = date_time.Filetime(
-        fsntfs_file_entry.get_creation_time_as_integer())
+    timestamp = fsntfs_file_entry.get_creation_time_as_integer()
+    date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.crtime = stat_time
       stat_object.crtime_nano = stat_time_nano
 
-    date_time_values = date_time.Filetime(
-        fsntfs_file_entry.get_modification_time_as_integer())
+    timestamp = fsntfs_file_entry.get_modification_time_as_integer()
+    date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.mtime = stat_time
       stat_object.mtime_nano = stat_time_nano
 
-    date_time_values = date_time.Filetime(
-        fsntfs_file_entry.get_entry_modification_time_as_integer())
+    timestamp = fsntfs_file_entry.get_entry_modification_time_as_integer()
+    date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.ctime = stat_time
       stat_object.ctime_nano = stat_time_nano

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file entry implementation."""
 
-from dfvfs.lib import date_time
+from dfvfs.dfdatetime import filetime
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import vshadow
@@ -101,10 +101,10 @@ class VShadowFileEntry(file_entry.FileEntry):
 
     # Date and time stat information.
     if vshadow_store is not None:
-      date_time_values = date_time.Filetime(
-          vshadow_store.get_creation_time_as_integer())
+      timestamp = vshadow_store.get_creation_time_as_integer()
+      date_time_values = filetime.Filetime(timestamp=timestamp)
 
-      stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+      stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.crtime = stat_time
         stat_object.crtime_nano = stat_time_nano

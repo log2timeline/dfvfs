@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The BDE file entry implementation."""
 
-from dfvfs.lib import date_time
+from dfvfs.dfdatetime import filetime
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
@@ -32,10 +32,10 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     stat_object.size = bde_volume.get_size()
 
     # Date and time stat information.
-    date_time_values = date_time.Filetime(
-        bde_volume.get_creation_time_as_integer())
+    timestamp = bde_volume.get_creation_time_as_integer()
+    date_time_values = filetime.Filetime(timestamp=timestamp)
 
-    stat_time, stat_time_nano = date_time_values.CopyToStatObject()
+    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
       stat_object.crtime = stat_time
       stat_object.crtime_nano = stat_time_nano
