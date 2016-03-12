@@ -5,7 +5,7 @@
 import sys
 import unittest
 
-# Change PYTHONPATH to include dfVFS.
+# Change PYTHONPATH to include dfvfs.
 sys.path.insert(0, u'.')
 
 import dfvfs.dependencies

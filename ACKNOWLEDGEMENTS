@@ -14,8 +14,8 @@ It was largely rewritten and made into a stand-alone project to provide more
 flexibility and allow other projects to make use of the VFS functionality.
 dfVFS originally was named PyVFS, but that name conflicted with another project.
 
-dfVFS is developed and maintained by:
-* Kristinn Gudjonsson
+dfVFS is currently developed and maintained by:
+* Daniel White
 * Joachim Metz
 
 dfVFS depends on various other projects. So thanks to the authors and others
