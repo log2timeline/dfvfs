@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """The BDE file entry implementation."""
 
-from dfvfs.dfdatetime import filetime
+from dfdatetime import filetime
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry

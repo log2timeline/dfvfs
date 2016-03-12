@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """The fake file system implementation."""
 
-from dfvfs.dfdatetime import fake_time
+from dfdatetime import fake_time
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import fake_path_spec

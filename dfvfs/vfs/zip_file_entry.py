@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """The zip file entry implementation."""
 
-from dfvfs.dfdatetime import time_elements
+from dfdatetime import time_elements
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3

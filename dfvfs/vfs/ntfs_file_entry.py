@@ -3,9 +3,9 @@
 
 import copy
 
+from dfdatetime import filetime
 import pyfsntfs
 
-from dfvfs.dfdatetime import filetime
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
