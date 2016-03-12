@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The fake file system implementation."""
 
-from dfdatetime import fake_time
+from dfdatetime import fake_time as dfdatetime_fake_time
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -85,7 +85,7 @@ class FakeFileSystem(file_system.FileSystem):
       stat_object.size = len(file_data)
 
     # Date and time stat information.
-    date_time_values = fake_time.FakeTime()
+    date_time_values = dfdatetime_fake_time.FakeTime()
 
     stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:

@@ -3,7 +3,7 @@
 
 import copy
 
-from dfdatetime import filetime
+from dfdatetime import filetime as dfdatetime_filetime
 import pyfsntfs
 
 from dfvfs.lib import definitions
@@ -45,19 +45,19 @@ class FileNameNTFSAttribute(NTFSAttribute):
   def access_time(self):
     """The access time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_access_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def creation_time(self):
     """The creation time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_creation_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def entry_modification_time(self):
     """The entry modification time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_entry_modification_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def file_attribute_flags(self):
@@ -68,7 +68,7 @@ class FileNameNTFSAttribute(NTFSAttribute):
   def modification_time(self):
     """The modification time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_modification_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def name(self):
@@ -101,19 +101,19 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
   def access_time(self):
     """The access time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_access_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def creation_time(self):
     """The creation time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_creation_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def entry_modification_time(self):
     """The entry modification time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_entry_modification_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def file_attribute_flags(self):
@@ -124,7 +124,7 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
   def modification_time(self):
     """The modification time (instance of Filetime)."""
     timestamp = self._fsntfs_attribute.get_modification_time_as_integer()
-    return filetime.Filetime(timestamp=timestamp)
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def owner_identifier(self):
@@ -354,7 +354,7 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     # Date and time stat information.
     timestamp = fsntfs_file_entry.get_access_time_as_integer()
-    date_time_values = filetime.Filetime(timestamp=timestamp)
+    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
 
     stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
@@ -362,7 +362,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       stat_object.atime_nano = stat_time_nano
 
     timestamp = fsntfs_file_entry.get_creation_time_as_integer()
-    date_time_values = filetime.Filetime(timestamp=timestamp)
+    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
 
     stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
@@ -370,7 +370,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       stat_object.crtime_nano = stat_time_nano
 
     timestamp = fsntfs_file_entry.get_modification_time_as_integer()
-    date_time_values = filetime.Filetime(timestamp=timestamp)
+    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
 
     stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
@@ -378,7 +378,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       stat_object.mtime_nano = stat_time_nano
 
     timestamp = fsntfs_file_entry.get_entry_modification_time_as_integer()
-    date_time_values = filetime.Filetime(timestamp=timestamp)
+    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
 
     stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
     if stat_time is not None:
