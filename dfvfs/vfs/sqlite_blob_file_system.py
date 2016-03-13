@@ -38,7 +38,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -60,7 +60,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       Boolean indicating if the file entry exists.
@@ -71,7 +71,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
     try:
       file_object = resolver.Resolver.OpenFileObject(
           path_spec, resolver_context=self._resolver_context)
-    except (errors.AccessError, errors.PathSpecError, IOError, ValueError):
+    except (IOError, ValueError, errors.AccessError, errors.PathSpecError):
       return False
 
     file_object.close()
@@ -81,7 +81,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       A file entry (instance of vfs.FileEntry) or None.

@@ -88,6 +88,7 @@ class VolumeScanner(object):
     self._source_path = None
     self._source_scanner = source_scanner.SourceScanner()
     self._source_type = None
+    self._vss_stores = None
 
   def _GetTSKPartitionIdentifiers(self, scan_node):
     """Determines the TSK partition identifiers.

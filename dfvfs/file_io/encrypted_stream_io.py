@@ -111,7 +111,7 @@ class EncryptedStream(file_io.FileIO):
     """Opens the file-like object.
 
     Args:
-      path_spec: optional path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

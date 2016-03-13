@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Imports for path specification factory."""
 
 from dfvfs.path import bde_path_spec
 from dfvfs.path import compressed_stream_path_spec

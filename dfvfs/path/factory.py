@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) path specification factory object."""
+"""The path specification factory."""
 
 
 class Factory(object):
-  """Class that implements the VFS path specification factory."""
+  """Class that implements the path specification factory."""
 
   PROPERTY_NAMES = frozenset([
       u'column_name',
@@ -35,7 +35,7 @@ class Factory(object):
     """Deregisters a path specification.
 
     Args:
-      path_spec_type: the VFS path specification type (or class) object.
+      path_spec_type: the path specification type (or class) object.
 
     Raises:
       KeyError: if path specification is not registered.
@@ -55,7 +55,7 @@ class Factory(object):
     """Retrieves a dictionary containing the path specification properties.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Raises:
       A dictionary object containing the properties.
@@ -86,12 +86,12 @@ class Factory(object):
     """Creates a new path specification for the specific type indicator.
 
     Args:
-      type_indicator: the VFS path specification type indicator.
+      type_indicator: the path specification type indicator.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 
     Returns:
-      The VFS path specification (instance of path.PathSpec).
+      The VFS path specification (instance of PathSpec).
 
     Raises:
       KeyError: if path specification is not registered.
@@ -113,7 +113,7 @@ class Factory(object):
     """Registers a path specification type.
 
     Args:
-      path_spec_type: the VFS path specification type (or class) object.
+      path_spec_type: the path specification type (or class) object.
 
     Raises:
       KeyError: if path specification is already registered.

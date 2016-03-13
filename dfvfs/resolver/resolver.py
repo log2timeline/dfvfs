@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) path specification resolver object."""
+"""The path specification resolver."""
 
 from dfvfs.credentials import keychain
 from dfvfs.lib import definitions
@@ -9,7 +9,7 @@ from dfvfs.resolver import context
 
 
 class Resolver(object):
-  """Class that implements the VFS path specification resolver."""
+  """Class that implements the path specification resolver."""
 
   _resolver_context = context.Context()
   _resolver_helpers = {}
@@ -22,7 +22,7 @@ class Resolver(object):
 
     Args:
       resolver_helper: the resolver helper object (instance of
-                       resolver.ResolverHelper).
+                       ResolverHelper).
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
@@ -40,7 +40,7 @@ class Resolver(object):
     """Opens a file entry object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -68,7 +68,7 @@ class Resolver(object):
     """Opens a file-like object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -118,7 +118,7 @@ class Resolver(object):
     """Opens a file system object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -178,7 +178,7 @@ class Resolver(object):
 
     Args:
       resolver_helper: the resolver helper object (instance of
-                       resolver.ResolverHelper).
+                       ResolverHelper).
 
     Raises:
       KeyError: if resolver helper object is already set for the corresponding

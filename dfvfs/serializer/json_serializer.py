@@ -38,7 +38,7 @@ class _PathSpecJsonDecoder(json.JSONDecoder):
       json_dict: a dictionary of the JSON serialized objects.
 
     Returns:
-      A path specification (instance of path.PathSpec).
+      A path specification (instance of PathSpec).
 
     Raises:
       TypeError: if the JSON serialized object does not contain a '__type__'
@@ -91,13 +91,13 @@ class _PathSpecJsonEncoder(json.JSONEncoder):
     by the JSON encoder.
 
     Args:
-      path_spec_object: a path specification (instance of path.PathSpec).
+      path_spec_object: a path specification (instance of PathSpec).
 
     Returns:
       A dictionary of the JSON serialized objects.
 
     Raises:
-      TypeError: if not an instance of path.PathSpec.
+      TypeError: if not an instance of PathSpec.
     """
     if not isinstance(path_spec_object, path_spec.PathSpec):
       raise TypeError
@@ -134,7 +134,7 @@ class JsonPathSpecSerializer(serializer.PathSpecSerializer):
       json_string: a JSON string containing the serialized path specification.
 
     Returns:
-      A path specification (instance of path.PathSpec).
+      A path specification (instance of PathSpec).
     """
     json_decoder = _PathSpecJsonDecoder()
     return json_decoder.decode(json_string)
@@ -144,7 +144,7 @@ class JsonPathSpecSerializer(serializer.PathSpecSerializer):
     """Writes a path specification to serialized form.
 
     Args:
-      path_spec_object: a path specification (instance of path.PathSpec).
+      path_spec_object: a path specification (instance of PathSpec).
 
     Returns:
       A JSON string containing the serialized path specification.

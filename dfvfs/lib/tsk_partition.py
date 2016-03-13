@@ -9,7 +9,7 @@ def GetTSKVsPartByPathSpec(tsk_volume, path_spec):
 
   Args:
     tsk_volume: a TSK volume object (instance of pytsk3.Volume_Info).
-    path_spec: the path specification (instance of path.PathSpec).
+    path_spec: the path specification (instance of PathSpec).
 
   Returns:
     A tuple of the TSK volume system part object (instance of

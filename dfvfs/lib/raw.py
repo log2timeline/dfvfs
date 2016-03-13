@@ -11,8 +11,8 @@ def _RawGlobPathSpecWithAlphabeticalSchema(
   """Globs for path specifications according to an alphabetical naming schema.
 
   Args:
-    file_system: the file system object (instance of vfs.FileSystem).
-    parent_path_spec: the parent path specification (instance of path.PathSpec).
+    file_system: the file system object (instance of FileSystem).
+    parent_path_spec: the parent path specification (instance of PathSpec).
     segment_format: the format string of the segment file location.
     location: the base segment file location string.
     segment_length: the length (number of characters) of the segment indicator.
@@ -65,8 +65,8 @@ def _RawGlobPathSpecWithNumericSchema(
   """Globs for path specifications according to a numeric naming schema.
 
   Args:
-    file_system: the file system object (instance of vfs.FileSystem).
-    parent_path_spec: the parent path specification (instance of path.PathSpec).
+    file_system: the file system object (instance of FileSystem).
+    parent_path_spec: the parent path specification (instance of PathSpec).
     segment_format: the format string of the segment file location.
     location: the base segment file location string.
     segment_number: the first segment number.
@@ -105,8 +105,8 @@ def RawGlobPathSpec(file_system, path_spec):
   """Globs for path specifications according to the split RAW naming schema.
 
   Args:
-    file_system: the file system object (instance of vfs.FileSystem).
-    path_spec: the path specification (instance of path.PathSpec).
+    file_system: the file system object (instance of FileSystem).
+    path_spec: the path specification (instance of PathSpec).
 
   Returns:
     A list of the path specifications that match the glob.

@@ -32,7 +32,7 @@ class SourceScanNode(object):
     """Initializes the source scan node object.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
     """
     super(SourceScanNode, self).__init__()
     self.path_spec = path_spec
@@ -110,7 +110,7 @@ class SourceScannerContext(object):
     """Adds a scan node for a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       parent_scan_node: the parent scan node (instance of SourceScanNode)
                         or None.
 
@@ -159,7 +159,7 @@ class SourceScannerContext(object):
     """Determines if there is a scan node for a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       A boolean value indicating if there is a scan node for
@@ -179,7 +179,7 @@ class SourceScannerContext(object):
     """Retrieves a scan node for a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       A scan node (instance of SourceScanNode) or None.
@@ -205,7 +205,7 @@ class SourceScannerContext(object):
     e.g. password, to unlock the volume is not available.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec)
+      path_spec: the path specification (instance of PathSpec)
                  of the scan node.
 
     Returns:
@@ -235,7 +235,7 @@ class SourceScannerContext(object):
     """Marks a scan node as locked.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Raises:
       KeyError: if the scan node does not exists.
@@ -261,7 +261,7 @@ class SourceScannerContext(object):
     """Removes a scan node of a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       The parent scan node (instance of SourceScanNode) or
@@ -303,7 +303,7 @@ class SourceScannerContext(object):
     """Marks a scan node as unlocked.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Raises:
       KeyError: if the scan node does not exists.
@@ -541,7 +541,7 @@ class SourceScanner(object):
       auto_recurse: optional boolean value to indicate if the scan should
                     automatically recurse as far as possible. The default
                     is True.
-      scan_path_spec: optional path specification (instance of path.PathSpec)
+      scan_path_spec: optional path specification (instance of PathSpec)
                       to indicate where the source scanner should continue
                       scanning. The default is None which indicates the
                       scanner will start with the sources.
@@ -715,7 +715,7 @@ class SourceScanner(object):
     Args:
       scan_context: the source scanner context (instance of
                     SourceScannerContext).
-      path_spec: the path specification (instance of path.PathSpec) of
+      path_spec: the path specification (instance of PathSpec) of
                  the locked scan node.
       credential_identifier: string containing the credential identifier used
                              to unlock the scan node.

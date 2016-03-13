@@ -10,7 +10,7 @@ from dfvfs.credentials import manager
 
 
 class KeyChain(object):
-  """Class that implements the VFS key chain."""
+  """Class that implements the key chain."""
 
   def __init__(self):
     """Initializes the key chain object."""
@@ -21,7 +21,7 @@ class KeyChain(object):
     """Retrieves a specific credential from the key chain.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       identifier: string containing the credential identifier.
 
     Returns:
@@ -35,7 +35,7 @@ class KeyChain(object):
     """Retrieves all credentials for the path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       A dictionary containing the credentials which is empty if the credentials
@@ -47,7 +47,7 @@ class KeyChain(object):
     """Sets a specific credential for the path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       identifier: string containing the credential identifier.
       data: the credential data.
 

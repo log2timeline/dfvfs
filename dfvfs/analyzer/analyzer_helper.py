@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) analyzer helper object interface."""
+"""The analyzer helper object interface."""
 
 
 class AnalyzerHelper(object):

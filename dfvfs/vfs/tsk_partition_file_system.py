@@ -46,7 +46,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:
@@ -76,7 +76,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       Boolean indicating if the file entry exists.
@@ -96,7 +96,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       A file entry (instance of vfs.TSKPartitionFileEntry) or None.

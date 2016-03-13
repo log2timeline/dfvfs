@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) path specification mount point manager object.
+"""The path specification mount point manager.
 
 The mount point manager allows to "mount" one path specification onto another.
 This allows dfVFS to expose complex path specifications in a way closer to
@@ -23,7 +23,7 @@ type=TSK_PARTITION, location=/p1
 
 
 class MountPointManager(object):
-  """Class that implements the moint point manager."""
+  """Class that implements the path specification moint point manager."""
 
   _mount_points = {}
 
@@ -51,8 +51,8 @@ class MountPointManager(object):
       mount_point: the mount point identifier.
 
     Returns:
-      The VFS path specification (instance of path.PathSpec) or None if
-      the mount point does not exists.
+      The VFS path specification (instance of PathSpec) or
+      None if the mount point does not exists.
     """
     return cls._mount_points.get(mount_point, None)
 
@@ -62,7 +62,7 @@ class MountPointManager(object):
 
     Args:
       mount_point: the mount point identifier.
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Raises:
       KeyError: if the corresponding mount point is already set.

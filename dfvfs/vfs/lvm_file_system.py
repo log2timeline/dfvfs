@@ -31,6 +31,7 @@ class LVMFileSystem(file_system.FileSystem):
     """
     super(LVMFileSystem, self).__init__(resolver_context)
     self._file_object = None
+    self._vslvm_volume_group = None
     self._vslvm_handle = None
 
   def _Close(self):

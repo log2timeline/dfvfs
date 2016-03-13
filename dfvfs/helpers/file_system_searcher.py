@@ -122,7 +122,7 @@ class FindSpec(object):
     """Checks the file entry type find specifications.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not or
@@ -142,7 +142,7 @@ class FindSpec(object):
     """Checks the is_allocated find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not or
@@ -156,7 +156,7 @@ class FindSpec(object):
     """Checks the is_device find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not.
@@ -169,7 +169,7 @@ class FindSpec(object):
     """Checks the is_directory find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not.
@@ -182,7 +182,7 @@ class FindSpec(object):
     """Checks the is_file find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not.
@@ -195,7 +195,7 @@ class FindSpec(object):
     """Checks the is_link find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not.
@@ -208,7 +208,7 @@ class FindSpec(object):
     """Checks the is_pipe find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not.
@@ -221,7 +221,7 @@ class FindSpec(object):
     """Checks the is_socket find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
 
     Returns:
       True if the file entry matches the find specification, False if not.
@@ -234,7 +234,7 @@ class FindSpec(object):
     """Checks the location find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
       search_depth: the search depth.
 
     Returns:
@@ -321,7 +321,7 @@ class FindSpec(object):
     """Initializes find specification for matching.
 
     Args:
-      file_system: the file system object (instance of vfs.FileSystem).
+      file_system: the file system object (instance of FileSystem).
     """
     if self._location is not None:
       self._location_segments = self._SplitPath(
@@ -343,7 +343,7 @@ class FindSpec(object):
     """Determines if the file entry matches the find specification.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
       search_depth: the search depth.
 
     Returns:
@@ -380,9 +380,8 @@ class FileSystemSearcher(object):
     """Initializes the file system searcher.
 
     Args:
-      file_system: the file system object (instance of vfs.FileSystem).
-      mount_point: the mount point path specification (instance of
-                   path.PathSpec).
+      file_system: the file system object (instance of FileSystem).
+      mount_point: the mount point path specification (instance of PathSpec).
 
     Raises:
       PathSpecError: if the mount point path specification is incorrect.
@@ -406,13 +405,13 @@ class FileSystemSearcher(object):
     """Searches for matching file entries within the file entry.
 
     Args:
-      file_entry: the file entry (instance of vfs.FileEntry).
+      file_entry: the file entry (instance of FileEntry).
       find_specs: a list of find specifications (instances of FindSpec).
       search_depth: the search depth.
 
     Yields:
       The path specification of the matching file entries (instances of
-      path.PathSpec).
+      PathSpec).
     """
     sub_find_specs = []
     for find_spec in find_specs:
@@ -445,7 +444,7 @@ class FileSystemSearcher(object):
 
     Yields:
       The path specification of the matching file entries (instances of
-      path.PathSpec).
+      PathSpec).
     """
     if not find_specs:
       find_specs.append(FindSpec())
@@ -466,10 +465,10 @@ class FileSystemSearcher(object):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      A file entry (instance of FileEntry) or None.
     """
     return self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -480,7 +479,7 @@ class FileSystemSearcher(object):
     The the location of the mount point is stripped off if relevant.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       The corresponding relative path or None if the relative path could not

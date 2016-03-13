@@ -30,7 +30,7 @@ class Context(object):
     """Determines the file system cache identifier for the path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       The string that identifiers the VFS object.
@@ -46,8 +46,8 @@ class Context(object):
     """Caches a file-like object based on a path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
-      file_object: the file-like object (instance of file_io.FileIO).
+      path_spec: the path specification (instance of PathSpec).
+      file_object: the file-like object (instance of FileIO).
     """
     self._file_object_cache.CacheObject(path_spec.comparable, file_object)
 
@@ -55,7 +55,7 @@ class Context(object):
     """Caches a file system object based on a path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       file_system: the file system object (instance of vfs.FileSystem).
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
@@ -70,7 +70,7 @@ class Context(object):
     """Forces the removal of a file-like object based on a path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       A boolean that indicates the file-like object was cached or not.
@@ -88,10 +88,10 @@ class Context(object):
     """Retrieves a file-like object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
-      The file-like object (instance of file_io.FileIO) or None if not cached.
+      The file-like object (instance of FileIO) or None if not cached.
     """
     return self._file_object_cache.GetObject(path_spec.comparable)
 
@@ -99,7 +99,7 @@ class Context(object):
     """Retrieves the reference count of a cached file-like object.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       An integer containing the reference count or None if there is no
@@ -115,7 +115,7 @@ class Context(object):
     """Retrieves a file system object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       The file system object (instance of vfs.FileSystem) or None if not cached.
@@ -127,7 +127,7 @@ class Context(object):
     """Retrieves the reference count of a cached file system object.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       An integer containing the reference count or None if there is no
@@ -144,7 +144,7 @@ class Context(object):
     """Grabs a cached file-like object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
     """
     self._file_object_cache.GrabObject(path_spec.comparable)
 
@@ -152,7 +152,7 @@ class Context(object):
     """Grabs a cached file system object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     self._file_system_cache.GrabObject(identifier)
@@ -161,7 +161,7 @@ class Context(object):
     """Releases a cached file-like object.
 
     Args:
-      file_object: the file-like object (instance of file_io.FileIO).
+      file_object: the file-like object (instance of FileIO).
 
     Returns:
       A boolean value indicating true if the file-like object can be closed.

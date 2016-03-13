@@ -9,8 +9,8 @@ def EWFGlobPathSpec(file_system, path_spec):
   """Globs for path specifications according to the EWF naming schema.
 
   Args:
-    file_system: the file system object (instance of vfs.FileSystem).
-    path_spec: the path specification (instance of path.PathSpec).
+    file_system: the file system object (instance of FileSystem).
+    path_spec: the path specification (instance of PathSpec).
 
   Returns:
     A list of the path specifications that match the glob.

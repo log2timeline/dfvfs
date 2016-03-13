@@ -23,7 +23,7 @@ class TestResolverHelper(resolver_helper.ResolverHelper):
       resolver_context: the resolver context (instance of resolver.Context).
 
     Returns:
-      The file-like object (instance of file_io.FileIO).
+      The file-like object (instance of FileIO).
     """
     return
 
@@ -40,7 +40,7 @@ class ResolverHelperTestCase(unittest.TestCase):
 
     Args:
       resolver_helper_object: the resolver helper object (instance of
-                              resolver.ResolverHelper).
+                              ResolverHelper).
     """
     file_object = resolver_helper_object.NewFileObject(self._resolver_context)
 
@@ -51,7 +51,7 @@ class ResolverHelperTestCase(unittest.TestCase):
 
     Args:
       resolver_helper_object: the resolver helper object (instance of
-                              resolver.ResolverHelper).
+                              ResolverHelper).
     """
     file_system = resolver_helper_object.NewFileSystem(self._resolver_context)
 
@@ -62,7 +62,7 @@ class ResolverHelperTestCase(unittest.TestCase):
 
     Args:
       resolver_helper_object: the resolver helper object (instance of
-                              resolver.ResolverHelper).
+                              ResolverHelper).
     """
     with self.assertRaises(RuntimeError):
       _ = resolver_helper_object.NewFileSystem(self._resolver_context)
@@ -72,8 +72,8 @@ class ResolverHelperTestCase(unittest.TestCase):
 
     Args:
       resolver_helper_object: the resolver helper object (instance of
-                              resolver.ResolverHelper).
-      path_spec: the VFS path specification (instance of path.PathSpec).
+                              ResolverHelper).
+      path_spec: the path specification (instance of PathSpec).
     """
     file_object = resolver_helper_object.OpenFileObject(
         path_spec, self._resolver_context)

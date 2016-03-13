@@ -113,7 +113,7 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
     for scan_node in scan_node.sub_nodes:
-      if getattr(scan_node.path_spec, u'location', None) == None:
+      if getattr(scan_node.path_spec, u'location', None) is None:
         break
 
     self.assertIsNotNone(scan_node)

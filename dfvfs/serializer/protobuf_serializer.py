@@ -47,7 +47,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
              containing the serialized form.
 
     Returns:
-      A path specification (instance of path.PathSpec).
+      A path specification (instance of PathSpec).
 
     Raises:
       RuntimeError: when proto is not of type: transmission_pb2.PathSpec.
@@ -81,7 +81,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
       proto_string: a protobuf string containing the serialized form.
 
     Returns:
-      A path specification (instance of path.PathSpec).
+      A path specification (instance of PathSpec).
     """
     proto = transmission_pb2.PathSpec()
     proto.ParseFromString(proto_string)
@@ -93,7 +93,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
     """Writes a path specification to serialized form.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       A protobuf object (instance of (transmission_pb2.PathSpec)
@@ -126,7 +126,7 @@ class ProtobufPathSpecSerializer(serializer.PathSpecSerializer):
     """Writes a path specification to serialized form.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       A protobuf string containing the serialized form.

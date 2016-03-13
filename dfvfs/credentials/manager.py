@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) path specification credentials manager object.
+"""The path specification credentials manager.
 
 The credentials manager uses credential (instances of Credentials) to specify
 which credentials a specific path specification type supports. E.g. in case
@@ -39,7 +39,7 @@ class CredentialsManager(object):
     """Retrieves the credentials for a specific path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       The credentials (instance of credentials.Credentials) or None if the path
