@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the VFS path specification factory object."""
+"""Tests for the path specification factory."""
 
 import unittest
 
@@ -11,7 +11,7 @@ from tests.path import test_lib
 
 
 class FactoryTest(unittest.TestCase):
-  """Class to test the VFS path specification factory object."""
+  """Class to test the path specification factory object."""
 
   def testPathSpecRegistration(self):
     """Tests the DeregisterPathSpec and DeregisterPathSpec functions."""

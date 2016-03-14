@@ -58,7 +58,7 @@ class LVMVolumeSystem(volume_system.VolumeSystem):
     """Opens a volume object defined by path specification.
 
     Args:
-      path_spec: the VFS path specification (instance of PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Raises:
       VolumeSystemError: if the LVM virtual file system could not be resolved.

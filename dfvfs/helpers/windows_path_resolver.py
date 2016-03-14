@@ -23,9 +23,8 @@ class WindowsPathResolver(object):
     system.
 
     Args:
-      file_system: the file system object (instance of vfs.FileSystem).
-      mount_point: the mount point path specification (instance of
-                   path.PathSpec).
+      file_system: the file system object (instance of FileSystem).
+      mount_point: the mount point path specification (instance of PathSpec).
       drive_letter: optional string that contains the drive letter used by
                     the file system.
 
@@ -189,7 +188,7 @@ class WindowsPathResolver(object):
     """Returns the Windows path based on a resolved path specification.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       The corresponding Windows path or None if the Windows path could not
@@ -235,7 +234,7 @@ class WindowsPathResolver(object):
                         expanded or not.
 
     Returns:
-      The path specification (instance of path.PathSpec) in file system
+      The path specification (instance of PathSpec) in file system
       specific format.
     """
     location, path_spec = self._ResolvePath(

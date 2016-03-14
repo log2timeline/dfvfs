@@ -23,6 +23,7 @@ class SQLiteBlobFile(file_io.FileIO):
     """
     super(SQLiteBlobFile, self).__init__(resolver_context)
     self._blob = None
+    self._current_offset = 0
     self._database_object = None
     self._number_of_rows = None
     self._size = 0
@@ -46,7 +47,7 @@ class SQLiteBlobFile(file_io.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Imports for the compression manager."""
 
 from dfvfs.compression import bzip2_decompressor
 

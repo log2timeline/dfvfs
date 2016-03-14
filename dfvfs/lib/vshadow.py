@@ -6,7 +6,7 @@ def VShadowPathSpecGetStoreIndex(path_spec):
   """Retrieves the store index from the path specification.
 
   Args:
-    path_spec: the path specification (instance of path.PathSpec).
+    path_spec: the path specification (instance of PathSpec).
   """
   store_index = getattr(path_spec, u'store_index', None)
 

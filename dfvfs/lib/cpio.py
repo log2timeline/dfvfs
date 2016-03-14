@@ -7,18 +7,32 @@ import construct
 
 
 class CPIOArchiveFileEntry(object):
-  """Class that contains a CPIO archive file entry."""
+  """Class that contains a CPIO archive file entry.
+
+  Attributes:
+    data_offset: an integer containing the data start offset.
+    data_size: an integer containing the data size.
+    group_identifier: an integer containing the group identifier (gid).
+    inode_number: an integer containing the inode number.
+    mode: an integer containing the mode.
+    modification_time: an integer containing the modification POSIX timestamp.
+    path: a string containing the path.
+    size: an integer containing the archive file entry record size.
+    user_identifier: an integer containing the user identifier (uid).
+  """
 
   def __init__(self):
     """Initializes the CPIO archive file entry object."""
     super(CPIOArchiveFileEntry, self).__init__()
     self.data_offset = None
     self.data_size = None
+    self.group_identifier = None
     self.inode_number = None
     self.mode = None
     self.modification_time = None
     self.path = None
     self.size = None
+    self.user_identifier = None
 
 
 class CPIOArchiveFile(object):

@@ -67,6 +67,26 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
 
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False):
+    """Initializes the file entry object.
+
+    Args:
+      resolver_context: the resolver context (instance of Context).
+      file_system: the file system object (instance of FileSystem).
+      path_spec: the path specification object (instance of PathSpec).
+      is_root: optional boolean value to indicate if the file entry is
+               the root file entry of the corresponding file system.
+      is_virtual: optional boolean value to indicate if the file entry is
+                  a virtual file entry emulated by the corresponding file
+                  system.
+    """
+    super(SQLiteBlobFileEntry, self).__init__(
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
+    self._number_of_entries = None
+
   def _GetStat(self):
     """Retrieves the stat object.
 

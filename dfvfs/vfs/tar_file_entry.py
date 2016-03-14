@@ -60,8 +60,8 @@ class TARFileEntry(file_entry.FileEntry):
     """Initializes the file entry object.
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of vfs.FileSystem).
-      path_spec: the path specification (instance of path.PathSpec).
+      file_system: the file system object (instance of FileSystem).
+      path_spec: the path specification (instance of PathSpec).
       is_root: optional boolean value to indicate if the file entry is
                the root file entry of the corresponding file system.
       is_virtual: optional boolean value to indicate if the file entry is

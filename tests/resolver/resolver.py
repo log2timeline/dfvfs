@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the VFS path specification resolver object."""
+"""Tests for the path specification resolver."""
 
 import unittest
 
@@ -9,7 +9,7 @@ from tests.resolver import test_lib
 
 
 class ResolverTest(unittest.TestCase):
-  """Class to test the VFS path specification resolver object."""
+  """Class to test the path specification resolver object."""
 
   def testHelperRegistration(self):
     """Tests the DeregisterHelper and DeregisterHelper functions."""

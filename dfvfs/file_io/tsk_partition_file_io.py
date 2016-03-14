@@ -32,7 +32,7 @@ class TSKPartitionFile(data_range_io.DataRange):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of path.PathSpec).
+      path_spec: optional path specification (instance of PathSpec).
       mode: optional file access mode. The default is 'rb' read-only binary.
 
     Raises:

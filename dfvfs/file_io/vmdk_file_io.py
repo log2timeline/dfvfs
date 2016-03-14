@@ -20,7 +20,7 @@ class VMDKFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
 
     Returns:
       A file-like object.
@@ -54,7 +54,7 @@ class VMDKFile(file_object_io.FileObjectIO):
     parent_location_path_segments = file_system.SplitPath(parent_location)
 
     extent_data_files = []
-    for extent_descriptor in vmdk_handle.extent_descriptors:
+    for extent_descriptor in iter(vmdk_handle.extent_descriptors):
       extent_data_filename = extent_descriptor.filename
 
       _, path_separator, filename = extent_data_filename.rpartition(u'/')

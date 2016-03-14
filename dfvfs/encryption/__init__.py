@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Imports for the encryption manager."""
 
 from dfvfs.encryption import aes_decrypter
 from dfvfs.encryption import blowfish_decrypter

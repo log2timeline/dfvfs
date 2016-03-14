@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) format analyzer object."""
+"""The format analyzer."""
 
 import pysigscan
 
@@ -13,7 +13,7 @@ dependencies.CheckModuleVersion(u'pysigscan')
 
 
 class Analyzer(object):
-  """Class that implements the VFS format analyzer."""
+  """Class that implements the format analyzer."""
 
   _SCAN_BUFFER_SIZE = 33 * 1024
 
@@ -174,7 +174,7 @@ class Analyzer(object):
                            FormatSpecificationStore).
       remainder_list: list of remaining analyzer helpers that do not have
                       a format specification.
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -191,7 +191,7 @@ class Analyzer(object):
     try:
       scanner_object.scan_file_object(scan_state, file_object)
 
-      for scan_result in scan_state.scan_results:
+      for scan_result in iter(scan_state.scan_results):
         format_specification = specification_store.GetSpecificationBySignature(
             scan_result.identifier)
 
@@ -214,7 +214,7 @@ class Analyzer(object):
     """Determines if a file contains a supported archive types.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -242,7 +242,7 @@ class Analyzer(object):
     """Determines if a file contains a supported compressed stream types.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -271,7 +271,7 @@ class Analyzer(object):
     """Determines if a file contains a supported file system types.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -299,7 +299,7 @@ class Analyzer(object):
     """Determines if a file contains a supported storage media image types.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.
@@ -328,7 +328,7 @@ class Analyzer(object):
     """Determines if a file contains a supported volume system types.
 
     Args:
-      path_spec: the VFS path specification (instance of path.PathSpec).
+      path_spec: the path specification (instance of PathSpec).
       resolver_context: the optional resolver context (instance of
                         resolver.Context). The default is None which will use
                         the built in context which is not multi process safe.

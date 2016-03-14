@@ -10,6 +10,8 @@ from dfvfs.dfdatetime import interface
 class DateTimeValuesTest(unittest.TestCase):
   """Tests for the date and time values interface."""
 
+  # pylint: disable=protected-access
+
   def testCopyDateFromString(self):
     """Tests the CopyDateFromString function."""
     date_time_values = interface.DateTimeValues()

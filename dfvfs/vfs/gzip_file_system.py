@@ -16,7 +16,7 @@ class GzipFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       A file entry (instance of vfs.FileEntry) or None.

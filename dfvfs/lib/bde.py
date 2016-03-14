@@ -7,7 +7,7 @@ def BDEVolumeOpen(bde_volume, path_spec, file_object, key_chain):
 
   Args:
     bde_volume: the BDE volume (instance of pybde.volume).
-    path_spec: the path specification (instance of path.PathSpec).
+    path_spec: the path specification (instance of PathSpec).
     file_object: the file-like object (instance of FileIO).
     key_chain: the key chain (instance of credentials.KeyChain).
   """

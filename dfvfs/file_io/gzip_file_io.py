@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """The gzip file-like object."""
 
-import construct
 import os
+
+import construct
 
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import definitions
@@ -136,7 +137,7 @@ class GzipFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of path.PathSpec).
+      path_spec: optional the path specification (instance of PathSpec).
 
     Returns:
       A file-like object.

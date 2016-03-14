@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Imports for the path specification resolver."""
 
 try:
   from dfvfs.resolver import bde_resolver_helper

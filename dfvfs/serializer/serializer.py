@@ -20,7 +20,7 @@ class PathSpecSerializer(object):
       serialized: an object containing the serialized form.
 
     Returns:
-      A path specification (instance of path.PathSpec).
+      A path specification (instance of PathSpec).
     """
 
   @abc.abstractmethod
@@ -28,7 +28,7 @@ class PathSpecSerializer(object):
     """Writes a path specification to serialized form.
 
     Args:
-      path_spec: a path specification (instance of path.PathSpec).
+      path_spec: a path specification (instance of PathSpec).
 
     Returns:
       An object containing the serialized form.
