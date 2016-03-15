@@ -2,10 +2,10 @@ Source: dfvfs
 Section: python
 Priority: extra
 Maintainer: dfVFS development team <log2timeline-dev@googlegroups.com>
-Build-Depends: debhelper (>= 7), python-all (>= 2.7~), python-setuptools, python3-all (>= 3.2~), python3-setuptools
+Build-Depends: debhelper (>= 7), python-all (>= 2.7~), python-setuptools, python3-all (>= 3.4~), python3-setuptools
 Standards-Version: 3.9.5
 X-Python-Version: >= 2.7
-X-Python3-Version: >= 3.2
+X-Python3-Version: >= 3.4
 Homepage: https://github.com/log2timeline/dfvfs/
 
 Package: python-dfvfs
