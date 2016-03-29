@@ -10,7 +10,7 @@ Homepage: https://github.com/log2timeline/dfvfs/
 
 Package: python-dfvfs
 Architecture: all
-Depends: libprotobuf7|libprotobuf8, libbde-python, libewf-python, libfsntfs-python, libqcow-python, libsigscan-python, libsmdev-python, libsmraw-python, libvhdi-python, libvmdk-python, libvshadow-python, libvslvm-python, python-construct, python-crypto, python-lzma, python-protobuf, python-six, pytsk3-python, ${python:Depends}, ${misc:Depends}
+Depends: libprotobuf7|libprotobuf8, libbde-python, libewf-python, libfsntfs-python, libqcow-python, libsigscan-python, libsmdev-python, libsmraw-python, libvhdi-python, libvmdk-python, libvshadow-python, libvslvm-python, python-construct, python-crypto, python-lzma, python-protobuf, python-pytsk3, python-six, ${python:Depends}, ${misc:Depends}
 Description: Digital Forensics Virtual File System (dfVFS).
  dfVFS, or Digital Forensics Virtual File System, provides read-only access to
  file-system objects from various storage media types and file formats. The goal
@@ -20,7 +20,7 @@ Description: Digital Forensics Virtual File System (dfVFS).
 
 Package: python3-dfvfs
 Architecture: all
-Depends: libprotobuf7|libprotobuf8, libbde-python3, libewf-python3, libfsntfs-python3, libqcow-python3, libsigscan-python3, libsmdev-python3, libsmraw-python3, libvhdi-python3, libvmdk-python3, libvshadow-python3, libvslvm-python3, python3-construct, python3-crypto, python3-protobuf, python3-six, pytsk3-python3, ${python3:Depends}, ${misc:Depends}
+Depends: libprotobuf7|libprotobuf8, libbde-python3, libewf-python3, libfsntfs-python3, libqcow-python3, libsigscan-python3, libsmdev-python3, libsmraw-python3, libvhdi-python3, libvmdk-python3, libvshadow-python3, libvslvm-python3, python3-construct, python3-crypto, python3-protobuf, python3-pytsk3, python3-six, ${python3:Depends}, ${misc:Depends}
 Description: Digital Forensics Virtual File System (dfVFS).
  dfVFS, or Digital Forensics Virtual File System, provides read-only access to
  file-system objects from various storage media types and file formats. The goal
