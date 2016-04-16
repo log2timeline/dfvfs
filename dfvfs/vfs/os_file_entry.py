@@ -10,6 +10,7 @@ import pysmdev
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
@@ -47,8 +48,14 @@ class OSDirectory(file_entry.Directory):
 
     except OSError as exception:
       if exception.errno == errno.EACCES:
+        exception_string = str(exception)
+        if not isinstance(exception_string, py2to3.UNICODE_TYPE):
+          exception_string = py2to3.UNICODE_TYPE(
+              exception_string, errors=u'replace')
+
         raise errors.AccessError(
-            u'Access to directory denied with error: {0:s}'.format(exception))
+            u'Access to directory denied with error: {0:s}'.format(
+                exception_string))
       else:
         raise errors.BackEndError(
             u'Unable to list directory: {0:s} with error: {1:s}'.format(
