@@ -94,6 +94,19 @@ class ObjectIdentifierNTFSAttribute(NTFSAttribute):
     return self._fsntfs_attribute.droid_file_identifier
 
 
+class SecurityDescriptorNTFSAttribute(NTFSAttribute):
+  """Class that implements a $SECURITY_DESCRIPTOR attribute object."""
+
+  TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR
+
+  @property
+  def security_descriptor(self):
+    """The security descriptor (instance of pyfwnt.security_descriptor)."""
+    fwnt_security_descriptor = pyfwnt.security_descriptor()
+    fwnt_security_descriptor.copy_from_byte_stream(self._fsntfs_attribute.data)
+    return fwnt_security_descriptor
+
+
 class StandardInformationNTFSAttribute(NTFSAttribute):
   """Class that implements a $STANDARD_INFORMATION attribute object."""
 
@@ -221,6 +234,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       0x00000010: StandardInformationNTFSAttribute,
       0x00000030: FileNameNTFSAttribute,
       0x00000040: ObjectIdentifierNTFSAttribute,
+      0x00000050: SecurityDescriptorNTFSAttribute,
   }
 
   def __init__(
