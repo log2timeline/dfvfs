@@ -147,7 +147,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsSocket())
 
   def testSubFileEntries(self):
-    """Test the sub file entries iteration functionality."""
+    """Test the sub file entries properties."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -182,7 +182,7 @@ class NTFSFileEntryTest(unittest.TestCase):
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
   def testAttributes(self):
-    """Test the attributes functionality."""
+    """Test the attributes properties."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -229,7 +229,7 @@ class NTFSFileEntryTest(unittest.TestCase):
         attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
 
   def testDataStream(self):
-    """Test the data streams functionality."""
+    """Tests the data streams properties."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -274,7 +274,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(sorted(data_stream_names), sorted([u'', u'$Config']))
 
   def testGetDataStream(self):
-    """Test the retrieve data stream functionality."""
+    """Tests the GetDataStream function."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -300,6 +300,26 @@ class NTFSFileEntryTest(unittest.TestCase):
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
+
+  def testGetSecurityDescriptor(self):
+    """Tests the GetSecurityDescriptor function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    security_descriptor = file_entry.GetSecurityDescriptor()
+    self.assertIsNotNone(file_entry)
+
+    security_identifier = security_descriptor.owner
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    security_identifier = security_descriptor.group
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-18')
 
 
 if __name__ == '__main__':

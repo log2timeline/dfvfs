@@ -4,6 +4,7 @@
 import copy
 
 import pyfsntfs
+import pyfwnt
 
 from dfdatetime import filetime as dfdatetime_filetime
 
@@ -579,3 +580,22 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     return NTFSFileEntry(
         self._resolver_context, self._file_system, path_spec, is_root=is_root)
+
+  def GetSecurityDescriptor(self):
+    """Retrieves the security descriptor.
+
+    Returns:
+      The security descriptor (pyfwnt.security_descriptor).
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    fwnt_security_descriptor = pyfwnt.security_descriptor()
+    fwnt_security_descriptor.copy_from_byte_stream(
+        fsntfs_file_entry.security_descriptor_data)
+
+    return fwnt_security_descriptor
