@@ -321,6 +321,16 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(security_identifier)
     self.assertEqual(security_identifier.string, u'S-1-5-18')
 
+    access_control_list = security_descriptor.discretionary_acl
+    self.assertIsNone(access_control_list)
+
+    access_control_list = security_descriptor.system_acl
+    self.assertIsNotNone(access_control_list)
+    self.assertEqual(access_control_list.number_of_entries, 1)
+
+    access_control_entry = access_control_list.get_entry(0)
+    self.assertIsNotNone(access_control_entry)
+
 
 if __name__ == '__main__':
   unittest.main()
