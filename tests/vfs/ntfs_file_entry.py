@@ -267,9 +267,10 @@ class NTFSFileEntryTest(unittest.TestCase):
     access_control_entry = access_control_list.get_entry(0)
     self.assertIsNotNone(access_control_entry)
 
-    # TODO: get ACE type
-    # TODO: get ACE flags
-    # TODO: get access mask
+    self.assertEqual(access_control_entry.type, 0)
+    self.assertEqual(access_control_entry.flags, 0)
+    self.assertEqual(access_control_entry.access_mask, 0x120089)
+
     security_identifier = access_control_entry.security_identifier
     self.assertIsNotNone(security_identifier)
     self.assertEqual(security_identifier.string, u'S-1-5-18')
@@ -377,9 +378,10 @@ class NTFSFileEntryTest(unittest.TestCase):
     access_control_entry = access_control_list.get_entry(0)
     self.assertIsNotNone(access_control_entry)
 
-    # TODO: get ACE type
-    # TODO: get ACE flags
-    # TODO: get access mask
+    self.assertEqual(access_control_entry.type, 0)
+    self.assertEqual(access_control_entry.flags, 0)
+    self.assertEqual(access_control_entry.access_mask, 0x10000)
+
     security_identifier = access_control_entry.security_identifier
     self.assertIsNotNone(security_identifier)
     self.assertEqual(security_identifier.string, u'S-1-5-32-544')
@@ -413,9 +415,10 @@ class NTFSFileEntryTest(unittest.TestCase):
     access_control_entry = access_control_list.get_entry(0)
     self.assertIsNotNone(access_control_entry)
 
-    # TODO: get ACE type
-    # TODO: get ACE flags
-    # TODO: get access mask
+    self.assertEqual(access_control_entry.type, 0)
+    self.assertEqual(access_control_entry.flags, 0)
+    self.assertEqual(access_control_entry.access_mask, 0x120089)
+
     security_identifier = access_control_entry.security_identifier
     self.assertIsNotNone(security_identifier)
     self.assertEqual(security_identifier.string, u'S-1-5-18')
