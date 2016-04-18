@@ -228,6 +228,51 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(
         attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
 
+    # Tests a file entry with the $SECURITY_DESCRIPTOR attribute.
+    test_location = u'\\$AttrDef'
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=4, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_attributes, 4)
+
+    attributes = list(file_entry.attributes)
+
+    attribute = attributes[2]
+
+    self.assertEqual(
+        attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR)
+
+    security_descriptor = attribute.security_descriptor
+    self.assertIsNotNone(security_descriptor)
+
+    security_identifier = security_descriptor.owner
+    self.assertIsNotNone(security_identifier)
+    expected_string = u'S-1-5-21-4060289323-199701022-3924801681-1000'
+    self.assertEqual(security_identifier.string, expected_string)
+
+    security_identifier = security_descriptor.group
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    access_control_list = security_descriptor.discretionary_acl
+    self.assertIsNone(access_control_list)
+
+    access_control_list = security_descriptor.system_acl
+    self.assertIsNotNone(access_control_list)
+    self.assertEqual(access_control_list.number_of_entries, 2)
+
+    access_control_entry = access_control_list.get_entry(0)
+    self.assertIsNotNone(access_control_entry)
+
+    # TODO: get ACE type
+    # TODO: get ACE flags
+    # TODO: get access mask
+    security_identifier = access_control_entry.security_identifier
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-18')
+
   def testDataStream(self):
     """Tests the data streams properties."""
     test_location = (
@@ -311,7 +356,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertIsNotNone(file_entry)
 
     security_descriptor = file_entry.GetSecurityDescriptor()
-    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(security_descriptor)
 
     security_identifier = security_descriptor.owner
     self.assertIsNotNone(security_identifier)
@@ -330,6 +375,49 @@ class NTFSFileEntryTest(unittest.TestCase):
 
     access_control_entry = access_control_list.get_entry(0)
     self.assertIsNotNone(access_control_entry)
+
+    # TODO: get ACE type
+    # TODO: get ACE flags
+    # TODO: get access mask
+    security_identifier = access_control_entry.security_identifier
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    # Tests a file entry with the $SECURITY_DESCRIPTOR attribute.
+    test_location = u'\\$AttrDef'
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=4, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    security_descriptor = file_entry.GetSecurityDescriptor()
+    self.assertIsNotNone(security_descriptor)
+
+    security_identifier = security_descriptor.owner
+    self.assertIsNotNone(security_identifier)
+    expected_string = u'S-1-5-21-4060289323-199701022-3924801681-1000'
+    self.assertEqual(security_identifier.string, expected_string)
+
+    security_identifier = security_descriptor.group
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    access_control_list = security_descriptor.discretionary_acl
+    self.assertIsNone(access_control_list)
+
+    access_control_list = security_descriptor.system_acl
+    self.assertIsNotNone(access_control_list)
+    self.assertEqual(access_control_list.number_of_entries, 2)
+
+    access_control_entry = access_control_list.get_entry(0)
+    self.assertIsNotNone(access_control_entry)
+
+    # TODO: get ACE type
+    # TODO: get ACE flags
+    # TODO: get access mask
+    security_identifier = access_control_entry.security_identifier
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-18')
 
 
 if __name__ == '__main__':
