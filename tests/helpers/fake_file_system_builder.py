@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Tests for the fake file system builder object."""
 
+import os
 import unittest
 
 from dfvfs.helpers import fake_file_system_builder
@@ -40,6 +41,18 @@ class FakeFileSystemBuilderTest(unittest.TestCase):
 
     with self.assertRaises(ValueError):
       file_system_builder.AddFile(test_path, test_file_data)
+
+  def testAddFileReadData(self):
+    """Test the AddFileReadData() function."""
+    file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
+
+    test_path = u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
+    test_file_data_path = os.path.join(u'dfvfs', u'__init__.py')
+
+    file_system_builder.AddFileReadData(test_path, test_file_data_path)
+
+    with self.assertRaises(ValueError):
+      file_system_builder.AddFileReadData(test_path, test_file_data_path)
 
   def testAddSymbolicLink(self):
     """Test the AddSymbolicLink() function."""

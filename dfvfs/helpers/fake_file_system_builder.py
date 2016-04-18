@@ -67,6 +67,26 @@ class FakeFileSystemBuilder(object):
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(path, file_data=file_data)
 
+  def AddFileReadData(self, path, file_data_path):
+    """Adds a "regular" file to the fake file system.
+
+    Args:
+      path: a string containing the path of the file within the fake
+            file system.
+      file_data_path: a string containing the name of the file to read
+                      the file data from.
+
+    Raises:
+      ValueError: if the path is already set.
+    """
+    if self.file_system.FileEntryExistsByPath(path):
+      raise ValueError(u'Path: {0:s} already set.'.format(path))
+
+    with open(file_data_path, 'rb') as file_object:
+      file_data = file_object.read()
+    self._AddParentDirectories(path)
+    self.file_system.AddFileEntry(path, file_data=file_data)
+
   def AddSymbolicLink(self, path, linked_path):
     """Adds a symbolic link to the fake file system.
 
