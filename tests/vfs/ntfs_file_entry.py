@@ -242,7 +242,8 @@ class NTFSFileEntryTest(unittest.TestCase):
     attribute = attributes[2]
 
     self.assertEqual(
-        attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR)
+        attribute.type_indicator,
+        definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR)
 
     security_descriptor = attribute.security_descriptor
     self.assertIsNotNone(security_descriptor)
