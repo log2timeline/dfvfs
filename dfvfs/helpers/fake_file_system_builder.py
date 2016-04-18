@@ -7,19 +7,17 @@ from dfvfs.vfs import fake_file_system
 
 
 class FakeFileSystemBuilder(object):
-  """Builder object for fake file systems."""
+  """Builder object for fake file systems.
+
+  Attributes:
+    file_system: a fake file system object (instance of FakeFileSystem)
+  """
 
   def __init__(self):
     """Initializes the fake file system builder object."""
     super(FakeFileSystemBuilder, self).__init__()
     resolver_context = context.Context()
-    self._file_system = fake_file_system.FakeFileSystem(
-        resolver_context)
-
-  @property
-  def file_system(self):
-    """The file system."""
-    return self._file_system
+    self.file_system = fake_file_system.FakeFileSystem(resolver_context)
 
   def _AddParentDirectories(self, path):
     """Adds the parent directories of a path to the fake file system.
@@ -28,11 +26,11 @@ class FakeFileSystemBuilder(object):
       path: a string containing the path of the file within the fake
             file system.
     """
-    path_segments = self._file_system.SplitPath(path)
+    path_segments = self.file_system.SplitPath(path)
     for segment_index in range(len(path_segments)):
-      parent_path = self._file_system.JoinPath(path_segments[:segment_index])
-      if not self._file_system.FileEntryExistsByPath(parent_path):
-        self._file_system.AddFileEntry(
+      parent_path = self.file_system.JoinPath(path_segments[:segment_index])
+      if not self.file_system.FileEntryExistsByPath(parent_path):
+        self.file_system.AddFileEntry(
             parent_path, file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
   def AddDirectory(self, path):
@@ -45,11 +43,11 @@ class FakeFileSystemBuilder(object):
     Raises:
       ValueError: if the path is already set.
     """
-    if self._file_system.FileEntryExistsByPath(path):
+    if self.file_system.FileEntryExistsByPath(path):
       raise ValueError(u'Path: {0:s} already set.'.format(path))
 
     self._AddParentDirectories(path)
-    self._file_system.AddFileEntry(
+    self.file_system.AddFileEntry(
         path, file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
   def AddFile(self, path, file_data):
@@ -63,11 +61,11 @@ class FakeFileSystemBuilder(object):
     Raises:
       ValueError: if the path is already set.
     """
-    if self._file_system.FileEntryExistsByPath(path):
+    if self.file_system.FileEntryExistsByPath(path):
       raise ValueError(u'Path: {0:s} already set.'.format(path))
 
     self._AddParentDirectories(path)
-    self._file_system.AddFileEntry(path, file_data=file_data)
+    self.file_system.AddFileEntry(path, file_data=file_data)
 
   def AddSymbolicLink(self, path, linked_path):
     """Adds a symbolic link to the fake file system.
@@ -80,10 +78,10 @@ class FakeFileSystemBuilder(object):
     Raises:
       ValueError: if the path is already set.
     """
-    if self._file_system.FileEntryExistsByPath(path):
+    if self.file_system.FileEntryExistsByPath(path):
       raise ValueError(u'Path: {0:s} already set.'.format(path))
 
     self._AddParentDirectories(path)
-    self._file_system.AddFileEntry(
+    self.file_system.AddFileEntry(
         path, file_entry_type=definitions.FILE_ENTRY_TYPE_LINK,
         link_data=linked_path)
