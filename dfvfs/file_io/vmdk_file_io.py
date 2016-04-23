@@ -48,6 +48,7 @@ class VMDKFile(file_object_io.FileObjectIO):
 
     file_object = resolver.Resolver.OpenFileObject(
         parent_path_spec, resolver_context=self._resolver_context)
+
     vmdk_handle = pyvmdk.handle()
     vmdk_handle.open_file_object(file_object)
 
