@@ -72,10 +72,10 @@ class VHDIFile(file_object_io.FileObjectIO):
 
     if vhdi_file.parent_identifier:
       file_system = resolver.Resolver.OpenFileSystem(
-          path_spec, resolver_context=self._resolver_context)
+          path_spec.parent, resolver_context=self._resolver_context)
 
       try:
-        self._OpenParentFile(file_system, path_spec, vhdi_file)
+        self._OpenParentFile(file_system, path_spec.parent, vhdi_file)
       finally:
         file_system.Close()
 
@@ -101,7 +101,7 @@ class VHDIFile(file_object_io.FileObjectIO):
     location = getattr(path_spec, u'location', None)
     if not location:
       raise errors.PathSpecError(
-          u'Unsupported parent path specification without location.')
+          u'Unsupported path specification without location.')
 
     location_path_segments = file_system.SplitPath(location)
 
@@ -139,8 +139,8 @@ class VHDIFile(file_object_io.FileObjectIO):
 
     vhdi_file.set_parent(vhdi_parent_file)
 
-    self._parent_file_object.append(file_object)
     self._parent_vhdi_files.append(vhdi_parent_file)
+    self._sub_file_objects.append(file_object)
 
   def get_size(self):
     """Returns the size of the file-like object.
