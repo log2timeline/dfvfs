@@ -23,11 +23,7 @@ class FakeFile(file_io.FileIO):
     self._size = 0
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     return
 
   def _Open(self, path_spec=None, mode='rb'):

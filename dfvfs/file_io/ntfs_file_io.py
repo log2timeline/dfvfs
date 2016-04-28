@@ -26,11 +26,7 @@ class NTFSFile(file_io.FileIO):
     self._fsntfs_file_entry = None
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     self._fsntfs_data_stream = None
     self._fsntfs_file_entry = None
 

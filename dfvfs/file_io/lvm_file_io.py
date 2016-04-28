@@ -23,11 +23,7 @@ class LVMFile(file_io.FileIO):
     self._vslvm_logical_volume = None
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     self._vslvm_logical_volume = None
 
     self._file_system.Close()

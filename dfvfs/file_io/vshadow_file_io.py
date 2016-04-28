@@ -23,11 +23,7 @@ class VShadowFile(file_io.FileIO):
     self._vshadow_store = None
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     self._vshadow_store = None
 
     self._file_system.Close()

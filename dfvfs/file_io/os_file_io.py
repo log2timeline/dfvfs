@@ -29,11 +29,7 @@ class OSFile(file_io.FileIO):
     self._size = 0
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     self._file_object.close()
     self._file_object = None
 

@@ -20,11 +20,7 @@ class TSKPartitionFile(data_range_io.DataRange):
     self._file_system = None
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     self._file_system.Close()
     self._file_system = None
 

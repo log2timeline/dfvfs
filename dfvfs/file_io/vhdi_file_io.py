@@ -28,15 +28,7 @@ class VHDIFile(file_object_io.FileObjectIO):
     self._sub_file_objects = []
 
   def _Close(self):
-    """Closes the file-like object.
-
-    If the file-like object was passed in the init function
-    the data range file-like object does not control the file-like object
-    and should not actually close it.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     super(VHDIFile, self)._Close()
 
     for vhdi_file in self._parent_vhdi_files:
