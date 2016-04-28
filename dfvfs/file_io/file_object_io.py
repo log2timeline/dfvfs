@@ -29,12 +29,9 @@ class FileObjectIO(file_io.FileIO):
   def _Close(self):
     """Closes the file-like object.
 
-    If the file-like object was passed in the init function
-    the data range file-like object does not control the file-like object
+    If the file-like object was passed in the init function the file
+    object-based file-like object does not control the file-like object
     and should not actually close it.
-
-    Raises:
-      IOError: if the close failed.
     """
     if not self._file_object_set_in_init:
       self._file_object.close()

@@ -26,11 +26,7 @@ class TSKFile(file_io.FileIO):
     self._tsk_file = None
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     self._tsk_attribute = None
     self._tsk_file = None
 

@@ -30,11 +30,7 @@ class SQLiteBlobFile(file_io.FileIO):
     self._table_name = None
 
   def _Close(self):
-    """Closes the file-like object.
-
-    Raises:
-      IOError: if the close failed.
-    """
+    """Closes the file-like object."""
     if self._database_object:
       self._database_object.Close()
 
