@@ -456,7 +456,7 @@ class WindowsVolumeScanner(VolumeScanner):
     if path_spec is None:
       return
 
-    return resolver.Resolver.OpenFileObject(path_spec)
+    return self._file_system.GetFileObjectByPathSpec(path_spec)
 
   def ScanForWindowsVolume(self, source_path):
     """Scans for a Windows volume.
