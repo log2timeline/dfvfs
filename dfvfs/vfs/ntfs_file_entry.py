@@ -4,6 +4,7 @@
 import copy
 
 import pyfsntfs
+import pyfwnt
 
 from dfdatetime import filetime as dfdatetime_filetime
 
@@ -91,6 +92,19 @@ class ObjectIdentifierNTFSAttribute(NTFSAttribute):
   def droid_file_identifier(self):
     """The droid file identifier (an UUID string or None)."""
     return self._fsntfs_attribute.droid_file_identifier
+
+
+class SecurityDescriptorNTFSAttribute(NTFSAttribute):
+  """Class that implements a $SECURITY_DESCRIPTOR attribute object."""
+
+  TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR
+
+  @property
+  def security_descriptor(self):
+    """The security descriptor (instance of pyfwnt.security_descriptor)."""
+    fwnt_security_descriptor = pyfwnt.security_descriptor()
+    fwnt_security_descriptor.copy_from_byte_stream(self._fsntfs_attribute.data)
+    return fwnt_security_descriptor
 
 
 class StandardInformationNTFSAttribute(NTFSAttribute):
@@ -220,6 +234,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       0x00000010: StandardInformationNTFSAttribute,
       0x00000030: FileNameNTFSAttribute,
       0x00000040: ObjectIdentifierNTFSAttribute,
+      0x00000050: SecurityDescriptorNTFSAttribute,
   }
 
   def __init__(
@@ -579,3 +594,22 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     return NTFSFileEntry(
         self._resolver_context, self._file_system, path_spec, is_root=is_root)
+
+  def GetSecurityDescriptor(self):
+    """Retrieves the security descriptor.
+
+    Returns:
+      The security descriptor (pyfwnt.security_descriptor).
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    fwnt_security_descriptor = pyfwnt.security_descriptor()
+    fwnt_security_descriptor.copy_from_byte_stream(
+        fsntfs_file_entry.security_descriptor_data)
+
+    return fwnt_security_descriptor

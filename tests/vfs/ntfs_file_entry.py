@@ -147,7 +147,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsSocket())
 
   def testSubFileEntries(self):
-    """Test the sub file entries iteration functionality."""
+    """Test the sub file entries properties."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -182,7 +182,7 @@ class NTFSFileEntryTest(unittest.TestCase):
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
   def testAttributes(self):
-    """Test the attributes functionality."""
+    """Test the attributes properties."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -228,8 +228,55 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(
         attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
 
+    # Tests a file entry with the $SECURITY_DESCRIPTOR attribute.
+    test_location = u'\\$AttrDef'
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=4, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_attributes, 4)
+
+    attributes = list(file_entry.attributes)
+
+    attribute = attributes[2]
+
+    self.assertEqual(
+        attribute.type_indicator,
+        definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR)
+
+    security_descriptor = attribute.security_descriptor
+    self.assertIsNotNone(security_descriptor)
+
+    security_identifier = security_descriptor.owner
+    self.assertIsNotNone(security_identifier)
+    expected_string = u'S-1-5-21-4060289323-199701022-3924801681-1000'
+    self.assertEqual(security_identifier.string, expected_string)
+
+    security_identifier = security_descriptor.group
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    access_control_list = security_descriptor.discretionary_acl
+    self.assertIsNone(access_control_list)
+
+    access_control_list = security_descriptor.system_acl
+    self.assertIsNotNone(access_control_list)
+    self.assertEqual(access_control_list.number_of_entries, 2)
+
+    access_control_entry = access_control_list.get_entry(0)
+    self.assertIsNotNone(access_control_entry)
+
+    self.assertEqual(access_control_entry.type, 0)
+    self.assertEqual(access_control_entry.flags, 0)
+    self.assertEqual(access_control_entry.access_mask, 0x120089)
+
+    security_identifier = access_control_entry.security_identifier
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-18')
+
   def testDataStream(self):
-    """Test the data streams functionality."""
+    """Tests the data streams properties."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -274,7 +321,7 @@ class NTFSFileEntryTest(unittest.TestCase):
     self.assertEqual(sorted(data_stream_names), sorted([u'', u'$Config']))
 
   def testGetDataStream(self):
-    """Test the retrieve data stream functionality."""
+    """Tests the GetDataStream function."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -300,6 +347,81 @@ class NTFSFileEntryTest(unittest.TestCase):
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
+
+  def testGetSecurityDescriptor(self):
+    """Tests the GetSecurityDescriptor function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    security_descriptor = file_entry.GetSecurityDescriptor()
+    self.assertIsNotNone(security_descriptor)
+
+    security_identifier = security_descriptor.owner
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    security_identifier = security_descriptor.group
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-18')
+
+    access_control_list = security_descriptor.discretionary_acl
+    self.assertIsNone(access_control_list)
+
+    access_control_list = security_descriptor.system_acl
+    self.assertIsNotNone(access_control_list)
+    self.assertEqual(access_control_list.number_of_entries, 1)
+
+    access_control_entry = access_control_list.get_entry(0)
+    self.assertIsNotNone(access_control_entry)
+
+    self.assertEqual(access_control_entry.type, 0)
+    self.assertEqual(access_control_entry.flags, 0)
+    self.assertEqual(access_control_entry.access_mask, 0x10000)
+
+    security_identifier = access_control_entry.security_identifier
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    # Tests a file entry with the $SECURITY_DESCRIPTOR attribute.
+    test_location = u'\\$AttrDef'
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=4, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    security_descriptor = file_entry.GetSecurityDescriptor()
+    self.assertIsNotNone(security_descriptor)
+
+    security_identifier = security_descriptor.owner
+    self.assertIsNotNone(security_identifier)
+    expected_string = u'S-1-5-21-4060289323-199701022-3924801681-1000'
+    self.assertEqual(security_identifier.string, expected_string)
+
+    security_identifier = security_descriptor.group
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-32-544')
+
+    access_control_list = security_descriptor.discretionary_acl
+    self.assertIsNone(access_control_list)
+
+    access_control_list = security_descriptor.system_acl
+    self.assertIsNotNone(access_control_list)
+    self.assertEqual(access_control_list.number_of_entries, 2)
+
+    access_control_entry = access_control_list.get_entry(0)
+    self.assertIsNotNone(access_control_entry)
+
+    self.assertEqual(access_control_entry.type, 0)
+    self.assertEqual(access_control_entry.flags, 0)
+    self.assertEqual(access_control_entry.access_mask, 0x120089)
+
+    security_identifier = access_control_entry.security_identifier
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, u'S-1-5-18')
 
 
 if __name__ == '__main__':
