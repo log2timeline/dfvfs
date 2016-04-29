@@ -5,7 +5,6 @@
 import unittest
 
 from dfvfs.lib import ewf
-from dfvfs.lib import definitions
 from dfvfs.path import fake_path_spec
 from dfvfs.path import ewf_path_spec
 from dfvfs.resolver import context
