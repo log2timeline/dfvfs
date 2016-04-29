@@ -25,8 +25,19 @@ class FakeFileSystemBuilder(object):
     Args:
       path: a string containing the path of the file within the fake
             file system.
+
+    Raises:
+      ValueError: if a parent directory is already set and is not a directory.
     """
     path_segments = self.file_system.SplitPath(path)
+    for segment_index in range(len(path_segments)):
+      parent_path = self.file_system.JoinPath(path_segments[:segment_index])
+      file_entry = self.file_system.GetFileEntryByPath(parent_path)
+      if file_entry and not file_entry.IsDirectory():
+        raise ValueError(
+            u'Non-directory parent file entry: {0:s} already exists.'.format(
+                parent_path))
+
     for segment_index in range(len(path_segments)):
       parent_path = self.file_system.JoinPath(path_segments[:segment_index])
       if not self.file_system.FileEntryExistsByPath(parent_path):
@@ -35,6 +46,8 @@ class FakeFileSystemBuilder(object):
 
   def AddDirectory(self, path):
     """Adds a directory to the fake file system.
+
+    Note that this function will create parent directories if needed.
 
     Args:
       path: a string containing the path of the directory within the fake
@@ -52,6 +65,8 @@ class FakeFileSystemBuilder(object):
 
   def AddFile(self, path, file_data):
     """Adds a "regular" file to the fake file system.
+
+    Note that this function will create parent directories if needed.
 
     Args:
       path: a string containing the path of the file within the fake

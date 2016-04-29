@@ -343,37 +343,42 @@ class FileEntry(object):
     """Determines if the file entry is allocated."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return self._stat_object.is_allocated
+    return self._stat_object and self._stat_object.is_allocated
 
   def IsDevice(self):
     """Determines if the file entry is a device."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return self._stat_object.type == self._stat_object.TYPE_DEVICE
+    return (self._stat_object and
+            self._stat_object.type == self._stat_object.TYPE_DEVICE)
 
   def IsDirectory(self):
     """Determines if the file entry is a directory."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return self._stat_object.type == self._stat_object.TYPE_DIRECTORY
+    return (self._stat_object and
+            self._stat_object.type == self._stat_object.TYPE_DIRECTORY)
 
   def IsFile(self):
     """Determines if the file entry is a file."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return self._stat_object.type == self._stat_object.TYPE_FILE
+    return (self._stat_object and
+            self._stat_object.type == self._stat_object.TYPE_FILE)
 
   def IsLink(self):
     """Determines if the file entry is a link."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return self._stat_object.type == self._stat_object.TYPE_LINK
+    return (self._stat_object and
+            self._stat_object.type == self._stat_object.TYPE_LINK)
 
   def IsPipe(self):
     """Determines if the file entry is a pipe."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return self._stat_object.type == self._stat_object.TYPE_PIPE
+    return (self._stat_object and
+            self._stat_object.type == self._stat_object.TYPE_PIPE)
 
   def IsRoot(self):
     """Determines if the file entry is the root file entry."""
@@ -383,7 +388,8 @@ class FileEntry(object):
     """Determines if the file entry is a socket."""
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return self._stat_object.type == self._stat_object.TYPE_SOCKET
+    return (self._stat_object and
+            self._stat_object.type == self._stat_object.TYPE_SOCKET)
 
   def IsVirtual(self):
     """Determines if the file entry is virtual (emulated by dfVFS)."""

@@ -42,6 +42,13 @@ class FakeFileSystemBuilderTest(unittest.TestCase):
     with self.assertRaises(ValueError):
       file_system_builder.AddFile(test_path, test_file_data)
 
+    test_path = u'/usr/bin/empty'
+    file_system_builder.AddFile(test_path, b'')
+
+    test_path = u'/usr/bin/empty/file'
+    with self.assertRaises(ValueError):
+      file_system_builder.AddFile(test_path, b'')
+
   def testAddFileReadData(self):
     """Test the AddFileReadData() function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
