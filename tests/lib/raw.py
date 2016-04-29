@@ -31,9 +31,6 @@ class GlobRawFileTest(unittest.TestCase):
     resolver_context = context.Context()
     file_system = fake_file_system.FakeFileSystem(resolver_context)
 
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
-
     for segment_filename in segment_filenames:
       path = u'/{0:s}'.format(segment_filename)
 
