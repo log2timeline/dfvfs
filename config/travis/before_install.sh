@@ -18,6 +18,6 @@ if test `uname -s` = 'Linux';
 then
 	sudo add-apt-repository ppa:gift/dev -y;
 	sudo apt-get update -q;
-	sudo apt-get install -y ${COVERALL_DEPENDENCIES} ${PYTHON2_DEPENDENCIES};
+	sudo apt-get install -y ${COVERALL_DEPENDENCIES} ${PYTHON2_DEPENDENCIES} ${PYTHON3_DEPENDENCIES};
 fi
 
