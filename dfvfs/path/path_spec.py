@@ -33,7 +33,7 @@ class PathSpec(object):
 
   def __eq__(self, other):
     """Determines if the path specification is equal to the other."""
-    return self.comparable == other.comparable
+    return isinstance(other, PathSpec) and self.comparable == other.comparable
 
   def __hash__(self):
     """Returns the hash of a path specification."""
