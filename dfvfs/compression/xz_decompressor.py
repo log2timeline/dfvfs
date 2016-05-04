@@ -2,6 +2,7 @@
 """The LZMA and XZ decompressor object implementations."""
 
 import lzma
+import sys
 
 # Different versions of lzma define LZMAError in different places.
 # pylint: disable=no-name-in-module
@@ -41,10 +42,14 @@ class XZDecompressor(decompressor.Decompressor):
       BackEndError: if the XZ compressed stream cannot be decompressed.
     """
     try:
-      # Note that we cannot use max_length=0 here due to different
-      # versions of the lzma code.
-      uncompressed_data = self._lzma_decompressor.decompress(
-          compressed_data, 0)
+      if sys.version_info[0] < 3:
+        # Note that we cannot use max_length=0 here due to different
+        # versions of the lzma code.
+        uncompressed_data = self._lzma_decompressor.decompress(
+            compressed_data, 0)
+      else:
+        uncompressed_data = self._lzma_decompressor.decompress(compressed_data)
+
       remaining_compressed_data = getattr(
           self._lzma_decompressor, u'unused_data', b'')
 
