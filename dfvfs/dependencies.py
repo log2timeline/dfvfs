@@ -37,7 +37,6 @@ PYTHON_DEPENDENCIES = [
     (u'construct', u'__version__', u'2.5.2', None),
     (u'Crypto', u'__version__', u'2.6.0', None),
     (u'dfdatetime', u'__version__', u'20160311', None),
-    (u'google.protobuf', u'', u'', None),
     (u'six', u'__version__', u'1.1.0', None)]
 
 # Optional import for now.
