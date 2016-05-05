@@ -30,7 +30,7 @@ class BlowfishDecrypter(decrypter.Decrypter):
 
     Raises:
       ValueError: when key is not set, block cipher mode is not supported,
-                  when initialization_vector is required and not set.
+                  or initialization_vector is required and not set.
     """
     if not key:
       raise ValueError(u'Missing key.')
