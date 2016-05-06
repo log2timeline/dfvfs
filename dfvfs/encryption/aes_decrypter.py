@@ -40,15 +40,16 @@ class AESDecrypter(decrypter.Decrypter):
 
     mode = self.ENCRYPTION_MODES[mode]
 
-    super(AESDecrypter, self).__init__()
-    if mode == AES.MODE_ECB:
-      self._aes_cipher = AES.new(key, mode=mode)
-    elif initialization_vector:
-      self._aes_cipher = AES.new(key, mode=mode, IV=initialization_vector)
-    else:
+    if mode != AES.MODE_ECB and not initialization_vector:
       # Pycrypto does not create a meaningful error when initialization vector
       # is missing. Therefore, we report it ourselves.
       raise ValueError(u'Missing initialization vector.')
+
+    super(AESDecrypter, self).__init__()
+    if mode == AES.MODE_ECB:
+      self._aes_cipher = AES.new(key, mode=mode)
+    else:
+      self._aes_cipher = AES.new(key, mode=mode, IV=initialization_vector)
 
   def Decrypt(self, encrypted_data):
     """Decrypts the encrypted data.
