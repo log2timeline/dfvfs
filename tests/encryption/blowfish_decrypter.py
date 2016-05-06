@@ -12,6 +12,43 @@ from tests.encryption import test_lib
 class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the Blowfish decrypter object."""
 
+  def testInitialization(self):
+    """Tests the initialization method."""
+    # Test missing arguments.
+    with self.assertRaises(ValueError):
+      blowfish_decrypter.BlowfishDecrypter()
+
+    # Test unsupport block cipher mode.
+    with self.assertRaises(ValueError):
+      blowfish_decrypter.BlowfishDecrypter(
+          key=u'This is a key123',
+          mode=u'bogus')
+
+    # Test missing initialization vector.
+    with self.assertRaises(ValueError):
+      blowfish_decrypter.BlowfishDecrypter(
+          key=u'This is a key123',
+          mode=definitions.ENCRYPTION_MODE_CBC)
+
+    # Test missing initialization vector with valid block cipher mode.
+    blowfish_decrypter.BlowfishDecrypter(
+        key=u'This is a key123',
+        mode=definitions.ENCRYPTION_MODE_ECB)
+
+    # Test incorrect key size.
+    with self.assertRaises(ValueError):
+      blowfish_decrypter.BlowfishDecrypter(
+          key=u'This is a key that is larger than the max key size of '
+              u'448 bits.',
+          mode=definitions.ENCRYPTION_MODE_ECB)
+
+    # Test incorrect initialization vector size.
+    with self.assertRaises(ValueError):
+      blowfish_decrypter.BlowfishDecrypter(
+          key=u'This is a key123',
+          mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=u'Wrong IV size')
+
   def testDecrypt(self):
     """Tests the Decrypt method."""
     decrypter = blowfish_decrypter.BlowfishDecrypter(

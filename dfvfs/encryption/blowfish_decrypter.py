@@ -40,16 +40,17 @@ class BlowfishDecrypter(decrypter.Decrypter):
 
     mode = self.ENCRYPTION_MODES[mode]
 
-    super(BlowfishDecrypter, self).__init__()
-    if mode == Blowfish.MODE_ECB:
-      self._blowfish_cipher = Blowfish.new(key, mode=mode)
-    elif initialization_vector:
-      self._blowfish_cipher = Blowfish.new(
-          key, mode=mode, IV=initialization_vector)
-    else:
+    if mode != Blowfish.MODE_ECB and not initialization_vector:
       # Pycrypto does not create a meaningful error when initialization vector
       # is missing. Therefore, we report it ourselves.
       raise ValueError(u'Missing initialization vector.')
+
+    super(BlowfishDecrypter, self).__init__()
+    if mode == Blowfish.MODE_ECB:
+      self._blowfish_cipher = Blowfish.new(key, mode=mode)
+    else:
+      self._blowfish_cipher = Blowfish.new(
+          key, mode=mode, IV=initialization_vector)
 
   def Decrypt(self, encrypted_data):
     """Decrypts the encrypted data.

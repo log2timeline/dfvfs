@@ -40,15 +40,16 @@ class DES3Decrypter(decrypter.Decrypter):
 
     mode = self.ENCRYPTION_MODES[mode]
 
-    super(DES3Decrypter, self).__init__()
-    if mode == DES3.MODE_ECB:
-      self._des3_cipher = DES3.new(key, mode=mode)
-    elif initialization_vector:
-      self._des3_cipher = DES3.new(key, mode=mode, IV=initialization_vector)
-    else:
+    if mode != DES3.MODE_ECB and not initialization_vector:
       # Pycrypto does not create a meaningful error when initialization vector
       # is missing. Therefore, we report it ourselves.
       raise ValueError(u'Missing initialization vector.')
+
+    super(DES3Decrypter, self).__init__()
+    if mode == DES3.MODE_ECB:
+      self._des3_cipher = DES3.new(key, mode=mode)
+    else:
+      self._des3_cipher = DES3.new(key, mode=mode, IV=initialization_vector)
 
   def Decrypt(self, encrypted_data):
     """Decrypts the encrypted data.
