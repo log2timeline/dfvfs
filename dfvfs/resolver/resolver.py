@@ -5,6 +5,7 @@ from dfvfs.credentials import keychain
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.mount import manager as mount_manager
+from dfvfs.path import path
 from dfvfs.resolver import context
 
 
@@ -81,7 +82,11 @@ class Resolver(object):
       KeyError: if resolver helper object is not set for the corresponding
                 type indicator.
       PathSpecError: if the path specification is incorrect.
+      TypeError: if the path specification type is unuspported.
     """
+    if not isinstance(path_spec, path.PathSpec):
+      raise TypeError(u'Unsupported path specification type.')
+
     if resolver_context is None:
       resolver_context = cls._resolver_context
 
@@ -133,7 +138,11 @@ class Resolver(object):
       KeyError: if resolver helper object is not set for the corresponding
                 type indicator.
       PathSpecError: if the path specification is incorrect.
+      TypeError: if the path specification type is unuspported.
     """
+    if not isinstance(path_spec, path.PathSpec):
+      raise TypeError(u'Unsupported path specification type.')
+
     if resolver_context is None:
       resolver_context = cls._resolver_context
 

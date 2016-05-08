@@ -134,8 +134,9 @@ class VolumeScanner(object):
       A list of VSS store identifiers.
 
     Raises:
-      ScannerError: if the format of or within the source
-                    is not supported or the the scan node is invalid.
+      ScannerError: if the format of or within the source is not supported,
+                    the the scan node is invalid or no mediator is provided
+                    and VSS store identifiers are found.
     """
     if not scan_node or not scan_node.path_spec:
       raise errors.ScannerError(u'Invalid scan node.')
@@ -147,6 +148,11 @@ class VolumeScanner(object):
         volume_system)
     if not self._mediator and not volume_identifiers:
       return []
+
+    if not self._mediator:
+      raise ScannerError(
+          u'Unable to proceed VSS identifiers found but no mediator to '
+          u'determine how they should be used.')
 
     try:
       return self._mediator.GetVSSStoreIdentifiers(
