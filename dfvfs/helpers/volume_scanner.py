@@ -150,7 +150,7 @@ class VolumeScanner(object):
       return []
 
     if not self._mediator:
-      raise ScannerError(
+      raise errors.ScannerError(
           u'Unable to proceed VSS identifiers found but no mediator to '
           u'determine how they should be used.')
 
