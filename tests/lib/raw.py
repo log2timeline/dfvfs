@@ -5,7 +5,6 @@
 import unittest
 
 from dfvfs.lib import raw
-from dfvfs.lib import definitions
 from dfvfs.path import fake_path_spec
 from dfvfs.path import raw_path_spec
 from dfvfs.resolver import context
@@ -30,9 +29,6 @@ class GlobRawFileTest(unittest.TestCase):
     """
     resolver_context = context.Context()
     file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
     for segment_filename in segment_filenames:
       path = u'/{0:s}'.format(segment_filename)

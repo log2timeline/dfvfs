@@ -26,6 +26,8 @@ class FakeFileSystem(file_system.FileSystem):
     """
     super(FakeFileSystem, self).__init__(resolver_context)
     self._paths = {}
+    self.AddFileEntry(
+        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
   def _Close(self):
     """Closes the file system object.
@@ -116,7 +118,7 @@ class FakeFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path exists.
 
     Args:
-      path: the path of the file entry.
+      path: a string containing the path of the file entry.
 
     Returns:
       Boolean indicating if the file entry exists.
@@ -139,13 +141,32 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves the data associated to a path.
 
     Args:
-      path: a path.
+      path: a string containing the path of the file entry.
 
     Returns:
       Binary string containing the data or None if not available.
     """
     _, path_data = self._paths.get(path, (None, None))
     return path_data
+
+  def GetFileEntryByPath(self, path):
+    """Retrieves a file entry for a path.
+
+    Args:
+      path: a string containing the path of the file entry.
+
+    Returns:
+      A file entry (instance of vfs.FileEntry) or None.
+    """
+    if path is None:
+      return
+
+    if not self.FileEntryExistsByPath(path):
+      return
+
+    path_spec = fake_path_spec.FakePathSpec(location=path)
+    return fake_file_entry.FakeFileEntry(
+        self._resolver_context, self, path_spec)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -160,8 +181,7 @@ class FakeFileSystem(file_system.FileSystem):
     if location is None:
       return
 
-    if (location != self.LOCATION_ROOT and
-        not self.FileEntryExistsByPathSpec(path_spec)):
+    if not self.FileEntryExistsByPathSpec(path_spec):
       return
 
     return fake_file_entry.FakeFileEntry(
@@ -191,7 +211,7 @@ class FakeFileSystem(file_system.FileSystem):
       path: a path.
 
     Returns:
-      The stat object (instance of vfs_stat.VFSStat).
+      The stat object (instance of vfs_stat.VFSStat) or None.
     """
     stat_object, _ = self._paths.get(path, (None, None))
     return stat_object

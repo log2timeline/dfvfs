@@ -5,7 +5,6 @@
 import unittest
 
 from dfvfs.lib import ewf
-from dfvfs.lib import definitions
 from dfvfs.path import fake_path_spec
 from dfvfs.path import ewf_path_spec
 from dfvfs.resolver import context
@@ -30,9 +29,6 @@ class GlobEWFFileTest(unittest.TestCase):
     """
     resolver_context = context.Context()
     file_system = fake_file_system.FakeFileSystem(resolver_context)
-
-    file_system.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
     filename, _, extension = filename.partition(u'.')
     number_of_segments += 1
