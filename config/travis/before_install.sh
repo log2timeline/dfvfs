@@ -2,9 +2,6 @@
 #
 # Script to set up Travis-CI test VM.
 
-EXIT_SUCCESS=0;
-EXIT_FAILURE=1;
-
 COVERALL_DEPENDENCIES="python-coverage python-coveralls python-docopt";
 
 PYTHON2_DEPENDENCIES="libbde-python libewf-python libfsntfs-python libfwnt-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python libvslvm-python python-construct python-crypto python-dfdatetime python-lzma python-pytsk3 python-requests python-six"
@@ -20,4 +17,3 @@ then
 	sudo apt-get update -q;
 	sudo apt-get install -y ${COVERALL_DEPENDENCIES} ${PYTHON2_DEPENDENCIES} ${PYTHON3_DEPENDENCIES};
 fi
-
