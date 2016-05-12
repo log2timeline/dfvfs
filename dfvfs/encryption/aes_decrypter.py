@@ -25,35 +25,31 @@ class AESDecrypter(decrypter.Decrypter):
     Args:
       key: optional binary string containing the key.
       mode: optional mode of operation.
-      initialization_vector: optional initialization vector. (defaults to 0)
+      initialization_vector: optional initialization vector.
       kwargs: a dictionary of keyword arguments depending on the decrypter.
 
     Raises:
-      ValueError: when key is not set or, the key or initialization vector size
-                  is not supported.
+      ValueError: when key is not set, block cipher mode is not supported,
+                  or initialization_vector is required and not set.
     """
     if not key:
       raise ValueError(u'Missing key.')
 
-    if len(key) not in AES.key_size:
-      raise ValueError(u'Unsupported key size.')
-
-    if initialization_vector is not None:
-      if len(initialization_vector) != AES.block_size:
-        raise ValueError(u'Unsupported initialization vector size.')
-    else:
-      initialization_vector = 0
-
-    if not mode:
-      raise ValueError(u'Missing mode of operation.')
-
     if mode not in self.ENCRYPTION_MODES:
-      raise ValueError(u'Unsupported mode of operation: {0:s}'.format(mode))
+      raise ValueError(u'Unsupported mode of operation: {0!s}'.format(mode))
 
     mode = self.ENCRYPTION_MODES[mode]
 
+    if mode != AES.MODE_ECB and not initialization_vector:
+      # Pycrypto does not create a meaningful error when initialization vector
+      # is missing. Therefore, we report it ourselves.
+      raise ValueError(u'Missing initialization vector.')
+
     super(AESDecrypter, self).__init__()
-    self._aes_cipher = AES.new(key, mode=mode, IV=initialization_vector)
+    if mode == AES.MODE_ECB:
+      self._aes_cipher = AES.new(key, mode=mode)
+    else:
+      self._aes_cipher = AES.new(key, mode=mode, IV=initialization_vector)
 
   def Decrypt(self, encrypted_data):
     """Decrypts the encrypted data.

@@ -12,6 +12,42 @@ from tests.encryption import test_lib
 class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the triple DES decrypter object."""
 
+  def testInitialization(self):
+    """Tests the initialization method."""
+    # Test missing arguments.
+    with self.assertRaises(ValueError):
+      des3_decrypter.DES3Decrypter()
+
+    # Test unsupport block cipher mode.
+    with self.assertRaises(ValueError):
+      des3_decrypter.DES3Decrypter(
+          key=u'This is a key123',
+          mode=u'bogus')
+
+    # Test missing initialization vector.
+    with self.assertRaises(ValueError):
+      des3_decrypter.DES3Decrypter(
+          key=u'This is a key123',
+          mode=definitions.ENCRYPTION_MODE_CBC)
+
+    # Test missing initialization vector with valid block cipher mode.
+    des3_decrypter.DES3Decrypter(
+        key=u'This is a key123',
+        mode=definitions.ENCRYPTION_MODE_ECB)
+
+    # Test incorrect key size.
+    with self.assertRaises(ValueError):
+      des3_decrypter.DES3Decrypter(
+          key=u'Wrong key size',
+          mode=definitions.ENCRYPTION_MODE_ECB)
+
+    # Test incorrect initialization vector size.
+    with self.assertRaises(ValueError):
+      des3_decrypter.DES3Decrypter(
+          key=u'This is a key123',
+          mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=u'Wrong IV size')
+
   def testDecrypt(self):
     """Tests the Decrypt method."""
     decrypter = des3_decrypter.DES3Decrypter(
