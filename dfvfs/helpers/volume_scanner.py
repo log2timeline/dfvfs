@@ -151,7 +151,7 @@ class VolumeScanner(object):
 
     if not self._mediator:
       raise errors.ScannerError(
-          u'Unable to proceed VSS identifiers found but no mediator to '
+          u'Unable to proceed VSS. Identifiers found but no mediator to '
           u'determine how they should be used.')
 
     try:

@@ -82,7 +82,7 @@ class Resolver(object):
       KeyError: if resolver helper object is not set for the corresponding
                 type indicator.
       PathSpecError: if the path specification is incorrect.
-      TypeError: if the path specification type is unuspported.
+      TypeError: if the path specification type is unsupported.
     """
     if not isinstance(path_spec_object, path_spec.PathSpec):
       raise TypeError(u'Unsupported path specification type.')
@@ -139,7 +139,7 @@ class Resolver(object):
       KeyError: if resolver helper object is not set for the corresponding
                 type indicator.
       PathSpecError: if the path specification is incorrect.
-      TypeError: if the path specification type is unuspported.
+      TypeError: if the path specification type is unsupported.
     """
     if not isinstance(path_spec_object, path_spec.PathSpec):
       raise TypeError(u'Unsupported path specification type.')
