@@ -8,6 +8,7 @@ class Factory(object):
   PROPERTY_NAMES = frozenset([
       u'column_name',
       u'compression_method',
+      u'credentials',
       u'data_stream',
       u'encoding_method',
       u'encryption_method',
