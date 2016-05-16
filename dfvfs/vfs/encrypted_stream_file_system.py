@@ -20,6 +20,7 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
       resolver_context: the resolver context (instance of resolver.Context).
     """
     super(EncryptedStreamFileSystem, self).__init__(resolver_context)
+    self._credentials = None
     self._encryption_method = None
 
   def _Close(self):
@@ -28,6 +29,7 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     Raises:
       IOError: if the close failed.
     """
+    self._credentials = None
     self._encryption_method = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -46,6 +48,9 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     if not path_spec.HasParent():
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
+
+    credentials = getattr(path_spec, u'credentials', None)
+    self._credentials = credentials
 
     encryption_method = getattr(path_spec, u'encryption_method', None)
     if not encryption_method:
@@ -73,6 +78,7 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
       A file entry (instance of vfs.FileEntry) or None.
     """
     path_spec = encrypted_stream_path_spec.EncryptedStreamPathSpec(
+        credentials=self._credentials,
         encryption_method=self._encryption_method,
         parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
