@@ -35,8 +35,12 @@ class BDEFile(file_object_io.FileObjectIO):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
     bde_volume = pybde.volume()
-    bde.BDEVolumeOpen(
-        bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
+
+    credentials = getattr(path_spec, u'credentials', None)
+    if credentials is None:
+      credentials = resolver.Resolver.key_chain.GetCredentials(path_spec)
+
+    bde.BDEVolumeOpen(bde_volume, credentials, file_object)
     return bde_volume
 
   @property
