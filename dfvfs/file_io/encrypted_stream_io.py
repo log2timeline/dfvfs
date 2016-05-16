@@ -77,7 +77,11 @@ class EncryptedStream(file_io.FileIO):
       IOError: if the decrypter cannot be initialized.
     """
     try:
-      credentials = resolver.Resolver.key_chain.GetCredentials(self._path_spec)
+      if self._path_spec.credentials:
+        credentials = self._path_spec.credentials
+      else:
+        credentials = resolver.Resolver.key_chain.GetCredentials(
+            self._path_spec)
       return encryption_manager.EncryptionManager.GetDecrypter(
           self._encryption_method, **credentials)
     except ValueError as exception:
