@@ -4,7 +4,6 @@
 
 import os
 import unittest
-import sys; sys.path = [u'C:\\dev\\apex\\dfvfs'] + sys.path
 
 from dfvfs.lib import errors
 from dfvfs.path import bde_path_spec
