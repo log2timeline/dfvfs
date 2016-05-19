@@ -59,10 +59,12 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     bde_volume = pybde.volume()
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
+    credentials = getattr(path_spec, u'credentials', None)
+    if credentials is None:
+      credentials = resolver.Resolver.key_chain.GetCredentials(path_spec)
 
     try:
-      bde.BDEVolumeOpen(
-          bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
+      bde.BDEVolumeOpen(bde_volume, credentials, file_object)
     except:
       file_object.close()
       raise

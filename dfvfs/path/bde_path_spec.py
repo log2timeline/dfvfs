@@ -11,12 +11,13 @@ class BDEPathSpec(path_spec.PathSpec):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 
-  def __init__(self, parent=None, **kwargs):
+  def __init__(self, credentials=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
     Note that the BDE path specification must have a parent.
 
     Args:
+      credentials: optional dictionary of credentials.
       parent: optional parent path specification (instance of PathSpec).
 
     Raises:
@@ -26,11 +27,18 @@ class BDEPathSpec(path_spec.PathSpec):
       raise ValueError(u'Missing parent value.')
 
     super(BDEPathSpec, self).__init__(parent=parent, **kwargs)
+    self.credentials = credentials
 
   @property
   def comparable(self):
     """Comparable representation of the path specification."""
-    return self._GetComparable()
+    string_parts = []
+
+    if self.credentials is not None:
+      for credential, value in iter(sorted(self.credentials.items())):
+        string_parts.append(u'{0:s}: {1!s}'.format(credential, value))
+
+    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
 
 # Register the path specification with the factory.
