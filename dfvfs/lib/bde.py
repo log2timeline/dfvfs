@@ -10,7 +10,7 @@ def BDEVolumeOpen(bde_volume, credentials, file_object):
     credentials: a dictionary of credentials.
     file_object: the file-like object (instance of FileIO).
   """
-  password = credentials.get(u'path_spec', None)
+  password = credentials.get(u'password', None)
   if password is not None:
     bde_volume.set_password(password)
 
