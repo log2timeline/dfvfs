@@ -10,9 +10,9 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
   """Class that implements the SleuthKit (TSK) partition path specification.
 
   Attributes:
-    location: string containing the location.
-    part_index: integer containing the part index.
-    start_offset: integer containing the start offset.
+    location (str): location.
+    part_index (int): part index.
+    start_offset (int): start offset.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
@@ -25,12 +25,10 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
     Note that the TSK partition path specification must have a parent.
 
     Args:
-      location: optional string containing the location.
-      parent: optional parent path specification (instance of PathSpec).
-      part_index: optional integer containing the part index.
-      start_offset: optional integer containing the start offset.
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification
+      location (Optional[str]): location.
+      parent (Optional[PathSpec]): parent path specification.
+      part_index (Optional[int]): part index.
+      start_offset (Optional[int]): start offset.
 
     Raises:
       ValueError: when parent is not set.
@@ -45,7 +43,7 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     string_parts = []
 
     if self.location is not None:

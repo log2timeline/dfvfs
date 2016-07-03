@@ -10,8 +10,8 @@ class LVMPathSpec(path_spec.PathSpec):
   """Class that implements the LVM path specification.
 
   Attributes:
-    location: string containing the location.
-    volume_index: integer containing the volume index.
+    location (str): location.
+    volume_index (int): volume index.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_LVM
@@ -22,9 +22,9 @@ class LVMPathSpec(path_spec.PathSpec):
     Note that the LVM path specification must have a parent.
 
     Args:
-      location: optional string containing the location.
-      parent: optional parent path specification (instance of PathSpec).
-      volume_index: optional integer containing the volume index.
+      location (Optional[str]): location.
+      parent (Optional[PathSpec]): parent path specification.
+      volume_index (Optional[int]): volume index.
 
     Raises:
       ValueError: when parent is not set.
@@ -38,7 +38,7 @@ class LVMPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     string_parts = []
 
     if self.location is not None:

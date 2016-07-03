@@ -10,15 +10,12 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
   """Class that implements the SQLite blob file path specification.
 
   Attributes:
-    column_name: string containing the name of the column in which the blob
-                 is stored.
-    row_condition: condition of the row in which the blob is stored.
-                   The condition is a tuple in the form:
-                   (column_name, operator, value).
-                   The condition must yield a single result.
-    row_index: integer containing index of the row in which the blob is stored.
-    table_name: string containing the name of the table in which the blob
-                is stored.
+    column_name (str): name of the column in which the blob is stored.
+    row_condition (tuple): condition of the row in which the blob is stored.
+        The condition is a tuple in the form: (column_name, operator, value).
+        The condition must yield a single result.
+    row_index (int): index of the row in which the blob is stored.
+    table_name (str): name of the table in which the blob is stored.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
@@ -31,19 +28,15 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
     Note that the SQLite blob file path specification must have a parent.
 
     Args:
-      column_name: optional string containing the name of the column in which
-                   the blob is stored.
-      parent: optional parent path specification (instance of PathSpec).
-      row_condition: optional condition of the row in which the blob is stored.
-                     The condition is a tuple in the form:
-                     (column_name, operator, value).
-                     The condition must yield a single result.
-      row_index: optional integer containing index of the row in which the
-                 blob is stored.
-      table_name: optional string containing the name of the table in which
-                  the blob is stored.
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification
+      column_name (Optional[str]): name of the column in which the blob is
+          stored.
+      parent (Optional[PathSpec]): parent path specification.
+      row_condition (Optional[tuple]): condition of the row in which the blob
+          is stored. The condition is a tuple in the form: (column_name,
+          operator, value).  The condition must yield a single result.
+      row_index (Optional[int]): index of the row in which the blob is stored.
+      table_name (Optional[str]): name of the table in which the blob is
+          stored.
 
     Raises:
       ValueError: when table_name, column_name, row_condition and row_index,
@@ -59,14 +52,14 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
           u'(column_name, operator, value).'))
 
     super(SQLiteBlobPathSpec, self).__init__(parent=parent, **kwargs)
-    self.table_name = table_name
     self.column_name = column_name
     self.row_condition = row_condition
     self.row_index = row_index
+    self.table_name = table_name
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     string_parts = []
 
     string_parts.append(u'table name: {0:s}'.format(self.table_name))

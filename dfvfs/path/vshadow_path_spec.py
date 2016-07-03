@@ -10,21 +10,21 @@ class VShadowPathSpec(path_spec.PathSpec):
   """Class that implements the VSS path specification.
 
   Attributes:
-    location: string containing the location.
-    store_index: integer containing the store index.
+    location (str): location.
+    store_index (int): store index.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
-  def __init__(self, location=None, store_index=None, parent=None, **kwargs):
+  def __init__(self, location=None, parent=None, store_index=None, **kwargs):
     """Initializes the path specification object.
 
     Note that the VSS path specification must have a parent.
 
     Args:
-      location: optional string containing the location.
-      store_index: optional integer containing the store index.
-      parent: optional parent path specification (instance of PathSpec).
+      location (Optional[str]): location.
+      parent (Optional[PathSpec]): parent path specification.
+      store_index (Optional[int]): store index.
 
     Raises:
       ValueError: when parent is not set.
@@ -38,7 +38,7 @@ class VShadowPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     string_parts = []
 
     if self.location is not None:

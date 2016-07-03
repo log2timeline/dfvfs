@@ -10,7 +10,7 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
   """Class that implements the encoded stream path specification.
 
   Attributes:
-    encoding_method: string containing the method used to the encode the data.
+    encoding_method (str): method used to the encode the data.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
@@ -21,11 +21,8 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
     Note that the encoded stream path specification must have a parent.
 
     Args:
-      encoding_method: optional string containing the method used to the encode
-                       the data.
-      parent: optional parent path specification (instance of PathSpec).
-      kwargs: a dictionary of keyword arguments depending on the path
-              specification.
+      encoding_method (Optional[str]): method used to the encode the data.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when encoding method or parent are not set.
@@ -38,7 +35,7 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     sub_comparable_string = (
         u'encoding_method: {0:s}').format(self.encoding_method)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)

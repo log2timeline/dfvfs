@@ -10,24 +10,21 @@ class DataRangePathSpec(path_spec.PathSpec):
   """Class that implements the data range path specification.
 
   Attributes:
-    range_offset: integer containing the start offset of the data range.
-    range_size: integer containing the size of the data range.
+    range_offset (int): start offset of the data range.
+    range_size (int): size of the data range.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_DATA_RANGE
 
-  def __init__(self, range_offset=None, range_size=None, parent=None, **kwargs):
+  def __init__(self, parent=None, range_offset=None, range_size=None, **kwargs):
     """Initializes the path specification object.
 
     Note that the data range path specification must have a parent.
 
     Args:
-      range_offset: optional integer containing the start offset of the data
-                    range.
-      range_size: optional integer containing the size of the data range.
-      parent: optional parent path specification (instance of PathSpec).
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification.
+      parent (Optional[PathSpec]): parent path specification.
+      range_offset (Optional[int]): start offset of the data range.
+      range_size (Optional[int]): size of the data range.
 
     Raises:
       ValueError: when range offset, range offset or parent are not set.
@@ -41,7 +38,7 @@ class DataRangePathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     sub_comparable_string = (
         u'range_offset: 0x{0:08x}, range_size: 0x{1:08x}').format(
             self.range_offset, self.range_size)

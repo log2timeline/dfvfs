@@ -17,11 +17,9 @@ class CPIOPathSpec(location_path_spec.LocationPathSpec):
     Note that the CPIO file path specification must have a parent.
 
     Args:
-      location: optional CPIO file internal location string prefixed with
-                a path separator character.
-      parent: optional parent path specification (instance of PathSpec).
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification.
+      location (Optional[str]): CPIO file internal location string prefixed
+          with a path separator character.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when parent is not set.

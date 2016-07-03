@@ -17,7 +17,7 @@ class BDEPathSpec(path_spec.PathSpec):
     Note that the BDE path specification must have a parent.
 
     Args:
-      parent: optional parent path specification (instance of PathSpec).
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when parent is not set.
@@ -29,7 +29,7 @@ class BDEPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     return self._GetComparable()
 
 

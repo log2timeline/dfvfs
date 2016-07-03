@@ -22,11 +22,8 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
     Note that the compressed stream path specification must have a parent.
 
     Args:
-      compression_method: optional string containing the method used to
-                          the compress the data.
-      parent: optional parent path specification (instance of PathSpec).
-      kwargs: a dictionary of keyword arguments depending on the path
-              specification.
+      compression_method (Optional[str]): method used to the compress the data.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when compression method or parent are not set.
@@ -39,7 +36,7 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     sub_comparable_string = (
         u'compression_method: {0:s}').format(self.compression_method)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)

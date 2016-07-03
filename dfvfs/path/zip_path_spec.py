@@ -17,11 +17,9 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
     Note that the zip file path specification must have a parent.
 
     Args:
-      location: optional zip file internal location string prefixed with a path
-                separator character.
-      parent: optional parent path specification (instance of PathSpec).
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification
+      location (Optional[str]): ZIP file internal location string prefixed
+          with a path separator character.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when parent is not set.
