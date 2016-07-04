@@ -27,7 +27,7 @@ class NTFSFileSystem(file_system.FileSystem):
     """Initializes a file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(NTFSFileSystem, self).__init__(resolver_context)
     self._file_object = None
@@ -48,8 +48,8 @@ class NTFSFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -77,10 +77,10 @@ class NTFSFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
 
     Raises:
       BackEndError: if the file entry cannot be opened.
@@ -107,10 +107,10 @@ class NTFSFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      NTFSFileEntry: file entry or None.
 
     Raises:
       BackEndError: if the file entry cannot be opened.
@@ -149,7 +149,7 @@ class NTFSFileSystem(file_system.FileSystem):
     """Retrieves the file system info object.
 
     Returns:
-      The NTFS volume object (instance of pyfsntfs.volume).
+      pyfsntfs.volume: NTFS volume object.
     """
     return self._fsntfs_volume
 
@@ -157,7 +157,7 @@ class NTFSFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      NTFSFileEntry: file entry.
     """
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=self.LOCATION_ROOT, mft_entry=self.MFT_ENTRY_ROOT_DIRECTORY,
