@@ -236,19 +236,19 @@ class NTFSFileEntry(file_entry.FileEntry):
   }
 
   def __init__(
-      self, resolver_context, file_system, path_spec, is_root=False,
-      is_virtual=False, fsntfs_file_entry=None):
+      self, resolver_context, file_system, path_spec, fsntfs_file_entry=None,
+      is_root=False, is_virtual=False):
     """Initializes the file entry object.
 
     Args:
       resolver_context (Context): resolver context.
       file_system (FileSystem): file system.
       path_spec (PathSpec): path specification.
+      fsntfs_file_entry (Optional[pyfsntfs.file_entry]): NTFS file entry.
       is_root (Optional[bool]): True if the file entry is the root file entry
           of the corresponding file system.
       is_virtual (Optional[bool]): True if the file entry is a virtual file
           entry emulated by the corresponding file system.
-      fsntfs_file_entry (Optional[pyfsntfs.file_entry]): NTFS file entry.
     """
     super(NTFSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -283,7 +283,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     """Retrieves the data streams.
 
     Returns:
-      list[NTFSDataStream]: data stream.
+      list[NTFSDataStream]: data streams.
 
     Raises:
       BackEndError: if the pyfsntfs file entry is missing.
@@ -450,7 +450,7 @@ class NTFSFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """NTFSFileEntry: sub file entries."""
+    """generator(NTFSFileEntry): sub file entries."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
