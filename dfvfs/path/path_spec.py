@@ -8,7 +8,7 @@ class PathSpec(object):
   """Class that implements the path specification object interface.
 
   Attributes:
-    parent: parent path specification (instance of PathSpec).
+    parent (PathSpec): parent path specification.
   """
 
   _IS_SYSTEM_LEVEL = False
@@ -17,7 +17,7 @@ class PathSpec(object):
     """Initializes the path specification object.
 
     Args:
-      parent: optional parent path specification (instance of PathSpec).
+      parent (Optional[PathSpec]): parent path specification.
       kwargs: a dictionary of keyword arguments dependending on the path
               specification.
 
@@ -45,10 +45,10 @@ class PathSpec(object):
     This is a convenience function for constructing comparables.
 
     Args:
-      sub_comparable_string: the sub comparable string.
+      sub_comparable_string (str): sub comparable string.
 
     Returns:
-      A string containing the comparable.
+      str: comparable representation of the path specification.
     """
     string_parts = []
 
@@ -63,11 +63,11 @@ class PathSpec(object):
 
   @abc.abstractproperty
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
 
   @property
   def type_indicator(self):
-    """The type indicator."""
+    """str: type indicator."""
     type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
@@ -78,7 +78,7 @@ class PathSpec(object):
     """Copies the path specification to a dictionary.
 
     Returns:
-      A dictionary containing the path specification attributes.
+      dict: path specification attributes.
     """
     path_spec_dict = {}
     for attribute_name, attribute_value in iter(self.__dict__.items()):
@@ -93,9 +93,17 @@ class PathSpec(object):
     return path_spec_dict
 
   def HasParent(self):
-    """Determines if the path specification has a parent."""
+    """Determines if the path specification has a parent.
+
+    Returns:
+      bool: True if the path specification has a parent.
+    """
     return self.parent is not None
 
   def IsSystemLevel(self):
-    """Determines if the path specification is at system-level."""
+    """Determines if the path specification is at system-level.
+
+    Returns:
+      bool: True if the path specification is at system-level.
+    """
     return getattr(self, u'_IS_SYSTEM_LEVEL', False)

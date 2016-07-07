@@ -10,7 +10,7 @@ class MountPathSpec(path_spec.PathSpec):
   """Class that implements the mount path specification.
 
   Attributes:
-    identifier: string containing the identifier of the mount point.
+    identifier (str): identifier of the mount point.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_MOUNT
@@ -21,9 +21,7 @@ class MountPathSpec(path_spec.PathSpec):
     Note that the mount path specification cannot have a parent.
 
     Args:
-      identifier: string containing the identifier of the mount point.
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification.
+      identifier (str): identifier of the mount point.
 
     Raises:
       ValueError: when identifier is not set.
@@ -36,7 +34,7 @@ class MountPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     sub_comparable_string = u'identifier: {0:s}'.format(self.identifier)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
 

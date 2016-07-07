@@ -20,10 +20,8 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
     Note that the operating system path specification cannot have a parent.
 
     Args:
-      location: optional operating specific location string e.g. /opt/dfvfs or
-                C:\\Opt\\dfvfs.
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification.
+      location (Optional[str]): operating specific location string e.g.
+          /opt/dfvfs or C:\\Opt\\dfvfs.
 
     Raises:
       ValueError: when location is not set or parent is set.

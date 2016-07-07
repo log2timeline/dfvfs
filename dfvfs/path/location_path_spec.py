@@ -8,18 +8,15 @@ class LocationPathSpec(path_spec.PathSpec):
   """Base class for location-based path specifications.
 
   Attributes:
-    location: string containing the location.
+    location (str): location.
   """
 
   def __init__(self, location=None, parent=None, **kwargs):
     """Initializes the path specification object.
 
     Args:
-      location: optional string containing the location.
-      parent: optional parent path specification (instance of PathSpec),
-              default is None.
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification.
+      location (Optional[str]): location.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when location is not set.
@@ -32,6 +29,6 @@ class LocationPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     sub_comparable_string = u'location: {0:s}'.format(self.location)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)

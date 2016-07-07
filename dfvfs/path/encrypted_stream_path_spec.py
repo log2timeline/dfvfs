@@ -7,7 +7,11 @@ from dfvfs.path import path_spec
 
 
 class EncryptedStreamPathSpec(path_spec.PathSpec):
-  """Class that implements the encrypted stream path specification."""
+  """Class that implements the encrypted stream path specification.
+
+  Attributes:
+    encryption_method (str): method used to the encrypt the data.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCRYPTED_STREAM
 
@@ -17,10 +21,8 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
     Note that the encrypted stream path specification must have a parent.
 
     Args:
-      encryption_method: optional method used to the encrypt the data.
-      parent: optional parent path specification (instance of PathSpec).
-      kwargs: a dictionary of keyword arguments depending on the path
-              specification.
+      encryption_method (Optional[str]): method used to the encrypt the data.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when encryption method or parent are not set.
@@ -33,7 +35,7 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     sub_comparable_string = (
         u'encryption_method: {0:s}').format(self.encryption_method)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)

@@ -10,13 +10,12 @@ class NTFSPathSpec(path_spec.PathSpec):
   """Class that implements the NTFS path specification.
 
   Attributes:
-    data_stream: string containing the data stream name, where None indicates
-                 the default data stream.
-    location: string containing the location.
-    mft_attribute: integer containing the $FILE_NAME MFT attribute index. The
-                   first attribute is indicated by 0.
-    mft_entry: integer containing the MFT entry. The first entry is indicated
-               by 0.
+    data_stream (str): data stream name, where None indicates the default
+        data stream.
+    location (str): location.
+    mft_attribute (int): $FILE_NAME MFT attribute index, where the first
+        attribute is indicated by 0.
+    mft_entry (int): MFT entry, where the first entry is indicated by 0.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_NTFS
@@ -29,16 +28,14 @@ class NTFSPathSpec(path_spec.PathSpec):
     Note that the NTFS path specification must have a parent.
 
     Args:
-      data_stream: optional string containing the data stream name,
-                   where None indicates the default data stream.
-      location: optional string containing the location.
-      mft_attribute: optional integer containing the $FILE_NAME MFT
-                     attribute index. The first attribute is indicated by 0.
-      mft_entry: optional integer containing the MFT entry. The first entry
-                 is indicated by 0.
-      parent: optional parent path specification (instance of PathSpec),
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification
+      data_stream (Optional[str]): data stream name, where None indicates
+          the default data stream.
+      location (Optional[str]): location.
+      mft_attribute (Optional[int]): $FILE_NAME MFT attribute index, where
+          the first attribute is indicated by 0.
+      mft_entry (Optional[int]): MFT entry, where the first entry is indicated
+          by 0.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when location and mft_entry, or parent are not set.
@@ -54,7 +51,7 @@ class NTFSPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     string_parts = []
 
     if self.data_stream:

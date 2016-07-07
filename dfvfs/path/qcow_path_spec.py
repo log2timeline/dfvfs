@@ -17,9 +17,7 @@ class QCOWPathSpec(path_spec.PathSpec):
     Note that the QCOW path specification must have a parent.
 
     Args:
-      parent: optional parent path specification (instance of PathSpec).
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when parent is not set.
@@ -31,7 +29,7 @@ class QCOWPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     return self._GetComparable()
 
 

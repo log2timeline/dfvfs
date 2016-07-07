@@ -35,7 +35,7 @@ class Factory(object):
     """Deregisters a path specification.
 
     Args:
-      path_spec_type: the path specification type (or class) object.
+      path_spec_type (type): path specification type.
 
     Raises:
       KeyError: if path specification is not registered.
@@ -55,10 +55,10 @@ class Factory(object):
     """Retrieves a dictionary containing the path specification properties.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Raises:
-      A dictionary object containing the properties.
+      dict: path specification properties.
     """
     properties = {}
 
@@ -74,10 +74,10 @@ class Factory(object):
     """Determines if the type indicator is at system-level.
 
     Args:
-      type_indicator: the type indicator.
+      type_indicator (str): type indicator.
 
     Returns:
-      A boolean indicating the type indicator is at system-level.
+      bool: True if the type indicator is at system-level.
     """
     return type_indicator in cls._system_level_type_indicators
 
@@ -86,12 +86,11 @@ class Factory(object):
     """Creates a new path specification for the specific type indicator.
 
     Args:
-      type_indicator: the path specification type indicator.
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification.
+      type_indicator (str): type indicator.
+      kwargs (dict): keyword arguments dependending on the path specification.
 
     Returns:
-      The VFS path specification (instance of PathSpec).
+      PathSpec: path specification.
 
     Raises:
       KeyError: if path specification is not registered.
@@ -113,7 +112,7 @@ class Factory(object):
     """Registers a path specification type.
 
     Args:
-      path_spec_type: the path specification type (or class) object.
+      path_spec_type (type): path specification type.
 
     Raises:
       KeyError: if path specification is already registered.

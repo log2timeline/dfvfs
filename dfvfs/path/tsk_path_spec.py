@@ -10,10 +10,10 @@ class TSKPathSpec(path_spec.PathSpec):
   """Class that implements the SleuthKit (TSK) path specification.
 
   Attributes:
-    data_stream: string containing the data stream name, where None indicates
-                 the default data stream.
-    inode: integer containing the inode.
-    location: string containing the location.
+    data_stream (str): data stream name, where None indicates the default
+        data stream.
+    inode (int): inode.
+    location (str): location.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
@@ -25,13 +25,11 @@ class TSKPathSpec(path_spec.PathSpec):
     Note that the TSK path specification must have a parent.
 
     Args:
-      data_stream: optional string containing the data stream name, where None
-                   indicates the default data stream.
-      inode: optional integer containing the inode.
-      location: optional string containing the location.
-      parent: optional parent path specification (instance of PathSpec),
-      kwargs: a dictionary of keyword arguments dependending on the path
-              specification
+      data_stream (Optional[str]): data stream name, where None indicates
+          the default data stream.
+      inode (Optional[int]): inode.
+      location (Optional[str]): location.
+      parent (Optional[PathSpec]): parent path specification.
 
     Raises:
       ValueError: when inode and location, or parent are not set.
@@ -46,7 +44,7 @@ class TSKPathSpec(path_spec.PathSpec):
 
   @property
   def comparable(self):
-    """Comparable representation of the path specification."""
+    """str: comparable representation of the path specification."""
     string_parts = []
 
     if self.data_stream:
