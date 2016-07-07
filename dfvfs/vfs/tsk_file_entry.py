@@ -20,7 +20,7 @@ class TSKAttribute(file_entry.Attribute):
     """Initializes the attribute object.
 
     Args:
-      tsk_attribute: the TSK attribute object (instance of pytsk3.Attribute).
+      tsk_attribute (pytsk3.Attribute): TSK attribute.
     """
     super(TSKAttribute, self).__init__()
     self._tsk_attribute = tsk_attribute
@@ -38,7 +38,7 @@ class TSKDataStream(file_entry.DataStream):
     """Initializes the data stream object.
 
     Args:
-      tsk_attribute: the TSK attribute object (instance of pytsk3.Attribute).
+      tsk_attribute (pytsk3.Attribute): TSK attribute.
     """
     super(TSKDataStream, self).__init__()
     self._tsk_attribute = tsk_attribute
@@ -70,7 +70,7 @@ class TSKDirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.TSKPathSpec).
+      TSKPathSpec: path specification.
     """
     # Opening a file by inode number is faster than opening a file
     # by location.
@@ -164,20 +164,19 @@ class TSKFileEntry(file_entry.FileEntry):
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
-      is_virtual=False, tsk_file=None, parent_inode=None):
+      is_virtual=False, parent_inode=None, tsk_file=None):
     """Initializes the file entry object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification (instance of PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
-      is_virtual: optional boolean value to indicate if the file entry is
-                  a virtual file entry emulated by the corresponding file
-                  system.
-      tsk_file: optional file object (instance of pytsk3.File).
-      parent_inode: optional parent inode number.
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+      is_virtual (Optional[bool]): True if the file entry is a virtual file
+          entry emulated by the corresponding file system.
+      parent_inode (Optional[int]): parent inode number.
+      tsk_file (Optional[pytsk3.File]): TSK file.
     """
     super(TSKFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -190,7 +189,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the attributes.
 
     Returns:
-      A list of attribute objects (instances of Attribute).
+      list[TSKAttribute]: attributes.
 
     Raises:
       BackEndError: if the TSK File .info or .info.meta attribute is missing.
@@ -217,7 +216,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the data streams.
 
     Returns:
-      A list of data stream objects (instances of TSKDataStream).
+      list[TSKDataStream]: data streams.
 
     Raises:
       BackEndError: if the TSK File .info or .info.meta attribute is missing.
@@ -261,7 +260,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      A directory object (instance of Directory) or None.
+      TSKDirectory: directory or None.
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
@@ -275,7 +274,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the link.
 
     Returns:
-      A string containing the path of the linked file.
+      str: path of the linked file.
     """
     if self._link is None:
       self._link = u''
@@ -320,7 +319,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the stat object.
 
     Returns:
-      The stat object (instance of VFSStat).
+      VFSStat: stat object.
 
     Raises:
       BackEndError: if the TSK File .info or .info.meta attribute is missing.
@@ -425,8 +424,8 @@ class TSKFileEntry(file_entry.FileEntry):
     """Copies a SleuthKit file object time value to a stat timestamp tuple.
 
     Args:
-      tsk_file: a SleuthKit file object (instance of pytsk3.File).
-      time_value: a string containing the name of the time value.
+      tsk_file (pytsk3.File): TSK file.
+      time_value (str): name of the time value.
 
     Returns:
       A tuple of an integer containing a POSIX timestamp in seconds
@@ -452,7 +451,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """The name of the file entry, which does not include the full path.
+    """str: name of the file entry, which does not include the full path.
 
     Raises:
       BackEndError: if pytsk3 returns a non UTF-8 formatted name.
@@ -488,7 +487,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of TSKFileEntry)."""
+    """generator(TSKFileEntry): sub file entries."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -500,12 +499,11 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the file-like object.
 
     Args:
-      data_stream_name: optional data stream name. The default is
-                        an empty string which represents the default
-                        data stream.
+      data_stream_name (Optional[str]): data stream name, where an empty
+          string represents the default data stream.
 
     Returns:
-      A file-like object (instance of FileIO) or None.
+      TSKFileIO: file-like object or None.
     """
     data_stream_names = [
         data_stream.name for data_stream in self._GetDataStreams()]
@@ -523,7 +521,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the linked file entry, e.g. for a symbolic link.
 
     Returns:
-      The linked file entry (instance of TSKFileEntry) or None.
+      TSKFileEntry: linked file entry or None.
     """
     link = self._GetLink()
     if not link:
@@ -551,7 +549,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the parent file entry.
 
     Returns:
-      The parent file entry (instance of FileEntry) or None.
+      TSKFileEntry: parent file entry or None.
     """
     location = getattr(self.path_spec, u'location', None)
     if location is None:
@@ -581,7 +579,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves the SleuthKit file object.
 
     Returns:
-      The SleuthKit file object (instance of pytsk3.File).
+      pytsk3.File: TSK file.
 
     Raises:
       PathSpecError: if the path specification is missing inode and location.
