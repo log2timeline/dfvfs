@@ -89,7 +89,7 @@ class ObjectIdentifierNTFSAttribute(NTFSAttribute):
 
   @property
   def droid_file_identifier(self):
-    """str: droid file identifier contains an UUID."""
+    """str: droid file identifier, formatted as an UUID."""
     return self._fsntfs_attribute.droid_file_identifier
 
 
