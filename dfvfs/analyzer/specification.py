@@ -12,8 +12,8 @@ class Signature(object):
   Attributes:
     identifier (str): unique signature identifier for a specification store.
     offset (int): offset of the signature, where None indicates the signature
-          has no offset.A positive offset or 0 is relative from the start of
-          the data a negative offset is relative from the end of the data.
+          has no offset. A positive offset or 0 is relative to the start of
+          the data a negative offset is relative to the end of the data.
     pattern (bytes): pattern of the signature.
   """
 
@@ -25,7 +25,7 @@ class Signature(object):
           (regexp) are not supported.
       offset (Optional[int]): offset of the signature, where None indicates
           the signature has no offset. A positive offset or 0 is relative
-          from the start of the data a negative offset is relative from
+          from the start of the data a negative offset is relative to
           the end of the data.
     """
     super(Signature, self).__init__()
@@ -63,7 +63,7 @@ class FormatSpecification(object):
           (regexp) are not supported.
       offset (Optional[int]): offset of the signature, where None indicates
           the signature has no offset. A positive offset or 0 is relative
-          from the start of the data a negative offset is relative from
+          from the start of the data a negative offset is relative to
           the end of the data.
     """
     self.signatures.append(Signature(pattern, offset=offset))
@@ -144,7 +144,7 @@ class FormatSpecificationStore(object):
       identifier (str): unique signature identifier for a specification store.
 
     Returns:
-      FormatSpecification: Aformat specification or None if the signature
+      FormatSpecification: A format specification or None if the signature
           identifier does not exist within the specification store.
     """
     return self._signature_map.get(signature_identifier, None)
