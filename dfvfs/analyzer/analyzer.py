@@ -102,7 +102,7 @@ class Analyzer(object):
       cls._volume_system_store = None
 
   @classmethod
-  def GetSignatureScanner(cls, specification_store):
+  def _GetSignatureScanner(cls, specification_store):
     """Initializes a signature scanner based on a specification store.
 
     Args:
