@@ -29,11 +29,11 @@ class AnalyzerHelper(object):
     This is the fall through implementation that raises a RuntimeError.
 
     Args:
-      unused_file_object: a file-like object (instance of file_io.FileIO).
+      unused_file_object (FileIO): file-like object.
 
     Returns:
-      The type indicator if the file-like object contains a supported format
-      or None otherwise.
+      str: type indicator if the file-like object contains a supported format
+          or None otherwise.
 
     Raises:
       RuntimeError: since this is the fall through implementation.
@@ -49,8 +49,8 @@ class AnalyzerHelper(object):
     This is the fall through implementation that returns None.
 
     Returns:
-      The format specification object (instance of FormatSpecification)
-      or None if the format cannot be defined by a specification object.
+      FormatSpecification: format specification or None if the format cannot
+          be defined by a specification object.
     """
     return
 
@@ -58,6 +58,6 @@ class AnalyzerHelper(object):
     """Determines if the analyzer helper is enabled.
 
     Returns:
-      A boolean value to indicate the analyzer helper is enabled.
+      bool: True if the analyzer helper is enabled.
     """
     return True

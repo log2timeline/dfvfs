@@ -16,7 +16,12 @@ class NTFSAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_NTFS
 
   def GetFormatSpecification(self):
-    """Retrieves the format specification."""
+    """Retrieves the format specification.
+
+    Returns:
+      FormatSpecification: format specification or None if the format cannot
+          be defined by a specification object.
+    """
     format_specification = specification.FormatSpecification(
         self.type_indicator)
 
@@ -29,10 +34,9 @@ class NTFSAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     """Determines if the analyzer helper is enabled.
 
     Returns:
-      A boolean value to indicate the analyzer helper is enabled.
+      bool: True if the analyzer helper is enabled.
     """
     return definitions.PREFERRED_NTFS_BACK_END == self.TYPE_INDICATOR
 
 
-# Register the analyzer helpers with the analyzer.
 analyzer.Analyzer.RegisterHelper(NTFSAnalyzerHelper())

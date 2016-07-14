@@ -17,7 +17,12 @@ class EWFAnalyzerHelper(analyzer_helper.AnalyzerHelper):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_EWF
 
   def GetFormatSpecification(self):
-    """Retrieves the format specification."""
+    """Retrieves the format specification.
+
+    Returns:
+      FormatSpecification: format specification or None if the format cannot
+          be defined by a specification object.
+    """
     format_specification = specification.FormatSpecification(
         self.type_indicator)
 
@@ -31,5 +36,4 @@ class EWFAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     return format_specification
 
 
-# Register the analyzer helpers with the analyzer.
 analyzer.Analyzer.RegisterHelper(EWFAnalyzerHelper())

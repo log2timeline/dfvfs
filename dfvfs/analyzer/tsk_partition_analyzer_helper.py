@@ -21,21 +21,20 @@ class TSKPartitionAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     """Retrieves the format specification.
 
     Args:
-      file_object: a file-like object (instance of file_io.FileIO).
+      file_object (FileIO): file-like object.
 
     Returns:
-      The type indicator if the file-like object contains a supported format
-      or None otherwise.
+      str: type indicator if the file-like object contains a supported format
+          or None otherwise.
     """
     tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
 
     try:
-      _ = pytsk3.Volume_Info(tsk_image_object)
+      pytsk3.Volume_Info(tsk_image_object)
     except IOError:
       return
 
     return self.type_indicator
 
 
-# Register the analyzer helpers with the analyzer.
 analyzer.Analyzer.RegisterHelper(TSKPartitionAnalyzerHelper())
