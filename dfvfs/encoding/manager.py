@@ -12,7 +12,7 @@ class EncodingManager(object):
     """Deregisters a decoder for a specific encoding method.
 
     Args:
-      decoder: the decoder class (encoding.Decoder).
+      decoder (type): decoder class.
 
     Raises:
       KeyError: if the corresponding decoder is not set.
@@ -30,11 +30,10 @@ class EncodingManager(object):
     """Retrieves the decoder object for a specific encoding method.
 
     Args:
-      encoding_method: the encoding method identifier.
+      encoding_method (str): encoding method identifier.
 
     Returns:
-      The decoder object (instance of encoding.Decoder) or None if
-      the encoding method does not exists.
+      Decoder: decoder or None if the encoding method does not exists.
     """
     encoding_method = encoding_method.lower()
     decoder = cls._decoders.get(encoding_method, None)
@@ -48,7 +47,7 @@ class EncodingManager(object):
     """Registers a decoder for a specific encoding method.
 
     Args:
-      decoder: the decoder class (encoding.Decoder).
+      decoder (type): decoder class.
 
     Raises:
       KeyError: if the corresponding decoder is already set.
@@ -68,7 +67,7 @@ class EncodingManager(object):
     The decoders are identified based on their lower case encoding method.
 
     Args:
-      decoders: a list of class objects of the decoders.
+      decoders (list[type]): decoder classes.
 
     Raises:
       KeyError: if decoders is already set for the corresponding

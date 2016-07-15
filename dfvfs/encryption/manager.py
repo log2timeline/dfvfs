@@ -12,7 +12,7 @@ class EncryptionManager(object):
     """Deregisters a decrypter for a specific encryption method.
 
     Args:
-      decrypter: the decrypter class (encryption.Decrypter).
+      decrypter (type): decrypter class.
 
     Raises:
       KeyError: if the corresponding decrypter is not set.
@@ -30,12 +30,11 @@ class EncryptionManager(object):
     """Retrieves the decrypter object for a specific encryption method.
 
     Args:
-      encryption_method: the encryption method identifier.
-      kwargs: a dictionary of keyword arguments dependending on the decrypter.
+      encryption_method (str): encryption method identifier.
+      kwargs (dict): keyword arguments depending on the decrypter.
 
     Returns:
-      The decrypter object (instance of encryption.Decrypter) or None if
-      the encryption method does not exists.
+      Decrypter: decrypter or None if the encryption method does not exists.
 
     Raises:
       CredentialError: if the necessary credentials are missing.
@@ -52,7 +51,7 @@ class EncryptionManager(object):
     """Registers a decrypter for a specific encryption method.
 
     Args:
-      decrypter: the decrypter class (encryption.Decrypter).
+      decrypter (type): decrypter class.
 
     Raises:
       KeyError: if the corresponding decrypter is already set.
@@ -72,7 +71,7 @@ class EncryptionManager(object):
     The decrypters are identified based on their lower case encryption method.
 
     Args:
-      decrypters: a list of class objects of the decrypters.
+      decrypters (list[type]): decrypter classes.
 
     Raises:
       KeyError: if decrypters is already set for the corresponding

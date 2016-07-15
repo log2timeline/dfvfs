@@ -23,10 +23,10 @@ class BlowfishDecrypter(decrypter.Decrypter):
     """Initializes the decrypter object.
 
     Args:
-      key: optional binary string containing the key.
-      mode: optional mode of operation.
-      initialization_vector: optional initialization vector.
-      kwargs: a dictionary of keyword arguments depending on the decrypter.
+      key (Optional[bytes]): key.
+      mode (Optional[str]): mode of operation.
+      initialization_vector (Optional[bytes]): initialization vector.
+      kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
       ValueError: when key is not set, block cipher mode is not supported,
@@ -56,11 +56,10 @@ class BlowfishDecrypter(decrypter.Decrypter):
     """Decrypts the encrypted data.
 
     Args:
-      encrypted_data: a byte string containing the encrypted data.
+      encrypted_data (bytes): encrypted data.
 
     Returns:
-      A tuple containing a byte string of the decrypted data and
-      the remaining encrypted data.
+      tuple[bytes,bytes]: decrypted data and remaining encrypted data.
     """
     index_split = -(len(encrypted_data) % Blowfish.block_size)
     if index_split:

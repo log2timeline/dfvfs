@@ -21,12 +21,12 @@ class KeyChain(object):
     """Retrieves a specific credential from the key chain.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
-      identifier: string containing the credential identifier.
+      path_spec (PathSpec): path specification.
+      identifier (str): credential identifier.
 
     Returns:
-      The credential or None if the credential for the path specification
-      is not set.
+      object: credential or None if the credential for the path specification
+          is not set.
     """
     credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
     return credentials.get(identifier, None)
@@ -35,11 +35,10 @@ class KeyChain(object):
     """Retrieves all credentials for the path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A dictionary containing the credentials which is empty if the credentials
-      for the path specification are not set.
+      dict[str,object]: credentials for the path specification.
     """
     return self._credentials_per_path_spec.get(path_spec.comparable, {})
 
@@ -47,9 +46,9 @@ class KeyChain(object):
     """Sets a specific credential for the path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
-      identifier: string containing the credential identifier.
-      data: the credential data.
+      path_spec (PathSpec): path specification.
+      identifier (str): credential identifier.
+      data (object): credential data.
 
     Raises:
       KeyError: if the credential is not supported by the path specification

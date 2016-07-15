@@ -11,7 +11,7 @@ class Decrypter(object):
     """Initializes the decrypter object.
 
     Args:
-      kwargs: a dictionary of keyword arguments depending on the decrypter.
+      kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
       ValueError: when there are unused keyword arguments.
@@ -27,9 +27,8 @@ class Decrypter(object):
     """Decrypts the encrypted data.
 
     Args:
-      encrypted_data: a byte string containing the encrypted data.
+      encrypted_data (bytes): encrypted data.
 
     Returns:
-      A tuple containing a byte string of the decrypted data and
-      the remaining encrypted data.
+      tuple[bytes,bytes]: decrypted data and remaining encrypted data.
     """

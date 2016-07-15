@@ -21,7 +21,7 @@ class CredentialsManager(object):
     """Deregisters a path specification credentials.
 
     Args:
-      credentials: the credentials object (instance of credentials.Credentials).
+      credentials (Credentials): credentials.
 
     Raises:
       KeyError: if credential object is not set for the corresponding
@@ -39,11 +39,11 @@ class CredentialsManager(object):
     """Retrieves the credentials for a specific path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The credentials (instance of credentials.Credentials) or None if the path
-      specification has no credentials support.
+      Credentials: credentials or None if the path specification has no
+          credentials support.
     """
     if not path_spec:
       return
@@ -55,7 +55,7 @@ class CredentialsManager(object):
     """Registers a path specification credentials.
 
     Args:
-      credentials: the credentials object (instance of credentials.Credentials).
+      credentials (Credentials): credentials.
 
     Raises:
       KeyError: if credentials object is already set for the corresponding

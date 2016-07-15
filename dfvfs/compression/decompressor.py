@@ -12,9 +12,8 @@ class Decompressor(object):
     """Decompresses the compressed data.
 
     Args:
-      compressed_data: a byte string containing the compressed data.
+      compressed_data (bytes): compressed data.
 
     Returns:
-      A tuple containing a byte string of the uncompressed data and
-      the remaining compressed data.
+      tuple(bytes,bytes): uncompressed data and remaining compressed data.
     """

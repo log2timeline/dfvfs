@@ -12,9 +12,8 @@ class Decoder(object):
     """Decodes the encoded data.
 
     Args:
-      encoded_data: a byte string containing the encoded data.
+      encoded_data (byte): encoded data.
 
     Returns:
-      A tuple containing a byte string of the decoded data and
-      the remaining encoded data.
+      tuple(bytes,bytes): decoded data and remaining encoded data.
     """
