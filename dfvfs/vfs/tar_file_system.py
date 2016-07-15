@@ -14,21 +14,21 @@ from dfvfs.vfs import file_system
 
 
 class TARFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using tarfile.
+  """Class that implements a file system using tarfile.
 
   Attributes:
-    encoding: string containing the file entry name encoding.
+    encoding (str): file entry name encoding.
   """
 
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
   def __init__(self, resolver_context, encoding=u'utf-8'):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      encoding: optional string containing file entry name encoding.
+      resolver_context (Context): resolver context.
+      encoding (Optional[str]): file entry name encoding.
     """
     super(TARFileSystem, self).__init__(resolver_context)
     self._file_object = None
@@ -36,7 +36,7 @@ class TARFileSystem(file_system.FileSystem):
     self.encoding = encoding
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.
@@ -48,15 +48,15 @@ class TARFileSystem(file_system.FileSystem):
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
-    """Opens the file system object defined by path specification.
+    """Opens the file system defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      IOError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -82,73 +82,78 @@ class TARFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
-    tar_info = None
     location = getattr(path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
-      return
+      return False
 
     if len(location) == 1:
       return True
 
     try:
-      tar_info = self._tar_file.getmember(location[1:])
+      self._tar_file.getmember(location[1:])
+      return True
     except KeyError:
       pass
 
-    return tar_info is not None
+    # Check if location could be a virtual directory.
+
+    for name in iter(self._tar_file.getnames()):
+      # The TAR info name does not have the leading path separator as
+      # the location string does.
+      if name.startswith(location[1:]):
+        return True
+
+    return False
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.TARFileEntry) or None.
+      TARFileEntry: file entry or None.
     """
-    tar_info = None
-    location = getattr(path_spec, u'location', None)
-
-    if (location is None or
-        not location.startswith(self.LOCATION_ROOT)):
+    if not self.FileEntryExistsByPathSpec(path_spec):
       return
+
+    location = getattr(path_spec, u'location', None)
 
     if len(location) == 1:
       return dfvfs.vfs.tar_file_entry.TARFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
+    kwargs = {}
     try:
-      tar_info = self._tar_file.getmember(location[1:])
+      kwargs[u'tar_info'] = self._tar_file.getmember(location[1:])
     except KeyError:
-      pass
+      kwargs[u'is_virtual'] = True
 
-    if tar_info is None:
-      return
     return dfvfs.vfs.tar_file_entry.TARFileEntry(
-        self._resolver_context, self, path_spec, tar_info=tar_info)
+        self._resolver_context, self, path_spec, **kwargs)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      TARFileEntry: file entry.
     """
     path_spec = tar_path_spec.TARPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
 
   def GetTARFile(self):
-    """Retrieves the TAR file object.
+    """Retrieves the TAR file.
 
     Returns:
-      The TAR file object (instance of tarfile.TARFile).
+      tarfile.TARFile: TAR file.
     """
     return self._tar_file

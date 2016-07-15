@@ -10,7 +10,7 @@ from dfvfs.vfs import vfs_stat
 
 
 class TARDirectory(file_entry.Directory):
-  """Class that implements a directory object using tarfile."""
+  """Class that implements a directory using tarfile."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -19,7 +19,7 @@ class TARDirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.TARPathSpec).
+      TARPathSpec: TAR path specification.
     """
     location = getattr(self.path_spec, u'location', None)
 
@@ -27,47 +27,72 @@ class TARDirectory(file_entry.Directory):
         not location.startswith(self._file_system.PATH_SEPARATOR)):
       return
 
+    # The TAR info name does not have the leading path separator as
+    # the location string does.
+    tar_path = location[1:]
+
+    # Set of top level sub directories that have been yielded.
+    processed_directories = set()
+
     tar_file = self._file_system.GetTARFile()
-    for tar_info in tar_file.getmembers():
+    for tar_info in iter(tar_file.getmembers()):
       path = tar_info.name
 
       # Determine if the start of the TAR info name is similar to
       # the location string. If not the file TAR info refers to is not in
-      # the same directory. Note that the TAR info name does not have the
-      # leading path separator as the location string does.
-      if not path or not path.startswith(location[1:]):
+      # the same directory.
+      if not path or not path.startswith(tar_path):
         continue
 
-      _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
-
-      # Ignore anything that is part of a sub directory or the directory itself.
-      if suffix or path == location:
+      # Ignore the directory itself.
+      if path == tar_path:
         continue
 
-      path_spec_location = self._file_system.JoinPath([path])
+      path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
+          tar_path, path)
+      if not path_segment:
+        continue
+
+      # Sometimes the TAR file lacks directories, therefore we will
+      # provide virtual ones.
+      if suffix:
+        path_spec_location = self._file_system.JoinPath([
+            location, path_segment])
+        is_directory = True
+
+      else:
+        path_spec_location = self._file_system.JoinPath([path])
+        is_directory = tar_info.isdir()
+
+      if is_directory:
+        if path_spec_location in processed_directories:
+          continue
+
+        processed_directories.add(path_spec_location)
+
       yield tar_path_spec.TARPathSpec(
           location=path_spec_location, parent=self.path_spec.parent)
 
 
 class TARFileEntry(file_entry.FileEntry):
-  """Class that implements a file entry object using tarfile."""
+  """Class that implements a file entry using tarfile."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False, tar_info=None):
-    """Initializes the file entry object.
+    """Initializes the file entry.
+
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification (instance of PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
-      is_virtual: optional boolean value to indicate if the file entry is
-                  a virtual file entry emulated by the corresponding file
-                  system.
-      tar_info: optional TAR info object (instance of tarfile.TARInfo).
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+      is_virtual (Optional[bool]): True if the file entry is a virtual file
+          entry emulated by the corresponding file system.
+      tar_info (Optional[tarfile.TARInfo]): TAR info.
     """
     super(TARFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -78,7 +103,7 @@ class TARFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      A directory object (instance of Directory) or None.
+      TARDirectory: directory or None.
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
@@ -91,16 +116,20 @@ class TARFileEntry(file_entry.FileEntry):
   def _GetLink(self):
     """Retrieves the link.
 
+    Returns:
+      str: link.
+
     Raises:
       BackEndError: when the TAR info is missing in a non-virtual file entry.
     """
     if self._link is None:
       tar_info = self.GetTARInfo()
-      if not self._is_virtual and tar_info is None:
+      if not self._is_virtual and not tar_info:
         raise errors.BackEndError(
             u'Missing TAR info in non-virtual file entry.')
 
-      self._link = tar_info.linkname
+      if tar_info:
+        self._link = tar_info.linkname
 
     return self._link
 
@@ -108,7 +137,7 @@ class TARFileEntry(file_entry.FileEntry):
     """Retrieves the stat object.
 
     Returns:
-      The stat object (instance of vfs.VFSStat).
+      VFSStat: stat object.
 
     Raises:
       BackEndError: when the TAR info is missing in a non-virtual file entry.
@@ -159,14 +188,8 @@ class TARFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """The name of the file entry, which does not include the full path."""
-    tar_info = self.GetTARInfo()
-
-    # Note that the root file entry is virtual and has no tar_info.
-    if tar_info is None:
-      return u''
-
-    path = getattr(tar_info, u'name', None)
+    """str: name of the file entry, which does not include the full path."""
+    path = getattr(self.path_spec, u'location', None)
     if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
       try:
         path = path.decode(self._file_system.encoding)
@@ -176,19 +199,32 @@ class TARFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.FileEntry)."""
+    """generator(TARFileEntry): sub file entries."""
+    tar_file = self._file_system.GetTARFile()
+
     if self._directory is None:
       self._directory = self._GetDirectory()
 
-    if self._directory:
+    if self._directory and tar_file:
       for path_spec in self._directory.entries:
-        yield TARFileEntry(self._resolver_context, self._file_system, path_spec)
+        location = getattr(path_spec, u'location', None)
+        if location is None:
+          continue
+
+        kwargs = {}
+        try:
+          kwargs[u'tar_info'] = tar_file.getmember(location[1:])
+        except KeyError:
+          kwargs[u'is_virtual'] = True
+
+        yield TARFileEntry(
+            self._resolver_context, self._file_system, path_spec, **kwargs)
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
 
     Returns:
-      The parent file entry (instance of FileEntry) or None.
+      TARFileEntry: parent file entry or None.
     """
     location = getattr(self.path_spec, u'location', None)
     if location is None:
@@ -206,10 +242,10 @@ class TARFileEntry(file_entry.FileEntry):
     return TARFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetTARInfo(self):
-    """Retrieves the TAR info object.
+    """Retrieves the TAR info.
 
     Returns:
-      The TAR info object (instance of tarfile.TARInfo).
+      tarfile.TARInfo: TAR info or None if it does not exist.
 
     Raises:
       ValueError: if the path specification is incorrect.
@@ -226,6 +262,9 @@ class TARFileEntry(file_entry.FileEntry):
         return
 
       tar_file = self._file_system.GetTARFile()
-      self._tar_info = tar_file.getmember(location[1:])
+      try:
+        self._tar_info = tar_file.getmember(location[1:])
+      except KeyError:
+        pass
 
     return self._tar_info
