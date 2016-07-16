@@ -19,11 +19,10 @@ class Base64Decoder(decoder.Decoder):
     """Decode the encoded data.
 
     Args:
-      encoded_data: a byte string containing the encoded data.
+      encoded_data (byte): encoded data.
 
     Returns:
-      A tuple containing a byte string of the decoded data and
-      the remaining encoded data.
+      tuple(bytes,bytes): decoded data and remaining encoded data.
 
     Raises:
       BackEndError: if the base64 stream cannot be decoded.
@@ -42,5 +41,4 @@ class Base64Decoder(decoder.Decoder):
     return decoded_data, b''
 
 
-# Register the decoder with the encoding manager.
 manager.EncodingManager.RegisterDecoder(Base64Decoder)

@@ -17,8 +17,8 @@ class RC4Decrypter(decrypter.Decrypter):
     """Initializes the decrypter object.
 
     Args:
-      key: optional binary string containing the key.
-      kwargs: a dictionary of keyword arguments depending on the decrypter.
+      key (Optional[bytes]): key.
+      kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
       ValueError: when key is not set.
@@ -33,11 +33,10 @@ class RC4Decrypter(decrypter.Decrypter):
     """Decrypts the encrypted data.
 
     Args:
-      encrypted_data: a byte string containing the encrypted data.
+      encrypted_data (bytes): encrypted data.
 
     Returns:
-      A tuple containing a byte string of the decrypted data and
-      the remaining encrypted data.
+      tuple[bytes,bytes]: decrypted data and remaining encrypted data.
     """
     decrypted_data = self._rc4_cipher.decrypt(encrypted_data)
     return decrypted_data, b''

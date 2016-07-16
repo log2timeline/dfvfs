@@ -12,7 +12,7 @@ class CompressionManager(object):
     """Deregisters a decompressor for a specific compression method.
 
     Args:
-      decompressor: the decompressor class (compression.Decompressor).
+      decompressor (type): decompressor class.
 
     Raises:
       KeyError: if the corresponding decompressor is not set.
@@ -30,11 +30,11 @@ class CompressionManager(object):
     """Retrieves the decompressor object for a specific compression method.
 
     Args:
-      compression_method: the compression method identifier.
+      compression_method (str): compression method identifier.
 
     Returns:
-      The decompressor object (instance of compression.Decompressor) or None if
-      the compression method does not exists.
+      Decompressor: decompressor or None if the compression method does
+          not exists.
     """
     compression_method = compression_method.lower()
     decompressor = cls._decompressors.get(compression_method, None)
@@ -48,7 +48,7 @@ class CompressionManager(object):
     """Registers a decompressor for a specific compression method.
 
     Args:
-      decompressor: the decompressor class (compression.Decompressor).
+      decompressor (type): decompressor class.
 
     Raises:
       KeyError: if the corresponding decompressor is already set.
@@ -69,7 +69,7 @@ class CompressionManager(object):
     method.
 
     Args:
-      decompressors: a list of class objects of the decompressors.
+      decompressors (list[type]): decompressor classes.
 
     Raises:
       KeyError: if decompressor is already set for the corresponding

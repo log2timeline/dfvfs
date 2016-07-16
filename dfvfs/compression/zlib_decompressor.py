@@ -18,10 +18,9 @@ class ZlibDecompressor(decompressor.Decompressor):
     """Initializes the decompressor object.
 
     Args:
-      window_size: optional base two logarithm of the size of the compression
-                   history buffer (aka window size). The default is
-                   zlib.MAX_WBITS. When the value is negative, the standard
-                   zlib data header is suppressed.
+      window_size (Optional[int]): base two logarithm of the size of
+          the compression history buffer (aka window size). When the value
+          is negative, the standard zlib data header is suppressed.
     """
     super(ZlibDecompressor, self).__init__()
     self._zlib_decompressor = zlib.decompressobj(window_size)
@@ -30,11 +29,10 @@ class ZlibDecompressor(decompressor.Decompressor):
     """Decompresses the compressed data.
 
     Args:
-      compressed_data: a byte string containing the compressed data.
+      compressed_data (bytes): compressed data.
 
     Returns:
-      A tuple containing a byte string of the uncompressed data and
-      the remaining compressed data.
+      tuple(bytes,bytes): uncompressed data and remaining compressed data.
 
     Raises:
       BackEndError: if the zlib compressed stream cannot be decompressed.

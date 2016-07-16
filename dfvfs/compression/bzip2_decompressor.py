@@ -23,11 +23,10 @@ class BZIP2Decompressor(decompressor.Decompressor):
     """Decompresses the compressed data.
 
     Args:
-      compressed_data: a byte string containing the compressed data.
+      compressed_data (bytes): compressed data.
 
     Returns:
-      A tuple containing a byte string of the uncompressed data and
-      the remaining compressed data.
+      tuple(bytes,bytes): uncompressed data and remaining compressed data.
 
     Raises:
       BackEndError: if the BZIP2 compressed stream cannot be decompressed.
