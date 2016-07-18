@@ -13,7 +13,8 @@ class FVDECredentials(credentials.Credentials):
   """Class that implements the FVDE credentials."""
 
   # TODO: add support for key_data credential, needs pyfvde update.
-  CREDENTIALS = frozenset([u'password', u'recovery_password'])
+  CREDENTIALS = frozenset([
+      u'encrypted_root_plist', u'password', u'recovery_password'])
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FVDE
 

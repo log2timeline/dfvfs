@@ -11,6 +11,11 @@ def FVDEVolumeOpen(fvde_volume, path_spec, file_object, key_chain):
     file_object (FileIO): file-like object.
     key_chain (KeyChain): key chain.
   """
+  encrypted_root_plist = key_chain.GetCredential(
+      path_spec, u'encrypted_root_plist')
+  if encrypted_root_plist:
+    fvde_volume.read_encrypted_root_plist(encrypted_root_plist)
+
   password = key_chain.GetCredential(path_spec, u'password')
   if password:
     fvde_volume.set_password(password)
