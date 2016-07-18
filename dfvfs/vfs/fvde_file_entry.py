@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The FVDE file entry implementation."""
 
-from dfdatetime import filetime as dfdatetime_filetime
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
