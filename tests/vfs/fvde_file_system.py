@@ -8,6 +8,7 @@ import unittest
 from dfvfs.path import fvde_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
+from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 from dfvfs.vfs import fvde_file_system
@@ -24,6 +25,8 @@ class FVDEFileSystemTest(unittest.TestCase):
     test_file = os.path.join(u'test_data', u'fvdetest.qcow2')
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
+        location=u'/p1', parent=path_spec)
     self._fvde_path_spec = fvde_path_spec.FVDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._fvde_path_spec, u'password', self._FVDE_PASSWORD)
