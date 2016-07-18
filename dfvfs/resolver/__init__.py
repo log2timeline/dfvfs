@@ -18,6 +18,12 @@ except ImportError:
   pass
 
 from dfvfs.resolver import fake_resolver_helper
+
+try:
+  from dfvfs.resolver import fvde_resolver_helper
+except ImportError:
+  pass
+
 from dfvfs.resolver import gzip_resolver_helper
 
 try:
