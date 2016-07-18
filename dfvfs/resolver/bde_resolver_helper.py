@@ -19,21 +19,21 @@ class BDEResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file-like object (instance of file_io.FileIO).
+      BDEFile: file-like object.
     """
     return dfvfs.file_io.bde_file_io.BDEFile(resolver_context)
 
   def NewFileSystem(self, resolver_context):
-    """Creates a new file system object.
+    """Creates a new file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file system object (instance of vfs.FileSystem).
+      BDEFileSystem: file system.
     """
     return dfvfs.vfs.bde_file_system.BDEFileSystem(resolver_context)
 

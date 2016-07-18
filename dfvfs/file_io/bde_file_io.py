@@ -20,7 +20,7 @@ class BDEFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
       A file-like object.
@@ -41,5 +41,5 @@ class BDEFile(file_object_io.FileObjectIO):
 
   @property
   def is_locked(self):
-    """Value to indicated if the volume is locked."""
+    """bool: True if the volume is locked."""
     return self._file_object.is_locked()

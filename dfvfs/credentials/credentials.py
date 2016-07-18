@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) credentials object interface."""
+"""The credentials object interface."""
 
 
 class Credentials(object):

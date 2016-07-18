@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) path specification key chain object.
+"""The path specification key chain.
 
-The key chain object is used to manage credentials for path specifications.
+The key chain is used to manage credentials for path specifications.
 E.g. BitLocker Drive Encryption (BDE) encrypted volumes can require a
 credential (e.g. password) to access the unencrypted data (unlock).
 """
@@ -13,7 +13,7 @@ class KeyChain(object):
   """Class that implements the key chain."""
 
   def __init__(self):
-    """Initializes the key chain object."""
+    """Initializes the key chain."""
     super(KeyChain, self).__init__()
     self._credentials_per_path_spec = {}
 
