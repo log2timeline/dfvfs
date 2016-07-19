@@ -19,8 +19,8 @@ class FVDEFileTest(test_lib.ImageFileTestCase):
 
   _FVDE_PASSWORD = u'fvde-TEST'
 
-  _INODE_PASSWORDS_TXT = 8
-  _INODE_ANOTHER_FILE = 582
+  _INODE_PASSWORDS_TXT = 26
+  _INODE_ANOTHER_FILE = 24
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
