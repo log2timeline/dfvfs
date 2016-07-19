@@ -5,7 +5,10 @@
 import os
 import unittest
 
-import pyfvde
+try:
+  import pyfvde
+except ImportError:
+  pyfvde = None
 
 from dfvfs.path import fvde_path_spec
 from dfvfs.path import os_path_spec
