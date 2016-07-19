@@ -5,11 +5,6 @@
 import os
 import unittest
 
-try:
-  import pyfvde
-except ImportError:
-  pyfvde = None
-
 from dfvfs.lib import errors
 from dfvfs.path import fvde_path_spec
 from dfvfs.path import os_path_spec
@@ -19,7 +14,6 @@ from dfvfs.resolver import resolver
 from tests.file_io import test_lib
 
 
-@unittest.skipIf(not pyfvde, 'missing pyfvde')
 class FVDEFileTest(test_lib.ImageFileTestCase):
   """Tests for the FileVault Drive Encryption (FVDE) file-like object."""
 

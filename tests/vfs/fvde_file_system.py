@@ -5,11 +5,6 @@
 import os
 import unittest
 
-try:
-  import pyfvde
-except ImportError:
-  pyfvde = None
-
 from dfvfs.path import fvde_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
@@ -19,7 +14,6 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import fvde_file_system
 
 
-@unittest.skipIf(not pyfvde, 'missing pyfvde')
 class FVDEFileSystemTest(unittest.TestCase):
   """The unit test for the FVDE file system object."""
 
