@@ -6,10 +6,10 @@ def BDEVolumeOpen(bde_volume, path_spec, file_object, key_chain):
   """Opens the BDE volume using the path specification.
 
   Args:
-    bde_volume: the BDE volume (instance of pybde.volume).
-    path_spec: the path specification (instance of PathSpec).
-    file_object: the file-like object (instance of FileIO).
-    key_chain: the key chain (instance of credentials.KeyChain).
+    bde_volume (pybde.volume): BDE volume.
+    path_spec (PathSpec): path specification.
+    file_object (FileIO): file-like object.
+    key_chain (KeyChain): key chain.
   """
   password = key_chain.GetCredential(path_spec, u'password')
   if password:

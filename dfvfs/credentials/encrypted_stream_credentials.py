@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The encrypted stream credentials object."""
+"""The encrypted stream credentials."""
 
 from dfvfs.credentials import credentials
 from dfvfs.credentials import manager
@@ -7,7 +7,7 @@ from dfvfs.lib import definitions
 
 
 class EncryptedStreamCredentials(credentials.Credentials):
-  """Class that implements the encrypted stream credentials object."""
+  """Class that implements the encrypted stream credentials."""
 
   CREDENTIALS = frozenset([u'key', u'mode', u'initialization_vector'])
 

@@ -18,7 +18,7 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     """Retrieves the stat object.
 
     Returns:
-      The stat object (instance of vfs.VFSStat).
+      VFSStat: stat object.
 
     Raises:
       BackEndError: when the BDE file is missing.

@@ -13,22 +13,22 @@ from dfvfs.vfs import root_only_file_system
 
 
 class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
-  """Class that implements a file system object using BDE."""
+  """Class that implements a file system using BDE."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 
   def __init__(self, resolver_context):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(BDEFileSystem, self).__init__(resolver_context)
     self._bde_volume = None
     self._file_object = None
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.
@@ -40,15 +40,16 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
-    """Opens the file system object defined by path specification.
+    """Opens the file system defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode. The default is 'rb'
+          read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      IOError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -71,10 +72,10 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     self._file_object = file_object
 
   def GetBDEVolume(self):
-    """Retrieves the BDE volume object.
+    """Retrieves the BDE volume.
 
     Returns:
-      The BDE volume object (instance of pybde.volume).
+      pybde.volume: BDE volume.
     """
     return self._bde_volume
 
@@ -82,10 +83,10 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      BDEFileEntry: file entry or None.
     """
     return bde_file_entry.BDEFileEntry(
         self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
@@ -94,7 +95,7 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      BDEFileEntry: file entry or None.
     """
     path_spec = bde_path_spec.BDEPathSpec(parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
