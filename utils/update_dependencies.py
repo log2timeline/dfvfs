@@ -194,6 +194,7 @@ class TravisBeforeInstallScript(object):
     file_content.extend(self._FILE_HEADER)
 
     dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
+    dependencies.append(u'python-lzma')
     dependencies = u' '.join(dependencies)
     file_content.append(u'PYTHON2_DEPENDENCIES="{0:s}";'.format(dependencies))
 
