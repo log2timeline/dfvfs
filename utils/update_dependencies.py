@@ -17,7 +17,7 @@ class DPKGControllWriter(object):
   _PATH = os.path.join(u'config', u'dpkg', u'control')
 
   _MAINTAINER = (
-      u'Log2Timeline developers <log2timeline-dev@googlegroups.com>')
+      u'Log2Timeline maintainers <log2timeline-maintainers@googlegroups.com>')
 
   _FILE_HEADER = [
       u'Source: dfvfs',
@@ -90,7 +90,7 @@ class SetupCfgWriter(object):
   _PATH = u'setup.cfg'
 
   _MAINTAINER = (
-      u'Log2Timeline developers <log2timeline-dev@googlegroups.com>')
+      u'Log2Timeline maintainers <log2timeline-maintainers@googlegroups.com>')
 
   _FILE_HEADER = [
       u'[bdist_rpm]',
@@ -194,7 +194,7 @@ class TravisBeforeInstallScript(object):
 
     dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
     dependencies.append(u'python-lzma')
-    dependencies = u' '.join(dependencies)
+    dependencies = u' '.join(sorted(dependencies))
     file_content.append(u'PYTHON2_DEPENDENCIES="{0:s}";'.format(dependencies))
 
     file_content.append(u'')
