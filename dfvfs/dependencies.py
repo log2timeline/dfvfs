@@ -45,14 +45,17 @@ PYTHON_DEPENDENCIES = [
     (u'six', u'__version__', u'1.1.0', None)]
 
 # Maps Python module names to DPKG packages.
-_DPKG_PACKAGE_NAMES = {}
+_DPKG_PACKAGE_NAMES = {
+    u'Crypto': u'python-crypto'}
 
 # Maps Python module names to PyPI projects.
 _PYPI_PROJECT_NAMES = {
+    u'Crypto': u'pycrypto',
     u'sqlite3': u'pysqlite'}
 
 # Maps Python module names to RPM packages.
 _RPM_PACKAGE_NAMES = {
+    u'Crypto': u'python-crypto',
     u'sqlite3': u'python-libs'}
 
 _VERSION_SPLIT_REGEX = re.compile(r'\.|\-')
@@ -462,18 +465,18 @@ def GetDPKGDepends(exclude_version=False):
     if exclude_version or not module_version:
       requires.append(module_name)
     else:
-      requires.append(u'{0:s} >= {1:s}'.format(module_name, module_version))
+      requires.append(u'{0:s} (>= {1:s})'.format(module_name, module_version))
 
   if exclude_version:
     requires.append(u'python-pytsk3')
   else:
-    requires.append(u'python-pytsk3 >= 4.1.2')
+    requires.append(u'python-pytsk3 (>= 4.1.2)')
 
   for module_name, module_version in sorted(LIBYAL_DEPENDENCIES.items()):
     if exclude_version or not module_version:
       requires.append(u'lib{0:s}-python'.format(module_name[2:]))
     else:
-      requires.append(u'lib{0:s}-python >= {1:d}'.format(
+      requires.append(u'lib{0:s}-python (>= {1:d})'.format(
           module_name[2:], module_version))
 
   return sorted(requires)
@@ -507,10 +510,13 @@ def GetInstallRequires():
 
   for module_name, module_version in sorted(LIBYAL_DEPENDENCIES.items()):
     if not module_version:
-      install_requires.append(module_name)
+      install_requires.append(u'lib{0:s}-python'.format(module_name[2:]))
     else:
-      install_requires.append(u'{0:s} >= {1:d}'.format(
-          module_name, module_version))
+      install_requires.append(u'lib{0:s}-python >= {1:d}'.format(
+          module_name[2:], module_version))
+
+  # Optional import for now.
+  install_requires.append(u'backports.lzma')
 
   return sorted(install_requires)
 

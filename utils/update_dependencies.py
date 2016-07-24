@@ -24,34 +24,58 @@ class DPKGControllWriter(object):
       u'Section: python',
       u'Priority: extra',
       u'Maintainer: {0:s}'.format(_MAINTAINER),
-      u'Build-Depends: debhelper (>= 7.0.0), python, python-setuptools',
+      (u'Build-Depends: debhelper (>= 7), python-all (>= 2.7~), '
+       u'python-setuptools, python3-all (>= 3.4~), python3-setuptools'),
       u'Standards-Version: 3.9.5',
       u'X-Python-Version: >= 2.7',
-      u'Homepage: https://github.com/log2timeline/dfvfs/',
-      u'',
+      u'X-Python3-Version: >= 3.4',
+      u'Homepage: https://github.com/log2timeline/dfvfs',
+      u'']
+
+  _PYTHON2_PACKAGE_HEADER = [
       u'Package: python-dfvfs',
       u'Architecture: all']
 
-  _FILE_FOOTER = [
-      u'Description: Super timeline all the things',
-      u' Log2Timeline is a framework to create super timelines. Its purpose',
-      u' is to extract timestamps from various files found on typical computer',
-      (u' systems and aggregate them. Plaso is the Python rewrite of '
-       u'log2timeline.'),
+  _PYTHON3_PACKAGE_HEADER = [
+      u'Package: python3-dfvfs',
+      u'Architecture: all']
+
+  _PYTHON_PACKAGE_FOOTER = [
+      u'Description: Digital Forensics Virtual File System (dfVFS).',
+      (u' dfVFS, or Digital Forensics Virtual File System, provides '
+       u'read-only access to'),
+      (u' file-system objects from various storage media types and file '
+       u'formats. The goal'),
+      (u' of dfVFS is to provide a generic interface for accessing '
+       u'file-system objects,'),
+      (u' for which it uses several back-ends that provide the actual '
+       u'implementation of'),
+      u' the various storage media types, volume systems and file systems.',
       u'']
 
   def Write(self):
     """Writes a setup.cfg file."""
     file_content = []
     file_content.extend(self._FILE_HEADER)
+    file_content.extend(self._PYTHON2_PACKAGE_HEADER)
 
     dependencies = dfvfs.dependencies.GetDPKGDepends()
     dependencies = u', '.join(dependencies)
     file_content.append(
-        u'Depends: {0:s}, ${{shlibs:Depends}}, ${{misc:Depends}}'.format(
+        u'Depends: {0:s}, ${{python:Depends}}, ${{misc:Depends}}'.format(
             dependencies))
 
-    file_content.extend(self._FILE_FOOTER)
+    file_content.extend(self._PYTHON_PACKAGE_FOOTER)
+    file_content.extend(self._PYTHON3_PACKAGE_HEADER)
+
+    dependencies = dfvfs.dependencies.GetDPKGDepends()
+    dependencies = u', '.join(dependencies)
+    dependencies = dependencies.replace(u'python', u'python3')
+    file_content.append(
+        u'Depends: {0:s}, ${{python:Depends}}, ${{misc:Depends}}'.format(
+            dependencies))
+
+    file_content.extend(self._PYTHON_PACKAGE_FOOTER)
 
     file_content = u'\n'.join(file_content)
     file_content = file_content.encode(u'utf-8')
@@ -112,8 +136,7 @@ class ToxIniWriter(object):
       u'    PYTHONPATH = {toxinidir}',
       u'deps =',
       u'    pip >= 7.0.0',
-      u'    pytest',
-      u'    mock']
+      u'    pytest']
 
   _FILE_FOOTER = [
       u'commands = python run_tests.py',
@@ -136,6 +159,60 @@ class ToxIniWriter(object):
       file_object.write(file_content)
 
 
+class TravisBeforeInstallScript(object):
+  """Class to help write the Travis-CI before_install.sh file."""
+
+  _PATH = os.path.join(
+      u'config', u'travis', u'before_install.sh')
+
+  _FILE_HEADER = [
+      u'#!/bin/bash',
+      u'#',
+      u'# Script to set up Travis-CI test VM.',
+      u'',
+      (u'COVERALL_DEPENDENCIES="python-coverage python-coveralls '
+       u'python-docopt";'),
+      u'']
+
+  _FILE_FOOTER = [
+      u'',
+      u'# Exit on error.',
+      u'set -e;',
+      u'',
+      u'if test `uname -s` = "Linux";',
+      u'then',
+      u'\tsudo add-apt-repository ppa:gift/dev -y;',
+      u'\tsudo apt-get update -q;',
+      (u'\tsudo apt-get install -y ${COVERALL_DEPENDENCIES} '
+       u'${PYTHON2_DEPENDENCIES} ${PYTHON3_DEPENDENCIES};'),
+      u'fi',
+      u'']
+
+  def Write(self):
+    """Writes a setup.cfg file."""
+    file_content = []
+    file_content.extend(self._FILE_HEADER)
+
+    dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
+    dependencies = u' '.join(dependencies)
+    file_content.append(u'PYTHON2_DEPENDENCIES="{0:s}";'.format(dependencies))
+
+    file_content.append(u'')
+
+    dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
+    dependencies = u' '.join(dependencies)
+    dependencies = dependencies.replace(u'python', u'python3')
+    file_content.append(u'PYTHON3_DEPENDENCIES="{0:s}";'.format(dependencies))
+
+    file_content.extend(self._FILE_FOOTER)
+
+    file_content = u'\n'.join(file_content)
+    file_content = file_content.encode(u'utf-8')
+
+    with open(self._PATH, 'wb') as file_object:
+      file_object.write(file_content)
+
+
 if __name__ == u'__main__':
   writer = DPKGControllWriter()
   writer.Write()
@@ -144,4 +221,7 @@ if __name__ == u'__main__':
   writer.Write()
 
   writer = ToxIniWriter()
+  writer.Write()
+
+  writer = TravisBeforeInstallScript()
   writer.Write()
