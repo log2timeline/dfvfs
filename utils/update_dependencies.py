@@ -131,7 +131,6 @@ class ToxIniWriter(object):
       u'',
       u'[testenv]',
       u'pip_pre = True',
-      u'sitepackages = True',
       u'setenv =',
       u'    PYTHONPATH = {toxinidir}',
       u'deps =',

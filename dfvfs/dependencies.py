@@ -389,6 +389,7 @@ def CheckDependencies(latest_version_check=False, verbose_output=True):
         verbose_output=verbose_output):
       check_result = False
 
+  # TODO: move these to PYTHON_DEPENDENCIES and handle them differently.
   if not _CheckSQLite3(verbose_output=verbose_output):
     check_result = False
 
