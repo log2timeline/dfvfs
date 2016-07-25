@@ -71,6 +71,9 @@ class TSKDirectory(file_entry.Directory):
 
     Yields:
       TSKPathSpec: path specification.
+
+    Raises:
+      BackEndError: if pytsk3 cannot open the directory.
     """
     # Opening a file by inode number is faster than opening a file
     # by location.
@@ -78,11 +81,19 @@ class TSKDirectory(file_entry.Directory):
     location = getattr(self.path_spec, u'location', None)
 
     fs_info = self._file_system.GetFsInfo()
-    if inode is not None:
-      tsk_directory = fs_info.open_dir(inode=inode)
-    elif location is not None:
-      tsk_directory = fs_info.open_dir(path=location)
-    else:
+    tsk_directory = None
+
+    try:
+      if inode is not None:
+        tsk_directory = fs_info.open_dir(inode=inode)
+      elif location is not None:
+        tsk_directory = fs_info.open_dir(path=location)
+
+    except IOError as exception:
+        raise errors.BackEndError(
+            u'Unable to open directory with error: {0:s}'.format(exception))
+
+    if not tsk_directory:
       return
 
     for tsk_directory_entry in tsk_directory:
