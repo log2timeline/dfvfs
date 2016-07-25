@@ -90,8 +90,8 @@ class TSKDirectory(file_entry.Directory):
         tsk_directory = fs_info.open_dir(path=location)
 
     except IOError as exception:
-        raise errors.BackEndError(
-            u'Unable to open directory with error: {0:s}'.format(exception))
+      raise errors.BackEndError(
+          u'Unable to open directory with error: {0:s}'.format(exception))
 
     if not tsk_directory:
       return
