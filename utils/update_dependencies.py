@@ -185,7 +185,8 @@ class TravisBeforeInstallScript(object):
       u'\tmv l2tdevtools ../;',
       u'\tmkdir dependencies;',
       u'',
-      u'\tPYTHONPATH=../l2tdevtools ../l2tdevtools/tools/update.py --download-directory=dependencies --preset=dfvfs;',
+      (u'\tPYTHONPATH=../l2tdevtools ../l2tdevtools/tools/update.py '
+       u'--download-directory=dependencies --preset=dfvfs;'),
       u'',
       u'elif test `uname -s` = "Linux";',
       u'then',
