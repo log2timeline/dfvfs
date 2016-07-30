@@ -1,14 +1,15 @@
 sudo: required
 dist: trusty
 language: python
-os:
-  - linux
-  - osx
-python:
-  - "2.7"
-  - "3.4"
+matrix:
+  include:
+  - os: linux
+    python: "2.7"
+  - os: linux
+    python: "3.4"
+  - os: osx
+    python: "2.7"
 before_install:
-<<<<<<< aa9dea78e00ceeea45a4aa8ea98ea9a14cb8db89
   - ./config/travis/before_install.sh
 script:
   - if test `uname -s` = 'Linux' && test ${TRAVIS_PYTHON_VERSION} = "2.7"; then coverage run --source=dfvfs --omit="*_test*,*__init__*,*test_lib*" ./run_tests.py; else ./run_tests.py; fi
@@ -18,14 +19,3 @@ script:
   - mkdir -p ${PWD}/tmp/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/ && PYTHONPATH=${PWD}/tmp/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/ python setup.py install --prefix=${PWD}/tmp/
 after_success:
   - if test `uname -s` = 'Linux' && test ${TRAVIS_PYTHON_VERSION} = "2.7"; then coveralls --verbose; fi
-=======
-  - if test `uname -s` = 'Darwin'; then git clone https://github.com/log2timeline/l2tdevtools.git && mv l2tdevtools ../ && mkdir dependencies && PYTHONPATH=../l2tdevtools ../l2tdevtools/tools/update.py --download-directory=dependencies construct pybde pyewf pyqcow pysigscan pysmdev pysmraw pyvhdi pyvmdk pyvshadow pytsk3 six; fi
-  - if test `uname -s` = 'Linux'; then sudo add-apt-repository ppa:gift/dev -y && sudo apt-get update -q && sudo apt-get install libbde-python libewf-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libtsk libvhdi-python libvmdk-python libvshadow-python python-construct python-coverage python-coveralls python-docopt python-protobuf python-requests python-six pytsk3; fi
-script:
-  - if test `uname -s` = 'Linux'; then coverage run --source=dfvfs --omit="*_test*,*__init__*,*test_lib*" ./run_tests.py; else ./run_tests.py; fi
-  - ./setup.py build
-  - ./setup.py sdist
-  - ./setup.py bdist
-after_success:
-  - if test `uname -s` = 'Linux'; then coveralls --verbose; fi
->>>>>>> Initial Travis Mac OS X support
