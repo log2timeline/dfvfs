@@ -11,7 +11,7 @@ PYTHON3_DEPENDENCIES="libbde-python3 libewf-python3 libfsntfs-python3 libfwnt-py
 # Exit on error.
 set -e;
 
-if test `uname -s` = 'Darwin';
+if test `uname -s` = "Darwin";
 then
 	git clone https://github.com/log2timeline/l2tdevtools.git;
 
