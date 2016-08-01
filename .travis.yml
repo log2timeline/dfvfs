@@ -1,9 +1,16 @@
-sudo: required
-dist: trusty
 language: python
-python:
-  - "2.7"
-  - "3.4"
+matrix:
+  include:
+  - os: linux
+    dist: trusty
+    sudo: required
+    python: 2.7
+  - os: linux
+    dist: trusty
+    sudo: required
+    python: 3.4
+  - os: osx
+    language: generic
 before_install:
   - ./config/travis/before_install.sh
 script:
@@ -11,6 +18,6 @@ script:
   - python setup.py build
   - python setup.py sdist
   - python setup.py bdist
-  - mkdir -p ${PWD}/tmp/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/ && PYTHONPATH=${PWD}/tmp/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/ python setup.py install --prefix=${PWD}/tmp/
+  - if test `uname -s` = 'Linux'; then mkdir -p ${PWD}/tmp/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/ && PYTHONPATH=${PWD}/tmp/lib/python${TRAVIS_PYTHON_VERSION}/site-packages/ python setup.py install --prefix=${PWD}/tmp/; fi
 after_success:
   - if test `uname -s` = 'Linux' && test ${TRAVIS_PYTHON_VERSION} = "2.7"; then coveralls --verbose; fi
