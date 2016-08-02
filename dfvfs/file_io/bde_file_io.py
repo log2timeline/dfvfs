@@ -23,7 +23,7 @@ class BDEFile(file_object_io.FileObjectIO):
       path_spec (PathSpec): path specification.
 
     Returns:
-      A file-like object.
+      pyvde.volume: BDE volume file-like object.
 
     Raises:
       PathSpecError: if the path specification is incorrect.

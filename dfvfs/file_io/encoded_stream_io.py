@@ -23,9 +23,9 @@ class EncodedStream(file_io.FileIO):
     file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      encoding_method: optional method used to the encode the data.
-      file_object: optional parent file-like object.
+      resolver_context (Context): resolver context.
+      encoding_method (Optional[str]): method used to the encode the data.
+      file_object (Optional[file]): parent file-like object.
 
     Raises:
       ValueError: if file_object provided but encoding_method is not.
@@ -67,11 +67,19 @@ class EncodedStream(file_io.FileIO):
     self._encoded_data = b''
 
   def _GetDecoder(self):
-    """Retrieves the decoder (instance of encodings.Decoder)."""
+    """Retrieves the decoder.
+
+    Returns:
+      Decoder: decoder.
+    """
     return encoding_manager.EncodingManager.GetDecoder(self._encoding_method)
 
   def _GetDecodedStreamSize(self):
-    """Retrieves the decoded stream size."""
+    """Retrieves the decoded stream size.
+
+    Returns:
+      int: decoded stream size.
+    """
     self._file_object.seek(0, os.SEEK_SET)
 
     self._decoder = self._GetDecoder()
@@ -95,8 +103,8 @@ class EncodedStream(file_io.FileIO):
     """Opens the file-like object.
 
     Args:
-      path_spec: optional path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -125,7 +133,7 @@ class EncodedStream(file_io.FileIO):
     """Aligns the encoded file with the decoded data offset.
 
     Args:
-      decoded_data_offset: the decoded data offset.
+      decoded_data_offset (int): decoded data offset.
     """
     self._file_object.seek(0, os.SEEK_SET)
 
@@ -152,10 +160,10 @@ class EncodedStream(file_io.FileIO):
     """Reads encoded data from the file-like object.
 
     Args:
-      read_size: the number of bytes of encoded data to read.
+      read_size (int): number of bytes of encoded data to read.
 
     Returns:
-      The number of bytes of encoded data read.
+      int: number of bytes of encoded data read.
     """
     encoded_data = self._file_object.read(read_size)
 
@@ -177,7 +185,7 @@ class EncodedStream(file_io.FileIO):
     determined separately.
 
     Args:
-      decoded_stream_size: the size of the decoded stream in bytes.
+      decoded_stream_size (int): size of the decoded stream in bytes.
 
     Raises:
       IOError: if the file-like object is already open.
@@ -203,11 +211,11 @@ class EncodedStream(file_io.FileIO):
     all of the remaining data if no size was specified.
 
     Args:
-      size: Optional integer value containing the number of bytes to read.
-            Default is all remaining data (None).
+      size (Optional[int]): number of bytes to read, where None is all
+          remaining data.
 
     Returns:
-      A byte string containing the data read.
+      bytes: data read.
 
     Raises:
       IOError: if the read failed.
@@ -279,9 +287,9 @@ class EncodedStream(file_io.FileIO):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: the offset to seek.
-      whence: optional value that indicates whether offset is an absolute
-              or relative position within the file.
+      offset (int): the offset to seek.
+      whence (Optional(int)): value that indicates whether offset is an absolute
+          or relative position within the file.
 
     Raises:
       IOError: if the seek failed.
@@ -310,6 +318,9 @@ class EncodedStream(file_io.FileIO):
   def get_offset(self):
     """Returns the current offset into the file-like object.
 
+    Returns:
+      int: current offset in the decoded stream.
+
     Raises:
       IOError: if the file-like object has not been opened.
     """
@@ -320,6 +331,9 @@ class EncodedStream(file_io.FileIO):
 
   def get_size(self):
     """Returns the size of the file-like object.
+
+    Returns:
+      int: size of the decoded stream.
 
     Raises:
       IOError: if the file-like object has not been opened.

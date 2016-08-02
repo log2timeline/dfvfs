@@ -14,7 +14,7 @@ class CPIOFile(file_io.FileIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(CPIOFile, self).__init__(resolver_context)
     self._cpio_archive_file = None
@@ -35,8 +35,8 @@ class CPIOFile(file_io.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (Optional[PathSpec]): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -71,11 +71,11 @@ class CPIOFile(file_io.FileIO):
     all of the remaining data if no size was specified.
 
     Args:
-      size: optional integer value containing the number of bytes to read.
-            Default is all remaining data (None).
+      size (Optional[int]): number of bytes to read, where None is all
+          remaining data.
 
     Returns:
-      A byte string containing the data read.
+      bytes: data read.
 
     Raises:
       IOError: if the read failed.
@@ -106,9 +106,9 @@ class CPIOFile(file_io.FileIO):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: the offset to seek.
-      whence: optional value that indicates whether offset is an absolute
-              or relative position within the file. Default is SEEK_SET.
+      offset (int): the offset to seek.
+      whence (Optional(int)): value that indicates whether offset is an absolute
+          or relative position within the file.
 
     Raises:
       IOError: if the seek failed.
@@ -131,6 +131,9 @@ class CPIOFile(file_io.FileIO):
   def get_offset(self):
     """Returns the current offset into the file-like object.
 
+    Returns:
+      int: current offset in the CPIO archived file.
+
     Raises:
       IOError: if the file-like object has not been opened.
     """
@@ -141,6 +144,9 @@ class CPIOFile(file_io.FileIO):
 
   def get_size(self):
     """Returns the size of the file-like object.
+
+    Returns:
+      int: size of the CPIO archived file.
 
     Raises:
       IOError: if the file-like object has not been opened.

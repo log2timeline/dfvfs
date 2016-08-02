@@ -20,7 +20,7 @@ class VHDIFile(file_object_io.FileObjectIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
       file_object: optional file-like object.
     """
     super(VHDIFile, self).__init__(resolver_context, file_object=file_object)

@@ -14,7 +14,7 @@ class FakeFile(file_io.FileIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
       file_data: the fake file data.
     """
     super(FakeFile, self).__init__(resolver_context)
@@ -30,8 +30,8 @@ class FakeFile(file_io.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.

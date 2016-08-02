@@ -46,7 +46,7 @@ class GzipFile(file_object_io.FileObjectIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
       file_object: optional file-like object.
 
     Raises:
@@ -137,7 +137,7 @@ class GzipFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of PathSpec).
+      path_spec (Optional[PathSpec]): path specification.
 
     Returns:
       A file-like object.

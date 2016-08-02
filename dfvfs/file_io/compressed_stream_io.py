@@ -23,9 +23,9 @@ class CompressedStream(file_io.FileIO):
     file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      compression_method: optional method used to the compress the data.
-      file_object: optional parent file-like object.
+      resolver_context (Context): resolver context.
+      compression_method (Optional[str]): method used to the compress the data.
+      file_object (Optional[file]): parent file-like object.
 
     Raises:
       ValueError: if file_object provided but compression_method is not.
@@ -68,12 +68,20 @@ class CompressedStream(file_io.FileIO):
     self._decompressor = None
 
   def _GetDecompressor(self):
-    """Retrieves the decompressor."""
+    """Retrieves the decompressor.
+
+    Returns:
+      Decompressor: decompressor.
+    """
     return compression_manager.CompressionManager.GetDecompressor(
         self._compression_method)
 
   def _GetUncompressedStreamSize(self):
-    """Retrieves the uncompressed stream size."""
+    """Retrieves the uncompressed stream size.
+
+    Returns:
+      int: uncompressed stream size.
+    """
     self._file_object.seek(0, os.SEEK_SET)
 
     self._decompressor = self._GetDecompressor()
@@ -97,8 +105,8 @@ class CompressedStream(file_io.FileIO):
     """Opens the file-like object.
 
     Args:
-      path_spec: optional path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (Optional[PathSpec]): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -127,7 +135,7 @@ class CompressedStream(file_io.FileIO):
     """Aligns the compressed file with the uncompressed data offset.
 
     Args:
-      uncompressed_data_offset: the uncompressed data offset.
+      uncompressed_data_offset (int): uncompressed data offset.
     """
     self._file_object.seek(0, os.SEEK_SET)
 
@@ -154,10 +162,10 @@ class CompressedStream(file_io.FileIO):
     """Reads compressed data from the file-like object.
 
     Args:
-      read_size: the number of bytes of compressed data to read.
+      read_size (int): number of bytes of compressed data to read.
 
     Returns:
-      The number of bytes of compressed data read.
+      int: number of bytes of compressed data read.
     """
     compressed_data = self._file_object.read(read_size)
 
@@ -182,11 +190,11 @@ class CompressedStream(file_io.FileIO):
     all of the remaining data if no size was specified.
 
     Args:
-      size: Optional integer value containing the number of bytes to read.
-            Default is all remaining data (None).
+      size (Optional[int]): number of bytes to read, where None is all
+          remaining data.
 
     Returns:
-      A byte string containing the data read.
+      bytes: data read.
 
     Raises:
       IOError: if the read failed.
@@ -258,9 +266,9 @@ class CompressedStream(file_io.FileIO):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: the offset to seek.
-      whence: optional value that indicates whether offset is an absolute
-              or relative position within the file.
+      offset (int): the offset to seek.
+      whence (Optional(int)): value that indicates whether offset is an absolute
+          or relative position within the file.
 
     Raises:
       IOError: if the seek failed.
@@ -289,6 +297,9 @@ class CompressedStream(file_io.FileIO):
   def get_offset(self):
     """Returns the current offset into the file-like object.
 
+    Returns:
+      int: current offset in the uncompressed stream.
+
     Raises:
       IOError: if the file-like object has not been opened.
     """
@@ -299,6 +310,9 @@ class CompressedStream(file_io.FileIO):
 
   def get_size(self):
     """Returns the size of the file-like object.
+
+    Returns:
+      int: size of the uncompressed stream.
 
     Raises:
       IOError: if the file-like object has not been opened.

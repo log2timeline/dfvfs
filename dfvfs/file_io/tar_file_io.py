@@ -17,7 +17,7 @@ class TARFile(file_io.FileIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(TARFile, self).__init__(resolver_context)
     self._current_offset = 0
@@ -37,8 +37,8 @@ class TARFile(file_io.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (Optional[PathSpec]): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -116,7 +116,7 @@ class TARFile(file_io.FileIO):
     """Seeks an offset within the file-like object.
 
     Args:
-      offset: the offset to seek.
+      offset (int): the offset to seek.
       whence: optional value that indicates whether offset is an absolute
               or relative position within the file.
 
