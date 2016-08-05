@@ -16,6 +16,14 @@ from tests import test_lib as shared_test_lib
 class VolumeScannerTest(shared_test_lib.BaseTestCase):
   """The unit test for the volume scanner object."""
 
+  # TODO: add test for _GetTSKPartitionIdentifiers.
+  # TODO: add test for _GetVSSStoreIdentifiers.
+  # TODO: add test for _ScanFileSystem.
+  # TODO: add test for _ScanVolume.
+  # TODO: add test for _ScanVolumeScanNode.
+  # TODO: add test for _ScanVolumeScanNodeEncrypted.
+  # TODO: add test for _ScanVolumeScanNodeVSS.
+
   @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
   def testGetBasePathSpecs(self):
     """Test the GetBasePathSpecs() function."""
@@ -42,9 +50,13 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
   """The unit test for the Windows volume scanner object."""
 
+  # TODO: add test for _ScanFileSystem.
+  # TODO: add test for _ScanFileSystemForWindowsDirectory.
+  # TODO: add test for OpenFile.
+
   @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
-  def testGetWindowsVolumePathSpec(self):
-    """Test the GetWindowsVolumePathSpec() function."""
+  def testScanForWindowsVolume(self):
+    """Test the ScanForWindowsVolume() function."""
     test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
     test_scanner = volume_scanner.WindowsVolumeScanner()
 
