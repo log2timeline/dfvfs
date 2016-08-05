@@ -30,10 +30,10 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     than 1 sub node.
 
     Args:
-      scan_context: scan context (instance of dfvfs.ScanContext).
+      scan_context (ScanContext): scan context.
 
     Returns:
-      A scan node (instance of dfvfs.ScanNode).
+      SourceScanNode: scan node.
     """
     scan_node = scan_context.GetRootScanNode()
     while len(scan_node.sub_nodes) == 1:
@@ -59,6 +59,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(len(scan_node.sub_nodes), 7)
 
+    # TODO: use GetSubNodeByLocation
     for scan_node in scan_node.sub_nodes[6].sub_nodes:
       if getattr(scan_node.path_spec, u'location', None) == u'/':
         break

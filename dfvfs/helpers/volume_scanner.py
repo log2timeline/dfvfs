@@ -98,7 +98,7 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source is not supported or
-                    the the scan node is invalid or if the volume for
+                    the scan node is invalid or if the volume for
                     a specific identifier cannot be retrieved.
     """
     if not scan_node or not scan_node.path_spec:
@@ -132,7 +132,7 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source is not supported,
-                    the the scan node is invalid or no mediator is provided
+                    the scan node is invalid or no mediator is provided
                     and VSS store identifiers are found.
     """
     if not scan_node or not scan_node.path_spec:
@@ -182,7 +182,7 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source
-                    is not supported or the the scan node is invalid.
+                    is not supported or the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
       raise errors.ScannerError(u'Invalid or missing volume scan node.')
@@ -207,7 +207,7 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source
-                    is not supported or the the scan node is invalid.
+                    is not supported or the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
       raise errors.ScannerError(u'Invalid or missing volume scan node.')
@@ -243,7 +243,13 @@ class VolumeScanner(object):
       scan_context (SourceScannerContext): source scanner context.
       volume_scan_node (SourceScanNode): volume scan node.
       base_path_specs (list[PathSpec]): file system base path specifications.
+
+    Raises:
+      ScannerError: if the scan node is invalid.
     """
+    if not volume_scan_node or not volume_scan_node.path_spec:
+      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+
     result = not scan_context.IsLockedScanNode(volume_scan_node.path_spec)
     if not result:
       credentials = credentials_manager.CredentialsManager.GetCredentials(
@@ -265,8 +271,12 @@ class VolumeScanner(object):
       base_path_specs (list[PathSpec]): file system base path specifications.
 
     Raises:
-      ScannerError: if a VSS sub scan node scannot be retrieved.
+      ScannerError: if a VSS sub scan node scannot be retrieved or
+                    if the scan node is invalid.
     """
+    if not volume_scan_node or not volume_scan_node.path_spec:
+      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+
     # Do not scan inside individual VSS store scan nodes.
     location = getattr(volume_scan_node.path_spec, u'location', None)
     if location != u'/':

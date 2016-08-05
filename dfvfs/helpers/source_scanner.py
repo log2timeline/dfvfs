@@ -29,10 +29,10 @@ class SourceScanNode(object):
   """Class that defines a source scan node."""
 
   def __init__(self, path_spec):
-    """Initializes the source scan node object.
+    """Initializes a source scan node.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
     """
     super(SourceScanNode, self).__init__()
     self.path_spec = path_spec
@@ -42,18 +42,18 @@ class SourceScanNode(object):
 
   @property
   def type_indicator(self):
-    """The path specification type indicator."""
+    """str: path specification type indicator."""
     return self.path_spec.type_indicator
 
   def GetSubNodeByLocation(self, location):
     """Retrieves a sub scan node based on the location.
 
     Args:
-      location: the location string in the sub scan node path specification,
-                that should match.
+      location (str): location that should match the location of the path
+          specification of a sub scan node.
 
     Return:
-      The sub scan node object (instance of SourceScanNode) or None.
+      SourceScanNode: sub scan node or None.
     """
     for sub_node in self.sub_nodes:
       sub_node_location = getattr(sub_node.path_spec, u'location', u'')
@@ -64,7 +64,7 @@ class SourceScanNode(object):
     """Retrieves the first unscanned sub node.
 
     Returns:
-      A scan node (instance of SourceScanNode) or None.
+      SourceScanNode: sub scan node or None.
     """
     if not self.sub_nodes and not self.scanned:
       return self
@@ -75,7 +75,11 @@ class SourceScanNode(object):
         return result
 
   def IsSystemLevel(self):
-    """Determines if the path specification is at system-level."""
+    """Determines if the path specification is at system-level.
+
+    Returns:
+      bool: True if the path specification is at system-level.
+    """
     return self.path_spec.IsSystemLevel()
 
 
