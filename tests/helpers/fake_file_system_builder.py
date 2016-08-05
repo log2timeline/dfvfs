@@ -14,7 +14,7 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
   """The unit test for the fake file system builder object."""
 
   def testAddDirectory(self):
-    """Test the AddDirectory() function."""
+    """Tests the AddDirectory function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
     test_path = u'/usr/lib/python2.7/site-packages/dfvfs'
@@ -24,7 +24,7 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
       file_system_builder.AddDirectory(test_path)
 
   def testAddFile(self):
-    """Test the AddFile() function."""
+    """Tests the AddFile function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
     test_path = u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
@@ -50,7 +50,7 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
       file_system_builder.AddFile(test_path, b'')
 
   def testAddFileReadData(self):
-    """Test the AddFileReadData() function."""
+    """Tests the AddFileReadData function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
     test_path = u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
@@ -62,7 +62,7 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
       file_system_builder.AddFileReadData(test_path, test_file_data_path)
 
   def testAddSymbolicLink(self):
-    """Test the AddSymbolicLink() function."""
+    """Tests the AddSymbolicLink function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
     test_path = u'/usr/lib/python2.7/site-packages/dfvfs'

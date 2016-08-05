@@ -10,11 +10,11 @@ class FakeFileSystemBuilder(object):
   """Builder object for fake file systems.
 
   Attributes:
-    file_system: a fake file system object (instance of FakeFileSystem)
+    file_system (FakeFileSystem): fake file system.
   """
 
   def __init__(self):
-    """Initializes the fake file system builder object."""
+    """Initializes a fake file system builder."""
     super(FakeFileSystemBuilder, self).__init__()
     resolver_context = context.Context()
     self.file_system = fake_file_system.FakeFileSystem(resolver_context)
@@ -23,8 +23,7 @@ class FakeFileSystemBuilder(object):
     """Adds the parent directories of a path to the fake file system.
 
     Args:
-      path: a string containing the path of the file within the fake
-            file system.
+      path (str): path of the file within the fake file system.
 
     Raises:
       ValueError: if a parent directory is already set and is not a directory.
@@ -50,8 +49,7 @@ class FakeFileSystemBuilder(object):
     Note that this function will create parent directories if needed.
 
     Args:
-      path: a string containing the path of the directory within the fake
-            file system.
+      path (str): path of the directory within the fake file system.
 
     Raises:
       ValueError: if the path is already set.
@@ -69,9 +67,8 @@ class FakeFileSystemBuilder(object):
     Note that this function will create parent directories if needed.
 
     Args:
-      path: a string containing the path of the file within the fake
-            file system.
-      file_data: a binary string containing the data of the file.
+      path (str): path of the file within the fake file system.
+      file_data (bytes): data of the file.
 
     Raises:
       ValueError: if the path is already set.
@@ -86,10 +83,8 @@ class FakeFileSystemBuilder(object):
     """Adds a "regular" file to the fake file system.
 
     Args:
-      path: a string containing the path of the file within the fake
-            file system.
-      file_data_path: a string containing the name of the file to read
-                      the file data from.
+      path (str): path of the file within the fake file system.
+      file_data_path (str): path of the file to read the file data from.
 
     Raises:
       ValueError: if the path is already set.
@@ -106,9 +101,8 @@ class FakeFileSystemBuilder(object):
     """Adds a symbolic link to the fake file system.
 
     Args:
-      path: a string containing the path of the symbolic link within the fake
-            file system.
-      linked_path: a string containing the path that is linked.
+      path (str): path of the symbolic link within the fake file system.
+      linked_path (str): path that is linked.
 
     Raises:
       ValueError: if the path is already set.
