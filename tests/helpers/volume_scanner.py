@@ -54,7 +54,8 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       ScannerError: if the source cannot be processed.
     """
     return [
-        int(volume_identifier[3:], 10) for volume_identifier in volume_identifiers]
+        int(volume_identifier[3:], 10)
+        for volume_identifier in volume_identifiers]
 
   def UnlockEncryptedVolume(
       self, source_scanner_object, scan_context, locked_scan_node,
