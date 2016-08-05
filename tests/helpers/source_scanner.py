@@ -18,6 +18,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
   """The unit test for the source scanner object."""
 
   _BDE_PASSWORD = u'bde-TEST'
+  _FVDE_PASSWORD = u'fvde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -59,11 +60,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(len(scan_node.sub_nodes), 7)
 
-    # TODO: use GetSubNodeByLocation
-    for scan_node in scan_node.sub_nodes[6].sub_nodes:
-      if getattr(scan_node.path_spec, u'location', None) == u'/':
-        break
-
+    scan_node = scan_node.sub_nodes[6].GetSubNodeByLocation(u'/')
+    self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
   @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
@@ -97,9 +95,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
     self.assertEqual(len(scan_node.sub_nodes), 1)
 
-    for scan_node in scan_node.sub_nodes:
-      if getattr(scan_node.path_spec, u'location', None) == u'/':
-        break
+    scan_node = scan_node.GetSubNodeByLocation(u'/')
+    self.assertIsNotNone(scan_node)
 
     expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
     self.assertEqual(scan_node.type_indicator, expected_type_indicator)
@@ -119,10 +116,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
-    for scan_node in scan_node.sub_nodes:
-      if getattr(scan_node.path_spec, u'location', None) is None:
-        break
-
+    scan_node = scan_node.GetSubNodeByLocation(None)
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_BDE)
     self.assertEqual(len(scan_node.sub_nodes), 0)
@@ -133,10 +127,42 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
     self.assertEqual(len(scan_node.sub_nodes), 1)
 
-    for scan_node in scan_node.sub_nodes:
-      if getattr(scan_node.path_spec, u'location', None) == u'/':
-        break
+    scan_node = scan_node.GetSubNodeByLocation(u'/')
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
+  @shared_test_lib.skipUnlessHasTestFile([u'fvdetest.qcow2'])
+  def testScanFVDE(self):
+    """Test the Scan() function on FVDE."""
+    test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+
+    scan_node = scan_node.GetSubNodeByLocation(u'/p1')
+    scan_node = scan_node.sub_nodes[0]
+
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_FVDE)
+    self.assertEqual(len(scan_node.sub_nodes), 0)
+
+    self._source_scanner.Unlock(
+        scan_context, scan_node.path_spec, u'password', self._FVDE_PASSWORD)
+
+    self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.GetSubNodeByLocation(u'/')
+    self.assertIsNotNone(scan_node)
     self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 

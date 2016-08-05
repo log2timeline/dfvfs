@@ -53,10 +53,10 @@ class SourceScanNode(object):
           specification of a sub scan node.
 
     Return:
-      SourceScanNode: sub scan node or None.
+      SourceScanNode: sub scan node or None if not available.
     """
     for sub_node in self.sub_nodes:
-      sub_node_location = getattr(sub_node.path_spec, u'location', u'')
+      sub_node_location = getattr(sub_node.path_spec, u'location', None)
       if location == sub_node_location:
         return sub_node
 
@@ -64,7 +64,7 @@ class SourceScanNode(object):
     """Retrieves the first unscanned sub node.
 
     Returns:
-      SourceScanNode: sub scan node or None.
+      SourceScanNode: sub scan node or None if not available.
     """
     if not self.sub_nodes and not self.scanned:
       return self
@@ -95,7 +95,7 @@ class SourceScannerContext(object):
       definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
   def __init__(self):
-    """Initializes the source scanner context object."""
+    """Initializes a source scanner context."""
     super(SourceScannerContext, self).__init__()
     self._file_system_scan_nodes = {}
     self._locked_scan_nodes = {}
@@ -107,19 +107,18 @@ class SourceScannerContext(object):
 
   @property
   def locked_scan_nodes(self):
-    """The locked scan nodes."""
+    """SourceScanNode: locked scan nodes."""
     return iter(self._locked_scan_nodes.values())
 
   def AddScanNode(self, path_spec, parent_scan_node):
     """Adds a scan node for a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
-      parent_scan_node: the parent scan node (instance of SourceScanNode)
-                        or None.
+      path_spec (PathSpec): path specification.
+      parent_scan_node (SourceScanNode): parent scan node or None.
 
     Returns:
-      The scan node (instance of SourceScanNode).
+      SourceScanNode: scan node.
 
     Raises:
       KeyError: if the scan node already exists.
@@ -163,11 +162,10 @@ class SourceScannerContext(object):
     """Determines if there is a scan node for a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A boolean value indicating if there is a scan node for
-      the path specification.
+      bool: True if there is a scan node for the path specification.
     """
     return self._scan_nodes.get(path_spec, None) is not None
 
@@ -175,7 +173,7 @@ class SourceScannerContext(object):
     """Retrieves the root scan node.
 
     Returns:
-      A scan node (instance of SourceScanNode) or None.
+      SourceScanNode: scan node or None if not available.
     """
     return self._scan_nodes.get(self._root_path_spec, None)
 
@@ -183,10 +181,10 @@ class SourceScannerContext(object):
     """Retrieves a scan node for a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A scan node (instance of SourceScanNode) or None.
+      SourceScanNode: scan node or None if not available.
     """
     return self._scan_nodes.get(path_spec, None)
 
@@ -194,7 +192,7 @@ class SourceScannerContext(object):
     """Retrieves the first unscanned scan node.
 
     Returns:
-      A scan node (instance of SourceScanNode) or None.
+      SourceScanNode: scan node or None if not available.
     """
     root_scan_node = self._scan_nodes.get(self._root_path_spec, None)
     if not root_scan_node.scanned:
@@ -209,11 +207,10 @@ class SourceScannerContext(object):
     e.g. password, to unlock the volume is not available.
 
     Args:
-      path_spec: the path specification (instance of PathSpec)
-                 of the scan node.
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A boolean value indicating if the scan node is locked.
+      bool: True if the scan node is locked.
     """
     return path_spec in self._locked_scan_nodes
 
@@ -221,7 +218,8 @@ class SourceScannerContext(object):
     """Determines if the source type is a directory.
 
     Returns:
-      A boolean if the source type is or is not a directory or None if not set.
+      bool: True if the source type is a directory, False if not or
+          None if not set.
     """
     if self.source_type:
       return self.source_type == definitions.SOURCE_TYPE_DIRECTORY
@@ -230,7 +228,7 @@ class SourceScannerContext(object):
     """Determines if the source type is a file.
 
     Returns:
-      A boolean if the source type is or is not a file or None if not set.
+      bool: True if the source type is a file, False if not or None if not set.
     """
     if self.source_type:
       return self.source_type == definitions.SOURCE_TYPE_FILE
@@ -239,7 +237,7 @@ class SourceScannerContext(object):
     """Marks a scan node as locked.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Raises:
       KeyError: if the scan node does not exists.
@@ -254,7 +252,7 @@ class SourceScannerContext(object):
     """Opens the source path.
 
     Args:
-      source_path: Unicode string containing the source path.
+      source_path (str): source path.
     """
     source_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=source_path)
@@ -265,11 +263,10 @@ class SourceScannerContext(object):
     """Removes a scan node of a certain path specifiation.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The parent scan node (instance of SourceScanNode) or
-      None if not available.
+      SourceScanNode: parent scan node or None if not available.
 
     Raises:
       RuntimeError: if the scan node has sub nodes.
@@ -298,7 +295,7 @@ class SourceScannerContext(object):
     """Sets the source type.
 
     Args:
-      source_type: the source type.
+      source_type (str): source type.
     """
     if self.source_type is None:
       self.source_type = source_type
@@ -307,7 +304,7 @@ class SourceScannerContext(object):
     """Marks a scan node as unlocked.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Raises:
       KeyError: if the scan node does not exists.
@@ -322,12 +319,12 @@ class SourceScanner(object):
   """Searcher object to find volumes within a volume system."""
 
   def __init__(self, resolver_context=None):
-    """Initializes the source scanner object.
+    """Initializes a source scanner.
 
     Args:
-      resolver_context: the optional resolver context (instance of
-                        resolver.Context). The default is None which will use
-                        the built in context which is not multi process safe.
+      resolver_context (Optional[Context]): resolver context, where None
+          indicates to use the built-in context which is not multi process
+          safe.
     """
     super(SourceScanner, self).__init__()
     self._resolver_context = resolver_context
@@ -339,12 +336,10 @@ class SourceScanner(object):
     """Scans for supported formats using a scan node.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      scan_node: the scan node (instance of SourceScanNode).
-      auto_recurse: optional boolean value to indicate if the scan should
-                    automatically recurse as far as possible. The default
-                    is False.
+      scan_context (SourceScannerContext): source scanner context.
+      scan_node (SourceScanNode): source scan node.
+      auto_recurse (Optional[bool]): True if the scan should automatically
+          recurse as far as possible.
 
     Raises:
       BackEndError: if the source cannot be scanned.
@@ -523,10 +518,10 @@ class SourceScanner(object):
     """Retrieves the volume identifiers.
 
     Args:
-      volume_system: The volume system (instance of dfvfs.VolumeSystem).
+      volume_system (VolumeSystem): volume system.
 
     Returns:
-      A sorted list containing the volume identifiers.
+      list[str]: sorted volume identifiers.
     """
     volume_identifiers = []
     for volume in volume_system.volumes:
@@ -540,15 +535,12 @@ class SourceScanner(object):
     """Scans for supported formats.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      auto_recurse: optional boolean value to indicate if the scan should
-                    automatically recurse as far as possible. The default
-                    is True.
-      scan_path_spec: optional path specification (instance of PathSpec)
-                      to indicate where the source scanner should continue
-                      scanning. The default is None which indicates the
-                      scanner will start with the sources.
+      scan_context (SourceScannerContext): source scanner context.
+      auto_recurse (Optional[bool]): True if the scan should automatically
+          recurse as far as possible.
+      scan_path_spec (Optional[PathSpec]): path specification to indicate
+          where the source scanner should continue scanning, where None
+          indicates the scanner will start with the sources.
 
     Raises:
       ValueError: if the scan context is invalid.
@@ -571,12 +563,11 @@ class SourceScanner(object):
     """Scans the path specification for a supported file system format.
 
     Args:
-      source_path_spec: the source path specification (instance of
-                        dfvfs.PathSpec).
+      source_path_spec (PathSpec): source path specification.
 
     Returns:
-      The file system path specification (instance of dfvfs.PathSpec) or None
-      if no supported file system type was found.
+      PathSpec: file system path specification or None if no supported file
+          system type was found.
 
     Raises:
       BackEndError: if the source cannot be scanned or more than one file
@@ -613,12 +604,11 @@ class SourceScanner(object):
     """Scans the path specification for a supported storage media image format.
 
     Args:
-      source_path_spec: the source path specification (instance of
-                        dfvfs.PathSpec).
+      source_path_spec (PathSpec): source path specification.
 
     Returns:
-      The storage media image path specification (instance of dfvfs.PathSpec)
-      or None if no supported storage media image type was found.
+      PathSpec: storage media image path specification or None if no supported
+          storage media image type was found.
 
     Raises:
       BackEndError: if the source cannot be scanned or more than one storage
@@ -663,12 +653,11 @@ class SourceScanner(object):
     """Scans the path specification for a supported volume system format.
 
     Args:
-      source_path_spec: the source path specification (instance of
-                        dfvfs.PathSpec).
+      source_path_spec (PathSpec): source path specification.
 
     Returns:
-      The volume system path specification (instance of dfvfs.PathSpec) or
-      None if no supported volume system type was found.
+      PathSpec: volume system path specification or None if no supported volume
+          system type was found.
 
     Raises:
       BackEndError: if the source cannot be scanned or more than one volume
@@ -717,16 +706,14 @@ class SourceScanner(object):
     """Unlocks a locked scan node e.g. the scan node of an encrypted volume.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      path_spec: the path specification (instance of PathSpec) of
-                 the locked scan node.
-      credential_identifier: string containing the credential identifier used
-                             to unlock the scan node.
-      credential_data: the credential data used to unlock the scan node.
+      scan_context (SourceScannerContext): source scanner context.
+      path_spec (PathSpec): path specification of the locked scan node.
+      credential_identifier (str): credential identifier used to unlock
+          the scan node.
+      credential_data (bytes): credential data used to unlock the scan node.
 
     Returns:
-      A boolean indicating if the scan node was successfully unlocked or not.
+      bool: True if the scan node was successfully unlocked.
 
     Raises:
       KeyError: if the scan node does not exists or is not locked.
