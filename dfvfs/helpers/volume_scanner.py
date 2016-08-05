@@ -29,7 +29,7 @@ class VolumeScannerMediator(object):
       volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      list[str]: selected partition identifiers or None.
+      list[str]: selected partition identifiers, such as "p1", or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
@@ -46,7 +46,7 @@ class VolumeScannerMediator(object):
       volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      list[str]: selected VSS store identifiers or None.
+      list[int]: selected VSS store numbers or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
@@ -116,10 +116,16 @@ class VolumeScanner(object):
       return volume_identifiers
 
     try:
-      return self._mediator.GetPartitionIdentifiers(
+      parition_identifiers = self._mediator.GetPartitionIdentifiers(
           volume_system, volume_identifiers)
+
     except KeyboardInterrupt:
       raise errors.ScannerError(u'File system scan aborted.')
+
+    if parition_identifiers is None:
+      return []
+
+    return parition_identifiers
 
   def _GetVSSStoreIdentifiers(self, scan_node):
     """Determines the VSS store identifiers.
@@ -128,7 +134,7 @@ class VolumeScanner(object):
       scan_node (ScanNode): scan node.
 
     Returns:
-      list[str]: VSS store identifiers.
+      list[int]: selected VSS store numbers.
 
     Raises:
       ScannerError: if the format of or within the source is not supported,
@@ -152,10 +158,16 @@ class VolumeScanner(object):
           u'determine how they should be used.')
 
     try:
-      return self._mediator.GetVSSStoreIdentifiers(
+      store_numbers = self._mediator.GetVSSStoreIdentifiers(
           volume_system, volume_identifiers)
+
     except KeyboardInterrupt:
       raise errors.UserAbort(u'File system scan aborted.')
+
+    if store_numbers is None:
+      return []
+
+    return store_numbers
 
   def _ScanFileSystem(self, file_system_scan_node, base_path_specs):
     """Scans a file system scan node for file systems.
@@ -255,7 +267,7 @@ class VolumeScanner(object):
       credentials = credentials_manager.CredentialsManager.GetCredentials(
           volume_scan_node.path_spec)
 
-      result = self._mediator.GetEncryptedVolumeCredential(
+      result = self._mediator.UnlockEncryptedVolume(
           self._source_scanner, scan_context, volume_scan_node, credentials)
 
     if result:

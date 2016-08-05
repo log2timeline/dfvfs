@@ -19,6 +19,8 @@ from tests import test_lib as shared_test_lib
 class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
   """Class that defines a volume scanner mediator for testing."""
 
+  _BDE_PASSWORD = u'bde-TEST'
+
   def GetPartitionIdentifiers(self, unused_volume_system, volume_identifiers):
     """Retrieves partition identifiers.
 
@@ -29,7 +31,7 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      list[str]: selected partition identifiers or None.
+      list[str]: selected partition identifiers, such as "p1", or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
@@ -46,16 +48,17 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      list[str]: selected VSS store identifiers or None.
+      list[int]: selected VSS store numbers or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
     """
-    return volume_identifiers
+    return [
+        int(volume_identifier[3:], 10) for volume_identifier in volume_identifiers]
 
   def UnlockEncryptedVolume(
-      self, unused_source_scanner_object, unused_scan_context,
-      unused_locked_scan_node, unused_credentials):
+      self, source_scanner_object, scan_context, locked_scan_node,
+      unused_credentials):
     """Unlocks an encrypted volume.
 
     This method can be used to prompt the user to provide encrypted volume
@@ -70,7 +73,9 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Returns:
       bool: True if the volume was unlocked.
     """
-    return False
+    return source_scanner_object.Unlock(
+        scan_context, locked_scan_node.path_spec, u'password',
+        self._BDE_PASSWORD)
 
 
 class VolumeScannerTest(shared_test_lib.BaseTestCase):
@@ -152,7 +157,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner._source_scanner.Scan(scan_context)
     scan_node = self._GetTestScanNode(scan_context)
 
-    expected_identifiers = sorted([u'vss1', u'vss2'])
+    expected_identifiers = sorted([1, 2])
     identifiers = test_scanner._GetVSSStoreIdentifiers(scan_node.sub_nodes[0])
     self.assertEqual(len(identifiers), 2)
     self.assertEqual(sorted(identifiers), expected_identifiers)
@@ -198,6 +203,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
       test_scanner._ScanFileSystem(scan_node, [])
 
   @shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
+  @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
   def testScanVolume(self):
     """Tests the _ScanVolume function."""
     # Single volume test.
@@ -209,48 +215,99 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     test_scanner._source_scanner.Scan(scan_context)
     volume_scan_node = scan_context.GetRootScanNode()
-    scan_node = self._GetTestScanNode(scan_context)
 
     base_path_specs = []
-    test_scanner._ScanVolume(scan_node, volume_scan_node, base_path_specs)
+    test_scanner._ScanVolume(scan_context, volume_scan_node, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
     # Multi volume test.
-    # TODO: test function.
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(test_mediator)
+
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    volume_scan_node = self._GetTestScanNode(scan_context)
+
+    base_path_specs = []
+    test_scanner._ScanVolume(
+        scan_context, volume_scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 3)
 
     # Test error conditions.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/')
-    scan_node = source_scanner.SourceScanNode(path_spec)
+    scan_context = source_scanner.SourceScannerContext()
 
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolume(scan_node, None, [])
+      test_scanner._ScanVolume(scan_context, None, [])
 
     volume_scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolume(scan_node, volume_scan_node, [])
+      test_scanner._ScanVolume(scan_context, volume_scan_node, [])
 
+  @shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
+  @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
   def testScanVolumeScanNode(self):
     """Tests the _ScanVolumeScanNode function."""
+    # Single volume test.
     test_scanner = volume_scanner.VolumeScanner()
 
-    # TODO: test function.
+    test_file = self._GetTestFilePath([u'ímynd.dd'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    volume_scan_node = scan_context.GetRootScanNode()
+
+    base_path_specs = []
+    test_scanner._ScanVolumeScanNode(
+        scan_context, volume_scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 1)
+
+    # Multi volume test.
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(test_mediator)
+
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    volume_scan_node = self._GetTestScanNode(scan_context)
+
+    base_path_specs = []
+    test_scanner._ScanVolumeScanNode(
+        scan_context, volume_scan_node.sub_nodes[0], base_path_specs)
+    self.assertEqual(len(base_path_specs), 2)
 
     # Test error conditions.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/')
-    scan_node = source_scanner.SourceScanNode(path_spec)
+    scan_context = source_scanner.SourceScannerContext()
 
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeScanNode(scan_node, None, [])
+      test_scanner._ScanVolumeScanNode(scan_context, None, [])
 
     volume_scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeScanNode(scan_node, volume_scan_node, [])
+      test_scanner._ScanVolumeScanNode(scan_context, volume_scan_node, [])
 
+  @shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
   def testScanVolumeScanNodeEncrypted(self):
     """Tests the _ScanVolumeScanNodeEncrypted function."""
-    test_scanner = volume_scanner.VolumeScanner()
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(test_mediator)
 
-    # TODO: test function.
+    test_file = self._GetTestFilePath([u'bdetogo.raw'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_file)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    volume_scan_node = self._GetTestScanNode(scan_context)
+
+    base_path_specs = []
+    test_scanner._ScanVolumeScanNode(
+        scan_context, volume_scan_node.sub_nodes[0], base_path_specs)
+    self.assertEqual(len(base_path_specs), 1)
 
     # Test error conditions.
     path_spec = fake_path_spec.FakePathSpec(location=u'/')
