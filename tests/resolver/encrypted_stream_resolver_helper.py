@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.resolver import encrypted_stream_resolver_helper
+
 from tests.resolver import test_lib
 
 

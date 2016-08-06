@@ -2,23 +2,24 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyqcow."""
 
-import os
 import unittest
 
 from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'image.qcow2'])
 class QCOWFileTest(test_lib.ImageFileTestCase):
   """The unit test for the QCOW image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(QCOWFileTest, self).setUp()
-    test_file = os.path.join(u'test_data', u'image.qcow2')
+    test_file = self._GetTestFilePath([u'image.qcow2'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
         parent=self._os_path_spec)

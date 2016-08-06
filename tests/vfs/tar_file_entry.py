@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using the tarfile."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -11,8 +10,11 @@ from dfvfs.resolver import context
 from dfvfs.vfs import tar_file_entry
 from dfvfs.vfs import tar_file_system
 
+from tests import test_lib as shared_test_lib
 
-class TARFileEntryTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.tar'])
+class TARFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the TAR extracted file entry object."""
 
   def _assertSubFileEntries(self, file_entry, expected_sub_file_entry_names):
@@ -36,7 +38,7 @@ class TARFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.tar')
+    test_file = self._GetTestFilePath([u'syslog.tar'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tar_path_spec = tar_path_spec.TARPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
@@ -132,7 +134,7 @@ class TARFileEntryTest(unittest.TestCase):
     self._assertSubFileEntries(file_entry, [u'syslog'])
 
     # Test on a tar file that has missing directory entries.
-    test_file = os.path.join(u'test_data', u'missing_directory_entries.tar')
+    test_file = self._GetTestFilePath([u'missing_directory_entries.tar'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = tar_path_spec.TARPathSpec(location=u'/', parent=path_spec)
 

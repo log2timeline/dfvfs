@@ -10,13 +10,16 @@ from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
 
+from tests import test_lib as shared_test_lib
+
 
 def TestPlatformSystem():
   """Test function to emulate platform.system() == 'Windows'"""
   return u'Windows'
 
 
-class OSFileSystemTest(unittest.TestCase):
+@shared_test_lib.skipUnlessHasTestFile([u'testdir_os', u'file1.txt'])
+class OSFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the operating system file system object."""
 
   def setUp(self):
@@ -33,27 +36,27 @@ class OSFileSystemTest(unittest.TestCase):
     """Test the file entry exists by path specification functionality."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
-    path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join(u'test_data', u'testdir_os', u'file1.txt'))
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join(u'test_data', u'testdir_os', u'file6.txt'))
+    test_file = self._GetTestFilePath([u'testdir_os', u'file6.txt'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
-    path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join(u'test_data', u'testdir_os', u'file1.txt'))
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, u'file1.txt')
 
-    path_spec = os_path_spec.OSPathSpec(
-        location=os.path.join(u'test_data', u'testdir_os', u'file6.txt'))
+    test_file = self._GetTestFilePath([u'testdir_os', u'file6.txt'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using pybde."""
 
-import os
 import unittest
 
 from dfvfs.path import bde_path_spec
@@ -12,8 +11,11 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import bde_file_entry
 from dfvfs.vfs import bde_file_system
 
+from tests import test_lib as shared_test_lib
 
-class BDEFileEntryTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
+class BDEFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the BDE file entry object."""
 
   _BDE_PASSWORD = u'bde-TEST'
@@ -21,7 +23,7 @@ class BDEFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'bdetogo.raw')
+    test_file = self._GetTestFilePath([u'bdetogo.raw'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(

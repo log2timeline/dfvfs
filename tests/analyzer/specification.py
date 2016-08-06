@@ -6,8 +6,10 @@ import unittest
 
 from dfvfs.analyzer import specification
 
+from tests import test_lib as shared_test_lib
 
-class FormatSpecificationStoreTest(unittest.TestCase):
+
+class FormatSpecificationStoreTest(shared_test_lib.BaseTestCase):
   """Class to test the specification store."""
 
   def testAddSpecification(self):

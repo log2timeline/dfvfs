@@ -9,6 +9,8 @@ from dfvfs.encoding import decoder
 from dfvfs.encoding import manager
 from dfvfs.lib import definitions
 
+from tests import test_lib as shared_test_lib
+
 
 class TestDecoder(decoder.Decoder):
   """Class that implements a test decoder."""
@@ -28,7 +30,7 @@ class TestDecoder(decoder.Decoder):
     return b'', b''
 
 
-class EncodingManagerTest(unittest.TestCase):
+class EncodingManagerTest(shared_test_lib.BaseTestCase):
   """Class to test the encoding manager."""
 
   def testDecoderRegistration(self):

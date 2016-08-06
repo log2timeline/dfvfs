@@ -15,6 +15,8 @@
 /build
 /dfvfs.egg-info
 /dist
+/MANIFEST
+/MANIFEST.test_data
 
 # Code review files
 /.review

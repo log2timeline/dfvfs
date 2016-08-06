@@ -9,6 +9,8 @@ from dfvfs.encryption import manager
 from dfvfs.encryption import rc4_decrypter
 from dfvfs.lib import definitions
 
+from tests import test_lib as shared_test_lib
+
 
 class TestDecrypter(decrypter.Decrypter):
   """Class that implements a test decrypter."""
@@ -28,7 +30,7 @@ class TestDecrypter(decrypter.Decrypter):
     return b'', b''
 
 
-class EncryptionManagerTest(unittest.TestCase):
+class EncryptionManagerTest(shared_test_lib.BaseTestCase):
   """Class to test the encryption manager."""
 
   def testDecrypterRegistration(self):

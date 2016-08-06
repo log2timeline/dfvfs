@@ -2,22 +2,24 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyvhdi."""
 
-import os
 import unittest
 
 from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import vhdi_path_spec
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'image.vhd'])
 class DynamicVHDIFileTest(test_lib.ImageFileTestCase):
   """The unit test for the VHD image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(DynamicVHDIFileTest, self).setUp()
-    test_file = os.path.join(u'test_data', u'image.vhd')
+    test_file = self._GetTestFilePath([u'image.vhd'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
         parent=self._os_path_spec)
@@ -46,13 +48,14 @@ class DynamicVHDIFileTest(test_lib.ImageFileTestCase):
     self._TestRead(self._vhdi_path_spec)
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'image-differential.vhd'])
 class DifferentialVHDIFileTest(test_lib.ImageFileTestCase):
   """The unit test for the VHD image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(DifferentialVHDIFileTest, self).setUp()
-    test_file = os.path.join(u'test_data', u'image-differential.vhd')
+    test_file = self._GetTestFilePath([u'image-differential.vhd'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
         parent=self._os_path_spec)

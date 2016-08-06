@@ -6,6 +6,7 @@ import unittest
 
 from dfvfs.encoding import base32_decoder
 from dfvfs.lib import errors
+
 from tests.encoding import test_lib
 
 

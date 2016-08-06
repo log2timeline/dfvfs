@@ -10,20 +10,24 @@ from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 
+from tests import test_lib as shared_test_lib
+
 
 # TODO: add tests that mock the device handling behavior.
 # TODO: add tests that mock the access denied behavior.
 
-class OSFileTest(unittest.TestCase):
+@shared_test_lib.skipUnlessHasTestFile([u'password.txt'])
+@shared_test_lib.skipUnlessHasTestFile([u'another_file'])
+class OSFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the operating systesm file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'password.txt')
+    test_file = self._GetTestFilePath([u'password.txt'])
     self._path_spec1 = os_path_spec.OSPathSpec(location=test_file)
 
-    test_file = os.path.join(u'test_data', u'another_file')
+    test_file = self._GetTestFilePath([u'another_file'])
     self._path_spec2 = os_path_spec.OSPathSpec(location=test_file)
 
   def testOpenClosePathSpec(self):
@@ -39,7 +43,7 @@ class OSFileTest(unittest.TestCase):
       file_object.open(path_spec=None)
 
     # Try open with a path specification that has no location.
-    test_file = os.path.join(u'test_data', u'password.txt')
+    test_file = self._GetTestFilePath([u'password.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec.location = None
 

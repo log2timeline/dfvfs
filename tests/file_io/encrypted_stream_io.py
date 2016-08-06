@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the encrypted stream file-like object."""
 
-import os
 import unittest
 
 from dfvfs.file_io import encrypted_stream_io
@@ -13,9 +12,11 @@ from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.rc4'])
 class RC4EncryptedStreamTest(test_lib.SylogTestCase):
   """The unit test for a RC4 encrypted stream file-like object."""
 
@@ -24,7 +25,7 @@ class RC4EncryptedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.rc4')
+    test_file = self._GetTestFilePath([u'syslog.rc4'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -76,6 +77,7 @@ class RC4EncryptedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.aes'])
 class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   """The unit test for a AES encrypted stream file-like object."""
 
@@ -86,7 +88,7 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.aes')
+    test_file = self._GetTestFilePath([u'syslog.aes'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -144,6 +146,7 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.blowfish'])
 class BlowfishEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   """The unit test for a Blowfish encrypted stream file-like object."""
 
@@ -154,7 +157,7 @@ class BlowfishEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.blowfish')
+    test_file = self._GetTestFilePath([u'syslog.blowfish'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -211,6 +214,8 @@ class BlowfishEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
 
     file_object.close()
 
+
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.des3'])
 class DES3EncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   """The unit test for a Triple DES encrypted stream file-like object."""
 
@@ -221,7 +226,7 @@ class DES3EncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.des3')
+    test_file = self._GetTestFilePath([u'syslog.des3'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(

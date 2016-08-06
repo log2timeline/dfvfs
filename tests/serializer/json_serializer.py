@@ -11,15 +11,15 @@ from dfvfs.path import tsk_path_spec
 from dfvfs.path import vshadow_path_spec
 from dfvfs.serializer import json_serializer as serializer
 
+from tests import test_lib as shared_test_lib
 
-class JsonPathSpecSerializerTest(unittest.TestCase):
+
+class JsonPathSpecSerializerTest(shared_test_lib.BaseTestCase):
   """Tests for the JSON path specification serializer object."""
-
-  maxDiff = None
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join(u'test_data', u'image.qcow2')
+    test_file = self._GetTestFilePath([u'image.qcow2'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
         parent=self._os_path_spec)

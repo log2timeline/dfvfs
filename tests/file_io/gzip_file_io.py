@@ -2,23 +2,25 @@
 # -*- coding: utf-8 -*-
 """Tests for the gzip file-like object."""
 
-import os
 import unittest
 
 from dfvfs.file_io import gzip_file_io
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.gz'])
 class GzipFileTest(test_lib.SylogTestCase):
   """The unit test for a gzip file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.gz')
+    test_file = self._GetTestFilePath([u'syslog.gz'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
 

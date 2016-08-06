@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using pyfvde."""
 
-import os
 import unittest
 
 from dfvfs.path import fvde_path_spec
@@ -14,8 +13,11 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import fvde_file_entry
 from dfvfs.vfs import fvde_file_system
 
+from tests import test_lib as shared_test_lib
 
-class FVDEFileEntryTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'fvdetest.qcow2'])
+class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the FVDE file entry object."""
 
   _FVDE_PASSWORD = u'fvde-TEST'
@@ -23,7 +25,7 @@ class FVDEFileEntryTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'fvdetest.qcow2')
+    test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(

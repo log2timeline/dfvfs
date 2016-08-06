@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pybde."""
 
-import os
 import unittest
 
 from dfvfs.lib import errors
 from dfvfs.path import bde_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import resolver
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
 class BDEFileTest(test_lib.ImageFileTestCase):
   """The unit test for the BitLocker Drive Encryption (BDE) file-like object."""
 
@@ -23,7 +25,7 @@ class BDEFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(BDEFileTest, self).setUp()
-    test_file = os.path.join(u'test_data', u'bdetogo.raw')
+    test_file = self._GetTestFilePath([u'bdetogo.raw'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=self._os_path_spec)
     resolver.Resolver.key_chain.SetCredential(

@@ -5,15 +5,18 @@
 import unittest
 
 from dfvfs.resolver import resolver
+
+from tests import test_lib as shared_test_lib
 from tests.resolver import test_lib
 
 
-class ResolverTest(unittest.TestCase):
+class ResolverTest(shared_test_lib.BaseTestCase):
   """Class to test the path specification resolver object."""
+
+  # pylint: disable=protected-access
 
   def testHelperRegistration(self):
     """Tests the DeregisterHelper and DeregisterHelper functions."""
-    # pylint: disable=protected-access
     number_of_resolver_helpers = len(resolver.Resolver._resolver_helpers)
 
     resolver.Resolver.RegisterHelper(test_lib.TestResolverHelper)

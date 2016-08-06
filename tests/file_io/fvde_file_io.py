@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyfvde."""
 
-import os
 import unittest
 
 from dfvfs.lib import errors
@@ -11,9 +10,12 @@ from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import resolver
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'fvdetest.qcow2'])
 class FVDEFileTest(test_lib.ImageFileTestCase):
   """Tests for the FileVault Drive Encryption (FVDE) file-like object."""
 
@@ -25,7 +27,7 @@ class FVDEFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(FVDEFileTest, self).setUp()
-    test_file = os.path.join(u'test_data', u'fvdetest.qcow2')
+    test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_partition_path_spec = (

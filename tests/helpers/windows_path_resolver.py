@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 """Tests for the Windows path resolver object."""
 
-import os
 import unittest
 
 from dfvfs.helpers import windows_path_resolver
@@ -14,20 +12,23 @@ from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
 from dfvfs.vfs import tsk_file_system
 
+from tests import test_lib as shared_test_lib
 
-class WindowsPathResolverTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
   """The unit test for the windows path resolver object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(os.getcwd(), u'test_data')
+    test_file = self._GetTestFilePath([])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     # TODO: add RAW volume only test image.
 
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
@@ -37,13 +38,13 @@ class WindowsPathResolverTest(unittest.TestCase):
         self._resolver_context)
     self._tsk_file_system.Open(self._tsk_path_spec)
 
+  @shared_test_lib.skipUnlessHasTestFile([u'testdir_os', u'file1.txt'])
   def testResolvePathDirectory(self):
     """Test the resolve path function on a mount point directory."""
     path_resolver = windows_path_resolver.WindowsPathResolver(
         self._os_file_system, self._os_path_spec)
 
-    expected_path = os.path.join(
-        os.getcwd(), u'test_data', u'testdir_os', u'file1.txt')
+    expected_path = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
 
     windows_path = u'C:\\testdir_os\\file1.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
@@ -170,8 +171,8 @@ class WindowsPathResolverTest(unittest.TestCase):
     path_resolver = windows_path_resolver.WindowsPathResolver(
         self._os_file_system, self._os_path_spec)
 
-    expected_path = os.path.join(
-        os.getcwd(), u'test_data', u'testdir_os', u'subdir1', u'file6.txt')
+    expected_path = self._GetTestFilePath([
+        u'testdir_os', u'subdir1', u'file6.txt'])
 
     path_resolver.SetEnvironmentVariable(u'Test', u'C:\\testdir_os\\subdir1')
 

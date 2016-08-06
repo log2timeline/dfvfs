@@ -10,8 +10,10 @@ from dfvfs.path import ewf_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_system
 
+from tests import test_lib as shared_test_lib
 
-class GlobEWFFileTest(unittest.TestCase):
+
+class GlobEWFFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the EWF image file glob functionality."""
 
   def _BuildFileFakeFileSystem(
@@ -19,13 +21,13 @@ class GlobEWFFileTest(unittest.TestCase):
     """Builds a fake file system containing EWF segment files.
 
     Args:
-      filename: the filename of the first segment file with extension.
-      number_of_segments: the number of segments.
-      segment_file_path_specs: a list to store the segment file path
-                               specifications in.
+      filename (str): filename of the first segment file with extension.
+      number_of_segments (int): number of segments.
+      segment_file_path_specs (list[PathSpec]): resulting segment file path
+          specifications.
 
     Returns:
-      The fake file system (instance of dvfvs.FakeFileSystem).
+      FakeFileSystem: fake file system.
     """
     resolver_context = context.Context()
     file_system = fake_file_system.FakeFileSystem(resolver_context)

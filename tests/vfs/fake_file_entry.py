@@ -10,8 +10,10 @@ from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_entry
 from dfvfs.vfs import fake_file_system
 
+from tests import test_lib as shared_test_lib
 
-class FakeFileEntryTest(unittest.TestCase):
+
+class FakeFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the fake file entry object."""
 
   def setUp(self):

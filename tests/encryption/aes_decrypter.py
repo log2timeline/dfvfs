@@ -6,6 +6,7 @@ import unittest
 
 from dfvfs.encryption import aes_decrypter
 from dfvfs.lib import definitions
+
 from tests.encryption import test_lib
 
 

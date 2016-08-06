@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Shared test cases."""
 
-import unittest
-
 from dfvfs.path import path_spec
+
+from tests import test_lib as shared_test_lib
 
 
 class TestPathSpec(path_spec.PathSpec):
@@ -22,7 +22,7 @@ class TestPathSpec(path_spec.PathSpec):
     return self._GetComparable()
 
 
-class PathSpecTestCase(unittest.TestCase):
+class PathSpecTestCase(shared_test_lib.BaseTestCase):
   """The unit test case for path specification implementions."""
 
   def setUp(self):

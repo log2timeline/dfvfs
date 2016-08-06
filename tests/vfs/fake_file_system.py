@@ -8,8 +8,10 @@ from dfvfs.path import fake_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_system
 
+from tests import test_lib as shared_test_lib
 
-class FakeFileSystemTest(unittest.TestCase):
+
+class FakeFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the fake file system object."""
 
   def setUp(self):

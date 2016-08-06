@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using gzip."""
 
-import os
 import unittest
 
 from dfvfs.path import gzip_path_spec
@@ -10,14 +9,17 @@ from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import gzip_file_system
 
+from tests import test_lib as shared_test_lib
 
-class GzipFileSystemTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.gz'])
+class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the gzip file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.gz')
+    test_file = self._GetTestFilePath([u'syslog.gz'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
 

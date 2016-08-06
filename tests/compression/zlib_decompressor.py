@@ -6,6 +6,7 @@ import unittest
 
 from dfvfs.compression import zlib_decompressor
 from dfvfs.lib import errors
+
 from tests.compression import test_lib
 
 

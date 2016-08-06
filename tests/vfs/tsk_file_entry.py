@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using the SleuthKit (TSK)."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -12,14 +11,17 @@ from dfvfs.resolver import context
 from dfvfs.vfs import tsk_file_entry
 from dfvfs.vfs import tsk_file_system
 
+from tests import test_lib as shared_test_lib
 
-class TSKFileEntryTestExt2(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
+class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   """The unit test for the SleuthKit (TSK) file entry object on ext2."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'ímynd.dd')
+    test_file = self._GetTestFilePath([u'ímynd.dd'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/', parent=self._os_path_spec)
@@ -226,14 +228,14 @@ class TSKFileEntryTestHFS(unittest.TestCase):
   # TODO: implement.
 
 
-
-class TSKFileEntryTestNTFS(unittest.TestCase):
+@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   """The unit test for the SleuthKit (TSK) file entry object on NTFS."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the source scanner object."""
 
-import os
 import unittest
 
 from dfvfs.helpers import source_scanner
@@ -12,13 +11,13 @@ from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
 
+from tests import test_lib as shared_test_lib
 
-class SourceScannerTest(unittest.TestCase):
+
+class SourceScannerTest(shared_test_lib.BaseTestCase):
   """The unit test for the source scanner object."""
 
   _BDE_PASSWORD = u'bde-TEST'
-
-  maxDiff = None
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -42,9 +41,10 @@ class SourceScannerTest(unittest.TestCase):
 
     return scan_node
 
-  def testScan(self):
-    """Test the Scan() function."""
-    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
+  @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
+  def testScanPartitionedImage(self):
+    """Test the Scan() function on a partitioned image."""
+    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -65,7 +65,10 @@ class SourceScannerTest(unittest.TestCase):
 
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+  @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+  def testScanVSS(self):
+    """Test the Scan() function on VSS."""
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -100,7 +103,10 @@ class SourceScannerTest(unittest.TestCase):
     expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
     self.assertEqual(scan_node.type_indicator, expected_type_indicator)
 
-    test_file = os.path.join(u'test_data', u'bdetogo.raw')
+  @shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
+  def testScanBDE(self):
+    """Test the Scan() function on BDE."""
+    test_file = self._GetTestFilePath([u'bdetogo.raw'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -133,7 +139,10 @@ class SourceScannerTest(unittest.TestCase):
     self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
-    test_file = os.path.join(u'test_data', u'testdir_os')
+  @shared_test_lib.skipUnlessHasTestFile([u'testdir_os', u'file1.txt'])
+  def testScanDirectory(self):
+    """Test the Scan() function on a directory."""
+    test_file = self._GetTestFilePath([u'testdir_os'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -147,7 +156,7 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
-    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -161,7 +170,10 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
-    test_file = os.path.join(u'test_data', u'bogus.001')
+  @shared_test_lib.skipUnlessHasTestFile([u'bogus.001'])
+  def testScanFile(self):
+    """Test the Scan() function on a file."""
+    test_file = self._GetTestFilePath([u'bogus.001'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -175,7 +187,10 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
-    test_file = os.path.join(u'test_data', u'ímynd.dd')
+  @shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
+  def testScanRAW(self):
+    """Test the Scan() function on a RAW image."""
+    test_file = self._GetTestFilePath([u'ímynd.dd'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
@@ -190,16 +205,19 @@ class SourceScannerTest(unittest.TestCase):
 
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
-    test_file = os.path.join(u'test_data', u'nosuchfile.raw')
+  def testScanNonExisting(self):
+    """Test the Scan() function."""
+    test_file = self._GetTestFilePath([u'nosuchfile.raw'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
     with self.assertRaises(errors.BackEndError):
       _ = self._source_scanner.Scan(scan_context)
 
-  def testScanForFileSystem(self):
-    """Test the ScanForFileSystem() function."""
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+  @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+  def testScanForFileSystemVSS(self):
+    """Test the ScanForFileSystem() function on VSS."""
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
     source_path_spec = qcow_path_spec.QCOWPathSpec(parent=source_path_spec)
     source_path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -211,36 +229,49 @@ class SourceScannerTest(unittest.TestCase):
     expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
     self.assertEqual(path_spec.type_indicator, expected_type_indicator)
 
-    test_file = os.path.join(u'test_data', u'mactime.body')
+  @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+  def testScanForFileSystemBodyFile(self):
+    """Test the ScanForFileSystem() function on a body file."""
+    test_file = self._GetTestFilePath([u'mactime.body'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForFileSystem(source_path_spec)
     self.assertIsNone(path_spec)
 
-  def testScanForStorageMediaImage(self):
-    """Test the ScanForStorageMediaImage() function."""
-    test_file = os.path.join(u'test_data', u'ímynd.dd')
+  @shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
+  def testScanForStorageMediaImageRAW(self):
+    """Test the ScanForStorageMediaImage() function on a RAW image."""
+    test_file = self._GetTestFilePath([u'ímynd.dd'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
-    test_file = os.path.join(u'test_data', u'image.raw.000')
+  @shared_test_lib.skipUnlessHasTestFile([u'image.raw.000'])
+  def testScanForStorageMediaImageSplitRAW(self):
+    """Test the ScanForStorageMediaImage() function on a split RAW image."""
+    test_file = self._GetTestFilePath([u'image.raw.000'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
-    test_file = os.path.join(u'test_data', u'image.E01')
+  @shared_test_lib.skipUnlessHasTestFile([u'image.E01'])
+  def testScanForStorageMediaImageEWF(self):
+    """Test the ScanForStorageMediaImage() function on an EWF image."""
+    test_file = self._GetTestFilePath([u'image.E01'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_EWF)
 
-    test_file = os.path.join(u'test_data', u'image.qcow2')
+  @shared_test_lib.skipUnlessHasTestFile([u'image.qcow2'])
+  def testScanForStorageMediaImageQCOW(self):
+    """Test the ScanForStorageMediaImage() function on a QCOW image."""
+    test_file = self._GetTestFilePath([u'image.qcow2'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
@@ -248,7 +279,10 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_QCOW)
 
-    test_file = os.path.join(u'test_data', u'image.vhd')
+  @shared_test_lib.skipUnlessHasTestFile([u'image.vhd'])
+  def testScanForStorageMediaImageVHDI(self):
+    """Test the ScanForStorageMediaImage() function on a VHD image."""
+    test_file = self._GetTestFilePath([u'image.vhd'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
@@ -256,7 +290,10 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
 
-    test_file = os.path.join(u'test_data', u'image.vmdk')
+  @shared_test_lib.skipUnlessHasTestFile([u'image.vmdk'])
+  def testScanForStorageMediaImageVMDK(self):
+    """Test the ScanForStorageMediaImage() function on a VMDK image."""
+    test_file = self._GetTestFilePath([u'image.vmdk'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
@@ -264,15 +301,19 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VMDK)
 
-    test_file = os.path.join(u'test_data', u'mactime.body')
+  @shared_test_lib.skipUnlessHasTestFile([u'mactime.body'])
+  def testScanForStorageMediaImageBodyFile(self):
+    """Test the ScanForStorageMediaImage() function on a body file."""
+    test_file = self._GetTestFilePath([u'mactime.body'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
     self.assertIsNone(path_spec)
 
-  def testScanForVolumeSystem(self):
-    """Test the ScanForVolumeSystem() function."""
-    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
+  @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
+  def testScanForVolumeSystemPartitionedImage(self):
+    """Test the ScanForVolumeSystem() function on a partitioned image."""
+    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
@@ -280,7 +321,10 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
 
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+  @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+  def testScanForVolumeSystemVSS(self):
+    """Test the ScanForVolumeSystem() function on VSS."""
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
     source_path_spec = qcow_path_spec.QCOWPathSpec(parent=source_path_spec)
 
@@ -289,14 +333,20 @@ class SourceScannerTest(unittest.TestCase):
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
 
-    test_file = os.path.join(u'test_data', u'bdetogo.raw')
+  @shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
+  def testScanForVolumeSystem(self):
+    """Test the ScanForVolumeSystem() function on BDE."""
+    test_file = self._GetTestFilePath([u'bdetogo.raw'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_BDE)
 
-    test_file = os.path.join(u'test_data', u'mactime.body')
+  @shared_test_lib.skipUnlessHasTestFile([u'mactime.body'])
+  def testScanForVolumeSystemBodyFile(self):
+    """Test the ScanForVolumeSystem() function on a body file."""
+    test_file = self._GetTestFilePath([u'mactime.body'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
