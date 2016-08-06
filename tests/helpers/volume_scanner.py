@@ -447,6 +447,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
   """Tests for a Windows volume scanner."""
 
+  # pylint: disable=protected-access
+
   def testScanFileSystem(self):
     """Tests the _ScanFileSystem function."""
     test_scanner = volume_scanner.WindowsVolumeScanner()
