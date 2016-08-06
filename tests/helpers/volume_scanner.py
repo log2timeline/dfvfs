@@ -277,7 +277,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
       test_scanner._ScanVolumeScanNode(scan_context, volume_scan_node, [])
 
   @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
-  def testScanVolumeScanNodeVSS(self):
+  def testScanVolumeScanNode(self):
     """Tests the _ScanVolumeScanNode function on VSS."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(test_mediator)
