@@ -15,8 +15,38 @@ from dfvfs.resolver import resolver
 from tests import test_lib as shared_test_lib
 
 
+class SourceScanNodeTest(shared_test_lib.BaseTestCase):
+  """The unit test for the source scanner node."""
+
+  # TODO: add test for type_indicator.
+  # TODO: add test for GetSubNodeByLocation.
+  # TODO: add test for GetUnscannedSubNode.
+  # TODO: add test for IsSystemLevel.
+
+
+class SourceScannerContextTest(shared_test_lib.BaseTestCase):
+  """The unit test for the source scanner context."""
+
+  # TODO: add test for locked_scan_nodes.
+  # TODO: add test for AddScanNode.
+  # TODO: add test for HasFileSystemScanNodes.
+  # TODO: add test for HasLockedScanNodes.
+  # TODO: add test for HasScanNode.
+  # TODO: add test for GetRootScanNode.
+  # TODO: add test for GetScanNode.
+  # TODO: add test for GetUnscannedScanNode.
+  # TODO: add test for IsLockedScanNode.
+  # TODO: add test for IsSourceTypeDirectory.
+  # TODO: add test for IsSourceTypeFile.
+  # TODO: add test for LockScanNode.
+  # TODO: add test for OpenSourcePath.
+  # TODO: add test for RemoveScanNode.
+  # TODO: add test for SetSourceType.
+  # TODO: add test for UnlockScanNode.
+
+
 class SourceScannerTest(shared_test_lib.BaseTestCase):
-  """The unit test for the source scanner object."""
+  """The unit test for the source scanner."""
 
   _BDE_PASSWORD = u'bde-TEST'
   _FVDE_PASSWORD = u'fvde-TEST'
@@ -42,6 +72,9 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
       scan_node = scan_node.sub_nodes[0]
 
     return scan_node
+
+  # TODO: add test for _ScanNode.
+  # TODO: add test for GetVolumeIdentifiers.
 
   @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
   def testScanPartitionedImage(self):
