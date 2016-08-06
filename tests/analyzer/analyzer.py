@@ -9,6 +9,7 @@ from dfvfs.lib import definitions
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
+from dfvfs.path import tsk_partition_path_spec
 from dfvfs.path import vshadow_path_spec
 
 from tests import test_lib as shared_test_lib
@@ -167,6 +168,20 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_BDE]
+    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
+        path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+  @shared_test_lib.skipUnlessHasTestFile([u'fvdetest.qcow2'])
+  def testGetVolumeSystemTypeIndicatorsFVDE(self):
+    """Function to test the get volume system type indicators function."""
+    test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
+        location=u'/p1', parent=path_spec)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_FVDE]
     type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)

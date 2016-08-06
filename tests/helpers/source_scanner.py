@@ -10,6 +10,7 @@ from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
+from dfvfs.resolver import resolver
 
 from tests import test_lib as shared_test_lib
 
@@ -104,6 +105,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
   @shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
   def testScanBDE(self):
     """Test the Scan function on BDE."""
+    resolver.Resolver.key_chain.Empty()
+
     test_file = self._GetTestFilePath([u'bdetogo.raw'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
@@ -135,6 +138,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
   @shared_test_lib.skipUnlessHasTestFile([u'fvdetest.qcow2'])
   def testScanFVDE(self):
     """Test the Scan function on FVDE."""
+    resolver.Resolver.key_chain.Empty()
+
     test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
@@ -363,6 +368,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
   @shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
   def testScanForVolumeSystem(self):
     """Test the ScanForVolumeSystem function on BDE."""
+    resolver.Resolver.key_chain.Empty()
+
     test_file = self._GetTestFilePath([u'bdetogo.raw'])
     source_path_spec = os_path_spec.OSPathSpec(location=test_file)
 

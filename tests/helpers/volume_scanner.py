@@ -12,6 +12,7 @@ from dfvfs.path import tsk_partition_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.helpers import source_scanner
 from dfvfs.helpers import volume_scanner
+from dfvfs.resolver import resolver
 
 from tests import test_lib as shared_test_lib
 
@@ -295,6 +296,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
   @shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
   def testScanVolumeScanNodeEncrypted(self):
     """Tests the _ScanVolumeScanNodeEncrypted function."""
+    resolver.Resolver.key_chain.Empty()
+
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(test_mediator)
 
