@@ -334,6 +334,9 @@ class VolumeScanner(object):
                     is not a file or directory, or if the format of or within
                     the source file is not supported.
     """
+    if not source_path:
+      raise errors.ScannerError(u'Invalid source path.')
+
     # Note that os.path.exists() does not support Windows device paths.
     if (not source_path.startswith(u'\\\\.\\') and
         not os.path.exists(source_path)):
@@ -345,7 +348,7 @@ class VolumeScanner(object):
 
     try:
       self._source_scanner.Scan(scan_context)
-    except (errors.BackEndError, ValueError) as exception:
+    except (ValueError, errors.BackEndError) as exception:
       raise errors.ScannerError(
           u'Unable to scan source with error: {0:s}.'.format(exception))
 
