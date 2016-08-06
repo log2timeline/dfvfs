@@ -13,6 +13,9 @@ from tests.encryption import test_lib
 class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the triple DES decrypter object."""
 
+  _DES3_INITIALIZATION_VECTOR = u'This IV!'
+  _DES3_KEY = u'This is a key123'
+
   def testInitialization(self):
     """Tests the initialization method."""
     # Test missing arguments.
@@ -22,39 +25,34 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     # Test unsupport block cipher mode.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          key=u'This is a key123',
-          mode=u'bogus')
+          cipher_mode=u'bogus', key=self._DES3_KEY)
 
     # Test missing initialization vector.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          key=u'This is a key123',
-          mode=definitions.ENCRYPTION_MODE_CBC)
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC, key=self._DES3_KEY)
 
     # Test missing initialization vector with valid block cipher mode.
     des3_decrypter.DES3Decrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_ECB)
+        cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._DES3_KEY)
 
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          key=u'Wrong key size',
-          mode=definitions.ENCRYPTION_MODE_ECB)
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=u'Wrong key size')
 
     # Test incorrect initialization vector size.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          key=u'This is a key123',
-          mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector=u'Wrong IV size')
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=u'Wrong IV size', key=self._DES3_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
     decrypter = des3_decrypter.DES3Decrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=u'This IV!')
+        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+        initialization_vector=self._DES3_INITIALIZATION_VECTOR,
+        key=self._DES3_KEY)
 
     # Test full decryption.
     decrypted_data, _ = decrypter.Decrypt(
@@ -65,9 +63,9 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
 
     # Reset decrypter.
     decrypter = des3_decrypter.DES3Decrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=u'This IV!')
+        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+        initialization_vector=self._DES3_INITIALIZATION_VECTOR,
+        key=self._DES3_KEY)
 
     # Test partial decryption.
     decrypted_data, encrypted_data = decrypter.Decrypt(

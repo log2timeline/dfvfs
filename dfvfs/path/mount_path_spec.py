@@ -39,5 +39,4 @@ class MountPathSpec(path_spec.PathSpec):
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(MountPathSpec)

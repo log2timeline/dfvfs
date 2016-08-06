@@ -31,5 +31,4 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
         location=location, parent=parent, **kwargs)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(ZipPathSpec)

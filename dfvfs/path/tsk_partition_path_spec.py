@@ -56,5 +56,4 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
     return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(TSKPartitionPathSpec)

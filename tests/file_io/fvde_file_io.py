@@ -16,8 +16,11 @@ from tests.file_io import test_lib
 
 
 @shared_test_lib.skipUnlessHasTestFile([u'fvdetest.qcow2'])
-class FVDEFileTest(test_lib.ImageFileTestCase):
-  """Tests for the FileVault Drive Encryption (FVDE) file-like object."""
+class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
+  """Tests for the FileVault Drive Encryption (FVDE) file-like object.
+
+  The credentials are passed via the key chain.
+  """
 
   _FVDE_PASSWORD = u'fvde-TEST'
 
@@ -26,7 +29,7 @@ class FVDEFileTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(FVDEFileTest, self).setUp()
+    super(FVDEFileTestWithKeyChainTest, self).setUp()
     test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
@@ -49,6 +52,50 @@ class FVDEFileTest(test_lib.ImageFileTestCase):
     # Try open with a path specification that has no parent.
     path_spec = fvde_path_spec.FVDEPathSpec(
         parent=self._tsk_partition_path_spec)
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
+
+  def testSeek(self):
+    """Test the seek functionality."""
+    self._TestSeek(self._fvde_path_spec)
+
+  def testRead(self):
+    """Test the read functionality."""
+    self._TestRead(self._fvde_path_spec)
+
+
+@shared_test_lib.skipUnlessHasTestFile([u'fvdetest.qcow2'])
+class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
+  """Tests the BitLocker Drive Encryption (FVDE) file-like object.
+
+  The credentials are passed via the path specification.
+  """
+  _FVDE_PASSWORD = u'fvde-TEST'
+
+  _INODE_PASSWORDS_TXT = 26
+  _INODE_ANOTHER_FILE = 24
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    super(FVDEFileWithPathSpecCredentialsTest, self).setUp()
+    test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._fvde_path_spec = fvde_path_spec.FVDEPathSpec(
+        password=self._FVDE_PASSWORD, parent=self._os_path_spec)
+
+  def testOpenCloseInode(self):
+    """Test the open and close functionality using an inode."""
+    self._TestOpenCloseInode(self._fvde_path_spec)
+
+  def testOpenCloseLocation(self):
+    """Test the open and close functionality using a location."""
+    self._TestOpenCloseLocation(self._fvde_path_spec)
+
+    # Try open with a path specification that has no parent.
+    path_spec = fvde_path_spec.FVDEPathSpec(
+        password=self._FVDE_PASSWORD, parent=self._os_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):

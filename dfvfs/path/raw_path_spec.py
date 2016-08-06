@@ -33,5 +33,4 @@ class RawPathSpec(path_spec.PathSpec):
     return self._GetComparable()
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(RawPathSpec)

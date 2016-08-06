@@ -21,6 +21,9 @@
 # Code review files
 /.review
 
+# PyCharm files
+/.idea
+
 # Test coverage files
 .coverage
 tests-coverage.txt

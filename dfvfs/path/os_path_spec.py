@@ -43,5 +43,4 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
     super(OSPathSpec, self).__init__(location=location, parent=parent, **kwargs)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(OSPathSpec)

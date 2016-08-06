@@ -17,6 +17,20 @@ class KeyChain(object):
     super(KeyChain, self).__init__()
     self._credentials_per_path_spec = {}
 
+  def ExtractCredentialsFromPathSpec(self, path_spec):
+    """Extracts credentials from a path specification.
+
+    Args:
+      path_spec (PathSpec): path specification to extract credentials from.
+    """
+    credentials = manager.CredentialsManager.GetCredentials(path_spec)
+    for identifier in credentials.CREDENTIALS:
+      value = getattr(path_spec, identifier, None)
+      if value is None:
+        continue
+
+      self.SetCredential(path_spec, identifier, value)
+
   def GetCredential(self, path_spec, identifier):
     """Retrieves a specific credential from the key chain.
 
