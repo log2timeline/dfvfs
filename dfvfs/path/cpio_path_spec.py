@@ -12,7 +12,7 @@ class CPIOPathSpec(location_path_spec.LocationPathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_CPIO
 
   def __init__(self, location=None, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the CPIO file path specification must have a parent.
 

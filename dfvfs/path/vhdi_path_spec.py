@@ -12,7 +12,7 @@ class VHDIPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the VHDI file path specification must have a parent.
 

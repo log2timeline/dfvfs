@@ -17,7 +17,7 @@ class LVMPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_LVM
 
   def __init__(self, location=None, parent=None, volume_index=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the LVM path specification must have a parent.
 

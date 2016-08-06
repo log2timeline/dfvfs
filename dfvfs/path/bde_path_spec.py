@@ -20,7 +20,7 @@ class BDEPathSpec(path_spec.PathSpec):
   def __init__(
       self, password=None, parent=None, recovery_password=None,
       startup_key=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the BDE path specification must have a parent.
 

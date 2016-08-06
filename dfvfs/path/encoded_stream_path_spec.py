@@ -16,7 +16,7 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
 
   def __init__(self, encoding_method=None, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the encoded stream path specification must have a parent.
 

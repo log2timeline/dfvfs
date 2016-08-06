@@ -17,7 +17,7 @@ class DataRangePathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_DATA_RANGE
 
   def __init__(self, parent=None, range_offset=None, range_size=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the data range path specification must have a parent.
 
