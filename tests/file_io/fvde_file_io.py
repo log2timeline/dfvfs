@@ -81,9 +81,15 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(FVDEFileWithPathSpecCredentialsTest, self).setUp()
     test_file = self._GetTestFilePath([u'fvdetest.qcow2'])
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._tsk_partition_path_spec = (
+        tsk_partition_path_spec.TSKPartitionPathSpec(
+            location=u'/p1', parent=path_spec))
     self._fvde_path_spec = fvde_path_spec.FVDEPathSpec(
-        password=self._FVDE_PASSWORD, parent=self._os_path_spec)
+        password=self._FVDE_PASSWORD, parent=self._tsk_partition_path_spec)
+    resolver.Resolver.key_chain.SetCredential(
+        self._fvde_path_spec, u'password', self._FVDE_PASSWORD)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -95,7 +101,7 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
 
     # Try open with a path specification that has no parent.
     path_spec = fvde_path_spec.FVDEPathSpec(
-        password=self._FVDE_PASSWORD, parent=self._os_path_spec)
+        parent=self._tsk_partition_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
