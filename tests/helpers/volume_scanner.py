@@ -7,6 +7,7 @@ import unittest
 from dfvfs.lib import errors
 from dfvfs.path import fake_path_spec
 from dfvfs.path import os_path_spec
+from dfvfs.path import qcow_path_spec
 from dfvfs.path import raw_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.path import tsk_path_spec
@@ -344,17 +345,16 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(test_mediator)
 
-    # Test VSS root.
+    # Test root.
     test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_file)
 
     test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
+    volume_scan_node = scan_context.GetRootScanNode()
 
     base_path_specs = []
-    test_scanner._ScanVolumeScanNodeVSS(
-        volume_scan_node, base_path_specs)
+    test_scanner._ScanVolumeScanNodeVSS(volume_scan_node, base_path_specs)
     self.assertEqual(len(base_path_specs), 0)
 
     # Test VSS volume.
@@ -426,13 +426,70 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(base_path_specs, expected_base_path_specs)
 
+  @shared_test_lib.skipUnlessHasTestFile([u'testdir_os'])
+  def testGetBasePathSpecsDirectory(self):
+    """Tests the GetBasePathSpecs function on a directory."""
+    test_file = self._GetTestFilePath([u'testdir_os'])
+    test_scanner = volume_scanner.VolumeScanner()
 
+    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_base_path_specs = [test_os_path_spec.comparable]
+
+    base_path_specs = test_scanner.GetBasePathSpecs(test_file)
+    base_path_specs = [
+        base_path_spec.comparable for base_path_spec in base_path_specs]
+
+    self.assertEqual(base_path_specs, expected_base_path_specs)
+
+
+@shared_test_lib.skipUnlessHasTestFile([u'windows_volume.qcow2'])
 class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
   """Tests for a Windows volume scanner."""
 
-  # TODO: add test for _ScanFileSystem.
-  # TODO: add test for _ScanFileSystemForWindowsDirectory.
-  # TODO: add test for OpenFile.
+  def testScanFileSystem(self):
+    """Tests the _ScanFileSystem function."""
+    test_scanner = volume_scanner.WindowsVolumeScanner()
+
+    test_file = self._GetTestFilePath([u'windows_volume.qcow2'])
+    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=test_os_path_spec)
+    test_tsk_path_spec = tsk_path_spec.TSKPathSpec(
+        location=u'/', parent=test_qcow_path_spec)
+    scan_node = source_scanner.SourceScanNode(test_tsk_path_spec)
+
+    base_path_specs = []
+    test_scanner._ScanFileSystem(scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 1)
+
+    # Test error conditions.
+    with self.assertRaises(errors.ScannerError):
+      test_scanner._ScanFileSystem(None, [])
+
+    scan_node = source_scanner.SourceScanNode(None)
+    with self.assertRaises(errors.ScannerError):
+      test_scanner._ScanFileSystem(scan_node, [])
+
+  # _ScanFileSystemForWindowsDirectory is tested by testScanFileSystem.
+
+  def testOpenFile(self):
+    """Tests the OpenFile function."""
+    test_file = self._GetTestFilePath([u'windows_volume.qcow2'])
+    test_scanner = volume_scanner.WindowsVolumeScanner()
+
+    result = test_scanner.ScanForWindowsVolume(test_file)
+    self.assertTrue(result)
+
+    file_object = test_scanner.OpenFile(
+        u'C:\\Windows\\System32\\config\\syslog')
+    self.assertIsNotNone(file_object)
+    file_object.close()
+
+    file_object = test_scanner.OpenFile(u'C:\\bogus')
+    self.assertIsNone(file_object)
+
+    with self.assertRaises(IOError):
+      test_scanner.OpenFile(u'C:\\Windows\\System32\\config')
 
   @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
   def testScanForWindowsVolume(self):
@@ -443,7 +500,11 @@ class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
     result = test_scanner.ScanForWindowsVolume(test_file)
     self.assertFalse(result)
 
-    # TODO: Add test that results in true.
+    test_file = self._GetTestFilePath([u'windows_volume.qcow2'])
+    test_scanner = volume_scanner.WindowsVolumeScanner()
+
+    result = test_scanner.ScanForWindowsVolume(test_file)
+    self.assertTrue(result)
 
 
 if __name__ == '__main__':
