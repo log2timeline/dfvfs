@@ -368,7 +368,14 @@ class SourceScanner(object):
         scan_context.SetSourceType(definitions.SOURCE_TYPE_DIRECTORY)
         return
 
-      source_path_spec = self.ScanForStorageMediaImage(scan_node.path_spec)
+      try:
+        source_path_spec = self.ScanForStorageMediaImage(scan_node.path_spec)
+      except IOError:
+        # ScanForStorageMediaImage will error out from pysigscan_scanner_scan_file_object
+        # if SourceScannerContext is set to logical volume (example: \\.\C:), but we need to continue
+        # if it is a logical volume.
+        source_path_spec = None
+        
       if source_path_spec:
         scan_node.scanned = True
         scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
