@@ -83,12 +83,22 @@ class ZipFile(file_io.FileIO):
 
     Args:
       uncompressed_data_offset: the uncompressed data offset.
+
+    Raises:
+      IOError: if the ZIP file could not be opened.
     """
     if self._zip_ext_file:
       self._zip_ext_file.close()
       self._zip_ext_file = None
 
-    self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
+    try:
+      # The open can fail if the file path in the local file header
+      # does not use the same path segment seperator as the corresponding
+      # entry in the central directory.
+      self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
+    except zipfile.BadZipfile as exception:
+      raise IOError(
+          u'Unable to open ZIP file with error: {0:s}'.format(exception))
 
     self._uncompressed_data = b''
     self._uncompressed_data_size = 0
