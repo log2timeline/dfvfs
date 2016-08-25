@@ -5,6 +5,7 @@
 # an instance of file_io.FileIO.
 
 import os
+import zipfile
 
 from dfvfs.file_io import file_io
 from dfvfs.resolver import resolver
