@@ -116,16 +116,16 @@ class VolumeScanner(object):
       return volume_identifiers
 
     try:
-      parition_identifiers = self._mediator.GetPartitionIdentifiers(
+      partition_identifiers = self._mediator.GetPartitionIdentifiers(
           volume_system, volume_identifiers)
 
     except KeyboardInterrupt:
       raise errors.ScannerError(u'File system scan aborted.')
 
-    if parition_identifiers is None:
+    if partition_identifiers is None:
       return []
 
-    return parition_identifiers
+    return partition_identifiers
 
   def _GetVSSStoreIdentifiers(self, scan_node):
     """Determines the VSS store identifiers.
