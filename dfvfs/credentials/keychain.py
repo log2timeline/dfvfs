@@ -17,6 +17,10 @@ class KeyChain(object):
     super(KeyChain, self).__init__()
     self._credentials_per_path_spec = {}
 
+  def Empty(self):
+    """Empties the key chain."""
+    self._credentials_per_path_spec = {}
+
   def ExtractCredentialsFromPathSpec(self, path_spec):
     """Extracts credentials from a path specification.
 

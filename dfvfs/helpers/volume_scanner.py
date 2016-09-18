@@ -25,11 +25,11 @@ class VolumeScannerMediator(object):
     This method can be used to prompt the user to provide partition identifiers.
 
     Args:
-      volume_system: the volume system (instance of dfvfs.TSKVolumeSystem).
-      volume_identifiers: a list of strings containing the volume identifiers.
+      volume_system (TSKVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      A list of strings containing the selected partition identifiers or None.
+      list[str]: selected partition identifiers, such as "p1", or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
@@ -42,11 +42,11 @@ class VolumeScannerMediator(object):
     This method can be used to prompt the user to provide VSS store identifiers.
 
     Args:
-      volume_system: the volume system (instance of dfvfs.VShadowVolumeSystem).
-      volume_identifiers: a list of strings containing the volume identifiers.
+      volume_system (VShadowVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      A list of integers containing the selected VSS store identifiers or None.
+      list[int]: selected VSS store numbers or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
@@ -61,15 +61,13 @@ class VolumeScannerMediator(object):
     credentials.
 
     Args:
-      source_scanner_object: the source scanner (instance of SourceScanner).
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      locked_scan_node: the locked scan node (instance of SourceScanNode).
-      credentials: the credentials supported by the locked scan node (instance
-                   of dfvfs.Credentials).
+      source_scanner_object (SourceScanner): source scanner.
+      scan_context (SourceScannerContext): source scanner context.
+      locked_scan_node (SourceScanNode): locked scan node.
+      credentials (Credentials): credentials supported by the locked scan node.
 
     Returns:
-      A boolean value indicating whether the volume was unlocked.
+      bool: True if the volume was unlocked.
     """
 
 
@@ -77,11 +75,10 @@ class VolumeScanner(object):
   """Class that defines a volume scanner."""
 
   def __init__(self, mediator=None):
-    """Initializes the scanner object.
+    """Initializes a volume scanner.
 
     Args:
-      mediator: a volume scanner mediator (instance of
-                VolumeScannerMediator) or None.
+      mediator (VolumeScannerMediator): a volume scanner mediator.
     """
     super(VolumeScanner, self).__init__()
     self._mediator = mediator
@@ -94,14 +91,14 @@ class VolumeScanner(object):
     """Determines the TSK partition identifiers.
 
     Args:
-      scan_node: the scan node (instance of dfvfs.ScanNode).
+      scan_node (ScanNode): scan node.
 
     Returns:
-      A list of partition identifiers.
+      list[str]: partition identifiers.
 
     Raises:
       ScannerError: if the format of or within the source is not supported or
-                    the the scan node is invalid or if the volume for
+                    the scan node is invalid or if the volume for
                     a specific identifier cannot be retrieved.
     """
     if not scan_node or not scan_node.path_spec:
@@ -119,23 +116,29 @@ class VolumeScanner(object):
       return volume_identifiers
 
     try:
-      return self._mediator.GetPartitionIdentifiers(
+      partition_identifiers = self._mediator.GetPartitionIdentifiers(
           volume_system, volume_identifiers)
+
     except KeyboardInterrupt:
       raise errors.ScannerError(u'File system scan aborted.')
+
+    if partition_identifiers is None:
+      return []
+
+    return partition_identifiers
 
   def _GetVSSStoreIdentifiers(self, scan_node):
     """Determines the VSS store identifiers.
 
     Args:
-      scan_node: the scan node (instance of dfvfs.ScanNode).
+      scan_node (ScanNode): scan node.
 
     Returns:
-      A list of VSS store identifiers.
+      list[int]: selected VSS store numbers.
 
     Raises:
       ScannerError: if the format of or within the source is not supported,
-                    the the scan node is invalid or no mediator is provided
+                    the scan node is invalid or no mediator is provided
                     and VSS store identifiers are found.
     """
     if not scan_node or not scan_node.path_spec:
@@ -155,19 +158,23 @@ class VolumeScanner(object):
           u'determine how they should be used.')
 
     try:
-      return self._mediator.GetVSSStoreIdentifiers(
+      store_numbers = self._mediator.GetVSSStoreIdentifiers(
           volume_system, volume_identifiers)
+
     except KeyboardInterrupt:
       raise errors.UserAbort(u'File system scan aborted.')
+
+    if store_numbers is None:
+      return []
+
+    return store_numbers
 
   def _ScanFileSystem(self, file_system_scan_node, base_path_specs):
     """Scans a file system scan node for file systems.
 
     Args:
-      file_system_scan_node: the file system scan node (instance of
-                             dfvfs.ScanNode).
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
+      file_system_scan_node (SourceScanNode): file system scan node.
+      base_path_specs (list[PathSpec]): file system base path specifications.
 
     Raises:
       ScannerError: if the scan node is invalid.
@@ -181,15 +188,13 @@ class VolumeScanner(object):
     """Scans the volume scan node for volume and file systems.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      volume_scan_node: the volume scan node (instance of dfvfs.ScanNode).
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
+      scan_context (SourceScannerContext): source scanner context.
+      volume_scan_node (SourceScanNode): volume scan node.
+      base_path_specs (list[PathSpec]): file system base path specifications.
 
     Raises:
       ScannerError: if the format of or within the source
-                    is not supported or the the scan node is invalid.
+                    is not supported or the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
       raise errors.ScannerError(u'Invalid or missing volume scan node.')
@@ -208,15 +213,13 @@ class VolumeScanner(object):
     """Scans an individual volume scan node for volume and file systems.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      volume_scan_node: the volume scan node (instance of dfvfs.ScanNode).
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
+      scan_context (SourceScannerContext): source scanner context.
+      volume_scan_node (SourceScanNode): volume scan node.
+      base_path_specs (list[PathSpec]): file system base path specifications.
 
     Raises:
       ScannerError: if the format of or within the source
-                    is not supported or the the scan node is invalid.
+                    is not supported or the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
       raise errors.ScannerError(u'Invalid or missing volume scan node.')
@@ -249,18 +252,22 @@ class VolumeScanner(object):
     """Scans an encrypted volume scan node for volume and file systems.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      volume_scan_node: the volume scan node (instance of dfvfs.ScanNode).
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
+      scan_context (SourceScannerContext): source scanner context.
+      volume_scan_node (SourceScanNode): volume scan node.
+      base_path_specs (list[PathSpec]): file system base path specifications.
+
+    Raises:
+      ScannerError: if the scan node is invalid.
     """
+    if not volume_scan_node or not volume_scan_node.path_spec:
+      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+
     result = not scan_context.IsLockedScanNode(volume_scan_node.path_spec)
     if not result:
       credentials = credentials_manager.CredentialsManager.GetCredentials(
           volume_scan_node.path_spec)
 
-      result = self._mediator.GetEncryptedVolumeCredential(
+      result = self._mediator.UnlockEncryptedVolume(
           self._source_scanner, scan_context, volume_scan_node, credentials)
 
     if result:
@@ -272,13 +279,16 @@ class VolumeScanner(object):
     """Scans a VSS volume scan node for volume and file systems.
 
     Args:
-      volume_scan_node: the volume scan node (instance of dfvfs.ScanNode).
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
+      volume_scan_node (SourceScanNode): volume scan node.
+      base_path_specs (list[PathSpec]): file system base path specifications.
 
     Raises:
-      ScannerError: if a VSS sub scan node scannot be retrieved.
+      ScannerError: if a VSS sub scan node scannot be retrieved or
+                    if the scan node is invalid.
     """
+    if not volume_scan_node or not volume_scan_node.path_spec:
+      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+
     # Do not scan inside individual VSS store scan nodes.
     location = getattr(volume_scan_node.path_spec, u'location', None)
     if location != u'/':
@@ -314,16 +324,19 @@ class VolumeScanner(object):
     """Determines the base path specifications.
 
     Args:
-      source_path: a string containing the source path.
+      source_path (str): source path.
 
     Returns:
-      A list of path specifications (instances of dfvfs.PathSpec).
+      list[PathSpec]: path specifications.
 
     Raises:
       ScannerError: if the source path does not exists, or if the source path
                     is not a file or directory, or if the format of or within
                     the source file is not supported.
     """
+    if not source_path:
+      raise errors.ScannerError(u'Invalid source path.')
+
     # Note that os.path.exists() does not support Windows device paths.
     if (not source_path.startswith(u'\\\\.\\') and
         not os.path.exists(source_path)):
@@ -335,7 +348,7 @@ class VolumeScanner(object):
 
     try:
       self._source_scanner.Scan(scan_context)
-    except (errors.BackEndError, ValueError) as exception:
+    except (ValueError, errors.BackEndError) as exception:
       raise errors.ScannerError(
           u'Unable to scan source with error: {0:s}.'.format(exception))
 
@@ -385,11 +398,10 @@ class WindowsVolumeScanner(VolumeScanner):
   ])
 
   def __init__(self, mediator=None):
-    """Initializes the scanner object.
+    """Initializes a Windows volume scanner.
 
     Args:
-      mediator: a volume scanner mediator (instance of
-                VolumeScannerMediator) or None.
+      mediator (VolumeScannerMediator): a volume scanner mediator.
     """
     super(WindowsVolumeScanner, self).__init__(mediator=mediator)
     self._file_system = None
@@ -402,10 +414,8 @@ class WindowsVolumeScanner(VolumeScanner):
     This method checks if the file system contains a known Windows directory.
 
     Args:
-      file_system_scan_node: the file system scan node (instance of
-                             dfvfs.ScanNode).
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
+      file_system_scan_node (SourceScanNode): file system scan node.
+      base_path_specs (list[PathSpec]): file system base path specifications.
 
     Raises:
       ScannerError: if the scan node is invalid.
@@ -432,10 +442,10 @@ class WindowsVolumeScanner(VolumeScanner):
     """Scans a file system for a known Windows directory.
 
     Args:
-      path_resolver: the path resolver (instance of WindowsPathResolver).
+      path_resolver (WindowsPathResolver): Windows path resolver.
 
     Returns:
-      A boolean value to indicate if a known Windows directory was found.
+      bool: True if a known Windows directory was found.
     """
     result = False
     for windows_path in self._WINDOWS_DIRECTORIES:
@@ -452,11 +462,10 @@ class WindowsVolumeScanner(VolumeScanner):
     """Opens the file specificed by the Windows path.
 
     Args:
-      windows_path: the Windows path to the file.
+      windows_path (str): Windows path to the file.
 
     Returns:
-      The file-like object (instance of dfvfs.FileIO) or None if
-      the file does not exist.
+      FileIO: file-like object or None if the file does not exist.
     """
     path_spec = self._path_resolver.ResolvePath(windows_path)
     if path_spec is None:
@@ -468,10 +477,10 @@ class WindowsVolumeScanner(VolumeScanner):
     """Scans for a Windows volume.
 
     Args:
-      source_path: a string containing the source path.
+      source_path (str): source path.
 
     Returns:
-      A boolean value indicating if a Windows volume was found.
+      bool: True if a Windows volume was found.
 
     Raises:
       ScannerError: if the source path does not exists, or if the source path

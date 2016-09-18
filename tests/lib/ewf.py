@@ -68,7 +68,8 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
               filename, first_letter, second_letter, third_letter)
 
       file_system.AddFileEntry(path)
-      segment_file_path_specs.append(fake_path_spec.FakePathSpec(location=path))
+      path_spec = fake_path_spec.FakePathSpec(location=path)
+      segment_file_path_specs.append(path_spec)
 
     return file_system
 
