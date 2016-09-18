@@ -13,7 +13,7 @@ class FakePathSpec(location_path_spec.LocationPathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
   def __init__(self, location=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the fake path specification cannot have a parent.
 
@@ -35,5 +35,4 @@ class FakePathSpec(location_path_spec.LocationPathSpec):
         location=location, parent=parent, **kwargs)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(FakePathSpec)

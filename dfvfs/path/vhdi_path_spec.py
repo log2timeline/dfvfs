@@ -12,7 +12,7 @@ class VHDIPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the VHDI file path specification must have a parent.
 
@@ -33,5 +33,4 @@ class VHDIPathSpec(path_spec.PathSpec):
     return self._GetComparable()
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(VHDIPathSpec)

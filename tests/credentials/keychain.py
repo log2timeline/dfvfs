@@ -8,8 +8,10 @@ from dfvfs.credentials import keychain
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 
+from tests import test_lib as shared_test_lib
 
-class KeychainTest(unittest.TestCase):
+
+class KeychainTest(shared_test_lib.BaseTestCase):
   """Class to test the keychain object."""
 
   def testCredentialGetSet(self):

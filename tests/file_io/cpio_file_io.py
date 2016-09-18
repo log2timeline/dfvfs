@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 """Tests for the CPIO extracted file-like object."""
 
-import os
 import unittest
 
 from dfvfs.file_io import cpio_file_io
 from dfvfs.path import cpio_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.bin.cpio'])
 class CPIOBinaryFileTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -19,7 +21,7 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIOBinaryFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.bin.cpio')
+    test_file = self._GetTestFilePath([u'syslog.bin.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=path_spec)
@@ -52,6 +54,7 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
     file_object.close()
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.odc.cpio'])
 class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -59,7 +62,7 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIOPortableASCIIFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.odc.cpio')
+    test_file = self._GetTestFilePath(['syslog.odc.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=path_spec)
@@ -92,6 +95,7 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
     file_object.close()
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.newc.cpio'])
 class CPIONewASCIIFileTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -99,7 +103,7 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIONewASCIIFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.newc.cpio')
+    test_file = self._GetTestFilePath(['syslog.newc.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=path_spec)
@@ -132,6 +136,7 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
     file_object.close()
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.crc.cpio'])
 class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -139,7 +144,7 @@ class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIONewASCIIFileWithChecksumTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.crc.cpio')
+    test_file = self._GetTestFilePath(['syslog.crc.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=path_spec)

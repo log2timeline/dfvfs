@@ -23,7 +23,7 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
   def __init__(
       self, column_name=None, parent=None, row_condition=None,
       row_index=None, table_name=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the SQLite blob file path specification must have a parent.
 
@@ -77,5 +77,4 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
     return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(SQLiteBlobPathSpec)

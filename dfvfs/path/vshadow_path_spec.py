@@ -17,7 +17,7 @@ class VShadowPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, location=None, parent=None, store_index=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the VSS path specification must have a parent.
 
@@ -49,5 +49,4 @@ class VShadowPathSpec(path_spec.PathSpec):
     return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(VShadowPathSpec)

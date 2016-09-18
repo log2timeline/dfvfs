@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) path specification object interface."""
+"""The Virtual File System (VFS) path specification interface."""
 
 import abc
 
 
 class PathSpec(object):
-  """Class that implements the path specification object interface.
+  """Class that implements the path specification interface.
 
   Attributes:
     parent (PathSpec): parent path specification.
@@ -14,7 +14,7 @@ class PathSpec(object):
   _IS_SYSTEM_LEVEL = False
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Args:
       parent (Optional[PathSpec]): parent path specification.

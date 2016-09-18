@@ -10,8 +10,10 @@ from dfvfs.path import raw_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_system
 
+from tests import test_lib as shared_test_lib
 
-class GlobRawFileTest(unittest.TestCase):
+
+class GlobRawFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the storage media RAW image file glob functionality."""
 
   def _BuildFileFakeFileSystem(
@@ -19,13 +21,13 @@ class GlobRawFileTest(unittest.TestCase):
     """Builds a fake file system containing storage media RAW segment files.
 
     Args:
-      filename: the filename of the first segment file with extension.
-      segment_filenames: a list of segment filenames.
-      segment_file_path_specs: a list to store the segment file path
-                               specifications in.
+      filename (str): filename of the first segment file with extension.
+      segment_filenames (list[str]): segment filenames.
+      segment_file_path_specs (list[PathSpec]): resulting segment file path
+          specifications.
 
     Returns:
-      The fake file system (instance of dvfvs.FakeFileSystem).
+      FakeFileSystem: fake file system.
     """
     resolver_context = context.Context()
     file_system = fake_file_system.FakeFileSystem(resolver_context)

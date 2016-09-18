@@ -218,8 +218,8 @@ class Analyzer(object):
                 type indicator.
     """
     if analyzer_helper.type_indicator not in cls._analyzer_helpers:
-      raise KeyError((
-          u'Analyzer helper object not set for type indicator: {0:s}.').format(
+      raise KeyError(
+          u'Analyzer helper object not set for type indicator: {0:s}.'.format(
               analyzer_helper.type_indicator))
 
     analyzer_helper = cls._analyzer_helpers[analyzer_helper.type_indicator]

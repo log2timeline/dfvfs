@@ -6,11 +6,15 @@ import unittest
 
 from dfvfs.encryption import aes_decrypter
 from dfvfs.lib import definitions
+
 from tests.encryption import test_lib
 
 
 class AESDecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the AES decrypter object."""
+
+  _AES_INITIALIZATION_VECTOR = u'This is an IV456'
+  _AES_KEY = u'This is a key123'
 
   def testInitialization(self):
     """Tests the initialization method."""
@@ -21,39 +25,34 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     # Test unsupport block cipher mode.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          key=u'This is a key123',
-          mode=u'bogus')
+          cipher_mode=u'bogus', key=self._AES_KEY)
 
     # Test missing initialization vector.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          key=u'This is a key123',
-          mode=definitions.ENCRYPTION_MODE_CBC)
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC, key=self._AES_KEY)
 
     # Test missing initialization vector with valid block cipher mode.
     aes_decrypter.AESDecrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_ECB)
+        cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._AES_KEY)
 
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          key=u'Wrong key size',
-          mode=definitions.ENCRYPTION_MODE_ECB)
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=u'Wrong key size')
 
     # Test incorrect initialization vector size.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          key=u'This is a key123',
-          mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector=u'Wrong IV size')
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=u'Wrong IV size', key=self._AES_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
     decrypter = aes_decrypter.AESDecrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=u'This is an IV456')
+        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+        initialization_vector=self._AES_INITIALIZATION_VECTOR,
+        key=self._AES_KEY)
 
     # Test full decryption.
     decrypted_data, _ = decrypter.Decrypt(
@@ -64,9 +63,9 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
 
     # Reset decrypter.
     decrypter = aes_decrypter.AESDecrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=u'This is an IV456')
+        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+        initialization_vector=self._AES_INITIALIZATION_VECTOR,
+        key=self._AES_KEY)
 
     # Test partial decryption.
     decrypted_data, encrypted_data = decrypter.Decrypt(

@@ -19,13 +19,14 @@ class AESDecrypter(decrypter.Decrypter):
       definitions.ENCRYPTION_MODE_ECB : AES.MODE_ECB,
       definitions.ENCRYPTION_MODE_OFB : AES.MODE_OFB}
 
-  def __init__(self, key=None, mode=None, initialization_vector=None, **kwargs):
+  def __init__(
+      self, cipher_mode=None, initialization_vector=None, key=None, **kwargs):
     """Initializes the decrypter object.
 
     Args:
-      key (Optional[bytes]): key.
-      mode (Optional[str]): mode of operation.
+      cipher_mode (Optional[str]): cipher mode.
       initialization_vector (Optional[bytes]): initialization vector.
+      key (Optional[bytes]): key.
       kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
@@ -35,21 +36,21 @@ class AESDecrypter(decrypter.Decrypter):
     if not key:
       raise ValueError(u'Missing key.')
 
-    if mode not in self.ENCRYPTION_MODES:
-      raise ValueError(u'Unsupported mode of operation: {0!s}'.format(mode))
+    cipher_mode = self.ENCRYPTION_MODES.get(cipher_mode, None)
+    if cipher_mode is None:
+      raise ValueError(u'Unsupported cipher mode: {0!s}'.format(cipher_mode))
 
-    mode = self.ENCRYPTION_MODES[mode]
-
-    if mode != AES.MODE_ECB and not initialization_vector:
+    if cipher_mode != AES.MODE_ECB and not initialization_vector:
       # Pycrypto does not create a meaningful error when initialization vector
       # is missing. Therefore, we report it ourselves.
       raise ValueError(u'Missing initialization vector.')
 
     super(AESDecrypter, self).__init__()
-    if mode == AES.MODE_ECB:
-      self._aes_cipher = AES.new(key, mode=mode)
+    if cipher_mode == AES.MODE_ECB:
+      self._aes_cipher = AES.new(key, mode=cipher_mode)
     else:
-      self._aes_cipher = AES.new(key, mode=mode, IV=initialization_vector)
+      self._aes_cipher = AES.new(
+          key, IV=initialization_vector, mode=cipher_mode)
 
   def Decrypt(self, encrypted_data):
     """Decrypts the encrypted data.
@@ -58,7 +59,7 @@ class AESDecrypter(decrypter.Decrypter):
       encrypted_data (bytes): encrypted data.
 
     Returns:
-      tuple[bytes,bytes]: decrypted data and remaining encrypted data.
+      tuple[bytes, bytes]: decrypted data and remaining encrypted data.
     """
     index_split = -(len(encrypted_data) % AES.block_size)
     if index_split:

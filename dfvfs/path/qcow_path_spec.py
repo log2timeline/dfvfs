@@ -12,7 +12,7 @@ class QCOWPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_QCOW
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the QCOW path specification must have a parent.
 
@@ -33,5 +33,4 @@ class QCOWPathSpec(path_spec.PathSpec):
     return self._GetComparable()
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(QCOWPathSpec)

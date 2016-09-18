@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for a partition file system implementation using pytsk3."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -10,14 +9,17 @@ from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import tsk_partition_file_system
 
+from tests import test_lib as shared_test_lib
 
-class TSKPartitionFileSystemTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
+class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the TSK partition file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
+    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_partition_path_spec = (
         tsk_partition_path_spec.TSKPartitionPathSpec(

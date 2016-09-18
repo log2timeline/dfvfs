@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the volume system implementation using pyvshadow."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -10,13 +9,16 @@ from dfvfs.path import qcow_path_spec
 from dfvfs.path import vshadow_path_spec
 from dfvfs.volume import vshadow_volume_system
 
+from tests import test_lib as shared_test_lib
 
-class VShadowVolumeSystemTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'lvmtest.qcow2'])
+class VShadowVolumeSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the Volume Shadow Snapshot (VSS) volume system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(

@@ -2,7 +2,6 @@
 """Shared test cases."""
 
 import os
-import unittest
 
 from dfvfs.file_io import tsk_file_io
 from dfvfs.file_io import tsk_partition_file_io
@@ -11,8 +10,10 @@ from dfvfs.path import tsk_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
 
+from tests import test_lib as shared_test_lib
 
-class ImageFileTestCase(unittest.TestCase):
+
+class ImageFileTestCase(shared_test_lib.BaseTestCase):
   """The unit test case for storage media image based test data."""
 
   _INODE_ANOTHER_FILE = 16
@@ -26,7 +27,7 @@ class ImageFileTestCase(unittest.TestCase):
     """Test the open and close functionality using an inode.
 
     Args:
-      parent_path_spec: the parent path specification.
+      parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
@@ -40,7 +41,7 @@ class ImageFileTestCase(unittest.TestCase):
     """Test the open and close functionality using a location.
 
     Args:
-      parent_path_spec: the parent path specification.
+      parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         location=u'/passwords.txt', parent=parent_path_spec)
@@ -54,7 +55,7 @@ class ImageFileTestCase(unittest.TestCase):
     """Test the seek functionality.
 
     Args:
-      parent_path_spec: the parent path specification.
+      parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_ANOTHER_FILE, location=u'/a_directory/another_file',
@@ -98,7 +99,7 @@ class ImageFileTestCase(unittest.TestCase):
     """Test the read functionality.
 
     Args:
-      parent_path_spec: the parent path specification.
+      parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_PASSWORDS_TXT, location=u'/passwords.txt',
@@ -122,7 +123,7 @@ class ImageFileTestCase(unittest.TestCase):
     file_object.close()
 
 
-class PartitionedImageFileTestCase(unittest.TestCase):
+class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
   """The unit test case for partitioned storage media image based test data."""
 
   _BYTES_PER_SECTOR = 512
@@ -149,7 +150,7 @@ class PartitionedImageFileTestCase(unittest.TestCase):
     """Test the open and close functionality.
 
     Args:
-      parent_path_spec: the parent path specification.
+      parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=2, parent=parent_path_spec)
@@ -207,7 +208,7 @@ class PartitionedImageFileTestCase(unittest.TestCase):
     """Test the seek functionality.
 
     Args:
-      parent_path_spec: the parent path specification.
+      parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=parent_path_spec)
@@ -258,7 +259,7 @@ class PartitionedImageFileTestCase(unittest.TestCase):
     """Test the read functionality.
 
     Args:
-      parent_path_spec: the parent path specification.
+      parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=parent_path_spec)
@@ -279,14 +280,14 @@ class PartitionedImageFileTestCase(unittest.TestCase):
     file_object.close()
 
 
-class SylogTestCase(unittest.TestCase):
+class SylogTestCase(shared_test_lib.BaseTestCase):
   """The unit test case for the syslog test data."""
 
   def _TestGetSizeFileObject(self, file_object):
     """Runs the get size tests on the file-like object.
 
     Args:
-      file_object: the file-like object with the test data.
+      file_object (file): file-like object with the test data.
     """
     self.assertEqual(file_object.get_size(), 1247)
 
@@ -294,8 +295,8 @@ class SylogTestCase(unittest.TestCase):
     """Runs the read tests on the file-like object.
 
     Args:
-      file_object: the file-like object with the test data.
-      base_offset: optional base offset use in the tests, the default is 167.
+      file_object (file): file-like object with the test data.
+      base_offset (Optional[int]): base offset use in the tests.
     """
     file_object.seek(base_offset, os.SEEK_SET)
 
@@ -317,8 +318,8 @@ class SylogTestCase(unittest.TestCase):
     """Runs the seek tests on the file-like object.
 
     Args:
-      file_object: the file-like object with the test data.
-      base_offset: optional base offset use in the tests, the default is 167.
+      file_object (file): file-like object with the test data.
+      base_offset (Optional[int]): base offset use in the tests.
     """
     file_object.seek(base_offset + 10)
     self.assertEqual(file_object.read(5), b'53:01')
@@ -367,7 +368,7 @@ class PaddedSyslogTestCase(SylogTestCase):
     """Runs the get size tests on the file-like object.
 
     Args:
-      file_object: the file-like object with the test data.
+      file_object (file): file-like object with the test data.
     """
     self.assertEqual(file_object.get_size(), 1247 + self.padding_size)
 
@@ -375,8 +376,8 @@ class PaddedSyslogTestCase(SylogTestCase):
     """Runs the seek tests on the file-like object.
 
     Args:
-      file_object: the file-like object with the test data.
-      base_offset: optional base offset use in the tests, the default is 167.
+      file_object (file): file-like object with the test data.
+      base_offset (Optional[int]): base offset use in the tests.
     """
     file_object.seek(base_offset + 10)
     self.assertEqual(file_object.read(5), b'53:01')

@@ -7,8 +7,10 @@ import unittest
 from dfvfs.resolver import context
 from dfvfs.vfs import file_system
 
+from tests import test_lib as shared_test_lib
 
-class FileSystemTest(unittest.TestCase):
+
+class FileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the VFS file system object interface."""
 
   def setUp(self):

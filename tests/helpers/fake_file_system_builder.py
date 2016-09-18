@@ -7,11 +7,11 @@ import unittest
 
 from dfvfs.helpers import fake_file_system_builder
 
+from tests import test_lib as shared_test_lib
 
-class FakeFileSystemBuilderTest(unittest.TestCase):
+
+class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
   """The unit test for the fake file system builder object."""
-
-  maxDiff = None
 
   def testAddDirectory(self):
     """Test the AddDirectory() function."""

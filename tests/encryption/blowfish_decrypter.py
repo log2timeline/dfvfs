@@ -6,11 +6,15 @@ import unittest
 
 from dfvfs.encryption import blowfish_decrypter
 from dfvfs.lib import definitions
+
 from tests.encryption import test_lib
 
 
 class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the Blowfish decrypter object."""
+
+  _BLOWFISH_INITIALIZATION_VECTOR = u'This IV!'
+  _BLOWFISH_KEY = u'This is a key123'
 
   def testInitialization(self):
     """Tests the initialization method."""
@@ -21,40 +25,35 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
     # Test unsupport block cipher mode.
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
-          key=u'This is a key123',
-          mode=u'bogus')
+          cipher_mode=u'bogus', key=self._BLOWFISH_KEY)
 
     # Test missing initialization vector.
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
-          key=u'This is a key123',
-          mode=definitions.ENCRYPTION_MODE_CBC)
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC, key=self._BLOWFISH_KEY)
 
     # Test missing initialization vector with valid block cipher mode.
     blowfish_decrypter.BlowfishDecrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_ECB)
+        cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._BLOWFISH_KEY)
 
     # Test incorrect key size.
+    key = u'This is a key that is larger than the max key size of 448 bits.'
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
-          key=u'This is a key that is larger than the max key size of '
-              u'448 bits.',
-          mode=definitions.ENCRYPTION_MODE_ECB)
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=key)
 
     # Test incorrect initialization vector size.
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
-          key=u'This is a key123',
-          mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector=u'Wrong IV size')
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=u'Wrong IV size', key=self._BLOWFISH_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
     decrypter = blowfish_decrypter.BlowfishDecrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=u'This IV!')
+        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+        initialization_vector=self._BLOWFISH_INITIALIZATION_VECTOR,
+        key=self._BLOWFISH_KEY)
 
     # Test full decryption.
     decrypted_data, _ = decrypter.Decrypt(
@@ -65,9 +64,9 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
 
     # Reset decrypter.
     decrypter = blowfish_decrypter.BlowfishDecrypter(
-        key=u'This is a key123',
-        mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=u'This IV!')
+        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+        initialization_vector=self._BLOWFISH_INITIALIZATION_VECTOR,
+        key=self._BLOWFISH_KEY)
 
     # Test partial decryption.
     decrypted_data, encrypted_data = decrypter.Decrypt(

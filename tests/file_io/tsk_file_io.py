@@ -9,16 +9,19 @@ from dfvfs.file_io import tsk_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_path_spec
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
 class TSKFileTest(test_lib.ImageFileTestCase):
   """The unit test for the SleuthKit (TSK) file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(TSKFileTest, self).setUp()
-    test_file = os.path.join(u'test_data', u'ímynd.dd')
+    test_file = self._GetTestFilePath([u'ímynd.dd'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
   def testOpenCloseInode(self):
@@ -39,7 +42,7 @@ class TSKFileTest(test_lib.ImageFileTestCase):
 
   def testReadADS(self):
     """Test the read functionality on an alternate data stream (ADS)."""
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     path_spec = tsk_path_spec.TSKPathSpec(

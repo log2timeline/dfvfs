@@ -12,7 +12,7 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
   def __init__(self, location=None, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the zip file path specification must have a parent.
 
@@ -31,5 +31,4 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
         location=location, parent=parent, **kwargs)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(ZipPathSpec)

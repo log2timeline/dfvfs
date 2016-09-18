@@ -14,22 +14,24 @@ from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
 from dfvfs.vfs import tsk_file_system
 
+from tests import test_lib as shared_test_lib
 
-class FileSystemSearcherTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'password.txt'])
+@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
   """The unit test for the file system searcher object."""
-
-  maxDiff = None
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._os_path = os.path.join(os.getcwd(), u'test_data')
+    self._os_path = self._GetTestFilePath([])
     self._os_path_spec = os_path_spec.OSPathSpec(location=self._os_path)
     self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     # TODO: add RAW volume only test image.
 
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
@@ -245,27 +247,27 @@ class FileSystemSearcherTest(unittest.TestCase):
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = sorted([
-        os.path.join(self._os_path, u'syslog.aes'),
-        os.path.join(self._os_path, u'syslog.base16'),
-        os.path.join(self._os_path, u'syslog.base32'),
-        os.path.join(self._os_path, u'syslog.base64'),
-        os.path.join(self._os_path, u'syslog.bin.cpio'),
-        os.path.join(self._os_path, u'syslog.blowfish'),
-        os.path.join(self._os_path, u'syslog.bz2'),
-        os.path.join(self._os_path, u'syslog.crc.cpio'),
-        os.path.join(self._os_path, u'syslog.db'),
-        os.path.join(self._os_path, u'syslog.des3'),
-        os.path.join(self._os_path, u'syslog.gz'),
-        os.path.join(self._os_path, u'syslog.newc.cpio'),
-        os.path.join(self._os_path, u'syslog.lzma'),
-        os.path.join(self._os_path, u'syslog.odc.cpio'),
-        os.path.join(self._os_path, u'syslog.rc4'),
-        os.path.join(self._os_path, u'syslog.tar'),
-        os.path.join(self._os_path, u'syslog.tgz'),
-        os.path.join(self._os_path, u'syslog.xz'),
-        os.path.join(self._os_path, u'syslog.Z'),
-        os.path.join(self._os_path, u'syslog.zip'),
-        os.path.join(self._os_path, u'syslog.zlib')])
+        self._GetTestFilePath([u'syslog.aes']),
+        self._GetTestFilePath([u'syslog.base16']),
+        self._GetTestFilePath([u'syslog.base32']),
+        self._GetTestFilePath([u'syslog.base64']),
+        self._GetTestFilePath([u'syslog.bin.cpio']),
+        self._GetTestFilePath([u'syslog.blowfish']),
+        self._GetTestFilePath([u'syslog.bz2']),
+        self._GetTestFilePath([u'syslog.crc.cpio']),
+        self._GetTestFilePath([u'syslog.db']),
+        self._GetTestFilePath([u'syslog.des3']),
+        self._GetTestFilePath([u'syslog.gz']),
+        self._GetTestFilePath([u'syslog.newc.cpio']),
+        self._GetTestFilePath([u'syslog.lzma']),
+        self._GetTestFilePath([u'syslog.odc.cpio']),
+        self._GetTestFilePath([u'syslog.rc4']),
+        self._GetTestFilePath([u'syslog.tar']),
+        self._GetTestFilePath([u'syslog.tgz']),
+        self._GetTestFilePath([u'syslog.xz']),
+        self._GetTestFilePath([u'syslog.Z']),
+        self._GetTestFilePath([u'syslog.zip']),
+        self._GetTestFilePath([u'syslog.zlib'])])
 
     locations = []
     first_path_spec = None
@@ -297,27 +299,27 @@ class FileSystemSearcherTest(unittest.TestCase):
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = sorted([
-        os.path.join(self._os_path, u'syslog.aes'),
-        os.path.join(self._os_path, u'syslog.base16'),
-        os.path.join(self._os_path, u'syslog.base32'),
-        os.path.join(self._os_path, u'syslog.base64'),
-        os.path.join(self._os_path, u'syslog.bin.cpio'),
-        os.path.join(self._os_path, u'syslog.blowfish'),
-        os.path.join(self._os_path, u'syslog.bz2'),
-        os.path.join(self._os_path, u'syslog.crc.cpio'),
-        os.path.join(self._os_path, u'syslog.db'),
-        os.path.join(self._os_path, u'syslog.des3'),
-        os.path.join(self._os_path, u'syslog.gz'),
-        os.path.join(self._os_path, u'syslog.newc.cpio'),
-        os.path.join(self._os_path, u'syslog.lzma'),
-        os.path.join(self._os_path, u'syslog.odc.cpio'),
-        os.path.join(self._os_path, u'syslog.rc4'),
-        os.path.join(self._os_path, u'syslog.tar'),
-        os.path.join(self._os_path, u'syslog.tgz'),
-        os.path.join(self._os_path, u'syslog.xz'),
-        os.path.join(self._os_path, u'syslog.Z'),
-        os.path.join(self._os_path, u'syslog.zip'),
-        os.path.join(self._os_path, u'syslog.zlib')])
+        self._GetTestFilePath([u'syslog.aes']),
+        self._GetTestFilePath([u'syslog.base16']),
+        self._GetTestFilePath([u'syslog.base32']),
+        self._GetTestFilePath([u'syslog.base64']),
+        self._GetTestFilePath([u'syslog.bin.cpio']),
+        self._GetTestFilePath([u'syslog.blowfish']),
+        self._GetTestFilePath([u'syslog.bz2']),
+        self._GetTestFilePath([u'syslog.crc.cpio']),
+        self._GetTestFilePath([u'syslog.db']),
+        self._GetTestFilePath([u'syslog.des3']),
+        self._GetTestFilePath([u'syslog.gz']),
+        self._GetTestFilePath([u'syslog.newc.cpio']),
+        self._GetTestFilePath([u'syslog.lzma']),
+        self._GetTestFilePath([u'syslog.odc.cpio']),
+        self._GetTestFilePath([u'syslog.rc4']),
+        self._GetTestFilePath([u'syslog.tar']),
+        self._GetTestFilePath([u'syslog.tgz']),
+        self._GetTestFilePath([u'syslog.xz']),
+        self._GetTestFilePath([u'syslog.Z']),
+        self._GetTestFilePath([u'syslog.zip']),
+        self._GetTestFilePath([u'syslog.zlib'])])
 
     locations = []
     first_path_spec = None

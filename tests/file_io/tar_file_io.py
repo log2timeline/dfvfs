@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 """Tests for the TAR extracted file-like object."""
 
-import os
 import unittest
 
 from dfvfs.file_io import tar_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import tar_path_spec
 from dfvfs.resolver import context
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.tar'])
 class TARFileTest(test_lib.SylogTestCase):
   """The unit test for a TAR extracted file-like object."""
 
@@ -19,7 +21,7 @@ class TARFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(TARFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.tar')
+    test_file = self._GetTestFilePath([u'syslog.tar'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tar_path_spec = tar_path_spec.TARPathSpec(
         location=u'/syslog', parent=path_spec)
