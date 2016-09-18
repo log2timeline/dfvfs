@@ -32,9 +32,12 @@ class BDEFile(file_object_io.FileObjectIO):
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
 
+    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
+
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
     bde_volume = pybde.volume()
+
     bde.BDEVolumeOpen(
         bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
     return bde_volume

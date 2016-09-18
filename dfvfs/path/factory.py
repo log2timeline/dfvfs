@@ -6,22 +6,28 @@ class Factory(object):
   """Class that implements the path specification factory."""
 
   PROPERTY_NAMES = frozenset([
+      u'cipher_mode',
       u'column_name',
       u'compression_method',
       u'data_stream',
       u'encoding_method',
       u'encryption_method',
       u'identifier',
+      u'initialization_vector',
       u'inode',
+      u'key',
       u'location',
       u'mft_attribute',
       u'mft_entry',
       u'part_index',
+      u'password',
       u'range_offset',
       u'range_size',
+      u'recovery_password',
       u'row_condition',
       u'row_index',
       u'start_offset',
+      u'startup_key',
       u'store_index',
       u'table_name',
       u'volume_index'])

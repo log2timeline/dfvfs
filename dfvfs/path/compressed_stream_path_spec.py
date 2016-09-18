@@ -17,7 +17,7 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
   def __init__(self, compression_method=None, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the compressed stream path specification must have a parent.
 
@@ -42,5 +42,4 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(CompressedStreamPathSpec)

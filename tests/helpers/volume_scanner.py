@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the volume scanner objects."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -11,15 +10,16 @@ from dfvfs.path import tsk_partition_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.helpers import volume_scanner
 
+from tests import test_lib as shared_test_lib
 
-class VolumeScannerTest(unittest.TestCase):
+
+class VolumeScannerTest(shared_test_lib.BaseTestCase):
   """The unit test for the volume scanner object."""
 
-  maxDiff = None
-
+  @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
   def testGetBasePathSpecs(self):
     """Test the GetBasePathSpecs() function."""
-    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
+    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
     test_scanner = volume_scanner.VolumeScanner()
 
     test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -39,14 +39,13 @@ class VolumeScannerTest(unittest.TestCase):
     self.assertEqual(base_path_specs, expected_base_path_specs)
 
 
-class WindowsVolumeScannerTest(unittest.TestCase):
+class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
   """The unit test for the Windows volume scanner object."""
 
-  maxDiff = None
-
+  @shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
   def testGetWindowsVolumePathSpec(self):
     """Test the GetWindowsVolumePathSpec() function."""
-    test_file = os.path.join(u'test_data', u'tsk_volume_system.raw')
+    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
     test_scanner = volume_scanner.WindowsVolumeScanner()
 
     result = test_scanner.ScanForWindowsVolume(test_file)

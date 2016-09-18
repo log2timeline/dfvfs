@@ -12,7 +12,7 @@ class TARPathSpec(location_path_spec.LocationPathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
   def __init__(self, location=None, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the TAR file path specification must have a parent.
 
@@ -31,5 +31,4 @@ class TARPathSpec(location_path_spec.LocationPathSpec):
         location=location, parent=parent, **kwargs)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(TARPathSpec)

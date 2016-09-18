@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using pyvshadow."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -12,14 +11,17 @@ from dfvfs.resolver import context
 from dfvfs.vfs import vshadow_file_entry
 from dfvfs.vfs import vshadow_file_system
 
+from tests import test_lib as shared_test_lib
 
-class VShadowFileEntryTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the VSS file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'vsstest.qcow2')
+    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(

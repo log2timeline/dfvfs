@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.encryption import rc4_decrypter
+
 from tests.encryption import test_lib
 
 

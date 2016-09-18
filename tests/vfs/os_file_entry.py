@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the operating system file entry implementation."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -10,14 +9,17 @@ from dfvfs.resolver import context
 from dfvfs.vfs import os_file_entry
 from dfvfs.vfs import os_file_system
 
+from tests import test_lib as shared_test_lib
 
-class OSFileEntryTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'testdir_os', u'file1.txt'])
+class OSFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the operating system file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'testdir_os')
+    test_file = self._GetTestFilePath([u'testdir_os'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     self._file_system = os_file_system.OSFileSystem(self._resolver_context)
@@ -42,7 +44,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
-    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -55,7 +57,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testGetStat(self):
     """Tests the GetStat function."""
-    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -74,7 +76,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testIsFunctions(self):
     """Test the Is? functions."""
-    test_file = os.path.join(u'test_data', u'testdir_os', u'file1.txt')
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -90,7 +92,7 @@ class OSFileEntryTest(unittest.TestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    test_file = os.path.join(u'test_data', u'testdir_os')
+    test_file = self._GetTestFilePath([u'testdir_os'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -128,7 +130,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testDataStreams(self):
     """Test the data streams functionality."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -141,7 +143,7 @@ class OSFileEntryTest(unittest.TestCase):
 
     self.assertEqual(data_stream_names, [u''])
 
-    test_file = os.path.join('test_data', 'testdir_os')
+    test_file = self._GetTestFilePath([u'testdir_os'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -156,7 +158,7 @@ class OSFileEntryTest(unittest.TestCase):
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
-    test_file = os.path.join('test_data', 'testdir_os', 'file1.txt')
+    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)

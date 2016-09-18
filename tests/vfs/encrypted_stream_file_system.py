@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the encrypted stream file system implementation."""
 
-import os
 import unittest
 
 from dfvfs.lib import definitions
@@ -12,8 +11,11 @@ from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 from dfvfs.vfs import encrypted_stream_file_system
 
+from tests import test_lib as shared_test_lib
 
-class EncryptedStreamFileSystemTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.rc4'])
+class EncryptedStreamFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the compressed stream file system object."""
 
   _RC4_KEY = b'rc4test'
@@ -21,7 +23,7 @@ class EncryptedStreamFileSystemTest(unittest.TestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.rc4')
+    test_file = self._GetTestFilePath([u'syslog.rc4'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(

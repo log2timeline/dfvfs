@@ -16,7 +16,7 @@ class MountPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_MOUNT
 
   def __init__(self, identifier, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the mount path specification cannot have a parent.
 
@@ -39,5 +39,4 @@ class MountPathSpec(path_spec.PathSpec):
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(MountPathSpec)

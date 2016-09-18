@@ -17,6 +17,11 @@ try:
 except ImportError:
   from distutils.command.bdist_rpm import bdist_rpm
 
+try:
+  from setuptools.commands.sdist import sdist
+except ImportError:
+  from distutils.command.sdist import sdist
+
 if sys.version < '2.7':
   print('Unsupported Python version: {0:s}.'.format(sys.version))
   print('Supported Python versions are 2.7 or a later 2.x version.')
@@ -135,6 +140,7 @@ setup(
     maintainer_email='log2timeline-dev@googlegroups.com',
     cmdclass={
         'bdist_rpm': BdistRPMCommand,
+        'sdist_test_data': sdist,
         'test': TestCommand},
     classifiers=[
         'Development Status :: 3 - Alpha',

@@ -9,6 +9,8 @@ from dfvfs.compression import manager
 from dfvfs.compression import zlib_decompressor
 from dfvfs.lib import definitions
 
+from tests import test_lib as shared_test_lib
+
 
 class TestDecompressor(decompressor.Decompressor):
   """Class that implements a test decompressor."""
@@ -28,7 +30,7 @@ class TestDecompressor(decompressor.Decompressor):
     return b'', b''
 
 
-class CompressionManagerTest(unittest.TestCase):
+class CompressionManagerTest(shared_test_lib.BaseTestCase):
   """Class to test the compression manager."""
 
   def testDecompressorRegistration(self):

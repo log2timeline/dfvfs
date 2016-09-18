@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.resolver import tar_resolver_helper
+
 from tests.resolver import test_lib
 
 

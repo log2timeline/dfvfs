@@ -10,6 +10,7 @@ except ImportError:
   xz_decompressor = None
 
 from dfvfs.lib import errors
+
 from tests.compression import test_lib
 
 

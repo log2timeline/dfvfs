@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Shared test cases."""
 
-import unittest
-
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver_helper
+
+from tests import test_lib as shared_test_lib
 
 
 class TestResolverHelper(resolver_helper.ResolverHelper):
@@ -20,15 +20,15 @@ class TestResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file-like object (instance of FileIO).
+      FileIO: file-like object.
     """
     return
 
 
-class ResolverHelperTestCase(unittest.TestCase):
+class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
   """The unit test case for resolver helper implementions."""
 
   def setUp(self):
@@ -39,8 +39,7 @@ class ResolverHelperTestCase(unittest.TestCase):
     """Tests the NewFileObject function.
 
     Args:
-      resolver_helper_object: the resolver helper object (instance of
-                              ResolverHelper).
+      resolver_context (Context): resolver context.
     """
     file_object = resolver_helper_object.NewFileObject(self._resolver_context)
 
@@ -50,8 +49,7 @@ class ResolverHelperTestCase(unittest.TestCase):
     """Tests the NewFileSystem function.
 
     Args:
-      resolver_helper_object: the resolver helper object (instance of
-                              ResolverHelper).
+      resolver_context (Context): resolver context.
     """
     file_system = resolver_helper_object.NewFileSystem(self._resolver_context)
 
@@ -61,8 +59,7 @@ class ResolverHelperTestCase(unittest.TestCase):
     """Tests the NewFileSystem function raises a RuntimeError.
 
     Args:
-      resolver_helper_object: the resolver helper object (instance of
-                              ResolverHelper).
+      resolver_context (Context): resolver context.
     """
     with self.assertRaises(RuntimeError):
       _ = resolver_helper_object.NewFileSystem(self._resolver_context)
@@ -71,9 +68,8 @@ class ResolverHelperTestCase(unittest.TestCase):
     """Tests the OpenFileObject function.
 
     Args:
-      resolver_helper_object: the resolver helper object (instance of
-                              ResolverHelper).
-      path_spec: the path specification (instance of PathSpec).
+      resolver_context (Context): resolver context.
+      path_spec (PathSpec): path specification.
     """
     file_object = resolver_helper_object.OpenFileObject(
         path_spec, self._resolver_context)

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using the CPIOArchiveFile."""
 
-import os
 import unittest
 
 from dfvfs.path import cpio_path_spec
@@ -10,14 +9,17 @@ from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import cpio_file_system
 
+from tests import test_lib as shared_test_lib
 
-class CPIOFileSystemTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.bin.cpio'])
+class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the CPIO file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.bin.cpio')
+    test_file = self._GetTestFilePath([u'syslog.bin.cpio'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location=u'/syslog', parent=self._os_path_spec)

@@ -16,7 +16,7 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
 
   def __init__(self, encoding_method=None, parent=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the encoded stream path specification must have a parent.
 
@@ -41,5 +41,4 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(EncodedStreamPathSpec)

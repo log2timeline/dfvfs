@@ -4,6 +4,7 @@
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import encrypted_stream_path_spec
+from dfvfs.resolver import resolver
 from dfvfs.vfs import encrypted_stream_file_entry
 from dfvfs.vfs import root_only_file_system
 
@@ -46,6 +47,8 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     if not path_spec.HasParent():
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
+
+    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
 
     encryption_method = getattr(path_spec, u'encryption_method', None)
     if not encryption_method:

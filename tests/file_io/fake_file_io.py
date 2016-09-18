@@ -9,8 +9,10 @@ from dfvfs.file_io import fake_file_io
 from dfvfs.path import fake_path_spec
 from dfvfs.resolver import context
 
+from tests import test_lib as shared_test_lib
 
-class FakeFileTest(unittest.TestCase):
+
+class FakeFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the operating systesm file-like object."""
 
   _FILE_DATA1 = (

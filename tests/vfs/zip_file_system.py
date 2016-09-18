@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using the zipfile."""
 
-import os
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -10,14 +9,17 @@ from dfvfs.path import zip_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import zip_file_system
 
+from tests import test_lib as shared_test_lib
 
-class ZipFileSystemTest(unittest.TestCase):
-  """The unit test for the zip file system object."""
+
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.zip'])
+class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
+  """The unit test for the ZIP file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.zip')
+    test_file = self._GetTestFilePath([u'syslog.zip'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location=u'/', parent=self._os_path_spec)

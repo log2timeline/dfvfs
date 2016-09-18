@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 """Tests for the zip extracted file-like object."""
 
-import os
 import unittest
 
 from dfvfs.file_io import zip_file_io
 from dfvfs.path import os_path_spec
 from dfvfs.path import zip_path_spec
 from dfvfs.resolver import context
+
+from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.zip'])
 class ZipFileTest(test_lib.SylogTestCase):
   """The unit test for a zip extracted file-like object."""
 
@@ -19,7 +21,7 @@ class ZipFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(ZipFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.zip')
+    test_file = self._GetTestFilePath([u'syslog.zip'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=path_spec)

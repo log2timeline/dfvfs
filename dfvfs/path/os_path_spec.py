@@ -15,7 +15,7 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   def __init__(self, location=None, **kwargs):
-    """Initializes the path specification object.
+    """Initializes the path specification.
 
     Note that the operating system path specification cannot have a parent.
 
@@ -43,5 +43,4 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
     super(OSPathSpec, self).__init__(location=location, parent=parent, **kwargs)
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(OSPathSpec)

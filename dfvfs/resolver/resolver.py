@@ -22,8 +22,7 @@ class Resolver(object):
     """Deregisters a path specification resolver helper.
 
     Args:
-      resolver_helper: the resolver helper object (instance of
-                       ResolverHelper).
+      resolver_helper (ResolverHelper): resolver helper.
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
@@ -41,14 +40,13 @@ class Resolver(object):
     """Opens a file entry object defined by path specification.
 
     Args:
-      path_spec_object: the path specification (instance of PathSpec).
-      resolver_context: the optional resolver context (instance of
-                        resolver.Context). The default is None which will use
-                        the built in context which is not multi process safe.
+      path_spec_object (PathSpec): path specification.
+      resolver_context (Optional[Context]): resolver context, where None
+          represents the built in context which is not multi process safe.
 
     Returns:
-      The file entry object (instance of vfs.FileEntry) or None if the path
-      specification could not be resolved.
+      FileEntry: file entry or None if the path specification could not be
+          resolved.
     """
     file_system = cls.OpenFileSystem(
         path_spec_object, resolver_context=resolver_context)
@@ -69,14 +67,13 @@ class Resolver(object):
     """Opens a file-like object defined by path specification.
 
     Args:
-      path_spec_object: the path specification (instance of PathSpec).
-      resolver_context: the optional resolver context (instance of
-                        resolver.Context). The default is None which will use
-                        the built in context which is not multi process safe.
+      path_spec_object (PathSpec): path specification.
+      resolver_context (Optional[Context]): resolver context, where None
+          represents the built in context which is not multi process safe.
 
     Returns:
-      The file-like object (instance of file.FileIO) or None if the path
-      specification could not be resolved.
+      FileIO: file-like object or None if the path specification could not
+          be resolved.
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
@@ -124,14 +121,13 @@ class Resolver(object):
     """Opens a file system object defined by path specification.
 
     Args:
-      path_spec_object: the path specification (instance of PathSpec).
-      resolver_context: the optional resolver context (instance of
-                        resolver.Context). The default is None which will use
-                        the built in context which is not multi process safe.
+      path_spec_object (PathSpec): path specification.
+      resolver_context (Optional[Context]): resolver context, where None
+          represents the built in context which is not multi process safe.
 
     Returns:
-      The file system object (instance of vfs.FileSystem) or None if the path
-      specification could not be resolved or has no file system object.
+      FileSystem: file system or None if the path specification could not
+          be resolved or has no file system object.
 
     Raises:
       AccessError: if the access to open the file system was denied.
@@ -188,8 +184,7 @@ class Resolver(object):
     """Registers a path specification resolver helper.
 
     Args:
-      resolver_helper: the resolver helper object (instance of
-                       ResolverHelper).
+      resolver_helper (ResolverHelper): resolver helper.
 
     Raises:
       KeyError: if resolver helper object is already set for the corresponding

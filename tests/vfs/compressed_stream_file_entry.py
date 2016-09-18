@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the compressed stream file entry implementation."""
 
-import os
 import unittest
 
 from dfvfs.lib import definitions
@@ -12,14 +11,17 @@ from dfvfs.resolver import context
 from dfvfs.vfs import compressed_stream_file_entry
 from dfvfs.vfs import compressed_stream_file_system
 
+from tests import test_lib as shared_test_lib
 
-class CompressedStreamFileEntryTest(unittest.TestCase):
+
+@shared_test_lib.skipUnlessHasTestFile([u'syslog.bz2'])
+class CompressedStreamFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the compressed stream file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = os.path.join(u'test_data', u'syslog.bz2')
+    test_file = self._GetTestFilePath([u'syslog.bz2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(

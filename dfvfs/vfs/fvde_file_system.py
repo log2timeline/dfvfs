@@ -57,6 +57,8 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
       raise errors.PathSpecError(
           u'Unsupported path specification without parent.')
 
+    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
+
     fvde_volume = pyfvde.volume()
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)

@@ -7,17 +7,28 @@ from dfvfs.path import path_spec
 
 
 class BDEPathSpec(path_spec.PathSpec):
-  """Class that implements the BDE path specification."""
+  """Class that implements the BDE path specification.
+
+  Attributes:
+    password (str): password.
+    recovery_password (str): recovery password.
+    startup_key (str): name of the startup key file.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 
-  def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification object.
+  def __init__(
+      self, password=None, parent=None, recovery_password=None,
+      startup_key=None, **kwargs):
+    """Initializes the path specification.
 
     Note that the BDE path specification must have a parent.
 
     Args:
+      password (Optional[str]): password.
       parent (Optional[PathSpec]): parent path specification.
+      recovery_password (Optional[str]): recovery password.
+      startup_key (Optional[str]): name of the startup key file.
 
     Raises:
       ValueError: when parent is not set.
@@ -26,12 +37,24 @@ class BDEPathSpec(path_spec.PathSpec):
       raise ValueError(u'Missing parent value.')
 
     super(BDEPathSpec, self).__init__(parent=parent, **kwargs)
+    self.password = password
+    self.recovery_password = recovery_password
+    self.startup_key = startup_key
 
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    return self._GetComparable()
+    string_parts = []
+
+    if self.password:
+      string_parts.append(u'password: {0:s}'.format(self.password))
+    if self.recovery_password:
+      string_parts.append(u'recovery_password: {0:s}'.format(
+          self.recovery_password))
+    if self.startup_key:
+      string_parts.append(u'startup_key: {0:s}'.format(self.startup_key))
+
+    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 
 
-# Register the path specification with the factory.
 factory.Factory.RegisterPathSpec(BDEPathSpec)
