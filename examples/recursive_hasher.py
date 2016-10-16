@@ -569,7 +569,7 @@ def Main():
     return False
 
   return_value = True
-  mediator = volume_scanner.RecursiveHasherVolumeScannerMediator()
+  mediator = RecursiveHasherVolumeScannerMediator()
   recursive_hasher = RecursiveHasher(mediator=mediator)
 
   try:
