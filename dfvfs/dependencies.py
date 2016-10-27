@@ -65,7 +65,7 @@ _PYPI_PROJECT_NAMES = {
 
 # Maps Python module names to RPM packages.
 _RPM_PACKAGE_NAMES = {
-    u'Crypto': u'pycrypto',
+    u'Crypto': u'python-crypto',
     u'pybde': u'libbde-python',
     u'pyewf': u'libewf-python',
     u'pyfsntfs': u'libfsntfs-python',
@@ -388,6 +388,9 @@ def GetInstallRequires():
     else:
       install_requires.append(u'{0:s} >= {1!s},<= {2!s}'.format(
           module_name, module_version, maximum_version))
+
+  # Optional import for now.
+  install_requires.append(u'backports.lzma')
 
   return sorted(install_requires)
 
