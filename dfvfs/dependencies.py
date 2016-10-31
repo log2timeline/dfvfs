@@ -6,8 +6,12 @@ import re
 
 
 # Dictionary that contains version tuples per module name.
+#
 # A version tuple consists of:
 # (version_attribute_name, minimum_version, maximum_version)
+#
+# Where ersion_attribute_name is either a name of an attribute,
+# property or method.
 PYTHON_DEPENDENCIES = {
     u'construct': (u'__version__', u'2.5.2', u'2.5.3'),
     u'Crypto': (u'__version__', u'2.6.0', None),
