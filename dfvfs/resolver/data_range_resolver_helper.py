@@ -3,6 +3,7 @@
 
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.data_range_io
+import dfvfs.vfs.data_range_file_system
 
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
@@ -24,6 +25,18 @@ class DataRangeResolverHelper(resolver_helper.ResolverHelper):
       The file-like object (instance of file_io.FileIO).
     """
     return dfvfs.file_io.data_range_io.DataRange(resolver_context)
+
+  def NewFileSystem(self, resolver_context):
+    """Creates a new file system object.
+
+    Args:
+      resolver_context: the resolver context (instance of resolver.Context).
+
+    Returns:
+      The file system object (instance of vfs.FileSystem).
+    """
+    return dfvfs.vfs.data_range_file_system.DataRangeFileSystem(
+        resolver_context)
 
 
 resolver.Resolver.RegisterHelper(DataRangeResolverHelper())
