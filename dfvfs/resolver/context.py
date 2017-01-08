@@ -13,12 +13,10 @@ class Context(object):
     """Initializes the resolver context object.
 
     Args:
-      maximum_number_of_file_objects: optional maximum number of file-like
-                                      objects cached in the context. The
-                                      default is 128.
-      maximum_number_of_file_systems: optional maximum number of file system
-                                      objects cached in the context. The
-                                      default is 16.
+      maximum_number_of_file_objects (Optional[int]): maximum number
+          of file-like objects cached in the context.
+      maximum_number_of_file_systems (Optional[int]): maximum number
+          of file system objects cached in the context.
     """
     super(Context, self).__init__()
     self._file_object_cache = cache.ObjectsCache(
@@ -30,10 +28,10 @@ class Context(object):
     """Determines the file system cache identifier for the path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The string that identifiers the VFS object.
+      str: identifief of the VFS object.
     """
     string_parts = []
 
@@ -46,8 +44,8 @@ class Context(object):
     """Caches a file-like object based on a path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
-      file_object: the file-like object (instance of FileIO).
+      path_spec (PathSpec): path specification.
+      file_object (FileIO): file-like object.
     """
     self._file_object_cache.CacheObject(path_spec.comparable, file_object)
 
@@ -55,8 +53,8 @@ class Context(object):
     """Caches a file system object based on a path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
-      file_system: the file system object (instance of vfs.FileSystem).
+      path_spec (PathSpec): path specification.
+      file_system (FileSystem): file system object.
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     self._file_system_cache.CacheObject(identifier, file_system)
@@ -70,10 +68,10 @@ class Context(object):
     """Forces the removal of a file-like object based on a path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A boolean that indicates the file-like object was cached or not.
+      bool: True if the file-like object was cached.
     """
     cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
     if not cache_value:
@@ -88,10 +86,10 @@ class Context(object):
     """Retrieves a file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The file-like object (instance of FileIO) or None if not cached.
+      FileIO: a file-like object or None if not cached.
     """
     return self._file_object_cache.GetObject(path_spec.comparable)
 
@@ -99,11 +97,11 @@ class Context(object):
     """Retrieves the reference count of a cached file-like object.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      An integer containing the reference count or None if there is no
-      file-like object for the corresponding path specification cached.
+      int: reference count or None if there is no file-like object for
+          the corresponding path specification cached.
     """
     cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
     if not cache_value:
@@ -115,10 +113,10 @@ class Context(object):
     """Retrieves a file system object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The file system object (instance of vfs.FileSystem) or None if not cached.
+      FileSystem: a file system object or None if not cached.
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     return self._file_system_cache.GetObject(identifier)
@@ -127,11 +125,11 @@ class Context(object):
     """Retrieves the reference count of a cached file system object.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      An integer containing the reference count or None if there is no
-      file system for the corresponding path specification cached.
+      int: reference count or None if there is no file system object for
+          the corresponding path specification cached.
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     cache_value = self._file_system_cache.GetCacheValue(identifier)
@@ -144,7 +142,7 @@ class Context(object):
     """Grabs a cached file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
     """
     self._file_object_cache.GrabObject(path_spec.comparable)
 
@@ -152,7 +150,7 @@ class Context(object):
     """Grabs a cached file system object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     self._file_system_cache.GrabObject(identifier)
@@ -161,15 +159,15 @@ class Context(object):
     """Releases a cached file-like object.
 
     Args:
-      file_object: the file-like object (instance of FileIO).
+      file_object (FileIO): file-like object.
 
     Returns:
-      A boolean value indicating true if the file-like object can be closed.
+      bool: True if the file-like object can be closed.
 
     Raises:
       PathSpecError: if the path specification is incorrect.
       RuntimeError: if the file-like object is not cached or an inconsistency
-                    is detected in the cache.
+          is detected in the cache.
     """
     identifier, cache_value = self._file_object_cache.GetCacheValueByObject(
         file_object)
@@ -192,15 +190,15 @@ class Context(object):
     """Releases a cached file system object.
 
     Args:
-      file_system: the file systemobject (instance of vfs.FileSystem).
+      file_system (FileSystem): file system object.
 
     Returns:
-      A boolean value indicating true if the file system object can be closed.
+      bool: True if the file system object can be closed.
 
     Raises:
       PathSpecError: if the path specification is incorrect.
       RuntimeError: if the file system object is not cached or an inconsistency
-                    is detected in the cache.
+          is detected in the cache.
     """
     identifier, cache_value = self._file_system_cache.GetCacheValueByObject(
         file_system)
@@ -223,8 +221,8 @@ class Context(object):
     """Sets the maximum number of cached filei-like objects.
 
     Args:
-      maximum_number_of_file_objects: the maximum number of file-like
-                                      objects cached in the context.
+      maximum_number_of_file_objects (int): maximum number of file-like
+          objects cached in the context.
     """
     self._file_object_cache.SetMaximumNumberOfCachedValues(
         maximum_number_of_file_objects)
@@ -233,8 +231,8 @@ class Context(object):
     """Sets the maximum number of cached file system objects.
 
     Args:
-      maximum_number_of_file_systems: the maximum number of file system
-                                      objects cached in the context.
+      maximum_number_of_file_systems (int): maximum number of file system
+          objects cached in the context.
     """
     self._file_system_cache.SetMaximumNumberOfCachedValues(
         maximum_number_of_file_systems)
