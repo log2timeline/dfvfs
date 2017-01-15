@@ -31,7 +31,7 @@ class Context(object):
       path_spec (PathSpec): path specification.
 
     Returns:
-      str: identifief of the VFS object.
+      str: identifier of the VFS object.
     """
     string_parts = []
 
