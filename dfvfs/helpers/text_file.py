@@ -216,10 +216,10 @@ class TextFile(object):
 
   # get_offset() is preferred above tell() by the libbfio layer used in libyal.
   def get_offset(self):
-    """Returns the current offset into the file-like object."""
+    """Retrieves the current offset into the file-like object."""
     return self._current_offset
 
   # Pythonesque alias for get_offet().
   def tell(self):
-    """Returns the current offset into the file-like object."""
+    """Retrieves the current offset into the file-like object."""
     return self._current_offset

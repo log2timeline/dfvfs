@@ -116,7 +116,7 @@ class FileIO(object):
 
   @abc.abstractmethod
   def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks an offset within the file-like object.
+    """Seeks to an offset within the file-like object.
 
     Args:
       offset (int): offset to seek.
@@ -141,7 +141,7 @@ class FileIO(object):
 
   # Pythonesque alias for get_offset().
   def tell(self):
-    """Returns the current offset into the file-like object."""
+    """Retrieves the current offset into the file-like object."""
     return self.get_offset()
 
   @abc.abstractmethod

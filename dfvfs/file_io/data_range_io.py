@@ -92,8 +92,8 @@ class DataRange(file_io.FileIO):
     (e.g. a single partition within a full disk image) as a file-like object.
 
     Args:
-      range_offset: the start offset of the data range.
-      range_size: the size of the data range.
+      range_offset (int): start offset of the data range.
+      range_size (int): size of the data range.
 
     Raises:
       IOError: if the file-like object is already open.
@@ -164,10 +164,10 @@ class DataRange(file_io.FileIO):
     return data
 
   def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks an offset within the file-like object.
+    """Seeks to an offset within the file-like object.
 
     Args:
-      offset (int): the offset to seek.
+      offset (int): offset to seek to.
       whence (Optional(int)): value that indicates whether offset is an absolute
           or relative position within the file.
 
@@ -193,7 +193,7 @@ class DataRange(file_io.FileIO):
     self._current_offset = offset
 
   def get_offset(self):
-    """Returns the current offset into the file-like object.
+    """Retrieves the current offset into the file-like object.
 
     Returns:
       int: current offset in the data range.
@@ -207,7 +207,7 @@ class DataRange(file_io.FileIO):
     return self._current_offset
 
   def get_size(self):
-    """Returns the size of the file-like object.
+    """Retrieves the size of the file-like object.
 
     Returns:
       int: size of the data range.

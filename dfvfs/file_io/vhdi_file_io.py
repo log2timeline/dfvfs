@@ -21,7 +21,7 @@ class VHDIFile(file_object_io.FileObjectIO):
 
     Args:
       resolver_context (Context): resolver context.
-      file_object: optional file-like object.
+      file_object (Optional[FileIO]): file-like object.
     """
     super(VHDIFile, self).__init__(resolver_context, file_object=file_object)
     self._parent_vhdi_files = []
@@ -44,7 +44,7 @@ class VHDIFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
       A file-like object.
@@ -82,10 +82,9 @@ class VHDIFile(file_object_io.FileObjectIO):
     """Opens the parent file.
 
     Args:
-      file_system: the file system (instance of FileSystem).
-      path_spec: the path specification of the VHDI file (instance of
-                 PathSpec).
-      vhdi_file: the VHDI file (instance of pyvhdi.file).
+      file_system (FileSystem): file system of the VHDI file.
+      path_spec (PathSpec): path specification of the VHDI file.
+      vhdi_file (pyvhdi.file): VHDI file.
 
     Raises:
       PathSpecError: if the path specification is incorrect.
@@ -135,7 +134,10 @@ class VHDIFile(file_object_io.FileObjectIO):
     self._sub_file_objects.append(file_object)
 
   def get_size(self):
-    """Returns the size of the file-like object.
+    """Retrieves the size of the file-like object.
+
+    Returns:
+      int: size of the file-like object data.
 
     Raises:
       IOError: if the file-like object has not been opened.

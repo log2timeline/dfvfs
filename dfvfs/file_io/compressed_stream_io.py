@@ -263,10 +263,10 @@ class CompressedStream(file_io.FileIO):
     return uncompressed_data
 
   def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks an offset within the file-like object.
+    """Seeks to an offset within the file-like object.
 
     Args:
-      offset (int): the offset to seek.
+      offset (int): offset to seek to.
       whence (Optional(int)): value that indicates whether offset is an absolute
           or relative position within the file.
 
@@ -295,7 +295,7 @@ class CompressedStream(file_io.FileIO):
       self._realign_offset = True
 
   def get_offset(self):
-    """Returns the current offset into the file-like object.
+    """Retrieves the current offset into the file-like object.
 
     Returns:
       int: current offset in the uncompressed stream.
@@ -309,7 +309,7 @@ class CompressedStream(file_io.FileIO):
     return self._current_offset
 
   def get_size(self):
-    """Returns the size of the file-like object.
+    """Retrieves the size of the file-like object.
 
     Returns:
       int: size of the uncompressed stream.
