@@ -329,7 +329,7 @@ class EncryptedStream(file_io.FileIO):
       self._realign_offset = True
 
   def get_offset(self):
-    """Retrieves the current offset into the file-like object.
+    """Retrieves the current offset into the decrypted stream.
 
     Return:
       int: current offset into the decrypted stream.
