@@ -22,7 +22,7 @@ class Base64Decoder(decoder.Decoder):
       encoded_data (byte): encoded data.
 
     Returns:
-      tuple(bytes,bytes): decoded data and remaining encoded data.
+      tuple(bytes, bytes): decoded data and remaining encoded data.
 
     Raises:
       BackEndError: if the base64 stream cannot be decoded.

@@ -297,7 +297,7 @@ class EncryptedStream(file_io.FileIO):
     return decrypted_data
 
   def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks an offset within the file-like object.
+    """Seeks to an offset within the file-like object.
 
     Args:
       offset (int): offset to seek.
@@ -329,10 +329,10 @@ class EncryptedStream(file_io.FileIO):
       self._realign_offset = True
 
   def get_offset(self):
-    """Retrieves the current offset into the file-like object.
+    """Retrieves the current offset into the decrypted stream.
 
     Return:
-      int: current offset into the file-like object.
+      int: current offset into the decrypted stream.
 
     Raises:
       IOError: if the file-like object has not been opened.
@@ -346,7 +346,7 @@ class EncryptedStream(file_io.FileIO):
     """Retrieves the size of the file-like object.
 
     Returns:
-      int: size of the file-like object.
+      int: size of the decrypted stream.
 
     Raises:
       IOError: if the file-like object has not been opened.

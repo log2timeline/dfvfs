@@ -23,7 +23,7 @@ class FVDEFile(file_object_io.FileObjectIO):
       path_spec (PathSpec): path specification.
 
     Returns:
-      A file-like object.
+      FileIO: a file-like object.
 
     Raises:
       PathSpecError: if the path specification is incorrect.

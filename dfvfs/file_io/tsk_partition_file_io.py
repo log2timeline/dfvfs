@@ -14,7 +14,7 @@ class TSKPartitionFile(data_range_io.DataRange):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(TSKPartitionFile, self).__init__(resolver_context)
     self._file_system = None
@@ -28,8 +28,8 @@ class TSKPartitionFile(data_range_io.DataRange):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.

@@ -15,5 +15,5 @@ class Decompressor(object):
       compressed_data (bytes): compressed data.
 
     Returns:
-      tuple(bytes,bytes): uncompressed data and remaining compressed data.
+      tuple(bytes, bytes): uncompressed data and remaining compressed data.
     """

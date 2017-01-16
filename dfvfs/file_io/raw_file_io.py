@@ -20,8 +20,8 @@ class RawFile(file_object_io.FileObjectIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_object: optional file-like object.
+      resolver_context (Context): resolver context.
+      file_object (Optional[FileIO]): file-like object.
 
     Raises:
       ValueError: when file_object is set.
@@ -46,10 +46,10 @@ class RawFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file-like object or None.
+      FileIO: a file-like object or None.
 
     Raises:
       PathSpecError: if the path specification is invalid.
@@ -85,7 +85,10 @@ class RawFile(file_object_io.FileObjectIO):
     return raw_handle
 
   def get_size(self):
-    """Returns the size of the file-like object.
+    """Retrieves the size of the file-like object.
+
+    Returns:
+      int: size of the RAW storage media image.
 
     Raises:
       IOError: if the file-like object has not been opened.

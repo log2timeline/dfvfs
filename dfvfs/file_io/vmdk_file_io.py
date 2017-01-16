@@ -20,10 +20,10 @@ class VMDKFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file-like object.
+      FileIO: a file-like object.
 
     Raises:
       IOError: if the file-like object could not be opened.
@@ -107,7 +107,10 @@ class VMDKFile(file_object_io.FileObjectIO):
     return vmdk_handle
 
   def get_size(self):
-    """Returns the size of the file-like object.
+    """Retrieves the size of the file-like object.
+
+    Returns:
+      int: size of the file-like object data.
 
     Raises:
       IOError: if the file-like object has not been opened.

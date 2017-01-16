@@ -46,8 +46,8 @@ class GzipFile(file_object_io.FileObjectIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_object: optional file-like object.
+      resolver_context (Context): resolver context.
+      file_object (Optional[FileIO]): file-like object.
 
     Raises:
       ValueError: when file_object is set.
@@ -68,7 +68,7 @@ class GzipFile(file_object_io.FileObjectIO):
     """Reads the file header.
 
     Args:
-      file_object: the file-like object to read from.
+      file_object (FileIO): file-like object to read from.
 
     Raises:
       FileFormatError: if file format related errors are detected.
@@ -123,7 +123,7 @@ class GzipFile(file_object_io.FileObjectIO):
     """Reads the file footer.
 
     Args:
-      file_object: the file-like object to read from.
+      file_object (FileIO): file-like object to read from.
 
     Raises:
       FileFormatError: if file format related errors are detected.
@@ -137,10 +137,10 @@ class GzipFile(file_object_io.FileObjectIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional the path specification (instance of PathSpec).
+      path_spec (Optional[PathSpec]): path specification.
 
     Returns:
-      A file-like object.
+      FileIO: a file-like object.
     """
     gzip_file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)

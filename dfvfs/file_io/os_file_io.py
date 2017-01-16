@@ -22,7 +22,7 @@ class OSFile(file_io.FileIO):
     """Initializes the file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(OSFile, self).__init__(resolver_context)
     self._file_object = None
@@ -37,8 +37,8 @@ class OSFile(file_io.FileIO):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec: optional path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -110,11 +110,11 @@ class OSFile(file_io.FileIO):
     all of the remaining data if no size was specified.
 
     Args:
-      size: Optional integer value containing the number of bytes to read.
-            Default is all remaining data (None).
+      size (Optional[int]): number of bytes to read, where None is all
+          remaining data.
 
     Returns:
-      A byte string containing the data read.
+      bytes: data read.
 
     Raises:
       IOError: if the read failed.
@@ -128,12 +128,12 @@ class OSFile(file_io.FileIO):
     return self._file_object.read(size)
 
   def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks an offset within the file-like object.
+    """Seeks to an offset within the file-like object.
 
     Args:
-      offset: The offset to seek.
-      whence: Optional value that indicates whether offset is an absolute
-              or relative position within the file.
+      offset (int): offset to seek to.
+      whence (Optional(int)): value that indicates whether offset is an absolute
+          or relative position within the file.
 
     Raises:
       IOError: if the seek failed.
@@ -150,7 +150,10 @@ class OSFile(file_io.FileIO):
     self._file_object.seek(offset, whence)
 
   def get_offset(self):
-    """Returns the current offset into the file-like object.
+    """Retrieves the current offset into the file-like object.
+
+    Return:
+      int: current offset into the file-like object.
 
     Raises:
       IOError: if the file-like object has not been opened.
@@ -161,7 +164,10 @@ class OSFile(file_io.FileIO):
     return self._file_object.tell()
 
   def get_size(self):
-    """Returns the size of the file-like object.
+    """Retrieves the size of the file-like object.
+
+    Returns:
+      int: size of the file-like object data.
 
     Raises:
       IOError: if the file-like object has not been opened.
