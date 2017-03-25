@@ -29,6 +29,9 @@ override_dh_auto_install:
 	set -ex; for python in $(shell py3versions -r); do \
 		$$python setup.py install --root=$(CURDIR)/debian/python3-dfvfs --install-layout=deb; \
 	done;
+	# The shared doc files are provided via python-dfvfs.docs and python3-dfvfs.docs
+	rm -rf $(CURDIR)/debian/python-dfvfs/usr/share/doc/dfvfs
+	rm -rf $(CURDIR)/debian/python3-dfvfs/usr/share/doc/dfvfs
 
 .PHONY: override_dh_auto_test
 override_dh_auto_test:
