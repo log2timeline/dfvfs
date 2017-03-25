@@ -8,33 +8,37 @@ import re
 # Dictionary that contains version tuples per module name.
 #
 # A version tuple consists of:
-# (version_attribute_name, minimum_version, maximum_version)
+# (version_attribute_name, minimum_version, maximum_version, is_required)
 #
 # Where ersion_attribute_name is either a name of an attribute,
 # property or method.
 PYTHON_DEPENDENCIES = {
-    u'construct': (u'__version__', u'2.5.2', u'2.5.3'),
-    u'Crypto': (u'__version__', u'2.6.0', None),
-    u'dfdatetime': (u'__version__', u'20160319', None),
-    u'pybde': (u'get_version()', u'20140531', None),
-    u'pyewf': (u'get_version()', u'20131210', None),
-    u'pyfsntfs': (u'get_version()', u'20151130', None),
-    u'pyfvde': (u'get_version()', u'20160719', None),
-    u'pyfwnt': (u'get_version()', u'20160418', None),
-    u'pyqcow': (u'get_version()', u'20131204', None),
-    u'pysigscan': (u'get_version()', u'20150627', None),
-    u'pysmdev': (u'get_version()', u'20140529', None),
-    u'pysmraw': (u'get_version()', u'20140612', None),
-    u'pytsk3': (u'get_version()', u'20160721', None),
-    u'pyvhdi': (u'get_version()', u'20131210', None),
-    u'pyvmdk': (u'get_version()', u'20140421', None),
-    u'pyvshadow': (u'get_version()', u'20160109', None),
-    u'pyvslvm': (u'get_version()', u'20160109', None),
-    u'six': (u'__version__', u'1.1.0', None)}
+    u'construct': (u'__version__', u'2.5.2', u'2.5.3', True),
+    u'Crypto': (u'__version__', u'2.6.0', None, True),
+    u'dfdatetime': (u'__version__', u'20160319', None, True),
+    u'lzma': (u'__version__', u'0.5.3', None, False),
+    u'pybde': (u'get_version()', u'20140531', None, True),
+    u'pyewf': (u'get_version()', u'20131210', None, True),
+    u'pyfsntfs': (u'get_version()', u'20151130', None, True),
+    u'pyfvde': (u'get_version()', u'20160719', None, True),
+    u'pyfwnt': (u'get_version()', u'20160418', None, True),
+    u'pyqcow': (u'get_version()', u'20131204', None, True),
+    u'pysigscan': (u'get_version()', u'20150627', None, True),
+    u'pysmdev': (u'get_version()', u'20140529', None, True),
+    u'pysmraw': (u'get_version()', u'20140612', None, True),
+    u'pytsk3': (u'get_version()', u'20160721', None, True),
+    u'pyvhdi': (u'get_version()', u'20131210', None, True),
+    u'pyvmdk': (u'get_version()', u'20140421', None, True),
+    u'pyvshadow': (u'get_version()', u'20160109', None, True),
+    u'pyvslvm': (u'get_version()', u'20160109', None, True),
+    u'six': (u'__version__', u'1.1.0', None, True)}
+
+PYTHON_TEST_DEPENDENCIES = {}
 
 # Maps Python module names to DPKG packages.
 _DPKG_PACKAGE_NAMES = {
     u'Crypto': u'python-crypto',
+    u'lzma': u'python-lzma',
     u'pybde': u'libbde-python',
     u'pyewf': u'libewf-python',
     u'pyfsntfs': u'libfsntfs-python',
@@ -52,6 +56,7 @@ _DPKG_PACKAGE_NAMES = {
 # Maps Python module names to PyPI projects.
 _PYPI_PROJECT_NAMES = {
     u'Crypto': u'pycrypto',
+    u'lzma': u'pyliblzma',
     u'pybde': u'libbde-python',
     u'pyewf': u'libewf-python',
     u'pyfsntfs': u'libfsntfs-python',
@@ -70,6 +75,7 @@ _PYPI_PROJECT_NAMES = {
 # Maps Python module names to RPM packages.
 _RPM_PACKAGE_NAMES = {
     u'Crypto': u'python-crypto',
+    u'lzma': u'pyliblzma',
     u'pybde': u'libbde-python',
     u'pyewf': u'libewf-python',
     u'pyfsntfs': u'libfsntfs-python',
@@ -90,13 +96,15 @@ _VERSION_SPLIT_REGEX = re.compile(r'\.|\-')
 
 def _CheckPythonModule(
     module_name, version_attribute_name, minimum_version,
-    maximum_version=None, verbose_output=True):
+    is_required=True, maximum_version=None, verbose_output=True):
   """Checks the availability of a Python module.
 
   Args:
     module_name (str): name of the module.
     version_attribute_name (str): name of the attribute that contains
        the module version or method to retrieve the module version.
+    is_required (Optional[bool]): True if the Python module is a required
+        dependency.
     minimum_version (str): minimum required version.
     maximum_version (Optional[str]): maximum required version. Should only be
         used if there is a later version that is not supported.
@@ -108,6 +116,10 @@ def _CheckPythonModule(
   """
   module_object = _ImportPythonModule(module_name)
   if not module_object:
+    if not is_required:
+      print(u'[OPTIONAL]\tmissing: {0:s}.'.format(module_name))
+      return True
+
     print(u'[FAILURE]\tmissing: {0:s}.'.format(module_name))
     return False
 
@@ -247,7 +259,8 @@ def CheckDependencies(verbose_output=True):
   for module_name, version_tuple in sorted(PYTHON_DEPENDENCIES.items()):
     if not _CheckPythonModule(
         module_name, version_tuple[0], version_tuple[1],
-        maximum_version=version_tuple[2], verbose_output=verbose_output):
+        is_required=version_tuple[3], maximum_version=version_tuple[2],
+        verbose_output=verbose_output):
       check_result = False
 
   if not _CheckSQLite3(verbose_output=verbose_output):
@@ -278,7 +291,7 @@ def CheckModuleVersion(module_name):
   if module_name not in PYTHON_DEPENDENCIES:
     return
 
-  version_attribute_name, minimum_version, maximum_version = (
+  version_attribute_name, minimum_version, maximum_version, _ = (
       PYTHON_DEPENDENCIES[module_name])
 
   module_version = None
@@ -324,10 +337,10 @@ def CheckTestDependencies():
     return False
 
   print(u'Checking availability and versions of test dependencies.')
-  for module_name, version_tuple in sorted(PYTHON_DEPENDENCIES.items()):
+  for module_name, version_tuple in sorted(PYTHON_TEST_DEPENDENCIES.items()):
     if not _CheckPythonModule(
         module_name, version_tuple[0], version_tuple[1],
-        maximum_version=version_tuple[2]):
+        is_required=version_tuple[3], maximum_version=version_tuple[2]):
       return False
 
   return True
