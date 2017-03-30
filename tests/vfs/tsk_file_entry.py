@@ -33,7 +33,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
-  def testIntialize(self):
+  def testInitialize(self):
     """Test the initialize functionality."""
     file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
@@ -97,6 +97,11 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.atime_nano, 0)
     self.assertEqual(stat_object.ctime, 1337961563)
     self.assertEqual(stat_object.ctime_nano, 0)
+    # EXT2 has no crtime timestamp.
+    with self.assertRaises(AttributeError):
+      _ = stat_object.crtime
+    with self.assertRaises(AttributeError):
+      _ = stat_object.crtime_nano
     self.assertEqual(stat_object.mtime, 1337961563)
     self.assertEqual(stat_object.mtime_nano, 0)
 

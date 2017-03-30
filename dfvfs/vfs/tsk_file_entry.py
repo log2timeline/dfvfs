@@ -173,6 +173,11 @@ class TSKFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
+  _TSK_NO_CTIME_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_FAT12, pytsk3.TSK_FS_TYPE_FAT16,
+      pytsk3.TSK_FS_TYPE_FAT32]
+  _TSK_NO_CRTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_EXT2, pytsk3.TSK_FS_TYPE_EXT3]
+
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False, parent_inode=None, tsk_file=None):
@@ -444,10 +449,24 @@ class TSKFileEntry(file_entry.FileEntry):
       None on error.
 
     Raises:
-      BackEndError: if the TSK File .info or .info.meta attribute is missing.
+      BackEndError: if the TSK File .info, .info.meta or info.fs_info
+        attribute is missing.
     """
-    if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
-      raise errors.BackEndError(u'Missing TSK File .info or .info.meta.')
+    if (not tsk_file or not tsk_file.info or not tsk_file.info.meta or
+        not tsk_file.info.fs_info):
+      raise errors.BackEndError(
+          u'Missing TSK File .info, .info.meta. or .info.fs_info')
+
+    file_system_type = tsk_file.info.fs_info.ftype
+    # pytsk3.TSK_FS_TYPE_ENUM is unhashable, preventing a dictionary lookup
+    # approach.
+    if (time_value == u'crtime' and
+        file_system_type in self._TSK_NO_CRTIME_FS_TYPES):
+      return None, None
+
+    if (time_value == u'ctime' and
+        file_system_type in self._TSK_NO_CTIME_FS_TYPES):
+      return None, None
 
     time_value_nano = u'{0:s}_nano'.format(time_value)
     stat_time = getattr(tsk_file.info.meta, time_value, None)
