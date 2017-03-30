@@ -444,9 +444,9 @@ class TSKFileEntry(file_entry.FileEntry):
       time_value (str): name of the time value.
 
     Returns:
-      A tuple of an integer containing a POSIX timestamp in seconds
-      and an integer containing the remainder in 100 nano seconds or
-      None on error.
+     tuple containing:
+        int|None:  POSIX timestamp in seconds. None on error.
+        int|None:  remainder in 100 nano seconds. None on error.
 
     Raises:
       BackEndError: if the TSK File .info, .info.meta or info.fs_info
