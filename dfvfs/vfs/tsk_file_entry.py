@@ -173,6 +173,20 @@ class TSKFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
+  _TSK_NO_ATIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_ISO9660]
+  _TSK_NO_MTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_ISO9660]
+  _TSK_NO_CTIME_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_FAT12, pytsk3.TSK_FS_TYPE_FAT16,
+      pytsk3.TSK_FS_TYPE_FAT32, pytsk3.TSK_FS_TYPE_ISO9660,
+      pytsk3.TSK_FS_TYPE_EXFAT]
+  _TSK_NO_CRTIME_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_FFS1, pytsk3.TSK_FS_TYPE_FFS1B,
+      pytsk3.TSK_FS_TYPE_FFS2, pytsk3.TSK_FS_TYPE_YAFFS2,
+      pytsk3.TSK_FS_TYPE_EXT2, pytsk3.TSK_FS_TYPE_EXT3]
+  _TSK_HAS_NANO_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_EXT4, pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_HFS,
+      pytsk3.TSK_FS_TYPE_FFS2, pytsk3.TSK_FS_TYPE_EXFAT]
+
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False, parent_inode=None, tsk_file=None):
@@ -439,19 +453,45 @@ class TSKFileEntry(file_entry.FileEntry):
       time_value (str): name of the time value.
 
     Returns:
-      A tuple of an integer containing a POSIX timestamp in seconds
-      and an integer containing the remainder in 100 nano seconds or
-      None on error.
+     tuple containing:
+        int: POSIX timestamp in seconds. None on error, or if the file system
+          does not include the requested timestamp.
+        int: remainder in 100 nano seconds. None on error, or if the file system
+          does not support sub-second precision.
 
     Raises:
-      BackEndError: if the TSK File .info or .info.meta attribute is missing.
+      BackEndError: if the TSK File .info, .info.meta or info.fs_info
+        attribute is missing.
     """
-    if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
-      raise errors.BackEndError(u'Missing TSK File .info or .info.meta.')
+    if (not tsk_file or not tsk_file.info or not tsk_file.info.meta or
+        not tsk_file.info.fs_info):
+      raise errors.BackEndError(
+          u'Missing TSK File .info, .info.meta. or .info.fs_info')
 
-    time_value_nano = u'{0:s}_nano'.format(time_value)
+    file_system_type = tsk_file.info.fs_info.ftype
+    # pytsk3.TSK_FS_TYPE_ENUM is unhashable, preventing a dictionary lookup
+    # approach.
+    if (time_value == u'atime' and
+        file_system_type in self._TSK_NO_ATIME_FS_TYPES):
+      return None, None
+
+    if (time_value == u'ctime' and
+        file_system_type in self._TSK_NO_CTIME_FS_TYPES):
+      return None, None
+
+    if (time_value == u'crtime' and
+        file_system_type in self._TSK_NO_CRTIME_FS_TYPES):
+      return None, None
+
+    if (time_value == u'mtime' and
+        file_system_type in self._TSK_NO_MTIME_FS_TYPES):
+      return None, None
+
     stat_time = getattr(tsk_file.info.meta, time_value, None)
-    stat_time_nano = getattr(tsk_file.info.meta, time_value_nano, None)
+    stat_time_nano = None
+    if file_system_type in self._TSK_HAS_NANO_FS_TYPES:
+      time_value_nano = u'{0:s}_nano'.format(time_value)
+      stat_time_nano = getattr(tsk_file.info.meta, time_value_nano, None)
 
     # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
     # 1 nano seconds precision.
