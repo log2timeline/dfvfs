@@ -8,7 +8,7 @@ import sys
 # Change PYTHONPATH to include dfvfs.
 sys.path.insert(0, u'.')
 
-import dfvfs.dependencies
+import dfvfs.dependencies  # pylint: disable=wrong-import-position
 
 
 class AppveyorYmlWriter(object):

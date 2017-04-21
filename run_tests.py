@@ -8,7 +8,7 @@ import unittest
 # Change PYTHONPATH to include dfvfs.
 sys.path.insert(0, u'.')
 
-import dfvfs.dependencies
+import dfvfs.dependencies  # pylint: disable=wrong-import-position
 
 
 if __name__ == '__main__':
