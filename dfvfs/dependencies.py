@@ -53,6 +53,22 @@ _DPKG_PACKAGE_NAMES = {
     u'pyvshadow': u'libvshadow-python',
     u'pyvslvm': u'libvslvm-python'}
 
+# Maps Python module names to l2tbinaries packages.
+_L2TBINARIES_PACKAGE_NAMES = {
+    u'pybde': u'libbde',
+    u'pyewf': u'libewf',
+    u'pyfsntfs': u'libfsntfs',
+    u'pyfvde': u'libfvde',
+    u'pyfwnt': u'libfwnt',
+    u'pyqcow': u'libqcow',
+    u'pysigscan': u'libsigscan',
+    u'pysmdev': u'libsmdev',
+    u'pysmraw': u'libsmraw',
+    u'pyvhdi': u'libvhdi',
+    u'pyvmdk': u'libvmdk',
+    u'pyvshadow': u'libvshadow',
+    u'pyvslvm': u'libvslvm'}
+
 # Maps Python module names to PyPI projects.
 _PYPI_PROJECT_NAMES = {
     u'Crypto': u'pycrypto',
@@ -327,20 +343,24 @@ def CheckModuleVersion(module_name):
           u'required.').format(module_name, module_version, maximum_version))
 
 
-def CheckTestDependencies():
+def CheckTestDependencies(verbose_output=True):
   """Checks the availability of the dependencies when running tests.
+
+  Args:
+    verbose_output (Optional[bool]): True if output should be verbose.
 
   Returns:
     bool: True if the dependencies are available, False otherwise.
   """
-  if not CheckDependencies():
+  if not CheckDependencies(verbose_output=verbose_output):
     return False
 
   print(u'Checking availability and versions of test dependencies.')
   for module_name, version_tuple in sorted(PYTHON_TEST_DEPENDENCIES.items()):
     if not _CheckPythonModule(
         module_name, version_tuple[0], version_tuple[1],
-        is_required=version_tuple[3], maximum_version=version_tuple[2]):
+        is_required=version_tuple[3], maximum_version=version_tuple[2],
+        verbose_output=verbose_output):
       return False
 
   return True
@@ -372,6 +392,22 @@ def GetDPKGDepends(exclude_version=False):
       requires.append(module_name)
     else:
       requires.append(u'{0:s} (>= {1!s})'.format(module_name, module_version))
+
+  return sorted(requires)
+
+
+def GetL2TBinaries():
+  """Retrieves the l2tbinaries requirements.
+
+  Returns:
+    list[str]: dependency definitions for l2tbinaries.
+  """
+  requires = []
+  for module_name, _ in sorted(PYTHON_DEPENDENCIES.items()):
+    # Map the import name to the l2tbinaries package name.
+    module_name = _L2TBINARIES_PACKAGE_NAMES.get(module_name, module_name)
+
+    requires.append(module_name)
 
   return sorted(requires)
 
