@@ -8,11 +8,77 @@ import sys
 # Change PYTHONPATH to include dfvfs.
 sys.path.insert(0, u'.')
 
-import dfvfs.dependencies
+import dfvfs.dependencies  # pylint: disable=wrong-import-position
 
 
-class DPKGControllWriter(object):
-  """Class to help write a dpkg control file."""
+class AppveyorYmlWriter(object):
+  """Appveyor.yml file writer."""
+
+  _PATH = os.path.join(u'appveyor.yml')
+
+  _FILE_HEADER = [
+      u'environment:',
+      u'  matrix:',
+      u'    - PYTHON: "C:\\\\Python27"',
+      u'',
+      u'install:',
+      (u'  - cmd: \'"C:\\Program Files\\Microsoft SDKs\\Windows\\v7.1\\Bin\\'
+       u'SetEnv.cmd" /x86 /release\''),
+      (u'  - ps: (new-object net.webclient).DownloadFile('
+       u'\'https://bootstrap.pypa.io/get-pip.py\', '
+       u'\'C:\\Projects\\get-pip.py\')'),
+      (u'  - ps: (new-object net.webclient).DownloadFile('
+       u'\'https://github.com/log2timeline/l2tbinaries/raw/master/win32/'
+       u'pywin32-220.win32-py2.7.exe\', '
+       u'\'C:\\Projects\\pywin32-220.win32-py2.7.exe\')'),
+      (u'  - ps: (new-object net.webclient).DownloadFile('
+       u'\'https://github.com/log2timeline/l2tbinaries/raw/master/win32/'
+       u'WMI-1.4.9.win32.exe\', \'C:\\Projects\\WMI-1.4.9.win32.exe\')'),
+      u'  - cmd: "%PYTHON%\\\\python.exe C:\\\\Projects\\\\get-pip.py"',
+      (u'  - cmd: "%PYTHON%\\\\Scripts\\\\easy_install.exe '
+       u'C:\\\\Projects\\\\pywin32-220.win32-py2.7.exe"'),
+      (u'  - cmd: "%PYTHON%\\\\Scripts\\\\easy_install.exe '
+       u'C:\\\\Projects\\\\WMI-1.4.9.win32.exe"'),
+      (u'  - cmd: git clone https://github.com/log2timeline/l2tdevtools.git '
+       u'&& move l2tdevtools ..\\')]
+
+  _L2TDEVTOOLS_UPDATE = (
+      u'  - cmd: mkdir dependencies && set PYTHONPATH=..\\l2tdevtools && '
+      u'"%PYTHON%\\\\python.exe" ..\\l2tdevtools\\tools\\update.py '
+      u'--download-directory dependencies --machine-type x86 '
+      u'--msi-targetdir "%PYTHON%" {0:s}')
+
+  _FILE_FOOTER = [
+      u'',
+      u'build: off',
+      u'',
+      u'test_script:',
+      u'  - "%PYTHON%\\\\python.exe run_tests.py"',
+      u'']
+
+  def Write(self):
+    """Writes an appveyor.yml file."""
+    file_content = []
+    file_content.extend(self._FILE_HEADER)
+
+    dependencies = dfvfs.dependencies.GetL2TBinaries()
+    dependencies.extend([u'funcsigs', u'mock', u'pbr'])
+    dependencies = u' '.join(dependencies)
+
+    l2tdevtools_update = self._L2TDEVTOOLS_UPDATE.format(dependencies)
+    file_content.append(l2tdevtools_update)
+
+    file_content.extend(self._FILE_FOOTER)
+
+    file_content = u'\n'.join(file_content)
+    file_content = file_content.encode(u'utf-8')
+
+    with open(self._PATH, 'wb') as file_object:
+      file_object.write(file_content)
+
+
+class DPKGControlWriter(object):
+  """Dpkg control file writer."""
 
   _PATH = os.path.join(u'config', u'dpkg', u'control')
 
@@ -54,26 +120,23 @@ class DPKGControllWriter(object):
       u'']
 
   def Write(self):
-    """Writes a setup.cfg file."""
+    """Writes a dpkg control file."""
     file_content = []
     file_content.extend(self._FILE_HEADER)
     file_content.extend(self._PYTHON2_PACKAGE_HEADER)
 
     dependencies = dfvfs.dependencies.GetDPKGDepends()
+    dependencies.extend([u'${python:Depends}', u'${misc:Depends}'])
     dependencies = u', '.join(dependencies)
-    file_content.append(
-        u'Depends: {0:s}, ${{python:Depends}}, ${{misc:Depends}}'.format(
-            dependencies))
+
+    file_content.append(u'Depends: {0:s}'.format(dependencies))
 
     file_content.extend(self._PYTHON_PACKAGE_FOOTER)
     file_content.extend(self._PYTHON3_PACKAGE_HEADER)
 
-    dependencies = dfvfs.dependencies.GetDPKGDepends()
-    dependencies = u', '.join(dependencies)
     dependencies = dependencies.replace(u'python', u'python3')
-    file_content.append(
-        u'Depends: {0:s}, ${{python:Depends}}, ${{misc:Depends}}'.format(
-            dependencies))
+
+    file_content.append(u'Depends: {0:s}'.format(dependencies))
 
     file_content.extend(self._PYTHON_PACKAGE_FOOTER)
 
@@ -85,7 +148,7 @@ class DPKGControllWriter(object):
 
 
 class RequirementsWriter(object):
-  """Class to help write a requirements.txt file."""
+  """Requirements.txt file writer."""
 
   _PATH = u'requirements.txt'
 
@@ -109,7 +172,7 @@ class RequirementsWriter(object):
 
 
 class SetupCfgWriter(object):
-  """Class to help write a setup.cfg file."""
+  """Setup.cfg file writer."""
 
   _PATH = u'setup.cfg'
 
@@ -153,8 +216,8 @@ class SetupCfgWriter(object):
       file_object.write(file_content)
 
 
-class TravisBeforeInstallScript(object):
-  """Class to help write the Travis-CI install.sh file."""
+class TravisBeforeInstallScriptWriter(object):
+  """Travis-CI install.sh file writer."""
 
   _PATH = os.path.join(
       u'config', u'travis', u'install.sh')
@@ -181,21 +244,33 @@ class TravisBeforeInstallScript(object):
       u'\tmkdir dependencies;',
       u'',
       (u'\tPYTHONPATH=../l2tdevtools ../l2tdevtools/tools/update.py '
-       u'--download-directory=dependencies --preset=dfvfs;'),
+       u'--download-directory=dependencies ${L2TBINARIES_DEPENDENCIES} '
+       u'${L2TBINARIES_TEST_DEPENDENCIES};'),
       u'',
       u'elif test `uname -s` = "Linux";',
       u'then',
       u'\tsudo add-apt-repository ppa:gift/dev -y;',
       u'\tsudo apt-get update -q;',
       (u'\tsudo apt-get install -y ${COVERALL_DEPENDENCIES} '
-       u'${PYTHON2_DEPENDENCIES} ${PYTHON3_DEPENDENCIES};'),
+       u'${PYTHON2_DEPENDENCIES} ${PYTHON2_TEST_DEPENDENCIES} '
+       u'${PYTHON3_DEPENDENCIES} ${PYTHON3_TEST_DEPENDENCIES};'),
       u'fi',
       u'']
 
   def Write(self):
-    """Writes a setup.cfg file."""
+    """Writes an install.sh file."""
     file_content = []
     file_content.extend(self._FILE_HEADER)
+
+    dependencies = dfvfs.dependencies.GetL2TBinaries()
+    dependencies = u' '.join(dependencies)
+    file_content.append(u'L2TBINARIES_DEPENDENCIES="{0:s}";'.format(
+        dependencies))
+
+    file_content.append(u'')
+    file_content.append(u'L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr";')
+
+    file_content.append(u'')
 
     dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
     dependencies.append(u'python-lzma')
@@ -203,11 +278,18 @@ class TravisBeforeInstallScript(object):
     file_content.append(u'PYTHON2_DEPENDENCIES="{0:s}";'.format(dependencies))
 
     file_content.append(u'')
+    file_content.append(u'PYTHON2_TEST_DEPENDENCIES="python-mock";')
+
+    file_content.append(u'')
 
     dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
     dependencies = u' '.join(dependencies)
     dependencies = dependencies.replace(u'python', u'python3')
     file_content.append(u'PYTHON3_DEPENDENCIES="{0:s}";'.format(dependencies))
+
+    file_content.append(u'')
+    file_content.append(u'PYTHON3_TEST_DEPENDENCIES="python3-mock";')
+
 
     file_content.extend(self._FILE_FOOTER)
 
@@ -219,14 +301,8 @@ class TravisBeforeInstallScript(object):
 
 
 if __name__ == u'__main__':
-  writer = DPKGControllWriter()
-  writer.Write()
-
-  writer = RequirementsWriter()
-  writer.Write()
-
-  writer = SetupCfgWriter()
-  writer.Write()
-
-  writer = TravisBeforeInstallScript()
-  writer.Write()
+  for writer_class in (
+      AppveyorYmlWriter, DPKGControlWriter, RequirementsWriter, SetupCfgWriter,
+      TravisBeforeInstallScriptWriter):
+    writer = writer_class()
+    writer.Write()

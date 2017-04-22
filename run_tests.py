@@ -8,7 +8,7 @@ import unittest
 # Change PYTHONPATH to include dfvfs.
 sys.path.insert(0, u'.')
 
-import dfvfs.dependencies
+import dfvfs.dependencies  # pylint: disable=wrong-import-position
 
 
 if __name__ == '__main__':
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # the argparse tests.
     sys.argv.remove('--fail-unless-has-test-file')
 
-  if not dfvfs.dependencies.CheckDependencies():
+  if not dfvfs.dependencies.CheckTestDependencies():
     sys.exit(1)
 
   test_suite = unittest.TestLoader().discover('tests', pattern='*.py')
