@@ -118,6 +118,7 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
   def testName(self):
+    """Test name property."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
     self.assertTrue(file_entry.name == (
