@@ -124,7 +124,10 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
     row_condition = getattr(self.path_spec, u'row_condition', None)
     if row_condition is not None:
-      return u'WHERE {0:s} {1:s} \'{2:s}\''.format(*row_condition)
+      if isinstance(row_condition[2], basestring):
+        row_condition = row_condition[:2] + (
+            u'\'{0:s}\''.format(row_condition[2]),)
+      return u'WHERE {0:s} {1:s} {2!s}'.format(*row_condition)
 
     # Directory name is full name of column: <table>.<column>
     table_name = getattr(self.path_spec, u'table_name', None)
