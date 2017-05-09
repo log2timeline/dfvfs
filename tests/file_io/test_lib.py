@@ -321,6 +321,9 @@ class SylogTestCase(shared_test_lib.BaseTestCase):
       file_object (file): file-like object with the test data.
       base_offset (Optional[int]): base offset use in the tests.
     """
+    file_object.seek(-10, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
+
     file_object.seek(base_offset + 10)
     self.assertEqual(file_object.read(5), b'53:01')
 
@@ -379,6 +382,9 @@ class PaddedSyslogTestCase(SylogTestCase):
       file_object (file): file-like object with the test data.
       base_offset (Optional[int]): base offset use in the tests.
     """
+    file_object.seek(-10 - self.padding_size, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
+
     file_object.seek(base_offset + 10)
     self.assertEqual(file_object.read(5), b'53:01')
 

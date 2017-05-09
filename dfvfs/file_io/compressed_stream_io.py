@@ -282,9 +282,9 @@ class CompressedStream(file_io.FileIO):
               self._current_offset))
 
     if whence == os.SEEK_CUR:
-      offset += self._current_offset
+      offset += self.get_offset()
     elif whence == os.SEEK_END:
-      offset += self._uncompressed_stream_size
+      offset += self.get_size()
     elif whence != os.SEEK_SET:
       raise IOError(u'Unsupported whence.')
     if offset < 0:
