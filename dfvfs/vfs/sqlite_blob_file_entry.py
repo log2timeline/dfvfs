@@ -3,6 +3,7 @@
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 from dfvfs.path import sqlite_blob_path_spec
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vfs_stat
@@ -124,9 +125,9 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
     row_condition = getattr(self.path_spec, u'row_condition', None)
     if row_condition is not None:
-      if isinstance(row_condition[2], basestring):
-        row_condition = row_condition[:2] + (
-            u'\'{0:s}\''.format(row_condition[2]),)
+      if len(row_condition) > 2 and isinstance(
+          row_condition[2], py2to3.STRING_TYPES):
+        return u'WHERE {0:s} {1:s} \'{2:s}\''.format(*row_condition)
       return u'WHERE {0:s} {1:s} {2!s}'.format(*row_condition)
 
     # Directory name is full name of column: <table>.<column>
