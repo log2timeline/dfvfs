@@ -28,6 +28,9 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
     self._sqlite_blob_path_spec_2 = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name=u'myblobs', column_name=u'blobs',
         row_index=2, parent=path_spec)
+    self._sqlite_blob_path_spec_3 = sqlite_blob_path_spec.SQLiteBlobPathSpec(
+        table_name=u'myblobs', column_name=u'blobs',
+        row_condition=(u'name', u'==', 4), parent=path_spec)
     self._sqlite_blob_path_spec_directory = (
         sqlite_blob_path_spec.SQLiteBlobPathSpec(
             table_name=u'myblobs', column_name=u'blobs', parent=path_spec))
@@ -113,6 +116,21 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsLink())
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
+
+  def testName(self):
+    """Test name property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._sqlite_blob_path_spec)
+    self.assertTrue(file_entry.name == (
+        u'WHERE name == \'mmssms.db\''))
+
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._sqlite_blob_path_spec_3)
+    self.assertTrue(file_entry.name == u'WHERE name == 4')
+
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._sqlite_blob_path_spec_directory)
+    self.assertTrue(file_entry.name == u'myblobs.blobs')
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
