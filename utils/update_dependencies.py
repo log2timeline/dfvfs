@@ -93,13 +93,13 @@ class AppveyorYmlWriter(DependencyFileWriter):
       _DOWNLOAD_PIP,
       _DOWNLOAD_PYWIN32,
       _DOWNLOAD_WMI,
-      _DOWNLOAD_SQLITE,
       _INSTALL_PIP,
       _INSTALL_PYWIN32,
       _INSTALL_WMI,
+      _DOWNLOAD_L2TDEVTOOLS,
+      _DOWNLOAD_SQLITE,
       _EXTRACT_SQLITE,
-      _INSTALL_SQLITE,
-      _DOWNLOAD_L2TDEVTOOLS]
+      _INSTALL_SQLITE]
 
   _L2TDEVTOOLS_UPDATE = (
       u'  - cmd: mkdir dependencies && set PYTHONPATH=..\\l2tdevtools && '
