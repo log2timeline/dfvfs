@@ -31,7 +31,7 @@ class AppveyorYmlWriter(DependencyFileWriter):
 
   _VERSION_PYWIN32 = u'220'
   _VERSION_WMI = u'1.4.9'
-  _VERSION_SQLITE = u'3080803'
+  _VERSION_SQLITE = u'3180000'
 
   _DOWNLOAD_PIP = (
       u'  - ps: (new-object net.webclient).DownloadFile('
@@ -65,7 +65,7 @@ class AppveyorYmlWriter(DependencyFileWriter):
 
   _DOWNLOAD_SQLITE = (
       u'  - ps: (new-object net.webclient).DownloadFile('
-      u'\'https://www.sqlite.org/2015/sqlite-dll-win32-x86-{0:s}.zip\', '
+      u'\'https://www.sqlite.org/2017/sqlite-dll-win32-x86-{0:s}.zip\', '
       u'\'C:\\Projects\\sqlite-dll-win32-x86-{0:s}.zip\')').format(
           _VERSION_SQLITE)
 
