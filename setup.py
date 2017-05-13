@@ -124,7 +124,7 @@ setup(
     maintainer_email='log2timeline-dev@googlegroups.com',
     cmdclass={
         'bdist_rpm': BdistRPMCommand,
-        'sdist_test_data': sdist}
+        'sdist_test_data': sdist},
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
