@@ -345,6 +345,9 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
     file_content.append(u'')
 
     dependencies = self._dependency_helper.GetDPKGDepends(exclude_version=True)
+    if u'python-backports.lzma' in dependencies:
+      dependencies.remove(u'python-backports.lzma')
+
     dependencies = u' '.join(dependencies)
     dependencies = dependencies.replace(u'python', u'python3')
     file_content.append(u'PYTHON3_DEPENDENCIES="{0:s}";'.format(dependencies))
