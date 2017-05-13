@@ -131,7 +131,7 @@ class DependencyHelper(object):
     """
     module_object = self._ImportPythonModule(dependency.name)
     if not module_object:
-      status_message = u'missing: {0:s}.'.format(dependency.name)
+      status_message = u'missing: {0:s}'.format(dependency.name)
       return dependency.is_optional, status_message
 
     if not dependency.version_property or not dependency.minimum_version:
@@ -187,7 +187,7 @@ class DependencyHelper(object):
 
     if module_version_map < minimum_version_map:
       status_message = (
-          u'{0:s} version: {1!s} is too old, {2!s} or later required.').format(
+          u'{0:s} version: {1!s} is too old, {2!s} or later required').format(
               module_name, module_version, minimum_version)
       return False, status_message
 
@@ -197,7 +197,7 @@ class DependencyHelper(object):
       if module_version_map > maximum_version_map:
         status_message = (
             u'{0:s} version: {1!s} is too recent, {2!s} or earlier '
-            u'required.').format(module_name, module_version, maximum_version)
+            u'required').format(module_name, module_version, maximum_version)
         return False, status_message
 
     status_message = u'{0:s} version: {1!s}'.format(module_name, module_version)
