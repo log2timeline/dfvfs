@@ -31,6 +31,7 @@ class AppveyorYmlWriter(DependencyFileWriter):
 
   _VERSION_PYWIN32 = u'220'
   _VERSION_WMI = u'1.4.9'
+  _VERSION_SQLITE = u'3080803'
 
   _DOWNLOAD_PIP = (
       u'  - ps: (new-object net.webclient).DownloadFile('
@@ -62,6 +63,21 @@ class AppveyorYmlWriter(DependencyFileWriter):
       u'  - cmd: "%PYTHON%\\\\Scripts\\\\easy_install.exe '
       u'C:\\\\Projects\\\\WMI-{0:s}.win32.exe"').format(_VERSION_WMI)
 
+  _DOWNLOAD_SQLITE = (
+      u'  - ps: (new-object net.webclient).DownloadFile('
+      u'\'https://www.sqlite.org/2015/sqlite-dll-win32-x86-{0:s}.zip\', '
+      u'\'C:\\Projects\\sqlite-dll-win32-x86-{0:s}.zip\')').format(
+          _VERSION_SQLITE)
+
+  _EXTRACT_SQLITE = (
+      u'  - ps: $Output = Invoke-Expression -Command '
+      u'"& \'C:\\\\Program Files\\\\7-Zip\\\\7z.exe\' -y '
+      u'-oC:\\\\Projects\\\\ x C:\\\\Projects\\\\'
+      u'sqlite-dll-win32-x86-{0:s}.zip 2>&1"').format(_VERSION_SQLITE)
+
+  _INSTALL_SQLITE = (
+      u'  - cmd: copy C:\\Projects\\sqlite3.dll C:\\Python27\\DLLs\\')
+
   _DOWNLOAD_L2TDEVTOOLS = (
       u'  - cmd: git clone https://github.com/log2timeline/l2tdevtools.git && '
       u'move l2tdevtools ..\\')
@@ -77,9 +93,12 @@ class AppveyorYmlWriter(DependencyFileWriter):
       _DOWNLOAD_PIP,
       _DOWNLOAD_PYWIN32,
       _DOWNLOAD_WMI,
+      _DOWNLOAD_SQLITE,
       _INSTALL_PIP,
       _INSTALL_PYWIN32,
       _INSTALL_WMI,
+      _EXTRACT_SQLITE,
+      _INSTALL_SQLITE,
       _DOWNLOAD_L2TDEVTOOLS]
 
   _L2TDEVTOOLS_UPDATE = (
@@ -102,7 +121,7 @@ class AppveyorYmlWriter(DependencyFileWriter):
     file_content.extend(self._FILE_HEADER)
 
     dependencies = self._dependency_helper.GetL2TBinaries()
-    dependencies.extend([u'funcsigs', u'mock', u'pbr', u'six'])
+    dependencies.extend([u'funcsigs', u'mock', u'pbr'])
     dependencies = u' '.join(dependencies)
 
     l2tdevtools_update = self._L2TDEVTOOLS_UPDATE.format(dependencies)
@@ -224,6 +243,14 @@ class SetupCfgWriter(DependencyFileWriter):
       u'Log2Timeline maintainers <log2timeline-maintainers@googlegroups.com>')
 
   _FILE_HEADER = [
+      u'[sdist]',
+      u'template = MANIFEST.in',
+      u'manifest = MANIFEST',
+      u'',
+      u'[sdist_test_data]',
+      u'template = MANIFEST.test_data.in',
+      u'manifest = MANIFEST.test_data',
+      u'',
       u'[bdist_rpm]',
       u'release = 1',
       u'packager = {0:s}'.format(_MAINTAINER),
@@ -304,7 +331,7 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
 
     file_content.append(u'')
     file_content.append(
-        u'L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr six";')
+        u'L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr";')
 
     file_content.append(u'')
 
