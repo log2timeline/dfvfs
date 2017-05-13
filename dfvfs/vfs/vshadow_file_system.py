@@ -6,16 +6,12 @@ import pyvshadow
 # This is necessary to prevent a circular import.
 import dfvfs.vfs.vshadow_file_entry
 
-from dfvfs import dependencies
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import vshadow
 from dfvfs.path import vshadow_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
-
-
-dependencies.CheckModuleVersion(u'pyvshadow')
 
 
 class VShadowFileSystem(file_system.FileSystem):

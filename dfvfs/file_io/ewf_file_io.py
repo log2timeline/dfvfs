@@ -3,14 +3,10 @@
 
 import pyewf
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.lib import ewf
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pyewf')
 
 
 class EWFFile(file_object_io.FileObjectIO):

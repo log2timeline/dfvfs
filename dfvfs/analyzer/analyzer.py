@@ -3,13 +3,9 @@
 
 import pysigscan
 
-from dfvfs import dependencies
 from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pysigscan')
 
 
 class Analyzer(object):

@@ -5,16 +5,66 @@
 import os
 import sys
 
-# Change PYTHONPATH to include dfvfs.
+# Change PYTHONPATH to include dependencies.
 sys.path.insert(0, u'.')
 
-import dfvfs.dependencies  # pylint: disable=wrong-import-position
+import utils.dependencies  # pylint: disable=wrong-import-position
 
 
-class AppveyorYmlWriter(object):
+class DependencyFileWriter(object):
+  """Dependency file writer."""
+
+  def __init__(self, dependency_helper):
+    """Initializes a dependency file writer.
+
+    Args:
+      dependency_helper (DependencyHelper): dependency helper.
+    """
+    super(DependencyFileWriter, self).__init__()
+    self._dependency_helper = dependency_helper
+
+
+class AppveyorYmlWriter(DependencyFileWriter):
   """Appveyor.yml file writer."""
 
   _PATH = os.path.join(u'appveyor.yml')
+
+  _VERSION_PYWIN32 = u'220'
+  _VERSION_WMI = u'1.4.9'
+
+  _DOWNLOAD_PIP = (
+      u'  - ps: (new-object net.webclient).DownloadFile('
+      u'\'https://bootstrap.pypa.io/get-pip.py\', '
+      u'\'C:\\Projects\\get-pip.py\')')
+
+  _DOWNLOAD_PYWIN32 = (
+      u'  - ps: (new-object net.webclient).DownloadFile('
+      u'\'https://github.com/log2timeline/l2tbinaries/raw/master/win32/'
+      u'pywin32-{0:s}.win32-py2.7.exe\', '
+      u'\'C:\\Projects\\pywin32-{0:s}.win32-py2.7.exe\')').format(
+          _VERSION_PYWIN32)
+
+  _DOWNLOAD_WMI = (
+      u'  - ps: (new-object net.webclient).DownloadFile('
+      u'\'https://github.com/log2timeline/l2tbinaries/raw/master/win32/'
+      u'WMI-{0:s}.win32.exe\', \'C:\\Projects\\WMI-{0:s}.win32.exe\')').format(
+          _VERSION_WMI)
+
+  _INSTALL_PIP = (
+      u'  - cmd: "%PYTHON%\\\\python.exe C:\\\\Projects\\\\get-pip.py"')
+
+  _INSTALL_PYWIN32 = (
+      u'  - cmd: "%PYTHON%\\\\Scripts\\\\easy_install.exe '
+      u'C:\\\\Projects\\\\pywin32-{0:s}.win32-py2.7.exe"').format(
+          _VERSION_PYWIN32)
+
+  _INSTALL_WMI = (
+      u'  - cmd: "%PYTHON%\\\\Scripts\\\\easy_install.exe '
+      u'C:\\\\Projects\\\\WMI-{0:s}.win32.exe"').format(_VERSION_WMI)
+
+  _DOWNLOAD_L2TDEVTOOLS = (
+      u'  - cmd: git clone https://github.com/log2timeline/l2tdevtools.git && '
+      u'move l2tdevtools ..\\')
 
   _FILE_HEADER = [
       u'environment:',
@@ -24,23 +74,13 @@ class AppveyorYmlWriter(object):
       u'install:',
       (u'  - cmd: \'"C:\\Program Files\\Microsoft SDKs\\Windows\\v7.1\\Bin\\'
        u'SetEnv.cmd" /x86 /release\''),
-      (u'  - ps: (new-object net.webclient).DownloadFile('
-       u'\'https://bootstrap.pypa.io/get-pip.py\', '
-       u'\'C:\\Projects\\get-pip.py\')'),
-      (u'  - ps: (new-object net.webclient).DownloadFile('
-       u'\'https://github.com/log2timeline/l2tbinaries/raw/master/win32/'
-       u'pywin32-220.win32-py2.7.exe\', '
-       u'\'C:\\Projects\\pywin32-220.win32-py2.7.exe\')'),
-      (u'  - ps: (new-object net.webclient).DownloadFile('
-       u'\'https://github.com/log2timeline/l2tbinaries/raw/master/win32/'
-       u'WMI-1.4.9.win32.exe\', \'C:\\Projects\\WMI-1.4.9.win32.exe\')'),
-      u'  - cmd: "%PYTHON%\\\\python.exe C:\\\\Projects\\\\get-pip.py"',
-      (u'  - cmd: "%PYTHON%\\\\Scripts\\\\easy_install.exe '
-       u'C:\\\\Projects\\\\pywin32-220.win32-py2.7.exe"'),
-      (u'  - cmd: "%PYTHON%\\\\Scripts\\\\easy_install.exe '
-       u'C:\\\\Projects\\\\WMI-1.4.9.win32.exe"'),
-      (u'  - cmd: git clone https://github.com/log2timeline/l2tdevtools.git '
-       u'&& move l2tdevtools ..\\')]
+      _DOWNLOAD_PIP,
+      _DOWNLOAD_PYWIN32,
+      _DOWNLOAD_WMI,
+      _INSTALL_PIP,
+      _INSTALL_PYWIN32,
+      _INSTALL_WMI,
+      _DOWNLOAD_L2TDEVTOOLS]
 
   _L2TDEVTOOLS_UPDATE = (
       u'  - cmd: mkdir dependencies && set PYTHONPATH=..\\l2tdevtools && '
@@ -61,8 +101,8 @@ class AppveyorYmlWriter(object):
     file_content = []
     file_content.extend(self._FILE_HEADER)
 
-    dependencies = dfvfs.dependencies.GetL2TBinaries()
-    dependencies.extend([u'funcsigs', u'mock', u'pbr'])
+    dependencies = self._dependency_helper.GetL2TBinaries()
+    dependencies.extend([u'funcsigs', u'mock', u'pbr', u'six'])
     dependencies = u' '.join(dependencies)
 
     l2tdevtools_update = self._L2TDEVTOOLS_UPDATE.format(dependencies)
@@ -77,16 +117,18 @@ class AppveyorYmlWriter(object):
       file_object.write(file_content)
 
 
-class DPKGControlWriter(object):
+class DPKGControlWriter(DependencyFileWriter):
   """Dpkg control file writer."""
 
   _PATH = os.path.join(u'config', u'dpkg', u'control')
+
+  _PROJECT_NAME = u'dfvfs'
 
   _MAINTAINER = (
       u'Log2Timeline maintainers <log2timeline-maintainers@googlegroups.com>')
 
   _FILE_HEADER = [
-      u'Source: dfvfs',
+      u'Source: {0:s}'.format(_PROJECT_NAME),
       u'Section: python',
       u'Priority: extra',
       u'Maintainer: {0:s}'.format(_MAINTAINER),
@@ -99,11 +141,11 @@ class DPKGControlWriter(object):
       u'']
 
   _PYTHON2_PACKAGE_HEADER = [
-      u'Package: python-dfvfs',
+      u'Package: python-{0:s}'.format(_PROJECT_NAME),
       u'Architecture: all']
 
   _PYTHON3_PACKAGE_HEADER = [
-      u'Package: python3-dfvfs',
+      u'Package: python3-{0:s}'.format(_PROJECT_NAME),
       u'Architecture: all']
 
   _PYTHON_PACKAGE_FOOTER = [
@@ -125,7 +167,7 @@ class DPKGControlWriter(object):
     file_content.extend(self._FILE_HEADER)
     file_content.extend(self._PYTHON2_PACKAGE_HEADER)
 
-    dependencies = dfvfs.dependencies.GetDPKGDepends()
+    dependencies = self._dependency_helper.GetDPKGDepends()
     dependencies.extend([u'${python:Depends}', u'${misc:Depends}'])
     dependencies = u', '.join(dependencies)
 
@@ -147,21 +189,23 @@ class DPKGControlWriter(object):
       file_object.write(file_content)
 
 
-class RequirementsWriter(object):
+class RequirementsWriter(DependencyFileWriter):
   """Requirements.txt file writer."""
 
   _PATH = u'requirements.txt'
 
   _FILE_HEADER = [
       u'pip >= 7.0.0',
-      u'pytest']
+      u'pytest',
+      u'mock']
 
   def Write(self):
     """Writes a requirements.txt file."""
     file_content = []
     file_content.extend(self._FILE_HEADER)
 
-    for dependency in dfvfs.dependencies.GetInstallRequires():
+    dependencies = self._dependency_helper.GetInstallRequires()
+    for dependency in dependencies:
       file_content.append(u'{0:s}'.format(dependency))
 
     file_content = u'\n'.join(file_content)
@@ -171,7 +215,7 @@ class RequirementsWriter(object):
       file_object.write(file_content)
 
 
-class SetupCfgWriter(object):
+class SetupCfgWriter(DependencyFileWriter):
   """Setup.cfg file writer."""
 
   _PATH = u'setup.cfg'
@@ -180,14 +224,6 @@ class SetupCfgWriter(object):
       u'Log2Timeline maintainers <log2timeline-maintainers@googlegroups.com>')
 
   _FILE_HEADER = [
-      u'[sdist]',
-      u'template = MANIFEST.in',
-      u'manifest = MANIFEST',
-      u'',
-      u'[sdist_test_data]',
-      u'template = MANIFEST.test_data.in',
-      u'manifest = MANIFEST.test_data',
-      u'',
       u'[bdist_rpm]',
       u'release = 1',
       u'packager = {0:s}'.format(_MAINTAINER),
@@ -202,7 +238,7 @@ class SetupCfgWriter(object):
     file_content = []
     file_content.extend(self._FILE_HEADER)
 
-    dependencies = dfvfs.dependencies.GetRPMRequires()
+    dependencies = self._dependency_helper.GetRPMRequires()
     for index, dependency in enumerate(dependencies):
       if index == 0:
         file_content.append(u'requires = {0:s}'.format(dependency))
@@ -216,11 +252,10 @@ class SetupCfgWriter(object):
       file_object.write(file_content)
 
 
-class TravisBeforeInstallScriptWriter(object):
+class TravisBeforeInstallScriptWriter(DependencyFileWriter):
   """Travis-CI install.sh file writer."""
 
-  _PATH = os.path.join(
-      u'config', u'travis', u'install.sh')
+  _PATH = os.path.join(u'config', u'travis', u'install.sh')
 
   _FILE_HEADER = [
       u'#!/bin/bash',
@@ -262,19 +297,19 @@ class TravisBeforeInstallScriptWriter(object):
     file_content = []
     file_content.extend(self._FILE_HEADER)
 
-    dependencies = dfvfs.dependencies.GetL2TBinaries()
+    dependencies = self._dependency_helper.GetL2TBinaries()
     dependencies = u' '.join(dependencies)
     file_content.append(u'L2TBINARIES_DEPENDENCIES="{0:s}";'.format(
         dependencies))
 
     file_content.append(u'')
-    file_content.append(u'L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr";')
+    file_content.append(
+        u'L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr six";')
 
     file_content.append(u'')
 
-    dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
-    dependencies.append(u'python-lzma')
-    dependencies = u' '.join(sorted(dependencies))
+    dependencies = self._dependency_helper.GetDPKGDepends(exclude_version=True)
+    dependencies = u' '.join(dependencies)
     file_content.append(u'PYTHON2_DEPENDENCIES="{0:s}";'.format(dependencies))
 
     file_content.append(u'')
@@ -282,14 +317,13 @@ class TravisBeforeInstallScriptWriter(object):
 
     file_content.append(u'')
 
-    dependencies = dfvfs.dependencies.GetDPKGDepends(exclude_version=True)
+    dependencies = self._dependency_helper.GetDPKGDepends(exclude_version=True)
     dependencies = u' '.join(dependencies)
     dependencies = dependencies.replace(u'python', u'python3')
     file_content.append(u'PYTHON3_DEPENDENCIES="{0:s}";'.format(dependencies))
 
     file_content.append(u'')
     file_content.append(u'PYTHON3_TEST_DEPENDENCIES="python3-mock";')
-
 
     file_content.extend(self._FILE_FOOTER)
 
@@ -301,8 +335,10 @@ class TravisBeforeInstallScriptWriter(object):
 
 
 if __name__ == u'__main__':
+  helper = utils.dependencies.DependencyHelper()
+
   for writer_class in (
       AppveyorYmlWriter, DPKGControlWriter, RequirementsWriter, SetupCfgWriter,
       TravisBeforeInstallScriptWriter):
-    writer = writer_class()
+    writer = writer_class(helper)
     writer.Write()

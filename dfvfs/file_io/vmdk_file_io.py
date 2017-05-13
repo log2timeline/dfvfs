@@ -3,14 +3,10 @@
 
 import pyvmdk
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pyvmdk')
 
 
 class VMDKFile(file_object_io.FileObjectIO):
