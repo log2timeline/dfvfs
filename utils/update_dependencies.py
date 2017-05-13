@@ -347,6 +347,8 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
     dependencies = self._dependency_helper.GetDPKGDepends(exclude_version=True)
     if u'python-backports.lzma' in dependencies:
       dependencies.remove(u'python-backports.lzma')
+    if u'python-pysqlite' in dependencies:
+      dependencies.remove(u'python-pysqlite')
 
     dependencies = u' '.join(dependencies)
     dependencies = dependencies.replace(u'python', u'python3')
