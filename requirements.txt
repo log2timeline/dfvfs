@@ -1,6 +1,7 @@
 pip >= 7.0.0
 pytest
 mock
+backports.lzma
 construct >= 2.5.2,<= 2.5.3
 dfdatetime >= 20160814
 libbde-python >= 20140531
@@ -17,7 +18,5 @@ libvmdk-python >= 20140421
 libvshadow-python >= 20160109
 libvslvm-python >= 20160109
 pycrypto >= 2.6.0
-pyliblzma >= 0.5.3
-pysqlite
 pytsk3 >= 20160721
 six >= 1.1.0

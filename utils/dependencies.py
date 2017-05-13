@@ -69,7 +69,7 @@ class DependencyDefinitionReader(object):
       object: value or None if the value does not exists.
     """
     try:
-      return config_parser.get(section_name, value_name).decode('utf-8')
+      return config_parser.get(section_name, value_name)
     except configparser.NoOptionError:
       return
 
@@ -107,7 +107,7 @@ class DependencyHelper(object):
 
     dependency_reader = DependencyDefinitionReader()
 
-    with open(u'dependencies.ini', 'rb') as file_object:
+    with open(u'dependencies.ini', 'r') as file_object:
       for dependency in dependency_reader.Read(file_object):
         self._dependencies[dependency.name] = dependency
 
@@ -320,7 +320,9 @@ class DependencyHelper(object):
     print(u'Checking availability and versions of test dependencies.')
     check_result = True
 
-    for dependency in sorted(self._test_dependencies.values()):
+    for dependency in sorted(
+        self._test_dependencies.values(),
+        key=lambda dependency: dependency.name):
       result, status_message = self._CheckPythonModule(dependency)
       if not result:
         check_result = False
@@ -345,7 +347,8 @@ class DependencyHelper(object):
       list[str]: dependency definitions for requires for DPKG control file.
     """
     requires = []
-    for dependency in sorted(self._dependencies.values()):
+    for dependency in sorted(
+        self._dependencies.values(), key=lambda dependency: dependency.name):
       module_name = dependency.dpkg_name or dependency.name
 
       if exclude_version or not dependency.minimum_version:
@@ -365,7 +368,8 @@ class DependencyHelper(object):
       list[str]: dependency definitions for l2tbinaries.
     """
     requires = []
-    for dependency in sorted(self._dependencies.values()):
+    for dependency in sorted(
+        self._dependencies.values(), key=lambda dependency: dependency.name):
       module_name = dependency.l2tbinaries_name or dependency.name
 
       requires.append(module_name)
@@ -379,8 +383,18 @@ class DependencyHelper(object):
       list[str]: dependency definitions for install_requires for setup.py.
     """
     install_requires = []
-    for dependency in sorted(self._dependencies.values()):
+    for dependency in sorted(
+        self._dependencies.values(), key=lambda dependency: dependency.name):
       module_name = dependency.pypi_name or dependency.name
+
+      # Use the backports.lzma instead of pyliblzma.
+      if module_name == u'pyliblzma':
+        install_requires.append(u'backports.lzma')
+        continue
+
+      # Use the sqlite3 module provided by the standard library.
+      if module_name == u'pysqlite':
+        continue
 
       if not dependency.minimum_version:
         requires_string = module_name
@@ -406,7 +420,8 @@ class DependencyHelper(object):
       list[str]: dependency definitions for requires for setup.cfg.
     """
     requires = []
-    for dependency in sorted(self._dependencies.values()):
+    for dependency in sorted(
+        self._dependencies.values(), key=lambda dependency: dependency.name):
       module_name = dependency.rpm_name or dependency.name
 
       if exclude_version or not dependency.minimum_version:
