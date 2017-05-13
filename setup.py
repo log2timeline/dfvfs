@@ -5,7 +5,10 @@
 import os
 import sys
 
-import run_tests
+try:
+  import run_tests
+except ImportError:
+  run_tests = None
 
 try:
   from setuptools import find_packages, setup, Command
@@ -111,7 +114,8 @@ class TestCommand(Command):
     pass
 
   def run(self):
-    test_results = run_tests.RunTests(os.path.join('.', 'dfvfs'))
+    if run_tests:
+      run_tests.RunTests(os.path.join('.', 'dfvfs'))
 
 
 dfvfs_version = dfvfs.__version__
