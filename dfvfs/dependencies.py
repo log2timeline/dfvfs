@@ -16,7 +16,6 @@ PYTHON_DEPENDENCIES = {
     u'construct': (u'__version__', u'2.5.2', u'2.5.3', True),
     u'Crypto': (u'__version__', u'2.6.0', None, True),
     u'dfdatetime': (u'__version__', u'20160319', None, True),
-    u'lzma': (u'__version__', u'0.5.3', None, False),
     u'pybde': (u'get_version()', u'20140531', None, True),
     u'pyewf': (u'get_version()', u'20131210', None, True),
     u'pyfsntfs': (u'get_version()', u'20151130', None, True),
@@ -38,7 +37,6 @@ PYTHON_TEST_DEPENDENCIES = {}
 # Maps Python module names to DPKG packages.
 _DPKG_PACKAGE_NAMES = {
     u'Crypto': u'python-crypto',
-    u'lzma': u'python-lzma',
     u'pybde': u'libbde-python',
     u'pyewf': u'libewf-python',
     u'pyfsntfs': u'libfsntfs-python',
@@ -72,7 +70,6 @@ _L2TBINARIES_PACKAGE_NAMES = {
 # Maps Python module names to PyPI projects.
 _PYPI_PROJECT_NAMES = {
     u'Crypto': u'pycrypto',
-    u'lzma': u'pyliblzma',
     u'pybde': u'libbde-python',
     u'pyewf': u'libewf-python',
     u'pyfsntfs': u'libfsntfs-python',
@@ -91,7 +88,6 @@ _PYPI_PROJECT_NAMES = {
 # Maps Python module names to RPM packages.
 _RPM_PACKAGE_NAMES = {
     u'Crypto': u'python-crypto',
-    u'lzma': u'pyliblzma',
     u'pybde': u'libbde-python',
     u'pyewf': u'libewf-python',
     u'pyfsntfs': u'libfsntfs-python',
