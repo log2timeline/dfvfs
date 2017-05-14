@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream path specification implementation."""
 
+import codecs
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
@@ -51,14 +53,21 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
 
     if self.cipher_mode:
       string_parts.append(u'cipher_mode: {0:s}'.format(self.cipher_mode))
+
     if self.encryption_method:
       string_parts.append(u'encryption_method: {0:s}'.format(
           self.encryption_method))
+
     if self.initialization_vector:
+      initialization_vector = codecs.encode(self.initialization_vector, u'hex')
+      initialization_vector = initialization_vector.decode(u'ascii')
       string_parts.append(u'initialization_vector: {0:s}'.format(
-          self.initialization_vector.encode(u'hex')))
+          initialization_vector))
+
     if self.key:
-      string_parts.append(u'key: {0:s}'.format(self.key.encode(u'hex')))
+      key = codecs.encode(self.key, u'hex')
+      key = key.decode(u'ascii')
+      string_parts.append(u'key: {0:s}'.format(key))
 
     return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
 

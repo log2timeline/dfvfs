@@ -49,7 +49,8 @@ class EncryptedStreamPathSpecTest(test_lib.PathSpecTestCase):
     # Test with credentials.
     path_spec = encrypted_stream_path_spec.EncryptedStreamPathSpec(
         cipher_mode=definitions.ENCRYPTION_MODE_CBC, encryption_method=u'test',
-        initialization_vector=u'This is IV.', key=u'This is key.',
+        initialization_vector=b'\x54\x68\x69\x73\x20\x69\x73\x20\x49\x56\x2e',
+        key=b'\x54\x68\x69\x73\x20\x69\x73\x20\x6b\x65\x79\x2e',
         parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
