@@ -315,7 +315,7 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
       u'\tsudo add-apt-repository ppa:gift/dev -y;',
       u'\tsudo apt-get update -q;',
       (u'\tsudo apt-get install -y ${COVERALL_DEPENDENCIES} '
-       u'${PYTHON2_DEPENDENCIES} ${PYTHON2_TEST_DEPENDENCIES};'),
+       u'${PYTHON2_DEPENDENCIES} ${PYTHON_TEST_DEPENDENCIES};'),
       u'',
       (u'elif test ${TRAVIS_OS_NAME} = "linux" && '
        u'test ${TRAVIS_PYTHON_VERSION} = "3.4";'),
@@ -323,7 +323,7 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
       u'\tsudo add-apt-repository ppa:gift/dev -y;',
       u'\tsudo apt-get update -q;',
       (u'\tsudo apt-get install -y ${COVERALL_DEPENDENCIES} '
-       u'${PYTHON3_DEPENDENCIES} ${PYTHON3_TEST_DEPENDENCIES};'),
+       u'${PYTHON3_DEPENDENCIES} ${PYTHON_TEST_DEPENDENCIES};'),
       u'fi',
       u'']
 
@@ -348,9 +348,6 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
     file_content.append(u'PYTHON2_DEPENDENCIES="{0:s}";'.format(dependencies))
 
     file_content.append(u'')
-    file_content.append(u'PYTHON2_TEST_DEPENDENCIES="python-mock";')
-
-    file_content.append(u'')
 
     dependencies = self._dependency_helper.GetDPKGDepends(exclude_version=True)
     if u'python-backports.lzma' in dependencies:
@@ -363,7 +360,7 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
     file_content.append(u'PYTHON3_DEPENDENCIES="{0:s}";'.format(dependencies))
 
     file_content.append(u'')
-    file_content.append(u'PYTHON3_TEST_DEPENDENCIES="python3-mock";')
+    file_content.append(u'PYTHON_TEST_DEPENDENCIES="python-mock";')
 
     file_content.extend(self._FILE_FOOTER)
 
