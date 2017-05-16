@@ -83,6 +83,9 @@ class CodeReviewHelper(CLIHelper):
           u'jberggren@gmail.com',
           u'someguyiknow@google.com',
           u'tomchop@gmail.com']),
+      u'l2tpreg': frozenset([
+          u'joachim.metz@gmail.com',
+          u'onager@deerpie.com']),
       u'plaso': frozenset([
           u'aaronp@gmail.com',
           u'jberggren@gmail.com',
@@ -940,8 +943,17 @@ class ProjectHelper(CLIHelper):
       u'Google Inc. (*@google.com)']
 
   SUPPORTED_PROJECTS = frozenset([
-      u'artifacts', u'dfdatetime', u'dfkinds', u'dfvfs', u'dfwinreg',
-      u'dftimewolf', u'eccemotus', u'l2tdevtools', u'l2tdocs', u'plaso'])
+      u'artifacts',
+      u'dfdatetime',
+      u'dfkinds',
+      u'dfvfs',
+      u'dfwinreg',
+      u'dftimewolf',
+      u'eccemotus',
+      u'l2tdevtools',
+      u'l2tdocs',
+      u'l2tpreg',
+      u'plaso'])
 
   def __init__(self, script_path):
     """Initializes a project helper.
@@ -1131,13 +1143,7 @@ class ProjectHelper(CLIHelper):
     date_version = time.strftime(u'%Y%m%d')
     lines = version_file_contents.split(u'\n')
     for line_index, line in enumerate(lines):
-      if (self.project_name == u'plaso' and
-          line.startswith(u'VERSION_DATE = ')):
-        version_string = u'VERSION_DATE = \'{0:s}\''.format(date_version)
-        lines[line_index] = version_string
-
-      elif (self.project_name != u'plaso' and
-            line.startswith(u'__version__ = ')):
+      if line.startswith(u'__version__ = '):
         version_string = u'__version__ = \'{0:s}\''.format(date_version)
         lines[line_index] = version_string
 
