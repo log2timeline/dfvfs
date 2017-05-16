@@ -103,7 +103,6 @@ class TARFileSystem(file_system.FileSystem):
       pass
 
     # Check if location could be a virtual directory.
-
     for name in iter(self._tar_file.getnames()):
       # The TAR info name does not have the leading path separator as
       # the location string does.

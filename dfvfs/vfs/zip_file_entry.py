@@ -29,6 +29,13 @@ class ZipDirectory(file_entry.Directory):
         not location.startswith(self._file_system.PATH_SEPARATOR)):
       return
 
+    # The zip_info filename does not have the leading path separates
+    # as the location string does.
+    zip_path = location[1:]
+
+    # Set of top level sub directories that have been yielded.
+    processed_directories = set()
+
     zip_file = self._file_system.GetZipFile()
     for zip_info in zip_file.infolist():
       path = getattr(zip_info, u'filename', None)
@@ -38,19 +45,33 @@ class ZipDirectory(file_entry.Directory):
         except UnicodeDecodeError:
           path = None
 
-      if not path or not path.startswith(location[1:]):
+      if not path or not path.startswith(zip_path):
         continue
 
-      _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
-
-      # Ignore anything that is part of a sub directory or the directory itself.
-      if suffix or path == location[1:]:
+      # Ignore the directory itself.
+      if path == zip_path:
         continue
 
-      path_spec_location = self._file_system.JoinPath([path])
+      path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
+          zip_path, path)
+      if not path_segment:
+        continue
 
-      # Restore / at end path to indicate a directory.
-      if path.endswith(self._file_system.PATH_SEPARATOR):
+      # Some times the ZIP file lacks directories, therefore we will
+      # provide virtual ones.
+      if suffix:
+        path_spec_location = self._file_system.JoinPath([
+            location, path_segment])
+        is_directory = True
+      else:
+        path_spec_location = self._file_system.JoinPath([path])
+        is_directory = path.endswith(u'/')
+
+      if is_directory:
+        if path_spec_location in processed_directories:
+          continue
+        processed_directories.add(path_spec_location)
+        # Restore / at end path to indicate a directory.
         path_spec_location += self._file_system.PATH_SEPARATOR
 
       yield zip_path_spec.ZipPathSpec(
@@ -172,23 +193,36 @@ class ZipFileEntry(file_entry.FileEntry):
   @property
   def name(self):
     """The name of the file entry, which does not include the full path."""
-    zip_info = self.GetZipInfo()
-
-    # Note that the root file entry is virtual and has no zip_info.
-    if zip_info is None:
-      return u''
-
-    return self._file_system.BasenamePath(zip_info.filename)
+    path = getattr(self.path_spec, u'location', None)
+    if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
+      try:
+        path = path.decode(self._file_system.encoding)
+      except UnicodeDecodeError:
+        path = None
+    return self._file_system.BasenamePath(path)
 
   @property
   def sub_file_entries(self):
     """The sub file entries (generator of instance of vfs.FileEntry)."""
+    zip_file = self._file_system.GetZipFile()
+
     if self._directory is None:
       self._directory = self._GetDirectory()
 
-    if self._directory:
+    if self._directory and zip_file:
       for path_spec in self._directory.entries:
-        yield ZipFileEntry(self._resolver_context, self._file_system, path_spec)
+        location = getattr(path_spec, u'location', None)
+        if location is None:
+          continue
+
+        kwargs = {}
+        try:
+          kwargs[u'zip_info'] = zip_file.getinfo(location[1:])
+        except KeyError:
+          kwargs[u'is_virtual'] = True
+
+        yield ZipFileEntry(
+            self._resolver_context, self._file_system, path_spec, **kwargs)
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
@@ -232,5 +266,8 @@ class ZipFileEntry(file_entry.FileEntry):
         return
 
       zip_file = self._file_system.GetZipFile()
-      self._zip_info = zip_file.getinfo(location[1:])
+      try:
+        self._zip_info = zip_file.getinfo(location[1:])
+      except KeyError:
+        pass
     return self._zip_info

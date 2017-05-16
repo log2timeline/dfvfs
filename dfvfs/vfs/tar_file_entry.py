@@ -67,7 +67,6 @@ class TARDirectory(file_entry.Directory):
       if is_directory:
         if path_spec_location in processed_directories:
           continue
-
         processed_directories.add(path_spec_location)
 
       yield tar_path_spec.TARPathSpec(

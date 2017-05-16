@@ -33,6 +33,7 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+  @shared_test_lib.skipUnlessHasTestFile([u'missing_directory_entries.tar'])
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = tar_file_system.TARFileSystem(self._resolver_context)
@@ -70,6 +71,7 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+  @shared_test_lib.skipUnlessHasTestFile([u'missing_directory_entries.tar'])
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = tar_file_system.TARFileSystem(self._resolver_context)

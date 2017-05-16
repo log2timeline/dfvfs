@@ -85,22 +85,29 @@ class ZipFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    zip_info = None
     location = getattr(path_spec, u'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
-      return
+      return False
 
     if len(location) == 1:
       return True
 
     try:
-      zip_info = self._zip_file.getinfo(location[1:])
+      self._zip_file.getinfo(location[1:])
+      return True
     except KeyError:
       pass
 
-    return zip_info is not None
+    # Check if location could be a virtual directory.
+    for name in iter(self._zip_file.namelist()):
+      # The ZIP info name does not have the leading path separator as
+      # the location string does.
+      if name.startswith(location[1:]):
+        return True
+
+    return False
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -111,27 +118,24 @@ class ZipFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.ZipFileEntry) or None.
     """
-    zip_info = None
-    location = getattr(path_spec, u'location', None)
-
-    if (location is None or
-        not location.startswith(self.LOCATION_ROOT)):
+    if not self.FileEntryExistsByPathSpec(path_spec):
       return
+
+    location = getattr(path_spec, u'location', None)
 
     if len(location) == 1:
       return dfvfs.vfs.zip_file_entry.ZipFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
+    kwargs = {}
     try:
-      zip_info = self._zip_file.getinfo(location[1:])
+      kwargs[u'zip_info'] = self._zip_file.getinfo(location[1:])
     except KeyError:
-      pass
+      kwargs[u'is_virtual'] = True
 
-    if zip_info is None:
-      return
     return dfvfs.vfs.zip_file_entry.ZipFileEntry(
-        self._resolver_context, self, path_spec, zip_info=zip_info)
+        self._resolver_context, self, path_spec, **kwargs)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
