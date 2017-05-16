@@ -309,21 +309,15 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
        u'--download-directory=dependencies ${L2TBINARIES_DEPENDENCIES} '
        u'${L2TBINARIES_TEST_DEPENDENCIES};'),
       u'',
-      (u'elif test ${TRAVIS_OS_NAME} = "linux" && '
-       u'test ${TRAVIS_PYTHON_VERSION} = "2.7";'),
+      u'elif test ${TRAVIS_OS_NAME} = "linux";',
       u'then',
       u'\tsudo add-apt-repository ppa:gift/dev -y;',
       u'\tsudo apt-get update -q;',
+      u'\t# Only install the Python 2 dependencies.',
+      (u'\t# Also see: https://docs.travis-ci.com/user/languages/python/'
+       u'#Travis-CI-Uses-Isolated-virtualenvs'),
       (u'\tsudo apt-get install -y ${COVERALL_DEPENDENCIES} '
-       u'${PYTHON2_DEPENDENCIES} ${PYTHON_TEST_DEPENDENCIES};'),
-      u'',
-      (u'elif test ${TRAVIS_OS_NAME} = "linux" && '
-       u'test ${TRAVIS_PYTHON_VERSION} = "3.4";'),
-      u'then',
-      u'\tsudo add-apt-repository ppa:gift/dev -y;',
-      u'\tsudo apt-get update -q;',
-      (u'\tsudo apt-get install -y ${COVERALL_DEPENDENCIES} '
-       u'${PYTHON3_DEPENDENCIES} ${PYTHON_TEST_DEPENDENCIES};'),
+       u'${PYTHON2_DEPENDENCIES} ${PYTHON2_TEST_DEPENDENCIES};'),
       u'fi',
       u'']
 
@@ -348,19 +342,7 @@ class TravisBeforeInstallScriptWriter(DependencyFileWriter):
     file_content.append(u'PYTHON2_DEPENDENCIES="{0:s}";'.format(dependencies))
 
     file_content.append(u'')
-
-    dependencies = self._dependency_helper.GetDPKGDepends(exclude_version=True)
-    if u'python-backports.lzma' in dependencies:
-      dependencies.remove(u'python-backports.lzma')
-    if u'python-pysqlite' in dependencies:
-      dependencies.remove(u'python-pysqlite')
-
-    dependencies = u' '.join(dependencies)
-    dependencies = dependencies.replace(u'python', u'python3')
-    file_content.append(u'PYTHON3_DEPENDENCIES="{0:s}";'.format(dependencies))
-
-    file_content.append(u'')
-    file_content.append(u'PYTHON_TEST_DEPENDENCIES="python-mock";')
+    file_content.append(u'PYTHON2_TEST_DEPENDENCIES="python-mock";')
 
     file_content.extend(self._FILE_FOOTER)
 
