@@ -17,24 +17,6 @@ from tests import test_lib as shared_test_lib
 class TARFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the TAR extracted file entry object."""
 
-  def _assertSubFileEntries(self, file_entry, expected_sub_file_entry_names):
-    """Helper function that asserts the sub file entries.
-
-    Args:
-      file_entry (FileEntry): file entry.
-      sub_file_entry_names (list[str]): sub file entry names.
-    """
-    self.assertEqual(
-        file_entry.number_of_sub_file_entries,
-        len(expected_sub_file_entry_names))
-
-    sub_file_entry_names = []
-    for sub_file_entry in file_entry.sub_file_entries:
-      sub_file_entry_names.append(sub_file_entry.name)
-
-    self.assertEqual(
-        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
-
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()

@@ -39,6 +39,24 @@ class BaseTestCase(unittest.TestCase):
   # conventions.
   maxDiff = None
 
+  def _assertSubFileEntries(self, file_entry, expected_sub_file_entry_names):
+    """Helper function that asserts the sub file entries.
+
+    Args:
+      file_entry (FileEntry): file entry.
+      sub_file_entry_names (list[str]): sub file entry names.
+    """
+    self.assertEqual(
+        file_entry.number_of_sub_file_entries,
+        len(expected_sub_file_entry_names))
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEqual(
+        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+
   def _GetTestFilePath(self, path_segments):
     """Retrieves the path of a test file in the test data directory.
 

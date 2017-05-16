@@ -33,6 +33,7 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+  @shared_test_lib.skipUnlessHasTestFile([u'missing_directory_entries.zip'])
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
@@ -50,6 +51,27 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+    # Test on a zip file that has missing directory entries.
+    test_file = self._GetTestFilePath([u'missing_directory_entries.zip'])
+    test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/', parent=test_file_path_spec)
+
+    file_system = zip_file_system.ZipFileSystem(self._resolver_context)
+    self.assertIsNotNone(file_system)
+    file_system.Open(path_spec)
+
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/folder', parent=test_file_path_spec)
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/folder/syslog', parent=test_file_path_spec)
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+
+    file_system.Close()
+
+  @shared_test_lib.skipUnlessHasTestFile([u'missing_directory_entries.zip'])
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
@@ -69,6 +91,31 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
+
+    file_system.Close()
+
+    # Test on a tar file that has missing directory entries.
+    test_file = self._GetTestFilePath([u'missing_directory_entries.zip'])
+    test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/', parent=test_file_path_spec)
+
+    file_system = zip_file_system.ZipFileSystem(self._resolver_context)
+    self.assertIsNotNone(file_system)
+    file_system.Open(path_spec)
+
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/folder', parent=test_file_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsVirtual())
+    self.assertEqual(file_entry.name, u'folder')
+
+    path_spec = zip_path_spec.ZipPathSpec(
+        location=u'/folder/syslog', parent=test_file_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, u'syslog')
 
     file_system.Close()
 
