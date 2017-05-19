@@ -3,12 +3,8 @@
 
 import os
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_io
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pyfsntfs')
 
 
 class NTFSFile(file_io.FileIO):

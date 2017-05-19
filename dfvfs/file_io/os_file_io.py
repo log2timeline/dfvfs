@@ -6,13 +6,9 @@ import os
 
 import pysmdev
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3
-
-
-dependencies.CheckModuleVersion(u'pysmdev')
 
 
 class OSFile(file_io.FileIO):

@@ -2,19 +2,15 @@
 # -*- coding: utf-8 -*-
 """Script to check for the availability and version of dependencies."""
 
-from __future__ import print_function
 import sys
 
-# Change PYTHONPATH to include dfVFS.
+# Change PYTHONPATH to include dependencies.
 sys.path.insert(0, u'.')
 
-import dfvfs.dependencies
+import utils.dependencies  # pylint: disable=wrong-import-position
 
 
 if __name__ == u'__main__':
-  if not dfvfs.dependencies.CheckDependencies():
-    build_instructions_url = (
-        u'https://github.com/log2timeline/dfvfs/wiki/Building')
+  dependency_helper = utils.dependencies.DependencyHelper()
 
-    print(u'See: {0:s} on how to set up dfVFS.'.format(build_instructions_url))
-    print(u'')
+  dependency_helper.CheckDependencies()

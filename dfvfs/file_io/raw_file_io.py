@@ -3,14 +3,10 @@
 
 import pysmraw
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.lib import raw
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pysmraw')
 
 
 class RawFile(file_object_io.FileObjectIO):

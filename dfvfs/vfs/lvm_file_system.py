@@ -6,16 +6,12 @@ import pyvslvm
 # This is necessary to prevent a circular import.
 import dfvfs.vfs.lvm_file_entry
 
-from dfvfs import dependencies
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import lvm
 from dfvfs.path import lvm_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
-
-
-dependencies.CheckModuleVersion(u'pyvslvm')
 
 
 class LVMFileSystem(file_system.FileSystem):

@@ -3,14 +3,10 @@
 
 import pybde
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import bde
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pybde')
 
 
 class BDEFile(file_object_io.FileObjectIO):

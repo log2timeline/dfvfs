@@ -3,14 +3,10 @@
 
 import pyfvde
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import fvde
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pyfvde')
 
 
 class FVDEFile(file_object_io.FileObjectIO):

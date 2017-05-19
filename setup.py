@@ -5,8 +5,6 @@
 import os
 import sys
 
-import run_tests
-
 try:
   from setuptools import find_packages, setup, Command
 except ImportError:
@@ -100,20 +98,6 @@ class BdistRPMCommand(bdist_rpm):
     return python_spec_file
 
 
-class TestCommand(Command):
-  """Run tests, implementing an interface."""
-  user_options = []
-
-  def initialize_options(self):
-    self._dir = os.getcwd()
-
-  def finalize_options(self):
-    pass
-
-  def run(self):
-    test_results = run_tests.RunTests(os.path.join('.', 'dfvfs'))
-
-
 dfvfs_version = dfvfs.__version__
 
 # Command bdist_msi does not support the library version, neither a date
@@ -140,8 +124,7 @@ setup(
     maintainer_email='log2timeline-dev@googlegroups.com',
     cmdclass={
         'bdist_rpm': BdistRPMCommand,
-        'sdist_test_data': sdist,
-        'test': TestCommand},
+        'sdist_test_data': sdist},
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

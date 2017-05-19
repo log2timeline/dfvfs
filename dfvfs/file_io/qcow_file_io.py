@@ -3,13 +3,9 @@
 
 import pyqcow
 
-from dfvfs import dependencies
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
-
-
-dependencies.CheckModuleVersion(u'pyqcow')
 
 
 class QCOWFile(file_object_io.FileObjectIO):
