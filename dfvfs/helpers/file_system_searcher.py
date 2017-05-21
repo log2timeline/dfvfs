@@ -274,7 +274,7 @@ class FindSpec(object):
 
     if search_depth > 0:
       if self._is_regex:
-        if not segment_name.match(file_entry.name):
+        if not segment_name.match(file_entry.name):  # pylint: disable=no-member
           return False
 
       elif self._is_case_sensitive:
