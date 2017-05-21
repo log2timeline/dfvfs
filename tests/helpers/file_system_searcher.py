@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""Tests for the file system searcher object."""
+"""Tests for the file system searcher."""
 
 import os
 import unittest
@@ -17,10 +17,20 @@ from dfvfs.vfs import tsk_file_system
 from tests import test_lib as shared_test_lib
 
 
+class FindSpecTest(shared_test_lib.BaseTestCase):
+  """Tests for the find specification."""
+
+  # TODO: add tests for _CheckKeyPath
+  # TODO: add tests for _SplitPath
+  # TODO: add tests for AtMaximumDepth
+  # TODO: add tests for Initialize
+  # TODO: add tests for Matches
+
+
 @shared_test_lib.skipUnlessHasTestFile([u'password.txt'])
 @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
 class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
-  """The unit test for the file system searcher object."""
+  """Tests for the file system searcher."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

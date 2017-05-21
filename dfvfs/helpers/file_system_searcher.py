@@ -310,7 +310,7 @@ class FindSpec(object):
       bool: True if at maximum depth, False if not.
     """
     if self._location_segments is not None:
-      if search_depth == self._number_of_location_segments:
+      if search_depth >= self._number_of_location_segments:
         return True
 
     return False
