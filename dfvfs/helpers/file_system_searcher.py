@@ -12,44 +12,42 @@ from dfvfs.path import factory as path_spec_factory
 
 
 class FindSpec(object):
-  """Find specification object."""
+  """Find specification."""
 
   def __init__(
-      self, file_entry_types=None, is_allocated=True, location=None,
-      location_glob=None, location_regex=None, case_sensitive=True):
-    """Initializes the find specification object.
+      self, case_sensitive=True, file_entry_types=None, is_allocated=True,
+      location=None, location_glob=None, location_regex=None):
+    """Initializes a find specification.
 
     Args:
-      file_entry_types: optional file entry types list or None to indicate
-                        no preference.
-      is_allocated: optional boolean value to indicate the file entry should
-                    be allocated, where None represents no preference.
-      location: optional location string or list of location segments, or None
-                to indicate no preference. The location should be defined
-                relative to the root of the file system.
-                Note that the string will be split into segments based on the
-                file system specific path segment separator.
-      location_glob: optional location glob string or list of location glob
-                     segments, or None to indicate no preference. The location
-                     glob should be defined relative to the root of the file
-                     system. The default is None. Note that the string will be
-                     split into segments based on the file system specific
-                     path segment separator.
-      location_regex: optional location regular expression string or list of
-                      location regular expression segments, or None to indicate
-                      no preference. The location regular expression should be
-                      defined relative to the root of the file system. The
-                      default is None. Note that the string will be split into
-                      segments based on the file system specific path segment
-                      separator.
-      case_sensitive: optional boolean value to indicate string matches should
-                      be case sensitive.
+      case_sensitive (Optional[bool]): True if string matches should be case
+          sensitive.
+      file_entry_types (Optional[list[str]]): file entry types, where
+          None indicates no preference.
+      is_allocated (Optional[bool]): True if the file entry should be
+          allocated, where None represents no preference.
+      location (Optional[str|list[str]]): location or location segments,
+          where None indicates no preference. The location should be defined
+          relative to the root of the file system. Note that the string will
+          be split into segments based on the file system specific path
+          segment separator.
+      location_glob (Optional[str:list[str]]): location glob or location glob
+          segments, where None indicates no preference. The location glob
+          should be defined relative to the root of the file system. The default
+          is None. Note that the string will be split into segments based on
+          the file system specific path segment separator.
+      location_regex (Optional[str|list[str]]): location regular expression or
+          location regular expression segments, where None indicates no
+          preference. The location regular expression should be defined
+          relative to the root of the file system. The default is None. Note
+          that the string will be split into segments based on the file system
+          specific path segment separator.
 
     Raises:
       TypeError: if the location, location_glob or location_regex type
-                 is not supported.
+          is not supported.
       ValueError: if the location, location_glob or location_regex arguments
-                  are used at the same time.
+          are used at the same time.
     """
     if (location is not None and location_glob is not None and
         location_regex is not None):
@@ -122,11 +120,11 @@ class FindSpec(object):
     """Checks the file entry type find specifications.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not or
-      None if no file entry type specification is defined.
+      bool: True if the file entry matches the find specification, False if
+          not or None if no file entry type specification is defined.
     """
     if self._file_entry_types is None:
       return
@@ -142,11 +140,11 @@ class FindSpec(object):
     """Checks the is_allocated find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not or
-      None if no allocation specification is defined.
+      bool: True if the file entry matches the find specification, False if
+          not or None if no allocation specification is defined.
     """
     if self._is_allocated is None:
       return
@@ -156,10 +154,10 @@ class FindSpec(object):
     """Checks the is_device find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not.
+      bool: True if the file entry matches the find specification, False if not.
     """
     if definitions.FILE_ENTRY_TYPE_DEVICE not in self._file_entry_types:
       return False
@@ -169,10 +167,10 @@ class FindSpec(object):
     """Checks the is_directory find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not.
+      bool: True if the file entry matches the find specification, False if not.
     """
     if definitions.FILE_ENTRY_TYPE_DIRECTORY not in self._file_entry_types:
       return False
@@ -182,10 +180,10 @@ class FindSpec(object):
     """Checks the is_file find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not.
+      bool: True if the file entry matches the find specification, False if not.
     """
     if definitions.FILE_ENTRY_TYPE_FILE not in self._file_entry_types:
       return False
@@ -195,10 +193,10 @@ class FindSpec(object):
     """Checks the is_link find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not.
+      bool: True if the file entry matches the find specification, False if not.
     """
     if definitions.FILE_ENTRY_TYPE_LINK not in self._file_entry_types:
       return False
@@ -208,10 +206,10 @@ class FindSpec(object):
     """Checks the is_pipe find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not.
+      bool: True if the file entry matches the find specification, False if not.
     """
     if definitions.FILE_ENTRY_TYPE_PIPE not in self._file_entry_types:
       return False
@@ -221,10 +219,10 @@ class FindSpec(object):
     """Checks the is_socket find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
+      file_entry (FileEntry): file entry.
 
     Returns:
-      True if the file entry matches the find specification, False if not.
+      bool: True if the file entry matches the find specification, False if not.
     """
     if definitions.FILE_ENTRY_TYPE_SOCKET not in self._file_entry_types:
       return False
@@ -234,11 +232,11 @@ class FindSpec(object):
     """Checks the location find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
-      search_depth: the search depth.
+      file_entry (FileEntry): file entry.
+      search_depth (int): search depth.
 
     Returns:
-      True if the file entry matches the find specification, False if not.
+      bool: True if the file entry matches the find specification, False if not.
     """
     if self._location_segments is None:
       return False
@@ -292,12 +290,12 @@ class FindSpec(object):
     """Splits the path into path segments.
 
     Args:
-      path: a string containing the path.
-      path_separator: a string containing the path separator.
+      path (str): path.
+      path_separator (str): path separator.
 
     Returns:
-      A list of path segements without the root path segment, which is an
-      empty string.
+      list[str]: path segements without the root path segment, which is
+          an empty string.
     """
     # Split the path with the path separator and remove empty path segments.
     return list(filter(None, path.split(path_separator)))
@@ -306,10 +304,10 @@ class FindSpec(object):
     """Determines if the find specification is at maximum depth.
 
     Args:
-      search_depth: the search depth.
+      search_depth (int): search depth.
 
     Returns:
-      True if at maximum depth, False if not.
+      bool: True if at maximum depth, False if not.
     """
     if self._location_segments is not None:
       if search_depth == self._number_of_location_segments:
@@ -321,7 +319,7 @@ class FindSpec(object):
     """Initializes find specification for matching.
 
     Args:
-      file_system: the file system object (instance of FileSystem).
+      file_system (FileSystem): file system.
     """
     if self._location is not None:
       self._location_segments = self._SplitPath(
@@ -343,14 +341,16 @@ class FindSpec(object):
     """Determines if the file entry matches the find specification.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
-      search_depth: the search depth.
+      file_entry (FileEntry): file entry.
+      search_depth (int): search depth.
 
     Returns:
-      A tuple containing:
-        True if the file entry matches the find specification, False otherwise.
-        True if the location matches, False if not or None if no location
-        specified.
+      tuple: contains:
+
+        bool: True if the file entry matches the find specification, False
+            otherwise.
+        bool: True if the location matches, False if not or None if no location
+            specified.
     """
     if self._location_segments is None:
       location_match = None
@@ -374,14 +374,15 @@ class FindSpec(object):
 
 
 class FileSystemSearcher(object):
-  """Searcher object to find file entries within a file system."""
+  """Searcher to find file entries within a file system."""
 
   def __init__(self, file_system, mount_point):
-    """Initializes the file system searcher.
+    """Initializes a file system searcher.
 
     Args:
-      file_system: the file system object (instance of FileSystem).
-      mount_point: the mount point path specification (instance of PathSpec).
+      file_system (FileSystem): file system.
+      mount_point (PathSpec): mount point path specification that refers
+          to the base location of the file system.
 
     Raises:
       PathSpecError: if the mount point path specification is incorrect.
@@ -397,7 +398,6 @@ class FileSystemSearcher(object):
             u'Mount point path specification missing location.')
 
     super(FileSystemSearcher, self).__init__()
-
     self._file_system = file_system
     self._mount_point = mount_point
 
@@ -405,13 +405,12 @@ class FileSystemSearcher(object):
     """Searches for matching file entries within the file entry.
 
     Args:
-      file_entry: the file entry (instance of FileEntry).
-      find_specs: a list of find specifications (instances of FindSpec).
-      search_depth: the search depth.
+      file_entry (FileEntry): file entry.
+      find_specs (list[FindSpec]): find specifications.
+      search_depth (int): search depth.
 
     Yields:
-      The path specification of the matching file entries (instances of
-      PathSpec).
+      PathSpec: path specification of a matching file entry.
     """
     sub_find_specs = []
     for find_spec in find_specs:
@@ -438,13 +437,11 @@ class FileSystemSearcher(object):
     """Searches for matching file entries within the file system.
 
     Args:
-      find_specs: a list of find specifications (instances of FindSpec).
-                  The default is None, which will return all allocated
-                  file entries.
+      find_specs (list[FindSpec]): find specifications. where None
+          will return all allocated file entries.
 
     Yields:
-      The path specification of the matching file entries (instances of
-      PathSpec).
+      PathSpec: path specification of a matching file entry.
     """
     if not find_specs:
       find_specs.append(FindSpec())
@@ -465,10 +462,10 @@ class FileSystemSearcher(object):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of FileEntry) or None.
+      FileEntry: file entry or None.
     """
     return self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -479,11 +476,11 @@ class FileSystemSearcher(object):
     The the location of the mount point is stripped off if relevant.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The corresponding relative path or None if the relative path could not
-      be determined.
+      str: corresponding relative path or None if the relative path could not
+          be determined.
 
     Raises:
       PathSpecError: if the path specification is incorrect.
@@ -521,10 +518,10 @@ class FileSystemSearcher(object):
     """Splits the path into path segments.
 
     Args:
-      path: a string containing the path.
+      path (str): path.
 
     Returns:
-      A list of path segements without the root path segment, which is an
-      empty string.
+      list[str]: path segements without the root path segment, which is an
+          empty string.
     """
     return self._file_system.SplitPath(path)
