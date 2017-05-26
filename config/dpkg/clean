@@ -1,0 +1,3 @@
+dfvfs/*.pyc
+dfvfs/*/*.pyc
+*.pyc

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """The LZMA and XZ decompressor object implementations."""
 
-import lzma
 import sys
+
+import lzma  # pylint: disable=wrong-import-order
 
 # Different versions of lzma define LZMAError in different places.
 # pylint: disable=no-name-in-module
