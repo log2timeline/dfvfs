@@ -235,7 +235,7 @@ class FindSpec(object):
 
     Args:
       file_entry (FileEntry): file entry.
-      search_depth (int): search depth.
+      search_depth (int): number of location path segements to compare.
 
     Returns:
       bool: True if the file entry matches the find specification, False if not.
@@ -306,7 +306,7 @@ class FindSpec(object):
     """Determines if the find specification is at maximum depth.
 
     Args:
-      search_depth (int): search depth.
+      search_depth (int): number of location path segements to compare.
 
     Returns:
       bool: True if at maximum depth, False if not.
@@ -317,34 +317,12 @@ class FindSpec(object):
 
     return False
 
-  def Initialize(self, file_system):
-    """Initializes find specification for matching.
-
-    Args:
-      file_system (FileSystem): file system.
-    """
-    if self._location is not None:
-      self._location_segments = self._SplitPath(
-          self._location, file_system.PATH_SEPARATOR)
-
-    elif self._location_regex is not None:
-      path_separator = file_system.PATH_SEPARATOR
-      if path_separator == u'\\':
-        # The backslash '\' is escaped within a regular expression.
-        path_separator = u'\\\\'
-
-      self._location_segments = self._SplitPath(
-          self._location_regex, path_separator)
-
-    if self._location_segments is not None:
-      self._number_of_location_segments = len(self._location_segments)
-
   def Matches(self, file_entry, search_depth):
     """Determines if the file entry matches the find specification.
 
     Args:
       file_entry (FileEntry): file entry.
-      search_depth (int): search depth.
+      search_depth (int): number of location path segements to compare.
 
     Returns:
       tuple: contains:
@@ -373,6 +351,28 @@ class FindSpec(object):
       return False, location_match
 
     return True, location_match
+
+  def PrepareMatches(self, file_system):
+    """Prepare find specification for matching.
+
+    Args:
+      file_system (FileSystem): file system.
+    """
+    if self._location is not None:
+      self._location_segments = self._SplitPath(
+          self._location, file_system.PATH_SEPARATOR)
+
+    elif self._location_regex is not None:
+      path_separator = file_system.PATH_SEPARATOR
+      if path_separator == u'\\':
+        # The backslash '\' is escaped within a regular expression.
+        path_separator = u'\\\\'
+
+      self._location_segments = self._SplitPath(
+          self._location_regex, path_separator)
+
+    if self._location_segments is not None:
+      self._number_of_location_segments = len(self._location_segments)
 
 
 class FileSystemSearcher(object):
@@ -409,7 +409,7 @@ class FileSystemSearcher(object):
     Args:
       file_entry (FileEntry): file entry.
       find_specs (list[FindSpec]): find specifications.
-      search_depth (int): search depth.
+      search_depth (int): number of location path segements to compare.
 
     Yields:
       PathSpec: path specification of a matching file entry.
@@ -449,7 +449,7 @@ class FileSystemSearcher(object):
       find_specs.append(FindSpec())
 
     for find_spec in find_specs:
-      find_spec.Initialize(self._file_system)
+      find_spec.PrepareMatches(self._file_system)
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         self._file_system.type_indicator):

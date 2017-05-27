@@ -23,7 +23,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for _CheckKeyPath
   # TODO: add tests for _SplitPath
   # TODO: add tests for AtMaximumDepth
-  # TODO: add tests for Initialize
   # TODO: add tests for Matches
 
 
