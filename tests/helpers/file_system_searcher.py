@@ -24,6 +24,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for _SplitPath
   # TODO: add tests for AtMaximumDepth
   # TODO: add tests for Matches
+  # TODO: add tests for PrepareMatches
 
 
 @shared_test_lib.skipUnlessHasTestFile([u'password.txt'])
