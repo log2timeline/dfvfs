@@ -243,7 +243,7 @@ class SetupCfgWriter(DependencyFileWriter):
       u'[sdist_test_data]',
       u'template = MANIFEST.test_data.in',
       u'manifest = MANIFEST.test_data',
-      u''
+      u'',
       u'[bdist_rpm]',
       u'release = 1',
       u'packager = {maintainer:s}',
