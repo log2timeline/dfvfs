@@ -1,6 +1,4 @@
 pip >= 7.0.0
-pytest
-mock
 backports.lzma
 construct >= 2.5.2,<= 2.5.3
 dfdatetime >= 20160814
