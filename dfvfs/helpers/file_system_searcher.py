@@ -49,8 +49,8 @@ class FindSpec(object):
       ValueError: if the location, location_glob or location_regex arguments
           are used at the same time.
     """
-    location_arguments = filter(
-        lambda argument: argument, (location, location_glob, location_regex))
+    location_arguments = [argument for argument in (
+        location, location_glob, location_regex) if argument]
 
     if len(location_arguments) > 1:
       raise ValueError((

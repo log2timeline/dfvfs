@@ -10,7 +10,7 @@ L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr";
 
 PYTHON2_DEPENDENCIES="libbde-python libewf-python libfsntfs-python libfvde-python libfwnt-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python libvslvm-python python-backports.lzma python-construct python-crypto python-dfdatetime python-pysqlite python-pytsk3 python-six";
 
-PYTHON2_TEST_DEPENDENCIES="python-mock";
+PYTHON2_TEST_DEPENDENCIES="python-mock python-tox";
 
 # Exit on error.
 set -e;
