@@ -29,7 +29,7 @@ class ZipDirectory(file_entry.Directory):
         not location.startswith(self._file_system.PATH_SEPARATOR)):
       return
 
-    # The zip_info filename does not have the leading path separates
+    # The zip_info filename does not have the leading path separator
     # as the location string does.
     zip_path = location[1:]
 
@@ -199,7 +199,9 @@ class ZipFileEntry(file_entry.FileEntry):
         path = path.decode(self._file_system.encoding)
       except UnicodeDecodeError:
         path = None
-    return self._file_system.BasenamePath(path)
+    if path:
+      return self._file_system.BasenamePath(path)
+    return u''
 
   @property
   def sub_file_entries(self):
