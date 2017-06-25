@@ -256,7 +256,7 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsFile())
 
   def testIsLink(self):
-    """Test the IsLink functions."""
+    """Test the IsLink function."""
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -272,7 +272,7 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsLink())
 
   def testIsPipe(self):
-    """Test the IsPipe functions."""
+    """Test the IsPipe function."""
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -304,7 +304,7 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertTrue(file_entry.IsRoot())
 
   def testIsSocket(self):
-    """Test the IsSocket functions."""
+    """Test the IsSocket function."""
     path_spec = zip_path_spec.ZipPathSpec(
         location=u'/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)

@@ -8,7 +8,6 @@ from dfvfs.lib import errors
 from dfvfs.lib import py2to3
 from dfvfs.path import zip_path_spec
 from dfvfs.vfs import file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class ZipDirectory(file_entry.Directory):
@@ -113,12 +112,7 @@ class ZipFileEntry(file_entry.FileEntry):
         is_virtual=is_virtual)
     self._creator_system = getattr(zip_info, u'create_system', 0)
     self._external_attributes = getattr(zip_info, u'external_attr', 0)
-    self._time_elements = getattr(zip_info, u'date_time', None)
     self._zip_info = zip_info
-
-    if self._time_elements:
-      self._modification_time = dfdatetime_time_elements.TimeElements(
-          self._time_elements)
 
     if (is_virtual or
         self._external_attributes & self._MSDOS_FILE_ATTRIBUTES_IS_DIRECTORY):
@@ -148,18 +142,11 @@ class ZipFileEntry(file_entry.FileEntry):
     if not self._is_virtual and zip_info is None:
       raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
 
-    stat_object = vfs_stat.VFSStat()
+    stat_object = super(ZipFileEntry, self)._GetStat()
 
     # File data stat information.
     if zip_info is not None:
       stat_object.size = getattr(zip_info, u'file_size', None)
-
-    # Date and time stat information.
-    if self._modification_time:
-      stat_time, stat_time_nano = self._modification_time.CopyToStatTimeTuple()
-      if stat_time is not None:
-        stat_object.mtime = stat_time
-        stat_object.mtime_nano = stat_time_nano
 
     # Ownership and permissions stat information.
     if zip_info is not None:
@@ -167,9 +154,6 @@ class ZipFileEntry(file_entry.FileEntry):
         if self._creator_system == self._CREATOR_SYSTEM_UNIX:
           st_mode = self._external_attributes >> 16
           stat_object.mode = st_mode & 0x0fff
-
-    # File entry type stat information.
-    stat_object.type = self._type
 
     # Other stat information.
     # zip_info.compress_type
@@ -194,6 +178,21 @@ class ZipFileEntry(file_entry.FileEntry):
       except UnicodeDecodeError:
         path = None
     return self._file_system.BasenamePath(path)
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available.
+
+    Raises:
+      BackEndError: when the zip info is missing in a non-virtual file entry.
+    """
+    zip_info = self.GetZipInfo()
+    if not self._is_virtual and zip_info is None:
+      raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
+
+    if zip_info is not None:
+      time_elements = getattr(zip_info, u'date_time', None)
+      return dfdatetime_time_elements.TimeElements(time_elements)
 
   @property
   def sub_file_entries(self):
@@ -234,15 +233,18 @@ class ZipFileEntry(file_entry.FileEntry):
     parent_path_spec = getattr(self.path_spec, u'parent', None)
 
     if parent_location == u'':
-      path_spec = zip_path_spec.ZipPathSpec(
-          location=self._file_system.PATH_SEPARATOR, parent=parent_path_spec)
-      return ZipFileEntry(
-          self._resolver_context, self._file_system, path_spec,
-          is_root=True, is_virtual=True)
+      parent_location = self._file_system.PATH_SEPARATOR
+      is_root = True
+      is_virtual = True
+    else:
+      is_root = False
+      is_virtual = False
 
     path_spec = zip_path_spec.ZipPathSpec(
         location=parent_location, parent=parent_path_spec)
-    return ZipFileEntry(self._resolver_context, self._file_system, path_spec)
+    return ZipFileEntry(
+        self._resolver_context, self._file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
 
   def GetZipInfo(self):
     """Retrieves the ZIP info object.

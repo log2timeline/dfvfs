@@ -18,10 +18,20 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
     self._resolver_context = context.Context()
 
   def testIntialize(self):
-    """Test the intialize functionality."""
+    """Test the __init__ function."""
     test_file_system = file_system.FileSystem(self._resolver_context)
 
     self.assertIsNotNone(test_file_system)
+
+  # TODO: add tests for type_indicator property.
+  # TODO: add tests for _Close function.
+  # TODO: add tests for _Open function.
+  # TODO: add tests for BasenamePath function.
+  # TODO: add tests for Close function.
+  # TODO: add tests for DirnamePath function.
+  # TODO: add tests for GetDataStreamByPathSpec function.
+  # TODO: add tests for GetFileObjectByPathSpec function.
+  # TODO: add tests for GetPathSegmentAndSuffix function.
 
   def testJoinPath(self):
     """Test the join path functionality."""
@@ -40,6 +50,8 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
 
     path = test_file_system.JoinPath([u'/test1///test2', u'test3'])
     self.assertEqual(path, expected_path)
+
+  # TODO: add tests for Open function.
 
   def testSplitPath(self):
     """Test the split path functionality."""

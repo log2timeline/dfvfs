@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) file entry object interface.
+"""The Virtual File System (VFS) file entry interface.
 
 The file entry can be various file system elements like a regular file,
 a directory or file system metadata.
@@ -7,8 +7,10 @@ a directory or file system metadata.
 
 import abc
 
+from dfvfs.lib import definitions
 from dfvfs.lib import py2to3
 from dfvfs.resolver import resolver
+from dfvfs.vfs import vfs_stat
 
 
 class Attribute(object):
@@ -90,17 +92,13 @@ class FileEntry(object):
           entry emulated by the corresponding file system.
     """
     super(FileEntry, self).__init__()
-    self._access_time = None
     self._attributes = None
-    self._change_time = None
-    self._creation_time = None
     self._data_streams = None
     self._directory = None
     self._file_system = file_system
     self._is_root = is_root
     self._is_virtual = is_virtual
     self._link = None
-    self._modification_time = None
     self._resolver_context = resolver_context
     self._stat_object = None
     self._type = None
@@ -161,18 +159,53 @@ class FileEntry(object):
       self._link = u''
     return self._link
 
-  @abc.abstractmethod
   def _GetStat(self):
     """Retrieves information about the file entry.
 
     Returns:
       VFSStat: a stat object or None if not available.
     """
+    stat_object = vfs_stat.VFSStat()
+
+    # Date and time stat information.
+    access_time = self.access_time
+    if access_time:
+      stat_time, stat_time_nano = access_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.atime = stat_time
+        stat_object.atime_nano = stat_time_nano
+
+    change_time = self.change_time
+    if change_time:
+      stat_time, stat_time_nano = change_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.ctime = stat_time
+        stat_object.ctime_nano = stat_time_nano
+
+    creation_time = self.creation_time
+    if creation_time:
+      stat_time, stat_time_nano = creation_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.crtime = stat_time
+        stat_object.crtime_nano = stat_time_nano
+
+    modification_time = self.modification_time
+    if modification_time:
+      stat_time, stat_time_nano = modification_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.mtime = stat_time
+        stat_object.mtime_nano = stat_time_nano
+
+    # File entry type stat information.
+    if self._type:
+      stat_object.type = self._type
+
+    return stat_object
 
   @property
   def access_time(self):
     """dfdatetime.DateTimeValues: access time or None if not available."""
-    return self._access_time
+    return
 
   @property
   def attributes(self):
@@ -182,12 +215,12 @@ class FileEntry(object):
   @property
   def change_time(self):
     """dfdatetime.DateTimeValues: change time or None if not available."""
-    return self._change_time
+    return
 
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
-    return self._creation_time
+    return
 
   @property
   def data_streams(self):
@@ -202,7 +235,7 @@ class FileEntry(object):
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
-    return self._modification_time
+    return
 
   @abc.abstractproperty
   def name(self):
@@ -284,11 +317,9 @@ class FileEntry(object):
     Returns:
       FileIO: a file-like object or None if not available.
     """
-    if data_stream_name:
-      return
-
-    return resolver.Resolver.OpenFileObject(
-        self.path_spec, resolver_context=self._resolver_context)
+    if not data_stream_name:
+      return resolver.Resolver.OpenFileObject(
+          self.path_spec, resolver_context=self._resolver_context)
 
   def GetFileSystem(self):
     """Retrieves the file system which contains the file entry.
@@ -400,8 +431,9 @@ class FileEntry(object):
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_DEVICE)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_DEVICE
 
   def IsDirectory(self):
     """Determines if the file entry is a directory.
@@ -411,8 +443,9 @@ class FileEntry(object):
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_DIRECTORY)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY
 
   def IsFile(self):
     """Determines if the file entry is a file.
@@ -422,8 +455,9 @@ class FileEntry(object):
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_FILE)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_FILE
 
   def IsLink(self):
     """Determines if the file entry is a link.
@@ -433,8 +467,9 @@ class FileEntry(object):
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_LINK)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_LINK
 
   def IsPipe(self):
     """Determines if the file entry is a pipe.
@@ -444,8 +479,9 @@ class FileEntry(object):
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_PIPE)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_PIPE
 
   def IsRoot(self):
     """Determines if the file entry is the root file entry.
@@ -463,8 +499,9 @@ class FileEntry(object):
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_SOCKET)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_SOCKET
 
   def IsVirtual(self):
     """Determines if the file entry is virtual (emulated by dfVFS).
