@@ -153,6 +153,8 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+  # TODO: add tests for GetVShadowStoreByPathSpec function.
+
 
 if __name__ == '__main__':
   unittest.main()

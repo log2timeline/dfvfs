@@ -108,8 +108,9 @@ class FileEntry(object):
 
   def __del__(self):
     """Cleans up the file entry."""
-    self._file_system.Close()
-    self._file_system = None
+    if self._file_system:
+      self._file_system.Close()
+      self._file_system = None
 
   def _GetAttributes(self):
     """Retrieves the attributes.
@@ -163,7 +164,7 @@ class FileEntry(object):
     """Retrieves information about the file entry.
 
     Returns:
-      VFSStat: a stat object or None if not available.
+      VFSStat: a stat object.
     """
     stat_object = vfs_stat.VFSStat()
 
@@ -338,7 +339,7 @@ class FileEntry(object):
     return
 
   def GetParentFileEntry(self):
-    """Retrieves the root file entry.
+    """Retrieves the parent file entry.
 
     Returns:
       FileEntry: parent file entry or None if not available.

@@ -15,23 +15,23 @@ from dfvfs.vfs import file_system
 
 
 class VShadowFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using pyvshadow."""
+  """File system that uses pyvshadow."""
 
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, resolver_context):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(VShadowFileSystem, self).__init__(resolver_context)
     self._file_object = None
     self._vshadow_volume = None
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.
@@ -46,8 +46,8 @@ class VShadowFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -76,10 +76,10 @@ class VShadowFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
     store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
 
@@ -96,10 +96,10 @@ class VShadowFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.VShadowFileEntry) or None.
+      VShadowFileEntry: file entry or None if not available.
     """
     store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
 
@@ -122,16 +122,29 @@ class VShadowFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      VShadowFileEntry: file entry or None if not available.
     """
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
 
-  def GetVShadowVolume(self):
-    """Retrieves the VSS volume object.
+  def GetVShadowStoreByPathSpec(self, path_spec):
+    """Retrieves a VSS store for a path specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The VSS volume object (instance of pyvshadow.volume).
+      pyvshadow.store: a VSS store or None if not available.
+    """
+    store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
+    if store_index is not None:
+      return self._vshadow_volume.get_store(store_index)
+
+  def GetVShadowVolume(self):
+    """Retrieves a VSS volume.
+
+    Returns:
+      pyvshadow.volume: a VSS volume.
     """
     return self._vshadow_volume

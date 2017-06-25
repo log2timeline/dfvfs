@@ -14,7 +14,7 @@ from dfvfs.vfs import file_system
 
 
 class NTFSFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using pyfsntfs."""
+  """File system that uses pyfsntfs."""
 
   MFT_ENTRY_ROOT_DIRECTORY = 5
 
@@ -110,7 +110,7 @@ class NTFSFileSystem(file_system.FileSystem):
       path_spec (PathSpec): path specification.
 
     Returns:
-      NTFSFileEntry: file entry or None.
+      NTFSFileEntry: file entry or None if not available.
 
     Raises:
       BackEndError: if the file entry cannot be opened.
@@ -145,13 +145,34 @@ class NTFSFileSystem(file_system.FileSystem):
         self._resolver_context, self, path_spec,
         fsntfs_file_entry=fsntfs_file_entry)
 
-  def GetNTFSVolume(self):
-    """Retrieves the file system info object.
+  def GetNTFSFileEntryByPathSpec(self, path_spec):
+    """Retrieves the NTFS file entry for a path specification.
+
+    Args:
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      pyfsntfs.volume: NTFS volume object.
+      pyfsntfs.file_entry: NTFS file entry.
+
+    Raises:
+      PathSpecError: if the path specification is missing location and
+          MFT entry.
     """
-    return self._fsntfs_volume
+    # Opening a file by MFT entry is faster than opening a file by location.
+    # However we need the index of the corresponding $FILE_NAME MFT attribute.
+    location = getattr(path_spec, u'location', None)
+    mft_attribute = getattr(path_spec, u'mft_attribute', None)
+    mft_entry = getattr(path_spec, u'mft_entry', None)
+
+    if mft_attribute is not None and mft_entry is not None:
+      fsntfs_file_entry = self._fsntfs_volume.get_file_entry(mft_entry)
+    elif location is not None:
+      fsntfs_file_entry = self._fsntfs_volume.get_file_entry_by_path(location)
+    else:
+      raise errors.PathSpecError(
+          u'Path specification missing location and MFT entry.')
+
+    return fsntfs_file_entry
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.

@@ -106,7 +106,15 @@ class ZipFileEntry(file_entry.FileEntry):
       is_virtual (Optional[bool]): True if the file entry is a virtual file
           entry emulated by the corresponding file system.
       zip_info (Optional[zipfile.ZipInfo]): ZIP information.
+
+    Raises:
+      BackEndError: when the zip info is missing in a non-virtual file entry.
     """
+    if not is_virtual and zip_info is None:
+      zip_info = file_system.GetZipInfoByPathSpec(path_spec)
+    if not is_virtual and zip_info is None:
+      raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
+
     super(ZipFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
@@ -124,32 +132,24 @@ class ZipFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      ZipDirectory: a directory or None.
+      ZipDirectory: a directory or None if not available.
     """
     if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return ZipDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
-    """Retrieves the stat object.
+    """Retrieves information about the file entry.
 
     Returns:
-      VFSStat: a stat object or None.
-
-    Raises:
-      BackEndError: when the zip info is missing in a non-virtual file entry.
+      VFSStat: a stat object.
     """
-    zip_info = self.GetZipInfo()
-    if not self._is_virtual and zip_info is None:
-      raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
-
     stat_object = super(ZipFileEntry, self)._GetStat()
 
-    # File data stat information.
-    if zip_info is not None:
-      stat_object.size = getattr(zip_info, u'file_size', None)
+    if self._zip_info is not None:
+      # File data stat information.
+      stat_object.size = getattr(self._zip_info, u'file_size', None)
 
-    # Ownership and permissions stat information.
-    if zip_info is not None:
+      # Ownership and permissions stat information.
       if self._external_attributes != 0:
         if self._creator_system == self._CREATOR_SYSTEM_UNIX:
           st_mode = self._external_attributes >> 16
@@ -181,17 +181,9 @@ class ZipFileEntry(file_entry.FileEntry):
 
   @property
   def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available.
-
-    Raises:
-      BackEndError: when the zip info is missing in a non-virtual file entry.
-    """
-    zip_info = self.GetZipInfo()
-    if not self._is_virtual and zip_info is None:
-      raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
-
-    if zip_info is not None:
-      time_elements = getattr(zip_info, u'date_time', None)
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    if self._zip_info is not None:
+      time_elements = getattr(self._zip_info, u'date_time', None)
       return dfdatetime_time_elements.TimeElements(time_elements)
 
   @property

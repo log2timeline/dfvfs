@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
@@ -15,9 +16,30 @@ from dfvfs.vfs import ntfs_file_system
 from tests import test_lib as shared_test_lib
 
 
+class NTFSAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the NTFS attribute."""
+
+  def testIntialize(self):
+    """Tests the __init__ function."""
+    # TODO: additional test coverage.
+
+    with self.assertRaises(errors.BackEndError):
+      ntfs_file_entry.NTFSAttribute(None)
+
+  # TODO: add tests for attribute_type property.
+
+
+# TODO: add tests for FileNameNTFSAttribute.
+# TODO: add tests for ObjectIdentifierNTFSAttribute.
+# TODO: add tests for SecurityDescriptorNTFSAttribute.
+# TODO: add tests for StandardInformationNTFSAttribute.
+# TODO: add tests for NTFSDataStream.
+# TODO: add tests for NTFSDirectory.
+
+
 @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
 class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the NTFS file entry object."""
+  """The unit test for the NTFS file entry."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

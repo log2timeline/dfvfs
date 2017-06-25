@@ -154,3 +154,25 @@ class ZipFileSystem(file_system.FileSystem):
       zipfile.ZipFile: a ZIP file object or None.
     """
     return self._zip_file
+
+  def GetZipInfoByPathSpec(self, path_spec):
+    """Retrieves the ZIP info object for a path specification.
+
+    Args:
+      path_spec (PathSpec): a path specification.
+
+    Returns:
+      zipfile.ZipInfo: a ZIP info object or None if not available.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+    """
+    location = getattr(path_spec, u'location', None)
+    if location is None:
+      raise errors.PathSpecError(u'Path specification missing location.')
+
+    if not location.startswith(self.LOCATION_ROOT):
+      raise errors.PathSpecError(u'Invalid location in path specification.')
+
+    if len(location) > 1:
+      return self._zip_file.getinfo(location[1:])

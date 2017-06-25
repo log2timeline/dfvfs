@@ -40,7 +40,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
   def testIntialize(self):
     """Test the __init__ function."""
     file_entry = zip_file_entry.ZipFileEntry(
-        self._resolver_context, self._file_system, self._zip_path_spec)
+        self._resolver_context, self._file_system, self._zip_path_spec,
+        is_virtual=True)
 
     self.assertIsNotNone(file_entry)
 

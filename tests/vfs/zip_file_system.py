@@ -133,6 +133,8 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+  # TODO: add tests for GetZipInfoByPathSpec function.
+
 
 if __name__ == '__main__':
   unittest.main()

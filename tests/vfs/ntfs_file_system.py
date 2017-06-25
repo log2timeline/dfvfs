@@ -84,6 +84,8 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+  # TODO: add tests for GetNTFSFileEntryByPathSpec function.
+
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)

@@ -42,6 +42,15 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
         self._resolver_context, self._file_system, self._bde_path_spec)
     self.assertIsNotNone(file_entry)
 
+    # TODO: test raises.
+
+  def testCreationTime(self):
+    """Test the creation_time property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.creation_time)
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
@@ -68,21 +77,68 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.crtime, 1401712849)
     self.assertEqual(stat_object.crtime_nano, 7281122)
 
-  def testIsFunctions(self):
-    """Test the Is? functions."""
+  def testIsAllocated(self):
+    """Test the IsAllocated function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
-    self.assertIsNotNone(file_entry)
 
-    self.assertTrue(file_entry.IsRoot())
-    self.assertTrue(file_entry.IsVirtual())
+    self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsAllocated())
 
+  def testIsDevice(self):
+    """Test the IsDevice functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDevice())
+
+  def testIsDirectory(self):
+    """Test the IsDirectory functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDirectory())
+
+  def testIsFile(self):
+    """Test the IsFile functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsFile())
+
+  def testIsLink(self):
+    """Test the IsLink functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsLink())
+
+  def testIsPipe(self):
+    """Test the IsPipe functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsPipe())
+
+  def testIsRoot(self):
+    """Test the IsRoot functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsRoot())
+
+  def testIsSocket(self):
+    """Test the IsSocket functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsSocket())
+
+  def testIsVirtual(self):
+    """Test the IsVirtual functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsVirtual())
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
