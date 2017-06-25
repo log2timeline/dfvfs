@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Tests for the encoded stream file-like object."""
 
+import os
 import unittest
 
 from dfvfs.file_io import encoded_stream_io
@@ -62,6 +63,17 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
 
     file_object.close()
 
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encoded_stream_io.EncodedStream(self._resolver_context)
+    file_object.open(path_spec=self._encoded_stream_path_spec)
+
+    file_object.seek(-10, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
+
+    file_object.close()
+
   def testRead(self):
     """Test the read functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
@@ -119,6 +131,17 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
 
     file_object.close()
 
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encoded_stream_io.EncodedStream(self._resolver_context)
+    file_object.open(path_spec=self._encoded_stream_path_spec)
+
+    file_object.seek(-10, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
+
+    file_object.close()
+
   def testRead(self):
     """Test the read functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
@@ -173,6 +196,17 @@ class Base64EncodedStreamTest(test_lib.SylogTestCase):
     file_object.open(path_spec=self._encoded_stream_path_spec)
 
     self._TestSeekFileObject(file_object)
+
+    file_object.close()
+
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encoded_stream_io.EncodedStream(self._resolver_context)
+    file_object.open(path_spec=self._encoded_stream_path_spec)
+
+    file_object.seek(-10, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
 
     file_object.close()
 

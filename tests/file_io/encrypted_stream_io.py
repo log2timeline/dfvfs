@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Tests for the encrypted stream file-like object."""
 
+import os
 import unittest
 
 from dfvfs.file_io import encrypted_stream_io
@@ -77,6 +78,17 @@ class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
 
     file_object.close()
 
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
+    file_object.open(path_spec=self._encrypted_stream_path_spec)
+
+    file_object.seek(-10 - self.padding_size, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
+
+    file_object.close()
+
   def testRead(self):
     """Test the read functionality."""
     file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
@@ -141,6 +153,17 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
     file_object.open(path_spec=self._encrypted_stream_path_spec)
 
     self._TestSeekFileObject(file_object)
+
+    file_object.close()
+
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
+    file_object.open(path_spec=self._encrypted_stream_path_spec)
+
+    file_object.seek(-10 - self.padding_size, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
 
     file_object.close()
 
@@ -215,6 +238,17 @@ class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
 
     file_object.close()
 
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
+    file_object.open(path_spec=self._encrypted_stream_path_spec)
+
+    file_object.seek(-10 - self.padding_size, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
+
+    file_object.close()
+
   def testRead(self):
     """Test the read functionality."""
     file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
@@ -286,6 +320,17 @@ class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
 
     file_object.close()
 
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
+    file_object.open(path_spec=self._encrypted_stream_path_spec)
+
+    file_object.seek(-10 - self.padding_size, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
+
+    file_object.close()
+
   def testRead(self):
     """Test the read functionality."""
     file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
@@ -346,6 +391,17 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
     file_object.open(path_spec=self._encrypted_stream_path_spec)
 
     self._TestSeekFileObject(file_object)
+
+    file_object.close()
+
+    # TODO: Test SEEK_CUR after open.
+
+    # Test SEEK_END after open.
+    file_object = encrypted_stream_io.EncryptedStream(self._resolver_context)
+    file_object.open(path_spec=self._encrypted_stream_path_spec)
+
+    file_object.seek(-10, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'times')
 
     file_object.close()
 

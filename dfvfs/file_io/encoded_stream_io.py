@@ -304,10 +304,18 @@ class EncodedStream(file_io.FileIO):
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
+
     elif whence == os.SEEK_END:
+      if self._decoded_stream_size is None:
+        self._decoded_stream_size = self._GetDecodedStreamSize()
+        if self._decoded_stream_size is None:
+          raise IOError(u'Invalid decoded stream size.')
+
       offset += self._decoded_stream_size
+
     elif whence != os.SEEK_SET:
       raise IOError(u'Unsupported whence.')
+
     if offset < 0:
       raise IOError(u'Invalid offset value less than zero.')
 
