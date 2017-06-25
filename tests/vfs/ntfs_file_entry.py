@@ -36,7 +36,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testIntialize(self):
-    """Tests the initialize functionality."""
+    """Tests the __init__ function."""
     file_entry = ntfs_file_entry.NTFSFileEntry(
         self._resolver_context, self._file_system, self._ntfs_path_spec)
 
@@ -352,6 +352,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetSecurityDescriptor(self):
     """Tests the GetSecurityDescriptor function."""
+    # pylint: disable=no-member
+
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(

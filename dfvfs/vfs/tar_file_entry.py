@@ -247,15 +247,15 @@ class TARFileEntry(file_entry.FileEntry):
       tarfile.TARInfo: TAR info or None if it does not exist.
 
     Raises:
-      ValueError: if the path specification is incorrect.
+      PathSpecError: if the path specification is incorrect.
     """
     if not self._tar_info:
       location = getattr(self.path_spec, u'location', None)
       if location is None:
-        raise ValueError(u'Path specification missing location.')
+        raise errors.PathSpecError(u'Path specification missing location.')
 
       if not location.startswith(self._file_system.LOCATION_ROOT):
-        raise ValueError(u'Invalid location in path specification.')
+        raise errors.PathSpecError(u'Invalid location in path specification.')
 
       if len(location) == 1:
         return

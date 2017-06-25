@@ -41,8 +41,8 @@ class FakeFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): a path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -60,16 +60,15 @@ class FakeFileSystem(file_system.FileSystem):
     """Adds a fake file entry.
 
     Args:
-      path: the path of the file entry.
-      file_entry_type: optional type of the file entry object.
-      file_data: optional data of the fake file-like object.
-      link_data: optional link data of the fake file entry object.
+      path (str): path of the file entry.
+      file_entry_type (Optional[str]): type of the file entry object.
+      file_data (Optional[bytes]): data of the fake file-like object.
+      link_data (Optional[bytes]): link data of the fake file entry object.
 
     Raises:
       KeyError: if the path already exists.
       ValueError: if the file data is set but the file entry type is not a file
-                  or if the link data is set but the file entry type is not
-                  a link.
+          or if the link data is set but the file entry type is not a link.
     """
     if path in self._paths:
       raise KeyError(u'File entry already set for path: {0:s}.'.format(path))
@@ -118,10 +117,10 @@ class FakeFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path exists.
 
     Args:
-      path: a string containing the path of the file entry.
+      path (str): path of the file entry.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
     return path and path in self._paths
 
@@ -129,10 +128,10 @@ class FakeFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
     location = getattr(path_spec, u'location', None)
     return self.FileEntryExistsByPath(location)
@@ -141,10 +140,10 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves the data associated to a path.
 
     Args:
-      path: a string containing the path of the file entry.
+      path (str): path of the file entry.
 
     Returns:
-      Binary string containing the data or None if not available.
+      bytes: data or None if not available.
     """
     _, path_data = self._paths.get(path, (None, None))
     return path_data
@@ -153,10 +152,10 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path.
 
     Args:
-      path: a string containing the path of the file entry.
+      path (str): path of the file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      FileEntry: a file entry or None if not available.
     """
     if path is None:
       return
@@ -172,10 +171,10 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      FileEntry: a file entry or None if not available.
     """
     location = getattr(path_spec, u'location', None)
     if location is None:
@@ -191,7 +190,7 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves the paths dictionary.
 
     Returns:
-      Dictionary containing the paths and the file-like objects.
+      dict[str, FileIO]: file-like object per path.
     """
     return self._paths
 
@@ -199,7 +198,7 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      FileEntry: a file entry or None if not available.
     """
     path_spec = fake_path_spec.FakePathSpec(location=self.LOCATION_ROOT)
     return self.GetFileEntryByPathSpec(path_spec)
@@ -208,10 +207,10 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves the stat object for a path.
 
     Args:
-      path: a path.
+      path (str): path of the file entry.
 
     Returns:
-      The stat object (instance of vfs_stat.VFSStat) or None.
+      VFSStat: stat object or None.
     """
     stat_object, _ = self._paths.get(path, (None, None))
     return stat_object
