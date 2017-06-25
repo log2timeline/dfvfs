@@ -86,6 +86,8 @@ class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
+  # TODO: add tests for GetCPIOArchiveFileEntryByPathSpec function.
+
 
 if __name__ == '__main__':
   unittest.main()

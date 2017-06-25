@@ -5,46 +5,63 @@ from __future__ import unicode_literals
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.resolver import resolver
 from dfvfs.vfs import root_only_file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
-  """Class that implements a compressed stream file entry object."""
+  """Compressed stream file entry."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
-  def _GetStat(self):
-    """Retrieves the stat object.
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False):
+    """Initializes a file entry.
 
-    Returns:
-      The stat object (instance of vfs.VFSStat).
+    Args:
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+      is_virtual (Optional[bool]): True if the file entry is a virtual file
 
     Raises:
       BackEndError: when the compressed stream is missing.
     """
-    compressed_stream = self.GetFileObject()
+    compressed_stream = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=resolver_context)
     if not compressed_stream:
       raise errors.BackEndError(
           'Unable to open compressed stream: {0:s}.'.format(
               self.path_spec.comparable))
 
-    try:
-      stat_object = vfs_stat.VFSStat()
+    super(CompressedStreamFileEntry, self).__init__(
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
+    self._compressed_stream = compressed_stream
+    self._type = definitions.FILE_ENTRY_TYPE_FILE
 
+  def __del__(self):
+    """Cleans up the file entry."""
+    # __del__ can be invoked before __init__ has completed.
+    if hasattr(self, u'_compressed_stream'):
+      self._compressed_stream.close()
+      self._compressed_stream = None
+
+    super(CompressedStreamFileEntry, self).__del__()
+
+  def _GetStat(self):
+    """Retrieves information about the file entry.
+
+    Returns:
+      VFSStat: a stat object.
+    """
+    stat_object = super(CompressedStreamFileEntry, self)._GetStat()
+
+    if self._compressed_stream:
       # File data stat information.
-      stat_object.size = compressed_stream.get_size()
-
-      # Date and time stat information.
-
-      # Ownership and permissions stat information.
-
-      # File entry type stat information.
-      stat_object.type = stat_object.TYPE_FILE
-
-      # Other stat information.
-
-    finally:
-      compressed_stream.close()
+      stat_object.size = self._compressed_stream.get_size()
 
     return stat_object

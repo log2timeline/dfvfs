@@ -485,7 +485,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     """Retrieves the parent file entry.
 
     Returns:
-      NTFSFileEntry: parent file entry or None.
+      NTFSFileEntry: parent file entry or None if not available.
     """
     location = getattr(self.path_spec, 'location', None)
     if location is not None:

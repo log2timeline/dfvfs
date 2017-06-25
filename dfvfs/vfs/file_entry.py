@@ -110,7 +110,8 @@ class FileEntry(object):
 
   def __del__(self):
     """Cleans up the file entry."""
-    if self._file_system:
+    # __del__ can be invoked before __init__ has completed.
+    if hasattr(self, u'_file_system'):
       self._file_system.Close()
       self._file_system = None
 

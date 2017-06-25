@@ -5,15 +5,16 @@ from __future__ import unicode_literals
 
 import stat
 
+from dfdatetime import posix_time as dfdatetime_posix_time
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import cpio_path_spec
 from dfvfs.vfs import file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class CPIODirectory(file_entry.Directory):
-  """Class that implements a directory object using CPIOArchiveFile."""
+  """File system directory that uses CPIOArchiveFile."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -22,7 +23,7 @@ class CPIODirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.CPIOPathSpec).
+      CPIOPathSpec: path specification.
     """
     location = getattr(self.path_spec, 'location', None)
 
@@ -50,26 +51,37 @@ class CPIODirectory(file_entry.Directory):
 
 
 class CPIOFileEntry(file_entry.FileEntry):
-  """Class that implements a file entry object using CPIOArchiveFile."""
+  """File system file entry that uses CPIOArchiveFile."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_CPIO
 
   def __init__(
-      self, resolver_context, file_system, path_spec, is_root=False,
-      is_virtual=False, cpio_archive_file_entry=None):
-    """Initializes the file entry object.
+      self, resolver_context, file_system, path_spec,
+      cpio_archive_file_entry=None, is_root=False, is_virtual=False):
+    """Initializes a file entry object.
+
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification (instance of PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
-      is_virtual: optional boolean value to indicate if the file entry is
-                  a virtual file entry emulated by the corresponding file
-                  system.
-      cpio_archive_file_entry: optional CPIO archive file entry object
-                               (instance of cpio.CPIOArchiveFileEntry).
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      cpio_archive_file_entry (Optional[CPIOArchiveFileEntry]): CPIO archive
+          file entry.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+      is_virtual (Optional[bool]): True if the file entry is a virtual file
+          entry emulated by the corresponding file system.
+
+    Raises:
+      BackEndError: when the CPIO archive file entry is missing in
+          a non-virtual file entry.
     """
+    if not is_virtual and cpio_archive_file_entry is None:
+      cpio_archive_file_entry = file_system.GetCPIOArchiveFileEntryByPathSpec(
+          path_spec)
+    if not is_virtual and cpio_archive_file_entry is None:
+      raise errors.BackEndError(
+          u'Missing CPIO archive file entry in non-virtual file entry.')
+
     super(CPIOFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
@@ -79,7 +91,7 @@ class CPIOFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      A directory object (instance of Directory) or None.
+      CPIODirectory: a directory or None if not available.
     """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
@@ -90,24 +102,15 @@ class CPIOFileEntry(file_entry.FileEntry):
     return
 
   def _GetLink(self):
-    """Retrieves the link.
-
-    Raises:
-      BackEndError: when the CPIO archive file entry is missing in
-                    a non-virtual file entry.
-    """
+    """Retrieves the link."""
     if self._link is None:
-      cpio_archive_file_entry = self.GetCPIOArchiveFileEntry()
-      if not self._is_virtual and cpio_archive_file_entry is None:
-        raise errors.BackEndError(
-            'Missing CPIO archive file entry in non-virtual file entry.')
-
       self._link = ''
-      if stat.S_ISLNK(cpio_archive_file_entry.mode):
+      if (self._cpio_archive_file_entry and
+          stat.S_ISLNK(self._cpio_archive_file_entry.mode)):
         cpio_archive_file = self._file_system.GetCPIOArchiveFile()
         link_data = cpio_archive_file.ReadDataAtOffset(
-            cpio_archive_file_entry.data_offset,
-            cpio_archive_file_entry.data_size)
+            self._cpio_archive_file_entry.data_offset,
+            self._cpio_archive_file_entry.data_size)
 
         # TODO: should this be ASCII?
         self._link = link_data.decode('ascii')
@@ -115,36 +118,28 @@ class CPIOFileEntry(file_entry.FileEntry):
     return self._link
 
   def _GetStat(self):
-    """Retrieves the stat object.
+    """Retrieves information about the file entry.
 
     Returns:
-      The stat object (instance of vfs.VFSStat).
-
-    Raises:
-      BackEndError: when the CPIO archive file entry is missing in
-                    a non-virtual file entry.
+      VFSStat: a stat object.
     """
-    cpio_archive_file_entry = self.GetCPIOArchiveFileEntry()
-    if not self._is_virtual and cpio_archive_file_entry is None:
-      raise errors.BackEndError(
-          'Missing CPIO archive file entry in non-virtual file entry.')
-
-    stat_object = vfs_stat.VFSStat()
+    stat_object = super(CPIOFileEntry, self)._GetStat()
 
     # File data stat information.
-    stat_object.size = getattr(cpio_archive_file_entry, 'data_size', None)
+    stat_object.size = getattr(
+        self._cpio_archive_file_entry, u'data_size', None)
 
     # Date and time stat information.
     stat_object.mtime = getattr(
-        cpio_archive_file_entry, 'modification_time', None)
+        self._cpio_archive_file_entry, u'modification_time', None)
 
     # Ownership and permissions stat information.
-    mode = getattr(cpio_archive_file_entry, 'mode', 0)
+    mode = getattr(self._cpio_archive_file_entry, u'mode', 0)
     stat_object.mode = stat.S_IMODE(mode)
     stat_object.uid = getattr(
-        cpio_archive_file_entry, 'user_identifier', None)
+        self._cpio_archive_file_entry, u'user_identifier', None)
     stat_object.gid = getattr(
-        cpio_archive_file_entry, 'group_identifier', None)
+        self._cpio_archive_file_entry, u'group_identifier', None)
 
     # File entry type stat information.
 
@@ -170,19 +165,25 @@ class CPIOFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """The name of the file entry, which does not include the full path."""
-    cpio_archive_file_entry = self.GetCPIOArchiveFileEntry()
-
+    """str: name of the file entry, which does not include the full path."""
     # Note that the root file entry is virtual and has no
     # cpio_archive_file_entry.
-    if cpio_archive_file_entry is None:
+    if self._cpio_archive_file_entry is None:
       return ''
 
-    return self._file_system.BasenamePath(cpio_archive_file_entry.path)
+    return self._file_system.BasenamePath(self._cpio_archive_file_entry.path)
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    timestamp = getattr(
+        self._cpio_archive_file_entry, u'modification_time', None)
+    if timestamp is not None:
+      return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.FileEntry)."""
+    """generator(CPIOFileEntry): sub file entries."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -195,42 +196,38 @@ class CPIOFileEntry(file_entry.FileEntry):
     """Retrieves the CPIO archive file entry object.
 
     Returns:
-      The CPIO archive file entry object (instance of
-      cpio.CPIOArchiveFileEntry).
+      CPIOArchiveFileEntry: CPIO archive file entry.
 
     Raises:
-      ValueError: if the path specification is incorrect.
+      PathSpecError: if the path specification is incorrect.
     """
-    if not self._cpio_archive_file_entry:
-      location = getattr(self.path_spec, 'location', None)
-      if location is None:
-        raise ValueError('Path specification missing location.')
-
-      if not location.startswith(self._file_system.LOCATION_ROOT):
-        raise ValueError('Invalid location in path specification.')
-
-      if len(location) == 1:
-        return
-
-      cpio_archive_file = self._file_system.GetCPIOArchiveFile()
-      self._cpio_archive_file_entry = cpio_archive_file.GetFileEntryByPath(
-          location[1:])
-
     return self._cpio_archive_file_entry
 
   def GetParentFileEntry(self):
-    """Retrieves the parent file entry."""
-    location = getattr(self.path_spec, 'location', None)
+    """Retrieves the parent file entry.
+
+    Returns:
+      CPIOFileEntry: parent file entry or None if not available.
+    """
+    location = getattr(self.path_spec, u'location', None)
     if location is None:
       return
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
       return
+
     if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
+      is_root = True
+      is_virtual = True
+    else:
+      is_root = False
+      is_virtual = False
 
     parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=parent_location, parent=parent_path_spec)
-    return CPIOFileEntry(self._resolver_context, self._file_system, path_spec)
+    return CPIOFileEntry(
+        self._resolver_context, self._file_system, path_spec,
+        is_root=is_root, is_virtual=is_virtual)

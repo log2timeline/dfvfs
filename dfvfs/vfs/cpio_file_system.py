@@ -94,6 +94,38 @@ class CPIOFileSystem(file_system.FileSystem):
 
     return self._cpio_archive_file.FileEntryExistsByPath(location[1:])
 
+  def GetCPIOArchiveFile(self):
+    """Retrieves the CPIO archive file object.
+
+    Returns:
+      The CPIO archvie file object (instance of cpio.CPIOArchiveFile).
+    """
+    return self._cpio_archive_file
+
+  def GetCPIOArchiveFileEntryByPathSpec(self, path_spec):
+    """Retrieves the CPIO archive file entry for a path specification.
+
+    Args:
+      path_spec (PathSpec): a path specification.
+
+    Returns:
+      CPIOArchiveFileEntry: CPIO archive file entry or None if not available.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+    """
+    location = getattr(path_spec, u'location', None)
+    if location is None:
+      raise errors.PathSpecError(u'Path specification missing location.')
+
+    if not location.startswith(self.LOCATION_ROOT):
+      raise errors.PathSpecError(u'Invalid location in path specification.')
+
+    if len(location) == 1:
+      return
+
+    return self._cpio_archive_file.GetFileEntryByPath(location[1:])
+
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
@@ -132,11 +164,3 @@ class CPIOFileSystem(file_system.FileSystem):
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
-
-  def GetCPIOArchiveFile(self):
-    """Retrieves the CPIO archive file object.
-
-    Returns:
-      The CPIO archvie file object (instance of cpio.CPIOArchiveFile).
-    """
-    return self._cpio_archive_file
