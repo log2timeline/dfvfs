@@ -358,44 +358,11 @@ class NTFSFileEntry(file_entry.FileEntry):
     if not fsntfs_file_entry:
       raise errors.BackEndError(u'Missing pyfsntfs file entry.')
 
-    stat_object = vfs_stat.VFSStat()
+    stat_object = super(ZipFileEntry, self)._GetStat()
 
     # File data stat information.
     if fsntfs_file_entry.has_default_data_stream():
       stat_object.size = fsntfs_file_entry.get_size()
-
-    # Date and time stat information.
-    timestamp = fsntfs_file_entry.get_access_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.atime = stat_time
-      stat_object.atime_nano = stat_time_nano
-
-    timestamp = fsntfs_file_entry.get_creation_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.crtime = stat_time
-      stat_object.crtime_nano = stat_time_nano
-
-    timestamp = fsntfs_file_entry.get_modification_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.mtime = stat_time
-      stat_object.mtime_nano = stat_time_nano
-
-    timestamp = fsntfs_file_entry.get_entry_modification_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.ctime = stat_time
-      stat_object.ctime_nano = stat_time_nano
 
     # Ownership and permissions stat information.
     # TODO: stat_object.mode
@@ -429,6 +396,51 @@ class NTFSFileEntry(file_entry.FileEntry):
         file_attribute_flags & pyfsntfs.file_attribute_flags.REPARSE_POINT)
 
   @property
+  def access_time(self):
+    """dfdatetime.DateTimeValues: access time or None if not available.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    timestamp = fsntfs_file_entry.get_access_time_as_integer()
+    if timestamp:
+      return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
+  def change_time(self):
+    """dfdatetime.DateTimeValues: change time or None if not available.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    timestamp = fsntfs_file_entry.get_entry_modification_time_as_integer()
+    if timestamp:
+      return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
+  def creation_time(self):
+    """dfdatetime.DateTimeValues: creation time or None if not available.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    timestamp = fsntfs_file_entry.get_creation_time_as_integer()
+    if timestamp:
+      return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
   def name(self):
     """str: name of the file entry, which does not include the full path.
 
@@ -447,6 +459,21 @@ class NTFSFileEntry(file_entry.FileEntry):
     if mft_attribute is not None:
       return fsntfs_file_entry.get_name_by_attribute_index(mft_attribute)
     return fsntfs_file_entry.get_name()
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
+    """
+    fsntfs_file_entry = self.GetNTFSFileEntry()
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
+    timestamp = fsntfs_file_entry.get_modification_time_as_integer()
+    if timestamp:
+      return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def sub_file_entries(self):
