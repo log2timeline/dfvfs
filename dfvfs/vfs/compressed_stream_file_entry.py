@@ -7,6 +7,7 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 from dfvfs.vfs import root_only_file_entry
+from dfvfs.vfs import vfs_stat
 
 
 class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
@@ -58,10 +59,11 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     Returns:
       VFSStat: a stat object.
     """
-    stat_object = super(CompressedStreamFileEntry, self)._GetStat()
+    stat_object = vfs_stat.VFSStat()
 
     if self._compressed_stream:
-      # File data stat information.
       stat_object.size = self._compressed_stream.get_size()
+
+    stat_object.type = self._type
 
     return stat_object
