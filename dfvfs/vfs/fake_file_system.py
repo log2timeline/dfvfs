@@ -10,11 +10,10 @@ from dfvfs.lib import errors
 from dfvfs.path import fake_path_spec
 from dfvfs.vfs import file_system
 from dfvfs.vfs import fake_file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class FakeFileSystem(file_system.FileSystem):
-  """Class that implements a fake file system object."""
+  """Fake file system."""
 
   LOCATION_ROOT = '/'
 
@@ -24,7 +23,7 @@ class FakeFileSystem(file_system.FileSystem):
     """Initializes a file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(FakeFileSystem, self).__init__(resolver_context)
     self._paths = {}
@@ -43,7 +42,7 @@ class FakeFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec (PathSpec): a path specification.
+      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -81,31 +80,6 @@ class FakeFileSystem(file_system.FileSystem):
     if link_data and file_entry_type != definitions.FILE_ENTRY_TYPE_LINK:
       raise ValueError('Link data set for non-link file entry type.')
 
-    stat_object = vfs_stat.VFSStat()
-
-    # File data stat information.
-    if file_data is not None:
-      stat_object.size = len(file_data)
-
-    # Date and time stat information.
-    date_time_values = dfdatetime_fake_time.FakeTime()
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.atime = stat_time
-      stat_object.atime_nano = stat_time_nano
-      stat_object.ctime = stat_time
-      stat_object.ctime_nano = stat_time_nano
-      stat_object.mtime = stat_time
-      stat_object.mtime_nano = stat_time_nano
-
-    # Ownership and permissions stat information.
-
-    # File entry type stat information.
-    stat_object.type = file_entry_type
-
-    # Other stat information.
-
     if file_data:
       path_data = file_data
     elif link_data:
@@ -113,7 +87,7 @@ class FakeFileSystem(file_system.FileSystem):
     else:
       path_data = None
 
-    self._paths[path] = (stat_object, path_data)
+    self._paths[path] = (file_entry_type, path_data)
 
   def FileEntryExistsByPath(self, path):
     """Determines if a file entry for a path exists.
@@ -162,12 +136,14 @@ class FakeFileSystem(file_system.FileSystem):
     if path is None:
       return
 
-    if not self.FileEntryExistsByPath(path):
+    file_entry_type, _ = self._paths.get(path, (None, None))
+    if not file_entry_type:
       return
 
     path_spec = fake_path_spec.FakePathSpec(location=path)
     return fake_file_entry.FakeFileEntry(
-        self._resolver_context, self, path_spec)
+        self._resolver_context, self, path_spec,
+        file_entry_type=file_entry_type)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -179,14 +155,7 @@ class FakeFileSystem(file_system.FileSystem):
       FileEntry: a file entry or None if not available.
     """
     location = getattr(path_spec, 'location', None)
-    if location is None:
-      return
-
-    if not self.FileEntryExistsByPathSpec(path_spec):
-      return
-
-    return fake_file_entry.FakeFileEntry(
-        self._resolver_context, self, path_spec)
+    return self.GetFileEntryByPath(location)
 
   def GetPaths(self):
     """Retrieves the paths dictionary.
@@ -204,15 +173,3 @@ class FakeFileSystem(file_system.FileSystem):
     """
     path_spec = fake_path_spec.FakePathSpec(location=self.LOCATION_ROOT)
     return self.GetFileEntryByPathSpec(path_spec)
-
-  def GetStatObjectByPath(self, path):
-    """Retrieves the stat object for a path.
-
-    Args:
-      path (str): path of the file entry.
-
-    Returns:
-      VFSStat: stat object or None.
-    """
-    stat_object, _ = self._paths.get(path, (None, None))
-    return stat_object

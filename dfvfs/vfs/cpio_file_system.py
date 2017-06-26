@@ -24,8 +24,8 @@ class CPIOFileSystem(file_system.FileSystem):
     """Initializes a file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      encoding: optional file entry name encoding.
+      resolver_context (Context): resolver context.
+      encoding (Optional[str]): file entry name encoding.
     """
     super(CPIOFileSystem, self).__init__(resolver_context)
     self._cpio_archive_file = None
@@ -48,8 +48,8 @@ class CPIOFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.

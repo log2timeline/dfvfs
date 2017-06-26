@@ -3,6 +3,8 @@
 
 from __future__ import unicode_literals
 
+from dfdatetime import fake_time as dfdatetime_fake_time
+
 from dfvfs.lib import definitions
 from dfvfs.file_io import fake_file_io
 from dfvfs.path import fake_path_spec
@@ -10,7 +12,7 @@ from dfvfs.vfs import file_entry
 
 
 class FakeDirectory(file_entry.Directory):
-  """Class that implements a fake directory object."""
+  """Fake file system directory."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -19,7 +21,7 @@ class FakeDirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.FakePathSpec).
+      FakePathSpec: a path specification.
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
@@ -44,50 +46,69 @@ class FakeDirectory(file_entry.Directory):
 
 
 class FakeFileEntry(file_entry.FileEntry):
-  """Class that implements a fake file entry object."""
+  """Fake file system file entry."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
-  def __init__(self, resolver_context, file_system, path_spec, is_root=False):
-    """Initializes the file entry object.
+  def __init__(
+      self, resolver_context, file_system, path_spec, file_entry_type=None,
+      is_root=False):
+    """Initializes a file entry.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification object (instance of PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      file_entry_type (Optional[str]): file entry type.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
     """
     super(FakeFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=True)
+    self._date_time = dfdatetime_fake_time.FakeTime()
     self._name = None
+    self._type = file_entry_type
 
   def _GetDirectory(self):
     """Retrieves a directory.
 
     Returns:
-      A directory object (instance of Directory) or None.
+      FakeDirectoyr: a directory or None if not available.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-
-    if (self._stat_object and
-        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
+    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return FakeDirectory(self._file_system, self.path_spec)
-    return
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat)."""
-    location = getattr(self.path_spec, 'location', None)
-    if location is None:
-      return
+    """Retrieves information about the file entry.
 
-    return self._file_system.GetStatObjectByPath(location)
+    Returns:
+      VFSStat: a stat object.
+    """
+    stat_object = super(FakeFileEntry, self)._GetStat()
+
+    location = getattr(self.path_spec, 'location', None)
+    if location:
+      file_data = self._file_system.GetDataByPath(location)
+
+      if file_data is not None:
+        stat_object.size = len(file_data)
+
+    return stat_object
+
+  @property
+  def access_time(self):
+    """dfdatetime.DateTimeValues: access time or None if not available."""
+    return self._date_time
+
+  @property
+  def change_time(self):
+    """dfdatetime.DateTimeValues: change time or None if not available."""
+    return self._date_time
 
   @property
   def link(self):
-    """The full path of the linked file entry."""
+    """str: full path of the linked file entry."""
     if not self.IsLink():
       return ''
 
@@ -98,8 +119,13 @@ class FakeFileEntry(file_entry.FileEntry):
     return self._file_system.GetDataByPath(location)
 
   @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    return self._date_time
+
+  @property
   def name(self):
-    """The name of the file entry, which does not include the full path."""
+    """str: name of the file entry, without the full path."""
     if self._name is None:
       location = getattr(self.path_spec, 'location', None)
       if location is not None:
@@ -108,7 +134,7 @@ class FakeFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.FakeFileEntry)."""
+    """generator[FakeFileEntry]: sub file entries."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -121,12 +147,11 @@ class FakeFileEntry(file_entry.FileEntry):
     """Retrieves the file-like object.
 
     Args:
-      data_stream_name: optional data stream name. The default is
-                        an empty string which represents the default
-                        data stream.
+      data_stream_name (Optional[str]): name of the data stream, where an empty
+          string represents the default data stream.
 
     Returns:
-      A file-like object (instance of file_io.FileIO) or None.
+      FakeFileIO: a file-like object or None if not available.
 
     Raises:
       IOError: if the file entry is not a file.
@@ -150,7 +175,7 @@ class FakeFileEntry(file_entry.FileEntry):
     """Retrieves the root file entry.
 
     Returns:
-      The parent file entry (instance of FileEntry) or None.
+      FakeFileEntry: parent file entry or None if not available.
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
