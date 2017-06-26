@@ -101,7 +101,7 @@ class LVMFileEntry(file_entry.FileEntry):
 
     return stat_object
 
-  # TODO: implement creation_time property after implementing 
+  # TODO: implement creation_time property after implementing
   # vslvm_logical_volume.get_creation_time_as_integer()
 
   @property
