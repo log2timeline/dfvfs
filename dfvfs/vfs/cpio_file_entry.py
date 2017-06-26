@@ -87,33 +87,53 @@ class CPIOFileEntry(file_entry.FileEntry):
         is_virtual=is_virtual)
     self._cpio_archive_file_entry = cpio_archive_file_entry
 
+    # The stat info member st_mode can have multiple types e.g.
+    # LINK and DIRECTORY in case of a symbolic link to a directory
+    # dfVFS currently only supports one type so we need to check
+    # for LINK first.
+    mode = getattr(cpio_archive_file_entry, u'mode', 0)
+    if stat.S_ISLNK(mode):
+      self._type = definitions.FILE_ENTRY_TYPE_LINK
+    # The root file entry is virtual and should have type directory.
+    elif is_virtual or stat.S_ISDIR(mode):
+      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+    elif stat.S_ISREG(mode):
+      self._type = definitions.FILE_ENTRY_TYPE_FILE
+    elif stat.S_ISCHR(mode) or stat.S_ISBLK(mode):
+      self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+    elif stat.S_ISFIFO(mode):
+      self._type = definitions.FILE_ENTRY_TYPE_PIPE
+    elif stat.S_ISSOCK(mode):
+      self._type = definitions.FILE_ENTRY_TYPE_SOCKET
+
   def _GetDirectory(self):
     """Retrieves a directory.
 
     Returns:
       CPIODirectory: a directory or None if not available.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-
-    if (self._stat_object and
-        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
+    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return CPIODirectory(self._file_system, self.path_spec)
-    return
 
   def _GetLink(self):
-    """Retrieves the link."""
+    """Retrieves the link.
+
+    Returns:
+      str: full path of the linked file entry.
+    """
     if self._link is None:
       self._link = ''
-      if (self._cpio_archive_file_entry and
-          stat.S_ISLNK(self._cpio_archive_file_entry.mode)):
-        cpio_archive_file = self._file_system.GetCPIOArchiveFile()
-        link_data = cpio_archive_file.ReadDataAtOffset(
-            self._cpio_archive_file_entry.data_offset,
-            self._cpio_archive_file_entry.data_size)
 
-        # TODO: should this be ASCII?
-        self._link = link_data.decode('ascii')
+      if self._type != definitions.FILE_ENTRY_TYPE_LINK:
+        return self._link
+
+      cpio_archive_file = self._file_system.GetCPIOArchiveFile()
+      link_data = cpio_archive_file.ReadDataAtOffset(
+          self._cpio_archive_file_entry.data_offset,
+          self._cpio_archive_file_entry.data_size)
+
+      # TODO: should this be ASCII?
+      self._link = link_data.decode('ascii')
 
     return self._link
 
@@ -129,10 +149,6 @@ class CPIOFileEntry(file_entry.FileEntry):
     stat_object.size = getattr(
         self._cpio_archive_file_entry, u'data_size', None)
 
-    # Date and time stat information.
-    stat_object.mtime = getattr(
-        self._cpio_archive_file_entry, u'modification_time', None)
-
     # Ownership and permissions stat information.
     mode = getattr(self._cpio_archive_file_entry, u'mode', 0)
     stat_object.mode = stat.S_IMODE(mode)
@@ -140,26 +156,6 @@ class CPIOFileEntry(file_entry.FileEntry):
         self._cpio_archive_file_entry, u'user_identifier', None)
     stat_object.gid = getattr(
         self._cpio_archive_file_entry, u'group_identifier', None)
-
-    # File entry type stat information.
-
-    # The stat info member st_mode can have multiple types e.g.
-    # LINK and DIRECTORY in case of a symbolic link to a directory
-    # dfVFS currently only supports one type so we need to check
-    # for LINK first.
-    if stat.S_ISLNK(mode):
-      stat_object.type = stat_object.TYPE_LINK
-    # The root file entry is virtual and should have type directory.
-    elif self._is_virtual or stat.S_ISDIR(mode):
-      stat_object.type = stat_object.TYPE_DIRECTORY
-    elif stat.S_ISREG(mode):
-      stat_object.type = stat_object.TYPE_FILE
-    elif stat.S_ISCHR(mode) or stat.S_ISBLK(mode):
-      stat_object.type = stat_object.TYPE_DEVICE
-    elif stat.S_ISFIFO(mode):
-      stat_object.type = stat_object.TYPE_PIPE
-    elif stat.S_ISSOCK(mode):
-      stat_object.type = stat_object.TYPE_SOCKET
 
     return stat_object
 

@@ -86,13 +86,8 @@ class VShadowFileEntry(file_entry.FileEntry):
     Returns:
       VShadowDirectory: a directory None if not available.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-
-    if (self._stat_object and
-        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
+    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return VShadowDirectory(self._file_system, self.path_spec)
-    return
 
   def _GetStat(self):
     """Retrieves information about the file entry.

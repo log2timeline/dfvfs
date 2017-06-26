@@ -17,17 +17,17 @@ from dfvfs.vfs import file_system
 
 
 class TSKFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using pytsk3."""
+  """File system that uses pytsk3."""
 
   LOCATION_ROOT = '/'
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
   def __init__(self, resolver_context):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(TSKFileSystem, self).__init__(resolver_context)
     self._file_object = None
@@ -49,8 +49,8 @@ class TSKFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -75,19 +75,6 @@ class TSKFileSystem(file_system.FileSystem):
     self._file_object = file_object
     self._tsk_file_system = tsk_file_system
 
-  def GetRootInode(self):
-    """Retrieves the root inode or None."""
-    # Note that because pytsk3.FS_Info does not explicitly define info
-    # we need to check if the attribute exists and has a value other
-    # than None
-    if getattr(self._tsk_file_system, 'info', None) is None:
-      return
-
-    # Note that because pytsk3.TSK_FS_INFO does not explicitly define
-    # root_inum we need to check if the attribute exists and has a value
-    # other than None
-    return getattr(self._tsk_file_system.info, 'root_inum', None)
-
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
 
@@ -95,7 +82,7 @@ class TSKFileSystem(file_system.FileSystem):
       path_spec: a path specification (instance of PathSpec).
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
     # Opening a file by inode number is faster than opening a file by location.
     tsk_file = None
@@ -117,10 +104,10 @@ class TSKFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      TSKFileEntry: a file entry or None if not available.
     """
     # Opening a file by inode number is faster than opening a file by location.
     tsk_file = None
@@ -152,10 +139,10 @@ class TSKFileSystem(file_system.FileSystem):
         self._resolver_context, self, path_spec, tsk_file=tsk_file)
 
   def GetFsInfo(self):
-    """Retrieves the file system info object.
+    """Retrieves the file system info.
 
     Returns:
-      The SleuthKit file system info object (instance of pytsk3.FS_Info).
+      pytsk3.FS_Info: file system info.
     """
     return self._tsk_file_system
 
@@ -163,7 +150,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Retrieves the file system type.
 
     Returns:
-      The SleuthKit file system type (instance of pytsk3.TSK_FS_TYPE_ENUM).
+      pytsk3.TSK_FS_TYPE_ENUM: file system type.
     """
     if self._tsk_fs_type is None:
       self._tsk_fs_type = pytsk3.TSK_FS_TYPE_UNSUPP
@@ -180,7 +167,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      TSKFileEntry: a file entry.
     """
     kwargs = {}
 
@@ -194,11 +181,55 @@ class TSKFileSystem(file_system.FileSystem):
     path_spec = tsk_path_spec.TSKPathSpec(**kwargs)
     return self.GetFileEntryByPathSpec(path_spec)
 
+  def GetRootInode(self):
+    """Retrieves the root inode.
+
+    Returns:
+      int: inode number or None if not available.
+    """
+    # Note that because pytsk3.FS_Info does not explicitly define info
+    # we need to check if the attribute exists and has a value other
+    # than None
+    if getattr(self._tsk_file_system, 'info', None) is None:
+      return
+
+    # Note that because pytsk3.TSK_FS_INFO does not explicitly define
+    # root_inum we need to check if the attribute exists and has a value
+    # other than None
+    return getattr(self._tsk_file_system.info, 'root_inum', None)
+
+  def GetTSKFileByPathSpec(self, path_spec):
+    """Retrieves the SleuthKit file object for a path specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
+
+    Returns:
+      pytsk3.File: TSK file.
+
+    Raises:
+      PathSpecError: if the path specification is missing inode and location.
+    """
+    # Opening a file by inode number is faster than opening a file
+    # by location.
+    inode = getattr(path_spec, 'inode', None)
+    location = getattr(path_spec, 'location', None)
+
+    if inode is not None:
+      tsk_file = self._tsk_file_system.open_meta(inode=inode)
+    elif location is not None:
+      tsk_file = self._tsk_file_system.open(location)
+    else:
+      raise errors.PathSpecError(
+          'Path specification missing inode and location.')
+
+    return tsk_file
+
   def IsHFS(self):
     """Determines if the file system is HFS, HFS+ or HFSX.
 
     Returns:
-      A boolean value indicating the file system is HFS.
+      bool: True if the file system is HFS.
     """
     tsk_fs_type = self.GetFsType()
     return tsk_fs_type in [
@@ -208,7 +239,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Determines if the file system is NTFS.
 
     Returns:
-      A boolean value indicating the file system is NTFS.
+      bool: True if the file system is NTFS.
     """
     tsk_fs_type = self.GetFsType()
     return tsk_fs_type in [

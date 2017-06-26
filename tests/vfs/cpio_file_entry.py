@@ -70,7 +70,7 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.gid, 1000)
 
     self.assertEqual(stat_object.mtime, 1432702913)
-    self.assertIsNone(stat_object.mtime_nano)
+    self.assertFalse(hasattr(stat_object, u'mtime_nano'))
 
   def testIsFunctions(self):
     """Test the Is? functions."""
