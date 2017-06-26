@@ -17,15 +17,15 @@ from dfvfs.vfs import file_system
 
 
 class LVMFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using pyvslvm."""
+  """File system that uses pyvslvm."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_LVM
 
   def __init__(self, resolver_context):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
-      resolver_context: the resolver context (instance of Context).
+      resolver_context (Context): resolver context.
     """
     super(LVMFileSystem, self).__init__(resolver_context)
     self._file_object = None
@@ -49,8 +49,8 @@ class LVMFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -84,10 +84,10 @@ class LVMFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
     volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
 
@@ -104,10 +104,10 @@ class LVMFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of FileEntry) or None.
+      LVMFileEntry: a file entry or None if not available.
     """
     volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
 
@@ -127,11 +127,24 @@ class LVMFileSystem(file_system.FileSystem):
     return dfvfs.vfs.lvm_file_entry.LVMFileEntry(
         self._resolver_context, self, path_spec)
 
-  def GetLVMVolumeGroup(self):
-    """Retrieves the LVM volume group object.
+  def GetLVMLogicalVolumeByPathSpec(self, path_spec):
+    """Retrieves a LVM logical volume for a path specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
 
     Returns:
-      The LVM handle object (instance of pyvslvm.volume_group).
+      pyvslvm.logical_volume: a LVM logical volume or None if not available.
+    """
+    volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
+    if volume_index is not None:
+      return self._vslvm_volume_group.get_logical_volume(volume_index)
+
+  def GetLVMVolumeGroup(self):
+    """Retrieves the LVM volume group.
+
+    Returns:
+      pyvslvm.volume_group: a LVM volume group.
     """
     return self._vslvm_volume_group
 
@@ -139,7 +152,7 @@ class LVMFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of FileEntry).
+      LVMFileEntry: root file entry or None if not available.
     """
     path_spec = lvm_path_spec.LVMPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
