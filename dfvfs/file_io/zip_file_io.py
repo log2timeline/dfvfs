@@ -72,6 +72,10 @@ class ZipFile(file_io.FileIO):
       file_system.Close()
       raise IOError(u'Unable to retrieve file entry.')
 
+    if not file_entry.IsFile():
+      file_system.Close()
+      raise IOError(u'Not a regular file.')
+
     self._file_system = file_system
     self._zip_file = self._file_system.GetZipFile()
     self._zip_info = file_entry.GetZipInfo()

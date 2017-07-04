@@ -114,16 +114,30 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 2)
 
-    expected_sub_file_entry_names = [u'syslog', u'wtmp.1']
+    self._assertSubFileEntries(file_entry, [u'syslog', u'wtmp.1'])
 
-    sub_file_entry_names = []
-    for sub_file_entry in file_entry.sub_file_entries:
-      sub_file_entry_names.append(sub_file_entry.name)
+    # Test on a zip file that has missing directory entries.
+    test_file = self._GetTestFilePath([u'missing_directory_entries.zip'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = zip_path_spec.ZipPathSpec(location=u'/', parent=path_spec)
 
-    self.assertEqual(
-        len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEqual(
-        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+    file_system = zip_file_system.ZipFileSystem(self._resolver_context)
+    self.assertIsNotNone(file_system)
+    file_system.Open(path_spec)
+
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self._assertSubFileEntries(file_entry, [u'folder'])
+
+    # The "folder" folder is a missing directory entry but should still
+    # be found due to the files found inside the directory.
+    sub_file_entry = next(file_entry.sub_file_entries)
+    self.assertTrue(sub_file_entry.IsVirtual())
+    self._assertSubFileEntries(sub_file_entry, [u'syslog', u'wtmp.1'])
+
+    file_system.Close()
+
 
   def testDataStreams(self):
     """Test the data streams functionality."""
