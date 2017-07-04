@@ -126,8 +126,7 @@ class FileSystem(object):
       path_spec (PathSpec): a path specification.
 
     Returns:
-      tuple[FileEntry, DataStream]: a file entry and data stream or None if
-          not available.
+      DataStream: a data stream or None if not available.
     """
     file_entry = self.GetFileEntryByPathSpec(path_spec)
     if file_entry:

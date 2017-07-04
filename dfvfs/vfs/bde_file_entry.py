@@ -28,7 +28,6 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
 
     Raises:
       BackEndError: when the BDE volume is missing.
-          entry emulated by the corresponding file system.
     """
     bde_volume = file_system.GetBDEVolume()
     if bde_volume is None:
