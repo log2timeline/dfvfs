@@ -103,7 +103,7 @@ class GzipFile(file_object_io.FileObjectIO):
       # Note that construct 2 does not support the encoding to be a Unicode
       # string.
       self.original_filename = construct.CString(
-          'original_filename', encoding='iso-8859-1').parse_stream(
+          'original_filename', encoding=b'iso-8859-1').parse_stream(
               file_object)
       self._compressed_data_offset = file_object.get_offset()
 
@@ -112,7 +112,7 @@ class GzipFile(file_object_io.FileObjectIO):
       # Note that construct 2 does not support the encoding to be a Unicode
       # string.
       self.comment = construct.CString(
-          'comment', encoding='iso-8859-1').parse_stream(file_object)
+          'comment', encoding=b'iso-8859-1').parse_stream(file_object)
       self._compressed_data_offset = file_object.get_offset()
 
     if file_header.flags & self._FLAG_FHCRC:
