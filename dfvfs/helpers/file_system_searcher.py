@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """A searcher to find file entries within a file system."""
 
-import fnmatch
 import re
 import sre_constants
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import glob2regex
 from dfvfs.lib import py2to3
 from dfvfs.path import factory as path_spec_factory
 
@@ -77,22 +77,22 @@ class FindSpec(object):
             type(location)))
 
     elif location_glob is not None:
-      # fnmatch.translate() is used to convert a glob into a regular expression.
-      # The resulting regular expression has "\Z(?ms)" defined at its end,
-      # which needs to be removed and escapes the forward slash "/", which
-      # needs to be undone.
+      # The regular expression from glob2regex contains escaped forward
+      # slashes "/", which needs to be undone.
+
       if isinstance(location_glob, py2to3.STRING_TYPES):
-        fnmatch_regex = fnmatch.translate(location_glob)
-        fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
-        fnmatch_regex = fnmatch_regex.replace(u'\\/', '/')
-        self._location_regex = fnmatch_regex
+        location_regex = glob2regex.Glob2Regex(location_glob)
+
+        self._location_regex = location_regex.replace(u'\\/', '/')
+
       elif isinstance(location_glob, list):
         self._location_segments = []
         for location_segment in location_glob:
-          fnmatch_regex = fnmatch.translate(location_segment)
-          fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
-          fnmatch_regex = fnmatch_regex.replace(u'\\/', '/')
-          self._location_segments.append(fnmatch_regex)
+          location_regex = glob2regex.Glob2Regex(location_segment)
+          location_regex = location_regex.replace(u'\\/', '/')
+
+          self._location_segments.append(location_regex)
+
       else:
         raise TypeError(u'Unsupported location_glob type: {0:s}.'.format(
             type(location_glob)))
