@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The zlib and DEFLATE decompressor object implementations."""
+"""The zlib and DEFLATE decompressor implementations."""
+
+from __future__ import unicode_literals
 
 import zlib
 
@@ -10,12 +12,12 @@ from dfvfs.lib import errors
 
 
 class ZlibDecompressor(decompressor.Decompressor):
-  """Class that implements a "zlib DEFLATE" decompressor using zlib."""
+  """DEFLATE with zlib data decompressor using zlib."""
 
   COMPRESSION_METHOD = definitions.COMPRESSION_METHOD_ZLIB
 
   def __init__(self, window_size=zlib.MAX_WBITS):
-    """Initializes the decompressor object.
+    """Initializes a decompressor.
 
     Args:
       window_size (Optional[int]): base two logarithm of the size of
@@ -40,23 +42,23 @@ class ZlibDecompressor(decompressor.Decompressor):
     try:
       uncompressed_data = self._zlib_decompressor.decompress(compressed_data)
       remaining_compressed_data = getattr(
-          self._zlib_decompressor, u'unused_data', b'')
+          self._zlib_decompressor, 'unused_data', b'')
 
     except zlib.error as exception:
       raise errors.BackEndError((
-          u'Unable to decompress zlib compressed stream with error: '
-          u'{0!s}.').format(exception))
+          'Unable to decompress zlib compressed stream with error: '
+          '{0!s}.').format(exception))
 
     return uncompressed_data, remaining_compressed_data
 
 
 class DeflateDecompressor(ZlibDecompressor):
-  """Class that implements a "raw DEFLATE" decompressor using zlib."""
+  """DEFLATE without zlib data decompressor using zlib."""
 
   COMPRESSION_METHOD = definitions.COMPRESSION_METHOD_DEFLATE
 
   def __init__(self):
-    """Initializes the decompressor object."""
+    """Initializes a decompressor."""
     super(DeflateDecompressor, self).__init__(window_size=-zlib.MAX_WBITS)
 
 

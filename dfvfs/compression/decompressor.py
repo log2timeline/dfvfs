@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-"""The decompressor object interface."""
+"""The decompressor interface."""
+
+from __future__ import unicode_literals
 
 import abc
 
 
 class Decompressor(object):
-  """Class that implements the decompressor object interface."""
+  """Decompressor interface."""
 
   @abc.abstractmethod
   def Decompress(self, compressed_data):
