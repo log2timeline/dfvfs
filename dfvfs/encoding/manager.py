@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """The encoding manager."""
 
+from __future__ import unicode_literals
+
 
 class EncodingManager(object):
-  """Class that implements the encoding manager."""
+  """Encoding manager."""
 
   _decoders = {}
 
@@ -20,7 +22,7 @@ class EncodingManager(object):
     encoding_method = decoder.ENCODING_METHOD.lower()
     if encoding_method not in cls._decoders:
       raise KeyError(
-          u'Decoder for encoding method: {0:s} not set.'.format(
+          'Decoder for encoding method: {0:s} not set.'.format(
               decoder.ENCODING_METHOD))
 
     del cls._decoders[encoding_method]
@@ -55,7 +57,7 @@ class EncodingManager(object):
     encoding_method = decoder.ENCODING_METHOD.lower()
     if encoding_method in cls._decoders:
       raise KeyError(
-          u'Decoder for encoding method: {0:s} already set.'.format(
+          'Decoder for encoding method: {0:s} already set.'.format(
               decoder.ENCODING_METHOD))
 
     cls._decoders[encoding_method] = decoder

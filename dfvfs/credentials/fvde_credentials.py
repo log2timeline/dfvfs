@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The FileVault Drive Encryption (FVDE) credentials."""
 
+from __future__ import unicode_literals
+
 from dfvfs.credentials import credentials
 from dfvfs.credentials import manager
 from dfvfs.lib import definitions
@@ -10,11 +12,11 @@ from dfvfs.lib import definitions
 
 
 class FVDECredentials(credentials.Credentials):
-  """Class that implements the FVDE credentials."""
+  """FVDE credentials."""
 
   # TODO: add support for key_data credential, needs pyfvde update.
   CREDENTIALS = frozenset([
-      u'encrypted_root_plist', u'password', u'recovery_password'])
+      'encrypted_root_plist', 'password', 'recovery_password'])
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FVDE
 

@@ -10,9 +10,11 @@ of  BitLocker Drive Encryption (BDE):
   * key data.
 """
 
+from __future__ import unicode_literals
+
 
 class CredentialsManager(object):
-  """Class that implements the credentials manager."""
+  """Credentials manager."""
 
   _credentials = {}
 
@@ -25,11 +27,11 @@ class CredentialsManager(object):
 
     Raises:
       KeyError: if credential object is not set for the corresponding
-                type indicator.
+          type indicator.
     """
     if credentials.type_indicator not in cls._credentials:
       raise KeyError(
-          u'Credential object not set for type indicator: {0:s}.'.format(
+          'Credential object not set for type indicator: {0:s}.'.format(
               credentials.type_indicator))
 
     del cls._credentials[credentials.type_indicator]
@@ -59,11 +61,11 @@ class CredentialsManager(object):
 
     Raises:
       KeyError: if credentials object is already set for the corresponding
-                type indicator.
+          type indicator.
     """
     if credentials.type_indicator in cls._credentials:
       raise KeyError(
-          u'Credentials object already set for type indicator: {0:s}.'.format(
+          'Credentials object already set for type indicator: {0:s}.'.format(
               credentials.type_indicator))
 
     cls._credentials[credentials.type_indicator] = credentials

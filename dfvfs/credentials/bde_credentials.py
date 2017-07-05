@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The BitLocker Drive Encryption (BDE) credentials."""
 
+from __future__ import unicode_literals
+
 from dfvfs.credentials import credentials
 from dfvfs.credentials import manager
 from dfvfs.lib import definitions
@@ -10,11 +12,11 @@ from dfvfs.lib import definitions
 
 
 class BDECredentials(credentials.Credentials):
-  """Class that implements the BDE credentials."""
+  """BDE credentials."""
 
   # TODO: add support for key_data credential, needs pybde update.
   CREDENTIALS = frozenset([
-      u'password', u'recovery_password', u'startup_key'])
+      'password', 'recovery_password', 'startup_key'])
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 

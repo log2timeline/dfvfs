@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-"""The decrypter object interface."""
+"""The decrypter interface."""
+
+from __future__ import unicode_literals
 
 import abc
 
 
 class Decrypter(object):
-  """Class that implements the decrypter object interface."""
+  """Decrypter interface."""
 
   def __init__(self, **kwargs):
-    """Initializes the decrypter object.
+    """Initializes a decrypter.
 
     Args:
       kwargs (dict): keyword arguments depending on the decrypter.
@@ -17,8 +19,8 @@ class Decrypter(object):
       ValueError: when there are unused keyword arguments.
     """
     if kwargs:
-      raise ValueError(u'Unused keyword arguments: {0:s}.'.format(
-          u', '.join(kwargs)))
+      raise ValueError('Unused keyword arguments: {0:s}.'.format(
+          ', '.join(kwargs)))
 
     super(Decrypter, self).__init__()
 

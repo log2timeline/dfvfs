@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The AES decrypter object implementation."""
+"""The AES decrypter implementation."""
+
+from __future__ import unicode_literals
 
 from Crypto.Cipher import AES
 
@@ -9,7 +11,7 @@ from dfvfs.lib import definitions
 
 
 class AESDecrypter(decrypter.Decrypter):
-  """Class that implements a AES decrypter using pycrypto."""
+  """AES decrypter using pycrypto."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_AES
 
@@ -21,7 +23,7 @@ class AESDecrypter(decrypter.Decrypter):
 
   def __init__(
       self, cipher_mode=None, initialization_vector=None, key=None, **kwargs):
-    """Initializes the decrypter object.
+    """Initializes a decrypter.
 
     Args:
       cipher_mode (Optional[str]): cipher mode.
@@ -31,19 +33,19 @@ class AESDecrypter(decrypter.Decrypter):
 
     Raises:
       ValueError: when key is not set, block cipher mode is not supported,
-                  or initialization_vector is required and not set.
+          or initialization_vector is required and not set.
     """
     if not key:
-      raise ValueError(u'Missing key.')
+      raise ValueError('Missing key.')
 
     cipher_mode = self.ENCRYPTION_MODES.get(cipher_mode, None)
     if cipher_mode is None:
-      raise ValueError(u'Unsupported cipher mode: {0!s}'.format(cipher_mode))
+      raise ValueError('Unsupported cipher mode: {0!s}'.format(cipher_mode))
 
     if cipher_mode != AES.MODE_ECB and not initialization_vector:
       # Pycrypto does not create a meaningful error when initialization vector
       # is missing. Therefore, we report it ourselves.
-      raise ValueError(u'Missing initialization vector.')
+      raise ValueError('Missing initialization vector.')
 
     super(AESDecrypter, self).__init__()
     if cipher_mode == AES.MODE_ECB:

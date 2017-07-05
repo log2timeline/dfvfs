@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream credentials."""
 
+from __future__ import unicode_literals
+
 from dfvfs.credentials import credentials
 from dfvfs.credentials import manager
 from dfvfs.lib import definitions
 
 
 class EncryptedStreamCredentials(credentials.Credentials):
-  """Class that implements the encrypted stream credentials."""
+  """Encrypted stream credentials."""
 
-  CREDENTIALS = frozenset([u'cipher_mode', u'initialization_vector', u'key'])
+  CREDENTIALS = frozenset(['cipher_mode', 'initialization_vector', 'key'])
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCRYPTED_STREAM
 

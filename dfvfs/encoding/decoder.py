@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-"""The decoder object interface."""
+"""The decoder interface."""
+
+from __future__ import unicode_literals
 
 import abc
 
 
 class Decoder(object):
-  """Class that implements the decoder object interface."""
+  """Decoder interface."""
 
   @abc.abstractmethod
   def Decode(self, encoded_data):
