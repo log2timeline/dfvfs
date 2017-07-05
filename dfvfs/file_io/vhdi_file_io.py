@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The VHD image file-like object."""
 
+from __future__ import unicode_literals
+
 import pyvhdi
 
 from dfvfs.file_io import file_object_io
@@ -10,10 +12,10 @@ from dfvfs.resolver import resolver
 
 
 class VHDIFile(file_object_io.FileObjectIO):
-  """Class that implements a file-like object using pyvhdi."""
+  """File-like object using pyvhdi."""
 
   def __init__(self, resolver_context, file_object=None):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -50,7 +52,7 @@ class VHDIFile(file_object_io.FileObjectIO):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -85,15 +87,15 @@ class VHDIFile(file_object_io.FileObjectIO):
     Raises:
       PathSpecError: if the path specification is incorrect.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     if not location:
       raise errors.PathSpecError(
-          u'Unsupported path specification without location.')
+          'Unsupported path specification without location.')
 
     location_path_segments = file_system.SplitPath(location)
 
     parent_filename = vhdi_file.parent_filename
-    _, _, parent_filename = parent_filename.rpartition(u'\\')
+    _, _, parent_filename = parent_filename.rpartition('\\')
 
     location_path_segments.pop()
     location_path_segments.append(parent_filename)
@@ -104,9 +106,9 @@ class VHDIFile(file_object_io.FileObjectIO):
     # keyword arguments and raise.
     kwargs = path_spec_factory.Factory.GetProperties(path_spec)
 
-    kwargs[u'location'] = parent_file_location
+    kwargs['location'] = parent_file_location
     if path_spec.parent is not None:
-      kwargs[u'parent'] = path_spec.parent
+      kwargs['parent'] = path_spec.parent
 
     parent_file_path_spec = path_spec_factory.Factory.NewPathSpec(
         path_spec.type_indicator, **kwargs)
@@ -139,6 +141,6 @@ class VHDIFile(file_object_io.FileObjectIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._file_object.get_media_size()

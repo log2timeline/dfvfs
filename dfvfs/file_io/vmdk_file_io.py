@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The VMDK image file-like object."""
 
+from __future__ import unicode_literals
+
 import pyvmdk
 
 from dfvfs.file_io import file_object_io
@@ -10,7 +12,7 @@ from dfvfs.resolver import resolver
 
 
 class VMDKFile(file_object_io.FileObjectIO):
-  """Class that implements a file-like object using pyvmdk."""
+  """File-like object using pyvmdk."""
 
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
@@ -27,14 +29,14 @@ class VMDKFile(file_object_io.FileObjectIO):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     parent_path_spec = path_spec.parent
 
-    parent_location = getattr(parent_path_spec, u'location', None)
+    parent_location = getattr(parent_path_spec, 'location', None)
     if not parent_location:
       raise errors.PathSpecError(
-          u'Unsupported parent path specification without location.')
+          'Unsupported parent path specification without location.')
 
     # Note that we cannot use pyvmdk's open_extent_data_files function
     # since it does not handle the file system abstraction dfvfs provides.
@@ -54,9 +56,9 @@ class VMDKFile(file_object_io.FileObjectIO):
     for extent_descriptor in iter(vmdk_handle.extent_descriptors):
       extent_data_filename = extent_descriptor.filename
 
-      _, path_separator, filename = extent_data_filename.rpartition(u'/')
+      _, path_separator, filename = extent_data_filename.rpartition('/')
       if not path_separator:
-        _, path_separator, filename = extent_data_filename.rpartition(u'\\')
+        _, path_separator, filename = extent_data_filename.rpartition('\\')
 
       if not path_separator:
         filename = extent_data_filename
@@ -76,9 +78,9 @@ class VMDKFile(file_object_io.FileObjectIO):
       # keyword arguments and raise.
       kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-      kwargs[u'location'] = extent_data_file_location
+      kwargs['location'] = extent_data_file_location
       if parent_path_spec.parent is not None:
-        kwargs[u'parent'] = parent_path_spec.parent
+        kwargs['parent'] = parent_path_spec.parent
 
       extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
           parent_path_spec.type_indicator, **kwargs)
@@ -89,7 +91,7 @@ class VMDKFile(file_object_io.FileObjectIO):
       extent_data_files.append(extent_data_file_path_spec)
 
     if len(extent_data_files) != vmdk_handle.number_of_extents:
-      raise IOError(u'Unable to locate all extent data files.')
+      raise IOError('Unable to locate all extent data files.')
 
     file_objects = []
     for extent_data_file_path_spec in extent_data_files:
@@ -112,6 +114,6 @@ class VMDKFile(file_object_io.FileObjectIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._file_object.get_media_size()

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.file_io import file_io
@@ -10,10 +12,10 @@ from dfvfs.resolver import resolver
 
 
 class LVMFile(file_io.FileIO):
-  """Class that implements a file-like object using pyvslvm."""
+  """File-like object using pyvslvm."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -43,12 +45,12 @@ class LVMFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specfication.')
+      raise ValueError('Missing path specfication.')
 
     volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
     if volume_index is None:
       raise errors.PathSpecError(
-          u'Unable to retrieve volume index from path specification.')
+          'Unable to retrieve volume index from path specification.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
@@ -57,8 +59,8 @@ class LVMFile(file_io.FileIO):
     if (volume_index < 0 or
         volume_index >= vslvm_volume_group.number_of_logical_volumes):
       raise errors.PathSpecError((
-          u'Unable to retrieve LVM logical volume index: {0:d} from path '
-          u'specification.').format(volume_index))
+          'Unable to retrieve LVM logical volume index: {0:d} from path '
+          'specification.').format(volume_index))
 
     self._vslvm_logical_volume = vslvm_volume_group.get_logical_volume(
         volume_index)
@@ -83,7 +85,7 @@ class LVMFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._vslvm_logical_volume.read(size)
 
@@ -99,7 +101,7 @@ class LVMFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     self._vslvm_logical_volume.seek(offset, whence)
 
@@ -113,7 +115,7 @@ class LVMFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._vslvm_logical_volume.get_offset()
 
@@ -124,6 +126,6 @@ class LVMFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._vslvm_logical_volume.size

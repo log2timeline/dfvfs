@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file-like object interface."""
 
+from __future__ import unicode_literals
+
 import abc
 import os
 
@@ -59,10 +61,10 @@ class FileIO(object):
       ValueError: if the path specification or mode is invalid.
     """
     if self._is_open and not self._is_cached:
-      raise IOError(u'Already open.')
+      raise IOError('Already open.')
 
     if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+      raise ValueError('Unsupport mode: {0:s}.'.format(mode))
 
     if not self._is_open:
       self._Open(path_spec=path_spec, mode=mode)
@@ -82,7 +84,7 @@ class FileIO(object):
       IOError: if the file-like object was not opened or the close failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if not self._is_cached:
       close_file_object = True

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The fake file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.file_io import file_io
@@ -8,10 +10,10 @@ from dfvfs.lib import errors
 
 
 class FakeFile(file_io.FileIO):
-  """Class that implements a fake file-like object."""
+  """Fake file-like object."""
 
   def __init__(self, resolver_context, file_data):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -40,14 +42,14 @@ class FakeFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if path_spec.HasParent():
-      raise errors.PathSpecError(u'Unsupported path specification with parent.')
+      raise errors.PathSpecError('Unsupported path specification with parent.')
 
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     if location is None:
-      raise errors.PathSpecError(u'Path specification missing location.')
+      raise errors.PathSpecError('Path specification missing location.')
 
     self._current_offset = 0
     self._size = len(self._file_data)
@@ -72,11 +74,11 @@ class FakeFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          u'Invalid current offset: {0:d} value less than zero.'.format(
+          'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if self._file_data is None or self._current_offset >= self._size:
@@ -103,17 +105,17 @@ class FakeFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError(u'Invalid offset value less than zero.')
+      raise IOError('Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -124,7 +126,7 @@ class FakeFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._current_offset
 
@@ -138,6 +140,6 @@ class FakeFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._size

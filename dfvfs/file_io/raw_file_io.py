@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The RAW storage media image file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import pysmraw
 
 from dfvfs.file_io import file_object_io
@@ -10,10 +12,10 @@ from dfvfs.resolver import resolver
 
 
 class RawFile(file_object_io.FileObjectIO):
-  """Class that implements a file-like object using pysmraw."""
+  """File-like object using pysmraw."""
 
   def __init__(self, resolver_context, file_object=None):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -23,7 +25,7 @@ class RawFile(file_object_io.FileObjectIO):
       ValueError: when file_object is set.
     """
     if file_object:
-      raise ValueError(u'File object value set.')
+      raise ValueError('File object value set.')
 
     super(RawFile, self).__init__(resolver_context)
     self._file_objects = []
@@ -52,7 +54,7 @@ class RawFile(file_object_io.FileObjectIO):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     parent_path_spec = path_spec.parent
 
@@ -90,6 +92,6 @@ class RawFile(file_object_io.FileObjectIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._file_object.get_media_size()

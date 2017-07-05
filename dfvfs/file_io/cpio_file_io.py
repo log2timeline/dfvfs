@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The CPIO extracted file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.file_io import file_io
@@ -8,10 +10,10 @@ from dfvfs.resolver import resolver
 
 
 class CPIOFile(file_io.FileIO):
-  """Class that implements a file-like object using CPIOArchiveFile."""
+  """File-like object using CPIOArchiveFile."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -45,7 +47,7 @@ class CPIOFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
@@ -53,7 +55,7 @@ class CPIOFile(file_io.FileIO):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     if not file_entry:
       file_system.Close()
-      raise IOError(u'Unable to retrieve file entry.')
+      raise IOError('Unable to retrieve file entry.')
 
     self._file_system = file_system
     self._cpio_archive_file = self._file_system.GetCPIOArchiveFile()
@@ -81,7 +83,7 @@ class CPIOFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset >= self._cpio_archive_file_entry.data_size:
       return b''
@@ -114,17 +116,17 @@ class CPIOFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._cpio_archive_file_entry.data_size
     elif whence != os.SEEK_SET:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError(u'Invalid offset value less than zero.')
+      raise IOError('Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -138,7 +140,7 @@ class CPIOFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._current_offset
 
@@ -152,6 +154,6 @@ class CPIOFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._cpio_archive_file_entry.data_size

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 import pytsk3
@@ -10,10 +12,10 @@ from dfvfs.resolver import resolver
 
 
 class TSKFile(file_io.FileIO):
-  """Class that implements a file-like object using pytsk3."""
+  """File-like object using pytsk3."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -47,9 +49,9 @@ class TSKFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
-    data_stream = getattr(path_spec, u'data_stream', None)
+    data_stream = getattr(path_spec, 'data_stream', None)
 
     file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
@@ -57,7 +59,7 @@ class TSKFile(file_io.FileIO):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     if not file_entry:
       file_system.Close()
-      raise IOError(u'Unable to retrieve file entry.')
+      raise IOError('Unable to retrieve file entry.')
 
     tsk_file = file_entry.GetTSKFile()
     tsk_attribute = None
@@ -65,52 +67,52 @@ class TSKFile(file_io.FileIO):
     # Note that because pytsk3.File does not explicitly defines info
     # we need to check if the attribute exists and has a value other
     # than None.
-    if getattr(tsk_file, u'info', None) is None:
+    if getattr(tsk_file, 'info', None) is None:
       file_system.Close()
-      raise IOError(u'Missing attribute info in file (pytsk3.File).')
+      raise IOError('Missing attribute info in file (pytsk3.File).')
 
     # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
     # we need to check if the attribute exists and has a value other
     # than None.
-    if getattr(tsk_file.info, u'meta', None) is None:
+    if getattr(tsk_file.info, 'meta', None) is None:
       file_system.Close()
       raise IOError(
-          u'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
+          'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines size
     # we need to check if the attribute exists.
-    if not hasattr(tsk_file.info.meta, u'size'):
+    if not hasattr(tsk_file.info.meta, 'size'):
       file_system.Close()
       raise IOError(
-          u'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
+          'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines type
     # we need to check if the attribute exists.
-    if not hasattr(tsk_file.info.meta, u'type'):
+    if not hasattr(tsk_file.info.meta, 'type'):
       file_system.Close()
       raise IOError(
-          u'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
+          'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
     if data_stream:
       for attribute in tsk_file:
-        if getattr(attribute, u'info', None) is None:
+        if getattr(attribute, 'info', None) is None:
           continue
 
         # The value of the attribute name will be None for the default
         # data stream.
-        attribute_name = getattr(attribute.info, u'name', None)
+        attribute_name = getattr(attribute.info, 'name', None)
         if attribute_name is None:
-          attribute_name = u''
+          attribute_name = ''
 
         else:
           try:
             # pytsk3 returns an UTF-8 encoded byte string.
-            attribute_name = attribute_name.decode(u'utf8')
+            attribute_name = attribute_name.decode('utf8')
           except UnicodeError:
             # Continue here since we cannot represent the attribute name.
             continue
 
-        attribute_type = getattr(attribute.info, u'type', None)
+        attribute_type = getattr(attribute.info, 'type', None)
         if attribute_name == data_stream and attribute_type in (
             pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,
             pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA,
@@ -120,13 +122,13 @@ class TSKFile(file_io.FileIO):
 
       if tsk_attribute is None:
         file_system.Close()
-        raise IOError(u'Unable to open data stream: {0:s}.'.format(
+        raise IOError('Unable to open data stream: {0:s}.'.format(
             data_stream))
 
     if (not tsk_attribute and
         tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG):
       file_system.Close()
-      raise IOError(u'Not a regular file.')
+      raise IOError('Not a regular file.')
 
     self._current_offset = 0
     self._file_system = file_system
@@ -158,10 +160,10 @@ class TSKFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(u'Invalid current offset value less than zero.')
+      raise IOError('Invalid current offset value less than zero.')
 
     # The SleuthKit is not POSIX compliant in its read behavior. Therefore
     # pytsk3 will raise an IOError if the read offset is beyond the data size.
@@ -197,17 +199,17 @@ class TSKFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError(u'Invalid offset value less than zero.')
+      raise IOError('Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -221,7 +223,7 @@ class TSKFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._current_offset
 
@@ -235,6 +237,6 @@ class TSKFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._size

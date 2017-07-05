@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition file-like object implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.file_io import data_range_io
 from dfvfs.lib import errors
 from dfvfs.lib import tsk_partition
@@ -8,10 +10,10 @@ from dfvfs.resolver import resolver
 
 
 class TSKPartitionFile(data_range_io.DataRange):
-  """Class that implements a file-like object using pytsk3."""
+  """File-like object using pytsk3."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -38,11 +40,11 @@ class TSKPartitionFile(data_range_io.DataRange):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
@@ -51,16 +53,16 @@ class TSKPartitionFile(data_range_io.DataRange):
 
     if tsk_vs is None:
       raise errors.PathSpecError(
-          u'Unable to retrieve TSK volume system part from path '
-          u'specification.')
+          'Unable to retrieve TSK volume system part from path '
+          'specification.')
 
     range_offset = tsk_partition.TSKVsPartGetStartSector(tsk_vs)
     range_size = tsk_partition.TSKVsPartGetNumberOfSectors(tsk_vs)
 
     if range_offset is None or range_size is None:
       raise errors.PathSpecError(
-          u'Unable to retrieve TSK volume system part data range from path '
-          u'specification.')
+          'Unable to retrieve TSK volume system part data range from path '
+          'specification.')
 
     bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(tsk_volume)
     range_offset *= bytes_per_sector

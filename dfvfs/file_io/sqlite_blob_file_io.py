@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SQlite blob file-like object."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.file_io import file_io
@@ -11,12 +13,12 @@ from dfvfs.resolver import resolver
 
 
 class SQLiteBlobFile(file_io.FileIO):
-  """Class that implements a file-like object using sqlite."""
+  """File-like object using sqlite."""
 
-  _OPERATORS = frozenset([u'==', u'=', u'IS'])
+  _OPERATORS = frozenset(['==', '=', 'IS'])
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -53,39 +55,39 @@ class SQLiteBlobFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
-    table_name = getattr(path_spec, u'table_name', None)
+    table_name = getattr(path_spec, 'table_name', None)
     if table_name is None:
-      raise errors.PathSpecError(u'Path specification missing table name.')
+      raise errors.PathSpecError('Path specification missing table name.')
 
-    column_name = getattr(path_spec, u'column_name', None)
+    column_name = getattr(path_spec, 'column_name', None)
     if column_name is None:
-      raise errors.PathSpecError(u'Path specification missing column name.')
+      raise errors.PathSpecError('Path specification missing column name.')
 
-    row_condition = getattr(path_spec, u'row_condition', None)
+    row_condition = getattr(path_spec, 'row_condition', None)
     if row_condition:
       if not isinstance(row_condition, tuple) or len(row_condition) != 3:
         raise errors.PathSpecError((
-            u'Unsupported row_condition not a tuple in the form: '
-            u'(column_name, operator, value).'))
+            'Unsupported row_condition not a tuple in the form: '
+            '(column_name, operator, value).'))
 
-    row_index = getattr(path_spec, u'row_index', None)
+    row_index = getattr(path_spec, 'row_index', None)
     if row_index is not None:
       if not isinstance(row_index, py2to3.INTEGER_TYPES):
         raise errors.PathSpecError(
-            u'Unsupported row_index not of integer type.')
+            'Unsupported row_index not of integer type.')
 
     if not row_condition and row_index is None:
       raise errors.PathSpecError(
-          u'Path specification requires either a row_condition or row_index.')
+          'Path specification requires either a row_condition or row_index.')
 
     if self._database_object:
-      raise IOError(u'Database file already set.')
+      raise IOError('Database file already set.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -97,31 +99,31 @@ class SQLiteBlobFile(file_io.FileIO):
       file_object.close()
 
     # Sanity check the table and column names.
-    error_string = u''
+    error_string = ''
     if not database_object.HasTable(table_name):
-      error_string = u'Missing table: {0:s}'.format(table_name)
+      error_string = 'Missing table: {0:s}'.format(table_name)
 
     elif not database_object.HasColumn(table_name, column_name):
-      error_string = u'Missing column: {0:s} in table: {1:s}'.format(
+      error_string = 'Missing column: {0:s} in table: {1:s}'.format(
           column_name, table_name)
 
     elif not row_condition:
-      query = u'SELECT {0:s} FROM {1:s} LIMIT 1 OFFSET {2:d}'.format(
+      query = 'SELECT {0:s} FROM {1:s} LIMIT 1 OFFSET {2:d}'.format(
           column_name, table_name, row_index)
       rows = database_object.Query(query)
 
     elif not database_object.HasColumn(table_name, row_condition[0]):
       error_string = (
-          u'Missing row condition column: {0:s} in table: {1:s}'.format(
+          'Missing row condition column: {0:s} in table: {1:s}'.format(
               row_condition[0], table_name))
 
     elif row_condition[1] not in self._OPERATORS:
       error_string = (
-          u'Unsupported row condition operator: {0:s}.'.format(
+          'Unsupported row condition operator: {0:s}.'.format(
               row_condition[1]))
 
     else:
-      query = u'SELECT {0:s} FROM {1:s} WHERE {2:s} {3:s} ?'.format(
+      query = 'SELECT {0:s} FROM {1:s} WHERE {2:s} {3:s} ?'.format(
           column_name, table_name, row_condition[0], row_condition[1])
       rows = database_object.Query(query, parameters=(row_condition[2], ))
 
@@ -130,15 +132,15 @@ class SQLiteBlobFile(file_io.FileIO):
     if not error_string and (len(rows) != 1 or len(rows[0]) != 1):
       if not row_condition:
         error_string = (
-            u'Unable to open blob in table: {0:s} and column: {1:s} '
-            u'for row: {2:d}.').format(table_name, column_name, row_index)
+            'Unable to open blob in table: {0:s} and column: {1:s} '
+            'for row: {2:d}.').format(table_name, column_name, row_index)
 
       else:
-        row_condition_string = u' '.join([
-            u'{0!s}'.format(value) for value in iter(row_condition)])
+        row_condition_string = ' '.join([
+            '{0!s}'.format(value) for value in iter(row_condition)])
         error_string = (
-            u'Unable to open blob in table: {0:s} and column: {1:s} '
-            u'where: {2:s}.').format(
+            'Unable to open blob in table: {0:s} and column: {1:s} '
+            'where: {2:s}.').format(
                 table_name, column_name, row_condition_string)
 
     if error_string:
@@ -163,7 +165,7 @@ class SQLiteBlobFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._database_object:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._number_of_rows is None:
       self._number_of_rows = self._database_object.GetNumberOfRows(
@@ -191,10 +193,10 @@ class SQLiteBlobFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._database_object:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(u'Invalid offset value out of bounds.')
+      raise IOError('Invalid offset value out of bounds.')
 
     if size == 0 or self._current_offset >= self._size:
       return b''
@@ -220,17 +222,17 @@ class SQLiteBlobFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._database_object:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError(u'Invalid offset value out of bounds.')
+      raise IOError('Invalid offset value out of bounds.')
 
     self._current_offset = offset
 
@@ -244,7 +246,7 @@ class SQLiteBlobFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._database_object:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._current_offset
 
@@ -258,6 +260,6 @@ class SQLiteBlobFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._database_object:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._size

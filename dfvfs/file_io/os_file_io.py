@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The operating system file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import stat
 import os
 
@@ -12,10 +14,10 @@ from dfvfs.lib import py2to3
 
 
 class OSFile(file_io.FileIO):
-  """Class that implements a file-like object using os."""
+  """File-like object using os."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -43,15 +45,15 @@ class OSFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if path_spec.HasParent():
-      raise errors.PathSpecError(u'Unsupported path specification with parent.')
+      raise errors.PathSpecError('Unsupported path specification with parent.')
 
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if location is None:
-      raise errors.PathSpecError(u'Path specification missing location.')
+      raise errors.PathSpecError('Path specification missing location.')
 
     # Windows does not support running os.stat on device files so we use
     # libsmdev to do an initial check.
@@ -67,11 +69,11 @@ class OSFile(file_io.FileIO):
       exception_string = str(exception)
       if not isinstance(exception_string, py2to3.UNICODE_TYPE):
         exception_string = py2to3.UNICODE_TYPE(
-            exception_string, errors=u'replace')
+            exception_string, errors='replace')
 
-      if u' access denied ' in exception_string:
+      if ' access denied ' in exception_string:
         raise errors.AccessError(
-            u'Access denied to file: {0:s} with error: {1:s}'.format(
+            'Access denied to file: {0:s} with error: {1:s}'.format(
                 location, exception_string))
       is_device = False
 
@@ -79,7 +81,7 @@ class OSFile(file_io.FileIO):
       try:
         stat_info = os.stat(location)
       except OSError as exception:
-        raise IOError(u'Unable to open file with error: {0:s}.'.format(
+        raise IOError('Unable to open file with error: {0:s}.'.format(
             exception))
 
       # In case the libsmdev check is not able to detect the device also use
@@ -116,7 +118,7 @@ class OSFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if size is None:
       size = self._size - self._file_object.tell()
@@ -135,13 +137,13 @@ class OSFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     # For a yet unknown reason a Python file-like object on Windows allows for
     # invalid whence values to be passed to the seek function. This check
     # makes sure the behavior of the function is the same on all platforms.
     if whence not in [os.SEEK_SET, os.SEEK_CUR, os.SEEK_END]:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     self._file_object.seek(offset, whence)
 
@@ -155,7 +157,7 @@ class OSFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._file_object.tell()
 
@@ -169,6 +171,6 @@ class OSFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._size
