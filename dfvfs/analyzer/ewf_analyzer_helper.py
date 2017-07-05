@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The EWF format analyzer helper implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
 from dfvfs.analyzer import specification
@@ -8,7 +10,7 @@ from dfvfs.lib import definitions
 
 
 class EWFAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Class that implements the EWF analyzer helper."""
+  """EWF analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
       definitions.FORMAT_CATEGORY_ARCHIVE,

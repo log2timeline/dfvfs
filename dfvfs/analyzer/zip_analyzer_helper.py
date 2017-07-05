@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The ZIP format analyzer helper implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
 from dfvfs.analyzer import specification
@@ -8,7 +10,7 @@ from dfvfs.lib import definitions
 
 
 class ZipAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Class that implements the ZIP analyzer helper."""
+  """ZIP analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
       definitions.FORMAT_CATEGORY_ARCHIVE])

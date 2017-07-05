@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) format analyzer helper implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
 from dfvfs.analyzer import specification
@@ -8,7 +10,7 @@ from dfvfs.lib import definitions
 
 
 class VShadowAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Class that implements the VSS analyzer helper."""
+  """VSS analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
       definitions.FORMAT_CATEGORY_VOLUME_SYSTEM])

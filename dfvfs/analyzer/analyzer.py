@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The format analyzer."""
 
+from __future__ import unicode_literals
+
 import pysigscan
 
 from dfvfs.analyzer import specification
@@ -9,7 +11,7 @@ from dfvfs.resolver import resolver
 
 
 class Analyzer(object):
-  """Class that implements the format analyzer."""
+  """Format analyzer."""
 
   _SCAN_BUFFER_SIZE = 33 * 1024
 
@@ -211,11 +213,11 @@ class Analyzer(object):
 
     Raises:
       KeyError: if analyzer helper object is not set for the corresponding
-                type indicator.
+          type indicator.
     """
     if analyzer_helper.type_indicator not in cls._analyzer_helpers:
       raise KeyError(
-          u'Analyzer helper object not set for type indicator: {0:s}.'.format(
+          'Analyzer helper object not set for type indicator: {0:s}.'.format(
               analyzer_helper.type_indicator))
 
     analyzer_helper = cls._analyzer_helpers[analyzer_helper.type_indicator]
@@ -372,12 +374,12 @@ class Analyzer(object):
 
     Raises:
       KeyError: if analyzer helper object is already set for the corresponding
-                type indicator.
+          type indicator.
     """
     if analyzer_helper.type_indicator in cls._analyzer_helpers:
       raise KeyError((
-          u'Analyzer helper object already set for type indicator: '
-          u'{0:s}.').format(analyzer_helper.type_indicator))
+          'Analyzer helper object already set for type indicator: '
+          '{0:s}.').format(analyzer_helper.type_indicator))
 
     cls._FlushCache(analyzer_helper.format_categories)
 

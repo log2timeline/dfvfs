@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """The format specification classes."""
 
+from __future__ import unicode_literals
+
 
 class Signature(object):
-  """Class that defines a signature of a format specification.
+  """Signature of a format specification.
 
   The signature consists of a byte string pattern, an optional
   offset relative to the start of the data, and a value to indicate
@@ -43,7 +45,7 @@ class Signature(object):
 
 
 class FormatSpecification(object):
-  """Class that contains a format specification."""
+  """Format specification."""
 
   def __init__(self, identifier):
     """Initializes a specification.
@@ -70,10 +72,10 @@ class FormatSpecification(object):
 
 
 class FormatSpecificationStore(object):
-  """Class that serves as a store for specifications."""
+  """Store for format specifications."""
 
   def __init__(self):
-    """Initializes a specification store."""
+    """Initializes a format specification store."""
     super(FormatSpecificationStore, self).__init__()
     self._format_specifications = {}
     # Maps signature identifiers to format specifications.
@@ -81,11 +83,11 @@ class FormatSpecificationStore(object):
 
   @property
   def specifications(self):
-    """A specifications iterator."""
+    """generator[FormatSpecification]: format specifications."""
     return iter(self._format_specifications.values())
 
   def AddNewSpecification(self, identifier):
-    """Adds a new specification.
+    """Adds a new format specification.
 
     Args:
       identifier (str): unique signature identifier for a specification store.
@@ -95,11 +97,11 @@ class FormatSpecificationStore(object):
 
     Raises:
       KeyError: if the store already contains a specification with
-                the same identifier.
+          the same identifier.
     """
     if identifier in self._format_specifications:
       raise KeyError(
-          u'Format specification {0:s} is already defined in store.'.format(
+          'Format specification {0:s} is already defined in store.'.format(
               identifier))
 
     self._format_specifications[identifier] = FormatSpecification(identifier)
@@ -114,11 +116,11 @@ class FormatSpecificationStore(object):
 
     Raises:
       KeyError: if the store already contains a specification with
-                the same identifier.
+          the same identifier.
     """
     if specification.identifier in self._format_specifications:
       raise KeyError(
-          u'Format specification {0:s} is already defined in store.'.format(
+          'Format specification {0:s} is already defined in store.'.format(
               specification.identifier))
 
     self._format_specifications[specification.identifier] = specification
@@ -126,12 +128,12 @@ class FormatSpecificationStore(object):
     for signature in specification.signatures:
       signature_index = len(self._signature_map)
 
-      signature_identifier = u'{0:s}:{1:d}'.format(
+      signature_identifier = '{0:s}:{1:d}'.format(
           specification.identifier, signature_index)
 
       if signature_identifier in self._signature_map:
         raise KeyError(
-            u'Signature {0:s} is already defined in map.'.format(
+            'Signature {0:s} is already defined in map.'.format(
                 signature_identifier))
 
       signature.SetIdentifier(signature_identifier)
