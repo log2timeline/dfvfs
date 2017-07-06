@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
@@ -15,9 +16,30 @@ from dfvfs.vfs import ntfs_file_system
 from tests import test_lib as shared_test_lib
 
 
+class NTFSAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the NTFS attribute."""
+
+  def testIntialize(self):
+    """Tests the __init__ function."""
+    # TODO: additional test coverage.
+
+    with self.assertRaises(errors.BackEndError):
+      ntfs_file_entry.NTFSAttribute(None)
+
+  # TODO: add tests for attribute_type property.
+
+
+# TODO: add tests for FileNameNTFSAttribute.
+# TODO: add tests for ObjectIdentifierNTFSAttribute.
+# TODO: add tests for SecurityDescriptorNTFSAttribute.
+# TODO: add tests for StandardInformationNTFSAttribute.
+# TODO: add tests for NTFSDataStream.
+# TODO: add tests for NTFSDirectory.
+
+
 @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
 class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the NTFS file entry object."""
+  """The unit test for the NTFS file entry."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -36,11 +58,47 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testIntialize(self):
-    """Tests the initialize functionality."""
+    """Tests the __init__ function."""
     file_entry = ntfs_file_entry.NTFSFileEntry(
         self._resolver_context, self._file_system, self._ntfs_path_spec)
 
     self.assertIsNotNone(file_entry)
+
+  def testAccessTime(self):
+    """Test the access_time property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.access_time)
+
+  def testChangeTime(self):
+    """Test the change_time property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.change_time)
+
+  def testCreationTime(self):
+    """Test the creation_time property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.creation_time)
+
+  def testModificationTime(self):
+    """Test the modification_time property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.modification_time)
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -95,58 +153,239 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.mtime, 1386052509)
     self.assertEqual(stat_object.mtime_nano, 5179783)
 
-  def testIsFunctions(self):
-    """Test the Is? functions."""
+  def testIsAllocated(self):
+    """Test the IsAllocated function."""
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=test_location, mft_entry=38, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
 
-    self.assertFalse(file_entry.IsRoot())
-    self.assertFalse(file_entry.IsVirtual())
+    self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsAllocated())
 
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsAllocated())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsAllocated())
+
+  def testIsDevice(self):
+    """Test the IsDevice function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDevice())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsDevice())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsDevice())
+
+  def testIsDirectory(self):
+    """Test the IsDirectory function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDirectory())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsDirectory())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsDirectory())
+
+  def testIsFile(self):
+    """Test the IsFile function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsFile())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsFile())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsFile())
+
+  def testIsLink(self):
+    """Test the IsLink function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsLink())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsLink())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsLink())
+
+  def testIsPipe(self):
+    """Test the IsPipe function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsPipe())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsPipe())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsPipe())
+
+  def testIsRoot(self):
+    """Test the IsRoot function."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsRoot())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsRoot())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsRoot())
+
+  def testIsSocket(self):
+    """Test the IsSocket functions."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\System Volume Information', mft_entry=36,
         parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
     self.assertIsNotNone(file_entry)
-
-    self.assertFalse(file_entry.IsRoot())
-    self.assertFalse(file_entry.IsVirtual())
-    self.assertTrue(file_entry.IsAllocated())
-
-    self.assertFalse(file_entry.IsDevice())
-    self.assertTrue(file_entry.IsDirectory())
-    self.assertFalse(file_entry.IsFile())
-    self.assertFalse(file_entry.IsLink())
-    self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=u'\\', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
     self.assertIsNotNone(file_entry)
-
-    self.assertTrue(file_entry.IsRoot())
-    self.assertFalse(file_entry.IsVirtual())
-    self.assertTrue(file_entry.IsAllocated())
-
-    self.assertFalse(file_entry.IsDevice())
-    self.assertTrue(file_entry.IsDirectory())
-    self.assertFalse(file_entry.IsFile())
-    self.assertFalse(file_entry.IsLink())
-    self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
+
+  def testIsVirtual(self):
+    """Test the IsVirtual functions."""
+    test_location = (
+        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=test_location, mft_entry=38, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsVirtual())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\System Volume Information', mft_entry=36,
+        parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsVirtual())
+
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location=u'\\', parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsVirtual())
 
   def testSubFileEntries(self):
     """Test the sub file entries properties."""
@@ -352,6 +591,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetSecurityDescriptor(self):
     """Tests the GetSecurityDescriptor function."""
+    # pylint: disable=no-member
+
     test_location = (
         u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = ntfs_path_spec.NTFSPathSpec(

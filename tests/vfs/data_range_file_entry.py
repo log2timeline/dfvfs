@@ -36,7 +36,7 @@ class DataRangeFileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testInitialize(self):
-    """Test the initialize functionality."""
+    """Test the __init__ function."""
     file_entry = data_range_file_entry.DataRangeFileEntry(
         self._resolver_context, self._file_system,
         self._data_range_path_spec)

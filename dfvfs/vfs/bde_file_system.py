@@ -13,7 +13,7 @@ from dfvfs.vfs import root_only_file_system
 
 
 class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
-  """Class that implements a file system using BDE."""
+  """File system that uses pybde."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 

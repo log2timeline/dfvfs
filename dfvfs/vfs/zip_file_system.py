@@ -14,21 +14,21 @@ from dfvfs.vfs import file_system
 
 
 class ZipFileSystem(file_system.FileSystem):
-  """Class that implements a file system object using zipfile.
+  """File system that uses zipfile.
 
   Attributes:
-    encoding: string containing the file entry name encoding.
+    encoding (str): encoding of the file entry name.
   """
 
   LOCATION_ROOT = u'/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
   def __init__(self, resolver_context, encoding=u'utf-8'):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
       resolver_context: the resolver context (instance of resolver.Context).
-      encoding: optional string containing file entry name encoding.
+      encoding (Optional[str]): encoding of the file entry name.
     """
     super(ZipFileSystem, self).__init__(resolver_context)
     self._file_object = None
@@ -51,8 +51,8 @@ class ZipFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification of the file system.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -80,10 +80,10 @@ class ZipFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification of the file entry.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
     location = getattr(path_spec, u'location', None)
 
@@ -113,10 +113,10 @@ class ZipFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification of the file entry.
 
     Returns:
-      A file entry (instance of vfs.ZipFileEntry) or None.
+      ZipFileEntry: a file entry or None.
     """
     if not self.FileEntryExistsByPathSpec(path_spec):
       return
@@ -141,16 +141,38 @@ class ZipFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      ZipFileEntry: a file entry or None.
     """
     path_spec = zip_path_spec.ZipPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
 
   def GetZipFile(self):
-    """Retrieves the zip file object.
+    """Retrieves the ZIP file object.
 
     Returns:
-      The zip file object (instance of zipfile.ZipFile).
+      zipfile.ZipFile: a ZIP file object or None.
     """
     return self._zip_file
+
+  def GetZipInfoByPathSpec(self, path_spec):
+    """Retrieves the ZIP info object for a path specification.
+
+    Args:
+      path_spec (PathSpec): a path specification.
+
+    Returns:
+      zipfile.ZipInfo: a ZIP info object or None if not available.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+    """
+    location = getattr(path_spec, u'location', None)
+    if location is None:
+      raise errors.PathSpecError(u'Path specification missing location.')
+
+    if not location.startswith(self.LOCATION_ROOT):
+      raise errors.PathSpecError(u'Invalid location in path specification.')
+
+    if len(location) > 1:
+      return self._zip_file.getinfo(location[1:])

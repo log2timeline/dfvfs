@@ -59,9 +59,10 @@ class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
   #   Attribute flags		: 0x00420009
 
   def testIntialize(self):
-    """Test the initialize functionality."""
+    """Test the __init__ function."""
     file_entry = vshadow_file_entry.VShadowFileEntry(
-        self._resolver_context, self._file_system, self._vshadow_path_spec)
+        self._resolver_context, self._file_system, self._vshadow_path_spec,
+        is_virtual=True)
 
     self.assertIsNotNone(file_entry)
 

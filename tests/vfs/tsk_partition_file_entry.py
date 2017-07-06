@@ -49,7 +49,7 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
   # 06:  01:00   0000000352   0000002879   0000002528   Linux (0x83)
 
   def testIntialize(self):
-    """Test the initialize functionality."""
+    """Test the __init__ function."""
     file_entry = tsk_partition_file_entry.TSKPartitionFileEntry(
         self._resolver_context, self._file_system,
         self._tsk_partition_path_spec)

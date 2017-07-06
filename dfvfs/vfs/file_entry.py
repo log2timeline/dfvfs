@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) file entry object interface.
+"""The Virtual File System (VFS) file entry interface.
 
 The file entry can be various file system elements like a regular file,
 a directory or file system metadata.
@@ -7,16 +7,18 @@ a directory or file system metadata.
 
 import abc
 
+from dfvfs.lib import definitions
 from dfvfs.lib import py2to3
 from dfvfs.resolver import resolver
+from dfvfs.vfs import vfs_stat
 
 
 class Attribute(object):
-  """Class that implements the VFS attribute interface."""
+  """VFS attribute interface."""
 
   @property
   def type_indicator(self):
-    """The type indicator."""
+    """str: type indicator."""
     type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
@@ -25,33 +27,36 @@ class Attribute(object):
 
 
 class DataStream(object):
-  """Class that implements the VFS data stream interface."""
+  """VFS data stream interface."""
 
   # The data stream object should not have a reference to its
   # file entry since that will create a cyclic reference.
 
   @property
   def name(self):
-    """The name."""
+    """str: name."""
     return u''
 
 
 class Directory(object):
-  """Class that implements the VFS directory object interface."""
+  """VFS directory interface.
+
+  Attributes:
+    path_spec (PathSpec): path specification of the directory.
+  """
 
   def __init__(self, file_system, path_spec):
-    """Initializes the directory object.
+    """Initializes a directory.
 
     Args:
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification object (instance of PathSpec).
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
     """
     super(Directory, self).__init__()
     self._entries = None
     self._file_system = file_system
     self.path_spec = path_spec
 
-  @abc.abstractmethod
   def _EntriesGenerator(self):
     """Retrieves directory entries.
 
@@ -59,58 +64,59 @@ class Directory(object):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of PathSpec).
+      PathSpec: path specification.
     """
+    return iter(())
 
   @property
   def entries(self):
-    """The entries (generator of instance of OSPathSpec)."""
-    for entry in self._EntriesGenerator():
-      yield entry
+    """generator[PathSpec]: path specifications of the directory entries."""
+    return self._EntriesGenerator()
 
 
 class FileEntry(object):
-  """Class that implements the VFS file entry object interface."""
+  """VFS file entry interface."""
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False):
-    """Initializes the file entry object.
+    """Initializes a file entry.
 
     Args:
-      resolver_context: the resolver context (instance of Context).
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification object (instance of PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
-      is_virtual: optional boolean value to indicate if the file entry is
-                  a virtual file entry emulated by the corresponding file
-                  system.
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+      is_virtual (Optional[bool]): True if the file entry is a virtual file
+          entry emulated by the corresponding file system.
     """
     super(FileEntry, self).__init__()
     self._attributes = None
     self._data_streams = None
     self._directory = None
     self._file_system = file_system
-    self._link = None
     self._is_root = is_root
     self._is_virtual = is_virtual
+    self._link = None
     self._resolver_context = resolver_context
     self._stat_object = None
+    self._type = None
     self.path_spec = path_spec
 
     self._file_system.Open(path_spec)
 
   def __del__(self):
-    """Cleans up the file entry object."""
-    self._file_system.Close()
-    self._file_system = None
+    """Cleans up the file entry."""
+    if self._file_system:
+      self._file_system.Close()
+      self._file_system = None
 
   def _GetAttributes(self):
     """Retrieves the attributes.
 
     Returns:
-      A list of attribute objects (instances of Attribute).
+      list[Attribute]: attributes.
     """
     if self._attributes is None:
       self._attributes = []
@@ -121,7 +127,7 @@ class FileEntry(object):
     """Retrieves the data streams.
 
     Returns:
-      A list of data stream objects (instances of DataStream).
+      list[DataStream]: data streams.
     """
     if self._data_streams is None:
       if self._directory is None:
@@ -141,53 +147,116 @@ class FileEntry(object):
     """Retrieves the directory.
 
     Returns:
-      A directory object (instance of Directory) or None.
+      Directory: a directory or None.
     """
 
   def _GetLink(self):
-    """Retrieves the link."""
+    """Retrieves the link.
+
+    Returns:
+      str: full path of the linked file entry.
+    """
     if self._link is None:
       self._link = u''
     return self._link
 
-  @abc.abstractmethod
   def _GetStat(self):
-    """Retrieves the stat object (instance of VFSStat)."""
+    """Retrieves information about the file entry.
+
+    Returns:
+      VFSStat: a stat object.
+    """
+    stat_object = vfs_stat.VFSStat()
+
+    # Date and time stat information.
+    access_time = self.access_time
+    if access_time:
+      stat_time, stat_time_nano = access_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.atime = stat_time
+        stat_object.atime_nano = stat_time_nano
+
+    change_time = self.change_time
+    if change_time:
+      stat_time, stat_time_nano = change_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.ctime = stat_time
+        stat_object.ctime_nano = stat_time_nano
+
+    creation_time = self.creation_time
+    if creation_time:
+      stat_time, stat_time_nano = creation_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.crtime = stat_time
+        stat_object.crtime_nano = stat_time_nano
+
+    modification_time = self.modification_time
+    if modification_time:
+      stat_time, stat_time_nano = modification_time.CopyToStatTimeTuple()
+      if stat_time is not None:
+        stat_object.mtime = stat_time
+        stat_object.mtime_nano = stat_time_nano
+
+    # File entry type stat information.
+    if self._type:
+      stat_object.type = self._type
+
+    return stat_object
+
+  @property
+  def access_time(self):
+    """dfdatetime.DateTimeValues: access time or None if not available."""
+    return
 
   @property
   def attributes(self):
-    """The attributes (generator of instance of Attribute)."""
+    """generator[Attribute]: attributes."""
     return self._GetAttributes()
 
   @property
+  def change_time(self):
+    """dfdatetime.DateTimeValues: change time or None if not available."""
+    return
+
+  @property
+  def creation_time(self):
+    """dfdatetime.DateTimeValues: creation time or None if not available."""
+    return
+
+  @property
   def data_streams(self):
-    """The data streams (generator of instance of DataStream)."""
+    """generator[DataStream]: data streams."""
     return self._GetDataStreams()
 
   @property
   def link(self):
-    """The full path of the linked file entry."""
+    """str: full path of the linked file entry."""
     return self._GetLink()
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    return
 
   @abc.abstractproperty
   def name(self):
-    """The name of the file entry, which does not include the full path."""
+    """str: name of the file entry, without the full path."""
 
   @property
   def number_of_attributes(self):
-    """The number of attributes."""
+    """int: number of attributes."""
     attributes = self._GetAttributes()
     return len(attributes)
 
   @property
   def number_of_data_streams(self):
-    """The number of data streams."""
+    """int: number of data streams."""
     data_streams = self._GetDataStreams()
     return len(data_streams)
 
   @property
   def number_of_sub_file_entries(self):
-    """The number of sub file entries."""
+    """int: number of sub file entries."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -199,11 +268,11 @@ class FileEntry(object):
 
   @abc.abstractproperty
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of FileEntry)."""
+    """generator[FileEntry]: sub file entries."""
 
   @property
   def type_indicator(self):
-    """The type indicator."""
+    """str: type indicator."""
     type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
@@ -214,12 +283,11 @@ class FileEntry(object):
     """Retrieves a data stream by name.
 
     Args:
-      name: the name of the data stream.
-      case_sentitive: optional boolean value to indicate if the name is
-                      case sensitive.
+      name (str): name of the data stream.
+      case_sentitive (Optional[bool]): True if the name is case sensitive.
 
     Returns:
-      A data stream (an instance of DataStream) or None.
+      DataStream: a data stream or None if not available.
 
     Raises:
       ValueError: if the name is not string.
@@ -240,16 +308,86 @@ class FileEntry(object):
 
     return matching_data_stream
 
+  def GetFileObject(self, data_stream_name=u''):
+    """Retrieves the file-like object.
+
+    Args:
+      data_stream_name (Optional[str]): name of the data stream, where an empty
+          string represents the default data stream.
+
+    Returns:
+      FileIO: a file-like object or None if not available.
+    """
+    if not data_stream_name:
+      return resolver.Resolver.OpenFileObject(
+          self.path_spec, resolver_context=self._resolver_context)
+
+  def GetFileSystem(self):
+    """Retrieves the file system which contains the file entry.
+
+    Returns:
+      FileSystem: a file system.
+    """
+    return self._file_system
+
+  def GetLinkedFileEntry(self):
+    """Retrieves the linked file entry, for example for a symbolic link.
+
+    Retruns:
+      FileEntry: linked file entry or None if not available.
+    """
+    return
+
+  def GetParentFileEntry(self):
+    """Retrieves the parent file entry.
+
+    Returns:
+      FileEntry: parent file entry or None if not available.
+    """
+    return
+
+  def GetSubFileEntryByName(self, name, case_sensitive=True):
+    """Retrieves a sub file entry by name.
+
+    Args:
+      name (str): name of the file entry.
+      case_sentitive (Optional[bool]): True if the name is case sensitive.
+
+    Returns:
+      FileEntry: a file entry or None if not available.
+    """
+    name_lower = name.lower()
+    matching_sub_file_entry = None
+
+    for sub_file_entry in self.sub_file_entries:
+      if sub_file_entry.name == name:
+        return sub_file_entry
+
+      if not case_sensitive and sub_file_entry.name.lower() == name_lower:
+        if not matching_sub_file_entry:
+          matching_sub_file_entry = sub_file_entry
+
+    return matching_sub_file_entry
+
+  def GetStat(self):
+    """Retrieves information about the file entry.
+
+    Returns:
+      VFSStat: a stat object or None if not available.
+    """
+    if self._stat_object is None:
+      self._stat_object = self._GetStat()
+    return self._stat_object
+
   def HasDataStream(self, name, case_sensitive=True):
     """Determines if the file entry has specific data stream.
 
     Args:
-      name: the name of the data stream.
-      case_sentitive: optional boolean value to indicate if the name is
-                      case sensitive.
+      name (str): name of the data stream.
+      case_sentitive (Optional[bool]): True if the name is case sensitive.
 
     Returns:
-      A boolean to indicate the file entry has the data stream.
+      bool: True if the file entry has the data stream.
 
     Raises:
       ValueError: if the name is not string.
@@ -272,125 +410,104 @@ class FileEntry(object):
     """Determines if the file entry has external stored data.
 
     Returns:
-      A boolean to indicate the file entry has external stored data.
+      bool: True if the file entry has external stored data.
     """
     return False
 
-  def GetFileObject(self, data_stream_name=u''):
-    """Retrieves the file-like object.
-
-    Args:
-      data_stream_name: optional data stream name. The default is
-                        an empty string which represents the default
-                        data stream.
-
-    Returns:
-      A file-like object (instance of file_io.FileIO) or None.
-    """
-    if data_stream_name:
-      return
-
-    return resolver.Resolver.OpenFileObject(
-        self.path_spec, resolver_context=self._resolver_context)
-
-  def GetFileSystem(self):
-    """Retrieves the file system (instance of FileSystem)."""
-    return self._file_system
-
-  def GetLinkedFileEntry(self):
-    """Retrieves the linked file entry, e.g. for a symbolic link."""
-    return
-
-  def GetParentFileEntry(self):
-    """Retrieves the root file entry.
-
-    Returns:
-      The parent file entry (instance of FileEntry) or None.
-    """
-    return
-
-  def GetSubFileEntryByName(self, name, case_sensitive=True):
-    """Retrieves a sub file entry by name.
-
-    Args:
-      name: the name of the file entry.
-      case_sentitive: optional boolean value to indicate if the name is
-                      case sensitive.
-
-    Returns:
-      A file entry (an instance of FileEntry) or None.
-    """
-    name_lower = name.lower()
-    matching_sub_file_entry = None
-
-    for sub_file_entry in self.sub_file_entries:
-      if sub_file_entry.name == name:
-        return sub_file_entry
-
-      if not case_sensitive and sub_file_entry.name.lower() == name_lower:
-        if not matching_sub_file_entry:
-          matching_sub_file_entry = sub_file_entry
-
-    return matching_sub_file_entry
-
-  def GetStat(self):
-    """Retrieves the stat object (instance of VFSStat)."""
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    return self._stat_object
-
   def IsAllocated(self):
-    """Determines if the file entry is allocated."""
+    """Determines if the file entry is allocated.
+
+    Returns:
+      bool: True if the file entry is allocated.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     return self._stat_object and self._stat_object.is_allocated
 
   def IsDevice(self):
-    """Determines if the file entry is a device."""
+    """Determines if the file entry is a device.
+
+    Returns:
+      bool: True if the file entry is a device.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_DEVICE)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_DEVICE
 
   def IsDirectory(self):
-    """Determines if the file entry is a directory."""
+    """Determines if the file entry is a directory.
+
+    Returns:
+      bool: True if the file entry is a directory.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_DIRECTORY)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY
 
   def IsFile(self):
-    """Determines if the file entry is a file."""
+    """Determines if the file entry is a file.
+
+    Returns:
+      bool: True if the file entry is a file.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_FILE)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_FILE
 
   def IsLink(self):
-    """Determines if the file entry is a link."""
+    """Determines if the file entry is a link.
+
+    Returns:
+      bool: True if the file entry is a link.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_LINK)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_LINK
 
   def IsPipe(self):
-    """Determines if the file entry is a pipe."""
+    """Determines if the file entry is a pipe.
+
+    Returns:
+      bool: True if the file entry is a pipe.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_PIPE)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_PIPE
 
   def IsRoot(self):
-    """Determines if the file entry is the root file entry."""
+    """Determines if the file entry is the root file entry.
+
+    Returns:
+      bool: True if the file entry is the root file entry.
+    """
     return self._is_root
 
   def IsSocket(self):
-    """Determines if the file entry is a socket."""
+    """Determines if the file entry is a socket.
+
+    Returns:
+      bool: True if the file entry is a socket.
+    """
     if self._stat_object is None:
       self._stat_object = self._GetStat()
-    return (self._stat_object and
-            self._stat_object.type == self._stat_object.TYPE_SOCKET)
+    if self._stat_object is not None:
+      self._type = self._stat_object.type
+    return self._type == definitions.FILE_ENTRY_TYPE_SOCKET
 
   def IsVirtual(self):
-    """Determines if the file entry is virtual (emulated by dfVFS)."""
+    """Determines if the file entry is virtual (emulated by dfVFS).
+
+    Returns:
+      bool: True if the file entry is virtual.
+    """
     return self._is_virtual

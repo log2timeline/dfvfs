@@ -32,7 +32,7 @@ class GZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testIntialize(self):
-    """Test the initialize functionality."""
+    """Test the __init__ function."""
     file_entry = gzip_file_entry.GzipFileEntry(
         self._resolver_context, self._file_system, self._gzip_path_spec)
 

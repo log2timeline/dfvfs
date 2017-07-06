@@ -50,7 +50,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testIntialize(self):
-    """Test the initialize functionality."""
+    """Test the __init__ function."""
     path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
     file_entry = fake_file_entry.FakeFileEntry(
         self._resolver_context, self._file_system, path_spec)

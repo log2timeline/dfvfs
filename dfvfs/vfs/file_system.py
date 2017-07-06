@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-"""The Virtual File System (VFS) file system object interface."""
+"""The Virtual File System (VFS) file system interface."""
 
 import abc
 
 
 class FileSystem(object):
-  """Class that implements the VFS file system object interface."""
+  """VFS file system interface."""
 
   LOCATION_ROOT = u'/'
   PATH_SEPARATOR = u'/'
 
   def __init__(self, resolver_context):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
     """
     super(FileSystem, self).__init__()
     self._is_cached = False
@@ -24,7 +24,7 @@ class FileSystem(object):
 
   @property
   def type_indicator(self):
-    """The type indicator."""
+    """str: type indicator."""
     type_indicator = getattr(self, u'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
@@ -44,8 +44,8 @@ class FileSystem(object):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): a path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -58,10 +58,10 @@ class FileSystem(object):
     """Determines the basename of the path.
 
     Args:
-      path: a string containing the path.
+      path (str): path.
 
     Returns:
-      A string containing the basename of the path.
+      str: basename of the path.
     """
     if path.endswith(self.PATH_SEPARATOR):
       path = path[:-1]
@@ -69,7 +69,7 @@ class FileSystem(object):
     return basename
 
   def Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the file system object was not opened or the close failed.
@@ -96,10 +96,10 @@ class FileSystem(object):
     The file system root is represented by an empty string.
 
     Args:
-      path: a string containing the path.
+      path (str): path.
 
     Returns:
-      A string containing the directory name of the path or None.
+      str: directory name of the path or None.
     """
     if path.endswith(self.PATH_SEPARATOR):
       path = path[:-1]
@@ -113,36 +113,49 @@ class FileSystem(object):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
+
+  def GetDataStreamByPathSpec(self, path_spec):
+    """Retrieves a data stream for a path specification.
+
+    Args:
+      path_spec (PathSpec): a path specification.
+
+    Returns:
+      DataStream: a data stream or None if not available.
+    """
+    file_entry = self.GetFileEntryByPathSpec(path_spec)
+    if file_entry:
+      data_stream_name = getattr(path_spec, u'data_stream', None)
+      return file_entry.GetDataStream(data_stream_name)
 
   @abc.abstractmethod
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      FileEntry: a file entry or None if not available.
     """
 
   def GetFileObjectByPathSpec(self, path_spec):
     """Retrieves a file-like object for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      A file-like object (instance of file_io.FileIO) or None.
+      FileIO: a file-like object or None if not available.
     """
     file_entry = self.GetFileEntryByPathSpec(path_spec)
-    if file_entry is None:
-      return
-    return file_entry.GetFileObject()
+    if file_entry:
+      return file_entry.GetFileObject()
 
   def GetPathSegmentAndSuffix(self, base_path, path):
     """Determines the path segment and suffix of the path.
@@ -151,11 +164,11 @@ class FileSystem(object):
     an empty string if the path exactly matches the base path.
 
     Args:
-      base_path: a string containing the base path.
-      path: a string containing the path.
+      base_path (str): base path.
+      path (str): path.
 
     Returns:
-      A tuple containing the path segment and suffix string.
+      tuple[str, str]: path segment and suffix string.
     """
     if path is None or base_path is None or not path.startswith(base_path):
       return None, None
@@ -175,18 +188,17 @@ class FileSystem(object):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      FileEntry: a file entry or None if not available.
     """
 
   def JoinPath(self, path_segments):
     """Joins the path segments into a path.
 
     Args:
-      path_segments: a list of path segments.
+      path_segments (list[str]): path segments.
 
     Returns:
-      A string containing the joined path segments prefixed with the path
-      separator.
+      str: joined path segments prefixed with the path separator.
     """
     # This is an optimized way to combine the path segments into a single path
     # and combine multiple successive path separators to one.
@@ -209,8 +221,8 @@ class FileSystem(object):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): a path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -243,11 +255,11 @@ class FileSystem(object):
     """Splits the path into path segments.
 
     Args:
-      path: a string containing the path.
+      path (str): path.
 
     Returns:
-      A list of path segements without the root path segment, which is an
-      empty string.
+      list[str]: path segements without the root path segment, which is
+          an empty string.
     """
     # Split the path with the path separator and remove empty path segments.
     return list(filter(None, path.split(self.PATH_SEPARATOR)))

@@ -13,21 +13,26 @@ from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_entry
-from dfvfs.vfs import vfs_stat
 
 
 _FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
 
 
 class NTFSAttribute(file_entry.Attribute):
-  """Class that implements an attribute object using pyfsntfs."""
+  """File system attribute that uses pyfsntfs."""
 
   def __init__(self, fsntfs_attribute):
     """Initializes the attribute object.
 
     Args:
       fsntfs_attribute (pyfsntfs.attribute): NTFS attribute.
+
+    Raises:
+      BackEndError: if the pyfsntfs attribute is missing.
     """
+    if not fsntfs_attribute:
+      raise errors.BackEndError(u'Missing pyfsntfs attribute.')
+
     super(NTFSAttribute, self).__init__()
     self._fsntfs_attribute = fsntfs_attribute
 
@@ -38,25 +43,25 @@ class NTFSAttribute(file_entry.Attribute):
 
 
 class FileNameNTFSAttribute(NTFSAttribute):
-  """Class that implements a $FILE_NAME attribute object."""
+  """NTFS $FILE_NAME file system attribute."""
 
   TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME
 
   @property
   def access_time(self):
-    """dfdatetime.Filetime: access time."""
+    """dfdatetime.Filetime: access time or None if not set."""
     timestamp = self._fsntfs_attribute.get_access_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def creation_time(self):
-    """dfdatetime.Filetime: creation time."""
+    """dfdatetime.Filetime: creation time or None if not set."""
     timestamp = self._fsntfs_attribute.get_creation_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def entry_modification_time(self):
-    """dfdatetime.Filetime: entry modification time."""
+    """dfdatetime.Filetime: entry modification time or None if not set."""
     timestamp = self._fsntfs_attribute.get_entry_modification_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
@@ -83,7 +88,7 @@ class FileNameNTFSAttribute(NTFSAttribute):
 
 
 class ObjectIdentifierNTFSAttribute(NTFSAttribute):
-  """Class that implements a $OBJECT_ID attribute object."""
+  """NTFS $OBJECT_ID file system attribute."""
 
   TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_OBJECT_ID
 
@@ -94,7 +99,7 @@ class ObjectIdentifierNTFSAttribute(NTFSAttribute):
 
 
 class SecurityDescriptorNTFSAttribute(NTFSAttribute):
-  """Class that implements a $SECURITY_DESCRIPTOR attribute object."""
+  """NTFS $SECURITY_DESCRIPTOR file system attribute."""
 
   TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR
 
@@ -107,25 +112,25 @@ class SecurityDescriptorNTFSAttribute(NTFSAttribute):
 
 
 class StandardInformationNTFSAttribute(NTFSAttribute):
-  """Class that implements a $STANDARD_INFORMATION attribute object."""
+  """NTFS $STANDARD_INFORMATION file system attribute."""
 
   TYPE_INDICATOR = definitions.ATTRIBUTE_TYPE_NTFS_STANDARD_INFORMATION
 
   @property
   def access_time(self):
-    """dfdatetime.Filetime: access time."""
+    """dfdatetime.Filetime: access time or None if not set."""
     timestamp = self._fsntfs_attribute.get_access_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def creation_time(self):
-    """dfdatetime.Filetime: creation time."""
+    """dfdatetime.Filetime: creation time or None if not set."""
     timestamp = self._fsntfs_attribute.get_creation_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def entry_modification_time(self):
-    """dfdatetime.Filetime: entry modification time."""
+    """dfdatetime.Filetime: entry modification time or None if not set."""
     timestamp = self._fsntfs_attribute.get_entry_modification_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
@@ -136,7 +141,7 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
 
   @property
   def modification_time(self):
-    """dfdatetime.Filetime: modification time."""
+    """dfdatetime.Filetime: modification time or None if not set."""
     timestamp = self._fsntfs_attribute.get_modification_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
@@ -157,7 +162,7 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
 
 
 class NTFSDataStream(file_entry.DataStream):
-  """Class that implements a data stream object using pyfsntfs."""
+  """File system data stream that uses pyfsntfs."""
 
   def __init__(self, fsntfs_data_stream):
     """Initializes the data stream object.
@@ -177,7 +182,7 @@ class NTFSDataStream(file_entry.DataStream):
 
 
 class NTFSDirectory(file_entry.Directory):
-  """Class that implements a directory object using pyfsntfs."""
+  """File system directory that uses pyfsntfs."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -188,23 +193,19 @@ class NTFSDirectory(file_entry.Directory):
     Yields:
       NTFSPathSpec: NTFS path specification.
     """
-    # Opening a file by MFT entry is faster than opening a file by location.
-    location = getattr(self.path_spec, u'location', None)
-    mft_entry = getattr(self.path_spec, u'mft_entry', None)
-
-    fsntfs_volume = self._file_system.GetNTFSVolume()
-    if mft_entry is not None:
-      fsntfs_file_entry = fsntfs_volume.get_file_entry(mft_entry)
-    elif location is not None:
-      fsntfs_file_entry = fsntfs_volume.get_file_entry_by_path(location)
-    else:
+    try:
+      fsntfs_file_entry = self._file_system.GetNTFSFileEntryByPathSpec(
+          self.path_spec)
+    except errors.PathSpecError:
       return
+
+    location = getattr(self.path_spec, u'location', None)
 
     for fsntfs_sub_file_entry in fsntfs_file_entry.sub_file_entries:
       directory_entry = fsntfs_sub_file_entry.name
 
       # Ignore references to self or parent.
-      if directory_entry in [u'.', u'..']:
+      if directory_entry in (u'.', u'..'):
         continue
 
       file_reference = fsntfs_sub_file_entry.file_reference
@@ -224,7 +225,7 @@ class NTFSDirectory(file_entry.Directory):
 
 
 class NTFSFileEntry(file_entry.FileEntry):
-  """Class that implements a file entry object using pyfsntfs."""
+  """File system file entry that uses pyfsntfs."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_NTFS
 
@@ -249,28 +250,36 @@ class NTFSFileEntry(file_entry.FileEntry):
           of the corresponding file system.
       is_virtual (Optional[bool]): True if the file entry is a virtual file
           entry emulated by the corresponding file system.
+
+    Raises:
+      BackEndError: if the pyfsntfs file entry is missing.
     """
+    if not fsntfs_file_entry:
+      fsntfs_file_entry = file_system.GetNTFSFileEntryByPathSpec(path_spec)
+    if not fsntfs_file_entry:
+      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
+
     super(NTFSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._fsntfs_file_entry = fsntfs_file_entry
+
+    if self._IsLink(fsntfs_file_entry.file_attribute_flags):
+      self._type = definitions.FILE_ENTRY_TYPE_LINK
+    elif fsntfs_file_entry.has_directory_entries_index():
+      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+    else:
+      self._type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetAttributes(self):
     """Retrieves the attributes.
 
     Returns:
       list[NTFSAttribute]: attributes.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
     """
     if self._attributes is None:
-      fsntfs_file_entry = self.GetNTFSFileEntry()
-      if not fsntfs_file_entry:
-        raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
       self._attributes = []
-      for fsntfs_attribute in fsntfs_file_entry.attributes:
+      for fsntfs_attribute in self._fsntfs_file_entry.attributes:
         attribute_class = self._ATTRIBUTE_TYPE_CLASS_MAPPINGS.get(
             fsntfs_attribute.attribute_type, NTFSAttribute)
 
@@ -284,20 +293,13 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     Returns:
       list[NTFSDataStream]: data streams.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
     """
     if self._data_streams is None:
-      fsntfs_file_entry = self.GetNTFSFileEntry()
-      if not fsntfs_file_entry:
-        raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
       self._data_streams = []
-      if fsntfs_file_entry.has_default_data_stream():
+      if self._fsntfs_file_entry.has_default_data_stream():
         self._data_streams.append(NTFSDataStream(None))
 
-      for fsntfs_data_stream in fsntfs_file_entry.alternate_data_streams:
+      for fsntfs_data_stream in self._fsntfs_file_entry.alternate_data_streams:
         self._data_streams.append(NTFSDataStream(fsntfs_data_stream))
 
     return self._data_streams
@@ -306,38 +308,23 @@ class NTFSFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      NTFSDirectory: directory or None.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
+      NTFSDirectory: directory or None if not available.
     """
-    fsntfs_file_entry = self.GetNTFSFileEntry()
-    if not fsntfs_file_entry:
-      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
-    if fsntfs_file_entry.number_of_sub_file_entries > 0:
+    if self._fsntfs_file_entry.number_of_sub_file_entries > 0:
       return NTFSDirectory(self._file_system, self.path_spec)
-    return
 
   def _GetLink(self):
     """Retrieves the link.
 
     Returns:
       str: path of the linked file.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
     """
     if self._link is None:
-      fsntfs_file_entry = self.GetNTFSFileEntry()
-      if not fsntfs_file_entry:
-        raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
       self._link = u''
-      if not self._IsLink(fsntfs_file_entry.file_attribute_flags):
+      if not self._IsLink(self._fsntfs_file_entry.file_attribute_flags):
         return self._link
 
-      link = fsntfs_file_entry.reparse_point_print_name
+      link = self._fsntfs_file_entry.reparse_point_print_name
       if link:
         # Strip off the drive letter, we assume the link is within
         # the same volume.
@@ -346,56 +333,16 @@ class NTFSFileEntry(file_entry.FileEntry):
     return self._link
 
   def _GetStat(self):
-    """Retrieves the stat object.
+    """Retrieves information about the file entry.
 
     Returns:
-      VFSStat: stat object.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
+      VFSStat: a stat object.
     """
-    fsntfs_file_entry = self.GetNTFSFileEntry()
-    if not fsntfs_file_entry:
-      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
-    stat_object = vfs_stat.VFSStat()
+    stat_object = super(NTFSFileEntry, self)._GetStat()
 
     # File data stat information.
-    if fsntfs_file_entry.has_default_data_stream():
-      stat_object.size = fsntfs_file_entry.get_size()
-
-    # Date and time stat information.
-    timestamp = fsntfs_file_entry.get_access_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.atime = stat_time
-      stat_object.atime_nano = stat_time_nano
-
-    timestamp = fsntfs_file_entry.get_creation_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.crtime = stat_time
-      stat_object.crtime_nano = stat_time_nano
-
-    timestamp = fsntfs_file_entry.get_modification_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.mtime = stat_time
-      stat_object.mtime_nano = stat_time_nano
-
-    timestamp = fsntfs_file_entry.get_entry_modification_time_as_integer()
-    date_time_values = dfdatetime_filetime.Filetime(timestamp=timestamp)
-
-    stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
-    if stat_time is not None:
-      stat_object.ctime = stat_time
-      stat_object.ctime_nano = stat_time_nano
+    if self._fsntfs_file_entry.has_default_data_stream():
+      stat_object.size = self._fsntfs_file_entry.get_size()
 
     # Ownership and permissions stat information.
     # TODO: stat_object.mode
@@ -403,19 +350,19 @@ class NTFSFileEntry(file_entry.FileEntry):
     # TODO: stat_object.gid
 
     # File entry type stat information.
-    if self._IsLink(fsntfs_file_entry.file_attribute_flags):
+    if self._IsLink(self._fsntfs_file_entry.file_attribute_flags):
       stat_object.type = stat_object.TYPE_LINK
-    elif fsntfs_file_entry.has_directory_entries_index():
+    elif self._fsntfs_file_entry.has_directory_entries_index():
       stat_object.type = stat_object.TYPE_DIRECTORY
     else:
       stat_object.type = stat_object.TYPE_FILE
 
     # Other stat information.
-    stat_object.ino = (
-        fsntfs_file_entry.file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
+    file_reference = self._fsntfs_file_entry.file_reference
+    stat_object.ino = file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK
     stat_object.fs_type = u'NTFS'
 
-    stat_object.is_allocated = fsntfs_file_entry.is_allocated()
+    stat_object.is_allocated = self._fsntfs_file_entry.is_allocated()
 
     return stat_object
 
@@ -429,24 +376,40 @@ class NTFSFileEntry(file_entry.FileEntry):
         file_attribute_flags & pyfsntfs.file_attribute_flags.REPARSE_POINT)
 
   @property
+  def access_time(self):
+    """dfdatetime.DateTimeValues: access time or None if not available."""
+    timestamp = self._fsntfs_file_entry.get_access_time_as_integer()
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
+  def change_time(self):
+    """dfdatetime.DateTimeValues: change time or None if not available."""
+    timestamp = self._fsntfs_file_entry.get_entry_modification_time_as_integer()
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
+  def creation_time(self):
+    """dfdatetime.DateTimeValues: creation time or None if not available."""
+    timestamp = self._fsntfs_file_entry.get_creation_time_as_integer()
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
   def name(self):
-    """str: name of the file entry, which does not include the full path.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
-    """
-    fsntfs_file_entry = self.GetNTFSFileEntry()
-    if not fsntfs_file_entry:
-      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
+    """str: name of the file entry, which does not include the full path."""
     # The root directory file name is typically '.', dfVFS however uses ''.
     if self._is_root:
       return u''
 
     mft_attribute = getattr(self.path_spec, u'mft_attribute', None)
     if mft_attribute is not None:
-      return fsntfs_file_entry.get_name_by_attribute_index(mft_attribute)
-    return fsntfs_file_entry.get_name()
+      return self._fsntfs_file_entry.get_name_by_attribute_index(mft_attribute)
+    return self._fsntfs_file_entry.get_name()
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    timestamp = self._fsntfs_file_entry.get_modification_time_as_integer()
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def sub_file_entries(self):
@@ -468,15 +431,9 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     Returns:
       NTFSFileIO: file-like object or None.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
     """
-    fsntfs_file_entry = self.GetNTFSFileEntry()
-    if not fsntfs_file_entry:
-      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
-    if not data_stream_name and not fsntfs_file_entry.has_default_data_stream():
+    if (not data_stream_name and
+        not self._fsntfs_file_entry.has_default_data_stream()):
       return
 
     # Make sure to make the changes on a copy of the path specification, so we
@@ -519,27 +476,7 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     Returns:
       pyfsntfs.file_entry: NTFS file entry.
-
-    Raises:
-      PathSpecError: if the path specification is missing location and
-                     MFT entry.
     """
-    if not self._fsntfs_file_entry:
-      # Opening a file by MFT entry is faster than opening a file by location.
-      # However we need the index of the corresponding $FILE_NAME MFT attribute.
-      location = getattr(self.path_spec, u'location', None)
-      mft_attribute = getattr(self.path_spec, u'mft_attribute', None)
-      mft_entry = getattr(self.path_spec, u'mft_entry', None)
-
-      fsntfs_volume = self._file_system.GetNTFSVolume()
-      if mft_attribute is not None and mft_entry is not None:
-        self._fsntfs_file_entry = fsntfs_volume.get_file_entry(mft_entry)
-      elif location is not None:
-        self._fsntfs_file_entry = fsntfs_volume.get_file_entry_by_path(location)
-      else:
-        raise errors.PathSpecError(
-            u'Path specification missing location and MFT entry.')
-
     return self._fsntfs_file_entry
 
   def GetParentFileEntry(self):
@@ -547,14 +484,7 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     Returns:
       NTFSFileEntry: parent file entry or None.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
     """
-    fsntfs_file_entry = self.GetNTFSFileEntry()
-    if not fsntfs_file_entry:
-      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
     location = getattr(self.path_spec, u'location', None)
     if location is not None:
       parent_location = self._file_system.DirnamePath(location)
@@ -565,10 +495,11 @@ class NTFSFileEntry(file_entry.FileEntry):
     mft_attribute = getattr(self.path_spec, u'mft_attribute', None)
     if mft_attribute is not None:
       parent_file_reference = (
-          fsntfs_file_entry.get_parent_file_reference_by_attribute_index(
+          self._fsntfs_file_entry.get_parent_file_reference_by_attribute_index(
               mft_attribute))
     else:
-      parent_file_reference = fsntfs_file_entry.get_parent_file_reference()
+      parent_file_reference = (
+          self._fsntfs_file_entry.get_parent_file_reference())
 
     if parent_file_reference is None:
       return
@@ -598,16 +529,9 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     Returns:
       pyfwnt.security_descriptor: security descriptor.
-
-    Raises:
-      BackEndError: if the pyfsntfs file entry is missing.
     """
-    fsntfs_file_entry = self.GetNTFSFileEntry()
-    if not fsntfs_file_entry:
-      raise errors.BackEndError(u'Missing pyfsntfs file entry.')
-
     fwnt_security_descriptor = pyfwnt.security_descriptor()
     fwnt_security_descriptor.copy_from_byte_stream(
-        fsntfs_file_entry.security_descriptor_data)
+        self._fsntfs_file_entry.security_descriptor_data)
 
     return fwnt_security_descriptor

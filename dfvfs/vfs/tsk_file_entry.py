@@ -14,10 +14,10 @@ from dfvfs.vfs import vfs_stat
 
 
 class TSKAttribute(file_entry.Attribute):
-  """Class that implements an attribute object using pytsk3."""
+  """File system attribute that uses pytsk3."""
 
   def __init__(self, tsk_attribute):
-    """Initializes the attribute object.
+    """Initializes an attribute.
 
     Args:
       tsk_attribute (pytsk3.Attribute): TSK attribute.
@@ -27,15 +27,15 @@ class TSKAttribute(file_entry.Attribute):
 
   @property
   def attribute_type(self):
-    """The attribute type."""
+    """object: attribute type."""
     return getattr(self._tsk_attribute.info, u'type', None)
 
 
 class TSKDataStream(file_entry.DataStream):
-  """Class that implements a data stream object using pytks3."""
+  """File system data stream that uses pytks3."""
 
   def __init__(self, tsk_attribute):
-    """Initializes the data stream object.
+    """Initializes a data stream.
 
     Args:
       tsk_attribute (pytsk3.Attribute): TSK attribute.
@@ -45,7 +45,7 @@ class TSKDataStream(file_entry.DataStream):
 
   @property
   def name(self):
-    """The name."""
+    """str: name."""
     if self._tsk_attribute:
       # The value of the attribute name will be None for the default
       # data stream.
@@ -61,7 +61,7 @@ class TSKDataStream(file_entry.DataStream):
 
 
 class TSKDirectory(file_entry.Directory):
-  """Class that implements a directory object using pytsk3."""
+  """File system directory that uses pytsk3."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -70,7 +70,7 @@ class TSKDirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      TSKPathSpec: path specification.
+      TSKPathSpec: a path specification.
 
     Raises:
       BackEndError: if pytsk3 cannot open the directory.
@@ -169,7 +169,7 @@ class TSKDirectory(file_entry.Directory):
 
 
 class TSKFileEntry(file_entry.FileEntry):
-  """Class that implements a file entry object using pytsk3."""
+  """File system file entry that uses pytsk3."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
@@ -190,7 +190,7 @@ class TSKFileEntry(file_entry.FileEntry):
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False, parent_inode=None, tsk_file=None):
-    """Initializes the file entry object.
+    """Initializes a file entry.
 
     Args:
       resolver_context (Context): resolver context.

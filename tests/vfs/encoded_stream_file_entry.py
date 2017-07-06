@@ -38,7 +38,7 @@ class EncodedStreamFileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testInitialize(self):
-    """Test the initialize functionality."""
+    """Test the __init__ function."""
     file_entry = encoded_stream_file_entry.EncodedStreamFileEntry(
         self._resolver_context, self._file_system,
         self._encoded_stream_path_spec)
