@@ -7,13 +7,18 @@ from __future__ import unicode_literals
 import fnmatch
 import unittest
 
-from dfvfs.lib import glob2regex
+from dfwinreg import glob2regex
 
 from tests import test_lib
 
 
 class Glob2RegexTest(test_lib.BaseTestCase):
   """Tests for the glob to regular expression conversion function."""
+
+  _TEST_PATTERNS = [
+      'plain.txt', '*.txt', 'plain?.txt', 'plain[?].txt', 'plai[nN].txt',
+      'plai[!nN].txt', 'plai[nN.txt', 'plain.(jpg|txt)', '.^$*+?{}\\[]|()',
+      '[.^$*+?{}\\|()]', '[\\]]', '[]]']
 
   def _Glob2Regex(self, glob_pattern):
     """Converts a glob pattern to a regular expression.
@@ -22,7 +27,7 @@ class Glob2RegexTest(test_lib.BaseTestCase):
       glob_pattern (str): glob pattern.
 
     Returns:
-      _sre.SRE_Pattern: regular expression of the glob pattern.
+      str: regular expression of the glob pattern.
 
     Raises:
       ValueError: if the glob pattern cannot be converted.
@@ -48,53 +53,10 @@ class Glob2RegexTest(test_lib.BaseTestCase):
 
   def testGlob2Regex(self):
     """Tests the Glob2Regex function."""
-    regex = glob2regex.Glob2Regex('plain.txt')
-    expected_regex = self._Glob2Regex('plain.txt')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('*.txt')
-    expected_regex = self._Glob2Regex('*.txt')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('plain?.txt')
-    expected_regex = self._Glob2Regex('plain?.txt')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('plain[?].txt')
-    expected_regex = self._Glob2Regex('plain[?].txt')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('plai[nN].txt')
-    expected_regex = self._Glob2Regex('plai[nN].txt')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('plai[!nN].txt')
-    expected_regex = self._Glob2Regex('plai[!nN].txt')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('plai[nN.txt')
-    expected_regex = self._Glob2Regex('plai[nN.txt')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('plain.(jpg|txt)')
-    expected_regex = self._Glob2Regex('plain.(jpg|txt)')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('.^$*+?{}\\[]|()')
-    expected_regex = self._Glob2Regex('.^$*+?{}\\[]|()')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex('[.^$*+?{}\\|()]')
-    expected_regex = self._Glob2Regex('[.^$*+?{}\\|()]')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex(u'[\\]]')
-    expected_regex = self._Glob2Regex(u'[\\]]')
-    self.assertEqual(regex, expected_regex)
-
-    regex = glob2regex.Glob2Regex(u'[]]')
-    expected_regex = self._Glob2Regex(u'[]]')
-    self.assertEqual(regex, expected_regex)
+    for glob_pattern in self._TEST_PATTERNS:
+      regex = glob2regex.Glob2Regex(glob_pattern)
+      expected_regex = self._Glob2Regex(glob_pattern)
+      self.assertEqual(regex, expected_regex)
 
 
 if __name__ == '__main__':
