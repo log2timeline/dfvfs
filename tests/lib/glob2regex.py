@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import fnmatch
 import unittest
 
-from dfwinreg import glob2regex
+from dfvfs.lib import glob2regex
 
 from tests import test_lib
 
