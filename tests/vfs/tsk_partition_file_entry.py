@@ -52,7 +52,7 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
     """Test the __init__ function."""
     file_entry = tsk_partition_file_entry.TSKPartitionFileEntry(
         self._resolver_context, self._file_system,
-        self._tsk_partition_path_spec)
+        self._tsk_partition_path_spec, is_virtual=True)
 
     self.assertIsNotNone(file_entry)
 
