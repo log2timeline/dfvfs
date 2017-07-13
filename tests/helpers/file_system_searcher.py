@@ -47,7 +47,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     return file_system_builder.file_system
 
   def testInitialize(self):
-    """Test the __init__() function."""
+    """Test the __init__ function."""
     find_spec = file_system_searcher.FindSpec(location=u'location')
     self.assertIsNotNone(find_spec)
 
@@ -216,6 +216,9 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     result = find_spec._CheckLocation(file_entry, 6)
     self.assertTrue(result)
 
+    result = find_spec._CheckLocation(file_entry, 0)
+    self.assertTrue(result)
+
     result = find_spec._CheckLocation(file_entry, 5)
     self.assertFalse(result)
 
@@ -226,11 +229,63 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     result = find_spec._CheckLocation(file_entry, 6)
     self.assertFalse(result)
 
-  # TODO: add tests for _ConvertLocationGlob2Regex
-  # TODO: add tests for _SplitPath
+  def testConvertLocationGlob2Regex(self):
+    """Test the _ConvertLocationGlob2Regex function."""
+    find_spec = file_system_searcher.FindSpec()
+
+    location_regex = find_spec._ConvertLocationGlob2Regex(
+        u'/tmp/loca?ion')
+    self.assertEqual(location_regex, u'/tmp/loca.ion')
+
+  def testSplitPath(self):
+    """Test the _SplitPath function."""
+    find_spec = file_system_searcher.FindSpec()
+
+    path_segments = find_spec._SplitPath(u'/tmp/location', u'/')
+    self.assertEqual(path_segments, [u'tmp', u'location'])
+
   # TODO: add tests for AtMaximumDepth
-  # TODO: add tests for Matches
-  # TODO: add tests for PrepareMatches
+
+  def testMatches(self):
+    """Test the Matches() function."""
+    file_system = self._CreateTestFileSystem()
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    find_spec = file_system_searcher.FindSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    find_spec.PrepareMatches(file_system)
+
+    result = find_spec.Matches(file_entry, 6)
+    self.assertEqual(result, (True, True))
+
+    result = find_spec.Matches(file_entry, 0)
+    self.assertEqual(result, (False, True))
+
+    find_spec = file_system_searcher.FindSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
+    find_spec.PrepareMatches(file_system)
+
+    result = find_spec.Matches(file_entry, 6)
+    self.assertEqual(result, (False, False))
+
+  def testPrepareMatches(self):
+    """Test the PrepareMatches function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+
+    self.assertIsNone(find_spec._location_segments)
+    self.assertEqual(find_spec._number_of_location_segments, 0)
+
+    find_spec.PrepareMatches(file_system)
+    self.assertEqual(find_spec._location_segments, [
+        u'usr', u'lib', u'python2.7', u'site-packages', u'dfvfs',
+        u'__init__.py'])
+    self.assertEqual(find_spec._number_of_location_segments, 6)
 
 
 @shared_test_lib.skipUnlessHasTestFile([u'password.txt'])
