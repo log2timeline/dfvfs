@@ -6,18 +6,17 @@ from dfvfs.lib import errors
 from dfvfs.lib import py2to3
 from dfvfs.path import sqlite_blob_path_spec
 from dfvfs.vfs import file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class SQLiteBlobDirectory(file_entry.Directory):
-  """Class that implements a SQLite blob directory object."""
+  """SQLite blob directory."""
 
   def __init__(self, file_system, path_spec):
-    """Initializes the directory object.
+    """Initializes a directory.
 
     Args:
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification object (instance of PathSpec).
+      file_system (SQLiteBlobFileSystem): file system.
+      path_spec (SQLiteBlobPathSpec): path specification.
     """
     super(SQLiteBlobDirectory, self).__init__(file_system, path_spec)
     self._number_of_entries = None
@@ -29,7 +28,7 @@ class SQLiteBlobDirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.SQLiteBlobPathSpec).
+      SQLiteBlobPathSpec: a path specification.
 
     Raises:
       AccessError: if the access to list the directory was denied.
@@ -64,52 +63,61 @@ class SQLiteBlobDirectory(file_entry.Directory):
 
 
 class SQLiteBlobFileEntry(file_entry.FileEntry):
-  """Class that implements a file entry object using sqlite."""
+  """SQLite blob file entry."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False):
-    """Initializes the file entry object.
+    """Initializes a file entry.
 
     Args:
-      resolver_context: the resolver context (instance of Context).
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification object (instance of PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
-      is_virtual: optional boolean value to indicate if the file entry is
-                  a virtual file entry emulated by the corresponding file
-                  system.
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+      is_virtual (Optional[bool]): True if the file entry is a virtual file
+          entry emulated by the corresponding file system.
     """
     super(SQLiteBlobFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._number_of_entries = None
 
+    if is_virtual:
+      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+    else:
+      self._type = definitions.FILE_ENTRY_TYPE_FILE
+
+  def _GetDirectory(self):
+    """Retrieves a directory.
+
+    Returns:
+      SQLiteBlobDirectory: a directory or None if not available.
+    """
+    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return SQLiteBlobDirectory(self._file_system, self.path_spec)
+
   def _GetStat(self):
     """Retrieves the stat object.
 
     Returns:
-      The stat object (instance of vfs.VFSStat).
+      VFSStat: stat object.
 
     Raises:
       BackEndError: when the SQLite blob file-like object is missing.
     """
-    stat_object = vfs_stat.VFSStat()
+    stat_object = super(SQLiteBlobFileEntry, self)._GetStat()
 
-    # The root file entry is virtual and should have type directory.
-    if self._is_virtual:
-      stat_object.type = stat_object.TYPE_DIRECTORY
-    else:
+    if not self._is_virtual:
       file_object = self.GetFileObject()
       if not file_object:
         raise errors.BackEndError(
             u'Unable to retrieve SQLite blob file-like object.')
 
       try:
-        stat_object.type = stat_object.TYPE_FILE
         stat_object.size = file_object.get_size()
       finally:
         file_object.close()
@@ -118,7 +126,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """The name of the file entry, which does not include the full path."""
+    """str: name of the file entry, which does not include the full path."""
     row_index = getattr(self.path_spec, u'row_index', None)
     if row_index is not None:
       return u'OFFSET {0:d}'.format(row_index)
@@ -140,8 +148,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.SQLiteBlobFileEntry).
-    """
+    """generator(SQLiteBlobFileEntry): sub file entries."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -150,25 +157,11 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
         yield SQLiteBlobFileEntry(
             self._resolver_context, self._file_system, path_spec)
 
-  def _GetDirectory(self):
-    """Retrieves a directory.
-
-    Returns:
-      A directory object (instance of Directory) or None.
-    """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-
-    if (self._stat_object and
-        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
-      return SQLiteBlobDirectory(self._file_system, self.path_spec)
-    return
-
   def GetNumberOfRows(self):
     """Retrieves the number of rows in the table.
 
     Returns:
-      An integer containing the number of rows.
+      int: number of rows.
 
     Raises:
       BackEndError: when the SQLite blob file-like object is missing.
@@ -190,7 +183,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     """Retrieves the parent file entry.
 
     Returns:
-      The parent file entry (instance of FileEntry) or None.
+      SQLiteBlobFileEntry: parent file entry or None if not available.
     """
     # If the file entry is a sub entry, return the SQLite blob directory.
     if self._is_virtual:
