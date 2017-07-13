@@ -77,19 +77,13 @@ class FindSpec(object):
             type(location)))
 
     elif location_glob is not None:
-      # The regular expression from glob2regex contains escaped forward
-      # slashes "/", which needs to be undone.
-
       if isinstance(location_glob, py2to3.STRING_TYPES):
-        location_regex = glob2regex.Glob2Regex(location_glob)
-
-        self._location_regex = location_regex.replace(u'\\/', '/')
+        self._location_regex = self._ConvertLocationGlob2Regex(location_glob)
 
       elif isinstance(location_glob, list):
         self._location_segments = []
         for location_segment in location_glob:
-          location_regex = glob2regex.Glob2Regex(location_segment)
-          location_regex = location_regex.replace(u'\\/', '/')
+          location_regex = self._ConvertLocationGlob2Regex(location_segment)
 
           self._location_segments.append(location_regex)
 
@@ -128,15 +122,13 @@ class FindSpec(object):
       bool: True if the file entry matches the find specification, False if
           not or None if no file entry type specification is defined.
     """
-    if self._file_entry_types is None:
-      return
-
-    return (self._CheckIsDevice(file_entry) or
-            self._CheckIsDirectory(file_entry) or
-            self._CheckIsFile(file_entry) or
-            self._CheckIsLink(file_entry) or
-            self._CheckIsPipe(file_entry) or
-            self._CheckIsSocket(file_entry))
+    if self._file_entry_types:
+      return (self._CheckIsDevice(file_entry) or
+              self._CheckIsDirectory(file_entry) or
+              self._CheckIsFile(file_entry) or
+              self._CheckIsLink(file_entry) or
+              self._CheckIsPipe(file_entry) or
+              self._CheckIsSocket(file_entry))
 
   def _CheckIsAllocated(self, file_entry):
     """Checks the is_allocated find specification.
@@ -287,6 +279,21 @@ class FindSpec(object):
         return False
 
     return True
+
+  def _ConvertLocationGlob2Regex(self, location_glob):
+    """Converts a location glob into a regular expression.
+
+    Args:
+      location_glob (str): location glob pattern.
+
+    Returns:
+      str: location regular expression pattern.
+    """
+    location_regex = glob2regex.Glob2Regex(location_glob)
+
+    # The regular expression from glob2regex contains escaped forward
+    # slashes "/", which needs to be undone.
+    return location_regex.replace(u'\\/', '/')
 
   def _SplitPath(self, path, path_separator):
     """Splits the path into path segments.

@@ -6,7 +6,9 @@ import os
 import unittest
 
 from dfvfs.lib import definitions
+from dfvfs.helpers import fake_file_system_builder
 from dfvfs.helpers import file_system_searcher
+from dfvfs.path import fake_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_path_spec
@@ -20,7 +22,211 @@ from tests import test_lib as shared_test_lib
 class FindSpecTest(shared_test_lib.BaseTestCase):
   """Tests for the find specification."""
 
-  # TODO: add tests for _CheckKeyPath
+  # pylint: disable=protected-access
+
+  def _CreateTestFileSystem(self):
+    """Create a file system for testing.
+
+    Returns:
+      FakeFileSystem: file system for testing.
+    """
+    file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
+
+    test_path = u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
+    test_file_data = b'\n'.join([
+        b'# -*- coding: utf-8 -*-',
+        b'"""Digital Forensics Virtual File System (dfVFS).',
+        b'',
+        b'dfVFS, or Digital Forensics Virtual File System, is a Python module',
+        b'that provides read-only access to file-system objects from various',
+        b'storage media types and file formats.',
+        b'"""'])
+
+    file_system_builder.AddFile(test_path, test_file_data)
+
+    return file_system_builder.file_system
+
+  def testInitialize(self):
+    """Test the __init__() function."""
+    find_spec = file_system_searcher.FindSpec(location=u'location')
+    self.assertIsNotNone(find_spec)
+
+    find_spec = file_system_searcher.FindSpec(location=[u'location'])
+    self.assertIsNotNone(find_spec)
+
+    with self.assertRaises(TypeError):
+      find_spec = file_system_searcher.FindSpec(location={})
+
+    find_spec = file_system_searcher.FindSpec(location_glob=u'loca?ion')
+    self.assertIsNotNone(find_spec)
+
+    find_spec = file_system_searcher.FindSpec(location_glob=[u'loca?ion'])
+    self.assertIsNotNone(find_spec)
+
+    with self.assertRaises(TypeError):
+      find_spec = file_system_searcher.FindSpec(location_glob={})
+
+    find_spec = file_system_searcher.FindSpec(location_regex=u'loca.ion')
+    self.assertIsNotNone(find_spec)
+
+    find_spec = file_system_searcher.FindSpec(location_regex=[u'loca.ion'])
+    self.assertIsNotNone(find_spec)
+
+    with self.assertRaises(TypeError):
+      find_spec = file_system_searcher.FindSpec(location_regex={})
+
+    with self.assertRaises(ValueError):
+      find_spec = file_system_searcher.FindSpec(
+          location=u'location', location_glob=u'loca?ion')
+
+  def testCheckFileEntryType(self):
+    """Test the _CheckFileEntryType() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckFileEntryType(file_entry)
+    self.assertTrue(result)
+
+    file_entry = file_system.GetRootFileEntry()
+
+    result = find_spec._CheckFileEntryType(file_entry)
+    self.assertFalse(result)
+
+    find_spec = file_system_searcher.FindSpec()
+
+    result = find_spec._CheckFileEntryType(file_entry)
+    self.assertIsNone(result)
+
+  def testCheckIsAllocated(self):
+    """Test the _CheckIsAllocated() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckIsAllocated(file_entry)
+    self.assertTrue(result)
+
+  def testCheckIsDevice(self):
+    """Test the _CheckIsDevice() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckIsDevice(file_entry)
+    self.assertFalse(result)
+
+  def testCheckIsDirectory(self):
+    """Test the _CheckIsDirectory() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckIsDirectory(file_entry)
+    self.assertFalse(result)
+
+  def testCheckIsFile(self):
+    """Test the _CheckIsFile() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckIsFile(file_entry)
+    self.assertTrue(result)
+
+  def testCheckIsLink(self):
+    """Test the _CheckIsLink() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckIsLink(file_entry)
+    self.assertFalse(result)
+
+  def testCheckIsPipe(self):
+    """Test the _CheckIsPipe() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckIsPipe(file_entry)
+    self.assertFalse(result)
+
+  def testCheckIsSocket(self):
+    """Test the _CheckIsSocket() function."""
+    file_system = self._CreateTestFileSystem()
+
+    find_spec = file_system_searcher.FindSpec(
+        file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    result = find_spec._CheckIsSocket(file_entry)
+    self.assertFalse(result)
+
+  def testCheckLocation(self):
+    """Test the _CheckLocation() function."""
+    file_system = self._CreateTestFileSystem()
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    find_spec = file_system_searcher.FindSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    find_spec.PrepareMatches(file_system)
+
+    result = find_spec._CheckLocation(file_entry, 6)
+    self.assertTrue(result)
+
+    result = find_spec._CheckLocation(file_entry, 5)
+    self.assertFalse(result)
+
+    find_spec = file_system_searcher.FindSpec(
+        location=u'/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
+    find_spec.PrepareMatches(file_system)
+
+    result = find_spec._CheckLocation(file_entry, 6)
+    self.assertFalse(result)
+
+  # TODO: add tests for _ConvertLocationGlob2Regex
   # TODO: add tests for _SplitPath
   # TODO: add tests for AtMaximumDepth
   # TODO: add tests for Matches
