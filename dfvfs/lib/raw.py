@@ -17,7 +17,8 @@ def _RawGlobPathSpecWithAlphabeticalSchema(
     parent_path_spec (PathSpec): parent path specification.
     segment_format (str): naming schema of the segment file location.
     location (str): the base segment file location string.
-    segment_length (int): length (number of characters) of the segment indicator.
+    segment_length (int): length (number of characters) of the segment
+        indicator.
     upper_case (Optional[bool]): True if the segment name is in upper case.
 
   Returns:
