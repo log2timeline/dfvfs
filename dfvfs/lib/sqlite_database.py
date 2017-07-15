@@ -13,7 +13,7 @@ from dfvfs.lib import py2to3
 
 
 class SQLiteDatabaseFile(object):
-  """Class that implements a SQLite database file using a file-like object."""
+  """SQLite database file using a file-like object."""
 
   _COPY_BUFFER_SIZE = 65536
 
@@ -59,10 +59,10 @@ class SQLiteDatabaseFile(object):
     """Retrieves the number of rows in the table.
 
     Args:
-      table_name: string containing the name of the table.
+      table_name (str): name of the table.
 
     Returns:
-      An integer containing the number of rows.
+      int: number of rows.
 
     Raises:
       IOError: if the file-like object has not been opened.
@@ -92,11 +92,11 @@ class SQLiteDatabaseFile(object):
     """Determines if a specific column exists.
 
     Args:
-      table_name: string containing the name of the table.
-      column_name: string containing the name of the column.
+      table_name (str): name of the table.
+      column_name (str): name of the column.
 
     Returns:
-      A boolean value indicating if the column exists.
+      bool: True if the column exists.
 
     Raises:
       IOError: if the database file is not opened.
@@ -132,10 +132,10 @@ class SQLiteDatabaseFile(object):
     """Determines if a specific table exists.
 
     Args:
-      table_name: string containing the name of the table.
+      table_name (str): name of the table.
 
     Returns:
-      A boolean value indicating if the column exists.
+      bool: True if the column exists.
 
     Raises:
       IOError: if the database file is not opened.
@@ -167,7 +167,7 @@ class SQLiteDatabaseFile(object):
     """Opens the database file object.
 
     Args:
-      file_object: the file-like object (instance of FileIO).
+      file_object (FileIO): file-like object.
 
     Raises:
       IOError: if the SQLite database signature does not match.
@@ -201,11 +201,11 @@ class SQLiteDatabaseFile(object):
     """Queries the database file.
 
     Args:
-      query: string containing the SQL query.
-      parameters: optional tuple or dictionary containing query parameters.
+      query (str): SQL query.
+      parameters (Optional[dict|tuple]): query parameters.
 
     Returns:
-      A list of the rows (instances of sqlite3.Row) of the query results.
+      list[sqlite3.Row]: rows resulting from the query.
     """
     # TODO: catch Warning and return None.
     # Note that we cannot pass parameters as a keyword argument here.

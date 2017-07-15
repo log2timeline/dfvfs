@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """A builder for fake file systems."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_system
@@ -34,7 +36,7 @@ class FakeFileSystemBuilder(object):
       file_entry = self.file_system.GetFileEntryByPath(parent_path)
       if file_entry and not file_entry.IsDirectory():
         raise ValueError(
-            u'Non-directory parent file entry: {0:s} already exists.'.format(
+            'Non-directory parent file entry: {0:s} already exists.'.format(
                 parent_path))
 
     for segment_index in range(len(path_segments)):
@@ -55,7 +57,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError(u'Path: {0:s} already set.'.format(path))
+      raise ValueError('Path: {0:s} already set.'.format(path))
 
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(
@@ -74,7 +76,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError(u'Path: {0:s} already set.'.format(path))
+      raise ValueError('Path: {0:s} already set.'.format(path))
 
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(path, file_data=file_data)
@@ -90,7 +92,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError(u'Path: {0:s} already set.'.format(path))
+      raise ValueError('Path: {0:s} already set.'.format(path))
 
     with open(file_data_path, 'rb') as file_object:
       file_data = file_object.read()
@@ -108,7 +110,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError(u'Path: {0:s} already set.'.format(path))
+      raise ValueError('Path: {0:s} already set.'.format(path))
 
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(

@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
 """Helper functions for Logical Volume Manager (LVM) support."""
 
+from __future__ import unicode_literals
+
 
 def LVMPathSpecGetVolumeIndex(path_spec):
   """Retrieves the volume index from the path specification.
 
   Args:
-    path_spec: the path specification (instance of PathSpec).
+    path_spec (PathSpec): path specification.
+
+  Returns:
+    int: volume index.
   """
-  volume_index = getattr(path_spec, u'volume_index', None)
+  volume_index = getattr(path_spec, 'volume_index', None)
 
   if volume_index is None:
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
-    if location is None or not location.startswith(u'/lvm'):
+    if location is None or not location.startswith('/lvm'):
       return
 
     volume_index = None

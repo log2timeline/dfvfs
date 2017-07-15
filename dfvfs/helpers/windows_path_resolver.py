@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """A resolver for Windows paths to file system specific formats."""
 
+from __future__ import unicode_literals
+
 import re
 
 from dfvfs.lib import errors
@@ -11,11 +13,11 @@ from dfvfs.path import factory as path_spec_factory
 class WindowsPathResolver(object):
   """Resolver object for Windows paths."""
 
-  _PATH_SEPARATOR = u'\\'
+  _PATH_SEPARATOR = '\\'
   _PATH_EXPANSION_VARIABLE = re.compile(r'^[%][^%]+[%]$')
 
-  def __init__(self, file_system, mount_point, drive_letter=u'C'):
-    """Initializes the Windows path helper.
+  def __init__(self, file_system, mount_point, drive_letter='C'):
+    """Initializes a Windows path helper.
 
     The mount point indicates a path specification where the Windows
     file system is mounted. This can either be a path specification
@@ -23,23 +25,22 @@ class WindowsPathResolver(object):
     system.
 
     Args:
-      file_system: the file system object (instance of FileSystem).
-      mount_point: the mount point path specification (instance of PathSpec).
-      drive_letter: optional string that contains the drive letter used by
-                    the file system.
+      file_system (FileSystem): a file system.
+      mount_point (PathSpec): mount point path specification.
+      drive_letter (Optional[str]): drive letter used by the file system.
 
     Raises:
       PathSpecError: if the mount point path specification is incorrect.
       ValueError: when file system or mount point is not set.
     """
     if not file_system or not mount_point:
-      raise ValueError(u'Missing file system or mount point value.')
+      raise ValueError('Missing file system or mount point value.')
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         file_system.type_indicator):
-      if not hasattr(mount_point, u'location'):
+      if not hasattr(mount_point, 'location'):
         raise errors.PathSpecError(
-            u'Mount point path specification missing location.')
+            'Mount point path specification missing location.')
 
     super(WindowsPathResolver, self).__init__()
 
@@ -70,29 +71,29 @@ class WindowsPathResolver(object):
     """Strips the prefix from a path.
 
     Args:
-      path: the Windows path to strip the prefix from.
+      path (str): Windows path to strip the prefix from.
 
     Returns:
-      The path without the prefix or None if the path is not supported.
+      str: path without the prefix or None if the path is not supported.
     """
-    if path.startswith(u'\\\\.\\') or path.startswith(u'\\\\?\\'):
-      if len(path) < 7 or path[5] != u':' or path[6] != self._PATH_SEPARATOR:
+    if path.startswith('\\\\.\\') or path.startswith('\\\\?\\'):
+      if len(path) < 7 or path[5] != ':' or path[6] != self._PATH_SEPARATOR:
         # Cannot handle a non-volume path.
         return
       path = path[7:]
 
-    elif path.startswith(u'\\\\'):
+    elif path.startswith('\\\\'):
       # Cannot handle an UNC path.
       return
 
-    elif len(path) >= 3 and path[1] == u':':
+    elif len(path) >= 3 and path[1] == ':':
       # Check if the path is a Volume 'absolute' path.
       if path[2] != self._PATH_SEPARATOR:
         # Cannot handle a Volume 'relative' path.
         return
       path = path[3:]
 
-    elif path.startswith(u'\\'):
+    elif path.startswith('\\'):
       path = path[1:]
 
     else:
@@ -109,17 +110,17 @@ class WindowsPathResolver(object):
     above a case insensitive match. If no match was found None is returned.
 
     Args:
-      path: the Windows path to resolve.
-      expand_variables: optional value to indicate path variables should be
-                        expanded or not.
+      path (str): Windows path to resolve.
+      expand_variables (Optional[bool]): True if path variables should be
+          expanded or not.
 
     Returns:
-      A tuple of the path in file system specific format and the matching path
-      specification.
+      tuple[str, PathSpec]: location and matching path specification or
+          (None, None) if not available.
     """
     # Allow for paths that start with an environment variable e.g.
     # %SystemRoot%\file.txt
-    if path.startswith(u'%'):
+    if path.startswith('%'):
       path_segment, _, _ = path.partition(self._PATH_SEPARATOR)
       if not self._PATH_EXPANSION_VARIABLE.match(path_segment):
         path = None
@@ -147,10 +148,10 @@ class WindowsPathResolver(object):
         return None, None
 
       # Ignore empty path segments or path segments containing a single dot.
-      if not path_segment or path_segment == u'.':
+      if not path_segment or path_segment == '.':
         continue
 
-      if path_segment == u'..':
+      if path_segment == '..':
         # Only allow to traverse back up to the mount point.
         if number_of_expanded_path_segments > 0:
           _ = expanded_path_segments.pop(0)
@@ -188,31 +189,31 @@ class WindowsPathResolver(object):
     """Returns the Windows path based on a resolved path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      The corresponding Windows path or None if the Windows path could not
-      be determined.
+      str: corresponding Windows path or None if the Windows path could not
+          be determined.
 
     Raises:
       PathSpecError: if the path specification is incorrect.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     if location is None:
-      raise errors.PathSpecError(u'Path specification missing location.')
+      raise errors.PathSpecError('Path specification missing location.')
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         self._file_system.type_indicator):
       if not location.startswith(self._mount_point.location):
         raise errors.PathSpecError(
-            u'Path specification does not contain mount point.')
+            'Path specification does not contain mount point.')
     else:
-      if not hasattr(path_spec, u'parent'):
-        raise errors.PathSpecError(u'Path specification missing parent.')
+      if not hasattr(path_spec, 'parent'):
+        raise errors.PathSpecError('Path specification missing parent.')
 
       if path_spec.parent != self._mount_point:
         raise errors.PathSpecError(
-            u'Path specification does not contain mount point.')
+            'Path specification does not contain mount point.')
 
     path_segments = self._file_system.SplitPath(location)
 
@@ -222,20 +223,19 @@ class WindowsPathResolver(object):
           self._mount_point.location)
       path_segments = path_segments[len(mount_point_path_segments):]
 
-    return u'{0:s}:\\{1:s}'.format(
+    return '{0:s}:\\{1:s}'.format(
         self._drive_letter, self._PATH_SEPARATOR.join(path_segments))
 
   def ResolvePath(self, path, expand_variables=True):
     """Resolves a Windows path in file system specific format.
 
     Args:
-      path: the Windows path to resolve.
-      expand_variables: optional value to indicate path variables should be
-                        expanded or not.
+      path (str): Windows path to resolve.
+      expand_variables (Optional[bool]): True if path variables should be
+          expanded or not.
 
     Returns:
-      The path specification (instance of PathSpec) in file system
-      specific format.
+      PathSpec: path specification in file system specific format.
     """
     location, path_spec = self._ResolvePath(
         path, expand_variables=expand_variables)
@@ -248,10 +248,10 @@ class WindowsPathResolver(object):
     # and raise.
     kwargs = path_spec_factory.Factory.GetProperties(path_spec)
 
-    kwargs[u'location'] = location
+    kwargs['location'] = location
     if not path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         self._file_system.type_indicator):
-      kwargs[u'parent'] = self._mount_point
+      kwargs['parent'] = self._mount_point
 
     return path_spec_factory.Factory.NewPathSpec(
         self._file_system.type_indicator, **kwargs)
@@ -260,9 +260,9 @@ class WindowsPathResolver(object):
     """Sets an environment variable in the Windows path helper.
 
     Args:
-      name: the name of the environment variable without enclosing
-            %-characters, e.g. SystemRoot as in %SystemRoot%.
-      value: the value of the environment variable.
+      name (str): name of the environment variable without enclosing
+          %-characters, e.g. SystemRoot as in %SystemRoot%.
+      value (str): value of the environment variable.
     """
     if isinstance(value, py2to3.STRING_TYPES):
       value = self._PathStripPrefix(value)

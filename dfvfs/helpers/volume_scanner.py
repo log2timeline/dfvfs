@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Classes to implement volume scanners."""
 
+from __future__ import unicode_literals
+
 import abc
 import os
 
@@ -16,7 +18,7 @@ from dfvfs.volume import vshadow_volume_system
 
 
 class VolumeScannerMediator(object):
-  """Class that defines a volume scanner mediator."""
+  """Volume scanner mediator."""
 
   @abc.abstractmethod
   def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
@@ -72,7 +74,7 @@ class VolumeScannerMediator(object):
 
 
 class VolumeScanner(object):
-  """Class that defines a volume scanner."""
+  """Volume scanner."""
 
   def __init__(self, mediator=None):
     """Initializes a volume scanner.
@@ -98,11 +100,11 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source is not supported or
-                    the scan node is invalid or if the volume for
-                    a specific identifier cannot be retrieved.
+          the scan node is invalid or if the volume for a specific identifier
+          cannot be retrieved.
     """
     if not scan_node or not scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid scan node.')
+      raise errors.ScannerError('Invalid scan node.')
 
     volume_system = tsk_volume_system.TSKVolumeSystem()
     volume_system.Open(scan_node.path_spec)
@@ -110,7 +112,7 @@ class VolumeScanner(object):
     volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
         volume_system)
     if not volume_identifiers:
-      raise errors.ScannerError(u'No partitions found.')
+      raise errors.ScannerError('No partitions found.')
 
     if not self._mediator or len(volume_identifiers) == 1:
       return volume_identifiers
@@ -120,7 +122,7 @@ class VolumeScanner(object):
           volume_system, volume_identifiers)
 
     except KeyboardInterrupt:
-      raise errors.ScannerError(u'File system scan aborted.')
+      raise errors.ScannerError('File system scan aborted.')
 
     if partition_identifiers is None:
       return []
@@ -138,11 +140,11 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source is not supported,
-                    the scan node is invalid or no mediator is provided
-                    and VSS store identifiers are found.
+          the scan node is invalid or no mediator is provided and VSS store
+          identifiers are found.
     """
     if not scan_node or not scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid scan node.')
+      raise errors.ScannerError('Invalid scan node.')
 
     volume_system = vshadow_volume_system.VShadowVolumeSystem()
     volume_system.Open(scan_node.path_spec)
@@ -154,15 +156,15 @@ class VolumeScanner(object):
 
     if not self._mediator:
       raise errors.ScannerError(
-          u'Unable to proceed VSS. Identifiers found but no mediator to '
-          u'determine how they should be used.')
+          'Unable to proceed VSS. Identifiers found but no mediator to '
+          'determine how they should be used.')
 
     try:
       store_numbers = self._mediator.GetVSSStoreIdentifiers(
           volume_system, volume_identifiers)
 
     except KeyboardInterrupt:
-      raise errors.UserAbort(u'File system scan aborted.')
+      raise errors.UserAbort('File system scan aborted.')
 
     if store_numbers is None:
       return []
@@ -180,7 +182,7 @@ class VolumeScanner(object):
       ScannerError: if the scan node is invalid.
     """
     if not file_system_scan_node or not file_system_scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid or missing file system scan node.')
+      raise errors.ScannerError('Invalid or missing file system scan node.')
 
     base_path_specs.append(file_system_scan_node.path_spec)
 
@@ -194,10 +196,10 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source
-                    is not supported or the scan node is invalid.
+          is not supported or the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+      raise errors.ScannerError('Invalid or missing volume scan node.')
 
     if len(volume_scan_node.sub_nodes) == 0:
       self._ScanVolumeScanNode(scan_context, volume_scan_node, base_path_specs)
@@ -219,18 +221,18 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source
-                    is not supported or the scan node is invalid.
+          is not supported or the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+      raise errors.ScannerError('Invalid or missing volume scan node.')
 
     # Get the first node where where we need to decide what to process.
     scan_node = volume_scan_node
     while len(scan_node.sub_nodes) == 1:
       # Make sure that we prompt the user about VSS selection.
       if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-        location = getattr(scan_node.path_spec, u'location', None)
-        if location == u'/':
+        location = getattr(scan_node.path_spec, 'location', None)
+        if location == '/':
           break
 
       scan_node = scan_node.sub_nodes[0]
@@ -260,7 +262,7 @@ class VolumeScanner(object):
       ScannerError: if the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+      raise errors.ScannerError('Invalid or missing volume scan node.')
 
     result = not scan_context.IsLockedScanNode(volume_scan_node.path_spec)
     if not result:
@@ -284,14 +286,14 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if a VSS sub scan node scannot be retrieved or
-                    if the scan node is invalid.
+          if the scan node is invalid.
     """
     if not volume_scan_node or not volume_scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid or missing volume scan node.')
+      raise errors.ScannerError('Invalid or missing volume scan node.')
 
     # Do not scan inside individual VSS store scan nodes.
-    location = getattr(volume_scan_node.path_spec, u'location', None)
-    if location != u'/':
+    location = getattr(volume_scan_node.path_spec, 'location', None)
+    if location != '/':
       return
 
     vss_store_identifiers = self._GetVSSStoreIdentifiers(volume_scan_node)
@@ -301,17 +303,17 @@ class VolumeScanner(object):
     # Process VSS stores starting with the most recent one.
     vss_store_identifiers.reverse()
     for vss_store_identifier in vss_store_identifiers:
-      location = u'/vss{0:d}'.format(vss_store_identifier)
+      location = '/vss{0:d}'.format(vss_store_identifier)
       sub_scan_node = volume_scan_node.GetSubNodeByLocation(location)
       if not sub_scan_node:
         raise errors.ScannerError(
-            u'Scan node missing for VSS store identifier: {0:d}.'.format(
+            'Scan node missing for VSS store identifier: {0:d}.'.format(
                 vss_store_identifier))
 
       # We "optimize" here for user experience, alternatively we could scan for
       # a file system instead of hard coding a TSK child path specification.
       path_spec = path_spec_factory.Factory.NewPathSpec(
-          definitions.TYPE_INDICATOR_TSK, location=u'/',
+          definitions.TYPE_INDICATOR_TSK, location='/',
           parent=sub_scan_node.path_spec)
       base_path_specs.append(path_spec)
 
@@ -331,17 +333,17 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the source path does not exists, or if the source path
-                    is not a file or directory, or if the format of or within
-                    the source file is not supported.
+          is not a file or directory, or if the format of or within the source
+          file is not supported.
     """
     if not source_path:
-      raise errors.ScannerError(u'Invalid source path.')
+      raise errors.ScannerError('Invalid source path.')
 
     # Note that os.path.exists() does not support Windows device paths.
-    if (not source_path.startswith(u'\\\\.\\') and
+    if (not source_path.startswith('\\\\.\\') and
         not os.path.exists(source_path)):
       raise errors.ScannerError(
-          u'No such device, file or directory: {0:s}.'.format(source_path))
+          'No such device, file or directory: {0:s}.'.format(source_path))
 
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(source_path)
@@ -350,7 +352,7 @@ class VolumeScanner(object):
       self._source_scanner.Scan(scan_context)
     except (ValueError, errors.BackEndError) as exception:
       raise errors.ScannerError(
-          u'Unable to scan source with error: {0:s}.'.format(exception))
+          'Unable to scan source with error: {0:s}.'.format(exception))
 
     self._source_path = source_path
     self._source_type = scan_context.source_type
@@ -380,7 +382,7 @@ class VolumeScanner(object):
 
     else:
       for partition_identifier in partition_identifiers:
-        location = u'/{0:s}'.format(partition_identifier)
+        location = '/{0:s}'.format(partition_identifier)
         sub_scan_node = scan_node.GetSubNodeByLocation(location)
         self._ScanVolume(scan_context, sub_scan_node, base_path_specs)
 
@@ -388,13 +390,13 @@ class VolumeScanner(object):
 
 
 class WindowsVolumeScanner(VolumeScanner):
-  """Class that defines a Windows volume scanner."""
+  """Windows volume scanner."""
 
   _WINDOWS_DIRECTORIES = frozenset([
-      u'C:\\Windows',
-      u'C:\\WINNT',
-      u'C:\\WTSRV',
-      u'C:\\WINNT35',
+      'C:\\Windows',
+      'C:\\WINNT',
+      'C:\\WTSRV',
+      'C:\\WINNT35',
   ])
 
   def __init__(self, mediator=None):
@@ -421,7 +423,7 @@ class WindowsVolumeScanner(VolumeScanner):
       ScannerError: if the scan node is invalid.
     """
     if not file_system_scan_node or not file_system_scan_node.path_spec:
-      raise errors.ScannerError(u'Invalid or missing file system scan node.')
+      raise errors.ScannerError('Invalid or missing file system scan node.')
 
     file_system = resolver.Resolver.OpenFileSystem(
         file_system_scan_node.path_spec)
@@ -484,8 +486,8 @@ class WindowsVolumeScanner(VolumeScanner):
 
     Raises:
       ScannerError: if the source path does not exists, or if the source path
-                    is not a file or directory, or if the format of or within
-                    the source file is not supported.
+          is not a file or directory, or if the format of or within the source
+          file is not supported.
     """
     windows_path_specs = self.GetBasePathSpecs(source_path)
     if (not windows_path_specs or
@@ -511,8 +513,8 @@ class WindowsVolumeScanner(VolumeScanner):
       return False
 
     self._path_resolver.SetEnvironmentVariable(
-        u'SystemRoot', self._windows_directory)
+        'SystemRoot', self._windows_directory)
     self._path_resolver.SetEnvironmentVariable(
-        u'WinDir', self._windows_directory)
+        'WinDir', self._windows_directory)
 
     return True

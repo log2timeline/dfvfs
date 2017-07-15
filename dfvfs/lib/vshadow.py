@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 """Helper functions for Volume Shadow Snapshots (VSS) support."""
 
+from __future__ import unicode_literals
+
 
 def VShadowPathSpecGetStoreIndex(path_spec):
   """Retrieves the store index from the path specification.
 
   Args:
-    path_spec: the path specification (instance of PathSpec).
+    path_spec (PathSpec): path specification.
   """
-  store_index = getattr(path_spec, u'store_index', None)
+  store_index = getattr(path_spec, 'store_index', None)
 
   if store_index is None:
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
-    if location is None or not location.startswith(u'/vss'):
+    if location is None or not location.startswith('/vss'):
       return
 
     store_index = None

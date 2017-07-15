@@ -17,6 +17,8 @@ previously scanned or user provided context information, e.g.
 * which VSS stores to default to.
 """
 
+from __future__ import unicode_literals
+
 from dfvfs.analyzer import analyzer
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -26,7 +28,7 @@ from dfvfs.resolver import resolver
 
 
 class SourceScanNode(object):
-  """Class that defines a source scan node."""
+  """Source scan node."""
 
   def __init__(self, path_spec):
     """Initializes a source scan node.
@@ -56,7 +58,7 @@ class SourceScanNode(object):
       SourceScanNode: sub scan node or None if not available.
     """
     for sub_node in self.sub_nodes:
-      sub_node_location = getattr(sub_node.path_spec, u'location', None)
+      sub_node_location = getattr(sub_node.path_spec, 'location', None)
       if location == sub_node_location:
         return sub_node
 
@@ -87,7 +89,7 @@ class SourceScanNode(object):
 
 
 class SourceScannerContext(object):
-  """Class that defines contextual information for the source scanner."""
+  """Contextual information for the source scanner."""
 
   # Keep for backwards compatibility reasons.
   SOURCE_TYPE_DIRECTORY = definitions.SOURCE_TYPE_DIRECTORY
@@ -129,12 +131,12 @@ class SourceScannerContext(object):
     """
     scan_node = self._scan_nodes.get(path_spec, None)
     if scan_node:
-      raise KeyError(u'Scan node already exists.')
+      raise KeyError('Scan node already exists.')
 
     scan_node = SourceScanNode(path_spec)
     if parent_scan_node:
       if parent_scan_node.path_spec not in self._scan_nodes:
-        raise RuntimeError(u'Parent scan node not present.')
+        raise RuntimeError('Parent scan node not present.')
       scan_node.parent_node = parent_scan_node
       parent_scan_node.sub_nodes.append(scan_node)
 
@@ -247,7 +249,7 @@ class SourceScannerContext(object):
     """
     scan_node = self._scan_nodes.get(path_spec, None)
     if not scan_node:
-      raise KeyError(u'Scan node does not exist.')
+      raise KeyError('Scan node does not exist.')
 
     self._locked_scan_nodes[path_spec] = scan_node
 
@@ -279,7 +281,7 @@ class SourceScannerContext(object):
       return
 
     if scan_node.sub_nodes:
-      raise RuntimeError(u'Scan node has sub nodes.')
+      raise RuntimeError('Scan node has sub nodes.')
 
     parent_scan_node = scan_node.parent_node
     if parent_scan_node:
@@ -313,7 +315,7 @@ class SourceScannerContext(object):
       KeyError: if the scan node does not exists.
     """
     if not self.HasScanNode(path_spec):
-      raise KeyError(u'Scan node does not exist.')
+      raise KeyError('Scan node does not exist.')
 
     del self._locked_scan_nodes[path_spec]
 
@@ -349,10 +351,10 @@ class SourceScanner(object):
       ValueError: if the scan context or scan node is invalid.
     """
     if not scan_context:
-      raise ValueError(u'Invalid scan context.')
+      raise ValueError('Invalid scan context.')
 
     if not scan_node:
-      raise ValueError(u'Invalid scan node.')
+      raise ValueError('Invalid scan node.')
 
     scan_path_spec = scan_node.path_spec
 
@@ -364,7 +366,7 @@ class SourceScanner(object):
           scan_node.path_spec, resolver_context=self._resolver_context)
 
       if system_level_file_entry is None:
-        raise errors.BackEndError(u'Unable to open file entry.')
+        raise errors.BackEndError('Unable to open file entry.')
 
       if system_level_file_entry.IsDirectory():
         scan_context.SetSourceType(definitions.SOURCE_TYPE_DIRECTORY)
@@ -471,7 +473,7 @@ class SourceScanner(object):
     # No need to scan the root of a volume system for a file system.
     if (scan_node.path_spec.type_indicator in (
         definitions.VOLUME_SYSTEM_TYPE_INDICATORS) and
-        getattr(scan_node.path_spec, u'location', None) == u'/'):
+        getattr(scan_node.path_spec, 'location', None) == '/'):
       pass
 
     # No need to scan a locked scan node e.g. an encrypted volume.
@@ -528,7 +530,7 @@ class SourceScanner(object):
     """
     volume_identifiers = []
     for volume in volume_system.volumes:
-      volume_identifier = getattr(volume, u'identifier', None)
+      volume_identifier = getattr(volume, 'identifier', None)
       if volume_identifier:
         volume_identifiers.append(volume_identifier)
 
@@ -549,7 +551,7 @@ class SourceScanner(object):
       ValueError: if the scan context is invalid.
     """
     if not scan_context:
-      raise ValueError(u'Invalid scan context.')
+      raise ValueError('Invalid scan context.')
 
     scan_context.updated = False
 
@@ -574,15 +576,15 @@ class SourceScanner(object):
 
     Raises:
       BackEndError: if the source cannot be scanned or more than one file
-                    system type is found.
+          system type is found.
     """
     try:
       type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(
           source_path_spec, resolver_context=self._resolver_context)
     except RuntimeError as exception:
       raise errors.BackEndError((
-          u'Unable to process source path specification with error: '
-          u'{0:s}').format(exception))
+          'Unable to process source path specification with error: '
+          '{0:s}').format(exception))
 
     if not type_indicators:
       return
@@ -591,17 +593,17 @@ class SourceScanner(object):
     if len(type_indicators) > 1:
       if definitions.PREFERRED_NTFS_BACK_END not in type_indicators:
         raise errors.BackEndError(
-            u'Unsupported source found more than one file system types.')
+            'Unsupported source found more than one file system types.')
 
       type_indicator = definitions.PREFERRED_NTFS_BACK_END
 
     # TODO: determine root location from file system or path specification.
     if type_indicator == definitions.TYPE_INDICATOR_NTFS:
       return path_spec_factory.Factory.NewPathSpec(
-          type_indicator, location=u'\\', parent=source_path_spec)
+          type_indicator, location='\\', parent=source_path_spec)
 
     return path_spec_factory.Factory.NewPathSpec(
-        type_indicator, location=u'/', parent=source_path_spec)
+        type_indicator, location='/', parent=source_path_spec)
 
   def ScanForStorageMediaImage(self, source_path_spec):
     """Scans the path specification for a supported storage media image format.
@@ -615,15 +617,15 @@ class SourceScanner(object):
 
     Raises:
       BackEndError: if the source cannot be scanned or more than one storage
-                    media image type is found.
+          media image type is found.
     """
     try:
       type_indicators = analyzer.Analyzer.GetStorageMediaImageTypeIndicators(
           source_path_spec, resolver_context=self._resolver_context)
     except RuntimeError as exception:
       raise errors.BackEndError((
-          u'Unable to process source path specification with error: '
-          u'{0:s}').format(exception))
+          'Unable to process source path specification with error: '
+          '{0:s}').format(exception))
 
     if not type_indicators:
       # The RAW storage media image type cannot be detected based on
@@ -647,7 +649,7 @@ class SourceScanner(object):
 
     if len(type_indicators) > 1:
       raise errors.BackEndError(
-          u'Unsupported source found more than one storage media image types.')
+          'Unsupported source found more than one storage media image types.')
 
     return path_spec_factory.Factory.NewPathSpec(
         type_indicators[0], parent=source_path_spec)
@@ -664,7 +666,7 @@ class SourceScanner(object):
 
     Raises:
       BackEndError: if the source cannot be scanned or more than one volume
-                    system type is found.
+          system type is found.
     """
     # It is technically possible to scan for VSS-in-VSS but makes no sense
     # to do so.
@@ -674,7 +676,7 @@ class SourceScanner(object):
     # Check if we already have a volume system root path specification.
     if source_path_spec.type_indicator in (
         definitions.VOLUME_SYSTEM_TYPE_INDICATORS):
-      if getattr(source_path_spec, u'location', None) == u'/':
+      if getattr(source_path_spec, 'location', None) == '/':
         return source_path_spec
 
     try:
@@ -682,15 +684,15 @@ class SourceScanner(object):
           source_path_spec, resolver_context=self._resolver_context)
     except (IOError, RuntimeError) as exception:
       raise errors.BackEndError((
-          u'Unable to process source path specification with error: '
-          u'{0:s}').format(exception))
+          'Unable to process source path specification with error: '
+          '{0:s}').format(exception))
 
     if not type_indicators:
       return
 
     if len(type_indicators) > 1:
       raise errors.BackEndError(
-          u'Unsupported source found more than one volume system types.')
+          'Unsupported source found more than one volume system types.')
 
     if (type_indicators[0] == definitions.TYPE_INDICATOR_TSK_PARTITION and
         source_path_spec.type_indicator in [
@@ -699,7 +701,7 @@ class SourceScanner(object):
 
     if type_indicators[0] in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
       return path_spec_factory.Factory.NewPathSpec(
-          type_indicators[0], location=u'/', parent=source_path_spec)
+          type_indicators[0], location='/', parent=source_path_spec)
 
     return path_spec_factory.Factory.NewPathSpec(
         type_indicators[0], parent=source_path_spec)
@@ -722,10 +724,10 @@ class SourceScanner(object):
       KeyError: if the scan node does not exists or is not locked.
     """
     if not scan_context.HasScanNode(path_spec):
-      raise KeyError(u'Scan node does not exist.')
+      raise KeyError('Scan node does not exist.')
 
     if not scan_context.IsLockedScanNode(path_spec):
-      raise KeyError(u'Scan node is not locked.')
+      raise KeyError('Scan node is not locked.')
 
     resolver.Resolver.key_chain.SetCredential(
         path_spec, credential_identifier, credential_data)
