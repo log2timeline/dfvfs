@@ -25,7 +25,7 @@ class NTFSPathSpec(path_spec.PathSpec):
   def __init__(
       self, data_stream=None, location=None, mft_attribute=None,
       mft_entry=None, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the NTFS path specification must have a parent.
 

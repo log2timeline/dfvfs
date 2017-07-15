@@ -14,7 +14,7 @@ class EWFPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_EWF
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the EWF file path specification must have a parent.
 

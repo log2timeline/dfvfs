@@ -25,7 +25,7 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
   def __init__(
       self, cipher_mode=None, encryption_method=None,
       initialization_vector=None, key=None, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the encrypted stream path specification must have a parent.
 

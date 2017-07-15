@@ -15,7 +15,7 @@ class FakePathSpec(location_path_spec.LocationPathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
   def __init__(self, location=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the fake path specification cannot have a parent.
 

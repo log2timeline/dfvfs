@@ -22,7 +22,7 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
   def __init__(
       self, location=None, parent=None, part_index=None, start_offset=None,
       **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the TSK partition path specification must have a parent.
 

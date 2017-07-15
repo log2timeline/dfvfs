@@ -22,7 +22,7 @@ class FVDEPathSpec(path_spec.PathSpec):
   def __init__(
       self, encrypted_root_plist=None, password=None, parent=None,
       recovery_password=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the FVDE path specification must have a parent.
 

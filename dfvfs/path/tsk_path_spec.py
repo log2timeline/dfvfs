@@ -22,7 +22,7 @@ class TSKPathSpec(path_spec.PathSpec):
 
   def __init__(
       self, data_stream=None, inode=None, location=None, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the TSK path specification must have a parent.
 

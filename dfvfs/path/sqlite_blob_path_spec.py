@@ -25,7 +25,7 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
   def __init__(
       self, column_name=None, parent=None, row_condition=None,
       row_index=None, table_name=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the SQLite blob file path specification must have a parent.
 

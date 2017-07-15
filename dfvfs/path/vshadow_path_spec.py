@@ -19,7 +19,7 @@ class VShadowPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, location=None, parent=None, store_index=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the VSS path specification must have a parent.
 

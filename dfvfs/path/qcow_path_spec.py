@@ -14,7 +14,7 @@ class QCOWPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_QCOW
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the QCOW path specification must have a parent.
 

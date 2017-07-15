@@ -14,7 +14,7 @@ class LocationPathSpec(path_spec.PathSpec):
   """
 
   def __init__(self, location=None, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Args:
       location (Optional[str]): location.

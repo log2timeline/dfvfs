@@ -16,7 +16,7 @@ class PathSpec(object):
   _IS_SYSTEM_LEVEL = False
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Args:
       parent (Optional[PathSpec]): parent path specification.
