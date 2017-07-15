@@ -43,6 +43,8 @@ class CPIOArchiveFile(object):
   Attributes:
     file_format (str): CPIO file format.
   """
+  # pylint: disable=no-member
+
   _CPIO_SIGNATURE_BINARY_BIG_ENDIAN = b'\x71\xc7'
   _CPIO_SIGNATURE_BINARY_LITTLE_ENDIAN = b'\xc7\x71'
   _CPIO_SIGNATURE_PORTABLE_ASCII = b'070707'
