@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The zip path specification implementation."""
+"""The ZIP archive file path specification implementation."""
+
+from __future__ import unicode_literals
 
 from dfvfs.lib import definitions
 from dfvfs.path import factory
@@ -7,7 +9,7 @@ from dfvfs.path import location_path_spec
 
 
 class ZipPathSpec(location_path_spec.LocationPathSpec):
-  """Class that implements the zip file path specification."""
+  """ZIP archive file path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
@@ -25,7 +27,7 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(ZipPathSpec, self).__init__(
         location=location, parent=parent, **kwargs)

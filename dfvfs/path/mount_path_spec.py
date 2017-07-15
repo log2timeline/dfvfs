@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The mount path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class MountPathSpec(path_spec.PathSpec):
-  """Class that implements the mount path specification.
+  """Mount path specification.
 
   Attributes:
     identifier (str): identifier of the mount point.
@@ -27,7 +29,7 @@ class MountPathSpec(path_spec.PathSpec):
       ValueError: when identifier is not set.
     """
     if not identifier:
-      raise ValueError(u'Missing identifier value.')
+      raise ValueError('Missing identifier value.')
 
     super(MountPathSpec, self).__init__(parent=None, **kwargs)
     self.identifier = identifier
@@ -35,7 +37,7 @@ class MountPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    sub_comparable_string = u'identifier: {0:s}'.format(self.identifier)
+    sub_comparable_string = 'identifier: {0:s}'.format(self.identifier)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
 
 

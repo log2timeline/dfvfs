@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The VHD image path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class VHDIPathSpec(path_spec.PathSpec):
-  """Class that implements the VHD image path specification."""
+  """VHD image path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
 
@@ -23,7 +25,7 @@ class VHDIPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(VHDIPathSpec, self).__init__(parent=parent, **kwargs)
 

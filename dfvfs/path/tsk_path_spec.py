@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class TSKPathSpec(path_spec.PathSpec):
-  """Class that implements the SleuthKit (TSK) path specification.
+  """SleuthKit (TSK) path specification.
 
   Attributes:
     data_stream (str): data stream name, where None indicates the default
@@ -35,7 +37,7 @@ class TSKPathSpec(path_spec.PathSpec):
       ValueError: when inode and location, or parent are not set.
     """
     if (not inode and not location) or not parent:
-      raise ValueError(u'Missing inode and location, or parent value.')
+      raise ValueError('Missing inode and location, or parent value.')
 
     super(TSKPathSpec, self).__init__(parent=parent, **kwargs)
     self.data_stream = data_stream
@@ -48,13 +50,13 @@ class TSKPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.data_stream:
-      string_parts.append(u'data stream: {0:s}'.format(self.data_stream))
+      string_parts.append('data stream: {0:s}'.format(self.data_stream))
     if self.inode is not None:
-      string_parts.append(u'inode: {0:d}'.format(self.inode))
+      string_parts.append('inode: {0:d}'.format(self.inode))
     if self.location is not None:
-      string_parts.append(u'location: {0:s}'.format(self.location))
+      string_parts.append('location: {0:s}'.format(self.location))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(TSKPathSpec)

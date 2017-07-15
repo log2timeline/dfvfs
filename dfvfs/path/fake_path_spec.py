@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The fake path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import location_path_spec
 
 
 class FakePathSpec(location_path_spec.LocationPathSpec):
-  """Class that implements the fake path specification."""
+  """Fake path specification."""
 
   _IS_SYSTEM_LEVEL = True
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
@@ -24,12 +26,12 @@ class FakePathSpec(location_path_spec.LocationPathSpec):
       ValueError: when parent is set.
     """
     parent = None
-    if u'parent' in kwargs:
-      parent = kwargs[u'parent']
-      del kwargs[u'parent']
+    if 'parent' in kwargs:
+      parent = kwargs['parent']
+      del kwargs['parent']
 
     if parent:
-      raise ValueError(u'Parent value set.')
+      raise ValueError('Parent value set.')
 
     super(FakePathSpec, self).__init__(
         location=location, parent=parent, **kwargs)

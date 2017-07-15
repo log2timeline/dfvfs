@@ -21,9 +21,11 @@ type=QCOW
 type=TSK_PARTITION, location=/p1
 """
 
+from __future__ import unicode_literals
+
 
 class MountPointManager(object):
-  """Class that implements the path specification moint point manager."""
+  """Path specification moint point manager."""
 
   _mount_points = {}
 
@@ -32,14 +34,13 @@ class MountPointManager(object):
     """Deregisters a path specification mount point.
 
     Args:
-      mount_point: the mount point identifier.
+      mount_point (str): mount point identifier.
 
     Raises:
       KeyError: if the corresponding mount point is not set.
     """
     if mount_point not in cls._mount_points:
-      raise KeyError(
-          u'Mount point: {0:s} not set.'.format(mount_point))
+      raise KeyError('Mount point: {0:s} not set.'.format(mount_point))
 
     del cls._mount_points[mount_point]
 
@@ -48,11 +49,11 @@ class MountPointManager(object):
     """Retrieves the path specification of a mount point.
 
     Args:
-      mount_point: the mount point identifier.
+      mount_point (str): mount point identifier.
 
     Returns:
-      The VFS path specification (instance of PathSpec) or
-      None if the mount point does not exists.
+      PathSpec: path specification of the mount point or None if the mount
+          point does not exists.
     """
     return cls._mount_points.get(mount_point, None)
 
@@ -61,14 +62,13 @@ class MountPointManager(object):
     """Registers a path specification mount point.
 
     Args:
-      mount_point: the mount point identifier.
-      path_spec: the path specification (instance of PathSpec).
+      mount_point (str): mount point identifier.
+      path_spec (PathSpec): path specification of the mount point.
 
     Raises:
       KeyError: if the corresponding mount point is already set.
     """
     if mount_point in cls._mount_points:
-      raise KeyError(
-          u'Mount point: {0:s} already set.'.format(mount_point))
+      raise KeyError('Mount point: {0:s} already set.'.format(mount_point))
 
     cls._mount_points[mount_point] = path_spec

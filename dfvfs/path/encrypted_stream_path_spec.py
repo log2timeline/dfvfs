@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream path specification implementation."""
 
+from __future__ import unicode_literals
+
 import codecs
 
 from dfvfs.lib import definitions
@@ -9,7 +11,7 @@ from dfvfs.path import path_spec
 
 
 class EncryptedStreamPathSpec(path_spec.PathSpec):
-  """Class that implements the encrypted stream path specification.
+  """Encrypted stream path specification.
 
   Attributes:
     cipher_mode (str): cipher mode.
@@ -38,7 +40,7 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
       ValueError: when encryption method or parent are not set.
     """
     if not encryption_method or not parent:
-      raise ValueError(u'Missing encryption method or parent value.')
+      raise ValueError('Missing encryption method or parent value.')
 
     super(EncryptedStreamPathSpec, self).__init__(parent=parent, **kwargs)
     self.cipher_mode = cipher_mode
@@ -52,24 +54,24 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.cipher_mode:
-      string_parts.append(u'cipher_mode: {0:s}'.format(self.cipher_mode))
+      string_parts.append('cipher_mode: {0:s}'.format(self.cipher_mode))
 
     if self.encryption_method:
-      string_parts.append(u'encryption_method: {0:s}'.format(
+      string_parts.append('encryption_method: {0:s}'.format(
           self.encryption_method))
 
     if self.initialization_vector:
-      initialization_vector = codecs.encode(self.initialization_vector, u'hex')
-      initialization_vector = initialization_vector.decode(u'ascii')
-      string_parts.append(u'initialization_vector: {0:s}'.format(
+      initialization_vector = codecs.encode(self.initialization_vector, 'hex')
+      initialization_vector = initialization_vector.decode('ascii')
+      string_parts.append('initialization_vector: {0:s}'.format(
           initialization_vector))
 
     if self.key:
-      key = codecs.encode(self.key, u'hex')
-      key = key.decode(u'ascii')
-      string_parts.append(u'key: {0:s}'.format(key))
+      key = codecs.encode(self.key, 'hex')
+      key = key.decode('ascii')
+      string_parts.append('key: {0:s}'.format(key))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(EncryptedStreamPathSpec)

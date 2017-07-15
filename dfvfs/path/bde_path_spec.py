@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The BitLocker Drive Encryption (BDE) path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class BDEPathSpec(path_spec.PathSpec):
-  """Class that implements the BDE path specification.
+  """BDE path specification.
 
   Attributes:
     password (str): password.
@@ -34,7 +36,7 @@ class BDEPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(BDEPathSpec, self).__init__(parent=parent, **kwargs)
     self.password = password
@@ -47,14 +49,14 @@ class BDEPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.password:
-      string_parts.append(u'password: {0:s}'.format(self.password))
+      string_parts.append('password: {0:s}'.format(self.password))
     if self.recovery_password:
-      string_parts.append(u'recovery_password: {0:s}'.format(
+      string_parts.append('recovery_password: {0:s}'.format(
           self.recovery_password))
     if self.startup_key:
-      string_parts.append(u'startup_key: {0:s}'.format(self.startup_key))
+      string_parts.append('startup_key: {0:s}'.format(self.startup_key))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(BDEPathSpec)

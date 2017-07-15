@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class TSKPartitionPathSpec(path_spec.PathSpec):
-  """Class that implements the SleuthKit (TSK) partition path specification.
+  """SleuthKit (TSK) partition path specification.
 
   Attributes:
     location (str): location.
@@ -34,7 +36,7 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(TSKPartitionPathSpec, self).__init__(parent=parent, **kwargs)
     self.location = location
@@ -47,13 +49,13 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.location is not None:
-      string_parts.append(u'location: {0:s}'.format(self.location))
+      string_parts.append('location: {0:s}'.format(self.location))
     if self.part_index is not None:
-      string_parts.append(u'part index: {0:d}'.format(self.part_index))
+      string_parts.append('part index: {0:d}'.format(self.part_index))
     if self.start_offset is not None:
-      string_parts.append(u'start offset: 0x{0:08x}'.format(self.start_offset))
+      string_parts.append('start offset: 0x{0:08x}'.format(self.start_offset))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(TSKPartitionPathSpec)

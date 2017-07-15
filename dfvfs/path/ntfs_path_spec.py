@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The path NTFS specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class NTFSPathSpec(path_spec.PathSpec):
-  """Class that implements the NTFS path specification.
+  """NTFS path specification.
 
   Attributes:
     data_stream (str): data stream name, where None indicates the default
@@ -41,7 +43,7 @@ class NTFSPathSpec(path_spec.PathSpec):
       ValueError: when location and mft_entry, or parent are not set.
     """
     if (not location and not mft_entry) or not parent:
-      raise ValueError(u'Missing location and MFT entry, or parent value.')
+      raise ValueError('Missing location and MFT entry, or parent value.')
 
     super(NTFSPathSpec, self).__init__(parent=parent, **kwargs)
     self.data_stream = data_stream
@@ -55,15 +57,15 @@ class NTFSPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.data_stream:
-      string_parts.append(u'data stream: {0:s}'.format(self.data_stream))
+      string_parts.append('data stream: {0:s}'.format(self.data_stream))
     if self.location is not None:
-      string_parts.append(u'location: {0:s}'.format(self.location))
+      string_parts.append('location: {0:s}'.format(self.location))
     if self.mft_attribute is not None:
-      string_parts.append(u'MFT attribute: {0:d}'.format(self.mft_attribute))
+      string_parts.append('MFT attribute: {0:d}'.format(self.mft_attribute))
     if self.mft_entry is not None:
-      string_parts.append(u'MFT entry: {0:d}'.format(self.mft_entry))
+      string_parts.append('MFT entry: {0:d}'.format(self.mft_entry))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(NTFSPathSpec)

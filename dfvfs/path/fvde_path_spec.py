@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The FileVault Drive Encryption (FVDE) path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class FVDEPathSpec(path_spec.PathSpec):
-  """Class that implements the FVDE path specification.
+  """FVDE path specification.
 
   Attributes:
     encrypted_root_plist (str): path to the EncryptedRoot.plist.wipekey file.
@@ -35,7 +37,7 @@ class FVDEPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(FVDEPathSpec, self).__init__(parent=parent, **kwargs)
     self.encrypted_root_plist = encrypted_root_plist
@@ -48,15 +50,15 @@ class FVDEPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.encrypted_root_plist:
-      string_parts.append(u'encrypted_root_plist: {0:s}'.format(
+      string_parts.append('encrypted_root_plist: {0:s}'.format(
           self.encrypted_root_plist))
     if self.password:
-      string_parts.append(u'password: {0:s}'.format(self.password))
+      string_parts.append('password: {0:s}'.format(self.password))
     if self.recovery_password:
-      string_parts.append(u'recovery_password: {0:s}'.format(
+      string_parts.append('recovery_password: {0:s}'.format(
           self.recovery_password))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 # Register the path specification with the factory.

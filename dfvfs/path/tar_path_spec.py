@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The TAR path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import location_path_spec
 
 
 class TARPathSpec(location_path_spec.LocationPathSpec):
-  """Class that implements the TAR file path specification."""
+  """TAR file path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
@@ -25,7 +27,7 @@ class TARPathSpec(location_path_spec.LocationPathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(TARPathSpec, self).__init__(
         location=location, parent=parent, **kwargs)

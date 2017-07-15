@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The EWF image path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class EWFPathSpec(path_spec.PathSpec):
-  """Class that implements the EWF image path specification."""
+  """EWF image path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_EWF
 
@@ -23,7 +25,7 @@ class EWFPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(EWFPathSpec, self).__init__(parent=parent, **kwargs)
 

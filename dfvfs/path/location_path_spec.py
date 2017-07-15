@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The location-based path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.path import path_spec
 
 
@@ -22,7 +24,7 @@ class LocationPathSpec(path_spec.PathSpec):
       ValueError: when location is not set.
     """
     if not location:
-      raise ValueError(u'Missing location value.')
+      raise ValueError('Missing location value.')
 
     super(LocationPathSpec, self).__init__(parent=parent, **kwargs)
     self.location = location
@@ -30,5 +32,5 @@ class LocationPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    sub_comparable_string = u'location: {0:s}'.format(self.location)
+    sub_comparable_string = 'location: {0:s}'.format(self.location)
     return self._GetComparable(sub_comparable_string=sub_comparable_string)
