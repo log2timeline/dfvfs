@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """A searcher to find file entries within a file system."""
 
-import fnmatch
 import re
 import sre_constants
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import glob2regex
 from dfvfs.lib import py2to3
 from dfvfs.path import factory as path_spec_factory
 
@@ -77,22 +77,16 @@ class FindSpec(object):
             type(location)))
 
     elif location_glob is not None:
-      # fnmatch.translate() is used to convert a glob into a regular expression.
-      # The resulting regular expression has "\Z(?ms)" defined at its end,
-      # which needs to be removed and escapes the forward slash "/", which
-      # needs to be undone.
       if isinstance(location_glob, py2to3.STRING_TYPES):
-        fnmatch_regex = fnmatch.translate(location_glob)
-        fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
-        fnmatch_regex = fnmatch_regex.replace(u'\\/', '/')
-        self._location_regex = fnmatch_regex
+        self._location_regex = self._ConvertLocationGlob2Regex(location_glob)
+
       elif isinstance(location_glob, list):
         self._location_segments = []
         for location_segment in location_glob:
-          fnmatch_regex = fnmatch.translate(location_segment)
-          fnmatch_regex, _, _ = fnmatch_regex.rpartition(r'\Z(?ms)')
-          fnmatch_regex = fnmatch_regex.replace(u'\\/', '/')
-          self._location_segments.append(fnmatch_regex)
+          location_regex = self._ConvertLocationGlob2Regex(location_segment)
+
+          self._location_segments.append(location_regex)
+
       else:
         raise TypeError(u'Unsupported location_glob type: {0:s}.'.format(
             type(location_glob)))
@@ -128,15 +122,13 @@ class FindSpec(object):
       bool: True if the file entry matches the find specification, False if
           not or None if no file entry type specification is defined.
     """
-    if self._file_entry_types is None:
-      return
-
-    return (self._CheckIsDevice(file_entry) or
-            self._CheckIsDirectory(file_entry) or
-            self._CheckIsFile(file_entry) or
-            self._CheckIsLink(file_entry) or
-            self._CheckIsPipe(file_entry) or
-            self._CheckIsSocket(file_entry))
+    if self._file_entry_types:
+      return (self._CheckIsDevice(file_entry) or
+              self._CheckIsDirectory(file_entry) or
+              self._CheckIsFile(file_entry) or
+              self._CheckIsLink(file_entry) or
+              self._CheckIsPipe(file_entry) or
+              self._CheckIsSocket(file_entry))
 
   def _CheckIsAllocated(self, file_entry):
     """Checks the is_allocated find specification.
@@ -287,6 +279,21 @@ class FindSpec(object):
         return False
 
     return True
+
+  def _ConvertLocationGlob2Regex(self, location_glob):
+    """Converts a location glob into a regular expression.
+
+    Args:
+      location_glob (str): location glob pattern.
+
+    Returns:
+      str: location regular expression pattern.
+    """
+    location_regex = glob2regex.Glob2Regex(location_glob)
+
+    # The regular expression from glob2regex contains escaped forward
+    # slashes "/", which needs to be undone.
+    return location_regex.replace(u'\\/', '/')
 
   def _SplitPath(self, path, path_separator):
     """Splits the path into path segments.
