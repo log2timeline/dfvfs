@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """The resolver context object."""
 
+from __future__ import unicode_literals
+
 from dfvfs.resolver import cache
 
 
 class Context(object):
-  """Class that implements the resolver context."""
+  """Resolver context."""
 
   def __init__(
       self, maximum_number_of_file_objects=128,
@@ -35,10 +37,10 @@ class Context(object):
     """
     string_parts = []
 
-    string_parts.append(getattr(path_spec.parent, u'comparable', u''))
-    string_parts.append(u'type: {0:s}'.format(path_spec.type_indicator))
+    string_parts.append(getattr(path_spec.parent, 'comparable', ''))
+    string_parts.append('type: {0:s}'.format(path_spec.type_indicator))
 
-    return u''.join(string_parts)
+    return ''.join(string_parts)
 
   def CacheFileObject(self, path_spec, file_object):
     """Caches a file-like object based on a path specification.
@@ -173,10 +175,10 @@ class Context(object):
         file_object)
 
     if not identifier:
-      raise RuntimeError(u'Object not cached.')
+      raise RuntimeError('Object not cached.')
 
     if not cache_value:
-      raise RuntimeError(u'Invalid cache value.')
+      raise RuntimeError('Invalid cache value.')
 
     self._file_object_cache.ReleaseObject(identifier)
 
@@ -204,10 +206,10 @@ class Context(object):
         file_system)
 
     if not identifier:
-      raise RuntimeError(u'Object not cached.')
+      raise RuntimeError('Object not cached.')
 
     if not cache_value:
-      raise RuntimeError(u'Invalid cache value.')
+      raise RuntimeError('Invalid cache value.')
 
     self._file_system_cache.ReleaseObject(identifier)
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) serializer object interfaces."""
 
+from __future__ import unicode_literals
+
 # Since abc does not seem to have an @abc.abstractclassmethod we're using
 # @abc.abstractmethod instead and shutting up pylint about:
 # E0213: Method should have "self" as first argument.
@@ -17,10 +19,10 @@ class PathSpecSerializer(object):
     """Reads a path specification from serialized form.
 
     Args:
-      serialized: an object containing the serialized form.
+      serialized (object): serialized form of the path specificaiton.
 
     Returns:
-      A path specification (instance of PathSpec).
+      PathSpec: a path specification.
     """
 
   @abc.abstractmethod
@@ -28,8 +30,8 @@ class PathSpecSerializer(object):
     """Writes a path specification to serialized form.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      An object containing the serialized form.
+      object: serialized form of the path specification.
     """

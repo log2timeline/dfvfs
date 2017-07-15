@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The BDE volume path specification resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.bde_file_io
 import dfvfs.vfs.bde_file_system
@@ -11,7 +13,7 @@ from dfvfs.resolver import resolver_helper
 
 
 class BDEResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the BDE volume resolver helper."""
+  """BDE volume resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 

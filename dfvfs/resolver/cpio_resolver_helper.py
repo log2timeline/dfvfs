@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The CPIO path specification resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.cpio_file_io
 import dfvfs.vfs.cpio_file_system
@@ -11,7 +13,7 @@ from dfvfs.resolver import resolver_helper
 
 
 class CPIOResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the CPIO resolver helper."""
+  """CPIO resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_CPIO
 
@@ -19,10 +21,10 @@ class CPIOResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file-like object (instance of file_io.FileIO).
+      FileIO: file-like object.
     """
     return dfvfs.file_io.cpio_file_io.CPIOFile(resolver_context)
 
@@ -30,10 +32,10 @@ class CPIOResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file system object (instance of vfs.FileSystem).
+      FileSystem: file system.
     """
     return dfvfs.vfs.cpio_file_system.CPIOFileSystem(resolver_context)
 

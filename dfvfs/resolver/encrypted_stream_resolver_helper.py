@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream path specification resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.encrypted_stream_io
 import dfvfs.vfs.encrypted_stream_file_system
@@ -11,7 +13,7 @@ from dfvfs.resolver import resolver_helper
 
 
 class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the encrypted stream resolver helper."""
+  """Encrypted stream resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCRYPTED_STREAM
 
@@ -19,10 +21,10 @@ class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file-like object (instance of file_io.FileIO).
+      FileIO: file-like object.
     """
     return dfvfs.file_io.encrypted_stream_io.EncryptedStream(resolver_context)
 
@@ -30,10 +32,10 @@ class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file system object (instance of vfs.FileSystem).
+      FileSystem: file system.
     """
     return dfvfs.vfs.encrypted_stream_file_system.EncryptedStreamFileSystem(
         resolver_context)

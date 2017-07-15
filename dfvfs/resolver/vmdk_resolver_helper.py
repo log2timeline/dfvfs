@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The VMDK image path specification resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.vmdk_file_io
 
@@ -10,7 +12,7 @@ from dfvfs.resolver import resolver_helper
 
 
 class VMDKResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the VMDK image resolver helper."""
+  """VMDK image resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VMDK
 
@@ -18,10 +20,10 @@ class VMDKResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file-like object (instance of file_io.FileIO).
+      FileIO: file-like object.
     """
     return dfvfs.file_io.vmdk_file_io.VMDKFile(resolver_context)
 
