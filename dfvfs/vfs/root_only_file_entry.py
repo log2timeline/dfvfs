@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The root only file system file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.vfs import file_entry
 
 
@@ -18,7 +20,7 @@ class RootOnlyFileEntry(file_entry.FileEntry):
   @property
   def name(self):
     """str: name of the file entry, without the full path."""
-    return u''
+    return ''
 
   @property
   def sub_file_entries(self):

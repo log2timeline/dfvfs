@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The operating system file system implementation."""
 
+from __future__ import unicode_literals
+
 import os
 import platform
 
@@ -17,10 +19,10 @@ from dfvfs.vfs import os_file_entry
 class OSFileSystem(file_system.FileSystem):
   """Class that implements an operating system file system object."""
 
-  if platform.system() == u'Windows':
-    PATH_SEPARATOR = u'\\'
+  if platform.system() == 'Windows':
+    PATH_SEPARATOR = '\\'
   else:
-    PATH_SEPARATOR = u'/'
+    PATH_SEPARATOR = '/'
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
@@ -47,7 +49,7 @@ class OSFileSystem(file_system.FileSystem):
     """
     if path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification with parent.')
+          'Unsupported path specification with parent.')
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -58,13 +60,13 @@ class OSFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if location is None:
       return False
 
     is_device = False
-    if platform.system() == u'Windows':
+    if platform.system() == 'Windows':
       # Windows does not support running os.path.exists on device files
       # so we use libsmdev to do the check.
       try:
@@ -78,9 +80,9 @@ class OSFileSystem(file_system.FileSystem):
         exception_string = str(exception)
         if not isinstance(exception_string, py2to3.UNICODE_TYPE):
           exception_string = py2to3.UNICODE_TYPE(
-              exception_string, errors=u'replace')
+              exception_string, errors='replace')
 
-        if u' access denied ' in exception_string:
+        if ' access denied ' in exception_string:
           is_device = True
 
     if not is_device and not os.path.exists(location):
@@ -107,14 +109,14 @@ class OSFileSystem(file_system.FileSystem):
     Returns:
       A file entry (instance of vfs.FileEntry) or None.
     """
-    if platform.system() == u'Windows':
+    if platform.system() == 'Windows':
       # Return the root with the drive letter of the volume the current
       # working directory is on.
       location = os.getcwd()
-      location, _, _ = location.partition(u'\\')
-      location = u'{0:s}\\'.format(location)
+      location, _, _ = location.partition('\\')
+      location = '{0:s}\\'.format(location)
     else:
-      location = u'/'
+      location = '/'
 
     if not os.path.exists(location):
       return
@@ -136,7 +138,7 @@ class OSFileSystem(file_system.FileSystem):
     # segment correctly.
     first_path_segment = None
 
-    if path_segments and platform.system() == u'Windows':
+    if path_segments and platform.system() == 'Windows':
       # Check if the first path segment contains a "special" path definition.
       first_path_segment = path_segments[0]
       first_path_segment_length = len(first_path_segment)
@@ -144,29 +146,29 @@ class OSFileSystem(file_system.FileSystem):
 
       # In case the path start with: \\.\C:\
       if (first_path_segment_length >= 7 and
-          first_path_segment.startswith(u'\\\\.\\') and
-          first_path_segment[5:7] == u':\\'):
+          first_path_segment.startswith('\\\\.\\') and
+          first_path_segment[5:7] == ':\\'):
         first_path_segment_prefix = first_path_segment[4:6]
         first_path_segment = first_path_segment[7:]
 
       # In case the path start with: \\.\ or \\?\
       elif (first_path_segment_length >= 4 and
-            first_path_segment[:4] in [u'\\\\.\\', u'\\\\?\\']):
+            first_path_segment[:4] in ['\\\\.\\', '\\\\?\\']):
         first_path_segment_prefix = first_path_segment[:4]
         first_path_segment = first_path_segment[4:]
 
       # In case the path start with: C:
-      elif first_path_segment_length >= 2 and first_path_segment[1] == u':':
+      elif first_path_segment_length >= 2 and first_path_segment[1] == ':':
         first_path_segment_prefix = first_path_segment[:2]
         first_path_segment = first_path_segment[2:]
 
       # In case the path start with: \\server\share (UNC).
-      elif first_path_segment.startswith(u'\\\\'):
+      elif first_path_segment.startswith('\\\\'):
         prefix, _, remainder = first_path_segment[2:].partition(
             self.PATH_SEPARATOR)
 
-        first_path_segment_prefix = u'\\\\{0:s}'.format(prefix)
-        first_path_segment = u'\\{0:s}'.format(remainder)
+        first_path_segment_prefix = '\\\\{0:s}'.format(prefix)
+        first_path_segment = '\\{0:s}'.format(remainder)
 
       if first_path_segment_prefix:
         first_path_segment, _, remainder = first_path_segment.partition(
@@ -177,7 +179,7 @@ class OSFileSystem(file_system.FileSystem):
         else:
           path_segments[0] = remainder
 
-        first_path_segment = u''.join([
+        first_path_segment = ''.join([
             first_path_segment_prefix, first_path_segment])
 
       else:
@@ -198,12 +200,12 @@ class OSFileSystem(file_system.FileSystem):
     path_segments = list(filter(None, path_segments))
 
     if first_path_segment is None:
-      path = u'{0:s}{1:s}'.format(
+      path = '{0:s}{1:s}'.format(
           self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
     else:
       path = first_path_segment
       if path_segments:
-        path = u'{0:s}{1:s}{2:s}'.format(
+        path = '{0:s}{1:s}{2:s}'.format(
             path, self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
 
     return path

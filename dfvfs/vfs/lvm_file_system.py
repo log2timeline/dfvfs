@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) file system implementation."""
 
+from __future__ import unicode_literals
+
 import pyvslvm
 
 # This is necessary to prevent a circular import.
@@ -58,7 +60,7 @@ class LVMFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -92,7 +94,7 @@ class LVMFileSystem(file_system.FileSystem):
     # The virtual root file has not corresponding volume index but
     # should have a location.
     if volume_index is None:
-      location = getattr(path_spec, u'location', None)
+      location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
     return (volume_index >= 0 and
@@ -112,7 +114,7 @@ class LVMFileSystem(file_system.FileSystem):
     # The virtual root file has not corresponding volume index but
     # should have a location.
     if volume_index is None:
-      location = getattr(path_spec, u'location', None)
+      location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
         return
       return dfvfs.vfs.lvm_file_entry.LVMFileEntry(

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The fake file system implementation."""
 
+from __future__ import unicode_literals
+
 from dfdatetime import fake_time as dfdatetime_fake_time
 
 from dfvfs.lib import definitions
@@ -14,7 +16,7 @@ from dfvfs.vfs import vfs_stat
 class FakeFileSystem(file_system.FileSystem):
   """Class that implements a fake file system object."""
 
-  LOCATION_ROOT = u'/'
+  LOCATION_ROOT = '/'
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
@@ -27,7 +29,7 @@ class FakeFileSystem(file_system.FileSystem):
     super(FakeFileSystem, self).__init__(resolver_context)
     self._paths = {}
     self.AddFileEntry(
-        u'/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
+        '/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
   def _Close(self):
     """Closes the file system object.
@@ -52,7 +54,7 @@ class FakeFileSystem(file_system.FileSystem):
     """
     if path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification with parent.')
+          'Unsupported path specification with parent.')
 
   def AddFileEntry(
       self, path, file_entry_type=definitions.FILE_ENTRY_TYPE_FILE,
@@ -71,13 +73,13 @@ class FakeFileSystem(file_system.FileSystem):
           or if the link data is set but the file entry type is not a link.
     """
     if path in self._paths:
-      raise KeyError(u'File entry already set for path: {0:s}.'.format(path))
+      raise KeyError('File entry already set for path: {0:s}.'.format(path))
 
     if file_data and file_entry_type != definitions.FILE_ENTRY_TYPE_FILE:
-      raise ValueError(u'File data set for non-file file entry type.')
+      raise ValueError('File data set for non-file file entry type.')
 
     if link_data and file_entry_type != definitions.FILE_ENTRY_TYPE_LINK:
-      raise ValueError(u'Link data set for non-link file entry type.')
+      raise ValueError('Link data set for non-link file entry type.')
 
     stat_object = vfs_stat.VFSStat()
 
@@ -133,7 +135,7 @@ class FakeFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     return self.FileEntryExistsByPath(location)
 
   def GetDataByPath(self, path):
@@ -176,7 +178,7 @@ class FakeFileSystem(file_system.FileSystem):
     Returns:
       FileEntry: a file entry or None if not available.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     if location is None:
       return
 

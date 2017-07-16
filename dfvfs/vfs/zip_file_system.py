@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The zip file system implementation."""
+"""The ZIP file system implementation."""
+
+from __future__ import unicode_literals
 
 import zipfile
 
@@ -20,10 +22,10 @@ class ZipFileSystem(file_system.FileSystem):
     encoding (str): encoding of the file entry name.
   """
 
-  LOCATION_ROOT = u'/'
+  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def __init__(self, resolver_context, encoding=u'utf-8'):
+  def __init__(self, resolver_context, encoding='utf-8'):
     """Initializes a file system.
 
     Args:
@@ -62,7 +64,7 @@ class ZipFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -85,7 +87,7 @@ class ZipFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
@@ -121,7 +123,7 @@ class ZipFileSystem(file_system.FileSystem):
     if not self.FileEntryExistsByPathSpec(path_spec):
       return
 
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if len(location) == 1:
       return dfvfs.vfs.zip_file_entry.ZipFileEntry(
@@ -130,9 +132,9 @@ class ZipFileSystem(file_system.FileSystem):
 
     kwargs = {}
     try:
-      kwargs[u'zip_info'] = self._zip_file.getinfo(location[1:])
+      kwargs['zip_info'] = self._zip_file.getinfo(location[1:])
     except KeyError:
-      kwargs[u'is_virtual'] = True
+      kwargs['is_virtual'] = True
 
     return dfvfs.vfs.zip_file_entry.ZipFileEntry(
         self._resolver_context, self, path_spec, **kwargs)
@@ -167,12 +169,12 @@ class ZipFileSystem(file_system.FileSystem):
     Raises:
       PathSpecError: if the path specification is incorrect.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     if location is None:
-      raise errors.PathSpecError(u'Path specification missing location.')
+      raise errors.PathSpecError('Path specification missing location.')
 
     if not location.startswith(self.LOCATION_ROOT):
-      raise errors.PathSpecError(u'Invalid location in path specification.')
+      raise errors.PathSpecError('Invalid location in path specification.')
 
     if len(location) > 1:
       return self._zip_file.getinfo(location[1:])

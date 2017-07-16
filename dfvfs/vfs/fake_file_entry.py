@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The fake file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.file_io import fake_file_io
 from dfvfs.path import fake_path_spec
@@ -19,7 +21,7 @@ class FakeDirectory(file_entry.Directory):
     Yields:
       A path specification (instance of path.FakePathSpec).
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -77,7 +79,7 @@ class FakeFileEntry(file_entry.FileEntry):
 
   def _GetStat(self):
     """Retrieves the stat object (instance of vfs.VFSStat)."""
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -87,11 +89,11 @@ class FakeFileEntry(file_entry.FileEntry):
   def link(self):
     """The full path of the linked file entry."""
     if not self.IsLink():
-      return u''
+      return ''
 
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return u''
+      return ''
 
     return self._file_system.GetDataByPath(location)
 
@@ -99,7 +101,7 @@ class FakeFileEntry(file_entry.FileEntry):
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
     return self._name
@@ -115,7 +117,7 @@ class FakeFileEntry(file_entry.FileEntry):
         yield FakeFileEntry(
             self._resolver_context, self._file_system, path_spec)
 
-  def GetFileObject(self, data_stream_name=u''):
+  def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.
 
     Args:
@@ -130,12 +132,12 @@ class FakeFileEntry(file_entry.FileEntry):
       IOError: if the file entry is not a file.
     """
     if not self.IsFile():
-      raise IOError(u'Cannot open non-file.')
+      raise IOError('Cannot open non-file.')
 
     if data_stream_name:
       return
 
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -150,7 +152,7 @@ class FakeFileEntry(file_entry.FileEntry):
     Returns:
       The parent file entry (instance of FileEntry) or None.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -158,7 +160,7 @@ class FakeFileEntry(file_entry.FileEntry):
     if parent_location is None:
       return
 
-    if parent_location == u'':
+    if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
 
     path_spec = fake_path_spec.FakePathSpec(location=parent_location)

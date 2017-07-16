@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The NTFS file system implementation."""
 
+from __future__ import unicode_literals
+
 import pyfsntfs
 
 # This is necessary to prevent a circular import.
@@ -18,8 +20,8 @@ class NTFSFileSystem(file_system.FileSystem):
 
   MFT_ENTRY_ROOT_DIRECTORY = 5
 
-  LOCATION_ROOT = u'\\'
-  PATH_SEPARATOR = u'\\'
+  LOCATION_ROOT = '\\'
+  PATH_SEPARATOR = '\\'
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_NTFS
 
@@ -59,7 +61,7 @@ class NTFSFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     try:
       file_object = resolver.Resolver.OpenFileObject(
@@ -88,9 +90,9 @@ class NTFSFileSystem(file_system.FileSystem):
     # Opening a file by MFT entry is faster than opening a file by location.
     # However we need the index of the corresponding $FILE_NAME MFT attribute.
     fsntfs_file_entry = None
-    location = getattr(path_spec, u'location', None)
-    mft_attribute = getattr(path_spec, u'mft_attribute', None)
-    mft_entry = getattr(path_spec, u'mft_entry', None)
+    location = getattr(path_spec, 'location', None)
+    mft_attribute = getattr(path_spec, 'mft_attribute', None)
+    mft_entry = getattr(path_spec, 'mft_entry', None)
 
     try:
       if mft_attribute is not None and mft_entry is not None:
@@ -118,9 +120,9 @@ class NTFSFileSystem(file_system.FileSystem):
     # Opening a file by MFT entry is faster than opening a file by location.
     # However we need the index of the corresponding $FILE_NAME MFT attribute.
     fsntfs_file_entry = None
-    location = getattr(path_spec, u'location', None)
-    mft_attribute = getattr(path_spec, u'mft_attribute', None)
-    mft_entry = getattr(path_spec, u'mft_entry', None)
+    location = getattr(path_spec, 'location', None)
+    mft_attribute = getattr(path_spec, 'mft_attribute', None)
+    mft_entry = getattr(path_spec, 'mft_entry', None)
 
     if (location == self.LOCATION_ROOT or
         mft_entry == self.MFT_ENTRY_ROOT_DIRECTORY):
@@ -160,9 +162,9 @@ class NTFSFileSystem(file_system.FileSystem):
     """
     # Opening a file by MFT entry is faster than opening a file by location.
     # However we need the index of the corresponding $FILE_NAME MFT attribute.
-    location = getattr(path_spec, u'location', None)
-    mft_attribute = getattr(path_spec, u'mft_attribute', None)
-    mft_entry = getattr(path_spec, u'mft_entry', None)
+    location = getattr(path_spec, 'location', None)
+    mft_attribute = getattr(path_spec, 'mft_attribute', None)
+    mft_entry = getattr(path_spec, 'mft_entry', None)
 
     if mft_attribute is not None and mft_entry is not None:
       fsntfs_file_entry = self._fsntfs_volume.get_file_entry(mft_entry)
@@ -170,7 +172,7 @@ class NTFSFileSystem(file_system.FileSystem):
       fsntfs_file_entry = self._fsntfs_volume.get_file_entry_by_path(location)
     else:
       raise errors.PathSpecError(
-          u'Path specification missing location and MFT entry.')
+          'Path specification missing location and MFT entry.')
 
     return fsntfs_file_entry
 

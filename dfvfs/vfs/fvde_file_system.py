@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The FVDE file system implementation."""
 
+from __future__ import unicode_literals
+
 import pyfvde
 
 from dfvfs.lib import fvde
@@ -55,7 +57,7 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
 

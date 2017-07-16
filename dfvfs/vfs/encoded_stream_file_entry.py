@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encoded stream file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
@@ -24,7 +26,7 @@ class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     encoded_stream = self.GetFileObject()
     if not encoded_stream:
       raise errors.BackEndError(
-          u'Unable to open encoded stream: {0:s}.'.format(
+          'Unable to open encoded stream: {0:s}.'.format(
               self.path_spec.comparable))
 
     try:

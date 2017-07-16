@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Volume system object implementation using Logical Volume Manager (LVM)."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
@@ -8,13 +10,13 @@ from dfvfs.volume import volume_system
 
 
 class LVMVolume(volume_system.Volume):
-  """Class that implements a volume object using pyvslvm."""
+  """Volume that uses pyvslvm."""
 
   def __init__(self, file_entry):
     """Initializes the volume object.
 
     Args:
-      file_entry: the LVM file entry object (instance of FileEntry).
+      file_entry (LVMFileEntry): a LVM file entry.
     """
     super(LVMVolume, self).__init__(file_entry.name)
     self._file_entry = file_entry
@@ -24,10 +26,10 @@ class LVMVolume(volume_system.Volume):
     vslvm_logical_volume = self._file_entry.GetLVMLogicalVolume()
 
     self._AddAttribute(volume_system.VolumeAttribute(
-        u'identifier', vslvm_logical_volume.identifier))
+        'identifier', vslvm_logical_volume.identifier))
     # TODO: implement in pyvslvm
     # self._AddAttribute(volume_system.VolumeAttribute(
-    #    u'creation_time', vslvm_logical_volume.get_creation_time_as_integer()))
+    #    'creation_time', vslvm_logical_volume.get_creation_time_as_integer()))
 
     # TODO: add support for logical volume extents
     volume_extent = volume_system.VolumeExtent(0, vslvm_logical_volume.size)
@@ -35,10 +37,10 @@ class LVMVolume(volume_system.Volume):
 
 
 class LVMVolumeSystem(volume_system.VolumeSystem):
-  """Class that implements a volume system object using pyvslvm."""
+  """Volume system that uses pyvslvm."""
 
   def __init__(self):
-    """Initializes the volume system object.
+    """Initializes a volume system.
 
     Raises:
       VolumeSystemError: if the volume system could not be accessed.
@@ -55,10 +57,10 @@ class LVMVolumeSystem(volume_system.VolumeSystem):
       self._AddVolume(volume)
 
   def Open(self, path_spec):
-    """Opens a volume object defined by path specification.
+    """Opens a volume defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Raises:
       VolumeSystemError: if the LVM virtual file system could not be resolved.
@@ -66,8 +68,8 @@ class LVMVolumeSystem(volume_system.VolumeSystem):
     self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
     if self._file_system is None:
       raise errors.VolumeSystemError(
-          u'Unable to resolve file system from path specification.')
+          'Unable to resolve file system from path specification.')
 
     type_indicator = self._file_system.type_indicator
     if type_indicator != definitions.TYPE_INDICATOR_LVM:
-      raise errors.VolumeSystemError(u'Unsupported file system type.')
+      raise errors.VolumeSystemError('Unsupported file system type.')

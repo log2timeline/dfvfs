@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) stat object interface."""
 
+from __future__ import unicode_literals
+
 # Note that if this file is name stat.py it will cause naming conflicts
 # if used in combination with 'import stat'.
 

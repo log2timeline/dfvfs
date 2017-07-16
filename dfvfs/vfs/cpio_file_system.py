@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The CPIO file system implementation."""
 
+from __future__ import unicode_literals
+
 # This is necessary to prevent a circular import.
 import dfvfs.vfs.cpio_file_entry
 
@@ -15,10 +17,10 @@ from dfvfs.vfs import file_system
 class CPIOFileSystem(file_system.FileSystem):
   """Class that implements a file system object using CPIOArchiveFile."""
 
-  LOCATION_ROOT = u'/'
+  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_CPIO
 
-  def __init__(self, resolver_context, encoding=u'utf-8'):
+  def __init__(self, resolver_context, encoding='utf-8'):
     """Initializes a file system object.
 
     Args:
@@ -57,7 +59,7 @@ class CPIOFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -81,7 +83,7 @@ class CPIOFileSystem(file_system.FileSystem):
     Returns:
       Boolean indicating if the file entry exists.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
@@ -102,7 +104,7 @@ class CPIOFileSystem(file_system.FileSystem):
       A file entry (instance of vfs.CPIOFileEntry) or None.
     """
     cpio_archive_file_entry = None
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):

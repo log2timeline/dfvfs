@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfdatetime import posix_time as dfdatetime_posix_time
 
 from dfvfs.lib import definitions
@@ -24,11 +26,11 @@ class LVMDirectory(file_entry.Directory):
       A path specification (instance of PathSpec).
     """
     # Only the virtual root file has directory entries.
-    volume_index = getattr(self.path_spec, u'volume_index', None)
+    volume_index = getattr(self.path_spec, 'volume_index', None)
     if volume_index is not None:
       return
 
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None or location != self._file_system.LOCATION_ROOT:
       return
 
@@ -36,7 +38,7 @@ class LVMDirectory(file_entry.Directory):
 
     for volume_index in range(0, vslvm_volume_group.number_of_logical_volumes):
       yield lvm_path_spec.LVMPathSpec(
-          location=u'/lvm{0:d}'.format(volume_index + 1),
+          location='/lvm{0:d}'.format(volume_index + 1),
           parent=self.path_spec.parent, volume_index=volume_index)
 
 
@@ -92,7 +94,7 @@ class LVMFileEntry(file_entry.FileEntry):
     vslvm_logical_volume = self.GetLVMLogicalVolume()
     if not self._is_virtual and vslvm_logical_volume is None:
       raise errors.BackEndError(
-          u'Missing vslvm logical volume in non-virtual file entry.')
+          'Missing vslvm logical volume in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
@@ -129,15 +131,15 @@ class LVMFileEntry(file_entry.FileEntry):
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
       else:
-        volume_index = getattr(self.path_spec, u'volume_index', None)
+        volume_index = getattr(self.path_spec, 'volume_index', None)
         if volume_index is not None:
-          self._name = u'lvm{0:d}'.format(volume_index + 1)
+          self._name = 'lvm{0:d}'.format(volume_index + 1)
         else:
-          self._name = u''
+          self._name = ''
     return self._name
 
   @property

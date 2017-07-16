@@ -5,6 +5,8 @@ The file entry can be various file system elements like a regular file,
 a directory or file system metadata.
 """
 
+from __future__ import unicode_literals
+
 import abc
 
 from dfvfs.lib import definitions
@@ -19,10 +21,10 @@ class Attribute(object):
   @property
   def type_indicator(self):
     """str: type indicator."""
-    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid attribute missing type indicator.')
+          'Invalid attribute missing type indicator.')
     return type_indicator
 
 
@@ -35,7 +37,7 @@ class DataStream(object):
   @property
   def name(self):
     """str: name."""
-    return u''
+    return ''
 
 
 class Directory(object):
@@ -157,7 +159,7 @@ class FileEntry(object):
       str: full path of the linked file entry.
     """
     if self._link is None:
-      self._link = u''
+      self._link = ''
     return self._link
 
   def _GetStat(self):
@@ -273,10 +275,10 @@ class FileEntry(object):
   @property
   def type_indicator(self):
     """str: type indicator."""
-    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid file entry missing type indicator.')
+          'Invalid file entry missing type indicator.')
     return type_indicator
 
   def GetDataStream(self, name, case_sensitive=True):
@@ -293,7 +295,7 @@ class FileEntry(object):
       ValueError: if the name is not string.
     """
     if not isinstance(name, py2to3.STRING_TYPES):
-      raise ValueError(u'Name is not a string.')
+      raise ValueError('Name is not a string.')
 
     name_lower = name.lower()
     matching_data_stream = None
@@ -308,7 +310,7 @@ class FileEntry(object):
 
     return matching_data_stream
 
-  def GetFileObject(self, data_stream_name=u''):
+  def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.
 
     Args:
@@ -393,7 +395,7 @@ class FileEntry(object):
       ValueError: if the name is not string.
     """
     if not isinstance(name, py2to3.STRING_TYPES):
-      raise ValueError(u'Name is not a string.')
+      raise ValueError('Name is not a string.')
 
     name_lower = name.lower()
 

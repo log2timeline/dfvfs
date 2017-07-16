@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The BDE file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfdatetime import filetime as dfdatetime_filetime
 
 from dfvfs.lib import definitions
@@ -31,7 +33,7 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     """
     bde_volume = file_system.GetBDEVolume()
     if bde_volume is None:
-      raise errors.BackEndError(u'Missing BDE volume.')
+      raise errors.BackEndError('Missing BDE volume.')
 
     super(BDEFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,

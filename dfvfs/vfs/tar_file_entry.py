@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The TAR file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3
@@ -21,7 +23,7 @@ class TARDirectory(file_entry.Directory):
     Yields:
       TARPathSpec: TAR path specification.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
 
     if (location is None or
         not location.startswith(self._file_system.PATH_SEPARATOR)):
@@ -125,7 +127,7 @@ class TARFileEntry(file_entry.FileEntry):
       tar_info = self.GetTARInfo()
       if not self._is_virtual and not tar_info:
         raise errors.BackEndError(
-            u'Missing TAR info in non-virtual file entry.')
+            'Missing TAR info in non-virtual file entry.')
 
       if tar_info:
         self._link = tar_info.linkname
@@ -143,24 +145,24 @@ class TARFileEntry(file_entry.FileEntry):
     """
     tar_info = self.GetTARInfo()
     if not self._is_virtual and tar_info is None:
-      raise errors.BackEndError(u'Missing TAR info in non-virtual file entry.')
+      raise errors.BackEndError('Missing TAR info in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = getattr(tar_info, u'size', None)
+    stat_object.size = getattr(tar_info, 'size', None)
 
     # Date and time stat information.
-    stat_object.mtime = getattr(tar_info, u'mtime', None)
+    stat_object.mtime = getattr(tar_info, 'mtime', None)
 
     # Ownership and permissions stat information.
-    stat_object.mode = getattr(tar_info, u'mode', None)
-    stat_object.uid = getattr(tar_info, u'uid', None)
-    stat_object.gid = getattr(tar_info, u'gid', None)
+    stat_object.mode = getattr(tar_info, 'mode', None)
+    stat_object.uid = getattr(tar_info, 'uid', None)
+    stat_object.gid = getattr(tar_info, 'gid', None)
 
     # TODO: implement support for:
-    # stat_object.uname = getattr(tar_info, u'uname', None)
-    # stat_object.gname = getattr(tar_info, u'gname', None)
+    # stat_object.uname = getattr(tar_info, 'uname', None)
+    # stat_object.gname = getattr(tar_info, 'gname', None)
 
     # File entry type stat information.
 
@@ -188,7 +190,7 @@ class TARFileEntry(file_entry.FileEntry):
   @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
-    path = getattr(self.path_spec, u'location', None)
+    path = getattr(self.path_spec, 'location', None)
     if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
       try:
         path = path.decode(self._file_system.encoding)
@@ -206,15 +208,15 @@ class TARFileEntry(file_entry.FileEntry):
 
     if self._directory and tar_file:
       for path_spec in self._directory.entries:
-        location = getattr(path_spec, u'location', None)
+        location = getattr(path_spec, 'location', None)
         if location is None:
           continue
 
         kwargs = {}
         try:
-          kwargs[u'tar_info'] = tar_file.getmember(location[1:])
+          kwargs['tar_info'] = tar_file.getmember(location[1:])
         except KeyError:
-          kwargs[u'is_virtual'] = True
+          kwargs['is_virtual'] = True
 
         yield TARFileEntry(
             self._resolver_context, self._file_system, path_spec, **kwargs)
@@ -225,17 +227,17 @@ class TARFileEntry(file_entry.FileEntry):
     Returns:
       TARFileEntry: parent file entry or None.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
       return
-    if parent_location == u'':
+    if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
 
-    parent_path_spec = getattr(self.path_spec, u'parent', None)
+    parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = tar_path_spec.TARPathSpec(
         location=parent_location, parent=parent_path_spec)
     return TARFileEntry(self._resolver_context, self._file_system, path_spec)
@@ -250,12 +252,12 @@ class TARFileEntry(file_entry.FileEntry):
       PathSpecError: if the path specification is incorrect.
     """
     if not self._tar_info:
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is None:
-        raise errors.PathSpecError(u'Path specification missing location.')
+        raise errors.PathSpecError('Path specification missing location.')
 
       if not location.startswith(self._file_system.LOCATION_ROOT):
-        raise errors.PathSpecError(u'Invalid location in path specification.')
+        raise errors.PathSpecError('Invalid location in path specification.')
 
       if len(location) == 1:
         return

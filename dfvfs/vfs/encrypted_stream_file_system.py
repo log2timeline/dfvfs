@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream file system implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import encrypted_stream_path_spec
@@ -46,14 +48,14 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
 
-    encryption_method = getattr(path_spec, u'encryption_method', None)
+    encryption_method = getattr(path_spec, 'encryption_method', None)
     if not encryption_method:
       raise errors.PathSpecError(
-          u'Unsupported path specification without encryption method.')
+          'Unsupported path specification without encryption method.')
 
     self._encryption_method = encryption_method
 

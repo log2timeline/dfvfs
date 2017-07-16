@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file system interface."""
 
+from __future__ import unicode_literals
+
 import abc
 
 
 class FileSystem(object):
   """VFS file system interface."""
 
-  LOCATION_ROOT = u'/'
-  PATH_SEPARATOR = u'/'
+  LOCATION_ROOT = '/'
+  PATH_SEPARATOR = '/'
 
   def __init__(self, resolver_context):
     """Initializes a file system.
@@ -25,10 +27,10 @@ class FileSystem(object):
   @property
   def type_indicator(self):
     """str: type indicator."""
-    type_indicator = getattr(self, u'TYPE_INDICATOR', None)
+    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
     if type_indicator is None:
       raise NotImplementedError(
-          u'Invalid file system missing type indicator.')
+          'Invalid file system missing type indicator.')
     return type_indicator
 
   @abc.abstractmethod
@@ -75,7 +77,7 @@ class FileSystem(object):
       IOError: if the file system object was not opened or the close failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if not self._is_cached:
       close_file_system = True
@@ -130,7 +132,7 @@ class FileSystem(object):
     """
     file_entry = self.GetFileEntryByPathSpec(path_spec)
     if file_entry:
-      data_stream_name = getattr(path_spec, u'data_stream', None)
+      data_stream_name = getattr(path_spec, 'data_stream', None)
       return file_entry.GetDataStream(data_stream_name)
 
   @abc.abstractmethod
@@ -178,7 +180,7 @@ class FileSystem(object):
       path_index += 1
 
     if path_index == len(path):
-      return u'', u''
+      return '', ''
 
     path_segment, _, suffix = path[path_index:].partition(self.PATH_SEPARATOR)
     return path_segment, suffix
@@ -214,7 +216,7 @@ class FileSystem(object):
     # Remove empty path segments.
     path_segments = list(filter(None, path_segments))
 
-    return u'{0:s}{1:s}'.format(
+    return '{0:s}{1:s}'.format(
         self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
 
   def Open(self, path_spec, mode='rb'):
@@ -231,13 +233,13 @@ class FileSystem(object):
       ValueError: if the path specification or mode is invalid.
     """
     if self._is_open and not self._is_cached:
-      raise IOError(u'Already open.')
+      raise IOError('Already open.')
 
     if mode != 'rb':
-      raise ValueError(u'Unsupport mode: {0:s}.'.format(mode))
+      raise ValueError('Unsupport mode: {0:s}.'.format(mode))
 
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if not self._is_open:
       self._Open(path_spec, mode=mode)
