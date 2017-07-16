@@ -108,7 +108,7 @@ class LVMFileEntry(file_entry.FileEntry):
       # timestamp = vslvm_logical_volume.get_creation_time_as_integer()
       timestamp = None
       if timestamp is not None:
-        date_time_values = dfdatetime_posix_time.PosixTimestamp(timestamp)
+        date_time_values = dfdatetime_posix_time.PosixTime(timestamp)
 
         stat_time, stat_time_nano = date_time_values.CopyToStatTimeTuple()
         if stat_time is not None:

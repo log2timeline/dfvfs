@@ -214,12 +214,15 @@ class VolumeSystem(object):
 
     Args:
       section_index (int): index of the section.
+
+    Returns:
+      VolumeExtent: a volume extent or None if not available.
     """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
 
-    if section_index >= and section_index < len(self._sections):
+    if section_index >= 0 and section_index < len(self._sections):
       return self._sections[section_index]
 
   def GetVolumeByIdentifier(self, volume_identifier):
@@ -245,16 +248,15 @@ class VolumeSystem(object):
       volume_index (int): index of the volume.
 
     Returns:
-      Volume: a volume.
+      Volume: a volume or None if not available.
     """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
 
-    if volume_index < 0 or volume_index >= len(self._volume_identifiers):
-      return
-    volume_identifier = self._volume_identifiers[volume_index]
-    return self._volumes[volume_identifier]
+    if volume_index >= 0 and volume_index < len(self._volume_identifiers):
+      volume_identifier = self._volume_identifiers[volume_index]
+      return self._volumes[volume_identifier]
 
   @abc.abstractmethod
   def Open(self, path_spec):
