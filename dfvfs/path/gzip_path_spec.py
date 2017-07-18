@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 """The gzip file path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class GzipPathSpec(path_spec.PathSpec):
-  """Class that implements the gzip file path specification."""
+  """Gzip file path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the gzip file path specification must have a parent.
 
@@ -23,7 +25,7 @@ class GzipPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(GzipPathSpec, self).__init__(parent=parent, **kwargs)
 

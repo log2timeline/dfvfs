@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The SQLite blob path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class SQLiteBlobPathSpec(path_spec.PathSpec):
-  """Class that implements the SQLite blob file path specification.
+  """SQLite blob file path specification.
 
   Attributes:
     column_name (str): name of the column in which the blob is stored.
@@ -23,7 +25,7 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
   def __init__(
       self, column_name=None, parent=None, row_condition=None,
       row_index=None, table_name=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the SQLite blob file path specification must have a parent.
 
@@ -40,16 +42,16 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
 
     Raises:
       ValueError: when table_name, column_name, row_condition and row_index,
-                  or parent is not set.
+          or parent is not set.
     """
     if not table_name or not column_name or not parent:
-      raise ValueError(u'Missing table_name, column_name or parent value.')
+      raise ValueError('Missing table_name, column_name or parent value.')
 
     if (row_condition and (
         not isinstance(row_condition, tuple) or len(row_condition) != 3)):
       raise ValueError((
-          u'Unsupported row_condition not a tuple in the form: '
-          u'(column_name, operator, value).'))
+          'Unsupported row_condition not a tuple in the form: '
+          '(column_name, operator, value).'))
 
     super(SQLiteBlobPathSpec, self).__init__(parent=parent, **kwargs)
     self.column_name = column_name
@@ -62,19 +64,19 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
     """str: comparable representation of the path specification."""
     string_parts = []
 
-    string_parts.append(u'table name: {0:s}'.format(self.table_name))
-    string_parts.append(u'column name: {0:s}'.format(self.column_name))
+    string_parts.append('table name: {0:s}'.format(self.table_name))
+    string_parts.append('column name: {0:s}'.format(self.column_name))
 
     if self.row_condition is not None:
-      row_condition_string = u' '.join([
-          u'{0!s}'.format(value) for value in self.row_condition])
-      string_parts.append(u'row condition: "{0:s}"'.format(
+      row_condition_string = ' '.join([
+          '{0!s}'.format(value) for value in self.row_condition])
+      string_parts.append('row condition: "{0:s}"'.format(
           row_condition_string))
 
     if self.row_index is not None:
-      string_parts.append(u'row index: {0:d}'.format(self.row_index))
+      string_parts.append('row index: {0:d}'.format(self.row_index))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(SQLiteBlobPathSpec)

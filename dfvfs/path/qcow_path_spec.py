@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 """The QCOW image path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class QCOWPathSpec(path_spec.PathSpec):
-  """Class that implements the QCOW image path specification."""
+  """QCOW image path specification."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_QCOW
 
   def __init__(self, parent=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the QCOW path specification must have a parent.
 
@@ -23,7 +25,7 @@ class QCOWPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(QCOWPathSpec, self).__init__(parent=parent, **kwargs)
 

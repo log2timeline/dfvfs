@@ -1,36 +1,38 @@
 # -*- coding: utf-8 -*-
 """The path specification factory."""
 
+from __future__ import unicode_literals
+
 
 class Factory(object):
-  """Class that implements the path specification factory."""
+  """Path specification factory."""
 
   PROPERTY_NAMES = frozenset([
-      u'cipher_mode',
-      u'column_name',
-      u'compression_method',
-      u'data_stream',
-      u'encoding_method',
-      u'encryption_method',
-      u'identifier',
-      u'initialization_vector',
-      u'inode',
-      u'key',
-      u'location',
-      u'mft_attribute',
-      u'mft_entry',
-      u'part_index',
-      u'password',
-      u'range_offset',
-      u'range_size',
-      u'recovery_password',
-      u'row_condition',
-      u'row_index',
-      u'start_offset',
-      u'startup_key',
-      u'store_index',
-      u'table_name',
-      u'volume_index'])
+      'cipher_mode',
+      'column_name',
+      'compression_method',
+      'data_stream',
+      'encoding_method',
+      'encryption_method',
+      'identifier',
+      'initialization_vector',
+      'inode',
+      'key',
+      'location',
+      'mft_attribute',
+      'mft_entry',
+      'part_index',
+      'password',
+      'range_offset',
+      'range_size',
+      'recovery_password',
+      'row_condition',
+      'row_index',
+      'start_offset',
+      'startup_key',
+      'store_index',
+      'table_name',
+      'volume_index'])
 
   _path_spec_types = {}
 
@@ -49,7 +51,7 @@ class Factory(object):
     type_indicator = path_spec_type.TYPE_INDICATOR
     if type_indicator not in cls._path_spec_types:
       raise KeyError(
-          u'Path specification type: {0:s} not set.'.format(type_indicator))
+          'Path specification type: {0:s} not set.'.format(type_indicator))
 
     del cls._path_spec_types[type_indicator]
 
@@ -103,12 +105,12 @@ class Factory(object):
     """
     if type_indicator not in cls._path_spec_types:
       raise KeyError(
-          u'Path specification type: {0:s} not set.'.format(type_indicator))
+          'Path specification type: {0:s} not set.'.format(type_indicator))
 
     # An empty parent will cause parentless path specifications to raise
     # so we conveniently remove it here.
-    if u'parent' in kwargs and kwargs[u'parent'] is None:
-      del kwargs[u'parent']
+    if 'parent' in kwargs and kwargs['parent'] is None:
+      del kwargs['parent']
 
     path_spec_type = cls._path_spec_types[type_indicator]
     return path_spec_type(**kwargs)
@@ -126,10 +128,10 @@ class Factory(object):
     type_indicator = path_spec_type.TYPE_INDICATOR
     if type_indicator in cls._path_spec_types:
       raise KeyError(
-          u'Path specification type: {0:s} already set.'.format(
+          'Path specification type: {0:s} already set.'.format(
               type_indicator))
 
     cls._path_spec_types[type_indicator] = path_spec_type
 
-    if getattr(path_spec_type, u'_IS_SYSTEM_LEVEL', False):
+    if getattr(path_spec_type, '_IS_SYSTEM_LEVEL', False):
       cls._system_level_type_indicators[type_indicator] = path_spec_type

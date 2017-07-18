@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) path specification implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec
 
 
 class VShadowPathSpec(path_spec.PathSpec):
-  """Class that implements the VSS path specification.
+  """Volume Shadow Snapshots (VSS) path specification.
 
   Attributes:
     location (str): location.
@@ -17,7 +19,7 @@ class VShadowPathSpec(path_spec.PathSpec):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, location=None, parent=None, store_index=None, **kwargs):
-    """Initializes the path specification.
+    """Initializes a path specification.
 
     Note that the VSS path specification must have a parent.
 
@@ -30,7 +32,7 @@ class VShadowPathSpec(path_spec.PathSpec):
       ValueError: when parent is not set.
     """
     if not parent:
-      raise ValueError(u'Missing parent value.')
+      raise ValueError('Missing parent value.')
 
     super(VShadowPathSpec, self).__init__(parent=parent, **kwargs)
     self.location = location
@@ -42,11 +44,11 @@ class VShadowPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.location is not None:
-      string_parts.append(u'location: {0:s}'.format(self.location))
+      string_parts.append('location: {0:s}'.format(self.location))
     if self.store_index is not None:
-      string_parts.append(u'store index: {0:d}'.format(self.store_index))
+      string_parts.append('store index: {0:d}'.format(self.store_index))
 
-    return self._GetComparable(sub_comparable_string=u', '.join(string_parts))
+    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(VShadowPathSpec)
