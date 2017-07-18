@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The path specification resolver."""
 
+from __future__ import unicode_literals
+
 from dfvfs.credentials import keychain
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -10,7 +12,7 @@ from dfvfs.resolver import context
 
 
 class Resolver(object):
-  """Class that implements the path specification resolver."""
+  """Path specification resolver."""
 
   _resolver_context = context.Context()
   _resolver_helpers = {}
@@ -26,7 +28,7 @@ class Resolver(object):
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
-                type indicator.
+          type indicator.
     """
     if resolver_helper.type_indicator not in cls._resolver_helpers:
       raise KeyError(
@@ -77,7 +79,7 @@ class Resolver(object):
 
     Raises:
       KeyError: if resolver helper object is not set for the corresponding
-                type indicator.
+          type indicator.
       PathSpecError: if the path specification is incorrect.
       TypeError: if the path specification type is unsupported.
     """
@@ -133,7 +135,7 @@ class Resolver(object):
       AccessError: if the access to open the file system was denied.
       BackEndError: if the file system cannot be opened.
       KeyError: if resolver helper object is not set for the corresponding
-                type indicator.
+          type indicator.
       PathSpecError: if the path specification is incorrect.
       TypeError: if the path specification type is unsupported.
     """
@@ -188,7 +190,7 @@ class Resolver(object):
 
     Raises:
       KeyError: if resolver helper object is already set for the corresponding
-                type indicator.
+          type indicator.
     """
     if resolver_helper.type_indicator in cls._resolver_helpers:
       raise KeyError((

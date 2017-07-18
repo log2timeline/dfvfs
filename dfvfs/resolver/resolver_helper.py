@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) resolver helper object interface."""
 
+from __future__ import unicode_literals
+
 
 class ResolverHelper(object):
-  """Class that implements the resolver helper object interface."""
+  """Resolver helper object interface."""
 
   @property
   def type_indicator(self):
@@ -18,10 +20,10 @@ class ResolverHelper(object):
     """Creates a new file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file-like object (instance of file_io.FileIO).
+      FileIO: file-like object.
 
     Raises:
       RuntimeError: if there is no implementation to create a file-like object.
@@ -35,14 +37,14 @@ class ResolverHelper(object):
     """Creates a new file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file system object (instance of vfs.FileSystem).
+      FileSystem: file system.
 
     Raises:
       RuntimeError: if there is no implementation to create a file system
-                    object.
+          object.
     """
     # Note: not using NotImplementedError or @abc.abstractmethod here since
     # pylint then will complain derived classes will need to implement

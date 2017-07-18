@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SQLite blob file path specification resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 # This is necessary to prevent a circular import.
 import dfvfs.file_io.sqlite_blob_file_io
 import dfvfs.vfs.sqlite_blob_file_system
@@ -11,7 +13,7 @@ from dfvfs.resolver import resolver_helper
 
 
 class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
-  """Class that implements the SQLite blob resolver helper."""
+  """SQLite blob resolver helper."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
 
@@ -19,10 +21,10 @@ class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file-like object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file-like object (instance of file_io.FileIO).
+      SQLiteBlobFile: file-like object.
     """
     return dfvfs.file_io.sqlite_blob_file_io.SQLiteBlobFile(resolver_context)
 
@@ -30,10 +32,10 @@ class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
     """Creates a new file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): resolver context.
 
     Returns:
-      The file system object (instance of vfs.SQLiteBlobFileSystem).
+      SQLiteBlobFileSystem: file system.
     """
     return dfvfs.vfs.sqlite_blob_file_system.SQLiteBlobFileSystem(
         resolver_context)
