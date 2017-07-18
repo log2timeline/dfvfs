@@ -47,7 +47,7 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
   def __del__(self):
     """Cleans up the file entry."""
     # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, u'_compressed_stream'):
+    if hasattr(self, '_compressed_stream'):
       self._compressed_stream.close()
       self._compressed_stream = None
 

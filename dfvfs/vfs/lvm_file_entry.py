@@ -66,7 +66,7 @@ class LVMFileEntry(file_entry.FileEntry):
           path_spec)
     if not is_virtual and vslvm_logical_volume is None:
       raise errors.BackEndError(
-          u'Missing vslvm logical volume in non-virtual file entry.')
+          'Missing vslvm logical volume in non-virtual file entry.')
 
     super(LVMFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,

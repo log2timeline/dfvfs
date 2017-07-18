@@ -47,7 +47,7 @@ class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
   def __del__(self):
     """Cleans up the file entry."""
     # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, u'_encoded_stream'):
+    if hasattr(self, '_encoded_stream'):
       self._encoded_stream.close()
       self._encoded_stream = None
 

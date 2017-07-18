@@ -102,7 +102,7 @@ class TARFileEntry(file_entry.FileEntry):
     if not is_virtual and tar_info is None:
       tar_info = file_system.GetTARInfoByPathSpec(path_spec)
     if not is_virtual and tar_info is None:
-      raise errors.BackEndError(u'Missing TAR info in non-virtual file entry.')
+      raise errors.BackEndError('Missing TAR info in non-virtual file entry.')
 
     super(TARFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -150,16 +150,16 @@ class TARFileEntry(file_entry.FileEntry):
     stat_object = super(TARFileEntry, self)._GetStat()
 
     # File data stat information.
-    stat_object.size = getattr(self._tar_info, u'size', None)
+    stat_object.size = getattr(self._tar_info, 'size', None)
 
     # Ownership and permissions stat information.
-    stat_object.mode = getattr(self._tar_info, u'mode', None)
-    stat_object.uid = getattr(self._tar_info, u'uid', None)
-    stat_object.gid = getattr(self._tar_info, u'gid', None)
+    stat_object.mode = getattr(self._tar_info, 'mode', None)
+    stat_object.uid = getattr(self._tar_info, 'uid', None)
+    stat_object.gid = getattr(self._tar_info, 'gid', None)
 
     # TODO: implement support for:
-    # stat_object.uname = getattr(self._tar_info, u'uname', None)
-    # stat_object.gname = getattr(self._tar_info, u'gname', None)
+    # stat_object.uname = getattr(self._tar_info, 'uname', None)
+    # stat_object.gname = getattr(self._tar_info, 'gname', None)
 
     # File entry type stat information.
 
@@ -188,7 +188,7 @@ class TARFileEntry(file_entry.FileEntry):
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
-    timestamp = getattr(self._tar_info, u'mtime', None)
+    timestamp = getattr(self._tar_info, 'mtime', None)
     if timestamp is not None:
       return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 

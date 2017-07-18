@@ -171,12 +171,12 @@ class TARFileSystem(file_system.FileSystem):
     Raises:
       PathSpecError: if the path specification is incorrect.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     if location is None:
-      raise errors.PathSpecError(u'Path specification missing location.')
+      raise errors.PathSpecError('Path specification missing location.')
 
     if not location.startswith(self.LOCATION_ROOT):
-      raise errors.PathSpecError(u'Invalid location in path specification.')
+      raise errors.PathSpecError('Invalid location in path specification.')
 
     if len(location) == 1:
       return

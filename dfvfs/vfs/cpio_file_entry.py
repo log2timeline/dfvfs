@@ -80,7 +80,7 @@ class CPIOFileEntry(file_entry.FileEntry):
           path_spec)
     if not is_virtual and cpio_archive_file_entry is None:
       raise errors.BackEndError(
-          u'Missing CPIO archive file entry in non-virtual file entry.')
+          'Missing CPIO archive file entry in non-virtual file entry.')
 
     super(CPIOFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -91,7 +91,7 @@ class CPIOFileEntry(file_entry.FileEntry):
     # LINK and DIRECTORY in case of a symbolic link to a directory
     # dfVFS currently only supports one type so we need to check
     # for LINK first.
-    mode = getattr(cpio_archive_file_entry, u'mode', 0)
+    mode = getattr(cpio_archive_file_entry, 'mode', 0)
     if stat.S_ISLNK(mode):
       self._type = definitions.FILE_ENTRY_TYPE_LINK
     # The root file entry is virtual and should have type directory.
@@ -147,15 +147,15 @@ class CPIOFileEntry(file_entry.FileEntry):
 
     # File data stat information.
     stat_object.size = getattr(
-        self._cpio_archive_file_entry, u'data_size', None)
+        self._cpio_archive_file_entry, 'data_size', None)
 
     # Ownership and permissions stat information.
-    mode = getattr(self._cpio_archive_file_entry, u'mode', 0)
+    mode = getattr(self._cpio_archive_file_entry, 'mode', 0)
     stat_object.mode = stat.S_IMODE(mode)
     stat_object.uid = getattr(
-        self._cpio_archive_file_entry, u'user_identifier', None)
+        self._cpio_archive_file_entry, 'user_identifier', None)
     stat_object.gid = getattr(
-        self._cpio_archive_file_entry, u'group_identifier', None)
+        self._cpio_archive_file_entry, 'group_identifier', None)
 
     return stat_object
 
@@ -173,7 +173,7 @@ class CPIOFileEntry(file_entry.FileEntry):
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     timestamp = getattr(
-        self._cpio_archive_file_entry, u'modification_time', None)
+        self._cpio_archive_file_entry, 'modification_time', None)
     if timestamp is not None:
       return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
@@ -205,7 +205,7 @@ class CPIOFileEntry(file_entry.FileEntry):
     Returns:
       CPIOFileEntry: parent file entry or None if not available.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 

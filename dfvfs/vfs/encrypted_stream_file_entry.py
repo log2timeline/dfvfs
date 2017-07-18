@@ -47,7 +47,7 @@ class EncryptedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
   def __del__(self):
     """Cleans up the file entry."""
     # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, u'_encrypted_stream'):
+    if hasattr(self, '_encrypted_stream'):
       self._encrypted_stream.close()
       self._encrypted_stream = None
 
