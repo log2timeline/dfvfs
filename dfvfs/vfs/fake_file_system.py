@@ -3,8 +3,6 @@
 
 from __future__ import unicode_literals
 
-from dfdatetime import fake_time as dfdatetime_fake_time
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import fake_path_spec

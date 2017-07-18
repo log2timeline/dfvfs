@@ -3,8 +3,6 @@
 
 from __future__ import unicode_literals
 
-from dfdatetime import posix_time as dfdatetime_posix_time
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import lvm
