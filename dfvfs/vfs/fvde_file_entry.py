@@ -28,7 +28,6 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
 
     Raises:
       BackEndError: when the FVDE volume is missing.
-          entry emulated by the corresponding file system.
     """
     fvde_volume = file_system.GetFVDEVolume()
     if fvde_volume is None:

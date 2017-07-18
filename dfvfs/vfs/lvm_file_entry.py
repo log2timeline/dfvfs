@@ -141,7 +141,7 @@ class LVMFileEntry(file_entry.FileEntry):
     """Retrieves the parent file entry.
 
     Returns:
-      LVMFileEntry: parent file entry or Noneif not available.
+      LVMFileEntry: parent file entry or None if not available.
     """
     volume_index = lvm.LVMPathSpecGetVolumeIndex(self.path_spec)
     if volume_index is None:

@@ -506,7 +506,8 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves a date and time value.
 
     Args:
-      name (str): name of the date and time value.
+      name (str): name of the date and time value, for exmample "atime" or
+          "mtime".
 
     Returns:
       dfdatetime.DateTimeValues: date and time value or None if not available.
