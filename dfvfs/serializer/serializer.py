@@ -19,7 +19,7 @@ class PathSpecSerializer(object):
     """Reads a path specification from serialized form.
 
     Args:
-      serialized (object): serialized form of the path specificaiton.
+      serialized (object): serialized form of the path specification.
 
     Returns:
       PathSpec: a path specification.
