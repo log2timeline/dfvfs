@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
@@ -24,7 +26,7 @@ class EncryptedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     encrypted_stream = self.GetFileObject()
     if not encrypted_stream:
       raise errors.BackEndError(
-          u'Unable to open encrypted stream: {0:s}.'.format(
+          'Unable to open encrypted stream: {0:s}.'.format(
               self.path_spec.comparable))
 
     try:

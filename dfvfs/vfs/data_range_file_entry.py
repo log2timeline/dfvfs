@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The data range file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.vfs import root_only_file_entry
 from dfvfs.vfs import vfs_stat

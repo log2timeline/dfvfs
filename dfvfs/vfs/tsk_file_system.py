@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) file system implementation."""
 
+from __future__ import unicode_literals
+
 import pytsk3
 
 # This is necessary to prevent a circular import.
@@ -17,7 +19,7 @@ from dfvfs.vfs import file_system
 class TSKFileSystem(file_system.FileSystem):
   """Class that implements a file system object using pytsk3."""
 
-  LOCATION_ROOT = u'/'
+  LOCATION_ROOT = '/'
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
@@ -58,7 +60,7 @@ class TSKFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -78,13 +80,13 @@ class TSKFileSystem(file_system.FileSystem):
     # Note that because pytsk3.FS_Info does not explicitly define info
     # we need to check if the attribute exists and has a value other
     # than None
-    if getattr(self._tsk_file_system, u'info', None) is None:
+    if getattr(self._tsk_file_system, 'info', None) is None:
       return
 
     # Note that because pytsk3.TSK_FS_INFO does not explicitly define
     # root_inum we need to check if the attribute exists and has a value
     # other than None
-    return getattr(self._tsk_file_system.info, u'root_inum', None)
+    return getattr(self._tsk_file_system.info, 'root_inum', None)
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -97,8 +99,8 @@ class TSKFileSystem(file_system.FileSystem):
     """
     # Opening a file by inode number is faster than opening a file by location.
     tsk_file = None
-    inode = getattr(path_spec, u'inode', None)
-    location = getattr(path_spec, u'location', None)
+    inode = getattr(path_spec, 'inode', None)
+    location = getattr(path_spec, 'location', None)
 
     try:
       if inode is not None:
@@ -122,8 +124,8 @@ class TSKFileSystem(file_system.FileSystem):
     """
     # Opening a file by inode number is faster than opening a file by location.
     tsk_file = None
-    inode = getattr(path_spec, u'inode', None)
-    location = getattr(path_spec, u'location', None)
+    inode = getattr(path_spec, 'inode', None)
+    location = getattr(path_spec, 'location', None)
 
     root_inode = self.GetRootInode()
     if (location == self.LOCATION_ROOT or
@@ -166,11 +168,11 @@ class TSKFileSystem(file_system.FileSystem):
     if self._tsk_fs_type is None:
       self._tsk_fs_type = pytsk3.TSK_FS_TYPE_UNSUPP
       if (not self._tsk_file_system or
-          not hasattr(self._tsk_file_system, u'info')):
+          not hasattr(self._tsk_file_system, 'info')):
         return self._tsk_fs_type
 
       self._tsk_fs_type = getattr(
-          self._tsk_file_system.info, u'ftype', pytsk3.TSK_FS_TYPE_UNSUPP)
+          self._tsk_file_system.info, 'ftype', pytsk3.TSK_FS_TYPE_UNSUPP)
 
     return self._tsk_fs_type
 
@@ -184,10 +186,10 @@ class TSKFileSystem(file_system.FileSystem):
 
     root_inode = self.GetRootInode()
     if root_inode is not None:
-      kwargs[u'inode'] = root_inode
+      kwargs['inode'] = root_inode
 
-    kwargs[u'location'] = self.LOCATION_ROOT
-    kwargs[u'parent'] = self._path_spec.parent
+    kwargs['location'] = self.LOCATION_ROOT
+    kwargs['parent'] = self._path_spec.parent
 
     path_spec = tsk_path_spec.TSKPathSpec(**kwargs)
     return self.GetFileEntryByPathSpec(path_spec)

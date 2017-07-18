@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The operating system file entry implementation."""
 
+from __future__ import unicode_literals
+
 import errno
 import os
 import platform
@@ -32,7 +34,7 @@ class OSDirectory(file_entry.Directory):
       AccessError: if the access to list the directory was denied.
       BackEndError: if the directory could not be listed.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -51,14 +53,14 @@ class OSDirectory(file_entry.Directory):
         exception_string = str(exception)
         if not isinstance(exception_string, py2to3.UNICODE_TYPE):
           exception_string = py2to3.UNICODE_TYPE(
-              exception_string, errors=u'replace')
+              exception_string, errors='replace')
 
         raise errors.AccessError(
-            u'Access to directory denied with error: {0:s}'.format(
+            'Access to directory denied with error: {0:s}'.format(
                 exception_string))
       else:
         raise errors.BackEndError(
-            u'Unable to list directory: {0:s} with error: {1:s}'.format(
+            'Unable to list directory: {0:s} with error: {1:s}'.format(
                 location, exception))
 
 
@@ -99,7 +101,7 @@ class OSFileEntry(file_entry.FileEntry):
   def _GetLink(self):
     """Retrieves the link."""
     if self._link is None:
-      self._link = u''
+      self._link = ''
 
       if not self.IsLink():
         return self._link
@@ -122,7 +124,7 @@ class OSFileEntry(file_entry.FileEntry):
     Returns:
       Stat object (instance of VFSStat) or None if no location is set.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -133,7 +135,7 @@ class OSFileEntry(file_entry.FileEntry):
 
     # Windows does not support running os.stat on device files so we use
     # libsmdev to do an initial check.
-    if platform.system() == u'Windows':
+    if platform.system() == 'Windows':
       try:
         is_windows_device = pysmdev.check_device(location)
       except IOError:
@@ -150,7 +152,7 @@ class OSFileEntry(file_entry.FileEntry):
         stat_info = os.stat(location)
       except OSError as exception:
         raise errors.BackEndError(
-            u'Unable to retrieve stat object with error: {0:s}'.format(
+            'Unable to retrieve stat object with error: {0:s}'.format(
                 exception))
 
       # File data stat information.
@@ -203,12 +205,12 @@ class OSFileEntry(file_entry.FileEntry):
   def link(self):
     """The full path of the linked file entry."""
     if self._link is None:
-      self._link = u''
+      self._link = ''
 
       if not self.IsLink():
         return self._link
 
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is None:
         return self._link
 
@@ -220,7 +222,7 @@ class OSFileEntry(file_entry.FileEntry):
   def name(self):
     """The name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
     return self._name
@@ -250,7 +252,7 @@ class OSFileEntry(file_entry.FileEntry):
     Returns:
       The parent file entry (instance of FileEntry) or None.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -258,7 +260,7 @@ class OSFileEntry(file_entry.FileEntry):
     if parent_location is None:
       return
 
-    if parent_location == u'':
+    if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
 
     path_spec = os_path_spec.OSPathSpec(location=parent_location)

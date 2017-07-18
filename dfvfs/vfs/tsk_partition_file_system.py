@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition file system implementation."""
 
+from __future__ import unicode_literals
+
 import pytsk3
 
 # This is necessary to prevent a circular import.
@@ -18,7 +20,7 @@ from dfvfs.vfs import file_system
 class TSKPartitionFileSystem(file_system.FileSystem):
   """Class that implements a file system object using pytsk3."""
 
-  LOCATION_ROOT = u'/'
+  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
   def __init__(self, resolver_context):
@@ -57,7 +59,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -87,7 +89,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     # The virtual root file has not corresponding TSK volume system part object
     # but should have a location.
     if tsk_vs_part is None:
-      location = getattr(path_spec, u'location', None)
+      location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
     return True
@@ -104,7 +106,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     tsk_vs_part, partition_index = tsk_partition.GetTSKVsPartByPathSpec(
         self._tsk_volume, path_spec)
 
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     # The virtual root file has not corresponding TSK volume system part object
     # but should have a location.
@@ -116,7 +118,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
           is_virtual=True)
 
     if location is None and partition_index is not None:
-      path_spec.location = u'/p{0:d}'.format(partition_index)
+      path_spec.location = '/p{0:d}'.format(partition_index)
 
     return dfvfs.vfs.tsk_partition_file_entry.TSKPartitionFileEntry(
         self._resolver_context, self, path_spec)

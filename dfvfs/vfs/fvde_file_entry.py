@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The FVDE file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
@@ -23,7 +25,7 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     """
     fvde_volume = self._file_system.GetFVDEVolume()
     if fvde_volume is None:
-      raise errors.BackEndError(u'Missing FVDE volume.')
+      raise errors.BackEndError('Missing FVDE volume.')
 
     stat_object = vfs_stat.VFSStat()
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The BDE file system implementation."""
 
+from __future__ import unicode_literals
+
 import pybde
 
 from dfvfs.lib import bde
@@ -55,7 +57,7 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
 

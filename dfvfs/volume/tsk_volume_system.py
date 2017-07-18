@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Volume system object implementation using the SleuthKit (TSK)."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import tsk_partition
@@ -9,14 +11,14 @@ from dfvfs.volume import volume_system
 
 
 class TSKVolume(volume_system.Volume):
-  """Class that implements a volume object using pytsk3."""
+  """Volume that uses pytsk3."""
 
   def __init__(self, file_entry, bytes_per_sector):
-    """Initializes the volume object.
+    """Initializes a volume.
 
     Args:
-      file_entry: a TSK partition file entry object (instance of FileEntry).
-      bytes_per_sector: an integer containing number of bytes per sector.
+      file_entry (TSKPartitionFileEntry): a TSK partition file entry.
+      bytes_per_sector (int): number of bytes per sector.
     """
     super(TSKVolume, self).__init__(file_entry.name)
     self._file_entry = file_entry
@@ -26,17 +28,18 @@ class TSKVolume(volume_system.Volume):
     """Extracts attributes and extents from the volume."""
     tsk_vs_part = self._file_entry.GetTSKVsPart()
 
-    tsk_addr = getattr(tsk_vs_part, u'addr', None)
+    tsk_addr = getattr(tsk_vs_part, 'addr', None)
     if tsk_addr is not None:
-      self._AddAttribute(volume_system.VolumeAttribute(u'address', tsk_addr))
+      address = volume_system.VolumeAttribute('address', tsk_addr)
+      self._AddAttribute(address)
 
-    tsk_desc = getattr(tsk_vs_part, u'desc', None)
+    tsk_desc = getattr(tsk_vs_part, 'desc', None)
     if tsk_desc is not None:
       # pytsk3 returns an UTF-8 encoded byte string.
       try:
-        tsk_desc = tsk_desc.decode(u'utf8')
+        tsk_desc = tsk_desc.decode('utf8')
         self._AddAttribute(volume_system.VolumeAttribute(
-            u'description', tsk_desc))
+            'description', tsk_desc))
       except UnicodeError:
         pass
 
@@ -49,10 +52,10 @@ class TSKVolume(volume_system.Volume):
 
 
 class TSKVolumeSystem(volume_system.VolumeSystem):
-  """Class that implements a volume system object using pytsk3."""
+  """Volume system that uses pytsk3."""
 
   def __init__(self):
-    """Initializes the volume system object.
+    """Initializes a volume system.
 
     Raises:
       VolumeSystemError: if the volume system could not be accessed.
@@ -86,20 +89,20 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
       self._sections.append(volume_extent)
 
   def Open(self, path_spec):
-    """Opens a volume object defined by path specification.
+    """Opens a volume defined by path specification.
 
     Args:
-      path_spec: the path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Raises:
       VolumeSystemError: if the TSK partition virtual file system could not
-                         be resolved.
+          be resolved.
     """
     self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
     if self._file_system is None:
       raise errors.VolumeSystemError(
-          u'Unable to resolve file system from path specification.')
+          'Unable to resolve file system from path specification.')
 
     type_indicator = self._file_system.type_indicator
     if type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
-      raise errors.VolumeSystemError(u'Unsupported file system type.')
+      raise errors.VolumeSystemError('Unsupported file system type.')

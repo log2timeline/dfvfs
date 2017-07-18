@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The root only file system implementation."""
 
+from __future__ import unicode_literals
+
 import abc
 
 from dfvfs.lib import errors
@@ -33,7 +35,7 @@ class RootOnlyFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.

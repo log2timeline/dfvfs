@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file system implementation."""
 
+from __future__ import unicode_literals
+
 import pyvshadow
 
 # This is necessary to prevent a circular import.
@@ -17,7 +19,7 @@ from dfvfs.vfs import file_system
 class VShadowFileSystem(file_system.FileSystem):
   """File system that uses pyvshadow."""
 
-  LOCATION_ROOT = u'/'
+  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, resolver_context):
@@ -57,7 +59,7 @@ class VShadowFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -86,7 +88,7 @@ class VShadowFileSystem(file_system.FileSystem):
     # The virtual root file has not corresponding store index but
     # should have a location.
     if store_index is None:
-      location = getattr(path_spec, u'location', None)
+      location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
     return (store_index >= 0 and
@@ -106,7 +108,7 @@ class VShadowFileSystem(file_system.FileSystem):
     # The virtual root file has not corresponding store index but
     # should have a location.
     if store_index is None:
-      location = getattr(path_spec, u'location', None)
+      location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
         return
       return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The data range file system implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import data_range_path_spec
@@ -47,17 +49,17 @@ class DataRangeFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
-    range_offset = getattr(path_spec, u'range_offset', None)
+    range_offset = getattr(path_spec, 'range_offset', None)
     if range_offset is None:
       raise errors.PathSpecError(
-          u'Unsupported path specification without encoding method.')
+          'Unsupported path specification without encoding method.')
 
-    range_size = getattr(path_spec, u'range_size', None)
+    range_size = getattr(path_spec, 'range_size', None)
     if range_size is None:
       raise errors.PathSpecError(
-          u'Unsupported path specification without encoding method.')
+          'Unsupported path specification without encoding method.')
 
     self._range_offset = range_offset
     self._range_size = range_size

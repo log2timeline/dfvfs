@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The zip file entry implementation."""
+"""The ZIP file entry implementation."""
+
+from __future__ import unicode_literals
 
 from dfdatetime import time_elements as dfdatetime_time_elements
 
@@ -22,7 +24,7 @@ class ZipDirectory(file_entry.Directory):
     Yields:
       ZipPathSpec: a path specification.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
 
     if (location is None or
         not location.startswith(self._file_system.PATH_SEPARATOR)):
@@ -37,7 +39,7 @@ class ZipDirectory(file_entry.Directory):
 
     zip_file = self._file_system.GetZipFile()
     for zip_info in zip_file.infolist():
-      path = getattr(zip_info, u'filename', None)
+      path = getattr(zip_info, 'filename', None)
       if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
         try:
           path = path.decode(self._file_system.encoding)
@@ -64,7 +66,7 @@ class ZipDirectory(file_entry.Directory):
         is_directory = True
       else:
         path_spec_location = self._file_system.JoinPath([path])
-        is_directory = path.endswith(u'/')
+        is_directory = path.endswith('/')
 
       if is_directory:
         if path_spec_location in processed_directories:
@@ -113,13 +115,13 @@ class ZipFileEntry(file_entry.FileEntry):
     if not is_virtual and zip_info is None:
       zip_info = file_system.GetZipInfoByPathSpec(path_spec)
     if not is_virtual and zip_info is None:
-      raise errors.BackEndError(u'Missing zip info in non-virtual file entry.')
+      raise errors.BackEndError('Missing zip info in non-virtual file entry.')
 
     super(ZipFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
-    self._creator_system = getattr(zip_info, u'create_system', 0)
-    self._external_attributes = getattr(zip_info, u'external_attr', 0)
+    self._creator_system = getattr(zip_info, 'create_system', 0)
+    self._external_attributes = getattr(zip_info, 'external_attr', 0)
     self._zip_info = zip_info
 
     if (is_virtual or
@@ -147,7 +149,7 @@ class ZipFileEntry(file_entry.FileEntry):
 
     if self._zip_info is not None:
       # File data stat information.
-      stat_object.size = getattr(self._zip_info, u'file_size', None)
+      stat_object.size = getattr(self._zip_info, 'file_size', None)
 
       # Ownership and permissions stat information.
       if self._external_attributes != 0:
@@ -171,7 +173,7 @@ class ZipFileEntry(file_entry.FileEntry):
   @property
   def name(self):
     """str: name of the file entry, without the full path."""
-    path = getattr(self.path_spec, u'location', None)
+    path = getattr(self.path_spec, 'location', None)
     if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
       try:
         path = path.decode(self._file_system.encoding)
@@ -183,7 +185,7 @@ class ZipFileEntry(file_entry.FileEntry):
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     if self._zip_info is not None:
-      time_elements = getattr(self._zip_info, u'date_time', None)
+      time_elements = getattr(self._zip_info, 'date_time', None)
       return dfdatetime_time_elements.TimeElements(time_elements)
 
   @property
@@ -195,15 +197,15 @@ class ZipFileEntry(file_entry.FileEntry):
     zip_file = self._file_system.GetZipFile()
     if self._directory and zip_file:
       for path_spec in self._directory.entries:
-        location = getattr(path_spec, u'location', None)
+        location = getattr(path_spec, 'location', None)
         if location is None:
           continue
 
         kwargs = {}
         try:
-          kwargs[u'zip_info'] = zip_file.getinfo(location[1:])
+          kwargs['zip_info'] = zip_file.getinfo(location[1:])
         except KeyError:
-          kwargs[u'is_virtual'] = True
+          kwargs['is_virtual'] = True
 
         yield ZipFileEntry(
             self._resolver_context, self._file_system, path_spec, **kwargs)
@@ -214,7 +216,7 @@ class ZipFileEntry(file_entry.FileEntry):
     Returns:
       ZipFileEntry: parent file entry or None if not available.
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
@@ -222,9 +224,9 @@ class ZipFileEntry(file_entry.FileEntry):
     if parent_location is None:
       return
 
-    parent_path_spec = getattr(self.path_spec, u'parent', None)
+    parent_path_spec = getattr(self.path_spec, 'parent', None)
 
-    if parent_location == u'':
+    if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
       is_root = True
       is_virtual = True
@@ -248,12 +250,12 @@ class ZipFileEntry(file_entry.FileEntry):
       PathSpecError: if the path specification is incorrect.
     """
     if not self._zip_info:
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is None:
-        raise errors.PathSpecError(u'Path specification missing location.')
+        raise errors.PathSpecError('Path specification missing location.')
 
       if not location.startswith(self._file_system.LOCATION_ROOT):
-        raise errors.PathSpecError(u'Invalid location in path specification.')
+        raise errors.PathSpecError('Invalid location in path specification.')
 
       if len(location) == 1:
         return

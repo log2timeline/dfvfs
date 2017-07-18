@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The CPIO file entry implementation."""
 
+from __future__ import unicode_literals
+
 import stat
 
 from dfvfs.lib import definitions
@@ -22,7 +24,7 @@ class CPIODirectory(file_entry.Directory):
     Yields:
       A path specification (instance of path.CPIOPathSpec).
     """
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
 
     if (location is None or
         not location.startswith(self._file_system.PATH_SEPARATOR)):
@@ -98,9 +100,9 @@ class CPIOFileEntry(file_entry.FileEntry):
       cpio_archive_file_entry = self.GetCPIOArchiveFileEntry()
       if not self._is_virtual and cpio_archive_file_entry is None:
         raise errors.BackEndError(
-            u'Missing CPIO archive file entry in non-virtual file entry.')
+            'Missing CPIO archive file entry in non-virtual file entry.')
 
-      self._link = u''
+      self._link = ''
       if stat.S_ISLNK(cpio_archive_file_entry.mode):
         cpio_archive_file = self._file_system.GetCPIOArchiveFile()
         link_data = cpio_archive_file.ReadDataAtOffset(
@@ -108,7 +110,7 @@ class CPIOFileEntry(file_entry.FileEntry):
             cpio_archive_file_entry.data_size)
 
         # TODO: should this be ASCII?
-        self._link = link_data.decode(u'ascii')
+        self._link = link_data.decode('ascii')
 
     return self._link
 
@@ -125,24 +127,24 @@ class CPIOFileEntry(file_entry.FileEntry):
     cpio_archive_file_entry = self.GetCPIOArchiveFileEntry()
     if not self._is_virtual and cpio_archive_file_entry is None:
       raise errors.BackEndError(
-          u'Missing CPIO archive file entry in non-virtual file entry.')
+          'Missing CPIO archive file entry in non-virtual file entry.')
 
     stat_object = vfs_stat.VFSStat()
 
     # File data stat information.
-    stat_object.size = getattr(cpio_archive_file_entry, u'data_size', None)
+    stat_object.size = getattr(cpio_archive_file_entry, 'data_size', None)
 
     # Date and time stat information.
     stat_object.mtime = getattr(
-        cpio_archive_file_entry, u'modification_time', None)
+        cpio_archive_file_entry, 'modification_time', None)
 
     # Ownership and permissions stat information.
-    mode = getattr(cpio_archive_file_entry, u'mode', 0)
+    mode = getattr(cpio_archive_file_entry, 'mode', 0)
     stat_object.mode = stat.S_IMODE(mode)
     stat_object.uid = getattr(
-        cpio_archive_file_entry, u'user_identifier', None)
+        cpio_archive_file_entry, 'user_identifier', None)
     stat_object.gid = getattr(
-        cpio_archive_file_entry, u'group_identifier', None)
+        cpio_archive_file_entry, 'group_identifier', None)
 
     # File entry type stat information.
 
@@ -174,7 +176,7 @@ class CPIOFileEntry(file_entry.FileEntry):
     # Note that the root file entry is virtual and has no
     # cpio_archive_file_entry.
     if cpio_archive_file_entry is None:
-      return u''
+      return ''
 
     return self._file_system.BasenamePath(cpio_archive_file_entry.path)
 
@@ -200,12 +202,12 @@ class CPIOFileEntry(file_entry.FileEntry):
       ValueError: if the path specification is incorrect.
     """
     if not self._cpio_archive_file_entry:
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is None:
-        raise ValueError(u'Path specification missing location.')
+        raise ValueError('Path specification missing location.')
 
       if not location.startswith(self._file_system.LOCATION_ROOT):
-        raise ValueError(u'Invalid location in path specification.')
+        raise ValueError('Invalid location in path specification.')
 
       if len(location) == 1:
         return
@@ -218,17 +220,17 @@ class CPIOFileEntry(file_entry.FileEntry):
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry."""
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None:
       return
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
       return
-    if parent_location == u'':
+    if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
 
-    parent_path_spec = getattr(self.path_spec, u'parent', None)
+    parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=parent_location, parent=parent_path_spec)
     return CPIOFileEntry(self._resolver_context, self._file_system, path_spec)

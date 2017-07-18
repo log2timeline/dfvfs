@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The TAR file system implementation."""
 
+from __future__ import unicode_literals
+
 import tarfile
 
 # This is necessary to prevent a circular import.
@@ -20,10 +22,10 @@ class TARFileSystem(file_system.FileSystem):
     encoding (str): file entry name encoding.
   """
 
-  LOCATION_ROOT = u'/'
+  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
-  def __init__(self, resolver_context, encoding=u'utf-8'):
+  def __init__(self, resolver_context, encoding='utf-8'):
     """Initializes a file system.
 
     Args:
@@ -62,7 +64,7 @@ class TARFileSystem(file_system.FileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -87,7 +89,7 @@ class TARFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if (location is None or
         not location.startswith(self.LOCATION_ROOT)):
@@ -123,7 +125,7 @@ class TARFileSystem(file_system.FileSystem):
     if not self.FileEntryExistsByPathSpec(path_spec):
       return
 
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
 
     if len(location) == 1:
       return dfvfs.vfs.tar_file_entry.TARFileEntry(
@@ -132,9 +134,9 @@ class TARFileSystem(file_system.FileSystem):
 
     kwargs = {}
     try:
-      kwargs[u'tar_info'] = self._tar_file.getmember(location[1:])
+      kwargs['tar_info'] = self._tar_file.getmember(location[1:])
     except KeyError:
-      kwargs[u'is_virtual'] = True
+      kwargs['is_virtual'] = True
 
     return dfvfs.vfs.tar_file_entry.TARFileEntry(
         self._resolver_context, self, path_spec, **kwargs)

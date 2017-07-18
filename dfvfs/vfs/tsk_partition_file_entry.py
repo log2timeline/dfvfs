@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import tsk_partition
@@ -21,13 +23,13 @@ class TSKPartitionDirectory(file_entry.Directory):
       A path specification (instance of path.TSKPartitionPathSpec).
     """
     # Only the virtual root file has directory entries.
-    part_index = getattr(self.path_spec, u'part_index', None)
-    start_offset = getattr(self.path_spec, u'start_offset', None)
+    part_index = getattr(self.path_spec, 'part_index', None)
+    start_offset = getattr(self.path_spec, 'start_offset', None)
 
     if part_index is not None or start_offset is not None:
       return
 
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None or location != self._file_system.LOCATION_ROOT:
       return
 
@@ -44,17 +46,17 @@ class TSKPartitionDirectory(file_entry.Directory):
 
       if tsk_partition.TSKVsPartIsAllocated(tsk_vs_part):
         partition_index += 1
-        kwargs[u'location'] = u'/p{0:d}'.format(partition_index)
+        kwargs['location'] = '/p{0:d}'.format(partition_index)
 
-      kwargs[u'part_index'] = part_index
+      kwargs['part_index'] = part_index
       part_index += 1
 
       start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
 
       if start_sector is not None:
-        kwargs[u'start_offset'] = start_sector * bytes_per_sector
+        kwargs['start_offset'] = start_sector * bytes_per_sector
 
-      kwargs[u'parent'] = self.path_spec.parent
+      kwargs['parent'] = self.path_spec.parent
 
       yield tsk_partition_path_spec.TSKPartitionPathSpec(**kwargs)
 
@@ -89,7 +91,7 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
           tsk_volume, path_spec)
     if not is_virtual and tsk_vs_part is None:
       raise errors.BackEndError(
-          u'Missing TSK volume system part in non-virtual file entry.')
+          'Missing TSK volume system part in non-virtual file entry.')
 
     super(TSKPartitionFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -150,11 +152,11 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     if self._name is None:
       # Directory entries without a location in the path specification
       # are not given a name for now.
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
       else:
-        self._name = u''
+        self._name = ''
     return self._name
 
   @property

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfdatetime import filetime as dfdatetime_filetime
 
 from dfvfs.lib import definitions
@@ -23,11 +25,11 @@ class VShadowDirectory(file_entry.Directory):
       VShadowPathSpec: a path specification.
     """
     # Only the virtual root file has directory entries.
-    store_index = getattr(self.path_spec, u'store_index', None)
+    store_index = getattr(self.path_spec, 'store_index', None)
     if store_index is not None:
       return
 
-    location = getattr(self.path_spec, u'location', None)
+    location = getattr(self.path_spec, 'location', None)
     if location is None or location != self._file_system.LOCATION_ROOT:
       return
 
@@ -35,7 +37,7 @@ class VShadowDirectory(file_entry.Directory):
 
     for store_index in range(0, vshadow_volume.number_of_stores):
       yield vshadow_path_spec.VShadowPathSpec(
-          location=u'/vss{0:d}'.format(store_index + 1),
+          location='/vss{0:d}'.format(store_index + 1),
           store_index=store_index, parent=self.path_spec.parent)
 
 
@@ -65,7 +67,7 @@ class VShadowFileEntry(file_entry.FileEntry):
     vshadow_store = file_system.GetVShadowStoreByPathSpec(path_spec)
     if not is_virtual and vshadow_store is None:
       raise errors.BackEndError(
-          u'Missing vshadow store in non-virtual file entry.')
+          'Missing vshadow store in non-virtual file entry.')
 
     super(VShadowFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -122,15 +124,15 @@ class VShadowFileEntry(file_entry.FileEntry):
   def name(self):
     """str: name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, u'location', None)
+      location = getattr(self.path_spec, 'location', None)
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
       else:
-        store_index = getattr(self.path_spec, u'store_index', None)
+        store_index = getattr(self.path_spec, 'store_index', None)
         if store_index is not None:
-          self._name = u'vss{0:d}'.format(store_index + 1)
+          self._name = 'vss{0:d}'.format(store_index + 1)
         else:
-          self._name = u''
+          self._name = ''
     return self._name
 
   @property

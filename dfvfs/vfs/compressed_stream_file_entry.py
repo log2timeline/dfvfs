@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The compressed stream file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
@@ -24,7 +26,7 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     compressed_stream = self.GetFileObject()
     if not compressed_stream:
       raise errors.BackEndError(
-          u'Unable to open compressed stream: {0:s}.'.format(
+          'Unable to open compressed stream: {0:s}.'.format(
               self.path_spec.comparable))
 
     try:

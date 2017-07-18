@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The compressed stream file system implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import compressed_stream_path_spec
@@ -45,12 +47,12 @@ class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
-    compression_method = getattr(path_spec, u'compression_method', None)
+    compression_method = getattr(path_spec, 'compression_method', None)
     if not compression_method:
       raise errors.PathSpecError(
-          u'Unsupported path specification without compression method.')
+          'Unsupported path specification without compression method.')
 
     self._compression_method = compression_method
 
