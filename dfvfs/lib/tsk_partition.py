@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Helper functions for SleuthKit (TSK) partition support."""
 
+from __future__ import unicode_literals
+
 import pytsk3
 
 
@@ -8,22 +10,24 @@ def GetTSKVsPartByPathSpec(tsk_volume, path_spec):
   """Retrieves the TSK volume system part object from the TSK volume object.
 
   Args:
-    tsk_volume: a TSK volume object (instance of pytsk3.Volume_Info).
-    path_spec: the path specification (instance of PathSpec).
+    tsk_volume (pytsk3.Volume_Info): TSK volume information.
+    path_spec (PathSpec): path specification.
 
   Returns:
-    A tuple of the TSK volume system part object (instance of
-    pytsk3.TSK_VS_PART_INFO) and the partition index. The partition index
-    is None when not available. The function return or (None, None) on error.
+    tuple: contains:
+
+      pytsk3.TSK_VS_PART_INFO: TSK volume system part information or
+          None on error.
+      int: partition index or None if not available.
   """
-  location = getattr(path_spec, u'location', None)
-  part_index = getattr(path_spec, u'part_index', None)
-  start_offset = getattr(path_spec, u'start_offset', None)
+  location = getattr(path_spec, 'location', None)
+  part_index = getattr(path_spec, 'part_index', None)
+  start_offset = getattr(path_spec, 'start_offset', None)
   partition_index = None
 
   if part_index is None:
     if location is not None:
-      if location.startswith(u'/p'):
+      if location.startswith('/p'):
         try:
           partition_index = int(location[2:], 10) - 1
         except ValueError:
@@ -85,16 +89,16 @@ def TSKVolumeGetBytesPerSector(tsk_volume):
   """Retrieves the number of bytes per sector from a TSK volume object.
 
   Args:
-    tsk_volume: a TSK volume object (instance of pytsk3.Volume_Info).
+    tsk_volume (pytsk3.Volume_Info): TSK volume information.
 
   Returns:
-    The number of bytes per sector or 512 by default.
+    int: number of bytes per sector or 512 by default.
   """
   # Note that because pytsk3.Volume_Info does not explicitly defines info
   # we need to check if the attribute exists and has a value other
   # than None. Default to 512 otherwise.
-  if hasattr(tsk_volume, u'info') and tsk_volume.info is not None:
-    block_size = getattr(tsk_volume.info, u'block_size', 512)
+  if hasattr(tsk_volume, 'info') and tsk_volume.info is not None:
+    block_size = getattr(tsk_volume.info, 'block_size', 512)
   else:
     block_size = 512
 
@@ -105,46 +109,43 @@ def TSKVsPartGetNumberOfSectors(tsk_vs_part):
   """Retrieves the number of sectors of a TSK volume system part object.
 
   Args:
-    tsk_vs_part: a TSK volume system part object (instance of
-                 pytsk3.TSK_VS_PART_INFO).
+    tsk_vs_part (pytsk3.TSK_VS_PART_INFO): TSK volume system part information.
 
   Returns:
-    The number of sectors or None.
+    int: number of sectors or None.
   """
   # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
   # len we need to check if the attribute exists.
-  return getattr(tsk_vs_part, u'len', None)
+  return getattr(tsk_vs_part, 'len', None)
 
 
 def TSKVsPartGetStartSector(tsk_vs_part):
   """Retrieves the start sector of a TSK volume system part object.
 
   Args:
-    tsk_vs_part: a TSK volume system part object (instance of
-                 pytsk3.TSK_VS_PART_INFO).
+    tsk_vs_part (pytsk3.TSK_VS_PART_INFO): TSK volume system part information.
 
   Returns:
-    The start sector or None.
+    int: start sector or None.
   """
   # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
   # start we need to check if the attribute exists.
-  return getattr(tsk_vs_part, u'start', None)
+  return getattr(tsk_vs_part, 'start', None)
 
 
 def TSKVsPartIsAllocated(tsk_vs_part):
   """Determines if the TSK volume system part object is allocated.
 
   Args:
-    tsk_vs_part: a TSK volume system part object (instance of
-                 pytsk3.TSK_VS_PART_INFO).
+    tsk_vs_part (pytsk3.TSK_VS_PART_INFO): TSK volume system part information.
 
   Returns:
-    True if the volume system part is allocated, False otherwise.
+    bool: True if the volume system part is allocated, False otherwise.
   """
   # Note that because pytsk3.TSK_VS_PART_INFO does not explicitly defines
   # flags need to check if the attribute exists.
   # The flags are an instance of TSK_VS_PART_FLAG_ENUM.
-  tsk_vs_part_flags = getattr(tsk_vs_part, u'flags', None)
+  tsk_vs_part_flags = getattr(tsk_vs_part, 'flags', None)
 
   return (tsk_vs_part_flags is not None and
           tsk_vs_part_flags == pytsk3.TSK_VS_PART_FLAG_ALLOC)

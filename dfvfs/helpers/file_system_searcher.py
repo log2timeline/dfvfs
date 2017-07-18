@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """A searcher to find file entries within a file system."""
 
+from __future__ import unicode_literals
+
 import re
 import sre_constants
 
@@ -54,8 +56,8 @@ class FindSpec(object):
 
     if len(location_arguments) > 1:
       raise ValueError((
-          u'The location, location_glob and location_regex arguments cannot '
-          u'be used at same time.'))
+          'The location, location_glob and location_regex arguments cannot '
+          'be used at same time.'))
 
     super(FindSpec, self).__init__()
     self._file_entry_types = file_entry_types
@@ -73,7 +75,7 @@ class FindSpec(object):
       elif isinstance(location, list):
         self._location_segments = location
       else:
-        raise TypeError(u'Unsupported location type: {0:s}.'.format(
+        raise TypeError('Unsupported location type: {0:s}.'.format(
             type(location)))
 
     elif location_glob is not None:
@@ -88,7 +90,7 @@ class FindSpec(object):
           self._location_segments.append(location_regex)
 
       else:
-        raise TypeError(u'Unsupported location_glob type: {0:s}.'.format(
+        raise TypeError('Unsupported location_glob type: {0:s}.'.format(
             type(location_glob)))
 
       self._is_regex = True
@@ -99,7 +101,7 @@ class FindSpec(object):
       elif isinstance(location_regex, list):
         self._location_segments = location_regex
       else:
-        raise TypeError(u'Unsupported location_regex type: {0:s}.'.format(
+        raise TypeError('Unsupported location_regex type: {0:s}.'.format(
             type(location_regex)))
 
       self._is_regex = True
@@ -241,7 +243,7 @@ class FindSpec(object):
     # Note that the root has no entry in the location segments and
     # no name to match.
     if search_depth == 0:
-      segment_name = u''
+      segment_name = ''
     else:
       segment_name = self._location_segments[search_depth - 1]
 
@@ -293,7 +295,7 @@ class FindSpec(object):
 
     # The regular expression from glob2regex contains escaped forward
     # slashes "/", which needs to be undone.
-    return location_regex.replace(u'\\/', '/')
+    return location_regex.replace('\\/', '/')
 
   def _SplitPath(self, path, path_separator):
     """Splits the path into path segments.
@@ -371,9 +373,9 @@ class FindSpec(object):
 
     elif self._location_regex is not None:
       path_separator = file_system.PATH_SEPARATOR
-      if path_separator == u'\\':
+      if path_separator == '\\':
         # The backslash '\' is escaped within a regular expression.
-        path_separator = u'\\\\'
+        path_separator = '\\\\'
 
       self._location_segments = self._SplitPath(
           self._location_regex, path_separator)
@@ -398,13 +400,13 @@ class FileSystemSearcher(object):
       ValueError: when file system or mount point is not set.
     """
     if not file_system or not mount_point:
-      raise ValueError(u'Missing file system or mount point value.')
+      raise ValueError('Missing file system or mount point value.')
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         file_system.type_indicator):
-      if not hasattr(mount_point, u'location'):
+      if not hasattr(mount_point, 'location'):
         raise errors.PathSpecError(
-            u'Mount point path specification missing location.')
+            'Mount point path specification missing location.')
 
     super(FileSystemSearcher, self).__init__()
     self._file_system = file_system
@@ -494,22 +496,22 @@ class FileSystemSearcher(object):
     Raises:
       PathSpecError: if the path specification is incorrect.
     """
-    location = getattr(path_spec, u'location', None)
+    location = getattr(path_spec, 'location', None)
     if location is None:
-      raise errors.PathSpecError(u'Path specification missing location.')
+      raise errors.PathSpecError('Path specification missing location.')
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         self._file_system.type_indicator):
       if not location.startswith(self._mount_point.location):
         raise errors.PathSpecError(
-            u'Path specification does not contain mount point.')
+            'Path specification does not contain mount point.')
     else:
-      if not hasattr(path_spec, u'parent'):
-        raise errors.PathSpecError(u'Path specification missing parent.')
+      if not hasattr(path_spec, 'parent'):
+        raise errors.PathSpecError('Path specification missing parent.')
 
       if path_spec.parent != self._mount_point:
         raise errors.PathSpecError(
-            u'Path specification does not contain mount point.')
+            'Path specification does not contain mount point.')
 
     path_segments = self._file_system.SplitPath(location)
 
@@ -519,7 +521,7 @@ class FileSystemSearcher(object):
           self._mount_point.location)
       path_segments = path_segments[len(mount_point_path_segments):]
 
-    return u'{0:s}{1:s}'.format(
+    return '{0:s}{1:s}'.format(
         self._file_system.PATH_SEPARATOR,
         self._file_system.PATH_SEPARATOR.join(path_segments))
 

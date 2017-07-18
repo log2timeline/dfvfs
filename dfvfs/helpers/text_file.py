@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """A text file interface for file-like objects."""
 
+from __future__ import unicode_literals
+
 import os
 
 # Since this class implements the readlines file-like object interface
@@ -11,7 +13,7 @@ import os
 
 
 class TextFile(object):
-  """Class that implements a text file interface for file-like objects."""
+  """Text file interface for file-like objects."""
 
   # The size of the lines buffer.
   _LINES_BUFFER_SIZE = 1024 * 1024
@@ -23,9 +25,8 @@ class TextFile(object):
     """Initializes the text file.
 
     Args:
-      file_object: the file-like object (instance of file_io.FileIO) to read
-                   from.
-      end_of_line: optional string containing the end of line indicator.
+      file_object (FileIO): a file-like object to read from.
+      end_of_line (Optional[str]): end of line indicator.
     """
     super(TextFile, self).__init__()
     self._file_object = file_object
@@ -50,7 +51,7 @@ class TextFile(object):
     """Returns a line of text.
 
     Yields:
-      A byte string containing a line of text.
+      bytes: line of text.
     """
     line = self.readline()
     while line:
@@ -63,20 +64,19 @@ class TextFile(object):
     The number of reads are minimized by using a lines buffer.
 
     Args:
-      maximum_size: optional integer value that contains the maximum number of
-                    bytes to read from the file-like object. The default is None
-                    indicating all remaining data.
+      maximum_size (Optional[int]): maximum number of bytes to read from
+         the file-like object, where None represents all remaining data.
 
     Raises:
       ValueError: if the maximum size is smaller than zero or exceeds the
-                  maximum (as defined by _MAXIMUM_READ_BUFFER_SIZE).
+          maximum (as defined by _MAXIMUM_READ_BUFFER_SIZE).
     """
     if maximum_size is not None and maximum_size < 0:
-      raise ValueError(u'Invalid maximum size value smaller than zero.')
+      raise ValueError('Invalid maximum size value smaller than zero.')
 
     if (maximum_size is not None and
         maximum_size > self._MAXIMUM_READ_BUFFER_SIZE):
-      raise ValueError(u'Invalid maximum size value exceeds maximum.')
+      raise ValueError('Invalid maximum size value exceeds maximum.')
 
     if self._lines_buffer_offset >= self._file_object_size:
       return b''
@@ -140,11 +140,10 @@ class TextFile(object):
     encountered immediately.
 
     Args:
-      size: Optional integer value that contains the maximum string size
-            to read. Default is None.
+      size (Optional[int]): maximum string size to read.
 
     Returns:
-      A byte string containing a line of text.
+      bytes: line of text.
     """
     if size is None or size <= 0:
       size = None
@@ -188,11 +187,10 @@ class TextFile(object):
     an internal buffer size) are read.
 
     Args:
-      sizehint: optional integer value that contains the maximum byte size
-                to read. Default is None.
+      sizehint (Optional[int]): maximum byte size to read.
 
     Returns:
-      A list of byte strings containing a lines of text.
+      list[bytes]: lines of text.
     """
     if sizehint is None or sizehint <= 0:
       sizehint = None
@@ -216,10 +214,18 @@ class TextFile(object):
 
   # get_offset() is preferred above tell() by the libbfio layer used in libyal.
   def get_offset(self):
-    """Retrieves the current offset into the file-like object."""
+    """Retrieves the current offset into the file-like object.
+
+    Returns:
+      int: cuffent offset into the file-like object.
+    """
     return self._current_offset
 
   # Pythonesque alias for get_offet().
   def tell(self):
-    """Retrieves the current offset into the file-like object."""
+    """Retrieves the current offset into the file-like object.
+
+    Returns:
+      int: cuffent offset into the file-like object.
+    """
     return self._current_offset
