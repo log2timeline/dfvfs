@@ -16,7 +16,7 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
       is_virtual=False):
-    """Initializes the file entry object.
+    """Initializes a file entry.
 
     Args:
       resolver_context (Context): resolver context.
@@ -25,6 +25,7 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
       is_root (Optional[bool]): True if the file entry is the root file entry
           of the corresponding file system.
       is_virtual (Optional[bool]): True if the file entry is a virtual file
+          entry emulated by the corresponding file system.
 
     Raises:
       BackEndError: when the FVDE volume is missing.
