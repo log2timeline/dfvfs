@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """The compression manager."""
 
+from __future__ import unicode_literals
+
 
 class CompressionManager(object):
-  """Class that implements the compression manager."""
+  """Compression manager."""
 
   _decompressors = {}
 
@@ -20,7 +22,7 @@ class CompressionManager(object):
     compression_method = decompressor.COMPRESSION_METHOD.lower()
     if compression_method not in cls._decompressors:
       raise KeyError(
-          u'Decompressor for compression method: {0:s} not set.'.format(
+          'Decompressor for compression method: {0:s} not set.'.format(
               decompressor.COMPRESSION_METHOD))
 
     del cls._decompressors[compression_method]
@@ -56,7 +58,7 @@ class CompressionManager(object):
     compression_method = decompressor.COMPRESSION_METHOD.lower()
     if compression_method in cls._decompressors:
       raise KeyError(
-          u'Decompressor for compression method: {0:s} already set.'.format(
+          'Decompressor for compression method: {0:s} already set.'.format(
               decompressor.COMPRESSION_METHOD))
 
     cls._decompressors[compression_method] = decompressor

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition format analyzer helper implementation."""
 
+from __future__ import unicode_literals
+
 import pytsk3
 
 from dfvfs.analyzer import analyzer
@@ -10,7 +12,7 @@ from dfvfs.lib import tsk_image
 
 
 class TSKPartitionAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Class that implements the TSK partition analyzer helper."""
+  """TSK partition analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
       definitions.FORMAT_CATEGORY_VOLUME_SYSTEM])

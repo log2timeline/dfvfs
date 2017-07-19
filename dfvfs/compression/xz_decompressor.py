@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The LZMA and XZ decompressor object implementations."""
+"""The LZMA and XZ decompressor implementations."""
+
+from __future__ import unicode_literals
 
 import sys
 
@@ -19,12 +21,12 @@ from dfvfs.lib import errors
 
 
 class XZDecompressor(decompressor.Decompressor):
-  """Class that implements a XZ decompressor using lzma."""
+  """XZ decompressor using lzma."""
 
   COMPRESSION_METHOD = definitions.COMPRESSION_METHOD_XZ
 
   def __init__(self):
-    """Initializes the decompressor object."""
+    """Initializes a decompressor."""
     super(XZDecompressor, self).__init__()
     # Note that lzma.FORMAT_XZ does not work for every implementation of lzma.
     self._lzma_decompressor = lzma.LZMADecompressor(1)
@@ -51,23 +53,23 @@ class XZDecompressor(decompressor.Decompressor):
         uncompressed_data = self._lzma_decompressor.decompress(compressed_data)
 
       remaining_compressed_data = getattr(
-          self._lzma_decompressor, u'unused_data', b'')
+          self._lzma_decompressor, 'unused_data', b'')
 
     except (EOFError, IOError, LZMAError) as exception:
       raise errors.BackEndError((
-          u'Unable to decompress XZ compressed stream with error: '
-          u'{0!s}.').format(exception))
+          'Unable to decompress XZ compressed stream with error: '
+          '{0!s}.').format(exception))
 
     return uncompressed_data, remaining_compressed_data
 
 
 class LZMADecompressor(XZDecompressor):
-  """Class that implements a LZMA decompressor using lzma."""
+  """LZMA decompressor using lzma."""
 
   COMPRESSION_METHOD = definitions.COMPRESSION_METHOD_LZMA
 
   def __init__(self):
-    """Initializes the decompressor object."""
+    """Initializes a decompressor."""
     super(LZMADecompressor, self).__init__()
     # Note that lzma.FORMAT_ALONE does not work for every implementation
     # of lzma.

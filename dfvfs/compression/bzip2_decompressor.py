@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The BZIP2 decompressor object implementation."""
+"""The BZIP2 decompressor implementation."""
+
+from __future__ import unicode_literals
 
 import bz2
 
@@ -10,12 +12,12 @@ from dfvfs.lib import errors
 
 
 class BZIP2Decompressor(decompressor.Decompressor):
-  """Class that implements a BZIP2 decompressor using bz2."""
+  """BZIP2 decompressor using bz2."""
 
   COMPRESSION_METHOD = definitions.COMPRESSION_METHOD_BZIP2
 
   def __init__(self):
-    """Initializes the decompressor object."""
+    """Initializes a decompressor."""
     super(BZIP2Decompressor, self).__init__()
     self._bz2_decompressor = bz2.BZ2Decompressor()
 
@@ -34,12 +36,12 @@ class BZIP2Decompressor(decompressor.Decompressor):
     try:
       uncompressed_data = self._bz2_decompressor.decompress(compressed_data)
       remaining_compressed_data = getattr(
-          self._bz2_decompressor, u'unused_data', b'')
+          self._bz2_decompressor, 'unused_data', b'')
 
     except (EOFError, IOError) as exception:
       raise errors.BackEndError((
-          u'Unable to decompress BZIP2 compressed stream with error: '
-          u'{0!s}.').format(exception))
+          'Unable to decompress BZIP2 compressed stream with error: '
+          '{0!s}.').format(exception))
 
     return uncompressed_data, remaining_compressed_data
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The VHDI format analyzer helper implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
 from dfvfs.analyzer import specification
@@ -8,7 +10,7 @@ from dfvfs.lib import definitions
 
 
 class VHDIAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Class that implements the VHDI analyzer helper."""
+  """VHDI analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
       definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE])
