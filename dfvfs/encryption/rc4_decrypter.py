@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The RC4 decrypter object implementation."""
+"""The RC4 decrypter implementation."""
+
+from __future__ import unicode_literals
 
 from Crypto.Cipher import ARC4
 
@@ -9,12 +11,12 @@ from dfvfs.lib import definitions
 
 
 class RC4Decrypter(decrypter.Decrypter):
-  """Class that implements a RC4 decrypter using pycrypto."""
+  """RC4 decrypter using pycrypto."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_RC4
 
   def __init__(self, key=None, **kwargs):
-    """Initializes the decrypter object.
+    """Initializes a decrypter.
 
     Args:
       key (Optional[bytes]): key.
@@ -24,7 +26,7 @@ class RC4Decrypter(decrypter.Decrypter):
       ValueError: when key is not set.
     """
     if not key:
-      raise ValueError(u'Missing key.')
+      raise ValueError('Missing key.')
 
     super(RC4Decrypter, self).__init__()
     self._rc4_cipher = ARC4.new(key)

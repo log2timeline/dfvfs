@@ -6,14 +6,16 @@ E.g. BitLocker Drive Encryption (BDE) encrypted volumes can require a
 credential (e.g. password) to access the unencrypted data (unlock).
 """
 
+from __future__ import unicode_literals
+
 from dfvfs.credentials import manager
 
 
 class KeyChain(object):
-  """Class that implements the key chain."""
+  """Key chain."""
 
   def __init__(self):
-    """Initializes the key chain."""
+    """Initializes a key chain."""
     super(KeyChain, self).__init__()
     self._credentials_per_path_spec = {}
 
@@ -76,8 +78,8 @@ class KeyChain(object):
 
     if identifier not in supported_credentials.CREDENTIALS:
       raise KeyError((
-          u'Unsuppored credential: {0:s} for path specification type: '
-          u'{1:s}').format(identifier, path_spec.type_indicator))
+          'Unsuppored credential: {0:s} for path specification type: '
+          '{1:s}').format(identifier, path_spec.type_indicator))
 
     credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
     credentials[identifier] = data

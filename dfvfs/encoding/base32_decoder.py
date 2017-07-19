@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The base32 decoder object implementation."""
+"""The base32 decoder implementation."""
+
+from __future__ import unicode_literals
 
 import base64
 import binascii
@@ -11,7 +13,7 @@ from dfvfs.lib import errors
 
 
 class Base32Decoder(decoder.Decoder):
-  """Class that implements a base32 decoder using base64."""
+  """Base32 decoder using base64."""
 
   ENCODING_METHOD = definitions.ENCODING_METHOD_BASE32
 
@@ -31,7 +33,7 @@ class Base32Decoder(decoder.Decoder):
       decoded_data = base64.b32decode(encoded_data, casefold=False)
     except (TypeError, binascii.Error) as exception:
       raise errors.BackEndError(
-          u'Unable to decode base32 stream with error: {0!s}.'.format(
+          'Unable to decode base32 stream with error: {0!s}.'.format(
               exception))
 
     return decoded_data, b''

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The base64 decoder object implementation."""
+"""The base64 decoder implementation."""
+
+from __future__ import unicode_literals
 
 import base64
 import binascii
@@ -11,7 +13,7 @@ from dfvfs.lib import errors
 
 
 class Base64Decoder(decoder.Decoder):
-  """Class that implements a base64 decoder using base64."""
+  """Base64 decoder using base64."""
 
   ENCODING_METHOD = definitions.ENCODING_METHOD_BASE64
 
@@ -35,7 +37,7 @@ class Base64Decoder(decoder.Decoder):
       decoded_data = base64.b64decode(encoded_data)
     except (TypeError, binascii.Error) as exception:
       raise errors.BackEndError(
-          u'Unable to decode base64 stream with error: {0!s}.'.format(
+          'Unable to decode base64 stream with error: {0!s}.'.format(
               exception))
 
     return decoded_data, b''

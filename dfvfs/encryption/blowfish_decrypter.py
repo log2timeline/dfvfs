@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The Blowfish decrypter object implementation."""
+"""The Blowfish decrypter implementation."""
+
+from __future__ import unicode_literals
 
 from Crypto.Cipher import Blowfish
 
@@ -9,7 +11,7 @@ from dfvfs.lib import definitions
 
 
 class BlowfishDecrypter(decrypter.Decrypter):
-  """Class that implements a Blowfish decrypter using pycrypto."""
+  """Blowfish decrypter using pycrypto."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_BLOWFISH
 
@@ -21,7 +23,7 @@ class BlowfishDecrypter(decrypter.Decrypter):
 
   def __init__(
       self, cipher_mode=None, initialization_vector=None, key=None, **kwargs):
-    """Initializes the decrypter object.
+    """Initializes a decrypter.
 
     Args:
       cipher_mode (Optional[str]): cipher mode.
@@ -31,19 +33,19 @@ class BlowfishDecrypter(decrypter.Decrypter):
 
     Raises:
       ValueError: when key is not set, block cipher mode is not supported,
-                  or initialization_vector is required and not set.
+          or initialization_vector is required and not set.
     """
     if not key:
-      raise ValueError(u'Missing key.')
+      raise ValueError('Missing key.')
 
     cipher_mode = self.ENCRYPTION_MODES.get(cipher_mode, None)
     if cipher_mode is None:
-      raise ValueError(u'Unsupported cipher mode: {0!s}'.format(cipher_mode))
+      raise ValueError('Unsupported cipher mode: {0!s}'.format(cipher_mode))
 
     if cipher_mode != Blowfish.MODE_ECB and not initialization_vector:
       # Pycrypto does not create a meaningful error when initialization vector
       # is missing. Therefore, we report it ourselves.
-      raise ValueError(u'Missing initialization vector.')
+      raise ValueError('Missing initialization vector.')
 
     super(BlowfishDecrypter, self).__init__()
     if cipher_mode == Blowfish.MODE_ECB:

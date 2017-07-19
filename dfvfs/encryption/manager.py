@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """The encryption manager."""
 
+from __future__ import unicode_literals
+
 
 class EncryptionManager(object):
-  """Class that implements the encryption manager."""
+  """Encryption manager."""
 
   _decrypters = {}
 
@@ -20,7 +22,7 @@ class EncryptionManager(object):
     encryption_method = decrypter.ENCRYPTION_METHOD.lower()
     if encryption_method not in cls._decrypters:
       raise KeyError(
-          u'Decrypter for encryption method: {0:s} not set.'.format(
+          'Decrypter for encryption method: {0:s} not set.'.format(
               decrypter.ENCRYPTION_METHOD))
 
     del cls._decrypters[encryption_method]
@@ -59,7 +61,7 @@ class EncryptionManager(object):
     encryption_method = decrypter.ENCRYPTION_METHOD.lower()
     if encryption_method in cls._decrypters:
       raise KeyError(
-          u'Decrypter for encryption method: {0:s} already set.'.format(
+          'Decrypter for encryption method: {0:s} already set.'.format(
               decrypter.ENCRYPTION_METHOD))
 
     cls._decrypters[encryption_method] = decrypter
@@ -75,7 +77,7 @@ class EncryptionManager(object):
 
     Raises:
       KeyError: if decrypters is already set for the corresponding
-                encryption method.
+          encryption method.
     """
     for decrypters in decrypters:
       cls.RegisterDecrypters(decrypters)
