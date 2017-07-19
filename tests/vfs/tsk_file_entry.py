@@ -94,16 +94,17 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.gid, 5000)
 
     self.assertEqual(stat_object.atime, 1337961563)
-    self.assertEqual(stat_object.atime_nano, None)
+    self.assertFalse(hasattr(stat_object, u'atime_nano'))
+
     self.assertEqual(stat_object.ctime, 1337961563)
-    self.assertEqual(stat_object.ctime_nano, None)
+    self.assertFalse(hasattr(stat_object, u'ctime_nano'))
+
     # EXT2 has no crtime timestamp.
-    with self.assertRaises(AttributeError):
-      _ = stat_object.crtime
-    with self.assertRaises(AttributeError):
-      _ = stat_object.crtime_nano
+    self.assertFalse(hasattr(stat_object, u'crtime'))
+    self.assertFalse(hasattr(stat_object, u'crtime_nano'))
+
     self.assertEqual(stat_object.mtime, 1337961563)
-    self.assertEqual(stat_object.mtime_nano, None)
+    self.assertFalse(hasattr(stat_object, u'mtime_nano'))
 
   def testIsFunctions(self):
     """Test the Is? functions."""

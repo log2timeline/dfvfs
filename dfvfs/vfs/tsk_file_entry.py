@@ -7,12 +7,109 @@ import copy
 
 import pytsk3
 
+from dfdatetime import definitions as dfdatetime_definitions
+from dfdatetime import interface as dfdatetime_interface
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_entry
-from dfvfs.vfs import vfs_stat
+
+
+class TSKTime(dfdatetime_interface.DateTimeValues):
+  """SleuthKit timestamp."""
+
+  def __init__(self, timestamp=None, timestamp_fragment=None):
+    """Initializes a SleuthKit timestamp.
+
+    Args:
+      timestamp (Optional[int]): POSIX timestamp.
+      timestamp_fragment (Optional[int]): POSIX timestamp fragment.
+    """
+    # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
+    # 1 nano second precision.
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      precision = dfdatetime_definitions.PRECISION_1_NANOSECOND
+    else:
+      precision = dfdatetime_definitions.PRECISION_100_NANOSECONDS
+
+    super(TSKTime, self).__init__()
+    self.precision = precision
+    self.timestamp = timestamp
+    self.timestamp_fragment = timestamp_fragment
+
+  def CopyFromString(self, time_string):
+    """Copies a POSIX timestamp from a date and time string.
+
+    Args:
+      time_string (str): date and time value formatted as:
+          YYYY-MM-DD hh:mm:ss.######[+-]##:##
+
+          Where # are numeric digits ranging from 0 to 9 and the seconds
+          fraction can be either 3 or 6 digits. The time of day, seconds
+          fraction and time zone offset are optional. The default time zone
+          is UTC.
+    """
+    date_time_values = self._CopyDateTimeFromString(time_string)
+
+    year = date_time_values.get('year', 0)
+    month = date_time_values.get('month', 0)
+    day_of_month = date_time_values.get('day_of_month', 0)
+    hours = date_time_values.get('hours', 0)
+    minutes = date_time_values.get('minutes', 0)
+    seconds = date_time_values.get('seconds', 0)
+    microseconds = date_time_values.get('microseconds', 0)
+
+    self.timestamp = self._GetNumberOfSecondsFromElements(
+        year, month, day_of_month, hours, minutes, seconds)
+    self.timestamp_fragment = microseconds
+
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      self.timestamp_fragment *= 1000
+    else:
+      self.timestamp_fragment *= 10
+
+    self.is_local_time = False
+
+  def CopyToStatTimeTuple(self):
+    """Copies the SleuthKit timestamp to a stat timestamp tuple.
+
+    Returns:
+      tuple[int, int]: a POSIX timestamp in seconds and the remainder in
+          100 nano seconds or (None, None) on error.
+    """
+    if self.timestamp is None:
+      return None, None
+
+    if (self.timestamp_fragment is not None and
+        pytsk3.TSK_VERSION_NUM >= 0x040200ff):
+      timestamp_fragment, _ = divmod(self.timestamp_fragment, 100)
+    else:
+      timestamp_fragment = self.timestamp_fragment
+
+    return self.timestamp, timestamp_fragment
+
+  def GetPlasoTimestamp(self):
+    """Retrieves a timestamp that is compatible with plaso.
+
+    Returns:
+      int: a POSIX timestamp in microseconds or None on error.
+    """
+    if self.timestamp is None:
+      return
+
+    timestamp = self.timestamp
+    if self.timestamp_fragment is not None:
+      if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+        timestamp_fragment, _ = divmod(self.timestamp_fragment, 1000)
+      else:
+        timestamp_fragment, _ = divmod(self.timestamp_fragment, 10)
+
+      timestamp *= 1000000
+      timestamp += timestamp_fragment
+
+    return timestamp
 
 
 class TSKAttribute(file_entry.Attribute):
@@ -175,16 +272,23 @@ class TSKFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
+  # pytsk3.TSK_FS_TYPE_ENUM is unhashable, preventing a set
+  # based lookup, hence lists are used.
+
   _TSK_NO_ATIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_ISO9660]
+
   _TSK_NO_MTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_ISO9660]
+
   _TSK_NO_CTIME_FS_TYPES = [
       pytsk3.TSK_FS_TYPE_FAT12, pytsk3.TSK_FS_TYPE_FAT16,
       pytsk3.TSK_FS_TYPE_FAT32, pytsk3.TSK_FS_TYPE_ISO9660,
       pytsk3.TSK_FS_TYPE_EXFAT]
+
   _TSK_NO_CRTIME_FS_TYPES = [
       pytsk3.TSK_FS_TYPE_FFS1, pytsk3.TSK_FS_TYPE_FFS1B,
       pytsk3.TSK_FS_TYPE_FFS2, pytsk3.TSK_FS_TYPE_YAFFS2,
       pytsk3.TSK_FS_TYPE_EXT2, pytsk3.TSK_FS_TYPE_EXT3]
+
   _TSK_HAS_NANO_FS_TYPES = [
       pytsk3.TSK_FS_TYPE_EXT4, pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_HFS,
       pytsk3.TSK_FS_TYPE_FFS2, pytsk3.TSK_FS_TYPE_EXFAT]
@@ -204,31 +308,60 @@ class TSKFileEntry(file_entry.FileEntry):
           entry emulated by the corresponding file system.
       parent_inode (Optional[int]): parent inode number.
       tsk_file (Optional[pytsk3.File]): TSK file.
+
+    Raises:
+      BackEndError: if the TSK File .info or .info.meta attribute is missing.
     """
+    if (not tsk_file or not tsk_file.info or not tsk_file.info.meta or
+        not tsk_file.info.fs_info):
+      tsk_file = file_system.GetTSKFileByPathSpec(path_spec)
+    if (not tsk_file or not tsk_file.info or not tsk_file.info.meta or
+        not tsk_file.info.fs_info):
+      raise errors.BackEndError(
+          'Missing TSK File .info, .info.meta or .info.fs_info')
+
     super(TSKFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
+    self._file_system_type = tsk_file.info.fs_info.ftype
     self._name = None
     self._parent_inode = parent_inode
     self._tsk_file = tsk_file
+
+    # The type is an instance of pytsk3.TSK_FS_META_TYPE_ENUM.
+    tsk_fs_meta_type = getattr(
+        tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
+
+    if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
+      self._type = definitions.FILE_ENTRY_TYPE_FILE
+    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_DIR:
+      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_LNK:
+      self._type = definitions.FILE_ENTRY_TYPE_LINK
+    elif (tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_CHR or
+          tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_BLK):
+      self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_FIFO:
+      self._type = definitions.FILE_ENTRY_TYPE_PIPE
+    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_SOCK:
+      self._type = definitions.FILE_ENTRY_TYPE_SOCKET
+
+    # TODO: implement support for:
+    # pytsk3.TSK_FS_META_TYPE_UNDEF
+    # pytsk3.TSK_FS_META_TYPE_SHAD
+    # pytsk3.TSK_FS_META_TYPE_WHT
+    # pytsk3.TSK_FS_META_TYPE_VIRT
 
   def _GetAttributes(self):
     """Retrieves the attributes.
 
     Returns:
       list[TSKAttribute]: attributes.
-
-    Raises:
-      BackEndError: if the TSK File .info or .info.meta attribute is missing.
     """
     if self._attributes is None:
-      tsk_file = self.GetTSKFile()
-      if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
-        raise errors.BackEndError('Missing TSK File .info or .info.meta.')
-
       self._attributes = []
 
-      for tsk_attribute in tsk_file:
+      for tsk_attribute in self._tsk_file:
         if getattr(tsk_attribute, 'info', None) is None:
           continue
 
@@ -244,15 +377,8 @@ class TSKFileEntry(file_entry.FileEntry):
 
     Returns:
       list[TSKDataStream]: data streams.
-
-    Raises:
-      BackEndError: if the TSK File .info or .info.meta attribute is missing.
     """
     if self._data_streams is None:
-      tsk_file = self.GetTSKFile()
-      if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
-        raise errors.BackEndError('Missing TSK File .info or .info.meta.')
-
       if self._file_system.IsHFS():
         known_data_attribute_types = [
             pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,
@@ -268,12 +394,12 @@ class TSKFileEntry(file_entry.FileEntry):
 
       if not known_data_attribute_types:
         tsk_fs_meta_type = getattr(
-            tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
+            self._tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
         if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
           self._data_streams.append(TSKDataStream(None))
 
       else:
-        for tsk_attribute in tsk_file:
+        for tsk_attribute in self._tsk_file:
           if getattr(tsk_attribute, 'info', None) is None:
             continue
 
@@ -289,13 +415,8 @@ class TSKFileEntry(file_entry.FileEntry):
     Returns:
       TSKDirectory: directory or None.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-
-    if (self._stat_object and
-        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
+    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return TSKDirectory(self._file_system, self.path_spec)
-    return
 
   def _GetLink(self):
     """Retrieves the link.
@@ -306,25 +427,12 @@ class TSKFileEntry(file_entry.FileEntry):
     if self._link is None:
       self._link = ''
 
-      if not self.IsLink():
-        return self._link
-
-      tsk_file = self.GetTSKFile()
-
-      # Note that because pytsk3.File does not explicitly defines info
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(tsk_file, 'info', None) is None:
-        return self._link
-
-      # If pytsk3.FS_Info.open() was used file.info has an attribute meta
-      # (pytsk3.TSK_FS_META) that contains the link.
-      if getattr(tsk_file.info, 'meta', None) is None:
+      if self._type != definitions.FILE_ENTRY_TYPE_LINK:
         return self._link
 
       # Note that the SleuthKit does not expose NTFS
       # IO_REPARSE_TAG_MOUNT_POINT or IO_REPARSE_TAG_SYMLINK as a link.
-      link = getattr(tsk_file.info.meta, 'link', None)
+      link = getattr(self._tsk_file.info.meta, 'link', None)
 
       if link is None:
         return self._link
@@ -347,97 +455,44 @@ class TSKFileEntry(file_entry.FileEntry):
 
     Returns:
       VFSStat: stat object.
-
-    Raises:
-      BackEndError: if the TSK File .info or .info.meta attribute is missing.
     """
-    tsk_file = self.GetTSKFile()
-    if not tsk_file or not tsk_file.info or not tsk_file.info.meta:
-      raise errors.BackEndError('Missing TSK File .info or .info.meta.')
-
-    stat_object = vfs_stat.VFSStat()
+    stat_object = super(TSKFileEntry, self)._GetStat()
 
     # File data stat information.
-    stat_object.size = getattr(tsk_file.info.meta, 'size', None)
+    stat_object.size = getattr(self._tsk_file.info.meta, 'size', None)
 
     # Date and time stat information.
     stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        tsk_file, 'atime')
-    if stat_time is not None:
-      stat_object.atime = stat_time
-      stat_object.atime_nano = stat_time_nano
-
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        tsk_file, 'bkup')
+        self._tsk_file, 'bkup')
     if stat_time is not None:
       stat_object.bkup = stat_time
       stat_object.bkup_nano = stat_time_nano
 
     stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        tsk_file, 'ctime')
-    if stat_time is not None:
-      stat_object.ctime = stat_time
-      stat_object.ctime_nano = stat_time_nano
-
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        tsk_file, 'crtime')
-    if stat_time is not None:
-      stat_object.crtime = stat_time
-      stat_object.crtime_nano = stat_time_nano
-
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        tsk_file, 'dtime')
+        self._tsk_file, 'dtime')
     if stat_time is not None:
       stat_object.dtime = stat_time
       stat_object.dtime_nano = stat_time_nano
 
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        tsk_file, 'mtime')
-    if stat_time is not None:
-      stat_object.mtime = stat_time
-      stat_object.mtime_nano = stat_time_nano
-
     # Ownership and permissions stat information.
-    mode = getattr(tsk_file.info.meta, 'mode', None)
+    mode = getattr(self._tsk_file.info.meta, 'mode', None)
     if mode is not None:
       # We need to cast mode to an int since it is of type
       # pytsk3.TSK_FS_META_MODE_ENUM.
       stat_object.mode = int(mode)
 
-    stat_object.uid = getattr(tsk_file.info.meta, 'uid', None)
-    stat_object.gid = getattr(tsk_file.info.meta, 'gid', None)
+    stat_object.uid = getattr(self._tsk_file.info.meta, 'uid', None)
+    stat_object.gid = getattr(self._tsk_file.info.meta, 'gid', None)
 
     # File entry type stat information.
-    # The type is an instance of pytsk3.TSK_FS_META_TYPE_ENUM.
-    tsk_fs_meta_type = getattr(
-        tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
-
-    if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
-      stat_object.type = stat_object.TYPE_FILE
-    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_DIR:
-      stat_object.type = stat_object.TYPE_DIRECTORY
-    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_LNK:
-      stat_object.type = stat_object.TYPE_LINK
-    elif (tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_CHR or
-          tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_BLK):
-      stat_object.type = stat_object.TYPE_DEVICE
-    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_FIFO:
-      stat_object.type = stat_object.TYPE_PIPE
-    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_SOCK:
-      stat_object.type = stat_object.TYPE_SOCKET
-    # TODO: implement support for:
-    # pytsk3.TSK_FS_META_TYPE_UNDEF
-    # pytsk3.TSK_FS_META_TYPE_SHAD
-    # pytsk3.TSK_FS_META_TYPE_WHT
-    # pytsk3.TSK_FS_META_TYPE_VIRT
 
     # Other stat information.
-    stat_object.ino = getattr(tsk_file.info.meta, 'addr', None)
+    stat_object.ino = getattr(self._tsk_file.info.meta, 'addr', None)
     # stat_object.dev = stat_info.st_dev
-    # stat_object.nlink = getattr(tsk_file.info.meta, 'nlink', None)
+    # stat_object.nlink = getattr(self._tsk_file.info.meta, 'nlink', None)
     # stat_object.fs_type = 'Unknown'
 
-    flags = getattr(tsk_file.info.meta, 'flags', 0)
+    flags = getattr(self._tsk_file.info.meta, 'flags', 0)
 
     # The flags are an instance of pytsk3.TSK_FS_META_FLAG_ENUM.
     if int(flags) & pytsk3.TSK_FS_META_FLAG_ALLOC:
@@ -446,6 +501,27 @@ class TSKFileEntry(file_entry.FileEntry):
       stat_object.is_allocated = False
 
     return stat_object
+
+  def _GetTimeValue(self, name):
+    """Retrieves a date and time value.
+
+    Args:
+      name (str): name of the date and time value, for exmample "atime" or
+          "mtime".
+
+    Returns:
+      dfdatetime.DateTimeValues: date and time value or None if not available.
+    """
+    timestamp = getattr(self._tsk_file.info.meta, name, None)
+
+    if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
+      name_fragment = '{0:s}_nano'.format(name)
+      timestamp_fragment = getattr(
+          self._tsk_file.info.meta, name_fragment, None)
+    else:
+      timestamp_fragment = None
+
+    return TSKTime(timestamp=timestamp, timestamp_fragment=timestamp_fragment)
 
   def _TSKFileTimeCopyToStatTimeTuple(self, tsk_file, time_value):
     """Copies a SleuthKit file object time value to a stat timestamp tuple.
@@ -470,28 +546,9 @@ class TSKFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           'Missing TSK File .info, .info.meta. or .info.fs_info')
 
-    file_system_type = tsk_file.info.fs_info.ftype
-    # pytsk3.TSK_FS_TYPE_ENUM is unhashable, preventing a dictionary lookup
-    # approach.
-    if (time_value == 'atime' and
-        file_system_type in self._TSK_NO_ATIME_FS_TYPES):
-      return None, None
-
-    if (time_value == 'ctime' and
-        file_system_type in self._TSK_NO_CTIME_FS_TYPES):
-      return None, None
-
-    if (time_value == 'crtime' and
-        file_system_type in self._TSK_NO_CRTIME_FS_TYPES):
-      return None, None
-
-    if (time_value == 'mtime' and
-        file_system_type in self._TSK_NO_MTIME_FS_TYPES):
-      return None, None
-
     stat_time = getattr(tsk_file.info.meta, time_value, None)
     stat_time_nano = None
-    if file_system_type in self._TSK_HAS_NANO_FS_TYPES:
+    if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
       time_value_nano = '{0:s}_nano'.format(time_value)
       stat_time_nano = getattr(tsk_file.info.meta, time_value_nano, None)
 
@@ -503,6 +560,30 @@ class TSKFileEntry(file_entry.FileEntry):
     return stat_time, stat_time_nano
 
   @property
+  def access_time(self):
+    """dfdatetime.DateTimeValues: access time or None if not available."""
+    if self._file_system_type in self._TSK_NO_ATIME_FS_TYPES:
+      return
+
+    return self._GetTimeValue('atime')
+
+  @property
+  def change_time(self):
+    """dfdatetime.DateTimeValues: change time or None if not available."""
+    if self._file_system_type in self._TSK_NO_CTIME_FS_TYPES:
+      return
+
+    return self._GetTimeValue('ctime')
+
+  @property
+  def creation_time(self):
+    """dfdatetime.DateTimeValues: creation time or None if not available."""
+    if self._file_system_type in self._TSK_NO_CRTIME_FS_TYPES:
+      return
+
+    return self._GetTimeValue('crtime')
+
+  @property
   def name(self):
     """str: name of the file entry, which does not include the full path.
 
@@ -510,19 +591,11 @@ class TSKFileEntry(file_entry.FileEntry):
       BackEndError: if pytsk3 returns a non UTF-8 formatted name.
     """
     if self._name is None:
-      tsk_file = self.GetTSKFile()
-
-      # Note that because pytsk3.File does not explicitly defines info
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(tsk_file, 'info', None) is None:
-        return
-
       # If pytsk3.FS_Info.open() was used file.info has an attribute name
       # (pytsk3.TSK_FS_FILE) that contains the name string. Otherwise the
       # name from the path specification is used.
-      if getattr(tsk_file.info, 'name', None) is not None:
-        name = getattr(tsk_file.info.name, 'name', None)
+      if getattr(self._tsk_file.info, 'name', None) is not None:
+        name = getattr(self._tsk_file.info.name, 'name', None)
 
         try:
           # pytsk3 returns an UTF-8 encoded byte string.
@@ -537,6 +610,14 @@ class TSKFileEntry(file_entry.FileEntry):
           self._name = self._file_system.BasenamePath(location)
 
     return self._name
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    if self._file_system_type in self._TSK_NO_MTIME_FS_TYPES:
+      return
+
+    return self._GetTimeValue('mtime')
 
   @property
   def sub_file_entries(self):
@@ -637,19 +718,4 @@ class TSKFileEntry(file_entry.FileEntry):
     Raises:
       PathSpecError: if the path specification is missing inode and location.
     """
-    if not self._tsk_file:
-      # Opening a file by inode number is faster than opening a file
-      # by location.
-      inode = getattr(self.path_spec, 'inode', None)
-      location = getattr(self.path_spec, 'location', None)
-
-      fs_info = self._file_system.GetFsInfo()
-      if inode is not None:
-        self._tsk_file = fs_info.open_meta(inode=inode)
-      elif location is not None:
-        self._tsk_file = fs_info.open(location)
-      else:
-        raise errors.PathSpecError(
-            'Path specification missing inode and location.')
-
     return self._tsk_file

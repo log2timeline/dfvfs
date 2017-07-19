@@ -20,7 +20,7 @@ class TSKPartitionDirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.TSKPartitionPathSpec).
+      TSKPartitionPathSpec: a path specification.
     """
     # Only the virtual root file has directory entries.
     part_index = getattr(self.path_spec, 'part_index', None)

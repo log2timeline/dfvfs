@@ -110,7 +110,8 @@ class FileEntry(object):
 
   def __del__(self):
     """Cleans up the file entry."""
-    if self._file_system:
+    # __del__ can be invoked before __init__ has completed.
+    if hasattr(self, '_file_system'):
       self._file_system.Close()
       self._file_system = None
 
@@ -176,6 +177,7 @@ class FileEntry(object):
       stat_time, stat_time_nano = access_time.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.atime = stat_time
+      if stat_time_nano is not None:
         stat_object.atime_nano = stat_time_nano
 
     change_time = self.change_time
@@ -183,6 +185,7 @@ class FileEntry(object):
       stat_time, stat_time_nano = change_time.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.ctime = stat_time
+      if stat_time_nano is not None:
         stat_object.ctime_nano = stat_time_nano
 
     creation_time = self.creation_time
@@ -190,6 +193,7 @@ class FileEntry(object):
       stat_time, stat_time_nano = creation_time.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.crtime = stat_time
+      if stat_time_nano is not None:
         stat_object.crtime_nano = stat_time_nano
 
     modification_time = self.modification_time
@@ -197,6 +201,7 @@ class FileEntry(object):
       stat_time, stat_time_nano = modification_time.CopyToStatTimeTuple()
       if stat_time is not None:
         stat_object.mtime = stat_time
+      if stat_time_nano is not None:
         stat_object.mtime_nano = stat_time_nano
 
     # File entry type stat information.

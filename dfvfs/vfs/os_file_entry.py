@@ -10,16 +10,17 @@ import stat
 
 import pysmdev
 
+from dfdatetime import posix_time as dfdatetime_posix_time
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class OSDirectory(file_entry.Directory):
-  """Class that implements an operating system directory object."""
+  """File system directory that uses os."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -28,7 +29,7 @@ class OSDirectory(file_entry.Directory):
     a generator is more memory efficient.
 
     Yields:
-      A path specification (instance of path.OSPathSpec).
+      OSPathSpec: a path specification.
 
     Raises:
       AccessError: if the access to list the directory was denied.
@@ -65,38 +66,90 @@ class OSDirectory(file_entry.Directory):
 
 
 class OSFileEntry(file_entry.FileEntry):
-  """Class that implements an operating system file entry object."""
+  """File system file entry that uses os."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   def __init__(self, resolver_context, file_system, path_spec, is_root=False):
-    """Initializes the file entry object.
+    """Initializes a file entry.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      file_system: the file system object (instance of FileSystem).
-      path_spec: the path specification object (instance of PathSpec).
-      is_root: optional boolean value to indicate if the file entry is
-               the root file entry of the corresponding file system.
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+
+    Raises:
+      BackEndError: If an OSError comes up it is caught and an
+          BackEndError error is raised instead.
     """
+    location = getattr(path_spec, 'location', None)
+
+    # Windows does not support running os.stat on device files so we use
+    # libsmdev to do an initial check.
+    is_windows_device = False
+    if platform.system() == 'Windows' and location:
+      try:
+        is_windows_device = pysmdev.check_device(location)
+      except IOError:
+        pass
+
+    stat_info = None
+    if not is_windows_device and location:
+      # We are only catching OSError. However on the Windows platform
+      # a WindowsError can be raised as well. We are not catching that since
+      # that error does not exist on non-Windows platforms.
+      try:
+        stat_info = os.stat(location)
+      except OSError as exception:
+        raise errors.BackEndError(
+            'Unable to retrieve stat object with error: {0!s}'.format(
+                exception))
+
     super(OSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=False)
+    self._is_windows_device = is_windows_device
     self._name = None
+    self._stat_info = stat_info
+
+    if is_windows_device:
+      self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+
+    elif stat_info:
+      # If location contains a trailing segment separator and points to
+      # a symbolic link to a directory stat info will not indicate
+      # the file entry as a symbolic link. The following check ensures
+      # that the LINK type is correctly detected.
+      is_link = os.path.islink(location)
+
+      # The stat info member st_mode can have multiple types e.g.
+      # LINK and DIRECTORY in case of a symbolic link to a directory
+      # dfVFS currently only supports one type so we need to check
+      # for LINK first.
+      if stat.S_ISLNK(stat_info.st_mode) or is_link:
+        self._type = definitions.FILE_ENTRY_TYPE_LINK
+      elif stat.S_ISREG(stat_info.st_mode):
+        self._type = definitions.FILE_ENTRY_TYPE_FILE
+      elif stat.S_ISDIR(stat_info.st_mode):
+        self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      elif (stat.S_ISCHR(stat_info.st_mode) or
+            stat.S_ISBLK(stat_info.st_mode)):
+        self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+      elif stat.S_ISFIFO(stat_info.st_mode):
+        self._type = definitions.FILE_ENTRY_TYPE_PIPE
+      elif stat.S_ISSOCK(stat_info.st_mode):
+        self._type = definitions.FILE_ENTRY_TYPE_SOCKET
 
   def _GetDirectory(self):
     """Retrieves a directory.
 
     Returns:
-      A directory object (instance of Directory) or None.
+      OSDirectory: a directory object or None if not available.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-
-    if (self._stat_object and
-        self._stat_object.type == self._stat_object.TYPE_DIRECTORY):
+    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return OSDirectory(self._file_system, self.path_spec)
-    return
 
   def _GetLink(self):
     """Retrieves the link."""
@@ -116,94 +169,42 @@ class OSFileEntry(file_entry.FileEntry):
     return self._link
 
   def _GetStat(self):
-    """Retrieves the stat object (instance of vfs.VFSStat).
+    """Retrieves information about the file entry.
 
-    Raises:
-      BackEndError: If an OSError comes up it is caught and an
-                    BackEndError error is raised instead.
     Returns:
-      Stat object (instance of VFSStat) or None if no location is set.
+      VFSStat: a stat object or None if not available.
     """
-    location = getattr(self.path_spec, 'location', None)
-    if location is None:
-      return
+    stat_object = super(OSFileEntry, self)._GetStat()
 
-    stat_object = vfs_stat.VFSStat()
-
-    is_windows_device = False
-    stat_info = None
-
-    # Windows does not support running os.stat on device files so we use
-    # libsmdev to do an initial check.
-    if platform.system() == 'Windows':
-      try:
-        is_windows_device = pysmdev.check_device(location)
-      except IOError:
-        pass
-
-    if is_windows_device:
-      stat_object.type = stat_object.TYPE_DEVICE
-
-    else:
-      # We are only catching OSError. However on the Windows platform
-      # a WindowsError can be raised as well. We are not catching that since
-      # that error does not exist on non-Windows platforms.
-      try:
-        stat_info = os.stat(location)
-      except OSError as exception:
-        raise errors.BackEndError(
-            'Unable to retrieve stat object with error: {0:s}'.format(
-                exception))
-
+    if not self._is_windows_device:
       # File data stat information.
-      stat_object.size = stat_info.st_size
-
-      # Date and time stat information.
-      stat_object.atime = stat_info.st_atime
-      stat_object.ctime = stat_info.st_ctime
-      stat_object.mtime = stat_info.st_mtime
+      stat_object.size = self._stat_info.st_size
 
       # Ownership and permissions stat information.
-      stat_object.mode = stat.S_IMODE(stat_info.st_mode)
-      stat_object.uid = stat_info.st_uid
-      stat_object.gid = stat_info.st_gid
-
-      # If location contains a trailing segment separator and points to
-      # a symbolic link to a directory stat info will not indicate
-      # the file entry as a symbolic link. The following check ensures
-      # that the LINK type is correctly detected.
-      is_link = os.path.islink(location)
-
-      # File entry type stat information.
-
-      # The stat info member st_mode can have multiple types e.g.
-      # LINK and DIRECTORY in case of a symbolic link to a directory
-      # dfVFS currently only supports one type so we need to check
-      # for LINK first.
-      if stat.S_ISLNK(stat_info.st_mode) or is_link:
-        stat_object.type = stat_object.TYPE_LINK
-      elif stat.S_ISREG(stat_info.st_mode):
-        stat_object.type = stat_object.TYPE_FILE
-      elif stat.S_ISDIR(stat_info.st_mode):
-        stat_object.type = stat_object.TYPE_DIRECTORY
-      elif (stat.S_ISCHR(stat_info.st_mode) or
-            stat.S_ISBLK(stat_info.st_mode)):
-        stat_object.type = stat_object.TYPE_DEVICE
-      elif stat.S_ISFIFO(stat_info.st_mode):
-        stat_object.type = stat_object.TYPE_PIPE
-      elif stat.S_ISSOCK(stat_info.st_mode):
-        stat_object.type = stat_object.TYPE_SOCKET
+      stat_object.mode = stat.S_IMODE(self._stat_info.st_mode)
+      stat_object.uid = self._stat_info.st_uid
+      stat_object.gid = self._stat_info.st_gid
 
       # Other stat information.
-      stat_object.ino = stat_info.st_ino
+      stat_object.ino = self._stat_info.st_ino
       # stat_info.st_dev
       # stat_info.st_nlink
 
     return stat_object
 
   @property
+  def access_time(self):
+    """dfdatetime.DateTimeValues: access time or None if not available."""
+    return dfdatetime_posix_time.PosixTime(timestamp=self._stat_info.st_atime)
+
+  @property
+  def change_time(self):
+    """dfdatetime.DateTimeValues: change time or None if not available."""
+    return dfdatetime_posix_time.PosixTime(timestamp=self._stat_info.st_ctime)
+
+  @property
   def link(self):
-    """The full path of the linked file entry."""
+    """str: full path of the linked file entry."""
     if self._link is None:
       self._link = ''
 
@@ -220,7 +221,7 @@ class OSFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """The name of the file entry, which does not include the full path."""
+    """str: name of the file entry, without the full path."""
     if self._name is None:
       location = getattr(self.path_spec, 'location', None)
       if location is not None:
@@ -228,8 +229,13 @@ class OSFileEntry(file_entry.FileEntry):
     return self._name
 
   @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    return dfdatetime_posix_time.PosixTime(timestamp=self._stat_info.st_mtime)
+
+  @property
   def sub_file_entries(self):
-    """The sub file entries (generator of instance of vfs.OSFileEntry)."""
+    """generator[OSFileEntry]: sub file entries."""
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -238,7 +244,11 @@ class OSFileEntry(file_entry.FileEntry):
         yield OSFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetLinkedFileEntry(self):
-    """Retrieves the linked file entry, e.g. for a symbolic link."""
+    """Retrieves the linked file entry, for example for a symbolic link.
+
+    Retruns:
+      OSFileEntry: linked file entry or None if not available.
+    """
     link = self._GetLink()
     if not link:
       return
@@ -250,7 +260,7 @@ class OSFileEntry(file_entry.FileEntry):
     """Retrieves the parent file entry.
 
     Returns:
-      The parent file entry (instance of FileEntry) or None.
+      OSFileEntry: parent file entry or None if not available.
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:

@@ -24,8 +24,8 @@ class CPIOFileSystem(file_system.FileSystem):
     """Initializes a file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
-      encoding: optional file entry name encoding.
+      resolver_context (Context): resolver context.
+      encoding (Optional[str]): file entry name encoding.
     """
     super(CPIOFileSystem, self).__init__(resolver_context)
     self._cpio_archive_file = None
@@ -48,8 +48,8 @@ class CPIOFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -94,6 +94,38 @@ class CPIOFileSystem(file_system.FileSystem):
 
     return self._cpio_archive_file.FileEntryExistsByPath(location[1:])
 
+  def GetCPIOArchiveFile(self):
+    """Retrieves the CPIO archive file object.
+
+    Returns:
+      The CPIO archvie file object (instance of cpio.CPIOArchiveFile).
+    """
+    return self._cpio_archive_file
+
+  def GetCPIOArchiveFileEntryByPathSpec(self, path_spec):
+    """Retrieves the CPIO archive file entry for a path specification.
+
+    Args:
+      path_spec (PathSpec): a path specification.
+
+    Returns:
+      CPIOArchiveFileEntry: CPIO archive file entry or None if not available.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+    """
+    location = getattr(path_spec, 'location', None)
+    if location is None:
+      raise errors.PathSpecError('Path specification missing location.')
+
+    if not location.startswith(self.LOCATION_ROOT):
+      raise errors.PathSpecError('Invalid location in path specification.')
+
+    if len(location) == 1:
+      return
+
+    return self._cpio_archive_file.GetFileEntryByPath(location[1:])
+
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
@@ -132,11 +164,3 @@ class CPIOFileSystem(file_system.FileSystem):
     path_spec = cpio_path_spec.CPIOPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
-
-  def GetCPIOArchiveFile(self):
-    """Retrieves the CPIO archive file object.
-
-    Returns:
-      The CPIO archvie file object (instance of cpio.CPIOArchiveFile).
-    """
-    return self._cpio_archive_file

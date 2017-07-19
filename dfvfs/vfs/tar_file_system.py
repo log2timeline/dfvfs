@@ -158,3 +158,30 @@ class TARFileSystem(file_system.FileSystem):
       tarfile.TARFile: TAR file.
     """
     return self._tar_file
+
+  def GetTARInfoByPathSpec(self, path_spec):
+    """Retrieves the TAR info for a path specification.
+
+    Args:
+      path_spec (PathSpec): a path specification.
+
+    Returns:
+      tarfile.TARInfo: TAR info or None if it does not exist.
+
+    Raises:
+      PathSpecError: if the path specification is incorrect.
+    """
+    location = getattr(path_spec, 'location', None)
+    if location is None:
+      raise errors.PathSpecError('Path specification missing location.')
+
+    if not location.startswith(self.LOCATION_ROOT):
+      raise errors.PathSpecError('Invalid location in path specification.')
+
+    if len(location) == 1:
+      return
+
+    try:
+      return self._tar_file.getmember(location[1:])
+    except KeyError:
+      pass

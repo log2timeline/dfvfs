@@ -158,7 +158,7 @@ class ZipFileSystem(file_system.FileSystem):
     return self._zip_file
 
   def GetZipInfoByPathSpec(self, path_spec):
-    """Retrieves the ZIP info object for a path specification.
+    """Retrieves the ZIP info for a path specification.
 
     Args:
       path_spec (PathSpec): a path specification.

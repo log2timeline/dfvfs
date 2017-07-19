@@ -6,39 +6,48 @@ from __future__ import unicode_literals
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
-  """Class that implements a file entry object using FVDE."""
+  """File system file entry that uses pyfvde."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FVDE
 
-  def _GetStat(self):
-    """Retrieves the stat object.
+  def __init__(
+      self, resolver_context, file_system, path_spec, is_root=False,
+      is_virtual=False):
+    """Initializes a file entry.
 
-    Returns:
-      VFSStat: stat object.
+    Args:
+      resolver_context (Context): resolver context.
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      is_root (Optional[bool]): True if the file entry is the root file entry
+          of the corresponding file system.
+      is_virtual (Optional[bool]): True if the file entry is a virtual file
+          entry emulated by the corresponding file system.
 
     Raises:
-      BackEndError: when the FVDE file is missing.
+      BackEndError: when the FVDE volume is missing.
     """
-    fvde_volume = self._file_system.GetFVDEVolume()
+    fvde_volume = file_system.GetFVDEVolume()
     if fvde_volume is None:
       raise errors.BackEndError('Missing FVDE volume.')
 
-    stat_object = vfs_stat.VFSStat()
+    super(FVDEFileEntry, self).__init__(
+        resolver_context, file_system, path_spec, is_root=is_root,
+        is_virtual=is_virtual)
+    self._fvde_volume = fvde_volume
+    self._type = definitions.FILE_ENTRY_TYPE_FILE
 
-    # File data stat information.
-    stat_object.size = fvde_volume.get_size()
+  def _GetStat(self):
+    """Retrieves information about the file entry.
 
-    # Date and time stat information.
+    Returns:
+      VFSStat: a stat object.
+    """
+    stat_object = super(FVDEFileEntry, self)._GetStat()
 
-    # Ownership and permissions stat information.
-
-    # File entry type stat information.
-    stat_object.type = stat_object.TYPE_FILE
-
-    # Other stat information.
+    stat_object.size = self._fvde_volume.get_size()
 
     return stat_object

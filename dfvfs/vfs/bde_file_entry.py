@@ -49,7 +49,6 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     """
     stat_object = super(BDEFileEntry, self)._GetStat()
 
-    # File data stat information.
     stat_object.size = self._bde_volume.get_size()
 
     return stat_object
