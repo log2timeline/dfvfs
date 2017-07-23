@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+import os
 import tarfile
 
 # This is necessary to prevent a circular import.
@@ -70,6 +71,9 @@ class TARFileSystem(file_system.FileSystem):
         path_spec.parent, resolver_context=self._resolver_context)
 
     try:
+      # Set the file offset to 0 because tarfile.open() does not.
+      file_object.seek(0, os.SEEK_SET)
+
       # Explicitly tell tarfile not to use compression. Compression should be
       # handled by the file-like object.
       tar_file = tarfile.open(mode='r:', fileobj=file_object)

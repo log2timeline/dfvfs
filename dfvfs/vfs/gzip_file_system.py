@@ -10,7 +10,7 @@ from dfvfs.vfs import root_only_file_system
 
 
 class GzipFileSystem(root_only_file_system.RootOnlyFileSystem):
-  """Class that implements a file system object using gzip."""
+  """File system that uses gzip."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
 
@@ -18,10 +18,10 @@ class GzipFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      GzipFileEntry: a file entry or None if not available.
     """
     return gzip_file_entry.GzipFileEntry(
         self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
@@ -30,7 +30,7 @@ class GzipFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      GzipFileEntry: a file entry or None if not available.
     """
     path_spec = gzip_path_spec.GzipPathSpec(parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
