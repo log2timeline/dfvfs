@@ -188,4 +188,4 @@ class FakeFileEntry(file_entry.FileEntry):
       parent_location = self._file_system.PATH_SEPARATOR
 
     path_spec = fake_path_spec.FakePathSpec(location=parent_location)
-    return FakeFileEntry(self._resolver_context, self._file_system, path_spec)
+    return self._file_system.GetFileEntryByPathSpec(path_spec)
