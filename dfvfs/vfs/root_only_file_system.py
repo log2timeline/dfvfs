@@ -10,7 +10,7 @@ from dfvfs.vfs import file_system
 
 
 class RootOnlyFileSystem(file_system.FileSystem):
-  """Class that implements a root only file system object."""
+  """Root only file system object."""
 
   def _Close(self):
     """Closes the file system object.
@@ -24,8 +24,8 @@ class RootOnlyFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): path specification.
+      mode (Optional[str]): file access mode.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -41,10 +41,10 @@ class RootOnlyFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists.
     """
     return True
 
@@ -52,10 +52,10 @@ class RootOnlyFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      FileEntry: a file entry or None if not available.
     """
     return self.GetRootFileEntry()
 
@@ -64,5 +64,5 @@ class RootOnlyFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      FileEntry: a file entry or None if not available.
     """
