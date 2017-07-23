@@ -74,7 +74,7 @@ class FakeFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      FakeDirectoyr: a directory or None if not available.
+      FakeDirectory: a directory or None if not available.
     """
     if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return FakeDirectory(self._file_system, self.path_spec)
@@ -140,8 +140,7 @@ class FakeFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield FakeFileEntry(
-            self._resolver_context, self._file_system, path_spec)
+        yield self._file_system.GetFileEntryByPathSpec(path_spec)
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.
