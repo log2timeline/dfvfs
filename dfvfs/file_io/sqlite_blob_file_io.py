@@ -134,6 +134,7 @@ class SQLiteBlobFile(file_io.FileIO):
             u'for row: {2:d}.').format(table_name, column_name, row_index)
 
       else:
+        # pylint: disable=not-an-iterable
         row_condition_string = u' '.join([
             u'{0!s}'.format(value) for value in iter(row_condition)])
         error_string = (
