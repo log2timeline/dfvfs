@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the bzip2 decompressor object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.compression import bzip2_decompressor

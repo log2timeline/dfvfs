@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the Blowfish decrypter object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.encryption import blowfish_decrypter
@@ -13,8 +15,8 @@ from tests.encryption import test_lib
 class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the Blowfish decrypter object."""
 
-  _BLOWFISH_INITIALIZATION_VECTOR = u'This IV!'
-  _BLOWFISH_KEY = u'This is a key123'
+  _BLOWFISH_INITIALIZATION_VECTOR = 'This IV!'
+  _BLOWFISH_KEY = 'This is a key123'
 
   def testInitialization(self):
     """Tests the initialization method."""
@@ -25,7 +27,7 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
     # Test unsupport block cipher mode.
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
-          cipher_mode=u'bogus', key=self._BLOWFISH_KEY)
+          cipher_mode='bogus', key=self._BLOWFISH_KEY)
 
     # Test missing initialization vector.
     with self.assertRaises(ValueError):
@@ -37,7 +39,7 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
         cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._BLOWFISH_KEY)
 
     # Test incorrect key size.
-    key = u'This is a key that is larger than the max key size of 448 bits.'
+    key = 'This is a key that is larger than the max key size of 448 bits.'
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=key)
@@ -46,7 +48,7 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector=u'Wrong IV size', key=self._BLOWFISH_KEY)
+          initialization_vector='Wrong IV size', key=self._BLOWFISH_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""

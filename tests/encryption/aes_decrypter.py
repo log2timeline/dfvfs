@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the AES decrypter object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.encryption import aes_decrypter
@@ -13,8 +15,8 @@ from tests.encryption import test_lib
 class AESDecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the AES decrypter object."""
 
-  _AES_INITIALIZATION_VECTOR = u'This is an IV456'
-  _AES_KEY = u'This is a key123'
+  _AES_INITIALIZATION_VECTOR = 'This is an IV456'
+  _AES_KEY = 'This is a key123'
 
   def testInitialization(self):
     """Tests the initialization method."""
@@ -25,7 +27,7 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     # Test unsupport block cipher mode.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          cipher_mode=u'bogus', key=self._AES_KEY)
+          cipher_mode='bogus', key=self._AES_KEY)
 
     # Test missing initialization vector.
     with self.assertRaises(ValueError):
@@ -39,13 +41,13 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=u'Wrong key size')
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key='Wrong key size')
 
     # Test incorrect initialization vector size.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector=u'Wrong IV size', key=self._AES_KEY)
+          initialization_vector='Wrong IV size', key=self._AES_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""

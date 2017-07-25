@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the compression manager."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.compression import decompressor
@@ -15,7 +17,7 @@ from tests import test_lib as shared_test_lib
 class TestDecompressor(decompressor.Decompressor):
   """Class that implements a test decompressor."""
 
-  COMPRESSION_METHOD = u'test'
+  COMPRESSION_METHOD = 'test'
 
   def Decompress(self, unused_compressed_data):
     """Decompresses the compressed data.
@@ -57,7 +59,7 @@ class CompressionManagerTest(shared_test_lib.BaseTestCase):
     self.assertIsInstance(
         decompressor_object, zlib_decompressor.ZlibDecompressor)
 
-    decompressor_object = manager.CompressionManager.GetDecompressor(u'bogus')
+    decompressor_object = manager.CompressionManager.GetDecompressor('bogus')
     self.assertIsNone(decompressor_object)
 
 

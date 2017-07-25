@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the base32 decoder object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.encoding import base32_decoder

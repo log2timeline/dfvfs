@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the encryption manager."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.encryption import decrypter
@@ -15,7 +17,7 @@ from tests import test_lib as shared_test_lib
 class TestDecrypter(decrypter.Decrypter):
   """Class that implements a test decrypter."""
 
-  ENCRYPTION_METHOD = u'test'
+  ENCRYPTION_METHOD = 'test'
 
   def Decrypt(self, unused_encrypted_data):
     """Decrypt the encrypted data.
@@ -56,7 +58,7 @@ class EncryptionManagerTest(shared_test_lib.BaseTestCase):
         definitions.ENCRYPTION_METHOD_RC4, key=b'test')
     self.assertIsInstance(decrypter_object, rc4_decrypter.RC4Decrypter)
 
-    decrypter_object = manager.EncryptionManager.GetDecrypter(u'bogus')
+    decrypter_object = manager.EncryptionManager.GetDecrypter('bogus')
     self.assertIsNone(decrypter_object)
 
 

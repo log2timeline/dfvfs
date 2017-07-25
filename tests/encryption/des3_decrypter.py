@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the triple DES decrypter object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.encryption import des3_decrypter
@@ -13,8 +15,8 @@ from tests.encryption import test_lib
 class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the triple DES decrypter object."""
 
-  _DES3_INITIALIZATION_VECTOR = u'This IV!'
-  _DES3_KEY = u'This is a key123'
+  _DES3_INITIALIZATION_VECTOR = 'This IV!'
+  _DES3_KEY = 'This is a key123'
 
   def testInitialization(self):
     """Tests the initialization method."""
@@ -25,7 +27,7 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     # Test unsupport block cipher mode.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          cipher_mode=u'bogus', key=self._DES3_KEY)
+          cipher_mode='bogus', key=self._DES3_KEY)
 
     # Test missing initialization vector.
     with self.assertRaises(ValueError):
@@ -39,13 +41,13 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=u'Wrong key size')
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key='Wrong key size')
 
     # Test incorrect initialization vector size.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector=u'Wrong IV size', key=self._DES3_KEY)
+          initialization_vector='Wrong IV size', key=self._DES3_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
