@@ -73,7 +73,7 @@ class EncodingManager(object):
 
     Raises:
       KeyError: if decoders is already set for the corresponding
-                encoding method.
+          encoding method.
     """
-    for decoders in decoders:
-      cls.RegisterDecoders(decoders)
+    for decoder in decoders:
+      cls.RegisterDecoder(decoder)

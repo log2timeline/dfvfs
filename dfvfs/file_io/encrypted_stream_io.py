@@ -10,14 +10,14 @@ from dfvfs.resolver import resolver
 
 
 class EncryptedStream(file_io.FileIO):
-  """Class that implements a file-like object of a encrypted stream."""
+  """File-like object of a encrypted stream."""
 
   # The size of the encrypted data buffer.
   _ENCRYPTED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
   def __init__(
       self, resolver_context, encryption_method=None, file_object=None):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     If the file-like object is chained do not separately use the parent
     file-like object.
@@ -44,13 +44,9 @@ class EncryptedStream(file_io.FileIO):
     self._encrypted_data = b''
     self._encryption_method = encryption_method
     self._file_object = file_object
+    self._file_object_set_in_init = bool(file_object)
     self._path_spec = None
     self._realign_offset = True
-
-    if file_object:
-      self._file_object_set_in_init = True
-    else:
-      self._file_object_set_in_init = False
 
   def _Close(self):
     """Closes the file-like object.

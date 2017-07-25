@@ -135,7 +135,7 @@ class SQLiteBlobFile(file_io.FileIO):
 
       else:
         row_condition_string = u' '.join([
-            u'{0!s}'.format(value) for value in row_condition])
+            u'{0!s}'.format(value) for value in iter(row_condition)])
         error_string = (
             u'Unable to open blob in table: {0:s} and column: {1:s} '
             u'where: {2:s}.').format(

@@ -104,10 +104,12 @@ else:
               '%{_prefix}/lib/python*/site-packages/dfvfs*.egg-info/*',
               '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*.pyc',
               '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*.pyo',
-              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/__pycache__/*',
+              ('%exclude %{_prefix}/lib/python*/site-packages/dfvfs/'
+               '__pycache__/*'),
               '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/*.pyc',
               '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/*.pyo',
-              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/__pycache__/*']
+              ('%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/'
+               '__pycache__/*')]
 
           python_spec_file.extend(lines)
           break
