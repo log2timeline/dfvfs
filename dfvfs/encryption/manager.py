@@ -79,5 +79,5 @@ class EncryptionManager(object):
       KeyError: if decrypters is already set for the corresponding
           encryption method.
     """
-    for decrypters in decrypters:
-      cls.RegisterDecrypters(decrypters)
+    for decrypter in decrypters:
+      cls.RegisterDecrypter(decrypter)

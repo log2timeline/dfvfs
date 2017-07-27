@@ -10,14 +10,14 @@ from dfvfs.resolver import resolver
 
 
 class CompressedStream(file_io.FileIO):
-  """Class that implements a file-like object of a compressed stream."""
+  """File-like object of a compressed stream."""
 
   # The size of the compressed data buffer.
   _COMPRESSED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
   def __init__(
       self, resolver_context, compression_method=None, file_object=None):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     If the file-like object is chained do not separately use the parent
     file-like object.
@@ -38,6 +38,7 @@ class CompressedStream(file_io.FileIO):
     super(CompressedStream, self).__init__(resolver_context)
     self._compression_method = compression_method
     self._file_object = file_object
+    self._file_object_set_in_init = bool(file_object)
     self._compressed_data = b''
     self._current_offset = 0
     self._decompressor = None
@@ -46,11 +47,6 @@ class CompressedStream(file_io.FileIO):
     self._uncompressed_data_offset = 0
     self._uncompressed_data_size = 0
     self._uncompressed_stream_size = None
-
-    if file_object:
-      self._file_object_set_in_init = True
-    else:
-      self._file_object_set_in_init = False
 
   def _Close(self):
     """Closes the file-like object.

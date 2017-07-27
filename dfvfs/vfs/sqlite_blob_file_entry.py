@@ -143,8 +143,8 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     column_name = getattr(self.path_spec, u'column_name', None)
     if table_name and column_name:
       return u'{0:s}.{1:s}'.format(table_name, column_name)
-    else:
-      return u''
+
+    return u''
 
   @property
   def sub_file_entries(self):

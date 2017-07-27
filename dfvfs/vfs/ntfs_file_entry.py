@@ -464,11 +464,9 @@ class NTFSFileEntry(file_entry.FileEntry):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location=link, parent=parent_path_spec)
 
-    if (link == self._file_system.LOCATION_ROOT or
-        link_mft_entry == self._file_system.MFT_ENTRY_ROOT_DIRECTORY):
-      is_root = True
-    else:
-      is_root = False
+    is_root = bool(
+        link == self._file_system.LOCATION_ROOT or
+        link_mft_entry == self._file_system.MFT_ENTRY_ROOT_DIRECTORY)
 
     return NTFSFileEntry(
         self._resolver_context, self._file_system, path_spec, is_root=is_root)
@@ -517,11 +515,9 @@ class NTFSFileEntry(file_entry.FileEntry):
         parent=parent_path_spec)
 
     # TODO: handle parent correctly use attribute index?
-    if (parent_location == self._file_system.LOCATION_ROOT or
-        parent_mft_entry == self._file_system.MFT_ENTRY_ROOT_DIRECTORY):
-      is_root = True
-    else:
-      is_root = False
+    is_root = bool(
+        parent_location == self._file_system.LOCATION_ROOT or
+        parent_mft_entry == self._file_system.MFT_ENTRY_ROOT_DIRECTORY)
 
     return NTFSFileEntry(
         self._resolver_context, self._file_system, path_spec, is_root=is_root)

@@ -6,10 +6,10 @@ import os
 
 
 class FileIO(object):
-  """Class that implements the VFS file-like object interface."""
+  """VFS file-like object interface."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.

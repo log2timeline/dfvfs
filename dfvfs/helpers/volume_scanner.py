@@ -201,7 +201,7 @@ class VolumeScanner(object):
     if not volume_scan_node or not volume_scan_node.path_spec:
       raise errors.ScannerError('Invalid or missing volume scan node.')
 
-    if len(volume_scan_node.sub_nodes) == 0:
+    if not volume_scan_node.sub_nodes:
       self._ScanVolumeScanNode(scan_context, volume_scan_node, base_path_specs)
 
     else:

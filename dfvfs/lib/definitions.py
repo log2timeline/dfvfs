@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+
 # The compression method definitions.
 COMPRESSION_METHOD_BZIP2 = 'bzip2'
 COMPRESSION_METHOD_DEFLATE = 'deflate'

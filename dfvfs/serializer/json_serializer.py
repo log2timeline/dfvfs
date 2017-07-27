@@ -72,7 +72,7 @@ class _PathSpecJsonEncoder(json.JSONEncoder):
   # Note: that the following functions do not follow the style guide
   # because they are part of the json.JSONEncoder object interface.
 
-  # pylint: disable=method-hidden
+  # pylint: disable=arguments-differ,method-hidden
   def default(self, path_spec_object):
     """Converts a path specification object into a JSON dictionary.
 
@@ -127,6 +127,8 @@ class _PathSpecJsonEncoder(json.JSONEncoder):
 
 class JsonPathSpecSerializer(serializer.PathSpecSerializer):
   """JSON path specification serializer object."""
+
+  # pylint: disable=arguments-differ
 
   @classmethod
   def ReadSerialized(cls, json_string):

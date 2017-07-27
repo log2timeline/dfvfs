@@ -495,10 +495,7 @@ class TSKFileEntry(file_entry.FileEntry):
     flags = getattr(self._tsk_file.info.meta, 'flags', 0)
 
     # The flags are an instance of pytsk3.TSK_FS_META_FLAG_ENUM.
-    if int(flags) & pytsk3.TSK_FS_META_FLAG_ALLOC:
-      stat_object.is_allocated = True
-    else:
-      stat_object.is_allocated = False
+    stat_object.is_allocated = bool(int(flags) & pytsk3.TSK_FS_META_FLAG_ALLOC)
 
     return stat_object
 
@@ -669,12 +666,10 @@ class TSKFileEntry(file_entry.FileEntry):
         location=link, parent=parent_path_spec)
 
     root_inode = self._file_system.GetRootInode()
-    if (link == self._file_system.LOCATION_ROOT or
-        (link_inode is not None and root_inode is not None and
-         link_inode == root_inode)):
-      is_root = True
-    else:
-      is_root = False
+    is_root = bool(
+        link == self._file_system.LOCATION_ROOT or (
+            link_inode is not None and root_inode is not None and
+            link_inode == root_inode))
 
     return TSKFileEntry(
         self._resolver_context, self._file_system, path_spec, is_root=is_root)
@@ -696,12 +691,10 @@ class TSKFileEntry(file_entry.FileEntry):
       parent_location = self._file_system.PATH_SEPARATOR
 
     root_inode = self._file_system.GetRootInode()
-    if (parent_location == self._file_system.LOCATION_ROOT or
-        (parent_inode is not None and root_inode is not None and
-         parent_inode == root_inode)):
-      is_root = True
-    else:
-      is_root = False
+    is_root = bool(
+        parent_location == self._file_system.LOCATION_ROOT or (
+            parent_inode is not None and root_inode is not None and
+            parent_inode == root_inode))
 
     parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = tsk_path_spec.TSKPathSpec(

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the encoding manager."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.encoding import base16_decoder
@@ -15,7 +17,7 @@ from tests import test_lib as shared_test_lib
 class TestDecoder(decoder.Decoder):
   """Class that implements a test decoder."""
 
-  ENCODING_METHOD = u'test'
+  ENCODING_METHOD = 'test'
 
   def Decode(self, unused_encoded_data):
     """Decode the encoded data.
@@ -56,7 +58,7 @@ class EncodingManagerTest(shared_test_lib.BaseTestCase):
         definitions.ENCODING_METHOD_BASE16)
     self.assertIsInstance(decoder_object, base16_decoder.Base16Decoder)
 
-    decoder_object = manager.EncodingManager.GetDecoder(u'bogus')
+    decoder_object = manager.EncodingManager.GetDecoder('bogus')
     self.assertIsNone(decoder_object)
 
 

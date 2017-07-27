@@ -94,9 +94,9 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
       return sqlite_blob_file_entry.SQLiteBlobFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
-    else:
-      return sqlite_blob_file_entry.SQLiteBlobFileEntry(
-          self._resolver_context, self, path_spec)
+
+    return sqlite_blob_file_entry.SQLiteBlobFileEntry(
+        self._resolver_context, self, path_spec)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.

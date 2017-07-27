@@ -4,6 +4,8 @@
 import sys
 
 
+# pylint: disable=invalid-name,undefined-variable
+
 if sys.version_info[0] < 3:
   BYTES_TYPE = str
   INTEGER_TYPES = (int, long)

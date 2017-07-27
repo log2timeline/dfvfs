@@ -11,7 +11,7 @@ class FileObjectIO(file_io.FileIO):
   """Base class for file object-based file-like object."""
 
   def __init__(self, resolver_context, file_object=None):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -19,12 +19,8 @@ class FileObjectIO(file_io.FileIO):
     """
     super(FileObjectIO, self).__init__(resolver_context)
     self._file_object = file_object
+    self._file_object_set_in_init = bool(file_object)
     self._size = None
-
-    if file_object:
-      self._file_object_set_in_init = True
-    else:
-      self._file_object_set_in_init = False
 
   def _Close(self):
     """Closes the file-like object.

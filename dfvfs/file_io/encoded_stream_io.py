@@ -10,14 +10,14 @@ from dfvfs.resolver import resolver
 
 
 class EncodedStream(file_io.FileIO):
-  """Class that implements a file-like object of a encoded stream."""
+  """File-like object of a encoded stream."""
 
   # The size of the encoded data buffer.
   _ENCODED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
   def __init__(
       self, resolver_context, encoding_method=None, file_object=None):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     If the file-like object is chained do not separately use the parent
     file-like object.
@@ -44,12 +44,8 @@ class EncodedStream(file_io.FileIO):
     self._encoded_data = b''
     self._encoding_method = encoding_method
     self._file_object = file_object
+    self._file_object_set_in_init = bool(file_object)
     self._realign_offset = True
-
-    if file_object:
-      self._file_object_set_in_init = True
-    else:
-      self._file_object_set_in_init = False
 
   def _Close(self):
     """Closes the file-like object.
