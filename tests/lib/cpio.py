@@ -24,6 +24,8 @@ class CPIOArchiveFileEntryTest(shared_test_lib.BaseTestCase):
 class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
   """Tests for Copy in and out (CPIO) archive file."""
 
+  # pylint: disable=protected-access
+
   @shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
   def testReadFileEntryOnBinary(self):
     """Tests the _ReadFileEntry function on binary format."""
