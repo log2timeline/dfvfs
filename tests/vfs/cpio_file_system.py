@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using the CPIOArchiveFile."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import cpio_path_spec
@@ -12,17 +14,17 @@ from dfvfs.vfs import cpio_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.bin.cpio'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
 class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the CPIO file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.bin.cpio'])
+    test_file = self._GetTestFilePath(['syslog.bin.cpio'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
@@ -41,11 +43,11 @@ class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._cpio_path_spec)
 
     path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/bogus', parent=self._os_path_spec)
+        location='/bogus', parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -58,14 +60,14 @@ class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._cpio_path_spec)
 
     path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'syslog')
+    self.assertEqual(file_entry.name, 'syslog')
 
     path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/bogus', parent=self._os_path_spec)
+        location='/bogus', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
@@ -82,7 +84,7 @@ class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

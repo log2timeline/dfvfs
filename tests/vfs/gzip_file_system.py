@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using gzip."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import gzip_path_spec
@@ -12,14 +14,14 @@ from dfvfs.vfs import gzip_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.gz'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.gz'])
 class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the gzip file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.gz'])
+    test_file = self._GetTestFilePath(['syslog.gz'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
 
@@ -53,7 +55,7 @@ class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 
@@ -67,7 +69,7 @@ class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the compressed stream file entry implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import definitions
@@ -14,14 +16,14 @@ from dfvfs.vfs import compressed_stream_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.bz2'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.bz2'])
 class CompressedStreamFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the compressed stream file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.bz2'])
+    test_file = self._GetTestFilePath(['syslog.bz2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
@@ -118,7 +120,7 @@ class CompressedStreamFileEntryTest(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
@@ -126,12 +128,12 @@ class CompressedStreamFileEntryTest(shared_test_lib.BaseTestCase):
         self._compressed_stream_path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
 

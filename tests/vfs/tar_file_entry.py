@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using the tarfile."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -13,17 +15,17 @@ from dfvfs.vfs import tar_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.tar'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.tar'])
 class TARFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the TAR extracted file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.tar'])
+    test_file = self._GetTestFilePath(['syslog.tar'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tar_path_spec = tar_path_spec.TARPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
 
     self._file_system = tar_file_system.TARFileSystem(self._resolver_context)
     self._file_system.Open(self._tar_path_spec)
@@ -42,7 +44,7 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -50,12 +52,12 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(parent_file_entry)
 
-    self.assertEqual(parent_file_entry.name, u'')
+    self.assertEqual(parent_file_entry.name, '')
 
   def testGetStat(self):
     """Tests the GetStat function."""
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -70,12 +72,12 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.gid, 5000)
 
     self.assertEqual(stat_object.mtime, 1343166324)
-    self.assertFalse(hasattr(stat_object, u'mtime_nano'))
+    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testIsFunctions(self):
     """Test the Is? functions."""
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -91,7 +93,7 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -109,16 +111,16 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self._assertSubFileEntries(file_entry, [u'syslog'])
+    self._assertSubFileEntries(file_entry, ['syslog'])
 
     # Test on a tar file that has missing directory entries.
-    test_file = self._GetTestFilePath([u'missing_directory_entries.tar'])
+    test_file = self._GetTestFilePath(['missing_directory_entries.tar'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = tar_path_spec.TARPathSpec(location=u'/', parent=path_spec)
+    path_spec = tar_path_spec.TARPathSpec(location='/', parent=path_spec)
 
     file_system = tar_file_system.TARFileSystem(self._resolver_context)
     self.assertIsNotNone(file_system)
@@ -128,35 +130,35 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
 
     self._assertSubFileEntries(
-        file_entry, [u'File System', u'Non Missing Directory Entry'])
+        file_entry, ['File System', 'Non Missing Directory Entry'])
 
     file_system_sub_file_entry = None
     for sub_file_entry in file_entry.sub_file_entries:
       # The "File System" and its sub-directories have missing entries within
       # the tar file, but still should be found due to the AssetManifest.plist
       # file found within the directories.
-      if sub_file_entry.name == u'File System':
+      if sub_file_entry.name == 'File System':
         self.assertTrue(sub_file_entry.IsVirtual())
 
-        self._assertSubFileEntries(sub_file_entry, [u'Recordings'])
+        self._assertSubFileEntries(sub_file_entry, ['Recordings'])
 
         file_system_sub_file_entry = sub_file_entry
 
       else:
-        self._assertSubFileEntries(sub_file_entry, [u'test_file.txt'])
+        self._assertSubFileEntries(sub_file_entry, ['test_file.txt'])
 
     if file_system_sub_file_entry:
       for sub_file_entry in file_system_sub_file_entry.sub_file_entries:
         self.assertTrue(sub_file_entry.IsVirtual())
 
-        self._assertSubFileEntries(sub_file_entry, [u'AssetManifest.plist'])
+        self._assertSubFileEntries(sub_file_entry, ['AssetManifest.plist'])
 
     file_system.Close()
 
   def testDataStreams(self):
     """Test the data streams functionality."""
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -166,10 +168,10 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -184,16 +186,16 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     path_spec = tar_path_spec.TARPathSpec(
-        location=u'/syslog', parent=self._os_path_spec)
+        location='/syslog', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
 

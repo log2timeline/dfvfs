@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the fake file entry implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import definitions
@@ -22,27 +24,27 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
 
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake',
+        '/test_data/testdir_fake',
         file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
+        '/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file2.txt', file_data=b'FILE2')
+        '/test_data/testdir_fake/file2.txt', file_data=b'FILE2')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file3.txt', file_data=b'FILE3')
+        '/test_data/testdir_fake/file3.txt', file_data=b'FILE3')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file4.txt', file_data=b'FILE4')
+        '/test_data/testdir_fake/file4.txt', file_data=b'FILE4')
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file5.txt', file_data=b'FILE5')
+        '/test_data/testdir_fake/file5.txt', file_data=b'FILE5')
 
     self._file_system.AddFileEntry(
-        u'/test_data/testdir_fake/link1.txt',
+        '/test_data/testdir_fake/link1.txt',
         file_entry_type=definitions.FILE_ENTRY_TYPE_LINK,
-        link_data=u'/test_data/testdir_fake/file1.txt')
+        link_data='/test_data/testdir_fake/file1.txt')
 
-    self._test_file = u'/test_data/testdir_fake'
+    self._test_file = '/test_data/testdir_fake'
 
-    self._fake_path_spec = fake_path_spec.FakePathSpec(location=u'/')
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
     self._file_system.Open(self._fake_path_spec)
 
   def tearDown(self):
@@ -66,7 +68,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetFileObject(self):
     """Test the get file object functionality."""
-    test_file = u'/test_data/testdir_fake/file1.txt'
+    test_file = '/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -82,7 +84,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
-    test_file = u'/test_data/testdir_fake/file1.txt'
+    test_file = '/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -91,11 +93,11 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(parent_file_entry)
 
-    self.assertEqual(parent_file_entry.name, u'testdir_fake')
+    self.assertEqual(parent_file_entry.name, 'testdir_fake')
 
   def testGetStat(self):
     """Tests the GetStat function."""
-    test_file = u'/test_data/testdir_fake/file1.txt'
+    test_file = '/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -114,7 +116,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsFunctions(self):
     """Test the Is? functions."""
-    test_file = u'/test_data/testdir_fake/file1.txt'
+    test_file = '/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -130,7 +132,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    test_file = u'/test_data/testdir_fake'
+    test_file = '/test_data/testdir_fake'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -146,7 +148,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    test_file = u'/test_data/testdir_fake/link1.txt'
+    test_file = '/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -164,12 +166,12 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testLink(self):
     """Test the link property functionality."""
-    test_file = u'/test_data/testdir_fake/link1.txt'
+    test_file = '/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.link, u'/test_data/testdir_fake/file1.txt')
+    self.assertEqual(file_entry.link, '/test_data/testdir_fake/file1.txt')
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
@@ -180,8 +182,8 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(file_entry.number_of_sub_file_entries, 6)
 
     expected_sub_file_entry_names = [
-        u'file1.txt', u'file2.txt', u'file3.txt', u'file4.txt', u'file5.txt',
-        u'link1.txt']
+        'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', 'file5.txt',
+        'link1.txt']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -194,7 +196,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testDataStreams(self):
     """Test the data streams functionality."""
-    test_file = u'/test_data/testdir_fake/file1.txt'
+    test_file = '/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -205,9 +207,9 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
-    test_file = u'/test_data/testdir_fake'
+    test_file = '/test_data/testdir_fake'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -220,7 +222,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [])
 
-    test_file = u'/test_data/testdir_fake/link1.txt'
+    test_file = '/test_data/testdir_fake/link1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -235,17 +237,17 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
-    test_file = u'/test_data/testdir_fake/file1.txt'
+    test_file = '/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
 

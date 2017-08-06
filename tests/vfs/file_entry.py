@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the VFS file entry interface."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import fake_path_spec
@@ -29,7 +31,7 @@ class DataStreamTest(shared_test_lib.BaseTestCase):
   def testName(self):
     """Test the name property."""
     test_data_stream = file_entry.DataStream()
-    self.assertEqual(test_data_stream.name, u'')
+    self.assertEqual(test_data_stream.name, '')
 
 
 class DirectoryTest(shared_test_lib.BaseTestCase):
@@ -38,7 +40,7 @@ class DirectoryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._fake_path_spec = fake_path_spec.FakePathSpec(location=u'/')
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
 
   # TODO: add tests for _EntriesGenerator function.
 
@@ -59,7 +61,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._path_spec = fake_path_spec.FakePathSpec(location=u'/')
+    self._path_spec = fake_path_spec.FakePathSpec(location='/')
 
     self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
     self._file_system.Open(self._path_spec)
