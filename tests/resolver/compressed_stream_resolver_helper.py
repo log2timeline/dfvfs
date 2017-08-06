@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the compressed stream resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.resolver import compressed_stream_resolver_helper

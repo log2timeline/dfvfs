@@ -20,7 +20,7 @@ class AttributeTest(shared_test_lib.BaseTestCase):
     test_attribute = file_entry.Attribute()
 
     with self.assertRaises(NotImplementedError):
-      _ = test_attribute.type_indicator
+      test_attribute.type_indicator
 
 
 class DataStreamTest(shared_test_lib.BaseTestCase):

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the serializer object implementation using JSON."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -15,28 +17,28 @@ from tests import test_lib as shared_test_lib
 
 
 class JsonPathSpecSerializerTest(shared_test_lib.BaseTestCase):
-  """Tests for the JSON path specification serializer object."""
+  """Tests for the JSON path specification serializer."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = self._GetTestFilePath([u'image.qcow2'])
+    test_file = self._GetTestFilePath(['image.qcow2'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
         parent=self._os_path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=self._qcow_path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        inode=16, location=u'/a_directory/another_file',
+        inode=16, location='/a_directory/another_file',
         parent=self._vshadow_path_spec)
 
     self._tsk_path_spec_dict = {
-        u'inode': 16,
-        u'location': u'/a_directory/another_file',
-        u'parent': {
-            u'store_index': 1,
-            u'parent': {
-                u'parent': {
-                    u'location': os.path.abspath(test_file)}
+        'inode': 16,
+        'location': '/a_directory/another_file',
+        'parent': {
+            'store_index': 1,
+            'parent': {
+                'parent': {
+                    'location': os.path.abspath(test_file)}
             }
         }
     }

@@ -277,7 +277,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_file)
 
     with self.assertRaises(errors.BackEndError):
-      _ = self._source_scanner.Scan(scan_context)
+      self._source_scanner.Scan(scan_context)
 
   @shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
   def testScanForFileSystemVSS(self):

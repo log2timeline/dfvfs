@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the SleuthKit (TSK) resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.resolver import tsk_resolver_helper

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the RAW image resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.resolver import raw_resolver_helper

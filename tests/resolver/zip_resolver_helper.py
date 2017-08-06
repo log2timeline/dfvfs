@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the zip resolver helper implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.resolver import zip_resolver_helper
