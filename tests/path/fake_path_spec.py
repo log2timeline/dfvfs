@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the fake path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import fake_path_spec
@@ -14,31 +16,31 @@ class FakePathSpecTest(test_lib.PathSpecTestCase):
 
   def testInitialize(self):
     """Tests the path specification initialization."""
-    path_spec = fake_path_spec.FakePathSpec(location=u'/test')
+    path_spec = fake_path_spec.FakePathSpec(location='/test')
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = fake_path_spec.FakePathSpec(location=u'/test', parent=self._path_spec)
+      fake_path_spec.FakePathSpec(location='/test', parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = fake_path_spec.FakePathSpec(location=u'/test', bogus=u'BOGUS')
+      fake_path_spec.FakePathSpec(location='/test', bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
-    path_spec = fake_path_spec.FakePathSpec(location=u'/test')
+    path_spec = fake_path_spec.FakePathSpec(location='/test')
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: FAKE, location: /test',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: FAKE, location: /test',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
   def testIsSystemLevel(self):
     """Tests the IsSystemLevel function."""
-    path_spec = fake_path_spec.FakePathSpec(location=u'/test')
+    path_spec = fake_path_spec.FakePathSpec(location='/test')
 
     self.assertIsNotNone(path_spec)
     self.assertTrue(path_spec.IsSystemLevel())

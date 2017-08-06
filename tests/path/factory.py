@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the path specification factory."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import definitions
@@ -33,7 +35,7 @@ class FactoryTest(unittest.TestCase):
   def testNewPathSpec(self):
     """Tests the NewPathSpec function."""
     test_path_spec = factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=u'/test')
+        definitions.TYPE_INDICATOR_OS, location='/test')
 
     self.assertIsNotNone(test_path_spec)
 

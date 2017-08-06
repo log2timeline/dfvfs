@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the zip path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import zip_path_spec
@@ -15,31 +17,31 @@ class ZipPathSpecTest(test_lib.PathSpecTestCase):
   def testInitialize(self):
     """Tests the path specification initialization."""
     path_spec = zip_path_spec.ZipPathSpec(
-        location=u'/test', parent=self._path_spec)
+        location='/test', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = zip_path_spec.ZipPathSpec(location=u'/test', parent=None)
+      zip_path_spec.ZipPathSpec(location='/test', parent=None)
 
     with self.assertRaises(ValueError):
-      _ = zip_path_spec.ZipPathSpec(location=None, parent=self._path_spec)
+      zip_path_spec.ZipPathSpec(location=None, parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = zip_path_spec.ZipPathSpec(
-          location=u'/test', parent=self._path_spec, bogus=u'BOGUS')
+      zip_path_spec.ZipPathSpec(
+          location='/test', parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
     path_spec = zip_path_spec.ZipPathSpec(
-        location=u'/test', parent=self._path_spec)
+        location='/test', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: ZIP, location: /test',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: ZIP, location: /test',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the LVM path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import lvm_path_spec
@@ -19,7 +21,7 @@ class LVMPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm2', parent=self._path_spec)
+        location='/lvm2', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
@@ -29,16 +31,16 @@ class LVMPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm2', parent=self._path_spec, volume_index=1)
+        location='/lvm2', parent=self._path_spec, volume_index=1)
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = lvm_path_spec.LVMPathSpec(parent=None)
+      lvm_path_spec.LVMPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = lvm_path_spec.LVMPathSpec(
-          parent=self._path_spec, bogus=u'BOGUS')
+      lvm_path_spec.LVMPathSpec(
+          parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
@@ -46,22 +48,22 @@ class LVMPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: LVM',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: LVM',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm2', parent=self._path_spec)
+        location='/lvm2', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: LVM, location: /lvm2',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: LVM, location: /lvm2',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
@@ -70,22 +72,22 @@ class LVMPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: LVM, volume index: 1',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: LVM, volume index: 1',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm2', parent=self._path_spec, volume_index=1)
+        location='/lvm2', parent=self._path_spec, volume_index=1)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: LVM, location: /lvm2, volume index: 1',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: LVM, location: /lvm2, volume index: 1',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 

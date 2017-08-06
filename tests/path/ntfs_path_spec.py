@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the NTFS path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from tests.path import test_lib
@@ -14,12 +16,12 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
   def testInitialize(self):
     """Tests the path specification initialization."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=u'\\test', parent=self._path_spec)
+        location='\\test', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        data_stream=u'test', location=u'\\test', parent=self._path_spec)
+        data_stream='test', location='\\test', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
@@ -34,46 +36,46 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=u'\\test', mft_entry=1, parent=self._path_spec)
+        location='\\test', mft_entry=1, parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = ntfs_path_spec.NTFSPathSpec(location=u'\\test', parent=None)
+      ntfs_path_spec.NTFSPathSpec(location='\\test', parent=None)
 
     with self.assertRaises(ValueError):
-      _ = ntfs_path_spec.NTFSPathSpec(location=None, parent=self._path_spec)
+      ntfs_path_spec.NTFSPathSpec(location=None, parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = ntfs_path_spec.NTFSPathSpec(mft_entry=None, parent=self._path_spec)
+      ntfs_path_spec.NTFSPathSpec(mft_entry=None, parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = ntfs_path_spec.NTFSPathSpec(
-          location=u'\\test', parent=self._path_spec, bogus=u'BOGUS')
+      ntfs_path_spec.NTFSPathSpec(
+          location='\\test', parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=u'\\test', parent=self._path_spec)
+        location='\\test', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: NTFS, location: \\test',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: NTFS, location: \\test',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        data_stream=u'test', location=u'\\test', parent=self._path_spec)
+        data_stream='test', location='\\test', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: NTFS, data stream: test, location: \\test',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: NTFS, data stream: test, location: \\test',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
@@ -82,10 +84,10 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: NTFS, MFT entry: 1',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: NTFS, MFT entry: 1',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
@@ -94,22 +96,22 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: NTFS, MFT attribute: 3, MFT entry: 1',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: NTFS, MFT attribute: 3, MFT entry: 1',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=u'\\test', mft_entry=1, parent=self._path_spec)
+        location='\\test', mft_entry=1, parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: NTFS, location: \\test, MFT entry: 1',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: NTFS, location: \\test, MFT entry: 1',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 

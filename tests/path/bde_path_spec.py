@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the BDE path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import bde_path_spec
@@ -19,10 +21,10 @@ class BDEPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = bde_path_spec.BDEPathSpec(parent=None)
+      bde_path_spec.BDEPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = bde_path_spec.BDEPathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      bde_path_spec.BDEPathSpec(parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
@@ -30,10 +32,10 @@ class BDEPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: BDE',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: BDE',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the gzip file path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import gzip_path_spec
@@ -19,10 +21,10 @@ class GzipPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = gzip_path_spec.GzipPathSpec(parent=None)
+      gzip_path_spec.GzipPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = gzip_path_spec.GzipPathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      gzip_path_spec.GzipPathSpec(parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
@@ -30,10 +32,10 @@ class GzipPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: GZIP',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: GZIP',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
