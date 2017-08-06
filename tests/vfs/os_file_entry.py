@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Tests for the operating system file entry implementation."""
 
-from __future__ import unicode_literals:
+from __future__ import unicode_literals
 
 import unittest
 
