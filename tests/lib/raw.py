@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the storage media RAW image support helper functions."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import raw
@@ -33,7 +35,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     file_system = fake_file_system.FakeFileSystem(resolver_context)
 
     for segment_filename in segment_filenames:
-      path = u'/{0:s}'.format(segment_filename)
+      path = '/{0:s}'.format(segment_filename)
 
       file_system.AddFileEntry(path)
       segment_file_path_specs.append(fake_path_spec.FakePathSpec(location=path))
@@ -43,12 +45,12 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
   def testGlobRawSinglecExtension(self):
     """Test the glob function for a RAW single extension scheme."""
     # Test single segment file: dd.
-    segment_filenames = [u'ímynd.dd']
+    segment_filenames = ['ímynd.dd']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/ímynd.dd')
+    path_spec = fake_path_spec.FakePathSpec(location='/ímynd.dd')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -58,12 +60,12 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test single segment file: dmg.
-    segment_filenames = [u'image.dmg']
+    segment_filenames = ['image.dmg']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.dmg')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.dmg')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -73,12 +75,12 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test single segment file: img.
-    segment_filenames = [u'image.img']
+    segment_filenames = ['image.img']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.img')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.img')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -88,12 +90,12 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
         segment_file_path_specs, expected_segment_file_path_specs)
 
     # Test single segment file: raw.
-    segment_filenames = [u'image.raw']
+    segment_filenames = ['image.raw']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.raw')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.raw')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -104,13 +106,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
   def testGlobRawAlphabeticalExtension(self):
     """Test the glob function for a RAW alphabetical extension scheme."""
-    segment_filenames = [u'image.aaa']
+    segment_filenames = ['image.aaa']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
     # Test single segment file: aaa.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.aaa')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.aaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -122,7 +124,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     # Test non exiting segment file: aaa.
     expected_segment_file_path_specs = []
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/bogus.aaa')
+    path_spec = fake_path_spec.FakePathSpec(location='/bogus.aaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -133,14 +135,14 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: aaa-aak.
     segment_filenames = [
-        u'image.aaa', u'image.aab', u'image.aac', u'image.aad', u'image.aae',
-        u'image.aaf', u'image.aag', u'image.aah', u'image.aai', u'image.aaj',
-        u'image.aak']
+        'image.aaa', 'image.aab', 'image.aac', 'image.aad', 'image.aae',
+        'image.aaf', 'image.aag', 'image.aah', 'image.aai', 'image.aaj',
+        'image.aak']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.aaa')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.aaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -151,14 +153,14 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: AAA-AAk.
     segment_filenames = [
-        u'image.AAA', u'image.AAB', u'image.AAC', u'image.AAD', u'image.AAE',
-        u'image.AAF', u'image.AAG', u'image.AAH', u'image.AAI', u'image.AAJ',
-        u'image.AAK']
+        'image.AAA', 'image.AAB', 'image.AAC', 'image.AAD', 'image.AAE',
+        'image.AAF', 'image.AAG', 'image.AAH', 'image.AAI', 'image.AAJ',
+        'image.AAK']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.AAA')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.AAA')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -169,13 +171,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
   def testGlobRawAlphabeticalSuffix(self):
     """Test the glob function for a RAW alphabetical suffix scheme."""
-    segment_filenames = [u'imageaaa']
+    segment_filenames = ['imageaaa']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
     # Test single segment file: aaa.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/imageaaa')
+    path_spec = fake_path_spec.FakePathSpec(location='/imageaaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -187,7 +189,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     # Test non exiting segment file: aaa.
     expected_segment_file_path_specs = []
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/bogusaaa')
+    path_spec = fake_path_spec.FakePathSpec(location='/bogusaaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -198,14 +200,14 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: aaa-aak.
     segment_filenames = [
-        u'imageaaa', u'imageaab', u'imageaac', u'imageaad', u'imageaae',
-        u'imageaaf', u'imageaag', u'imageaah', u'imageaai', u'imageaaj',
-        u'imageaak']
+        'imageaaa', 'imageaab', 'imageaac', 'imageaad', 'imageaae',
+        'imageaaf', 'imageaag', 'imageaah', 'imageaai', 'imageaaj',
+        'imageaak']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/imageaaa')
+    path_spec = fake_path_spec.FakePathSpec(location='/imageaaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -216,14 +218,14 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: AAA-AAk.
     segment_filenames = [
-        u'imageAAA', u'imageAAB', u'imageAAC', u'imageAAD', u'imageAAE',
-        u'imageAAF', u'imageAAG', u'imageAAH', u'imageAAI', u'imageAAJ',
-        u'imageAAK']
+        'imageAAA', 'imageAAB', 'imageAAC', 'imageAAD', 'imageAAE',
+        'imageAAF', 'imageAAG', 'imageAAH', 'imageAAI', 'imageAAJ',
+        'imageAAK']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/imageAAA')
+    path_spec = fake_path_spec.FakePathSpec(location='/imageAAA')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -234,13 +236,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
   def testGlobRawNumericExtension(self):
     """Test the glob function for a RAW numeric extension scheme."""
-    segment_filenames = [u'image.000']
+    segment_filenames = ['image.000']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
     # Test single segment file: 000.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.000')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.000')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -252,7 +254,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     # Test non exiting segment file: 000.
     expected_segment_file_path_specs = []
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/bogus.000')
+    path_spec = fake_path_spec.FakePathSpec(location='/bogus.000')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -263,14 +265,14 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 000-010.
     segment_filenames = [
-        u'image.000', u'image.001', u'image.002', u'image.003', u'image.004',
-        u'image.005', u'image.006', u'image.007', u'image.008', u'image.009',
-        u'image.010']
+        'image.000', 'image.001', 'image.002', 'image.003', 'image.004',
+        'image.005', 'image.006', 'image.007', 'image.008', 'image.009',
+        'image.010']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.000')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.000')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -281,13 +283,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 001-010.
     segment_filenames = [
-        u'image.001', u'image.002', u'image.003', u'image.004', u'image.005',
-        u'image.006', u'image.007', u'image.008', u'image.009', u'image.010']
+        'image.001', 'image.002', 'image.003', 'image.004', 'image.005',
+        'image.006', 'image.007', 'image.008', 'image.009', 'image.010']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.001')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.001')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -298,13 +300,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 1-10.
     segment_filenames = [
-        u'image.1', u'image.2', u'image.3', u'image.4', u'image.5',
-        u'image.6', u'image.7', u'image.8', u'image.9', u'image.10']
+        'image.1', 'image.2', 'image.3', 'image.4', 'image.5',
+        'image.6', 'image.7', 'image.8', 'image.9', 'image.10']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image.1')
+    path_spec = fake_path_spec.FakePathSpec(location='/image.1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -315,13 +317,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
   def testGlobRawNumericSuffix(self):
     """Test the glob function for a RAW numeric suffix scheme."""
-    segment_filenames = [u'image1']
+    segment_filenames = ['image1']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
     # Test single segment file: 000.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image1')
+    path_spec = fake_path_spec.FakePathSpec(location='/image1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -333,7 +335,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     # Test non exiting segment file: 000.
     expected_segment_file_path_specs = []
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/bogus1')
+    path_spec = fake_path_spec.FakePathSpec(location='/bogus1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -344,13 +346,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 000-010.
     segment_filenames = [
-        u'image0', u'image1', u'image2', u'image3', u'image4', u'image5',
-        u'image6', u'image7', u'image8', u'image9', u'image10']
+        'image0', 'image1', 'image2', 'image3', 'image4', 'image5',
+        'image6', 'image7', 'image8', 'image9', 'image10']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image0')
+    path_spec = fake_path_spec.FakePathSpec(location='/image0')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -361,13 +363,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 1-10.
     segment_filenames = [
-        u'image1', u'image2', u'image3', u'image4', u'image5',
-        u'image6', u'image7', u'image8', u'image9', u'image10']
+        'image1', 'image2', 'image3', 'image4', 'image5',
+        'image6', 'image7', 'image8', 'image9', 'image10']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image1')
+    path_spec = fake_path_spec.FakePathSpec(location='/image1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -378,13 +380,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 001-010.
     segment_filenames = [
-        u'image001', u'image002', u'image003', u'image004', u'image005',
-        u'image006', u'image007', u'image008', u'image009', u'image010']
+        'image001', 'image002', 'image003', 'image004', 'image005',
+        'image006', 'image007', 'image008', 'image009', 'image010']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image001')
+    path_spec = fake_path_spec.FakePathSpec(location='/image001')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -395,13 +397,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
   def testGlobRawAsbExtension(self):
     """Test the glob function for a RAW ASB extension scheme."""
-    segment_filenames = [u'image001.asb']
+    segment_filenames = ['image001.asb']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
     # Test single segment file: 001.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image001.asb')
+    path_spec = fake_path_spec.FakePathSpec(location='/image001.asb')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -413,7 +415,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     # Test non exiting segment file: 001.
     expected_segment_file_path_specs = []
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/bogus000.asb')
+    path_spec = fake_path_spec.FakePathSpec(location='/bogus000.asb')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -424,14 +426,14 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 001-010.
     segment_filenames = [
-        u'image001.asb', u'image002.asb', u'image003.asb', u'image004.asb',
-        u'image005.asb', u'image006.asb', u'image007.asb', u'image008.asb',
-        u'image009.asb', u'image010.asb']
+        'image001.asb', 'image002.asb', 'image003.asb', 'image004.asb',
+        'image005.asb', 'image006.asb', 'image007.asb', 'image008.asb',
+        'image009.asb', 'image010.asb']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image001.asb')
+    path_spec = fake_path_spec.FakePathSpec(location='/image001.asb')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -442,13 +444,13 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
   def testGlobRawVMDKExtension(self):
     """Test the glob function for a RAW VMDK extension scheme."""
-    segment_filenames = [u'image-f001.vmdk']
+    segment_filenames = ['image-f001.vmdk']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
     # Test single segment file: 001.
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image-f001.vmdk')
+    path_spec = fake_path_spec.FakePathSpec(location='/image-f001.vmdk')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -460,7 +462,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     # Test non exiting segment file: 001.
     expected_segment_file_path_specs = []
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/bogus-f000.vmdk')
+    path_spec = fake_path_spec.FakePathSpec(location='/bogus-f000.vmdk')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
@@ -471,15 +473,15 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
 
     # Test multiple segment files: 001-010.
     segment_filenames = [
-        u'image-f001.vmdk', u'image-f002.vmdk', u'image-f003.vmdk',
-        u'image-f004.vmdk', u'image-f005.vmdk', u'image-f006.vmdk',
-        u'image-f007.vmdk', u'image-f008.vmdk', u'image-f009.vmdk',
-        u'image-f010.vmdk']
+        'image-f001.vmdk', 'image-f002.vmdk', 'image-f003.vmdk',
+        'image-f004.vmdk', 'image-f005.vmdk', 'image-f006.vmdk',
+        'image-f007.vmdk', 'image-f008.vmdk', 'image-f009.vmdk',
+        'image-f010.vmdk']
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
         segment_filenames, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/image-f001.vmdk')
+    path_spec = fake_path_spec.FakePathSpec(location='/image-f001.vmdk')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)

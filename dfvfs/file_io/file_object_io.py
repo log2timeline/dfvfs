@@ -92,7 +92,9 @@ class FileObjectIO(file_io.FileIO):
     if not self._is_open:
       raise IOError(u'Not opened.')
 
-    return self._file_object.read(size=size)
+    # Do not pass the size argument as a keyword argument since it breaks
+    # some file-like object implementations.
+    return self._file_object.read(size)
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks to an offset within the file-like object.

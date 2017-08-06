@@ -124,16 +124,17 @@ class CPIOArchiveFile(object):
 
     self.file_format = None
 
-  def _ReadFileEntry(self, file_offset):
+  def _ReadFileEntry(self, file_object, file_offset):
     """Reads a file entry.
 
     Args:
+      file_object (FileIO): file-like object.
       file_offset (int): current file offset.
 
     Raises:
       IOError: if the file entry cannot be read.
     """
-    self._file_object.seek(file_offset, os.SEEK_SET)
+    file_object.seek(file_offset, os.SEEK_SET)
 
     if self.file_format == 'bin-big-endian':
       file_entry_struct = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_STRUCT
@@ -147,7 +148,7 @@ class CPIOArchiveFile(object):
     file_entry_struct_size = file_entry_struct.sizeof()
 
     try:
-      file_entry_struct = file_entry_struct.parse_stream(self._file_object)
+      file_entry_struct = file_entry_struct.parse_stream(file_object)
     except construct.FieldError as exception:
       raise IOError((
           'Unable to parse file entry data section with error: '
@@ -189,7 +190,7 @@ class CPIOArchiveFile(object):
       path_string_size = int(file_entry_struct.path_string_size, 16)
       file_size = int(file_entry_struct.file_size, 16)
 
-    path_string_data = self._file_object.read(path_string_size)
+    path_string_data = file_object.read(path_string_size)
     file_offset += path_string_size
 
     # TODO: should this be ASCII?
@@ -223,22 +224,37 @@ class CPIOArchiveFile(object):
         file_entry_struct_size + path_string_size + padding_size + file_size)
     file_entry.user_identifier = user_identifier
 
-    if self.file_format in ('crc', 'newc'):
-      file_offset += file_size
+    file_offset += file_size
 
+    if self.file_format in ('bin-big-endian', 'bin-little-endian'):
+      padding_size = file_offset % 2
+      if padding_size > 0:
+        padding_size = 2 - padding_size
+
+    elif self.file_format == 'odc':
+      padding_size = 0
+
+    elif self.file_format in ('crc', 'newc'):
       padding_size = file_offset % 4
       if padding_size > 0:
         padding_size = 4 - padding_size
 
+    if padding_size > 0:
       file_entry.size += padding_size
 
     return file_entry
 
-  def _ReadFileEntries(self):
-    """Reads the file entries from the cpio archive."""
+  def _ReadFileEntries(self, file_object):
+    """Reads the file entries from the cpio archive.
+
+    Args:
+      file_object (FileIO): file-like object.
+    """
+    self._file_entries = {}
+
     file_offset = 0
     while file_offset < self._file_size:
-      file_entry = self._ReadFileEntry(file_offset)
+      file_entry = self._ReadFileEntry(file_object, file_offset)
       file_offset += file_entry.size
       if file_entry.path == 'TRAILER!!!':
         break
@@ -275,9 +291,10 @@ class CPIOArchiveFile(object):
     Yields:
       CPIOArchiveFileEntry: a CPIO archive file entry.
     """
-    for path, file_entry in iter(self._file_entries.items()):
-      if path.startswith(path_prefix):
-        yield file_entry
+    if self._file_entries:
+      for path, file_entry in iter(self._file_entries.items()):
+        if path.startswith(path_prefix):
+          yield file_entry
 
   def GetFileEntryByPath(self, path):
     """Retrieves a file entry for a specific path.
@@ -285,10 +302,8 @@ class CPIOArchiveFile(object):
     Returns:
       CPIOArchiveFileEntry: a CPIO archive file entry or None if not available.
     """
-    if self._file_entries is None:
-      return
-
-    return self._file_entries.get(path, None)
+    if self._file_entries:
+      return self._file_entries.get(path, None)
 
   def Open(self, file_object):
     """Opens the CPIO archive file.
@@ -318,11 +333,10 @@ class CPIOArchiveFile(object):
     if self.file_format is None:
       raise IOError('Unsupported CPIO format.')
 
-    self._file_entries = {}
     self._file_object = file_object
     self._file_size = file_object.get_size()
 
-    self._ReadFileEntries()
+    self._ReadFileEntries(self._file_object)
 
   def ReadDataAtOffset(self, file_offset, size):
     """Reads a byte string from the file-like object at a specific offset.
