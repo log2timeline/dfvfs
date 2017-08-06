@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the encoded stream file-like object."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -16,14 +18,14 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.base16'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.base16'])
 class Base16EncodedStreamTest(test_lib.SylogTestCase):
   """The unit test for a base16 encoded stream file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.base16'])
+    test_file = self._GetTestFilePath(['syslog.base16'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(
@@ -84,14 +86,14 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.base32'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.base32'])
 class Base32EncodedStreamTest(test_lib.SylogTestCase):
   """The unit test for a base32 encoded stream file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.base32'])
+    test_file = self._GetTestFilePath(['syslog.base32'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(
@@ -152,14 +154,14 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.base64'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.base64'])
 class Base64EncodedStreamTest(test_lib.SylogTestCase):
   """The unit test for a base64 encoded stream file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.base64'])
+    test_file = self._GetTestFilePath(['syslog.base64'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyfsntfs."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -16,7 +18,7 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class NTFSFileTest(test_lib.ImageFileTestCase):
   """The unit test for the NTFS file-like object."""
 
@@ -27,7 +29,7 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(NTFSFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
         parent=self._os_path_spec)
@@ -48,7 +50,7 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=u'\\password.txt', parent=self._qcow_path_spec)
+        location='\\password.txt', parent=self._qcow_path_spec)
     file_object = ntfs_file_io.NTFSFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -64,7 +66,7 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
   def testSeek(self):
     """Test the seek functionality."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=u'/a_directory/another_file',
+        location='/a_directory/another_file',
         mft_attribute=2, mft_entry=self._MFT_ENTRY_ANOTHER_FILE,
         parent=self._qcow_path_spec)
     file_object = ntfs_file_io.NTFSFile(self._resolver_context)
@@ -105,7 +107,7 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
   def testRead(self):
     """Test the read functionality."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=u'\\passwords.txt', mft_attribute=2,
+        location='\\passwords.txt', mft_attribute=2,
         mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._qcow_path_spec)
     file_object = ntfs_file_io.NTFSFile(self._resolver_context)
 
@@ -128,7 +130,7 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
   def testReadADS(self):
     """Test the read functionality on an alternate data stream (ADS)."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        data_stream=u'$SDS', location=u'\\$Secure', mft_attribute=2,
+        data_stream='$SDS', location='\\$Secure', mft_attribute=2,
         mft_entry=9, parent=self._qcow_path_spec)
     file_object = ntfs_file_io.NTFSFile(self._resolver_context)
 

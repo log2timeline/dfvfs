@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyewf."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import errors
@@ -12,14 +14,14 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'image.E01'])
+@shared_test_lib.skipUnlessHasTestFile(['image.E01'])
 class EWFFileTest(test_lib.ImageFileTestCase):
   """The unit test for the EWF image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(EWFFileTest, self).setUp()
-    test_file = self._GetTestFilePath([u'image.E01'])
+    test_file = self._GetTestFilePath(['image.E01'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=self._os_path_spec)
 
@@ -47,14 +49,14 @@ class EWFFileTest(test_lib.ImageFileTestCase):
     self._TestRead(self._ewf_path_spec)
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'image-split.E01'])
+@shared_test_lib.skipUnlessHasTestFile(['image-split.E01'])
 class SplitEWFFileTest(test_lib.PartitionedImageFileTestCase):
   """The unit test for the split EWF image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(SplitEWFFileTest, self).setUp()
-    test_file = self._GetTestFilePath([u'image-split.E01'])
+    test_file = self._GetTestFilePath(['image-split.E01'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 

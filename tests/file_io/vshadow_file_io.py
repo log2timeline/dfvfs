@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyvshadow."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -15,14 +17,14 @@ from dfvfs.resolver import context
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class VShadowFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the Volume Shadow Snapshots (VSS) file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
 
@@ -44,7 +46,7 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
       file_object.open(path_spec=path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss1', parent=self._qcow_path_spec)
+        location='/vss1', parent=self._qcow_path_spec)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -52,14 +54,14 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss0', parent=self._qcow_path_spec)
+        location='/vss0', parent=self._qcow_path_spec)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.open(path_spec=path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss13', parent=self._qcow_path_spec)
+        location='/vss13', parent=self._qcow_path_spec)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):

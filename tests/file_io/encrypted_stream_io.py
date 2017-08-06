@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the encrypted stream file-like object."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -17,7 +19,7 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.aes'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.aes'])
 class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   """Tests the RC4 encrypted stream file-like object.
 
@@ -30,19 +32,19 @@ class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.aes'])
+    test_file = self._GetTestFilePath(['syslog.aes'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
             encryption_method=definitions.ENCRYPTION_METHOD_AES,
             parent=self._os_path_spec))
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'key', self._AES_KEY)
+        self._encrypted_stream_path_spec, 'key', self._AES_KEY)
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'initialization_vector',
+        self._encrypted_stream_path_spec, 'initialization_vector',
         self._AES_IV)
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'cipher_mode', self._AES_MODE)
+        self._encrypted_stream_path_spec, 'cipher_mode', self._AES_MODE)
     self.padding_size = 1
 
   def testOpenCloseFileObject(self):
@@ -99,7 +101,7 @@ class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.aes'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.aes'])
 class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   """The unit test for a AES encrypted stream file-like object.
 
@@ -113,7 +115,7 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.aes'])
+    test_file = self._GetTestFilePath(['syslog.aes'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -177,7 +179,7 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.blowfish'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.blowfish'])
 class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   """Tests the Blowfish encrypted stream file-like object.
 
@@ -190,19 +192,19 @@ class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.blowfish'])
+    test_file = self._GetTestFilePath(['syslog.blowfish'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
             encryption_method=definitions.ENCRYPTION_METHOD_BLOWFISH,
             parent=self._os_path_spec))
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'key', self._BLOWFISH_KEY)
+        self._encrypted_stream_path_spec, 'key', self._BLOWFISH_KEY)
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'initialization_vector',
+        self._encrypted_stream_path_spec, 'initialization_vector',
         self._BLOWFISH_IV)
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'cipher_mode', self._BLOWFISH_MODE)
+        self._encrypted_stream_path_spec, 'cipher_mode', self._BLOWFISH_MODE)
     self.padding_size = 1
 
   def testOpenCloseFileObject(self):
@@ -259,7 +261,7 @@ class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.des3'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.des3'])
 class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   """Tests the Triple DES encrypted stream file-like object.
 
@@ -272,19 +274,19 @@ class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.des3'])
+    test_file = self._GetTestFilePath(['syslog.des3'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
             encryption_method=definitions.ENCRYPTION_METHOD_DES3,
             parent=self._os_path_spec))
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'key', self._DES3_KEY)
+        self._encrypted_stream_path_spec, 'key', self._DES3_KEY)
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'initialization_vector',
+        self._encrypted_stream_path_spec, 'initialization_vector',
         self._DES3_IV)
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'cipher_mode', self._DES3_MODE)
+        self._encrypted_stream_path_spec, 'cipher_mode', self._DES3_MODE)
     self.padding_size = 1
 
   def testOpenCloseFileObject(self):
@@ -341,7 +343,7 @@ class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.rc4'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.rc4'])
 class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
   """Tests the RC4 encrypted stream file-like object.
 
@@ -352,14 +354,14 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.rc4'])
+    test_file = self._GetTestFilePath(['syslog.rc4'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
             encryption_method=definitions.ENCRYPTION_METHOD_RC4,
             parent=self._os_path_spec))
     resolver.Resolver.key_chain.SetCredential(
-        self._encrypted_stream_path_spec, u'key', self._RC4_KEY)
+        self._encrypted_stream_path_spec, 'key', self._RC4_KEY)
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""

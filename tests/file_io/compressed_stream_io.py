@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the compressed stream file-like object."""
 
+from __future__ import unicode_literals
+
 try:
   import lzma
 except ImportError:
@@ -21,14 +23,14 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.bz2'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.bz2'])
 class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
   """The unit test for a BZIP2 compressed stream file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.bz2'])
+    test_file = self._GetTestFilePath(['syslog.bz2'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
@@ -90,14 +92,14 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
 
 
 @unittest.skipIf(lzma is None, 'requires LZMA compression support')
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.lzma'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.lzma'])
 class LZMACompressedStreamTest(test_lib.SylogTestCase):
   """The unit test for a LZMA compressed stream file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.lzma'])
+    test_file = self._GetTestFilePath(['syslog.lzma'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
@@ -159,14 +161,14 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
 
 
 @unittest.skipIf(lzma is None, 'requires LZMA compression support')
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.xz'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.xz'])
 class XZCompressedStreamTest(test_lib.SylogTestCase):
   """The unit test for a XZ compressed stream file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.xz'])
+    test_file = self._GetTestFilePath(['syslog.xz'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(
@@ -227,14 +229,14 @@ class XZCompressedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.zlib'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.zlib'])
 class ZlibCompressedStreamTest(test_lib.SylogTestCase):
   """The unit test for a zlib compressed stream file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.zlib'])
+    test_file = self._GetTestFilePath(['syslog.zlib'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._compressed_stream_path_spec = (
         compressed_stream_path_spec.CompressedStreamPathSpec(

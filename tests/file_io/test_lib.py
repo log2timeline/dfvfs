@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Shared test cases."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.file_io import tsk_file_io
@@ -44,7 +46,7 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
       parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'/passwords.txt', parent=parent_path_spec)
+        location='/passwords.txt', parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -58,7 +60,7 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
       parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=u'/a_directory/another_file',
+        inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
         parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
@@ -102,7 +104,7 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
       parent_path_spec (PathSpec): parent path specification.
     """
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, location=u'/passwords.txt',
+        inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
         parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
@@ -168,7 +170,7 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
       file_object.open(path_spec=path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p2', parent=parent_path_spec)
+        location='/p2', parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -176,14 +178,14 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object.close()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p0', parent=parent_path_spec)
+        location='/p0', parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.open(path_spec=path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p3', parent=parent_path_spec)
+        location='/p3', parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):

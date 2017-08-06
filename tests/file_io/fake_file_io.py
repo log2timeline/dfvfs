@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the fake file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -28,10 +30,10 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = u'/test_data/password.txt'
+    test_file = '/test_data/password.txt'
     self._path_spec1 = fake_path_spec.FakePathSpec(location=test_file)
 
-    test_file = u'/test_data/another_file'
+    test_file = '/test_data/another_file'
     self._path_spec2 = fake_path_spec.FakePathSpec(location=test_file)
 
   def testOpenClosePathSpec(self):

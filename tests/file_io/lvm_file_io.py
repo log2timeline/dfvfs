@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyvslvm."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -16,14 +18,14 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'lvmtest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class LVMFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the Logical Volume Manager (LVM) file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
 
@@ -45,7 +47,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
       file_object.open(path_spec=path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm1', parent=self._qcow_path_spec)
+        location='/lvm1', parent=self._qcow_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -53,14 +55,14 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm0', parent=self._qcow_path_spec)
+        location='/lvm0', parent=self._qcow_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.open(path_spec=path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm13', parent=self._qcow_path_spec)
+        location='/lvm13', parent=self._qcow_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
@@ -129,7 +131,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'lvmtest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class LVMImageFileTest(test_lib.ImageFileTestCase):
   """The unit test for the Logical Volume Manager (LVM) file-like object."""
 
@@ -139,7 +141,7 @@ class LVMImageFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(LVMImageFileTest, self).setUp()
-    test_file = self._GetTestFilePath([u'lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
