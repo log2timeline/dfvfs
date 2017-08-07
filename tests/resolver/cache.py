@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the resolver objects cache."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import errors
@@ -10,7 +12,7 @@ from dfvfs.resolver import cache
 
 
 class TestVFSObject(object):
-  """Class to define the test VFS object."""
+  """Test VFS object."""
 
 
 class ObjectsCacheValueTest(unittest.TestCase):
@@ -53,7 +55,7 @@ class ObjectsCacheTest(unittest.TestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    self._path_spec = fake_path_spec.FakePathSpec(location=u'1')
+    self._path_spec = fake_path_spec.FakePathSpec(location='1')
     self._vfs_object = TestVFSObject()
 
   def testCache(self):
@@ -81,7 +83,7 @@ class ObjectsCacheTest(unittest.TestCase):
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'2')
+    path_spec = fake_path_spec.FakePathSpec(location='2')
     vfs_object = TestVFSObject()
 
     with self.assertRaises(errors.CacheFullError):
@@ -94,11 +96,11 @@ class ObjectsCacheTest(unittest.TestCase):
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'2')
+    path_spec = fake_path_spec.FakePathSpec(location='2')
     vfs_object = TestVFSObject()
     cache_object.CacheObject(path_spec.comparable, vfs_object)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'3')
+    path_spec = fake_path_spec.FakePathSpec(location='3')
     vfs_object = TestVFSObject()
     cache_object.CacheObject(path_spec.comparable, vfs_object)
 

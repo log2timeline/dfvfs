@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the resolver context object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.file_io import fake_file_io
@@ -20,7 +22,7 @@ class ContextTest(unittest.TestCase):
     # pylint: disable=protected-access
     self.assertEqual(len(resolver_context._file_object_cache._values), 0)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/empty.txt')
+    path_spec = fake_path_spec.FakePathSpec(location='/empty.txt')
     file_object = fake_file_io.FakeFile(resolver_context, b'')
 
     resolver_context.CacheFileObject(path_spec, file_object)
@@ -48,7 +50,7 @@ class ContextTest(unittest.TestCase):
     # pylint: disable=protected-access
     self.assertEqual(len(resolver_context._file_system_cache._values), 0)
 
-    path_spec = fake_path_spec.FakePathSpec(location=u'/')
+    path_spec = fake_path_spec.FakePathSpec(location='/')
     file_system = fake_file_system.FakeFileSystem(resolver_context)
 
     resolver_context.CacheFileSystem(path_spec, file_system)

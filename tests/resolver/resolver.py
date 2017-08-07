@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the path specification resolver."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.resolver import resolver
@@ -11,7 +13,7 @@ from tests.resolver import test_lib
 
 
 class ResolverTest(shared_test_lib.BaseTestCase):
-  """Class to test the path specification resolver object."""
+  """Tests the path specification resolver."""
 
   # pylint: disable=protected-access
 
