@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using the SleuthKit (TSK)."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -14,17 +16,17 @@ from dfvfs.vfs import tsk_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
+@shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
 class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   """The unit test for the SleuthKit (TSK) file entry object on ext2."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'ímynd.dd'])
+    test_file = self._GetTestFilePath(['ímynd.dd'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
 
     self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
     self._file_system.Open(self._tsk_path_spec)
@@ -49,7 +51,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
-    test_location = u'/a_link'
+    test_location = '/a_link'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=13, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -59,11 +61,11 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(linked_file_entry)
 
-    self.assertEqual(linked_file_entry.name, u'another_file')
+    self.assertEqual(linked_file_entry.name, 'another_file')
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
-    test_location = u'/a_directory/another_file'
+    test_location = '/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -73,11 +75,11 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(parent_file_entry)
 
-    self.assertEqual(parent_file_entry.name, u'a_directory')
+    self.assertEqual(parent_file_entry.name, 'a_directory')
 
   def testGetStat(self):
     """Tests the GetStat function."""
-    test_location = u'/a_directory/another_file'
+    test_location = '/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -94,21 +96,21 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.gid, 5000)
 
     self.assertEqual(stat_object.atime, 1337961563)
-    self.assertFalse(hasattr(stat_object, u'atime_nano'))
+    self.assertFalse(hasattr(stat_object, 'atime_nano'))
 
     self.assertEqual(stat_object.ctime, 1337961563)
-    self.assertFalse(hasattr(stat_object, u'ctime_nano'))
+    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
 
     # EXT2 has no crtime timestamp.
-    self.assertFalse(hasattr(stat_object, u'crtime'))
-    self.assertFalse(hasattr(stat_object, u'crtime_nano'))
+    self.assertFalse(hasattr(stat_object, 'crtime'))
+    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
 
     self.assertEqual(stat_object.mtime, 1337961563)
-    self.assertFalse(hasattr(stat_object, u'mtime_nano'))
+    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testIsFunctions(self):
     """Test the Is? functions."""
-    test_location = u'/a_directory/another_file'
+    test_location = '/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -125,7 +127,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    test_location = u'/a_directory'
+    test_location = '/a_directory'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=12, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -143,7 +145,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -161,7 +163,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -170,11 +172,11 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     # Note that passwords.txt~ is currently ignored by dfvfs, since
     # its directory entry has no pytsk3.TSK_FS_META object.
     expected_sub_file_entry_names = [
-        u'a_directory',
-        u'a_link',
-        u'lost+found',
-        u'passwords.txt',
-        u'$OrphanFiles']
+        'a_directory',
+        'a_link',
+        'lost+found',
+        'passwords.txt',
+        '$OrphanFiles']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -187,7 +189,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
   def testDataStreams(self):
     """Test the data streams functionality."""
-    test_location = u'/a_directory/another_file'
+    test_location = '/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -199,9 +201,9 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
-    test_location = u'/a_directory'
+    test_location = '/a_directory'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=12, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -217,13 +219,13 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
-    test_location = u'/a_directory/another_file'
+    test_location = '/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=test_location, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
 
@@ -234,18 +236,18 @@ class TSKFileEntryTestHFS(unittest.TestCase):
   # TODO: implement.
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   """The unit test for the SleuthKit (TSK) file entry object on NTFS."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'\\', parent=self._qcow_path_spec)
+        location='\\', parent=self._qcow_path_spec)
 
     self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
     self._file_system.Open(self._tsk_path_spec)
@@ -257,7 +259,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   def testGetStat(self):
     """Tests the GetStat function."""
     test_location = (
-        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -285,7 +287,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   def testAttributes(self):
     """Test the attributes functionality."""
     test_location = (
-        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -296,7 +298,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   def testDataStream(self):
     """Test the data streams functionality."""
     test_location = (
-        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -308,10 +310,10 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=36, location=u'\\System Volume Information',
+        inode=36, location='\\System Volume Information',
         parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -324,7 +326,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [])
 
-    test_location = u'\\$Extend\\$RmMetadata\\$Repair'
+    test_location = '\\$Extend\\$RmMetadata\\$Repair'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=28, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -336,32 +338,32 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(sorted(data_stream_names), sorted([u'', u'$Config']))
+    self.assertEqual(sorted(data_stream_names), sorted(['', '$Config']))
 
   def testGetDataStream(self):
     """Test the retrieve data stream functionality."""
     test_location = (
-        u'\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=38, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
-    test_location = u'\\$Extend\\$RmMetadata\\$Repair'
+    test_location = '\\$Extend\\$RmMetadata\\$Repair'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=28, location=test_location, parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u'$Config'
+    data_stream_name = '$Config'
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)

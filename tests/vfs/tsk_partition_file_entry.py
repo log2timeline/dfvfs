@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the partition file entry implementation using pytsk3."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -13,18 +15,18 @@ from dfvfs.vfs import tsk_partition_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
+@shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
 class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the TSK partition file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
+    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_partition_path_spec = (
         tsk_partition_path_spec.TSKPartitionPathSpec(
-            location=u'/', parent=self._os_path_spec))
+            location='/', parent=self._os_path_spec))
 
     self._file_system = tsk_partition_file_system.TSKPartitionFileSystem(
         self._resolver_context)
@@ -100,7 +102,7 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -118,13 +120,13 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 7)
 
-    expected_sub_file_entry_names = [u'', u'', u'', u'', u'', u'p1', u'p2']
+    expected_sub_file_entry_names = ['', '', '', '', '', 'p1', 'p2']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -148,10 +150,10 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -170,12 +172,12 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
 

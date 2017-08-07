@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for a file system implementation using pyvshadow."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -13,18 +15,18 @@ from dfvfs.vfs import vshadow_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the VSS file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
 
   # qcowmount test_data/vsstest.qcow2 fuse/
   # vshadowinfo fuse/qcow1
@@ -66,7 +68,7 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._vshadow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -74,7 +76,7 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss2', parent=self._qcow_path_spec)
+        location='/vss2', parent=self._qcow_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -82,11 +84,11 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss0', parent=self._qcow_path_spec)
+        location='/vss0', parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss9', parent=self._qcow_path_spec)
+        location='/vss9', parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -99,25 +101,25 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._vshadow_path_spec)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         parent=self._qcow_path_spec, store_index=1)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'vss2')
+    self.assertEqual(file_entry.name, 'vss2')
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss2', parent=self._qcow_path_spec)
+        location='/vss2', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'vss2')
+    self.assertEqual(file_entry.name, 'vss2')
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         parent=self._qcow_path_spec, store_index=9)
@@ -126,13 +128,13 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(file_entry)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss0', parent=self._qcow_path_spec)
+        location='/vss0', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=u'/vss9', parent=self._qcow_path_spec)
+        location='/vss9', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
@@ -149,7 +151,7 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

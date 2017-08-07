@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the data range file system implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import data_range_path_spec
@@ -12,14 +14,14 @@ from dfvfs.vfs import data_range_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog'])
 class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the data range file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog'])
+    test_file = self._GetTestFilePath(['syslog'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._data_range_path_spec = (
         data_range_path_spec.DataRangePathSpec(
@@ -60,7 +62,7 @@ class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
         self._data_range_path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 
@@ -75,7 +77,7 @@ class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

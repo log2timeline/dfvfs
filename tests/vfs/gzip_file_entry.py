@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using gzip."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import gzip_path_spec
@@ -13,14 +15,14 @@ from dfvfs.vfs import gzip_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.gz'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.gz'])
 class GZIPFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the gzip file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.gz'])
+    test_file = self._GetTestFilePath(['syslog.gz'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
 
@@ -65,7 +67,7 @@ class GZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.size, 1247)
 
     self.assertEqual(stat_object.mtime, 1343493847)
-    self.assertFalse(hasattr(stat_object, u'mtime_nano'))
+    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testIsFunctions(self):
     """Test the Is? functions."""
@@ -112,19 +114,19 @@ class GZIPFileEntryTest(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._gzip_path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
 

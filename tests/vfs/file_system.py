@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the VFS file system object interface."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.resolver import context
@@ -37,18 +39,18 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
     """Test the join path functionality."""
     test_file_system = file_system.FileSystem(self._resolver_context)
 
-    expected_path = u'/test1/test2/test3'
+    expected_path = '/test1/test2/test3'
 
-    path = test_file_system.JoinPath([u'test1', u'test2', u'test3'])
+    path = test_file_system.JoinPath(['test1', 'test2', 'test3'])
     self.assertEqual(path, expected_path)
 
-    path = test_file_system.JoinPath([u'/test1', u'test2//', u'test3/'])
+    path = test_file_system.JoinPath(['/test1', 'test2//', 'test3/'])
     self.assertEqual(path, expected_path)
 
-    path = test_file_system.JoinPath([u'/test1/test2/', u'/test3/'])
+    path = test_file_system.JoinPath(['/test1/test2/', '/test3/'])
     self.assertEqual(path, expected_path)
 
-    path = test_file_system.JoinPath([u'/test1///test2', u'test3'])
+    path = test_file_system.JoinPath(['/test1///test2', 'test3'])
     self.assertEqual(path, expected_path)
 
   # TODO: add tests for Open function.
@@ -57,15 +59,15 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
     """Test the split path functionality."""
     test_file_system = file_system.FileSystem(self._resolver_context)
 
-    expected_path_segments = [u'test1', u'test2', u'test3']
+    expected_path_segments = ['test1', 'test2', 'test3']
 
-    path_segments = test_file_system.SplitPath(u'/test1/test2/test3')
+    path_segments = test_file_system.SplitPath('/test1/test2/test3')
     self.assertEqual(path_segments, expected_path_segments)
 
-    path_segments = test_file_system.SplitPath(u'/test1/test2/test3/')
+    path_segments = test_file_system.SplitPath('/test1/test2/test3/')
     self.assertEqual(path_segments, expected_path_segments)
 
-    path_segments = test_file_system.SplitPath(u'/test1///test2/test3')
+    path_segments = test_file_system.SplitPath('/test1///test2/test3')
     self.assertEqual(path_segments, expected_path_segments)
 
 

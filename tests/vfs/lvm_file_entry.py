@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using pyvslvm."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import lvm_path_spec
@@ -14,18 +16,18 @@ from dfvfs.vfs import lvm_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'lvmtest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the LVM file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
 
     self._file_system = lvm_file_system.LVMFileSystem(self._resolver_context)
     self._file_system.Open(self._lvm_path_spec)
@@ -95,7 +97,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(parent_file_entry)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -138,7 +140,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -156,13 +158,13 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 2)
 
-    expected_sub_file_entry_names = [u'lvm1', u'lvm2']
+    expected_sub_file_entry_names = ['lvm1', 'lvm2']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -186,10 +188,10 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -208,12 +210,12 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for a file system implementation using pyvslvm."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import lvm_path_spec
@@ -13,18 +15,18 @@ from dfvfs.vfs import lvm_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'lvmtest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class LVMFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the LVM file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
 
   # qcowmount test_data/lvmtest.qcow2 fuse/
   # vslvminfo fuse/qcow1
@@ -85,7 +87,7 @@ class LVMFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._lvm_path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = lvm_path_spec.LVMPathSpec(
@@ -93,7 +95,7 @@ class LVMFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm2', parent=self._qcow_path_spec)
+        location='/lvm2', parent=self._qcow_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = lvm_path_spec.LVMPathSpec(
@@ -101,11 +103,11 @@ class LVMFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm0', parent=self._qcow_path_spec)
+        location='/lvm0', parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm9', parent=self._qcow_path_spec)
+        location='/lvm9', parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -118,25 +120,25 @@ class LVMFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._lvm_path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._qcow_path_spec, volume_index=1)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'lvm2')
+    self.assertEqual(file_entry.name, 'lvm2')
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm2', parent=self._qcow_path_spec)
+        location='/lvm2', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'lvm2')
+    self.assertEqual(file_entry.name, 'lvm2')
 
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._qcow_path_spec, volume_index=9)
@@ -145,13 +147,13 @@ class LVMFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(file_entry)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm0', parent=self._qcow_path_spec)
+        location='/lvm0', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location=u'/lvm9', parent=self._qcow_path_spec)
+        location='/lvm9', parent=self._qcow_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
@@ -168,7 +170,7 @@ class LVMFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

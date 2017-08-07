@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the volume system implementation using the SleuthKit (TSK)."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -11,17 +13,17 @@ from dfvfs.volume import tsk_volume_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
+@shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
 class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the SleuthKit (TSK) volume system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
+    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/', parent=path_spec)
+        location='/', parent=path_spec)
 
   # mmls test_data/tsk_volume_system.raw
   # DOS Partition Table
@@ -52,15 +54,15 @@ class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 2)
-    self.assertEqual(volume.identifier, u'p2')
+    self.assertEqual(volume.identifier, 'p2')
 
     expected_value = 6
-    volume_attribute = volume.GetAttribute(u'address')
+    volume_attribute = volume.GetAttribute('address')
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 
-    expected_value = u'Linux (0x83)'
-    volume_attribute = volume.GetAttribute(u'description')
+    expected_value = 'Linux (0x83)'
+    volume_attribute = volume.GetAttribute('description')
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 

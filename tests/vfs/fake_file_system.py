@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the fake file system implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import fake_path_spec
@@ -17,7 +19,7 @@ class FakeFileSystemTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._fake_path_spec = fake_path_spec.FakePathSpec(location=u'/')
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
@@ -34,16 +36,16 @@ class FakeFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_system)
 
     file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
+        '/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
 
     file_system.Open(self._fake_path_spec)
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/test_data/testdir_fake/file1.txt')
+        location='/test_data/testdir_fake/file1.txt')
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/test_data/testdir_fake/file6.txt')
+        location='/test_data/testdir_fake/file6.txt')
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -54,19 +56,19 @@ class FakeFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_system)
 
     file_system.AddFileEntry(
-        u'/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
+        '/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
 
     file_system.Open(self._fake_path_spec)
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/test_data/testdir_fake/file1.txt')
+        location='/test_data/testdir_fake/file1.txt')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'file1.txt')
+    self.assertEqual(file_entry.name, 'file1.txt')
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/test_data/testdir_fake/file6.txt')
+        location='/test_data/testdir_fake/file6.txt')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
@@ -83,7 +85,7 @@ class FakeFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

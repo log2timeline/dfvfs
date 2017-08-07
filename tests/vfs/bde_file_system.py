@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using pybde."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import bde_path_spec
@@ -13,20 +15,20 @@ from dfvfs.vfs import bde_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
+@shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the BDE file system object."""
 
-  _BDE_PASSWORD = u'bde-TEST'
+  _BDE_PASSWORD = 'bde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'bdetogo.raw'])
+    test_file = self._GetTestFilePath(['bdetogo.raw'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(
-        self._bde_path_spec, u'password', self._BDE_PASSWORD)
+        self._bde_path_spec, 'password', self._BDE_PASSWORD)
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
@@ -58,7 +60,7 @@ class BDEFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(self._bde_path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 
@@ -72,7 +74,7 @@ class BDEFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

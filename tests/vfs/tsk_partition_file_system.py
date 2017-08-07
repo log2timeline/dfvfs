@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for a partition file system implementation using pytsk3."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -12,18 +14,18 @@ from dfvfs.vfs import tsk_partition_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'tsk_volume_system.raw'])
+@shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
 class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the TSK partition file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'tsk_volume_system.raw'])
+    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_partition_path_spec = (
         tsk_partition_path_spec.TSKPartitionPathSpec(
-            location=u'/', parent=self._os_path_spec))
+            location='/', parent=self._os_path_spec))
 
   # mmls test_data/tsk_volume_system.raw
   # DOS Partition Table
@@ -58,7 +60,7 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._tsk_partition_path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
@@ -70,7 +72,7 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p2', parent=self._os_path_spec)
+        location='/p2', parent=self._os_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
@@ -78,11 +80,11 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p0', parent=self._os_path_spec)
+        location='/p0', parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p9', parent=self._os_path_spec)
+        location='/p9', parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -96,32 +98,32 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._tsk_partition_path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=3, parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'p2')
+    self.assertEqual(file_entry.name, 'p2')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p2', parent=self._os_path_spec)
+        location='/p2', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'p2')
+    self.assertEqual(file_entry.name, 'p2')
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=9, parent=self._os_path_spec)
@@ -130,13 +132,13 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(file_entry)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p0', parent=self._os_path_spec)
+        location='/p0', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location=u'/p9', parent=self._os_path_spec)
+        location='/p9', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
@@ -154,7 +156,7 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

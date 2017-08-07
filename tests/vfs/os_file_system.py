@@ -15,10 +15,10 @@ from tests import test_lib as shared_test_lib
 
 def TestPlatformSystem():
   """Test function to emulate platform.system() == 'Windows'"""
-  return u'Windows'
+  return 'Windows'
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'testdir_os', u'file1.txt'])
+@shared_test_lib.skipUnlessHasTestFile(['testdir_os', 'file1.txt'])
 class OSFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the operating system file system object."""
 
@@ -36,11 +36,11 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     """Test the file entry exists by path specification functionality."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
-    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
+    test_file = self._GetTestFilePath(['testdir_os', 'file1.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    test_file = self._GetTestFilePath([u'testdir_os', u'file6.txt'])
+    test_file = self._GetTestFilePath(['testdir_os', 'file6.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
@@ -48,14 +48,14 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
-    test_file = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
+    test_file = self._GetTestFilePath(['testdir_os', 'file1.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'file1.txt')
+    self.assertEqual(file_entry.name, 'file1.txt')
 
-    test_file = self._GetTestFilePath([u'testdir_os', u'file6.txt'])
+    test_file = self._GetTestFilePath(['testdir_os', 'file6.txt'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -65,13 +65,13 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     """Test the get root file entry functionality."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
-    if platform.system() == u'Windows':
+    if platform.system() == 'Windows':
       # Return the root with the drive letter of the volume the current
       # working directory is on.
       expected_location = os.getcwd()
-      expected_location, _, _ = expected_location.partition(u'\\')
+      expected_location, _, _ = expected_location.partition('\\')
     else:
-      expected_location = u''
+      expected_location = ''
 
     file_entry = file_system.GetRootFileEntry()
 
@@ -85,49 +85,49 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     platform.system = TestPlatformSystem
 
     file_system = os_file_system.OSFileSystem(self._resolver_context)
-    file_system.PATH_SEPARATOR = u'\\'
+    file_system.PATH_SEPARATOR = '\\'
 
-    expected_path = u'\\\\.\\PhysicalDrive0'
+    expected_path = '\\\\.\\PhysicalDrive0'
 
-    path = file_system.JoinPath([u'\\\\.\\PhysicalDrive0'])
+    path = file_system.JoinPath(['\\\\.\\PhysicalDrive0'])
     self.assertEqual(path, expected_path)
 
-    expected_path = u'\\\\.\\C:'
+    expected_path = '\\\\.\\C:'
 
-    path = file_system.JoinPath([u'\\\\.\\C:'])
+    path = file_system.JoinPath(['\\\\.\\C:'])
     self.assertEqual(path, expected_path)
 
-    expected_path = u'C:'
+    expected_path = 'C:'
 
-    path = file_system.JoinPath([u'\\\\.\\C:\\'])
+    path = file_system.JoinPath(['\\\\.\\C:\\'])
     self.assertEqual(path, expected_path)
 
     expected_path = (
-        u'\\\\?\\Volume{26a21bda-a627-11d7-9931-806e6f6e6963}\\test1')
+        '\\\\?\\Volume{26a21bda-a627-11d7-9931-806e6f6e6963}\\test1')
 
     path = file_system.JoinPath([
-        u'\\\\?\\Volume{26a21bda-a627-11d7-9931-806e6f6e6963}\\', u'test1'])
+        '\\\\?\\Volume{26a21bda-a627-11d7-9931-806e6f6e6963}\\', 'test1'])
     self.assertEqual(path, expected_path)
 
-    expected_path = u'C:\\test1\\test2\\test3'
+    expected_path = 'C:\\test1\\test2\\test3'
 
-    path = file_system.JoinPath([u'C:', u'test1', u'test2', u'test3'])
+    path = file_system.JoinPath(['C:', 'test1', 'test2', 'test3'])
     self.assertEqual(path, expected_path)
 
     path = file_system.JoinPath([
-        u'C:\\', u'test1\\\\', u'\\\\test2', u'test3\\'])
+        'C:\\', 'test1\\\\', '\\\\test2', 'test3\\'])
     self.assertEqual(path, expected_path)
 
-    path = file_system.JoinPath([u'C:\\test1\\\\', u'\\\\test2\\test3'])
+    path = file_system.JoinPath(['C:\\test1\\\\', '\\\\test2\\test3'])
     self.assertEqual(path, expected_path)
 
-    path = file_system.JoinPath([u'\\\\.\\C:\\', u'test1', u'test2', u'test3'])
+    path = file_system.JoinPath(['\\\\.\\C:\\', 'test1', 'test2', 'test3'])
     self.assertEqual(path, expected_path)
 
-    expected_path = u'\\\\server\\share\\directory\\file.txt'
+    expected_path = '\\\\server\\share\\directory\\file.txt'
 
     path = file_system.JoinPath([
-        u'\\\\server\\share', u'directory', u'file.txt'])
+        '\\\\server\\share', 'directory', 'file.txt'])
     self.assertEqual(path, expected_path)
 
     platform.system = original_platform_system

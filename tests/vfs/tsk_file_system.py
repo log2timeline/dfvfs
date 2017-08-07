@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using the SleuthKit (TSK)."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import os_path_spec
@@ -12,17 +14,17 @@ from dfvfs.vfs import tsk_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'ímynd.dd'])
+@shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
 class TSKFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the SleuthKit (TSK) file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'ímynd.dd'])
+    test_file = self._GetTestFilePath(['ímynd.dd'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'/', parent=self._os_path_spec)
+        location='/', parent=self._os_path_spec)
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
@@ -41,11 +43,11 @@ class TSKFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._tsk_path_spec)
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=15, location=u'/password.txt', parent=self._os_path_spec)
+        inode=15, location='/password.txt', parent=self._os_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=19, location=u'/bogus.txt', parent=self._os_path_spec)
+        inode=19, location='/bogus.txt', parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -66,14 +68,14 @@ class TSKFileSystemTest(shared_test_lib.BaseTestCase):
     # in the path_spec or retrieving the file_entry from its parent.
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=15, location=u'/password.txt', parent=self._os_path_spec)
+        inode=15, location='/password.txt', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'password.txt')
+    self.assertEqual(file_entry.name, 'password.txt')
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=19, location=u'/bogus.txt', parent=self._os_path_spec)
+        inode=19, location='/bogus.txt', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
@@ -90,7 +92,7 @@ class TSKFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'')
+    self.assertEqual(file_entry.name, '')
 
     file_system.Close()
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using pybde."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import bde_path_spec
@@ -14,20 +16,20 @@ from dfvfs.vfs import bde_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
+@shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the BDE file entry object."""
 
-  _BDE_PASSWORD = u'bde-TEST'
+  _BDE_PASSWORD = 'bde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'bdetogo.raw'])
+    test_file = self._GetTestFilePath(['bdetogo.raw'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(
-        self._bde_path_spec, u'password', self._BDE_PASSWORD)
+        self._bde_path_spec, 'password', self._BDE_PASSWORD)
 
     self._file_system = bde_file_system.BDEFileSystem(self._resolver_context)
     self._file_system.Open(self._bde_path_spec)
@@ -169,19 +171,19 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(data_stream_names, [u''])
+    self.assertEqual(data_stream_names, [''])
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = u''
+    data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)
 
-    data_stream = file_entry.GetDataStream(u'bogus')
+    data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
 

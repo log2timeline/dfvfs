@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the encoded stream file entry implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import definitions
@@ -14,14 +16,14 @@ from dfvfs.vfs import encoded_stream_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.base64'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.base64'])
 class EncodedStreamFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the encoded stream file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.base64'])
+    test_file = self._GetTestFilePath(['syslog.base64'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(
