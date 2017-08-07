@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The FileVault Drive Encryption (FVDE) file-like object."""
 
+from __future__ import unicode_literals
+
 import pyfvde
 
 from dfvfs.file_io import file_object_io
@@ -10,7 +12,7 @@ from dfvfs.resolver import resolver
 
 
 class FVDEFile(file_object_io.FileObjectIO):
-  """Class that implements a file-like object using pyfvde."""
+  """File-like object using pyfvde."""
 
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
@@ -26,7 +28,7 @@ class FVDEFile(file_object_io.FileObjectIO):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
 

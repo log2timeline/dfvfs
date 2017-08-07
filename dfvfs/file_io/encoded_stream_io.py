@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encoded stream file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.encoding import manager as encoding_manager
@@ -32,7 +34,7 @@ class EncodedStream(file_io.FileIO):
     """
     if file_object is not None and encoding_method is None:
       raise ValueError(
-          u'File-like object provided without corresponding encoding method.')
+          'File-like object provided without corresponding encoding method.')
 
     super(EncodedStream, self).__init__(resolver_context)
     self._current_offset = 0
@@ -109,18 +111,18 @@ class EncodedStream(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not self._file_object_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if not self._file_object_set_in_init:
       if not path_spec.HasParent():
         raise errors.PathSpecError(
-            u'Unsupported path specification without parent.')
+            'Unsupported path specification without parent.')
 
-      self._encoding_method = getattr(path_spec, u'encoding_method', None)
+      self._encoding_method = getattr(path_spec, 'encoding_method', None)
 
       if self._encoding_method is None:
         raise errors.PathSpecError(
-            u'Path specification missing encoding method.')
+            'Path specification missing encoding method.')
 
       self._file_object = resolver.Resolver.OpenFileObject(
           path_spec.parent, resolver_context=self._resolver_context)
@@ -188,12 +190,12 @@ class EncodedStream(file_io.FileIO):
       ValueError: if the decoded stream size is invalid.
     """
     if self._is_open:
-      raise IOError(u'Already open.')
+      raise IOError('Already open.')
 
     if decoded_stream_size < 0:
       raise ValueError((
-          u'Invalid decoded stream size: {0:d} value out of '
-          u'bounds.').format(decoded_stream_size))
+          'Invalid decoded stream size: {0:d} value out of '
+          'bounds.').format(decoded_stream_size))
 
     self._decoded_stream_size = decoded_stream_size
 
@@ -217,18 +219,18 @@ class EncodedStream(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          u'Invalid current offset: {0:d} value less than zero.'.format(
+          'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if self._decoded_stream_size is None:
       self._decoded_stream_size = self._GetDecodedStreamSize()
 
     if self._decoded_stream_size < 0:
-      raise IOError(u'Invalid decoded stream size.')
+      raise IOError('Invalid decoded stream size.')
 
     if self._current_offset >= self._decoded_stream_size:
       return b''
@@ -291,11 +293,11 @@ class EncodedStream(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          u'Invalid current offset: {0:d} value less than zero.'.format(
+          'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if whence == os.SEEK_CUR:
@@ -305,15 +307,15 @@ class EncodedStream(file_io.FileIO):
       if self._decoded_stream_size is None:
         self._decoded_stream_size = self._GetDecodedStreamSize()
         if self._decoded_stream_size is None:
-          raise IOError(u'Invalid decoded stream size.')
+          raise IOError('Invalid decoded stream size.')
 
       offset += self._decoded_stream_size
 
     elif whence != os.SEEK_SET:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError(u'Invalid offset value less than zero.')
+      raise IOError('Invalid offset value less than zero.')
 
     if offset != self._current_offset:
       self._current_offset = offset
@@ -329,7 +331,7 @@ class EncodedStream(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._current_offset
 
@@ -343,7 +345,7 @@ class EncodedStream(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._decoded_stream_size is None:
       self._decoded_stream_size = self._GetDecodedStreamSize()

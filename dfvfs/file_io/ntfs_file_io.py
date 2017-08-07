@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The NTFS file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.file_io import file_io
@@ -8,10 +10,10 @@ from dfvfs.resolver import resolver
 
 
 class NTFSFile(file_io.FileIO):
-  """Class that implements a file-like object using pyfsntfs."""
+  """File-like object using pyfsntfs."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -43,31 +45,31 @@ class NTFSFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
-    data_stream = getattr(path_spec, u'data_stream', None)
+    data_stream = getattr(path_spec, 'data_stream', None)
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
 
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     if not file_entry:
-      raise IOError(u'Unable to open file entry.')
+      raise IOError('Unable to open file entry.')
 
     fsntfs_data_stream = None
     fsntfs_file_entry = file_entry.GetNTFSFileEntry()
     if not fsntfs_file_entry:
-      raise IOError(u'Unable to open NTFS file entry.')
+      raise IOError('Unable to open NTFS file entry.')
 
     if data_stream:
       fsntfs_data_stream = fsntfs_file_entry.get_alternate_data_stream_by_name(
           data_stream)
       if not fsntfs_data_stream:
-        raise IOError(u'Unable to open data stream: {0:s}.'.format(
+        raise IOError('Unable to open data stream: {0:s}.'.format(
             data_stream))
 
     elif not fsntfs_file_entry.has_default_data_stream():
-      raise IOError(u'Missing default data stream.')
+      raise IOError('Missing default data stream.')
 
     self._fsntfs_data_stream = fsntfs_data_stream
     self._fsntfs_file_entry = fsntfs_file_entry
@@ -92,7 +94,7 @@ class NTFSFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._fsntfs_data_stream:
       return self._fsntfs_data_stream.read(size=size)
@@ -110,7 +112,7 @@ class NTFSFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._fsntfs_data_stream:
       self._fsntfs_data_stream.seek(offset, whence)
@@ -127,7 +129,7 @@ class NTFSFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._fsntfs_data_stream:
       return self._fsntfs_data_stream.get_offset()
@@ -143,7 +145,7 @@ class NTFSFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._fsntfs_data_stream:
       return self._fsntfs_data_stream.get_size()

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The gzip file-like object."""
 
+from __future__ import unicode_literals
+
 import os
 
 import construct
@@ -14,23 +16,23 @@ from dfvfs.resolver import resolver
 
 
 class GzipFile(file_object_io.FileObjectIO):
-  """Class that implements a file-like object of a gzip file.
+  """File-like object of a gzip file.
 
-     The gzip file is a zlib compressed data stream with additional metadata.
+  The gzip file is a zlib compressed data stream with additional metadata.
   """
   _FILE_HEADER_STRUCT = construct.Struct(
-      u'file_header',
-      construct.ULInt16(u'signature'),
-      construct.UBInt8(u'compression_method'),
-      construct.UBInt8(u'flags'),
-      construct.SLInt32(u'modification_time'),
-      construct.UBInt8(u'extra_flags'),
-      construct.UBInt8(u'operating_system'))
+      'file_header',
+      construct.ULInt16('signature'),
+      construct.UBInt8('compression_method'),
+      construct.UBInt8('flags'),
+      construct.SLInt32('modification_time'),
+      construct.UBInt8('extra_flags'),
+      construct.UBInt8('operating_system'))
 
   _FILE_FOOTER_STRUCT = construct.Struct(
-      u'file_footer',
-      construct.ULInt32(u'checksum'),
-      construct.ULInt32(u'uncompressed_data_size'))
+      'file_footer',
+      construct.ULInt32('checksum'),
+      construct.ULInt32('uncompressed_data_size'))
 
   _FILE_SIGNATURE = 0x8b1f
 
@@ -43,7 +45,7 @@ class GzipFile(file_object_io.FileObjectIO):
   _FLAG_FCOMMENT = 0x10
 
   def __init__(self, resolver_context, file_object=None):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -53,7 +55,7 @@ class GzipFile(file_object_io.FileObjectIO):
       ValueError: when file_object is set.
     """
     if file_object:
-      raise ValueError(u'File object value set.')
+      raise ValueError('File object value set.')
 
     super(GzipFile, self).__init__(resolver_context)
     self._compressed_data_offset = -1
@@ -79,12 +81,12 @@ class GzipFile(file_object_io.FileObjectIO):
 
     if file_header.signature != self._FILE_SIGNATURE:
       raise errors.FileFormatError(
-          u'Unsuppored file signature: 0x{0:04x}.'.format(
+          'Unsuppored file signature: 0x{0:04x}.'.format(
               file_header.signature))
 
     if file_header.compression_method != self._COMPRESSION_METHOD_DEFLATE:
       raise errors.FileFormatError(
-          u'Unsuppored compression method: {0:d}.'.format(
+          'Unsuppored compression method: {0:d}.'.format(
               file_header.compression_method))
 
     self.modification_time = file_header.modification_time
@@ -92,7 +94,7 @@ class GzipFile(file_object_io.FileObjectIO):
 
     if file_header.flags & self._FLAG_FEXTRA:
       extra_field_data_size = construct.ULInt16(
-          u'extra_field_data_size').parse_stream(file_object)
+          'extra_field_data_size').parse_stream(file_object)
       file_object.seek(extra_field_data_size, os.SEEK_CUR)
       self._compressed_data_offset += 2 + extra_field_data_size
 
@@ -101,7 +103,7 @@ class GzipFile(file_object_io.FileObjectIO):
       # Note that construct 2 does not support the encoding to be a Unicode
       # string.
       self.original_filename = construct.CString(
-          u'original_filename', encoding='iso-8859-1').parse_stream(
+          'original_filename', encoding=b'iso-8859-1').parse_stream(
               file_object)
       self._compressed_data_offset = file_object.get_offset()
 
@@ -110,7 +112,7 @@ class GzipFile(file_object_io.FileObjectIO):
       # Note that construct 2 does not support the encoding to be a Unicode
       # string.
       self.comment = construct.CString(
-          u'comment', encoding='iso-8859-1').parse_stream(file_object)
+          'comment', encoding=b'iso-8859-1').parse_stream(file_object)
       self._compressed_data_offset = file_object.get_offset()
 
     if file_header.flags & self._FLAG_FHCRC:

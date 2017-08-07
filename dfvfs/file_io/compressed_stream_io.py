@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The compressed stream file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.compression import manager as compression_manager
@@ -32,8 +34,8 @@ class CompressedStream(file_io.FileIO):
     """
     if file_object is not None and compression_method is None:
       raise ValueError(
-          u'File-like object provided without corresponding compression '
-          u'method.')
+          'File-like object provided without corresponding compression '
+          'method.')
 
     super(CompressedStream, self).__init__(resolver_context)
     self._compression_method = compression_method
@@ -111,18 +113,18 @@ class CompressedStream(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not self._file_object_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if not self._file_object_set_in_init:
       if not path_spec.HasParent():
         raise errors.PathSpecError(
-            u'Unsupported path specification without parent.')
+            'Unsupported path specification without parent.')
 
-      self._compression_method = getattr(path_spec, u'compression_method', None)
+      self._compression_method = getattr(path_spec, 'compression_method', None)
 
       if self._compression_method is None:
         raise errors.PathSpecError(
-            u'Path specification missing compression method.')
+            'Path specification missing compression method.')
 
       self._file_object = resolver.Resolver.OpenFileObject(
           path_spec.parent, resolver_context=self._resolver_context)
@@ -196,18 +198,18 @@ class CompressedStream(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          u'Invalid current offset: {0:d} value less than zero.'.format(
+          'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if self._uncompressed_stream_size is None:
       self._uncompressed_stream_size = self._GetUncompressedStreamSize()
 
     if self._uncompressed_stream_size < 0:
-      raise IOError(u'Invalid uncompressed stream size.')
+      raise IOError('Invalid uncompressed stream size.')
 
     if self._current_offset >= self._uncompressed_stream_size:
       return b''
@@ -270,11 +272,11 @@ class CompressedStream(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          u'Invalid current offset: {0:d} value less than zero.'.format(
+          'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if whence == os.SEEK_CUR:
@@ -284,15 +286,15 @@ class CompressedStream(file_io.FileIO):
       if self._uncompressed_stream_size is None:
         self._uncompressed_stream_size = self._GetUncompressedStreamSize()
         if self._uncompressed_stream_size is None:
-          raise IOError(u'Invalid uncompressed stream size.')
+          raise IOError('Invalid uncompressed stream size.')
 
       offset += self._uncompressed_stream_size
 
     elif whence != os.SEEK_SET:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError(u'Invalid offset value less than zero.')
+      raise IOError('Invalid offset value less than zero.')
 
     if offset != self._current_offset:
       self._current_offset = offset
@@ -308,7 +310,7 @@ class CompressedStream(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._current_offset
 
@@ -322,7 +324,7 @@ class CompressedStream(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._uncompressed_stream_size is None:
       self._uncompressed_stream_size = self._GetUncompressedStreamSize()

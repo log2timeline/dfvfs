@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.encryption import manager as encryption_manager
@@ -32,7 +34,7 @@ class EncryptedStream(file_io.FileIO):
     """
     if file_object is not None and encryption_method is None:
       raise ValueError(
-          u'File-like object provided without corresponding encryption method.')
+          'File-like object provided without corresponding encryption method.')
 
     super(EncryptedStream, self).__init__(resolver_context)
     self._current_offset = 0
@@ -120,18 +122,18 @@ class EncryptedStream(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not self._file_object_set_in_init and not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     if not self._file_object_set_in_init:
       if not path_spec.HasParent():
         raise errors.PathSpecError(
-            u'Unsupported path specification without parent.')
+            'Unsupported path specification without parent.')
 
-      self._encryption_method = getattr(path_spec, u'encryption_method', None)
+      self._encryption_method = getattr(path_spec, 'encryption_method', None)
 
       if self._encryption_method is None:
         raise errors.PathSpecError(
-            u'Path specification missing encryption method.')
+            'Path specification missing encryption method.')
 
       self._file_object = resolver.Resolver.OpenFileObject(
           path_spec.parent, resolver_context=self._resolver_context)
@@ -201,12 +203,12 @@ class EncryptedStream(file_io.FileIO):
       ValueError: if the decrypted stream size is invalid.
     """
     if self._is_open:
-      raise IOError(u'Already open.')
+      raise IOError('Already open.')
 
     if decrypted_stream_size < 0:
       raise ValueError((
-          u'Invalid decrypted stream size: {0:d} value out of '
-          u'bounds.').format(decrypted_stream_size))
+          'Invalid decrypted stream size: {0:d} value out of '
+          'bounds.').format(decrypted_stream_size))
 
     self._decrypted_stream_size = decrypted_stream_size
 
@@ -230,18 +232,18 @@ class EncryptedStream(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          u'Invalid current offset: {0:d} value less than zero.'.format(
+          'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if self._decrypted_stream_size is None:
       self._decrypted_stream_size = self._GetDecryptedStreamSize()
 
     if self._decrypted_stream_size < 0:
-      raise IOError(u'Invalid decrypted stream size.')
+      raise IOError('Invalid decrypted stream size.')
 
     if self._current_offset >= self._decrypted_stream_size:
       return b''
@@ -304,11 +306,11 @@ class EncryptedStream(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._current_offset < 0:
       raise IOError(
-          u'Invalid current offset: {0:d} value less than zero.'.format(
+          'Invalid current offset: {0:d} value less than zero.'.format(
               self._current_offset))
 
     if whence == os.SEEK_CUR:
@@ -318,15 +320,15 @@ class EncryptedStream(file_io.FileIO):
       if self._decrypted_stream_size is None:
         self._decrypted_stream_size = self._GetDecryptedStreamSize()
         if self._decrypted_stream_size is None:
-          raise IOError(u'Invalid decrypted stream size.')
+          raise IOError('Invalid decrypted stream size.')
 
       offset += self._decrypted_stream_size
 
     elif whence != os.SEEK_SET:
-      raise IOError(u'Unsupported whence.')
+      raise IOError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError(u'Invalid offset value less than zero.')
+      raise IOError('Invalid offset value less than zero.')
 
     if offset != self._current_offset:
       self._current_offset = offset
@@ -342,7 +344,7 @@ class EncryptedStream(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._current_offset
 
@@ -356,7 +358,7 @@ class EncryptedStream(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if self._decrypted_stream_size is None:
       self._decrypted_stream_size = self._GetDecryptedStreamSize()

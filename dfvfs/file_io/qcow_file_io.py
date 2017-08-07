@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The QCOW image file-like object."""
 
+from __future__ import unicode_literals
+
 import pyqcow
 
 from dfvfs.file_io import file_object_io
@@ -9,7 +11,7 @@ from dfvfs.resolver import resolver
 
 
 class QCOWFile(file_object_io.FileObjectIO):
-  """Class that implements a file-like object using pyqcow."""
+  """File-like object using pyqcow."""
 
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
@@ -25,7 +27,7 @@ class QCOWFile(file_object_io.FileObjectIO):
     """
     if not path_spec.HasParent():
       raise errors.PathSpecError(
-          u'Unsupported path specification without parent.')
+          'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
@@ -43,6 +45,6 @@ class QCOWFile(file_object_io.FileObjectIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._file_object.get_media_size()

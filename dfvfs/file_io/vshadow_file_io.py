@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file-like object implementation."""
 
+from __future__ import unicode_literals
+
 import os
 
 from dfvfs.file_io import file_io
@@ -10,10 +12,10 @@ from dfvfs.resolver import resolver
 
 
 class VShadowFile(file_io.FileIO):
-  """Class that implements a file-like object using pyvshadow."""
+  """File-like object using pyvshadow."""
 
   def __init__(self, resolver_context):
-    """Initializes the file-like object.
+    """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
@@ -43,12 +45,12 @@ class VShadowFile(file_io.FileIO):
       ValueError: if the path specification is invalid.
     """
     if not path_spec:
-      raise ValueError(u'Missing path specification.')
+      raise ValueError('Missing path specification.')
 
     store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
     if store_index is None:
       raise errors.PathSpecError(
-          u'Unable to retrieve store index from path specification.')
+          'Unable to retrieve store index from path specification.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
@@ -57,14 +59,14 @@ class VShadowFile(file_io.FileIO):
     if (store_index < 0 or
         store_index >= vshadow_volume.number_of_stores):
       raise errors.PathSpecError((
-          u'Unable to retrieve VSS store: {0:d} from path '
-          u'specification.').format(store_index))
+          'Unable to retrieve VSS store: {0:d} from path '
+          'specification.').format(store_index))
 
     vshadow_store = vshadow_volume.get_store(store_index)
     if not vshadow_store.has_in_volume_data():
       raise IOError((
-          u'Unable to open VSS store: {0:d} without in-volume stored '
-          u'data.').format(store_index))
+          'Unable to open VSS store: {0:d} without in-volume stored '
+          'data.').format(store_index))
 
     self._vshadow_store = vshadow_store
 
@@ -88,7 +90,7 @@ class VShadowFile(file_io.FileIO):
       IOError: if the read failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._vshadow_store.read(size)
 
@@ -104,7 +106,7 @@ class VShadowFile(file_io.FileIO):
       IOError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     self._vshadow_store.seek(offset, whence)
 
@@ -118,7 +120,7 @@ class VShadowFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._vshadow_store.get_offset()
 
@@ -132,6 +134,6 @@ class VShadowFile(file_io.FileIO):
       IOError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     return self._vshadow_store.volume_size
