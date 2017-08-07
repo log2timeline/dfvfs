@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the SQLite blob path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import sqlite_blob_path_spec
@@ -15,69 +17,69 @@ class SQLiteBlobPathSpecTest(test_lib.PathSpecTestCase):
   def testInitialize(self):
     """Tests the path specification initialization."""
     path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'test_table', column_name=u'test_column',
-        row_condition=(u'identifier', u'==', 0), parent=self._path_spec)
+        table_name='test_table', column_name='test_column',
+        row_condition=('identifier', '==', 0), parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'test_table', column_name=u'test_column', row_index=0,
+        table_name='test_table', column_name='test_column', row_index=0,
         parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=u'test_table', column_name=u'test_column', row_index=0,
+      sqlite_blob_path_spec.SQLiteBlobPathSpec(
+          table_name='test_table', column_name='test_column', row_index=0,
           parent=None)
 
     with self.assertRaises(ValueError):
-      _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=None, column_name=u'test_column', row_index=0,
+      sqlite_blob_path_spec.SQLiteBlobPathSpec(
+          table_name=None, column_name='test_column', row_index=0,
           parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=u'test_table', column_name=None, row_index=0,
+      sqlite_blob_path_spec.SQLiteBlobPathSpec(
+          table_name='test_table', column_name=None, row_index=0,
           parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=u'test_table', column_name=u'test_column',
-          row_condition=u'identifier == 0', parent=self._path_spec)
+      sqlite_blob_path_spec.SQLiteBlobPathSpec(
+          table_name='test_table', column_name='test_column',
+          row_condition='identifier == 0', parent=self._path_spec)
 
     with self.assertRaises(ValueError):
-      _ = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=u'test_table', column_name=u'test_column', row_index=0,
-          parent=self._path_spec, bogus=u'BOGUS')
+      sqlite_blob_path_spec.SQLiteBlobPathSpec(
+          table_name='test_table', column_name='test_column', row_index=0,
+          parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
     path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'test_table', column_name=u'test_column',
-        row_condition=(u'identifier', u'==', 0), parent=self._path_spec)
+        table_name='test_table', column_name='test_column',
+        row_condition=('identifier', '==', 0), parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        (u'type: SQLITE_BLOB, table name: test_table, '
-         u'column name: test_column, row condition: "identifier == 0"'),
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        ('type: SQLITE_BLOB, table name: test_table, '
+         'column name: test_column, row condition: "identifier == 0"'),
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'test_table', column_name=u'test_column', row_index=0,
+        table_name='test_table', column_name='test_column', row_index=0,
         parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        (u'type: SQLITE_BLOB, table name: test_table, '
-         u'column name: test_column, row index: 0'),
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        ('type: SQLITE_BLOB, table name: test_table, '
+         'column name: test_column, row index: 0'),
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 

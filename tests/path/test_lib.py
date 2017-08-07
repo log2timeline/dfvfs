@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Shared test cases."""
 
+from __future__ import unicode_literals
+
 from dfvfs.path import path_spec
 
 from tests import test_lib as shared_test_lib
@@ -10,10 +12,10 @@ class TestPathSpec(path_spec.PathSpec):
   """Test path specification."""
 
   _IS_SYSTEM_LEVEL = True
-  TYPE_INDICATOR = u'TEST'
+  TYPE_INDICATOR = 'TEST'
 
   def __init__(self, **kwargs):
-    """Initializes the path specification object."""
+    """Initializes a test path specification."""
     super(TestPathSpec, self).__init__(parent=None, **kwargs)
 
   @property

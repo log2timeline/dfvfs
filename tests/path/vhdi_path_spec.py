@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the VHD image path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import vhdi_path_spec
@@ -19,10 +21,10 @@ class VHDIPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = vhdi_path_spec.VHDIPathSpec(parent=None)
+      vhdi_path_spec.VHDIPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = vhdi_path_spec.VHDIPathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      vhdi_path_spec.VHDIPathSpec(parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
@@ -30,10 +32,10 @@ class VHDIPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: VHDI',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: VHDI',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 

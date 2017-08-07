@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the VMDK image path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import vmdk_path_spec
@@ -19,10 +21,10 @@ class VMDKPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = vmdk_path_spec.VMDKPathSpec(parent=None)
+      vmdk_path_spec.VMDKPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = vmdk_path_spec.VMDKPathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      vmdk_path_spec.VMDKPathSpec(parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
@@ -30,10 +32,10 @@ class VMDKPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: VMDK',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: VMDK',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 

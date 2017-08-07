@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the RAW storage media image path specification implementation."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import raw_path_spec
@@ -19,10 +21,10 @@ class RawPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     with self.assertRaises(ValueError):
-      _ = raw_path_spec.RawPathSpec(parent=None)
+      raw_path_spec.RawPathSpec(parent=None)
 
     with self.assertRaises(ValueError):
-      _ = raw_path_spec.RawPathSpec(parent=self._path_spec, bogus=u'BOGUS')
+      raw_path_spec.RawPathSpec(parent=self._path_spec, bogus='BOGUS')
 
   def testComparable(self):
     """Tests the path specification comparable property."""
@@ -30,10 +32,10 @@ class RawPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertIsNotNone(path_spec)
 
-    expected_comparable = u'\n'.join([
-        u'type: TEST',
-        u'type: RAW',
-        u''])
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: RAW',
+        ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
