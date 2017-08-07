@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pybde."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import errors
@@ -13,13 +15,13 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
+@shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileWithKeyChainTest(test_lib.ImageFileTestCase):
   """Tests the BitLocker Drive Encryption (BDE) file-like object.
 
   The credentials are passed via the key chain.
   """
-  _BDE_PASSWORD = u'bde-TEST'
+  _BDE_PASSWORD = 'bde-TEST'
 
   _INODE_PASSWORDS_TXT = 8
   _INODE_ANOTHER_FILE = 582
@@ -27,11 +29,11 @@ class BDEFileWithKeyChainTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(BDEFileWithKeyChainTest, self).setUp()
-    test_file = self._GetTestFilePath([u'bdetogo.raw'])
+    test_file = self._GetTestFilePath(['bdetogo.raw'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=self._os_path_spec)
     resolver.Resolver.key_chain.SetCredential(
-        self._bde_path_spec, u'password', self._BDE_PASSWORD)
+        self._bde_path_spec, 'password', self._BDE_PASSWORD)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -57,13 +59,13 @@ class BDEFileWithKeyChainTest(test_lib.ImageFileTestCase):
     self._TestRead(self._bde_path_spec)
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'bdetogo.raw'])
+@shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
   """Tests the BitLocker Drive Encryption (BDE) file-like object.
 
   The credentials are passed via the path specification.
   """
-  _BDE_PASSWORD = u'bde-TEST'
+  _BDE_PASSWORD = 'bde-TEST'
 
   _INODE_PASSWORDS_TXT = 8
   _INODE_ANOTHER_FILE = 582
@@ -71,7 +73,7 @@ class BDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(BDEFileWithPathSpecCredentialsTest, self).setUp()
-    test_file = self._GetTestFilePath([u'bdetogo.raw'])
+    test_file = self._GetTestFilePath(['bdetogo.raw'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(
         password=self._BDE_PASSWORD, parent=self._os_path_spec)

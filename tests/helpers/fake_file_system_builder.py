@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the fake file system builder object."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -17,7 +19,7 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
     """Tests the AddDirectory function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
-    test_path = u'/usr/lib/python2.7/site-packages/dfvfs'
+    test_path = '/usr/lib/python2.7/site-packages/dfvfs'
     file_system_builder.AddDirectory(test_path)
 
     with self.assertRaises(ValueError):
@@ -27,7 +29,7 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
     """Tests the AddFile function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
-    test_path = u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
+    test_path = '/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
     test_file_data = b'\n'.join([
         b'# -*- coding: utf-8 -*-',
         b'"""Digital Forensics Virtual File System (dfVFS).',
@@ -42,10 +44,10 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(ValueError):
       file_system_builder.AddFile(test_path, test_file_data)
 
-    test_path = u'/usr/bin/empty'
+    test_path = '/usr/bin/empty'
     file_system_builder.AddFile(test_path, b'')
 
-    test_path = u'/usr/bin/empty/file'
+    test_path = '/usr/bin/empty/file'
     with self.assertRaises(ValueError):
       file_system_builder.AddFile(test_path, b'')
 
@@ -53,8 +55,8 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
     """Tests the AddFileReadData function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
-    test_path = u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
-    test_file_data_path = os.path.join(u'dfvfs', u'__init__.py')
+    test_path = '/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
+    test_file_data_path = os.path.join('dfvfs', '__init__.py')
 
     file_system_builder.AddFileReadData(test_path, test_file_data_path)
 
@@ -65,8 +67,8 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
     """Tests the AddSymbolicLink function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
-    test_path = u'/usr/lib/python2.7/site-packages/dfvfs'
-    test_linked_path = u'/opt/dfvfs'
+    test_path = '/usr/lib/python2.7/site-packages/dfvfs'
+    test_linked_path = '/opt/dfvfs'
     file_system_builder.AddSymbolicLink(test_path, test_linked_path)
 
     with self.assertRaises(ValueError):

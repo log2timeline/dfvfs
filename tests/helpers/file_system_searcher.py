@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system searcher."""
 
+from __future__ import unicode_literals
+
 import os
 import unittest
 
@@ -32,7 +34,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     """
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
-    test_path = u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
+    test_path = '/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
     test_file_data = b'\n'.join([
         b'# -*- coding: utf-8 -*-',
         b'"""Digital Forensics Virtual File System (dfVFS).',
@@ -48,28 +50,28 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Test the __init__ function."""
-    find_spec = file_system_searcher.FindSpec(location=u'location')
+    find_spec = file_system_searcher.FindSpec(location='location')
     self.assertIsNotNone(find_spec)
 
-    find_spec = file_system_searcher.FindSpec(location=[u'location'])
+    find_spec = file_system_searcher.FindSpec(location=['location'])
     self.assertIsNotNone(find_spec)
 
     with self.assertRaises(TypeError):
       find_spec = file_system_searcher.FindSpec(location={})
 
-    find_spec = file_system_searcher.FindSpec(location_glob=u'loca?ion')
+    find_spec = file_system_searcher.FindSpec(location_glob='loca?ion')
     self.assertIsNotNone(find_spec)
 
-    find_spec = file_system_searcher.FindSpec(location_glob=[u'loca?ion'])
+    find_spec = file_system_searcher.FindSpec(location_glob=['loca?ion'])
     self.assertIsNotNone(find_spec)
 
     with self.assertRaises(TypeError):
       find_spec = file_system_searcher.FindSpec(location_glob={})
 
-    find_spec = file_system_searcher.FindSpec(location_regex=u'loca.ion')
+    find_spec = file_system_searcher.FindSpec(location_regex='loca.ion')
     self.assertIsNotNone(find_spec)
 
-    find_spec = file_system_searcher.FindSpec(location_regex=[u'loca.ion'])
+    find_spec = file_system_searcher.FindSpec(location_regex=['loca.ion'])
     self.assertIsNotNone(find_spec)
 
     with self.assertRaises(TypeError):
@@ -77,7 +79,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
 
     with self.assertRaises(ValueError):
       find_spec = file_system_searcher.FindSpec(
-          location=u'location', location_glob=u'loca?ion')
+          location='location', location_glob='loca?ion')
 
   def testCheckFileEntryType(self):
     """Test the _CheckFileEntryType() function."""
@@ -87,7 +89,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckFileEntryType(file_entry)
@@ -111,7 +113,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckIsAllocated(file_entry)
@@ -125,7 +127,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckIsDevice(file_entry)
@@ -139,7 +141,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckIsDirectory(file_entry)
@@ -153,7 +155,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckIsFile(file_entry)
@@ -167,7 +169,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckIsLink(file_entry)
@@ -181,7 +183,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckIsPipe(file_entry)
@@ -195,7 +197,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE])
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     result = find_spec._CheckIsSocket(file_entry)
@@ -206,11 +208,11 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     file_system = self._CreateTestFileSystem()
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     find_spec = file_system_searcher.FindSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     find_spec.PrepareMatches(file_system)
 
     result = find_spec._CheckLocation(file_entry, 6)
@@ -223,7 +225,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertFalse(result)
 
     find_spec = file_system_searcher.FindSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
     find_spec.PrepareMatches(file_system)
 
     result = find_spec._CheckLocation(file_entry, 6)
@@ -234,15 +236,15 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     find_spec = file_system_searcher.FindSpec()
 
     location_regex = find_spec._ConvertLocationGlob2Regex(
-        u'/tmp/loca?ion')
-    self.assertEqual(location_regex, u'/tmp/loca.ion')
+        '/tmp/loca?ion')
+    self.assertEqual(location_regex, '/tmp/loca.ion')
 
   def testSplitPath(self):
     """Test the _SplitPath function."""
     find_spec = file_system_searcher.FindSpec()
 
-    path_segments = find_spec._SplitPath(u'/tmp/location', u'/')
-    self.assertEqual(path_segments, [u'tmp', u'location'])
+    path_segments = find_spec._SplitPath('/tmp/location', '/')
+    self.assertEqual(path_segments, ['tmp', 'location'])
 
   # TODO: add tests for AtMaximumDepth
 
@@ -251,11 +253,11 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     file_system = self._CreateTestFileSystem()
 
     path_spec = fake_path_spec.FakePathSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     find_spec = file_system_searcher.FindSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     find_spec.PrepareMatches(file_system)
 
     result = find_spec.Matches(file_entry, 6)
@@ -265,7 +267,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertEqual(result, (False, True))
 
     find_spec = file_system_searcher.FindSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
     find_spec.PrepareMatches(file_system)
 
     result = find_spec.Matches(file_entry, 6)
@@ -276,20 +278,20 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
-        location=u'/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
 
     self.assertIsNone(find_spec._location_segments)
     self.assertEqual(find_spec._number_of_location_segments, 0)
 
     find_spec.PrepareMatches(file_system)
     self.assertEqual(find_spec._location_segments, [
-        u'usr', u'lib', u'python2.7', u'site-packages', u'dfvfs',
-        u'__init__.py'])
+        'usr', 'lib', 'python2.7', 'site-packages', 'dfvfs',
+        '__init__.py'])
     self.assertEqual(find_spec._number_of_location_segments, 6)
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'password.txt'])
-@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['password.txt'])
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
   """Tests for the file system searcher."""
 
@@ -302,11 +304,11 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # TODO: add RAW volume only test image.
 
-    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
 
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context)
@@ -324,36 +326,36 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/$AttrDef',
-        u'/$BadClus',
-        u'/$Bitmap',
-        u'/$Boot',
-        u'/$Extend/$ObjId',
-        u'/$Extend/$Quota',
-        u'/$Extend/$Reparse',
-        u'/$Extend/$RmMetadata/$Repair',
-        u'/$Extend/$RmMetadata/$TxfLog/$Tops',
-        u'/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf',
-        u'/$Extend/$RmMetadata/$TxfLog/$TxfLogContainer00000000000000000001',
-        u'/$Extend/$RmMetadata/$TxfLog/$TxfLogContainer00000000000000000002',
-        u'/$LogFile',
-        u'/$MFT',
-        u'/$MFTMirr',
-        u'/$Secure',
-        u'/$UpCase',
-        u'/$Volume',
-        u'/another_file',
-        u'/password.txt',
-        u'/syslog.gz',
-        u'/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}',
-        (u'/System Volume Information/{600f0b69-5bdf-11e3-9d6c-005056c00008}'
-         u'{3808876b-c176-4e48-b7ae-04046e6cc752}'),
-        (u'/System Volume Information/{600f0b6d-5bdf-11e3-9d6c-005056c00008}'
-         u'{3808876b-c176-4e48-b7ae-04046e6cc752}')]
+        '/$AttrDef',
+        '/$BadClus',
+        '/$Bitmap',
+        '/$Boot',
+        '/$Extend/$ObjId',
+        '/$Extend/$Quota',
+        '/$Extend/$Reparse',
+        '/$Extend/$RmMetadata/$Repair',
+        '/$Extend/$RmMetadata/$TxfLog/$Tops',
+        '/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf',
+        '/$Extend/$RmMetadata/$TxfLog/$TxfLogContainer00000000000000000001',
+        '/$Extend/$RmMetadata/$TxfLog/$TxfLogContainer00000000000000000002',
+        '/$LogFile',
+        '/$MFT',
+        '/$MFTMirr',
+        '/$Secure',
+        '/$UpCase',
+        '/$Volume',
+        '/another_file',
+        '/password.txt',
+        '/syslog.gz',
+        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}',
+        ('/System Volume Information/{600f0b69-5bdf-11e3-9d6c-005056c00008}'
+         '{3808876b-c176-4e48-b7ae-04046e6cc752}'),
+        ('/System Volume Information/{600f0b6d-5bdf-11e3-9d6c-005056c00008}'
+         '{3808876b-c176-4e48-b7ae-04046e6cc752}')]
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -364,17 +366,17 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/',
-        u'/$Extend',
-        u'/$Extend/$RmMetadata',
-        u'/$Extend/$RmMetadata/$Txf',
-        u'/$Extend/$RmMetadata/$TxfLog',
-        u'/System Volume Information',
-        u'/$OrphanFiles']
+        '/',
+        '/$Extend',
+        '/$Extend/$RmMetadata',
+        '/$Extend/$RmMetadata/$Txf',
+        '/$Extend/$RmMetadata/$TxfLog',
+        '/System Volume Information',
+        '/$OrphanFiles']
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -388,70 +390,70 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a location.
     find_spec1 = file_system_searcher.FindSpec(
-        location=u'/$Extend/$RmMetadata')
+        location='/$Extend/$RmMetadata')
     find_spec2 = file_system_searcher.FindSpec(
-        location=[u'$Extend', u'$RmMetadata', u'$TxfLog', u'$TxfLog.blf'])
+        location=['$Extend', '$RmMetadata', '$TxfLog', '$TxfLog.blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location=u'/PASSWORD.TXT')
+        location='/PASSWORD.TXT')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/$Extend/$RmMetadata',
-        u'/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
+        '/$Extend/$RmMetadata',
+        '/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a case insensitive location.
     find_spec = file_system_searcher.FindSpec(
-        location=u'/PASSWORD.TXT', case_sensitive=False)
+        location='/PASSWORD.TXT', case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/password.txt']
+        '/password.txt']
 
     locations = []
     first_path_spec = None
     for path_spec in path_spec_generator:
       if not first_path_spec:
         first_path_spec = path_spec
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
     test_relative_path = searcher.GetRelativePath(first_path_spec)
-    self.assertEqual(test_relative_path, u'/password.txt')
+    self.assertEqual(test_relative_path, '/password.txt')
 
     # Find all the file entries with a location glob.
     find_spec1 = file_system_searcher.FindSpec(
-        location_glob=u'/*/$RmMetadata')
+        location_glob='/*/$RmMetadata')
     find_spec2 = file_system_searcher.FindSpec(
-        location_glob=[u'$Extend', u'$RmMetadata', u'*', u'*.blf'])
+        location_glob=['$Extend', '$RmMetadata', '*', '*.blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location_glob=u'/PASSWORD.TXT')
+        location_glob='/PASSWORD.TXT')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/$Extend/$RmMetadata',
-        u'/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
+        '/$Extend/$RmMetadata',
+        '/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -459,51 +461,51 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     find_spec1 = file_system_searcher.FindSpec(
         location_regex=r'/.*/\$RmMetadata')
     find_spec2 = file_system_searcher.FindSpec(
-        location_regex=[r'\$Extend', r'\$RmMetadata', u'.*', u'.*[.]blf'])
+        location_regex=[r'\$Extend', r'\$RmMetadata', '.*', '.*[.]blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location_regex=u'/PASSWORD.TXT')
+        location_regex='/PASSWORD.TXT')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/$Extend/$RmMetadata',
-        u'/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
+        '/$Extend/$RmMetadata',
+        '/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf']
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a case insensitive location glob.
     find_spec = file_system_searcher.FindSpec(
-        location_glob=u'/PASSWORD.TXT', case_sensitive=False)
+        location_glob='/PASSWORD.TXT', case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/password.txt']
+        '/password.txt']
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
     # Find all the file entries with a case insensitive location regular
     # expression.
     find_spec = file_system_searcher.FindSpec(
-        location_regex=u'/PASSWORD.TXT', case_sensitive=False)
+        location_regex='/PASSWORD.TXT', case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        u'/password.txt']
+        '/password.txt']
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(locations, expected_locations)
 
@@ -511,46 +513,46 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     searcher = file_system_searcher.FileSystemSearcher(
         self._os_file_system, self._os_path_spec)
 
-    location = u'{0:s}syslog.*'.format(os.path.sep)
+    location = '{0:s}syslog.*'.format(os.path.sep)
     find_spec = file_system_searcher.FindSpec(
         location_glob=location, case_sensitive=False)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = sorted([
-        self._GetTestFilePath([u'syslog.aes']),
-        self._GetTestFilePath([u'syslog.base16']),
-        self._GetTestFilePath([u'syslog.base32']),
-        self._GetTestFilePath([u'syslog.base64']),
-        self._GetTestFilePath([u'syslog.bin.cpio']),
-        self._GetTestFilePath([u'syslog.blowfish']),
-        self._GetTestFilePath([u'syslog.bz2']),
-        self._GetTestFilePath([u'syslog.crc.cpio']),
-        self._GetTestFilePath([u'syslog.db']),
-        self._GetTestFilePath([u'syslog.des3']),
-        self._GetTestFilePath([u'syslog.gz']),
-        self._GetTestFilePath([u'syslog.newc.cpio']),
-        self._GetTestFilePath([u'syslog.lzma']),
-        self._GetTestFilePath([u'syslog.odc.cpio']),
-        self._GetTestFilePath([u'syslog.rc4']),
-        self._GetTestFilePath([u'syslog.tar']),
-        self._GetTestFilePath([u'syslog.tgz']),
-        self._GetTestFilePath([u'syslog.xz']),
-        self._GetTestFilePath([u'syslog.Z']),
-        self._GetTestFilePath([u'syslog.zip']),
-        self._GetTestFilePath([u'syslog.zlib'])])
+        self._GetTestFilePath(['syslog.aes']),
+        self._GetTestFilePath(['syslog.base16']),
+        self._GetTestFilePath(['syslog.base32']),
+        self._GetTestFilePath(['syslog.base64']),
+        self._GetTestFilePath(['syslog.bin.cpio']),
+        self._GetTestFilePath(['syslog.blowfish']),
+        self._GetTestFilePath(['syslog.bz2']),
+        self._GetTestFilePath(['syslog.crc.cpio']),
+        self._GetTestFilePath(['syslog.db']),
+        self._GetTestFilePath(['syslog.des3']),
+        self._GetTestFilePath(['syslog.gz']),
+        self._GetTestFilePath(['syslog.newc.cpio']),
+        self._GetTestFilePath(['syslog.lzma']),
+        self._GetTestFilePath(['syslog.odc.cpio']),
+        self._GetTestFilePath(['syslog.rc4']),
+        self._GetTestFilePath(['syslog.tar']),
+        self._GetTestFilePath(['syslog.tgz']),
+        self._GetTestFilePath(['syslog.xz']),
+        self._GetTestFilePath(['syslog.Z']),
+        self._GetTestFilePath(['syslog.zip']),
+        self._GetTestFilePath(['syslog.zlib'])])
 
     locations = []
     first_path_spec = None
     for path_spec in path_spec_generator:
       if not first_path_spec:
         first_path_spec = path_spec
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(sorted(locations), expected_locations)
 
     _, path_separator, relative_path = locations[0].rpartition(os.path.sep)
-    expected_relative_path = u'{0:s}{1:s}'.format(
+    expected_relative_path = '{0:s}{1:s}'.format(
         path_separator, relative_path)
     test_relative_path = searcher.GetRelativePath(first_path_spec)
     self.assertEqual(test_relative_path, expected_relative_path)
@@ -559,10 +561,10 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     searcher = file_system_searcher.FileSystemSearcher(
         self._os_file_system, self._os_path_spec)
 
-    if os.path.sep == u'\\':
-      location = u'\\\\syslog[.].*'
+    if os.path.sep == '\\':
+      location = '\\\\syslog[.].*'
     else:
-      location = u'{0:s}syslog[.].*'.format(os.path.sep)
+      location = '{0:s}syslog[.].*'.format(os.path.sep)
 
     find_spec = file_system_searcher.FindSpec(
         location_regex=location, case_sensitive=False)
@@ -570,39 +572,39 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = sorted([
-        self._GetTestFilePath([u'syslog.aes']),
-        self._GetTestFilePath([u'syslog.base16']),
-        self._GetTestFilePath([u'syslog.base32']),
-        self._GetTestFilePath([u'syslog.base64']),
-        self._GetTestFilePath([u'syslog.bin.cpio']),
-        self._GetTestFilePath([u'syslog.blowfish']),
-        self._GetTestFilePath([u'syslog.bz2']),
-        self._GetTestFilePath([u'syslog.crc.cpio']),
-        self._GetTestFilePath([u'syslog.db']),
-        self._GetTestFilePath([u'syslog.des3']),
-        self._GetTestFilePath([u'syslog.gz']),
-        self._GetTestFilePath([u'syslog.newc.cpio']),
-        self._GetTestFilePath([u'syslog.lzma']),
-        self._GetTestFilePath([u'syslog.odc.cpio']),
-        self._GetTestFilePath([u'syslog.rc4']),
-        self._GetTestFilePath([u'syslog.tar']),
-        self._GetTestFilePath([u'syslog.tgz']),
-        self._GetTestFilePath([u'syslog.xz']),
-        self._GetTestFilePath([u'syslog.Z']),
-        self._GetTestFilePath([u'syslog.zip']),
-        self._GetTestFilePath([u'syslog.zlib'])])
+        self._GetTestFilePath(['syslog.aes']),
+        self._GetTestFilePath(['syslog.base16']),
+        self._GetTestFilePath(['syslog.base32']),
+        self._GetTestFilePath(['syslog.base64']),
+        self._GetTestFilePath(['syslog.bin.cpio']),
+        self._GetTestFilePath(['syslog.blowfish']),
+        self._GetTestFilePath(['syslog.bz2']),
+        self._GetTestFilePath(['syslog.crc.cpio']),
+        self._GetTestFilePath(['syslog.db']),
+        self._GetTestFilePath(['syslog.des3']),
+        self._GetTestFilePath(['syslog.gz']),
+        self._GetTestFilePath(['syslog.newc.cpio']),
+        self._GetTestFilePath(['syslog.lzma']),
+        self._GetTestFilePath(['syslog.odc.cpio']),
+        self._GetTestFilePath(['syslog.rc4']),
+        self._GetTestFilePath(['syslog.tar']),
+        self._GetTestFilePath(['syslog.tgz']),
+        self._GetTestFilePath(['syslog.xz']),
+        self._GetTestFilePath(['syslog.Z']),
+        self._GetTestFilePath(['syslog.zip']),
+        self._GetTestFilePath(['syslog.zlib'])])
 
     locations = []
     first_path_spec = None
     for path_spec in path_spec_generator:
       if not first_path_spec:
         first_path_spec = path_spec
-      locations.append(getattr(path_spec, u'location', u''))
+      locations.append(getattr(path_spec, 'location', ''))
 
     self.assertEqual(sorted(locations), expected_locations)
 
     _, path_separator, relative_path = locations[0].rpartition(os.path.sep)
-    expected_relative_path = u'{0:s}{1:s}'.format(
+    expected_relative_path = '{0:s}{1:s}'.format(
         path_separator, relative_path)
     test_relative_path = searcher.GetRelativePath(first_path_spec)
     self.assertEqual(test_relative_path, expected_relative_path)

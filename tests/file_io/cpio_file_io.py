@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the CPIO extracted file-like object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.file_io import cpio_file_io
@@ -13,7 +15,7 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.bin.cpio'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
 class CPIOBinaryFileTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -21,10 +23,10 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIOBinaryFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.bin.cpio'])
+    test_file = self._GetTestFilePath(['syslog.bin.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/syslog', parent=path_spec)
+        location='/syslog', parent=path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -54,7 +56,7 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.odc.cpio'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.odc.cpio'])
 class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -65,7 +67,7 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
     test_file = self._GetTestFilePath(['syslog.odc.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/syslog', parent=path_spec)
+        location='/syslog', parent=path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -95,7 +97,7 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.newc.cpio'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.newc.cpio'])
 class CPIONewASCIIFileTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -106,7 +108,7 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
     test_file = self._GetTestFilePath(['syslog.newc.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/syslog', parent=path_spec)
+        location='/syslog', parent=path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -136,7 +138,7 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.crc.cpio'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.crc.cpio'])
 class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
   """The unit test for a CPIO extracted file-like object."""
 
@@ -147,7 +149,7 @@ class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
     test_file = self._GetTestFilePath(['syslog.crc.cpio'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location=u'/syslog', parent=path_spec)
+        location='/syslog', parent=path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""

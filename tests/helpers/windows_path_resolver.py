@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the Windows path resolver object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.helpers import windows_path_resolver
@@ -15,7 +17,7 @@ from dfvfs.vfs import tsk_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'vsstest.qcow2'])
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
   """The unit test for the windows path resolver object."""
 
@@ -28,25 +30,25 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
 
     # TODO: add RAW volume only test image.
 
-    test_file = self._GetTestFilePath([u'vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        location=u'/', parent=self._qcow_path_spec)
+        location='/', parent=self._qcow_path_spec)
 
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context)
     self._tsk_file_system.Open(self._tsk_path_spec)
 
-  @shared_test_lib.skipUnlessHasTestFile([u'testdir_os', u'file1.txt'])
+  @shared_test_lib.skipUnlessHasTestFile(['testdir_os', 'file1.txt'])
   def testResolvePathDirectory(self):
     """Test the resolve path function on a mount point directory."""
     path_resolver = windows_path_resolver.WindowsPathResolver(
         self._os_file_system, self._os_path_spec)
 
-    expected_path = self._GetTestFilePath([u'testdir_os', u'file1.txt'])
+    expected_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
 
-    windows_path = u'C:\\testdir_os\\file1.txt'
+    windows_path = 'C:\\testdir_os\\file1.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
@@ -54,7 +56,7 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
     test_windows_path = path_resolver.GetWindowsPath(path_spec)
     self.assertEqual(test_windows_path, windows_path)
 
-    windows_path = u'C:\\testdir_os\\file6.txt'
+    windows_path = 'C:\\testdir_os\\file6.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
@@ -64,11 +66,11 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
         self._tsk_file_system, self._qcow_path_spec)
 
     expected_path = (
-        u'/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
 
     windows_path = (
-        u'C:\\System Volume Information'
-        u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        'C:\\System Volume Information'
+        '\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
@@ -77,67 +79,67 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
     self.assertEqual(test_windows_path, windows_path)
 
     windows_path = (
-        u'\\\\?\\C:\\System Volume Information'
-        u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '\\\\?\\C:\\System Volume Information'
+        '\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
     windows_path = (
-        u'\\\\.\\C:\\System Volume Information'
-        u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '\\\\.\\C:\\System Volume Information'
+        '\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
-    expected_path = u'/syslog.gz'
+    expected_path = '/syslog.gz'
 
-    windows_path = u'\\SYSLOG.GZ'
+    windows_path = '\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
-    windows_path = u'C:\\..\\SYSLOG.GZ'
+    windows_path = 'C:\\..\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
-    expected_path = u'/'
+    expected_path = '/'
 
-    windows_path = u'\\'
+    windows_path = '\\'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
-    windows_path = u'S'
+    windows_path = 'S'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
-    windows_path = u'\\\\?\\'
+    windows_path = '\\\\?\\'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
-    windows_path = u'\\\\.\\'
+    windows_path = '\\\\.\\'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
-    windows_path = u'\\\\?\\UNC\\server\\share\\directory\\file.txt'
+    windows_path = '\\\\?\\UNC\\server\\share\\directory\\file.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
-    windows_path = u'\\\\server\\share\\directory\\file.txt'
+    windows_path = '\\\\server\\share\\directory\\file.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
-    windows_path = u'SYSLOG.GZ'
+    windows_path = 'SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
-    windows_path = u'.\\SYSLOG.GZ'
+    windows_path = '.\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
-    windows_path = u'..\\SYSLOG.GZ'
+    windows_path = '..\\SYSLOG.GZ'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
@@ -147,23 +149,23 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
         self._tsk_file_system, self._qcow_path_spec)
 
     path_resolver.SetEnvironmentVariable(
-        u'SystemRoot', u'C:\\System Volume Information')
+        'SystemRoot', 'C:\\System Volume Information')
 
     expected_path = (
-        u'/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
 
-    windows_path = u'%SystemRoot%\\{3808876b-c176-4e48-b7ae-04046e6cc752}'
+    windows_path = '%SystemRoot%\\{3808876b-c176-4e48-b7ae-04046e6cc752}'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
     expected_windows_path = (
-        u'C:\\System Volume Information'
-        u'\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+        'C:\\System Volume Information'
+        '\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     test_windows_path = path_resolver.GetWindowsPath(path_spec)
     self.assertEqual(test_windows_path, expected_windows_path)
 
-    windows_path = u'%WinDir%\\{3808876b-c176-4e48-b7ae-04046e6cc752}'
+    windows_path = '%WinDir%\\{3808876b-c176-4e48-b7ae-04046e6cc752}'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNone(path_spec)
 
@@ -172,11 +174,11 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
         self._os_file_system, self._os_path_spec)
 
     expected_path = self._GetTestFilePath([
-        u'testdir_os', u'subdir1', u'file6.txt'])
+        'testdir_os', 'subdir1', 'file6.txt'])
 
-    path_resolver.SetEnvironmentVariable(u'Test', u'C:\\testdir_os\\subdir1')
+    path_resolver.SetEnvironmentVariable('Test', 'C:\\testdir_os\\subdir1')
 
-    windows_path = u'%Test%\\file6.txt'
+    windows_path = '%Test%\\file6.txt'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)

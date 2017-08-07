@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the text file interface for file-like objects."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.file_io import os_file_io
@@ -17,18 +19,18 @@ from tests import test_lib as shared_test_lib
 # that original buffer size (to test if the buffer is correctly
 # filled).
 
-@shared_test_lib.skipUnlessHasTestFile([u'another_file'])
-@shared_test_lib.skipUnlessHasTestFile([u'password.txt'])
+@shared_test_lib.skipUnlessHasTestFile(['another_file'])
+@shared_test_lib.skipUnlessHasTestFile(['password.txt'])
 class TextFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the text file object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'another_file'])
+    test_file = self._GetTestFilePath(['another_file'])
     self._os_path_spec1 = os_path_spec.OSPathSpec(location=test_file)
 
-    test_file = self._GetTestFilePath([u'password.txt'])
+    test_file = self._GetTestFilePath(['password.txt'])
     self._os_path_spec2 = os_path_spec.OSPathSpec(location=test_file)
 
   def testReadline(self):
@@ -75,10 +77,10 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile([u'fls_bodyfile.txt'])
+  @shared_test_lib.skipUnlessHasTestFile(['fls_bodyfile.txt'])
   def testReadlinesWithFileWithoutNewLineAtEnd(self):
     """Test reading lines from a file without a new line char at the end."""
-    test_file = self._GetTestFilePath([u'fls_bodyfile.txt'])
+    test_file = self._GetTestFilePath(['fls_bodyfile.txt'])
     test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(test_file_path_spec)

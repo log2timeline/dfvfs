@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyvmdk."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.lib import errors
@@ -12,14 +14,14 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'image.vmdk'])
+@shared_test_lib.skipUnlessHasTestFile(['image.vmdk'])
 class VMDKFileTest(test_lib.ImageFileTestCase):
   """The unit test for the VMDK image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(VMDKFileTest, self).setUp()
-    test_file = self._GetTestFilePath([u'image.vmdk'])
+    test_file = self._GetTestFilePath(['image.vmdk'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._vmdk_path_spec = vmdk_path_spec.VMDKPathSpec(
         parent=self._os_path_spec)

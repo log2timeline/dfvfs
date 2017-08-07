@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the data range file-like object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.file_io import data_range_io
@@ -14,14 +16,14 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog'])
 class DataRangeTest(test_lib.SylogTestCase):
   """The unit test for the data range file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog'])
+    test_file = self._GetTestFilePath(['syslog'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._data_range_path_spec = data_range_path_spec.DataRangePathSpec(
         range_offset=167, range_size=1080, parent=self._os_path_spec)
