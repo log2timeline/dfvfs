@@ -78,9 +78,9 @@ class FakeFileSystem(file_system.FileSystem):
     if link_data and file_entry_type != definitions.FILE_ENTRY_TYPE_LINK:
       raise ValueError('Link data set for non-link file entry type.')
 
-    if file_data:
+    if file_data is not None:
       path_data = file_data
-    elif link_data:
+    elif link_data is not None:
       path_data = link_data
     else:
       path_data = None

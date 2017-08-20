@@ -96,6 +96,7 @@ class FakeFileSystemBuilder(object):
 
     with open(file_data_path, 'rb') as file_object:
       file_data = file_object.read()
+
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(path, file_data=file_data)
 
