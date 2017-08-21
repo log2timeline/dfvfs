@@ -19,61 +19,82 @@ from tests import test_lib as shared_test_lib
 # that original buffer size (to test if the buffer is correctly
 # filled).
 
-@shared_test_lib.skipUnlessHasTestFile(['another_file'])
-@shared_test_lib.skipUnlessHasTestFile(['password.txt'])
 class TextFileTest(shared_test_lib.BaseTestCase):
   """The unit test for the text file object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['another_file'])
-    self._os_path_spec1 = os_path_spec.OSPathSpec(location=test_file)
 
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._os_path_spec2 = os_path_spec.OSPathSpec(location=test_file)
-
+  @shared_test_lib.skipUnlessHasTestFile(['another_file'])
   def testReadline(self):
     """Test the readline() function."""
+    test_file = self._GetTestFilePath(['another_file'])
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
     file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(self._os_path_spec1)
+    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
-    self.assertEqual(text_file_object.readline(), b'This is another file.\n')
+    self.assertEqual(text_file_object.readline(), 'This is another file.\n')
 
     self.assertEqual(text_file_object.get_offset(), 22)
 
     file_object.close()
 
+  @shared_test_lib.skipUnlessHasTestFile(['another_file.utf16'])
+  def testReadlineUTF16(self):
+    """Test the readline() function on UTF-16 encoded text."""
+    test_file = self._GetTestFilePath(['another_file.utf16'])
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(test_path_spec)
+    text_file_object = text_file.TextFile(file_object, encoding='utf-16-le')
+
+    self.assertEqual(text_file_object.readline(), 'This is another file.\n')
+
+    self.assertEqual(text_file_object.get_offset(), 46)
+
+    file_object.close()
+
+  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testReadlines(self):
     """Test the readlines() function."""
+    test_file = self._GetTestFilePath(['password.txt'])
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
     file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(self._os_path_spec2)
+    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     lines = text_file_object.readlines()
 
     self.assertEqual(len(lines), 5)
-    self.assertEqual(lines[0], b'place,user,password\n')
-    self.assertEqual(lines[1], b'bank,joesmith,superrich\n')
-    self.assertEqual(lines[2], b'alarm system,-,1234\n')
-    self.assertEqual(lines[3], b'treasure chest,-,1111\n')
-    self.assertEqual(lines[4], b'uber secret laire,admin,admin\n')
+    self.assertEqual(lines[0], 'place,user,password\n')
+    self.assertEqual(lines[1], 'bank,joesmith,superrich\n')
+    self.assertEqual(lines[2], 'alarm system,-,1234\n')
+    self.assertEqual(lines[3], 'treasure chest,-,1111\n')
+    self.assertEqual(lines[4], 'uber secret laire,admin,admin\n')
 
     file_object.close()
 
+  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testReadlinesWithSizeHint(self):
     """Test the readlines() function."""
+    test_file = self._GetTestFilePath(['password.txt'])
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
     file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(self._os_path_spec2)
+    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     lines = text_file_object.readlines(sizehint=60)
 
     self.assertEqual(len(lines), 3)
-    self.assertEqual(lines[0], b'place,user,password\n')
-    self.assertEqual(lines[1], b'bank,joesmith,superrich\n')
-    self.assertEqual(lines[2], b'alarm system,-,1234\n')
+    self.assertEqual(lines[0], 'place,user,password\n')
+    self.assertEqual(lines[1], 'bank,joesmith,superrich\n')
+    self.assertEqual(lines[2], 'alarm system,-,1234\n')
 
     file_object.close()
 
@@ -90,10 +111,14 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(len(lines), 25)
 
+  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testIterator(self):
     """Test the iterator functionality."""
+    test_file = self._GetTestFilePath(['password.txt'])
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
     file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(self._os_path_spec2)
+    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     lines = []
@@ -101,11 +126,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
       lines.append(line)
 
     self.assertEqual(len(lines), 5)
-    self.assertEqual(lines[0], b'place,user,password\n')
-    self.assertEqual(lines[1], b'bank,joesmith,superrich\n')
-    self.assertEqual(lines[2], b'alarm system,-,1234\n')
-    self.assertEqual(lines[3], b'treasure chest,-,1111\n')
-    self.assertEqual(lines[4], b'uber secret laire,admin,admin\n')
+    self.assertEqual(lines[0], 'place,user,password\n')
+    self.assertEqual(lines[1], 'bank,joesmith,superrich\n')
+    self.assertEqual(lines[2], 'alarm system,-,1234\n')
+    self.assertEqual(lines[3], 'treasure chest,-,1111\n')
+    self.assertEqual(lines[4], 'uber secret laire,admin,admin\n')
 
     file_object.close()
 

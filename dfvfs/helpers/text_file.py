@@ -9,8 +9,6 @@ import os
 # the names of the interface functions are in lower case as an exception
 # to the normal naming convention.
 
-# TODO: add encoding and codepage support.
-
 
 class TextFile(object):
   """Text file interface for file-like objects."""
@@ -21,17 +19,19 @@ class TextFile(object):
   # The maximum allowed size of the read buffer.
   _MAXIMUM_READ_BUFFER_SIZE = 16 * 1024 * 1024
 
-  def __init__(self, file_object, end_of_line=b'\n'):
+  def __init__(self, file_object, encoding='utf-8', end_of_line='\n'):
     """Initializes the text file.
 
     Args:
       file_object (FileIO): a file-like object to read from.
+      encoding (Optional[str]): text encoding.
       end_of_line (Optional[str]): end of line indicator.
     """
     super(TextFile, self).__init__()
     self._file_object = file_object
     self._file_object_size = file_object.get_size()
-    self._end_of_line = end_of_line
+    self._encoding = encoding
+    self._end_of_line = end_of_line.encode(self._encoding)
     self._lines_buffer = b''
     self._lines_buffer_offset = 0
     self._lines_buffer_size = 0
@@ -51,7 +51,7 @@ class TextFile(object):
     """Returns a line of text.
 
     Yields:
-      bytes: line of text.
+      str: line of text.
     """
     line = self.readline()
     while line:
@@ -143,7 +143,10 @@ class TextFile(object):
       size (Optional[int]): maximum string size to read.
 
     Returns:
-      bytes: line of text.
+      str: line of text.
+
+    Raises:
+      UnicodeDecodeError: if a line cannot be decoded.
     """
     if size is None or size <= 0:
       size = None
@@ -173,9 +176,16 @@ class TextFile(object):
       self._lines_buffer_size -= len(result + separator)
 
     line = b''.join([result, separator])
+    last_offset = self._current_offset
     self._current_offset += len(line)
 
-    return line
+    decoded_line = line.decode(self._encoding)
+
+    # Remove a byte-order mark at the start of the file.
+    if last_offset == 0 and decoded_line[0] == '\ufeff':
+      decoded_line = decoded_line[1:]
+
+    return decoded_line
 
   def readlines(self, sizehint=None):
     """Reads lines of text.
@@ -190,7 +200,7 @@ class TextFile(object):
       sizehint (Optional[int]): maximum byte size to read.
 
     Returns:
-      list[bytes]: lines of text.
+      list[str]: lines of text.
     """
     if sizehint is None or sizehint <= 0:
       sizehint = None
