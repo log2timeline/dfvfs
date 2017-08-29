@@ -22,7 +22,9 @@ PYTHON3_DEPENDENCIES="libbde-python3
                       libvmdk-python3
                       libvshadow-python3
                       libvslvm-python3
-                      python3-crypto
+                      python3-cffi
+                      python3-cryptography
+                      python3-idna
                       python3-dfdatetime
                       python3-dtfabric
                       python3-pytsk3

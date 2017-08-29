@@ -19,11 +19,14 @@ class TestDecrypter(decrypter.Decrypter):
 
   ENCRYPTION_METHOD = 'test'
 
-  def Decrypt(self, encrypted_data):
+  # pylint: disable=unused-argument
+  def Decrypt(self, encrypted_data, finalize=False):
     """Decrypt the encrypted data.
 
     Args:
       encrypted_data (bytes): the encrypted data.
+      finalize (Optional[bool]): True if the end of data has been reached and
+          the cipher context should be finalized.
 
     Returns:
       tuple[bytes, bytes]: byte string of the decrypted data and the remaining
@@ -55,7 +58,7 @@ class EncryptionManagerTest(shared_test_lib.BaseTestCase):
   def testGetDecrypter(self):
     """Function to test the GetDecrypter function."""
     decrypter_object = manager.EncryptionManager.GetDecrypter(
-        definitions.ENCRYPTION_METHOD_RC4, key=b'test')
+        definitions.ENCRYPTION_METHOD_RC4, key=b'test1')
     self.assertIsInstance(decrypter_object, rc4_decrypter.RC4Decrypter)
 
     decrypter_object = manager.EncryptionManager.GetDecrypter('bogus')

@@ -90,22 +90,23 @@ class EncryptedStream(file_io.FileIO):
     Returns:
       int: decrypted stream size.
     """
-    self._file_object.seek(0, os.SEEK_SET)
-
     self._decrypter = self._GetDecrypter()
     self._decrypted_data = b''
+    self._decrypted_data_size = 0
 
-    encrypted_data_offset = 0
-    encrypted_data_size = self._file_object.get_size()
+    self._file_object.seek(0, os.SEEK_SET)
+    self._encrypted_data = b''
+
     decrypted_stream_size = 0
 
-    while encrypted_data_offset < encrypted_data_size:
-      read_count = self._ReadEncryptedData(self._ENCRYPTED_DATA_BUFFER_SIZE)
-      if read_count == 0:
-        break
-
-      encrypted_data_offset += read_count
+    read_count = self._ReadEncryptedData(self._ENCRYPTED_DATA_BUFFER_SIZE)
+    while read_count > 0:
       decrypted_stream_size += self._decrypted_data_size
+
+      read_count = self._ReadEncryptedData(self._ENCRYPTED_DATA_BUFFER_SIZE)
+
+    self._ReadEncryptedData(0, finalize=True)
+    decrypted_stream_size += self._decrypted_data_size
 
     return decrypted_stream_size
 
@@ -148,32 +149,33 @@ class EncryptedStream(file_io.FileIO):
     Args:
       decrypted_data_offset (int): decrypted data offset.
     """
-    self._file_object.seek(0, os.SEEK_SET)
-
     self._decrypter = self._GetDecrypter()
     self._decrypted_data = b''
+    self._decrypted_data_size = 0
 
-    encrypted_data_offset = 0
-    encrypted_data_size = self._file_object.get_size()
+    self._file_object.seek(0, os.SEEK_SET)
+    self._encrypted_data = b''
 
-    while encrypted_data_offset < encrypted_data_size:
-      read_count = self._ReadEncryptedData(self._ENCRYPTED_DATA_BUFFER_SIZE)
-      if read_count == 0:
-        break
-
-      encrypted_data_offset += read_count
-
+    read_count = self._ReadEncryptedData(self._ENCRYPTED_DATA_BUFFER_SIZE)
+    while read_count > 0:
       if decrypted_data_offset < self._decrypted_data_size:
         self._decrypted_data_offset = decrypted_data_offset
-        break
+        return
 
       decrypted_data_offset -= self._decrypted_data_size
 
-  def _ReadEncryptedData(self, read_size):
+      read_count = self._ReadEncryptedData(self._ENCRYPTED_DATA_BUFFER_SIZE)
+
+    self._ReadEncryptedData(0, finalize=True)
+    self._decrypted_data_offset = decrypted_data_offset
+
+  def _ReadEncryptedData(self, read_size, finalize=False):
     """Reads encrypted data from the file-like object.
 
     Args:
       read_size (int): number of bytes of encrypted data to read.
+      finalize (Optional[bool]): True if the end of data has been reached and
+          the cipher context should be finalized.
 
     Returns:
       int: number of bytes of encrypted data read.
@@ -184,8 +186,8 @@ class EncryptedStream(file_io.FileIO):
 
     self._encrypted_data = b''.join([self._encrypted_data, encrypted_data])
 
-    self._decrypted_data, self._encrypted_data = (
-        self._decrypter.Decrypt(self._encrypted_data))
+    self._decrypted_data, self._encrypted_data = self._decrypter.Decrypt(
+        self._encrypted_data, finalize=finalize)
 
     self._decrypted_data_size = len(self._decrypted_data)
 
@@ -282,9 +284,10 @@ class EncryptedStream(file_io.FileIO):
         break
 
       read_count = self._ReadEncryptedData(self._ENCRYPTED_DATA_BUFFER_SIZE)
-      self._decrypted_data_offset = 0
       if read_count == 0:
-        break
+        self._ReadEncryptedData(0, finalize=True)
+
+      self._decrypted_data_offset = 0
 
     if size > 0:
       slice_start_offset = self._decrypted_data_offset
