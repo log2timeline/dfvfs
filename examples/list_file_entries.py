@@ -3,6 +3,8 @@
 """Script to list file entries."""
 
 from __future__ import print_function
+from __future__ import unicode_literals
+
 import argparse
 import logging
 import os
@@ -24,8 +26,8 @@ class FileEntryLister(object):
   _READ_BUFFER_SIZE = 32768
 
   # For context see: http://en.wikipedia.org/wiki/Byte
-  _UNITS_1000 = [u'B', u'kB', u'MB', u'GB', u'TB', u'EB', u'ZB', u'YB']
-  _UNITS_1024 = [u'B', u'KiB', u'MiB', u'GiB', u'TiB', u'EiB', u'ZiB', u'YiB']
+  _UNITS_1000 = ['B', 'kB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB']
+  _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
   def _GetHumanReadableSize(self, size):
     """Retrieves a human readable string of the size.
@@ -50,18 +52,18 @@ class FileEntryLister(object):
 
     size_string_1000 = None
     if magnitude_1000 > 0 and magnitude_1000 <= 7:
-      size_string_1000 = u'{0:.1f}{1:s}'.format(
+      size_string_1000 = '{0:.1f}{1:s}'.format(
           size_1000, self._UNITS_1000[magnitude_1000])
 
     size_string_1024 = None
     if magnitude_1024 > 0 and magnitude_1024 <= 7:
-      size_string_1024 = u'{0:.1f}{1:s}'.format(
+      size_string_1024 = '{0:.1f}{1:s}'.format(
           size_1024, self._UNITS_1024[magnitude_1024])
 
     if not size_string_1000 or not size_string_1024:
-      return u'{0:d} B'.format(size)
+      return '{0:d} B'.format(size)
 
-    return u'{0:s} / {1:s} ({2:d} B)'.format(
+    return '{0:s} / {1:s} ({2:d} B)'.format(
         size_string_1024, size_string_1000, size)
 
   def _GetNextLevelTSKPartionVolumeSystemPathSpec(self, source_path_spec):
@@ -79,7 +81,7 @@ class FileEntryLister(object):
       RuntimeError: if the format of or within the source is not supported.
     """
     volume_system_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK_PARTITION, location=u'/',
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/',
         parent=source_path_spec)
 
     volume_system = tsk_volume_system.TSKVolumeSystem()
@@ -92,35 +94,35 @@ class FileEntryLister(object):
         volume_identifiers.append(volume_identifier)
 
     if not volume_identifiers:
-      logging.warning(u'No supported partitions found.')
+      logging.warning('No supported partitions found.')
       return source_path_spec
 
     if len(volume_identifiers) == 1:
       return path_spec_factory.Factory.NewPathSpec(
-          definitions.TYPE_INDICATOR_TSK_PARTITION, location=u'/p1',
+          definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
           parent=source_path_spec)
 
-    print(u'The following partitions were found:')
-    print(u'Identifier\tOffset\t\t\tSize')
+    print('The following partitions were found:')
+    print('Identifier\tOffset\t\t\tSize')
 
     for volume_identifier in sorted(volume_identifiers):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise RuntimeError(
-            u'Volume missing for identifier: {0:s}.'.format(volume_identifier))
+            'Volume missing for identifier: {0:s}.'.format(volume_identifier))
 
       volume_extent = volume.extents[0]
       print(
-          u'{0:s}\t\t{1:d} (0x{1:08x})\t{2:s}'.format(
+          '{0:s}\t\t{1:d} (0x{1:08x})\t{2:s}'.format(
               volume.identifier, volume_extent.offset,
               self._GetHumanReadableSize(volume_extent.size)))
 
-    print(u'')
+    print('')
 
     while True:
       print(
-          u'Please specify the identifier of the partition that should '
-          u'be processed:')
+          'Please specify the identifier of the partition that should '
+          'be processed:')
 
       selected_volume_identifier = sys.stdin.readline()
       selected_volume_identifier = selected_volume_identifier.strip()
@@ -128,13 +130,13 @@ class FileEntryLister(object):
       if selected_volume_identifier in volume_identifiers:
         break
 
-      print(u'')
+      print('')
       print(
-          u'Unsupported partition identifier, please try again or abort '
-          u'with Ctrl^C.')
-      print(u'')
+          'Unsupported partition identifier, please try again or abort '
+          'with Ctrl^C.')
+      print('')
 
-    location = u'/{0:s}'.format(selected_volume_identifier)
+    location = '/{0:s}'.format(selected_volume_identifier)
 
     return path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, location=location,
@@ -180,7 +182,7 @@ class FileEntryLister(object):
 
     if len(type_indicators) > 1:
       raise RuntimeError(
-          u'Unsupported source found more than one volume system types.')
+          'Unsupported source found more than one volume system types.')
 
     if type_indicators[0] == definitions.TYPE_INDICATOR_TSK_PARTITION:
       path_spec = self._GetNextLevelTSKPartionVolumeSystemPathSpec(
@@ -192,8 +194,8 @@ class FileEntryLister(object):
 
     else:
       raise RuntimeError((
-          u'Unsupported source found unsupported volume system '
-          u'type: {0:s}.').format(type_indicators[0]))
+          'Unsupported source found unsupported volume system '
+          'type: {0:s}.').format(type_indicators[0]))
 
     return path_spec
 
@@ -228,11 +230,11 @@ class FileEntryLister(object):
     file_entry = resolver.Resolver.OpenFileEntry(base_path_spec)
     if file_entry is None:
       logging.warning(
-          u'Unable to open base path specification:\n{0:s}'.format(
+          'Unable to open base path specification:\n{0:s}'.format(
               base_path_spec.comparable))
       return
 
-    self._ListFileEntry(file_system, file_entry, u'', output_writer)
+    self._ListFileEntry(file_system, file_entry, '', output_writer)
 
   def GetBasePathSpec(self, source_path):
     """Determines the base path specification.
@@ -249,14 +251,14 @@ class FileEntryLister(object):
                     the source file is not supported.
     """
     if not os.path.exists(source_path):
-      raise RuntimeError(u'No such source: {0:s}.'.format(source_path))
+      raise RuntimeError('No such source: {0:s}.'.format(source_path))
 
     stat_info = os.stat(source_path)
 
     if (not stat.S_ISDIR(stat_info.st_mode) and
         not stat.S_ISREG(stat_info.st_mode)):
       raise RuntimeError(
-          u'Unsupported source: {0:s} not a file or directory.'.format(
+          'Unsupported source: {0:s} not a file or directory.'.format(
               source_path))
 
     if stat.S_ISDIR(stat_info.st_mode):
@@ -272,8 +274,8 @@ class FileEntryLister(object):
 
       if len(type_indicators) > 1:
         raise RuntimeError((
-            u'Unsupported source: {0:s} found more than one storage media '
-            u'image types.').format(source_path))
+            'Unsupported source: {0:s} found more than one storage media '
+            'image types.').format(source_path))
 
       if len(type_indicators) == 1:
         path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -306,22 +308,22 @@ class FileEntryLister(object):
 
       if len(type_indicators) > 1:
         raise RuntimeError((
-            u'Unsupported source: {0:s} found more than one file system '
-            u'types.').format(source_path))
+            'Unsupported source: {0:s} found more than one file system '
+            'types.').format(source_path))
 
       if not type_indicators:
-        logging.warning(u'Unable to find a supported file system.')
+        logging.warning('Unable to find a supported file system.')
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=source_path)
 
       elif type_indicators[0] != definitions.TYPE_INDICATOR_TSK:
         raise RuntimeError((
-            u'Unsupported source: {0:s} found unsupported file system '
-            u'type: {1:s}.').format(source_path, type_indicators[0]))
+            'Unsupported source: {0:s} found unsupported file system '
+            'type: {1:s}.').format(source_path, type_indicators[0]))
 
       else:
         path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_TSK, location=u'/',
+            definitions.TYPE_INDICATOR_TSK, location='/',
             parent=path_spec)
 
     return path_spec
@@ -348,7 +350,7 @@ class StdoutWriter(object):
     Args:
       path: the path of the file.
     """
-    print(u'{0:s}'.format(path))
+    print('{0:s}'.format(path))
 
 
 def Main():
@@ -358,31 +360,31 @@ def Main():
     A boolean containing True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
-      u'Lists file entries in a directory or storage media image.'))
+      'Lists file entries in a directory or storage media image.'))
 
   argument_parser.add_argument(
-      u'source', nargs=u'?', action=u'store', metavar=u'image.raw',
+      'source', nargs='?', action='store', metavar='image.raw',
       default=None, help=(
-          u'path of the directory or filename of a storage media image '
-          u'containing the file.'))
+          'path of the directory or filename of a storage media image '
+          'containing the file.'))
 
   options = argument_parser.parse_args()
 
   if not options.source:
-    print(u'Source value is missing.')
-    print(u'')
+    print('Source value is missing.')
+    print('')
     argument_parser.print_help()
-    print(u'')
+    print('')
     return False
 
   logging.basicConfig(
-      level=logging.INFO, format=u'[%(levelname)s] %(message)s')
+      level=logging.INFO, format='[%(levelname)s] %(message)s')
 
   output_writer = StdoutWriter()
 
   if not output_writer.Open():
-    print(u'Unable to open output writer.')
-    print(u'')
+    print('Unable to open output writer.')
+    print('')
     return False
 
   return_value = True
@@ -393,14 +395,14 @@ def Main():
 
     file_entry_lister.ListFileEntries(base_path_spec, output_writer)
 
-    print(u'')
-    print(u'Completed.')
+    print('')
+    print('Completed.')
 
   except KeyboardInterrupt:
     return_value = False
 
-    print(u'')
-    print(u'Aborted by user.')
+    print('')
+    print('Aborted by user.')
 
   output_writer.Close()
 

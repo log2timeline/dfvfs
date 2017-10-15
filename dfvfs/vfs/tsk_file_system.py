@@ -35,7 +35,7 @@ class TSKFileSystem(file_system.FileSystem):
     self._tsk_fs_type = None
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes a file system.
 
     Raises:
       IOError: if the close failed.
@@ -79,7 +79,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): path specification.
 
     Returns:
       bool: True if the file entry exists.

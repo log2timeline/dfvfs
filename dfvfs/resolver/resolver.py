@@ -32,7 +32,7 @@ class Resolver(object):
     """
     if resolver_helper.type_indicator not in cls._resolver_helpers:
       raise KeyError(
-          u'Resolver helper object not set for type indicator: {0:s}.'.format(
+          'Resolver helper object not set for type indicator: {0:s}.'.format(
               resolver_helper.type_indicator))
 
     del cls._resolver_helpers[resolver_helper.type_indicator]
@@ -84,7 +84,7 @@ class Resolver(object):
       TypeError: if the path specification type is unsupported.
     """
     if not isinstance(path_spec_object, path_spec.PathSpec):
-      raise TypeError(u'Unsupported path specification type.')
+      raise TypeError('Unsupported path specification type.')
 
     if resolver_context is None:
       resolver_context = cls._resolver_context
@@ -92,25 +92,25 @@ class Resolver(object):
     if path_spec_object.type_indicator == definitions.TYPE_INDICATOR_MOUNT:
       if path_spec_object.HasParent():
         raise errors.PathSpecError(
-            u'Unsupported mount path specification with parent.')
+            'Unsupported mount path specification with parent.')
 
-      mount_point = getattr(path_spec_object, u'identifier', None)
+      mount_point = getattr(path_spec_object, 'identifier', None)
       if not mount_point:
         raise errors.PathSpecError(
-            u'Unsupported path specification without mount point identifier.')
+            'Unsupported path specification without mount point identifier.')
 
       path_spec_object = mount_manager.MountPointManager.GetMountPoint(
           mount_point)
       if not path_spec_object:
         raise errors.MountPointError(
-            u'No such mount point: {0:s}'.format(mount_point))
+            'No such mount point: {0:s}'.format(mount_point))
 
     file_object = resolver_context.GetFileObject(path_spec_object)
     if not file_object:
       if path_spec_object.type_indicator not in cls._resolver_helpers:
         raise KeyError((
-            u'Resolver helper object not set for type indicator: '
-            u'{0:s}.').format(path_spec_object.type_indicator))
+            'Resolver helper object not set for type indicator: '
+            '{0:s}.').format(path_spec_object.type_indicator))
 
       resolver_helper = cls._resolver_helpers[path_spec_object.type_indicator]
       file_object = resolver_helper.NewFileObject(resolver_context)
@@ -140,7 +140,7 @@ class Resolver(object):
       TypeError: if the path specification type is unsupported.
     """
     if not isinstance(path_spec_object, path_spec.PathSpec):
-      raise TypeError(u'Unsupported path specification type.')
+      raise TypeError('Unsupported path specification type.')
 
     if resolver_context is None:
       resolver_context = cls._resolver_context
@@ -148,25 +148,25 @@ class Resolver(object):
     if path_spec_object.type_indicator == definitions.TYPE_INDICATOR_MOUNT:
       if path_spec_object.HasParent():
         raise errors.PathSpecError(
-            u'Unsupported mount path specification with parent.')
+            'Unsupported mount path specification with parent.')
 
-      mount_point = getattr(path_spec_object, u'identifier', None)
+      mount_point = getattr(path_spec_object, 'identifier', None)
       if not mount_point:
         raise errors.PathSpecError(
-            u'Unsupported path specification without mount point identifier.')
+            'Unsupported path specification without mount point identifier.')
 
       path_spec_object = mount_manager.MountPointManager.GetMountPoint(
           mount_point)
       if not path_spec_object:
         raise errors.MountPointError(
-            u'No such mount point: {0:s}'.format(mount_point))
+            'No such mount point: {0:s}'.format(mount_point))
 
     file_system = resolver_context.GetFileSystem(path_spec_object)
     if not file_system:
       if path_spec_object.type_indicator not in cls._resolver_helpers:
         raise KeyError((
-            u'Resolver helper object not set for type indicator: '
-            u'{0:s}.').format(path_spec_object.type_indicator))
+            'Resolver helper object not set for type indicator: '
+            '{0:s}.').format(path_spec_object.type_indicator))
 
       resolver_helper = cls._resolver_helpers[path_spec_object.type_indicator]
       file_system = resolver_helper.NewFileSystem(resolver_context)
@@ -177,7 +177,7 @@ class Resolver(object):
       raise
     except (IOError, ValueError) as exception:
       raise errors.BackEndError(
-          u'Unable to open file system with error: {0:s}'.format(exception))
+          'Unable to open file system with error: {0:s}'.format(exception))
 
     return file_system
 
@@ -194,7 +194,7 @@ class Resolver(object):
     """
     if resolver_helper.type_indicator in cls._resolver_helpers:
       raise KeyError((
-          u'Resolver helper object already set for type indicator: '
-          u'{0!s}.').format(resolver_helper.type_indicator))
+          'Resolver helper object already set for type indicator: '
+          '{0!s}.').format(resolver_helper.type_indicator))
 
     cls._resolver_helpers[resolver_helper.type_indicator] = resolver_helper
