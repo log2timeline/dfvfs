@@ -6,6 +6,8 @@
 # as well: https://github.com/log2timeline/dfvfs/wiki/Development
 
 from __future__ import print_function
+from __future__ import unicode_literals
+
 import argparse
 import getpass
 import hashlib
@@ -24,13 +26,13 @@ class RecursiveHasherVolumeScannerMediator(
   """Class that defines a volume scanner mediator."""
 
   # For context see: http://en.wikipedia.org/wiki/Byte
-  _UNITS_1000 = [u'B', u'kB', u'MB', u'GB', u'TB', u'EB', u'ZB', u'YB']
-  _UNITS_1024 = [u'B', u'KiB', u'MiB', u'GiB', u'TiB', u'EiB', u'ZiB', u'YiB']
+  _UNITS_1000 = ['B', 'kB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB']
+  _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
   def __init__(self):
     """Initializes the scanner mediator object."""
     super(RecursiveHasherVolumeScannerMediator, self).__init__()
-    self._encode_errors = u'strict'
+    self._encode_errors = 'strict'
     self._preferred_encoding = locale.getpreferredencoding()
 
   def _EncodeString(self, string):
@@ -45,13 +47,13 @@ class RecursiveHasherVolumeScannerMediator(
       encoded_string = string.encode(
           self._preferred_encoding, errors=self._encode_errors)
     except UnicodeEncodeError:
-      if self._encode_errors == u'strict':
+      if self._encode_errors == 'strict':
         logging.error(
-            u'Unable to properly write output due to encoding error. '
-            u'Switching to error tolerant encoding which can result in '
-            u'non Basic Latin (C0) characters being replaced with "?" or '
-            u'"\\ufffd".')
-        self._encode_errors = u'replace'
+            'Unable to properly write output due to encoding error. '
+            'Switching to error tolerant encoding which can result in '
+            'non Basic Latin (C0) characters being replaced with "?" or '
+            '"\\ufffd".')
+        self._encode_errors = 'replace'
 
       encoded_string = string.encode(
           self._preferred_encoding, errors=self._encode_errors)
@@ -81,18 +83,18 @@ class RecursiveHasherVolumeScannerMediator(
 
     size_string_1000 = None
     if magnitude_1000 > 0 and magnitude_1000 <= 7:
-      size_string_1000 = u'{0:.1f}{1:s}'.format(
+      size_string_1000 = '{0:.1f}{1:s}'.format(
           size_1000, self._UNITS_1000[magnitude_1000])
 
     size_string_1024 = None
     if magnitude_1024 > 0 and magnitude_1024 <= 7:
-      size_string_1024 = u'{0:.1f}{1:s}'.format(
+      size_string_1024 = '{0:.1f}{1:s}'.format(
           size_1024, self._UNITS_1024[magnitude_1024])
 
     if not size_string_1000 or not size_string_1024:
-      return u'{0:d} B'.format(size)
+      return '{0:d} B'.format(size)
 
-    return u'{0:s} / {1:s} ({2:d} B)'.format(
+    return '{0:s} / {1:s} ({2:d} B)'.format(
         size_string_1024, size_string_1000, size)
 
   def _ParseVSSStoresString(self, vss_stores):
@@ -115,33 +117,33 @@ class RecursiveHasherVolumeScannerMediator(
     if not vss_stores:
       return []
 
-    if vss_stores == u'all':
-      return [u'all']
+    if vss_stores == 'all':
+      return ['all']
 
     stores = []
-    for vss_store_range in vss_stores.split(u','):
+    for vss_store_range in vss_stores.split(','):
       # Determine if the range is formatted as 1..3 otherwise it indicates
       # a single store number.
-      if u'..' in vss_store_range:
-        first_store, last_store = vss_store_range.split(u'..')
+      if '..' in vss_store_range:
+        first_store, last_store = vss_store_range.split('..')
         try:
           first_store = int(first_store, 10)
           last_store = int(last_store, 10)
         except ValueError:
-          raise ValueError(u'Invalid VSS store range: {0:s}.'.format(
+          raise ValueError('Invalid VSS store range: {0:s}.'.format(
               vss_store_range))
 
         for store_number in range(first_store, last_store + 1):
           if store_number not in stores:
             stores.append(store_number)
       else:
-        if vss_store_range.startswith(u'vss'):
+        if vss_store_range.startswith('vss'):
           vss_store_range = vss_store_range[3:]
 
         try:
           store_number = int(vss_store_range, 10)
         except ValueError:
-          raise ValueError(u'Invalid VSS store range: {0:s}.'.format(
+          raise ValueError('Invalid VSS store range: {0:s}.'.format(
               vss_store_range))
 
         if store_number not in stores:
@@ -164,49 +166,49 @@ class RecursiveHasherVolumeScannerMediator(
     Raises:
       ScannerError: if the source cannot be processed.
     """
-    print(u'The following partitions were found:')
-    print(u'Identifier\tOffset (in bytes)\tSize (in bytes)')
+    print('The following partitions were found:')
+    print('Identifier\tOffset (in bytes)\tSize (in bytes)')
 
     for volume_identifier in sorted(volume_identifiers):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
-            u'Volume missing for identifier: {0:s}.'.format(volume_identifier))
+            'Volume missing for identifier: {0:s}.'.format(volume_identifier))
 
       volume_extent = volume.extents[0]
-      print(u'{0:s}\t\t{1:d} (0x{1:08x})\t{2:s}'.format(
+      print('{0:s}\t\t{1:d} (0x{1:08x})\t{2:s}'.format(
           volume.identifier, volume_extent.offset,
           self._FormatHumanReadableSize(volume_extent.size)))
 
     while True:
       print(
-          u'Please specify the identifier of the partition that should be '
-          u'processed.')
+          'Please specify the identifier of the partition that should be '
+          'processed.')
       print(
-          u'All partitions can be defined as: "all". Note that you '
-          u'can abort with Ctrl^C.')
+          'All partitions can be defined as: "all". Note that you '
+          'can abort with Ctrl^C.')
 
       selected_volume_identifier = sys.stdin.readline()
       selected_volume_identifier = selected_volume_identifier.strip()
 
-      if not selected_volume_identifier.startswith(u'p'):
+      if not selected_volume_identifier.startswith('p'):
         try:
           partition_number = int(selected_volume_identifier, 10)
-          selected_volume_identifier = u'p{0:d}'.format(partition_number)
+          selected_volume_identifier = 'p{0:d}'.format(partition_number)
         except ValueError:
           pass
 
-      if selected_volume_identifier == u'all':
+      if selected_volume_identifier == 'all':
         return volume_identifiers
 
       if selected_volume_identifier in volume_identifiers:
         break
 
-      print(u'')
+      print('')
       print(
-          u'Unsupported partition identifier, please try again or abort '
-          u'with Ctrl^C.')
-      print(u'')
+          'Unsupported partition identifier, please try again or abort '
+          'with Ctrl^C.')
+      print('')
 
     return [selected_volume_identifier]
 
@@ -230,7 +232,7 @@ class RecursiveHasherVolumeScannerMediator(
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
-            u'Volume missing for identifier: {0:s}.'.format(volume_identifier))
+            'Volume missing for identifier: {0:s}.'.format(volume_identifier))
 
       try:
         volume_identifier = int(volume.identifier[3:], 10)
@@ -241,38 +243,38 @@ class RecursiveHasherVolumeScannerMediator(
     print_header = True
     while True:
       if print_header:
-        print(u'The following Volume Shadow Snapshots (VSS) were found:')
-        print(u'Identifier\tVSS store identifier')
+        print('The following Volume Shadow Snapshots (VSS) were found:')
+        print('Identifier\tVSS store identifier')
 
         for volume_identifier in volume_identifiers:
           volume = volume_system.GetVolumeByIdentifier(volume_identifier)
           if not volume:
             raise errors.ScannerError(
-                u'Volume missing for identifier: {0:s}.'.format(
+                'Volume missing for identifier: {0:s}.'.format(
                     volume_identifier))
 
-          vss_identifier = volume.GetAttribute(u'identifier')
-          print(u'{0:s}\t\t{1:s}'.format(
+          vss_identifier = volume.GetAttribute('identifier')
+          print('{0:s}\t\t{1:s}'.format(
               volume.identifier, vss_identifier.value))
 
-        print(u'')
+        print('')
 
         print_header = False
 
       print(
-          u'Please specify the identifier(s) of the VSS that should be '
-          u'processed:')
+          'Please specify the identifier(s) of the VSS that should be '
+          'processed:')
       print(
-          u'Note that a range of stores can be defined as: 3..5. Multiple '
-          u'stores can')
+          'Note that a range of stores can be defined as: 3..5. Multiple '
+          'stores can')
       print(
-          u'be defined as: 1,3,5 (a list of comma separated values). Ranges '
-          u'and lists can')
+          'be defined as: 1,3,5 (a list of comma separated values). Ranges '
+          'and lists can')
       print(
-          u'also be combined as: 1,3..5. The first store is 1. All stores '
-          u'can be defined')
-      print(u'as "all". If no stores are specified none will be processed. You')
-      print(u'can abort with Ctrl^C.')
+          'also be combined as: 1,3..5. The first store is 1. All stores '
+          'can be defined')
+      print('as "all". If no stores are specified none will be processed. Yo')
+      print('can abort with Ctrl^C.')
 
       selected_vss_stores = sys.stdin.readline()
 
@@ -285,18 +287,18 @@ class RecursiveHasherVolumeScannerMediator(
       except ValueError:
         selected_vss_stores = []
 
-      if selected_vss_stores == [u'all']:
+      if selected_vss_stores == ['all']:
         # We need to set the stores to cover all vss stores.
         selected_vss_stores = range(1, volume_system.number_of_volumes + 1)
 
       if not set(selected_vss_stores).difference(normalized_volume_identifiers):
         break
 
-      print(u'')
+      print('')
       print(
-          u'Unsupported VSS identifier(s), please try again or abort with '
-          u'Ctrl^C.')
-      print(u'')
+          'Unsupported VSS identifier(s), please try again or abort with '
+          'Ctrl^C.')
+      print('')
 
     return selected_vss_stores
 
@@ -320,24 +322,24 @@ class RecursiveHasherVolumeScannerMediator(
     """
     # TODO: print volume description.
     if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-      print(u'Found a BitLocker encrypted volume.')
+      print('Found a BitLocker encrypted volume.')
     else:
-      print(u'Found an encrypted volume.')
+      print('Found an encrypted volume.')
 
     credentials_list = list(credentials.CREDENTIALS)
-    credentials_list.append(u'skip')
+    credentials_list.append('skip')
 
-    print(u'Supported credentials:')
-    print(u'')
+    print('Supported credentials:')
+    print('')
     for index, name in enumerate(credentials_list):
-      print(u'  {0:d}. {1:s}'.format(index, name))
-    print(u'')
-    print(u'Note that you can abort with Ctrl^C.')
-    print(u'')
+      print('  {0:d}. {1:s}'.format(index, name))
+    print('')
+    print('Note that you can abort with Ctrl^C.')
+    print('')
 
     result = False
     while not result:
-      print(u'Select a credential to unlock the volume: ', end=u'')
+      print('Select a credential to unlock the volume: ', end='')
       # TODO: add an input reader.
       input_line = sys.stdin.readline()
       input_line = input_line.strip()
@@ -349,26 +351,26 @@ class RecursiveHasherVolumeScannerMediator(
           credential_type = int(input_line, 10)
           credential_type = credentials_list[credential_type]
         except (IndexError, ValueError):
-          print(u'Unsupported credential: {0:s}'.format(input_line))
+          print('Unsupported credential: {0:s}'.format(input_line))
           continue
 
-      if credential_type == u'skip':
+      if credential_type == 'skip':
         break
 
-      getpass_string = u'Enter credential data: '
-      if sys.platform.startswith(u'win') and sys.version_info[0] < 3:
+      getpass_string = 'Enter credential data: '
+      if sys.platform.startswith('win') and sys.version_info[0] < 3:
         # For Python 2 on Windows getpass (win_getpass) requires an encoded
         # byte string. For Python 3 we need it to be a Unicode string.
         getpass_string = self._EncodeString(getpass_string)
 
       credential_data = getpass.getpass(getpass_string)
-      print(u'')
+      print('')
 
-      if credential_type == u'key':
+      if credential_type == 'key':
         try:
-          credential_data = credential_data.decode(u'hex')
+          credential_data = credential_data.decode('hex')
         except TypeError:
-          print(u'Unsupported credential data.')
+          print('Unsupported credential data.')
           continue
 
       result = source_scanner_object.Unlock(
@@ -376,8 +378,8 @@ class RecursiveHasherVolumeScannerMediator(
           credential_data)
 
       if not result:
-        print(u'Unable to unlock volume.')
-        print(u'')
+        print('Unable to unlock volume.')
+        print('')
 
     return result
 
@@ -404,8 +406,8 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
       file_object = file_entry.GetFileObject(data_stream_name=data_stream_name)
     except IOError as exception:
       logging.warning((
-          u'Unable to open path specification:\n{0:s}'
-          u'with error: {1:s}').format(
+          'Unable to open path specification:\n{0:s}'
+          'with error: {1:s}').format(
               file_entry.path_spec.comparable, exception))
       return
 
@@ -419,8 +421,8 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
         data = file_object.read(self._READ_BUFFER_SIZE)
     except IOError as exception:
       logging.warning((
-          u'Unable to read from path specification:\n{0:s}'
-          u'with error: {1:s}').format(
+          'Unable to read from path specification:\n{0:s}'
+          'with error: {1:s}').format(
               file_entry.path_spec.comparable, exception))
       return
 
@@ -450,7 +452,7 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
 
       # TODO: print volume.
       if data_stream.name:
-        display_path = u'{0:s}:{1:s}'.format(full_path, data_stream.name)
+        display_path = '{0:s}:{1:s}'.format(full_path, data_stream.name)
       else:
         display_path = full_path
 
@@ -473,18 +475,18 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
       file_entry = resolver.Resolver.OpenFileEntry(base_path_spec)
       if file_entry is None:
         logging.warning(
-            u'Unable to open base path specification:\n{0:s}'.format(
+            'Unable to open base path specification:\n{0:s}'.format(
                 base_path_spec.comparable))
         continue
 
       self._CalculateHashesFileEntry(
-          file_system, file_entry, u'', output_writer)
+          file_system, file_entry, '', output_writer)
 
 
 class StdoutWriter(object):
   """Class that defines a stdout output writer."""
 
-  def __init__(self, encoding=u'utf-8'):
+  def __init__(self, encoding='utf-8'):
     """Initializes the output writer object.
 
     Args:
@@ -492,7 +494,7 @@ class StdoutWriter(object):
     """
     super(StdoutWriter, self).__init__()
     self._encoding = encoding
-    self._errors = u'strict'
+    self._errors = 'strict'
 
   def Open(self):
     """Opens the output writer object.
@@ -513,20 +515,20 @@ class StdoutWriter(object):
       path: the path of the file.
       hash_value: the message digest hash calculated over the file data.
     """
-    string = u'{0:s}\t{1:s}'.format(hash_value, path)
+    string = '{0:s}\t{1:s}'.format(hash_value, path)
 
     try:
       # Note that encode() will first convert string into a Unicode string
       # if necessary.
       encoded_string = string.encode(self._encoding, errors=self._errors)
     except UnicodeEncodeError:
-      if self._errors == u'strict':
+      if self._errors == 'strict':
         logging.error(
-            u'Unable to properly write output due to encoding error. '
-            u'Switching to error tolerant encoding which can result in '
-            u'non Basic Latin (C0) characters to be replaced with "?" or '
-            u'"\\ufffd".')
-        self._errors = u'replace'
+            'Unable to properly write output due to encoding error. '
+            'Switching to error tolerant encoding which can result in '
+            'non Basic Latin (C0) characters to be replaced with "?" or '
+            '"\\ufffd".')
+        self._errors = 'replace'
 
       encoded_string = string.encode(self._encoding, errors=self._errors)
 
@@ -540,32 +542,32 @@ def Main():
     A boolean containing True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
-      u'Calculates a message digest hash for every file in a directory or '
-      u'storage media image.'))
+      'Calculates a message digest hash for every file in a directory or '
+      'storage media image.'))
 
   argument_parser.add_argument(
-      u'source', nargs=u'?', action=u'store', metavar=u'image.raw',
+      'source', nargs='?', action='store', metavar='image.raw',
       default=None, help=(
-          u'path of the directory or filename of a storage media image '
-          u'containing the file.'))
+          'path of the directory or filename of a storage media image '
+          'containing the file.'))
 
   options = argument_parser.parse_args()
 
   if not options.source:
-    print(u'Source value is missing.')
-    print(u'')
+    print('Source value is missing.')
+    print('')
     argument_parser.print_help()
-    print(u'')
+    print('')
     return False
 
   logging.basicConfig(
-      level=logging.INFO, format=u'[%(levelname)s] %(message)s')
+      level=logging.INFO, format='[%(levelname)s] %(message)s')
 
   output_writer = StdoutWriter()
 
   if not output_writer.Open():
-    print(u'Unable to open output writer.')
-    print(u'')
+    print('Unable to open output writer.')
+    print('')
     return False
 
   return_value = True
@@ -575,20 +577,20 @@ def Main():
   try:
     base_path_specs = recursive_hasher.GetBasePathSpecs(options.source)
     if not base_path_specs:
-      print(u'No supported file system found in source.')
-      print(u'')
+      print('No supported file system found in source.')
+      print('')
       return False
 
     recursive_hasher.CalculateHashes(base_path_specs, output_writer)
 
-    print(u'')
-    print(u'Completed.')
+    print('')
+    print('Completed.')
 
   except KeyboardInterrupt:
     return_value = False
 
-    print(u'')
-    print(u'Aborted by user.')
+    print('')
+    print('Aborted by user.')
 
   output_writer.Close()
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Helper functions for SQLite database support."""
 
+from __future__ import unicode_literals
+
 import os
 import tempfile
 
@@ -17,14 +19,14 @@ class SQLiteDatabaseFile(object):
 
   _COPY_BUFFER_SIZE = 65536
 
-  _HAS_COLUMN_QUERY = u'PRAGMA table_info("{0:s}")'
+  _HAS_COLUMN_QUERY = 'PRAGMA table_info("{0:s}")'
 
   _HAS_TABLE_QUERY = (
-      u'SELECT name FROM sqlite_master WHERE type = "table"')
+      'SELECT name FROM sqlite_master WHERE type = "table"')
 
   _HEADER_SIGNATURE = b'SQLite format 3'
 
-  _NUMBER_OF_ROWS_QUERY = u'SELECT COUNT(*) FROM {0:s}'
+  _NUMBER_OF_ROWS_QUERY = 'SELECT COUNT(*) FROM {0:s}'
 
   def __init__(self):
     """Initializes the database file object."""
@@ -33,7 +35,7 @@ class SQLiteDatabaseFile(object):
     self._connection = None
     self._cursor = None
     self._table_names = None
-    self._temp_file_path = u''
+    self._temp_file_path = ''
 
   def Close(self):
     """Closes the database file object.
@@ -53,7 +55,7 @@ class SQLiteDatabaseFile(object):
     except (OSError, IOError):
       pass
 
-    self._temp_file_path = u''
+    self._temp_file_path = ''
 
   def GetNumberOfRows(self, table_name):
     """Retrieves the number of rows in the table.
@@ -68,13 +70,13 @@ class SQLiteDatabaseFile(object):
       IOError: if the file-like object has not been opened.
     """
     if not self._connection:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     self._cursor.execute(self._NUMBER_OF_ROWS_QUERY.format(table_name))
     row = self._cursor.fetchone()
     if not row:
       raise IOError(
-          u'Unable to retrieve number of rows of table: {0:s}'.format(
+          'Unable to retrieve number of rows of table: {0:s}'.format(
               table_name))
 
     number_of_rows = row[0]
@@ -83,8 +85,8 @@ class SQLiteDatabaseFile(object):
         number_of_rows = int(number_of_rows, 10)
       except ValueError as exception:
         raise IOError((
-            u'Unable to determine number of rows of table: {0:s} '
-            u'with error: {1:s}').format(table_name, exception))
+            'Unable to determine number of rows of table: {0:s} '
+            'with error: {1:s}').format(table_name, exception))
 
     return number_of_rows
 
@@ -102,7 +104,7 @@ class SQLiteDatabaseFile(object):
       IOError: if the database file is not opened.
     """
     if not self._connection:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if not column_name:
       return False
@@ -119,7 +121,7 @@ class SQLiteDatabaseFile(object):
 
         row_column_name = row[1]
         if isinstance(row_column_name, bytes):
-          row_column_name = row_column_name.decode(u'utf-8')
+          row_column_name = row_column_name.decode('utf-8')
 
         column_names.append(row_column_name.lower())
 
@@ -141,7 +143,7 @@ class SQLiteDatabaseFile(object):
       IOError: if the database file is not opened.
     """
     if not self._connection:
-      raise IOError(u'Not opened.')
+      raise IOError('Not opened.')
 
     if not table_name:
       return False
@@ -156,7 +158,7 @@ class SQLiteDatabaseFile(object):
 
         row_table_name = row[0]
         if isinstance(row_table_name, bytes):
-          row_table_name = row_table_name.decode(u'utf-8')
+          row_table_name = row_table_name.decode('utf-8')
 
         self._table_names.append(row_table_name.lower())
 
@@ -174,7 +176,7 @@ class SQLiteDatabaseFile(object):
       ValueError: if the file-like object is invalid.
     """
     if not file_object:
-      raise ValueError(u'Missing file-like object.')
+      raise ValueError('Missing file-like object.')
 
     # Since pysqlite3 does not provide an exclusive read-only mode and
     # cannot interact with a file-like object directly we make a temporary
@@ -185,7 +187,7 @@ class SQLiteDatabaseFile(object):
 
     if data != self._HEADER_SIGNATURE:
       file_object.close()
-      raise IOError(u'Unsupported SQLite database signature.')
+      raise IOError('Unsupported SQLite database signature.')
 
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
       self._temp_file_path = temp_file.name

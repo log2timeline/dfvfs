@@ -22,7 +22,7 @@ then
 	mv l2tdevtools ../;
 	mkdir dependencies;
 
-	PYTHONPATH=../l2tdevtools ../l2tdevtools/tools/update.py --download-directory=dependencies ${L2TBINARIES_DEPENDENCIES} ${L2TBINARIES_TEST_DEPENDENCIES};
+	PYTHONPATH=../l2tdevtools ../l2tdevtools/tools/update.py --download-directory dependencies --track dev ${L2TBINARIES_DEPENDENCIES} ${L2TBINARIES_TEST_DEPENDENCIES};
 
 elif test ${TRAVIS_OS_NAME} = "linux";
 then

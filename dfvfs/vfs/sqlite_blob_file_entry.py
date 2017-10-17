@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SQLite blob file entry implementation."""
 
+from __future__ import unicode_literals
+
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3
@@ -34,11 +36,11 @@ class SQLiteBlobDirectory(file_entry.Directory):
       AccessError: if the access to list the directory was denied.
       BackEndError: if the directory could not be listed.
     """
-    table_name = getattr(self.path_spec, u'table_name', None)
+    table_name = getattr(self.path_spec, 'table_name', None)
     if table_name is None:
       return
 
-    column_name = getattr(self.path_spec, u'column_name', None)
+    column_name = getattr(self.path_spec, 'column_name', None)
     if column_name is None:
       return
 
@@ -115,7 +117,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
       file_object = self.GetFileObject()
       if not file_object:
         raise errors.BackEndError(
-            u'Unable to retrieve SQLite blob file-like object.')
+            'Unable to retrieve SQLite blob file-like object.')
 
       try:
         stat_object.size = file_object.get_size()
@@ -127,24 +129,24 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
   @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
-    row_index = getattr(self.path_spec, u'row_index', None)
+    row_index = getattr(self.path_spec, 'row_index', None)
     if row_index is not None:
-      return u'OFFSET {0:d}'.format(row_index)
+      return 'OFFSET {0:d}'.format(row_index)
 
-    row_condition = getattr(self.path_spec, u'row_condition', None)
+    row_condition = getattr(self.path_spec, 'row_condition', None)
     if row_condition is not None:
       if len(row_condition) > 2 and isinstance(
           row_condition[2], py2to3.STRING_TYPES):
-        return u'WHERE {0:s} {1:s} \'{2:s}\''.format(*row_condition)
-      return u'WHERE {0:s} {1:s} {2!s}'.format(*row_condition)
+        return 'WHERE {0:s} {1:s} \'{2:s}\''.format(*row_condition)
+      return 'WHERE {0:s} {1:s} {2!s}'.format(*row_condition)
 
     # Directory name is full name of column: <table>.<column>
-    table_name = getattr(self.path_spec, u'table_name', None)
-    column_name = getattr(self.path_spec, u'column_name', None)
+    table_name = getattr(self.path_spec, 'table_name', None)
+    column_name = getattr(self.path_spec, 'column_name', None)
     if table_name and column_name:
-      return u'{0:s}.{1:s}'.format(table_name, column_name)
+      return '{0:s}.{1:s}'.format(table_name, column_name)
 
-    return u''
+    return ''
 
   @property
   def sub_file_entries(self):
@@ -169,7 +171,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     file_object = self.GetFileObject()
     if not file_object:
       raise errors.BackEndError(
-          u'Unable to retrieve SQLite blob file-like object.')
+          'Unable to retrieve SQLite blob file-like object.')
 
     try:
       # TODO: move this function out of SQLiteBlobFile.

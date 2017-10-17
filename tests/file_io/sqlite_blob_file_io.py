@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the SQLite blob file-like object."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.file_io import sqlite_blob_file_io
@@ -13,18 +15,18 @@ from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.db'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.db'])
 class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
   """The unit test for a SQLite blob file-like object using row condition."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.db'])
+    test_file = self._GetTestFilePath(['syslog.db'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'blobs', column_name=u'blob',
-        row_condition=(u'identifier', u'==', u'myblob'), parent=path_spec)
+        table_name='blobs', column_name='blob',
+        row_condition=('identifier', '==', 'myblob'), parent=path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -54,17 +56,17 @@ class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'syslog.db'])
+@shared_test_lib.skipUnlessHasTestFile(['syslog.db'])
 class SQLiteBlobFileWithIndexTest(test_lib.SylogTestCase):
   """The unit test for a SQLite blob file-like object using row index."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'syslog.db'])
+    test_file = self._GetTestFilePath(['syslog.db'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'blobs', column_name=u'blob', row_index=0, parent=path_spec)
+        table_name='blobs', column_name='blob', row_index=0, parent=path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""

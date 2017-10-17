@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using sqlite blob."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import sqlite_blob_path_spec
@@ -12,20 +14,20 @@ from dfvfs.vfs import sqlite_blob_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'blob.db'])
+@shared_test_lib.skipUnlessHasTestFile(['blob.db'])
 class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
   """The unit test for the sqlite blob file system object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'blob.db'])
+    test_file = self._GetTestFilePath(['blob.db'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'myblobs', column_name=u'blobs',
-        row_condition=(u'name', u'==', u'mmssms.db'), parent=path_spec)
+        table_name='myblobs', column_name='blobs',
+        row_condition=('name', '==', 'mmssms.db'), parent=path_spec)
     self._sqlite_blob_path_spec_2 = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'myblobs', column_name=u'blobs',
+        table_name='myblobs', column_name='blobs',
         row_index=2, parent=path_spec)
 
   def testOpenAndClose(self):
@@ -69,13 +71,13 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(self._sqlite_blob_path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'WHERE name == \'mmssms.db\'')
+    self.assertEqual(file_entry.name, 'WHERE name == \'mmssms.db\'')
 
     file_entry = file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec_2)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'OFFSET 2')
+    self.assertEqual(file_entry.name, 'OFFSET 2')
 
     file_system.Close()
 
@@ -90,7 +92,7 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, u'myblobs.blobs')
+    self.assertEqual(file_entry.name, 'myblobs.blobs')
 
     file_system.Close()
 

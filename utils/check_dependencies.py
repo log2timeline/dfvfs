@@ -5,12 +5,12 @@
 import sys
 
 # Change PYTHONPATH to include dependencies.
-sys.path.insert(0, u'.')
+sys.path.insert(0, '.')
 
 import utils.dependencies  # pylint: disable=wrong-import-position
 
 
-if __name__ == u'__main__':
+if __name__ == '__main__':
   dependency_helper = utils.dependencies.DependencyHelper()
 
   dependency_helper.CheckDependencies()

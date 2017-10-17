@@ -3,6 +3,8 @@
 """Script to analyze a source device, file or directory."""
 
 from __future__ import print_function
+from __future__ import unicode_literals
+
 import argparse
 import getpass
 import locale
@@ -31,7 +33,7 @@ class SourceAnalyzer(object):
     """
     super(SourceAnalyzer, self).__init__()
     self._auto_recurse = auto_recurse
-    self._encode_errors = u'strict'
+    self._encode_errors = 'strict'
     self._preferred_encoding = locale.getpreferredencoding()
     self._source_scanner = source_scanner.SourceScanner()
 
@@ -47,13 +49,13 @@ class SourceAnalyzer(object):
       encoded_string = string.encode(
           self._preferred_encoding, errors=self._encode_errors)
     except UnicodeEncodeError:
-      if self._encode_errors == u'strict':
+      if self._encode_errors == 'strict':
         logging.error(
-            u'Unable to properly write output due to encoding error. '
-            u'Switching to error tolerant encoding which can result in '
-            u'non Basic Latin (C0) characters to be replaced with "?" or '
-            u'"\\ufffd".')
-        self._encode_errors = u'replace'
+            'Unable to properly write output due to encoding error. '
+            'Switching to error tolerant encoding which can result in '
+            'non Basic Latin (C0) characters to be replaced with "?" or '
+            '"\\ufffd".')
+        self._encode_errors = 'replace'
 
       encoded_string = string.encode(
           self._preferred_encoding, errors=self._encode_errors)
@@ -75,24 +77,24 @@ class SourceAnalyzer(object):
 
     # TODO: print volume description.
     if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-      output_writer.WriteLine(u'Found a BitLocker encrypted volume.')
+      output_writer.WriteLine('Found a BitLocker encrypted volume.')
     else:
-      output_writer.WriteLine(u'Found an encrypted volume.')
+      output_writer.WriteLine('Found an encrypted volume.')
 
     credentials_list = list(credentials.CREDENTIALS)
-    credentials_list.append(u'skip')
+    credentials_list.append('skip')
 
     # TODO: check which credentials are available.
-    output_writer.WriteLine(u'Supported credentials:')
-    output_writer.WriteLine(u'')
+    output_writer.WriteLine('Supported credentials:')
+    output_writer.WriteLine('')
     for index, name in enumerate(credentials_list):
-      output_writer.WriteLine(u'  {0:d}. {1:s}'.format(index, name))
-    output_writer.WriteLine(u'')
+      output_writer.WriteLine('  {0:d}. {1:s}'.format(index, name))
+    output_writer.WriteLine('')
 
     result = False
     while not result:
       output_writer.WriteString(
-          u'Select a credential to unlock the volume: ')
+          'Select a credential to unlock the volume: ')
       # TODO: add an input reader.
       input_line = sys.stdin.readline()
       input_line = input_line.strip()
@@ -105,28 +107,28 @@ class SourceAnalyzer(object):
           credential_identifier = credentials_list[credential_identifier]
         except (IndexError, ValueError):
           output_writer.WriteLine(
-              u'Unsupported credential: {0:s}'.format(input_line))
+              'Unsupported credential: {0:s}'.format(input_line))
           continue
 
-      if credential_identifier == u'skip':
+      if credential_identifier == 'skip':
         break
 
-      getpass_string = u'Enter credential data: '
-      if sys.platform.startswith(u'win') and sys.version_info[0] < 3:
+      getpass_string = 'Enter credential data: '
+      if sys.platform.startswith('win') and sys.version_info[0] < 3:
         # For Python 2 on Windows getpass (win_getpass) requires an encoded
         # byte string. For Python 3 we need it to be a Unicode string.
         getpass_string = self._EncodeString(getpass_string)
 
       credential_data = getpass.getpass(getpass_string)
-      output_writer.WriteLine(u'')
+      output_writer.WriteLine('')
 
       result = self._source_scanner.Unlock(
           scan_context, locked_scan_node.path_spec, credential_identifier,
           credential_data)
 
       if not result:
-        output_writer.WriteLine(u'Unable to unlock volume.')
-        output_writer.WriteLine(u'')
+        output_writer.WriteLine('Unable to unlock volume.')
+        output_writer.WriteLine('')
 
   def Analyze(self, source_path, output_writer):
     """Analyzes the source.
@@ -141,7 +143,7 @@ class SourceAnalyzer(object):
                     the source file is not supported.
     """
     if not os.path.exists(source_path):
-      raise RuntimeError(u'No such source: {0:s}.'.format(source_path))
+      raise RuntimeError('No such source: {0:s}.'.format(source_path))
 
     scan_context = source_scanner.SourceScannerContext()
     scan_path_spec = None
@@ -214,16 +216,16 @@ class StdoutWriter(object):
       scan_step: optional integer indicating the scan step.
     """
     if scan_step is not None:
-      print(u'Scan step: {0:d}'.format(scan_step))
+      print('Scan step: {0:d}'.format(scan_step))
 
-    print(u'Source type\t\t: {0:s}'.format(scan_context.source_type))
-    print(u'')
+    print('Source type\t\t: {0:s}'.format(scan_context.source_type))
+    print('')
 
     scan_node = scan_context.GetRootScanNode()
     self.WriteScanNode(scan_node)
-    print(u'')
+    print('')
 
-  def WriteScanNode(self, scan_node, indentation=u''):
+  def WriteScanNode(self, scan_node, indentation=''):
     """Writes the source scanner node to stdout.
 
     Args:
@@ -236,26 +238,26 @@ class StdoutWriter(object):
 
     values = []
 
-    part_index = getattr(scan_node.path_spec, u'part_index', None)
+    part_index = getattr(scan_node.path_spec, 'part_index', None)
     if part_index is not None:
-      values.append(u'{0:d}'.format(part_index))
+      values.append('{0:d}'.format(part_index))
 
-    store_index = getattr(scan_node.path_spec, u'store_index', None)
+    store_index = getattr(scan_node.path_spec, 'store_index', None)
     if store_index is not None:
-      values.append(u'{0:d}'.format(store_index))
+      values.append('{0:d}'.format(store_index))
 
-    start_offset = getattr(scan_node.path_spec, u'start_offset', None)
+    start_offset = getattr(scan_node.path_spec, 'start_offset', None)
     if start_offset is not None:
-      values.append(u'start offset: {0:d} (0x{0:08x})'.format(start_offset))
+      values.append('start offset: {0:d} (0x{0:08x})'.format(start_offset))
 
-    location = getattr(scan_node.path_spec, u'location', None)
+    location = getattr(scan_node.path_spec, 'location', None)
     if location is not None:
-      values.append(u'location: {0:s}'.format(location))
+      values.append('location: {0:s}'.format(location))
 
-    print(u'{0:s}{1:s}: {2:s}'.format(
-        indentation, scan_node.path_spec.type_indicator, u', '.join(values)))
+    print('{0:s}{1:s}: {2:s}'.format(
+        indentation, scan_node.path_spec.type_indicator, ', '.join(values)))
 
-    indentation = u'  {0:s}'.format(indentation)
+    indentation = '  {0:s}'.format(indentation)
     for sub_scan_node in scan_node.sub_nodes:
       self.WriteScanNode(sub_scan_node, indentation=indentation)
 
@@ -265,7 +267,7 @@ class StdoutWriter(object):
     Args:
       line: string of text.
     """
-    print(string, end=u'')
+    print(string, end='')
 
 
 def Main():
@@ -284,27 +286,27 @@ def Main():
                           'media image containing the file.'))
 
   argument_parser.add_argument(
-      u'--no-auto-recurse', u'--no_auto_recurse', dest=u'no_auto_recurse',
-      action=u'store_true', default=False, help=(
-          u'Indicate that the source scanner should not auto-recurse.'))
+      '--no-auto-recurse', '--no_auto_recurse', dest='no_auto_recurse',
+      action='store_true', default=False, help=(
+          'Indicate that the source scanner should not auto-recurse.'))
 
   options = argument_parser.parse_args()
 
   if not options.source:
-    print(u'Source value is missing.')
-    print(u'')
+    print('Source value is missing.')
+    print('')
     argument_parser.print_help()
-    print(u'')
+    print('')
     return False
 
   logging.basicConfig(
-      level=logging.INFO, format=u'[%(levelname)s] %(message)s')
+      level=logging.INFO, format='[%(levelname)s] %(message)s')
 
   output_writer = StdoutWriter()
 
   if not output_writer.Open():
-    print(u'Unable to open output writer.')
-    print(u'')
+    print('Unable to open output writer.')
+    print('')
     return False
 
   return_value = True
@@ -313,12 +315,12 @@ def Main():
   try:
     source_analyzer.Analyze(options.source, output_writer)
 
-    print(u'Completed.')
+    print('Completed.')
 
   except KeyboardInterrupt:
     return_value = False
 
-    print(u'Aborted by user.')
+    print('Aborted by user.')
 
   output_writer.Close()
 

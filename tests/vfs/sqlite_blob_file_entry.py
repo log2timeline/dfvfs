@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using sqlite blob."""
 
+from __future__ import unicode_literals
+
 import unittest
 
 from dfvfs.path import sqlite_blob_path_spec
@@ -13,27 +15,27 @@ from dfvfs.vfs import sqlite_blob_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile([u'blob.db'])
+@shared_test_lib.skipUnlessHasTestFile(['blob.db'])
 class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
   """The unit test for the sqlite blob file entry object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath([u'blob.db'])
+    test_file = self._GetTestFilePath(['blob.db'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'myblobs', column_name=u'blobs',
-        row_condition=(u'name', u'==', u'mmssms.db'), parent=path_spec)
+        table_name='myblobs', column_name='blobs',
+        row_condition=('name', '==', 'mmssms.db'), parent=path_spec)
     self._sqlite_blob_path_spec_2 = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'myblobs', column_name=u'blobs',
+        table_name='myblobs', column_name='blobs',
         row_index=2, parent=path_spec)
     self._sqlite_blob_path_spec_3 = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name=u'myblobs', column_name=u'blobs',
-        row_condition=(u'name', u'==', 4), parent=path_spec)
+        table_name='myblobs', column_name='blobs',
+        row_condition=('name', '==', 4), parent=path_spec)
     self._sqlite_blob_path_spec_directory = (
         sqlite_blob_path_spec.SQLiteBlobPathSpec(
-            table_name=u'myblobs', column_name=u'blobs', parent=path_spec))
+            table_name='myblobs', column_name='blobs', parent=path_spec))
 
     self._file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context)
@@ -79,7 +81,7 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(parent_file_entry)
 
-    self.assertEqual(parent_file_entry.name, u'myblobs.blobs')
+    self.assertEqual(parent_file_entry.name, 'myblobs.blobs')
 
   def testGetStat(self):
     """Tests the GetStat function."""
@@ -122,15 +124,15 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
     self.assertTrue(file_entry.name == (
-        u'WHERE name == \'mmssms.db\''))
+        'WHERE name == \'mmssms.db\''))
 
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec_3)
-    self.assertTrue(file_entry.name == u'WHERE name == 4')
+    self.assertTrue(file_entry.name == 'WHERE name == 4')
 
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec_directory)
-    self.assertTrue(file_entry.name == u'myblobs.blobs')
+    self.assertTrue(file_entry.name == 'myblobs.blobs')
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
@@ -144,7 +146,7 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(file_entry.number_of_sub_file_entries, 4)
 
     expected_sub_file_entry_names = [
-        u'OFFSET 0', u'OFFSET 1', u'OFFSET 2', u'OFFSET 3']
+        'OFFSET 0', 'OFFSET 1', 'OFFSET 2', 'OFFSET 3']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
