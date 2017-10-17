@@ -106,10 +106,10 @@ class RecursiveHasherVolumeScannerMediator(
     All stores can be defined as "all".
 
     Args:
-      vss_stores: a string containing the VSS stores.
+      vss_stores (str): user specified VSS stores.
 
     Returns:
-      A list containing the individual VSS stores numbers or the string "all".
+      list[int|str]: Individual VSS stores numbers or the string "all".
 
     Raises:
       ValueError: if the VSS stores option is invalid.
@@ -218,11 +218,11 @@ class RecursiveHasherVolumeScannerMediator(
     This method can be used to prompt the user to provide VSS store identifiers.
 
     Args:
-      volume_system: the volume system (instance of dfvfs.VShadowVolumeSystem).
-      volume_identifiers: a list of strings containing the volume identifiers.
+      volume_system (VShadowVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      A list of integers containing the selected VSS store identifiers or None.
+      list[int]: selected VSS store numbers or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
@@ -280,6 +280,7 @@ class RecursiveHasherVolumeScannerMediator(
 
       selected_vss_stores = selected_vss_stores.strip()
       if not selected_vss_stores:
+        selected_vss_stores = []
         break
 
       try:
