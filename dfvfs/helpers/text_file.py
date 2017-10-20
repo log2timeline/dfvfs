@@ -67,6 +67,9 @@ class TextFile(object):
       maximum_size (Optional[int]): maximum number of bytes to read from
          the file-like object, where None represents all remaining data.
 
+    Returns:
+      bytes: lines data.
+
     Raises:
       ValueError: if the maximum size is smaller than zero or exceeds the
           maximum (as defined by _MAXIMUM_READ_BUFFER_SIZE).
@@ -231,7 +234,7 @@ class TextFile(object):
     """
     return self._current_offset
 
-  # Pythonesque alias for get_offet().
+  # Pythonesque alias for get_offset().
   def tell(self):
     """Retrieves the current offset into the file-like object.
 
