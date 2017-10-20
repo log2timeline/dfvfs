@@ -65,7 +65,8 @@ class TextFile(object):
 
     Args:
       maximum_size (Optional[int]): maximum number of bytes to read from
-         the file-like object, where None represents all remaining data.
+         the file-like object, where None represents all remaining data
+         up to the maximum (as defined by _MAXIMUM_READ_BUFFER_SIZE).
 
     Returns:
       bytes: lines data.
@@ -134,16 +135,15 @@ class TextFile(object):
   def readline(self, size=None):
     """Reads a single line of text.
 
-    The functions reads one entire line from the file-like object.
-    A trailing end-of-line indicator (newline by default) is kept in the
-    string (but may be absent when a file ends with an incomplete line).
-    If the size argument is present and non-negative, it is a maximum byte
-    count (including the trailing end-of-line) and an incomplete line may
-    be returned. An empty string is returned only when end-of-file is
-    encountered immediately.
+    The functions reads one entire line from the file-like object. A trailing
+    end-of-line indicator (newline by default) is kept in the string (but may
+    be absent when a file ends with an incomplete line). An empty string is
+    returned only when end-of-file is encountered immediately.
 
     Args:
-      size (Optional[int]): maximum string size to read.
+      size (Optional[int]): maximum string size to read. If the size argument
+      is present and non-negative, it is a maximum byte count (including the
+      trailing end-of-line) and an incomplete line may be returned.
 
     Returns:
       str: line of text.
