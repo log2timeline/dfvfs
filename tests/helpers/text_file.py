@@ -44,7 +44,7 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     text_file_object = text_file.TextFile(file_object)
 
-    line = text_file_object.readline(11)
+    line = text_file_object.readline(size=11)
     self.assertEqual(line, 'This is ano')
 
     offset = text_file_object.get_offset()
