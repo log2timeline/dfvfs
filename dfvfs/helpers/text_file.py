@@ -86,7 +86,7 @@ class TextFile(object):
     if size > self._MAXIMUM_READ_BUFFER_SIZE:
       raise ValueError('Invalid size value exceeds maximum.')
 
-    if size is None:
+    if not size:
       size = self._MAXIMUM_READ_BUFFER_SIZE
 
     if not self._lines:
