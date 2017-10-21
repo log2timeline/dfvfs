@@ -107,6 +107,7 @@ class TextFile(object):
         self._lines[0] = b''.join([self._lines_buffer, self._lines[0]])
         self._lines_buffer = b''
 
+      # Move a partial line from the lines list to the lines buffer.
       if read_buffer[self._end_of_line_length:] != self._end_of_line:
         self._lines_buffer = self._lines.pop()
 
@@ -118,11 +119,17 @@ class TextFile(object):
         self._lines.append(self._lines_buffer)
         self._lines_buffer = b''
 
-    if self._lines:
-      line = self._lines.pop(0)
-    else:
+    if not self._lines:
       line = self._lines_buffer
       self._lines_buffer = b''
+
+    elif not size or size >= len(self._lines[0]):
+      line = self._lines.pop(0)
+
+    else: 
+      line = self._lines[0]
+      self._lines[0] = line[size:]
+      line = line[:size]
 
     last_offset = self._current_offset
     self._current_offset += len(line)

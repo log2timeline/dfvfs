@@ -68,6 +68,50 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     offset = text_file_object.get_offset()
     self.assertEqual(offset, 46)
 
+    text_file_object = text_file.TextFile(file_object, encoding='utf-16-le')
+
+    line = text_file_object.readline(size=24)
+    self.assertEqual(line, 'This is ano')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 24)
+
+    file_object.close()
+
+  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
+  def testReadlineMultipleLines(self):
+    """Test the readline() function on multiple lines."""
+    test_file = self._GetTestFilePath(['password.txt'])
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(test_path_spec)
+    text_file_object = text_file.TextFile(file_object)
+
+    line = text_file_object.readline()
+    self.assertEqual(line, 'place,user,password\n')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 20)
+
+    line = text_file_object.readline(size=5)
+    self.assertEqual(line, 'bank,')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 25)
+
+    line = text_file_object.readline()
+    self.assertEqual(line, 'joesmith,superrich\n')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 44)
+
+    line = text_file_object.readline()
+    self.assertEqual(line, 'alarm system,-,1234\n')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 64)
+
     file_object.close()
 
   @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
