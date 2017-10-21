@@ -136,14 +136,14 @@ class TextFile(object):
     """Reads a single line of text.
 
     The functions reads one entire line from the file-like object. A trailing
-    end-of-line indicator (newline by default) is kept in the string (but may
-    be absent when a file ends with an incomplete line). An empty string is
-    returned only when end-of-file is encountered immediately.
+    end-of-line indicator (newline by default) is kept in the byte string (but
+    may be absent when a file ends with an incomplete line). An empty byte
+    string is returned only when end-of-file is encountered immediately.
 
     Args:
-      size (Optional[int]): maximum string size to read. If present and
-      non-negative, it is a maximum byte count (including the trailing
-      end-of-line) and an incomplete line may be returned.
+      size (Optional[int]): maximum byte string size to read. If present and
+          non-negative, it is a maximum byte count (including the trailing
+          end-of-line) and an incomplete line may be returned.
 
     Returns:
       str: line of text.
@@ -167,31 +167,34 @@ class TextFile(object):
           (size is None or self._lines_buffer_size < size)):
       lines_data = self._ReadLinesData(size)
 
-      split_lines = lines_data.split(self._end_of_line)
+      split_lines = lines_data.split(self._end_of_line, 1)
       result = split_lines.pop(0)
+      result_length = len(result)
 
       if len(result) < len(lines_data):
         separator = self._end_of_line
+        result_length += len(self._end_of_line)
       else:
         separator = b''
 
-      if split_lines:
-        lines_data = self._end_of_line.join(split_lines)
+      lines_data = lines_data[result_length:]
+      if lines_data:
         self._lines_buffer = b''.join([lines_data, self._lines_buffer])
         self._lines_buffer_size = len(self._lines_buffer)
 
     else:
-      split_lines = self._lines_buffer.split(self._end_of_line)
+      split_lines = self._lines_buffer.split(self._end_of_line, 1)
       result = split_lines.pop(0)
       result_length = len(result)
 
       if result_length < self._lines_buffer_size:
         separator = self._end_of_line
+        result_length += len(self._end_of_line)
       else:
         separator = b''
 
-      self._lines_buffer = self._end_of_line.join(split_lines)
-      self._lines_buffer_size -= result_length + len(separator)
+      self._lines_buffer = self._lines_buffer[result_length:]
+      self._lines_buffer_size -= result_length
 
     line = b''.join([result, separator])
     last_offset = self._current_offset
@@ -213,7 +216,7 @@ class TextFile(object):
 
     Args:
       sizehint (Optional[int]): maximum byte size to read. If present, instead
-      of reading up to EOF, whole lines totalling sizehint bytes are read.
+          of reading up to EOF, whole lines totalling sizehint bytes are read.
 
     Returns:
       list[str]: lines of text.
