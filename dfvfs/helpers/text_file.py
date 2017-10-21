@@ -120,8 +120,6 @@ class TextFile(object):
 
     if self._lines:
       line = self._lines.pop(0)
-    elif not size:
-      return ''
     else:
       line = self._lines_buffer
       self._lines_buffer = b''
