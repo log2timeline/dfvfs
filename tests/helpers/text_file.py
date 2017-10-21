@@ -36,9 +36,19 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
-    self.assertEqual(text_file_object.readline(), 'This is another file.\n')
+    line = text_file_object.readline()
+    self.assertEqual(line, 'This is another file.\n')
 
-    self.assertEqual(text_file_object.get_offset(), 22)
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 22)
+
+    text_file_object = text_file.TextFile(file_object)
+
+    line = text_file_object.readline(11)
+    self.assertEqual(line, 'This is ano')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 11)
 
     file_object.close()
 
@@ -52,9 +62,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object, encoding='utf-16-le')
 
-    self.assertEqual(text_file_object.readline(), 'This is another file.\n')
+    line = text_file_object.readline()
+    self.assertEqual(line, 'This is another file.\n')
 
-    self.assertEqual(text_file_object.get_offset(), 46)
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 46)
 
     file_object.close()
 
