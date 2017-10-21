@@ -63,12 +63,12 @@ class TextFile(object):
     """Reads a single line of text.
 
     The functions reads one entire line from the file-like object. A trailing
-    end-of-line indicator (newline by default) is kept in the byte string (but
-    may be absent when a file ends with an incomplete line). An empty byte
-    string is returned only when end-of-file is encountered immediately.
+    end-of-line indicator (newline by default) is kept in the string (but may
+    be absent when a file ends with an incomplete line). An empty string is
+    returned only when end-of-file is encountered immediately.
 
     Args:
-      size (Optional[int]): maximum byte string size to read. If present and
+      size (Optional[int]): maximum byte size to read. If present and
           non-negative, it is a maximum byte count (including the trailing
           end-of-line) and an incomplete line may be returned.
 
