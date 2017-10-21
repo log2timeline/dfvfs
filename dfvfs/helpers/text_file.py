@@ -126,7 +126,7 @@ class TextFile(object):
     elif not size or size >= len(self._lines[0]):
       line = self._lines.pop(0)
 
-    else: 
+    else:
       line = self._lines[0]
       self._lines[0] = line[size:]
       line = line[:size]
