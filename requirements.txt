@@ -15,6 +15,6 @@ libvhdi-python >= 20131210
 libvmdk-python >= 20140421
 libvshadow-python >= 20160109
 libvslvm-python >= 20160109
-pycrypto >= 2.6.0
+pycrypto >= 2.6
 pytsk3 >= 20160721
 six >= 1.1.0
