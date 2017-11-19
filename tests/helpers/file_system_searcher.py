@@ -371,12 +371,14 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         '/$Extend/$RmMetadata',
         '/$Extend/$RmMetadata/$Txf',
         '/$Extend/$RmMetadata/$TxfLog',
-        '/System Volume Information',
-        '/$OrphanFiles']
+        '/System Volume Information']
 
     locations = []
     for path_spec in path_spec_generator:
-      locations.append(getattr(path_spec, 'location', ''))
+      # Some versions of Sleuthkit include "/$OrphanFiles" some don't.
+      location = getattr(path_spec, 'location', '')
+      if location != '/$OrphanFiles':
+        locations.append(location)
 
     self.assertEqual(locations, expected_locations)
 
