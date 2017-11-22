@@ -91,6 +91,7 @@ class OSFileEntry(file_entry.FileEntry):
     is_windows_device = False
     if platform.system() == 'Windows' and location:
       try:
+        # pylint: disable=no-member
         is_windows_device = pysmdev.check_device(location)
       except IOError:
         pass
