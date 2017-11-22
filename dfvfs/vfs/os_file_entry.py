@@ -101,7 +101,7 @@ class OSFileEntry(file_entry.FileEntry):
       # a WindowsError can be raised as well. We are not catching that since
       # that error does not exist on non-Windows platforms.
       try:
-        stat_info = os.stat(location)
+        stat_info = os.lstat(location)
       except OSError as exception:
         raise errors.BackEndError(
             'Unable to retrieve stat object with error: {0!s}'.format(
