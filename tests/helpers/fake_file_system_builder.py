@@ -4,7 +4,6 @@
 
 from __future__ import unicode_literals
 
-import os
 import unittest
 
 from dfvfs.helpers import fake_file_system_builder
@@ -51,12 +50,13 @@ class FakeFileSystemBuilderTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(ValueError):
       file_system_builder.AddFile(test_path, b'')
 
+  @shared_test_lib.skipUnlessHasTestFile(['init.py'])
   def testAddFileReadData(self):
     """Tests the AddFileReadData function."""
     file_system_builder = fake_file_system_builder.FakeFileSystemBuilder()
 
     test_path = '/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
-    test_file_data_path = os.path.join('dfvfs', '__init__.py')
+    test_file_data_path = self._GetTestFilePath(['init.py'])
 
     file_system_builder.AddFileReadData(test_path, test_file_data_path)
 
