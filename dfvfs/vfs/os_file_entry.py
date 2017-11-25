@@ -91,6 +91,7 @@ class OSFileEntry(file_entry.FileEntry):
     is_windows_device = False
     if platform.system() == 'Windows' and location:
       try:
+        # pylint: disable=no-member
         is_windows_device = pysmdev.check_device(location)
       except IOError:
         pass
@@ -101,7 +102,7 @@ class OSFileEntry(file_entry.FileEntry):
       # a WindowsError can be raised as well. We are not catching that since
       # that error does not exist on non-Windows platforms.
       try:
-        stat_info = os.stat(location)
+        stat_info = os.lstat(location)
       except OSError as exception:
         raise errors.BackEndError(
             'Unable to retrieve stat object with error: {0!s}'.format(
