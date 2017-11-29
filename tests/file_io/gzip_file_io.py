@@ -23,8 +23,11 @@ class GzipFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.gz'])
+    test_file2 = self._GetTestFilePath(['fsevents_000000000000b208'])
     path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec2 = os_path_spec.OSPathSpec(location=test_file2)
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
+    self._gzip_path_spec2 = gzip_path_spec.GzipPathSpec(parent=path_spec2)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -55,6 +58,15 @@ class GzipFileTest(test_lib.SylogTestCase):
     file_object.open(path_spec=self._gzip_path_spec)
 
     self._TestReadFileObject(file_object)
+
+    file_object.close()
+
+  def testRead2(self):
+    file_object = gzip_file_io.GzipFile(self._resolver_context)
+    file_object.open(path_spec=self._gzip_path_spec2)
+
+    content = file_object.read()
+    print content
 
     file_object.close()
 

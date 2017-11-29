@@ -171,8 +171,11 @@ class CompressedStream(file_io.FileIO):
 
     self._compressed_data = b''.join([self._compressed_data, compressed_data])
 
-    self._uncompressed_data, self._compressed_data = (
-        self._decompressor.Decompress(self._compressed_data))
+    try:
+      self._uncompressed_data, self._compressed_data = (
+          self._decompressor.Decompress(self._compressed_data))
+    except Exception as exception:
+      print exception
 
     self._uncompressed_data_size = len(self._uncompressed_data)
 
