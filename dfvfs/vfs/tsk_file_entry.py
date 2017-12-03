@@ -99,14 +99,13 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     if self.timestamp is None:
       return
 
-    timestamp = self.timestamp
+    timestamp = self.timestamp * 1000000
     if self.timestamp_fragment is not None:
       if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
         timestamp_fragment, _ = divmod(self.timestamp_fragment, 1000)
       else:
         timestamp_fragment, _ = divmod(self.timestamp_fragment, 10)
 
-      timestamp *= 1000000
       timestamp += timestamp_fragment
 
     return timestamp
