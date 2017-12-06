@@ -2,6 +2,7 @@
 """The compressed stream file-like object implementation."""
 
 from __future__ import unicode_literals
+from __future__ import print_function
 
 import os
 
@@ -175,7 +176,7 @@ class CompressedStream(file_io.FileIO):
       self._uncompressed_data, self._compressed_data = (
           self._decompressor.Decompress(self._compressed_data))
     except Exception as exception:
-      print exception
+      print(exception)
 
     self._uncompressed_data_size = len(self._uncompressed_data)
 

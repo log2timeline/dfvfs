@@ -100,7 +100,7 @@ class ZipFile(file_io.FileIO):
 
     try:
       # The open can fail if the file path in the local file header
-      # does not use the same path segment seperator as the corresponding
+      # does not use the same path segment separator as the corresponding
       # entry in the central directory.
       self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
     except zipfile.BadZipfile as exception:

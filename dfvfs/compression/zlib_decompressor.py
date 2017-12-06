@@ -27,6 +27,12 @@ class ZlibDecompressor(decompressor.Decompressor):
     super(ZlibDecompressor, self).__init__()
     self._zlib_decompressor = zlib.decompressobj(window_size)
 
+  @property
+  def unused_data(self):
+    """Data passed in past the end of the compressed data."""
+    return self._zlib_decompressor.unused_data
+
+
   def Decompress(self, compressed_data):
     """Decompresses the compressed data.
 
