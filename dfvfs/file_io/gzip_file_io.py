@@ -146,7 +146,7 @@ class GzipMember(object):
     if size is not None and size < 0:
       raise ValueError('Invalid size value smaller than zero.')
 
-    if offset > self._cache_end_offset or offset < self._cache_start_offset:
+    if not self._cache_start_offset or offset > self._cache_end_offset or offset < self._cache_start_offset:
       self.FlushCache()
       self._LoadDataIntoCache(self._file_object, offset)
 
@@ -190,12 +190,11 @@ class GzipMember(object):
         data_to_add = decompressed_data
         added_data_offset = current_offset
       elif current_offset + decompressed_data_length > minimum_offset:
-        decompressed_data_offset = (
-            current_offset + decompressed_data_length - minimum_offset)
+        decompressed_data_offset = minimum_offset - current_offset
         data_to_add = decompressed_data[decompressed_data_offset:]
         added_data_offset = current_offset + decompressed_data_offset
 
-      if not self.IsCacheFull and data_to_add:
+      if not self.IsCacheFull() and data_to_add:
         self._cache = self._cache.join([data_to_add])
         if not self._cache_start_offset:
           self._cache_start_offset = added_data_offset
@@ -341,15 +340,6 @@ class GzipFile(file_io.FileIO):
       if offset < member.uncompressed_data_offset + \
           member.uncompressed_data_size:
         return member
-
-  def _GetCachedSize(self):
-    """Returns the total size of all cached data in all members.
-
-    Returns:
-      int: total size of all cached data
-    """
-    cache_sizes = [member.GetCacheSize for member in self._members]
-    return sum(cache_sizes)
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks to an offset within the file-like object.
