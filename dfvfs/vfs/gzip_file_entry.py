@@ -73,6 +73,6 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
-    timestamp = getattr(self._gzip_file, 'modification_time', None)
-    if timestamp is not None:
-      return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+    timestamps = self._gzip_file.modification_times
+    if timestamps:
+      return dfdatetime_posix_time.PosixTime(timestamp=timestamps[0])
