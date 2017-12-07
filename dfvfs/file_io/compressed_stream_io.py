@@ -175,7 +175,7 @@ class CompressedStream(file_io.FileIO):
     try:
       self._uncompressed_data, self._compressed_data = (
           self._decompressor.Decompress(self._compressed_data))
-    except Exception as exception:
+    except Exception as exception: # pylint: disable=broad-except
       print(exception)
 
     self._uncompressed_data_size = len(self._uncompressed_data)

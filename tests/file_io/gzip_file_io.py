@@ -64,7 +64,7 @@ class GzipFileTest(test_lib.SylogTestCase):
     parent_path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = gzip_path_spec.GzipPathSpec(parent=parent_path_spec)
     file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.open(path_spec= path_spec)
+    file_object.open(path_spec=path_spec)
 
     self.assertEqual(file_object.uncompressed_data_size, 506631)
     self.assertEqual(file_object.modification_times, [0, 0])

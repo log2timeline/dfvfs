@@ -14,7 +14,22 @@ from dfvfs.file_io import file_io
 
 
 class GzipMember(object):
-  """Implementation of a single gzip member."""
+  """Implementation of a single gzip member.
+
+  Attributes:
+    comment (str|None): comment stored in the member
+    member_end_offset (int): offset to the end of the member in the parent file
+        object.
+    member_start_offset (int): offset to the start of the member in the parent
+        file object.
+    operating_system (int|None): type of file system on which the compression
+        took place.
+    original_filename (str|None): original filename of the uncompressed file.
+    uncompressed_data_offset (int): offset of the start of the uncompressed
+        data in this member relative to the whole gzip file's uncompressed data.
+    uncompressed_data_size (int): total size of the data in this gzip member
+        after decompression.
+  """
   _FILE_HEADER_STRUCT = construct.Struct(
       'file_header',
       construct.ULInt16('signature'),
@@ -39,10 +54,10 @@ class GzipMember(object):
   _FLAG_FNAME = 0x08
   _FLAG_FCOMMENT = 0x10
 
-  _MAXIMUM_READ_SIZE = 10 * 2 ** 20  # 10 megabytes
+  _MAXIMUM_READ_SIZE = 1024 * 1024
 
-  # The maximum size of the uncompressed data buffer.
-  _UNCOMPRESSED_DATA_BUFFER_SIZE = 16 * 1024 * 1024
+  # The maximum size of the uncompressed data cache.
+  _UNCOMPRESSED_DATA_CACHE_SIZE = 16 * 1024 * 1024
 
   def __init__(self, file_object, uncompressed_data_offset):
     """Initializes a file-like object.
@@ -50,26 +65,26 @@ class GzipMember(object):
     Args:
       file_object (FileIO): file-like object, positioned to the
           the beginning of the Gzip Member.
-      uncompressed_data_offset (int): Current offset into the uncompressed data.
-
-    Raises:
-      ValueError: when file_object is set.
+      uncompressed_data_offset (int): current offset into the uncompressed data
+          in the containing file.
     """
     self.comment = None
     self.modification_time = None
     self.operating_system = None
     self.original_filename = None
 
-    # Offset into the uncompressed data of the first item in the buffer.
-    self._buffer_start_offset = None
-    # Offset into the uncompressed data of the last item in the buffer.
-    self._buffer_end_offset = None
-    self._buffer = b''
+    # Offset into this member's uncompressed data of the first item in
+    # the cache.
+    self._cache_start_offset = None
+    # Offset into this member's uncompressed data of the last item in
+    # the cache.
+    self._cache_end_offset = None
+    self._cache = b''
 
     # Total size of the data in this gzip member after decompression.
     self.uncompressed_data_size = None
-    # Offset of the data in this member relative the whole gzip uncompressed
-    # data.
+    # Offset of the start of the uncompressed data in this member relative to
+    # the whole gzip file's uncompressed data.
     self.uncompressed_data_offset = uncompressed_data_offset
 
     # Offset to the start of the member in the parent file object.
@@ -82,27 +97,45 @@ class GzipMember(object):
     # Initialize the member with data
     self._file_object = file_object
     self._ReadHeader(file_object)
-    self._ReadDataIntoBuffer(file_object)
+    self._LoadDataIntoCache(file_object, 0, read_all_data=True)
     self._ReadFooter(file_object)
 
-  @property
-  def buffered_data_size(self):
-    return self._buffer_end_offset - self._buffer_start_offset
+  def GetCacheSize(self):
+    """Gets the size of the uncompressed data cache.
+
+    Returns:
+      int: number of cached bytes.
+    """
+    if not self._cache_start_offset or not self._cache_end_offset:
+      return 0
+    return self._cache_end_offset - self._cache_start_offset
+
+  def IsCacheFull(self):
+    """Convenience method to check whether the uncompressed data cache is full.
+
+    Returns:
+      bool: True if the cache is full.
+    """
+    return self.GetCacheSize() >= self._UNCOMPRESSED_DATA_CACHE_SIZE
 
   def FlushCache(self):
-    """Empties the buffer that holds cached decompressed data."""
-    self._TruncateBuffer(self.buffered_data_size)
+    """Empties the cache that holds cached decompressed data."""
+    self._cache = b''
+    self._cache_start_offset = None
+    self._cache_end_offset = None
 
   def read(self, offset, size=None):
-    """Reads a byte string from the file-like object at the current offset.
+    """Reads a byte string from the file-like object at the specified offset.
 
     The function will read a byte string of the specified size or
     all of the remaining data if no size was specified.
 
     Args:
-      offset (int): offset within the uncompressed data to read from.
+      offset (int): offset within the uncompressed data in this member to
+        read from.
       size (Optional[int]): maximum number of bytes to read, where None
-          represents all remaining data.
+          represents all remaining data, to a maximum of the uncompressed
+          cache size.
 
     Returns:
       bytes: data read.
@@ -113,100 +146,74 @@ class GzipMember(object):
     if size is not None and size < 0:
       raise ValueError('Invalid size value smaller than zero.')
 
-    if offset > self._buffer_start_offset:
-      self._TruncateBuffer()
-      self._ReadDataIntoBuffer(self._file_object, offset=offset)
+    if offset > self._cache_end_offset or offset < self._cache_start_offset:
+      self.FlushCache()
+      self._LoadDataIntoCache(self._file_object, offset)
 
-    if not self.buffered_data_size > = size:
-      self._ReadDataIntoBuffer(self._file_object)
+    cache_offset = offset - self._cache_start_offset
     if not size:
-      data = self._buffer[self.uncompressed_data_offset:]
-      self.uncompressed_data_offset = self.uncompressed_data_size
-    else:
-      end = self.uncompressed_data_offset + size
-      data = self._buffer[self.uncompressed_data_offset:end]
-      self.uncompressed_data_offset = end
-    return data
+      return self._cache[cache_offset:]
 
-  def get_offset(self):
-    """Retrieves the current offset into the member.
+    data_end_offset = cache_offset + size
 
-    Return:
-      int: current offset into the file-like object.
-    """
-    return self.uncompressed_data_offset
+    if data_end_offset > self._cache_end_offset:
+      return self._cache[cache_offset:]
 
-  def _TruncateBuffer(self, length=None):
-    """
+    return self._cache[cache_offset:data_end_offset]
 
-    Args:
-      length (int): number of bytes to truncate from the buffer.
-    """
-    if length is None:
-      self._buffer = []
-      self._buffer_start_offset = None
-      self._buffer_end_offset = None
-      return
-
-    if length > self.buffered_data_size:
-      raise ValueError('Invalid length greater than cached data.')
-    self._buffer = self._buffer[length:]
-    self._buffer_start_offset -= length
-
-  def _ReadDataIntoBuffer(self, file_object, offset):
+  def _LoadDataIntoCache(
+      self, file_object, minimum_offset, read_all_data=False):
     """Reads and decompresses the data in the member.
+
+    This function already loads as much data as possible in the cache, up to
+    UNCOMPRESSED_DATA_CACHE_SIZE bytes.
 
     Args:
       file_object (FileIO): file-like object.
-      offset (init): offset into this member's uncompressed data.
+      minimum_offset (init): offset into this member's uncompressed data at
+          which the cache should start.
+      read_all_data (bool): whether to read all the compressed data from the
+          member. Useful during the initial read, to locate the member footer.
     """
     # We always need to start from the beginning of the compressed data.
     file_object.seek(self._compressed_data_offset, os.SEEK_SET)
     decompressor = zlib_decompressor.DeflateDecompressor()
     current_offset = 0
     compressed_data = b''
-    while not self.buffered_data_size >= self._UNCOMPRESSED_DATA_BUFFER_SIZE:
+    while not (self.IsCacheFull() and not read_all_data):
       compressed_data += file_object.read(self._MAXIMUM_READ_SIZE)
       decompressed_data, compressed_data = decompressor.Decompress(
           compressed_data)
-      # Only add to buffer if the offset has been reached.
-      if offset < current_offset + len(decompressed_data):
-        data_to_buffer = decompressed_data[offset - current_offset:]
-        self._buffer += data_to_buffer
-        if not self._buffer_start_offset:
-          buffer_start_offset = current_offset +
+      decompressed_data_length = len(decompressed_data)
 
-      # Check if we're at the end of the stream.
+      if current_offset >= minimum_offset:
+        data_to_add = decompressed_data
+        added_data_offset = current_offset
+      elif current_offset + decompressed_data_length > minimum_offset:
+        decompressed_data_offset = (
+            current_offset + decompressed_data_length - minimum_offset)
+        data_to_add = decompressed_data[decompressed_data_offset:]
+        added_data_offset = current_offset + decompressed_data_offset
+
+      if not self.IsCacheFull and data_to_add:
+        self._cache = self._cache.join([data_to_add])
+        if not self._cache_start_offset:
+          self._cache_start_offset = added_data_offset
+        if not self._cache_end_offset:
+          self._cache_end_offset = self._cache_start_offset + len(data_to_add)
+        else:
+          self._cache_end_offset += len(data_to_add)
+
+      current_offset += len(decompressed_data)
+
+      # If there's no more data in the member, the unused_data value is
+      # populated in the decompressor. When this situation arises, we rewind
+      # to the end of the compressed_data section.
       unused_data = decompressor.unused_data
       if unused_data:
         seek_offset = -len(unused_data)
         file_object.seek(seek_offset, os.SEEK_CUR)
         break
-
-  def _ReadDataIntoBufferOld(self, file_object):
-    """Reads and decompresses the data in the member.
-
-    Args:
-      file_object (FileIO): file-like object.
-    """
-    # We always need to start from the beginning of the compressed data.
-    file_object.seek(self._compressed_data_offset, os.SEEK_SET)
-    decompressor = zlib_decompressor.DeflateDecompressor()
-    completed = False
-    compressed_data = b''
-    while not completed:
-      compressed_data += file_object.read(self._MAXIMUM_READ_SIZE)
-      decompressed_data, compressed_data = decompressor.Decompress(
-          compressed_data)
-      self._buffer += data_to_buffer
-      unused_data = decompressor.unused_data
-      if unused_data:
-        completed = True
-        seek_offset = -len(unused_data)
-        file_object.seek(seek_offset, os.SEEK_CUR)
-
-    self.cached = True
-    self.uncompressed_data_size = len(self._buffer)
 
   def _ReadHeader(self, file_object):
     """Reads the file header.
@@ -245,7 +252,7 @@ class GzipMember(object):
       # string.
       self.original_filename = construct.CString(
           'original_filename', encoding=b'iso-8859-1').parse_stream(
-          file_object)
+              file_object)
       self._compressed_data_offset = file_object.get_offset()
 
     if file_header.flags & self._FLAG_FCOMMENT:
@@ -279,8 +286,6 @@ class GzipFile(file_io.FileIO):
   The gzip file format is defined in RFC1952: http://www.zlib.org/rfc-gzip.html
   """
 
-  _MAXMIUM_DATA_BUFFER_SIZE = 200 * 1024 ** 2
-
   def __init__(self, resolver_context):
     """Initializes a file-like object.
 
@@ -297,28 +302,54 @@ class GzipFile(file_io.FileIO):
     self._gzip_file_object = None
     self._members = []
 
-
   @property
   def original_filenames(self):
+    """The original filenames stored in the gzip file."""
     return [member.original_filename for member in self._members]
 
   @property
   def modification_times(self):
+    """The modification times stored in the gzip file."""
     return [member.modification_time for member in self._members]
 
   @property
   def operating_systems(self):
+    """The operating system values stored in the gzip file."""
     return [member.operating_system for member in self._members]
 
   @property
   def comments(self):
+    """The comments in the gzip file."""
     return [member.comment for member in self._members]
 
   def _GetMemberForOffset(self, offset):
-    """Finds the member """
+    """Finds the member whose data includes the provided offset.
+
+    Args:
+      offset (int): offset in the uncompressed data to find the
+          containing member for.
+
+    Raises:
+      ValueError: if the provided offset is outside of the bounds of the
+      uncompressed data.
+    """
+    if offset < 0 or offset > self.uncompressed_data_size:
+      raise ValueError('Offset {0:d} is larger that file size {1:d}.'.format(
+          offset, self.uncompressed_data_size))
+
     for member in self._members:
-      if offset < member.uncompressed_data_offset + member.uncompressed_data_size:
+      if offset < member.uncompressed_data_offset + \
+          member.uncompressed_data_size:
         return member
+
+  def _GetCachedSize(self):
+    """Returns the total size of all cached data in all members.
+
+    Returns:
+      int: total size of all cached data
+    """
+    cache_sizes = [member.GetCacheSize for member in self._members]
+    return sum(cache_sizes)
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks to an offset within the file-like object.
@@ -329,8 +360,11 @@ class GzipFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
+      IOError: if the seek failed or the file has not been opened..
     """
+    if not self._gzip_file_object:
+      raise IOError('Not opened.')
+
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
@@ -360,13 +394,14 @@ class GzipFile(file_io.FileIO):
       IOError: if the read failed.
     """
     data = b''
-    while len(data) < size and self._current_offset < self.uncompressed_data_size:
+    while (size and len(
+        data) < size) and self._current_offset < self.uncompressed_data_size:
       member = self._GetMemberForOffset(self._current_offset)
       member_offset = self._current_offset - member.uncompressed_data_offset
-      member.seek(member_offset)
-      data_read = member.read(size)
-      self._current_offset += len(data_read)
-      data = data.join([data_read])
+      data_read = member.read(member_offset, size)
+      if data_read:
+        self._current_offset += len(data_read)
+        data = data.join([data_read])
 
     return data
 
@@ -379,6 +414,8 @@ class GzipFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
+    if not self._gzip_file_object:
+      raise IOError('Not opened.')
     return self._current_offset
 
   def get_size(self):
@@ -390,8 +427,9 @@ class GzipFile(file_io.FileIO):
     Raises:
       IOError: if the file-like object has not been opened.
     """
+    if not self._gzip_file_object:
+      raise IOError('Not opened.')
     return self.uncompressed_data_size
-
 
   def _Close(self):
     """Closes the file-like object."""
