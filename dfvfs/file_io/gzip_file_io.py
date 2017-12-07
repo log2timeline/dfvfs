@@ -146,7 +146,10 @@ class GzipMember(object):
     if size is not None and size < 0:
       raise ValueError('Invalid size value smaller than zero.')
 
-    if not self._cache_start_offset or offset > self._cache_end_offset or offset < self._cache_start_offset:
+    if not self._cache_start_offset:
+      self._LoadDataIntoCache(self._file_object, offset)
+
+    if offset > self._cache_end_offset or offset < self._cache_start_offset:
       self.FlushCache()
       self._LoadDataIntoCache(self._file_object, offset)
 
