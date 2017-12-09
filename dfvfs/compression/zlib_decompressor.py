@@ -32,7 +32,6 @@ class ZlibDecompressor(decompressor.Decompressor):
     """Data passed in past the end of the compressed data."""
     return self._zlib_decompressor.unused_data
 
-
   def Decompress(self, compressed_data):
     """Decompresses the compressed data.
 

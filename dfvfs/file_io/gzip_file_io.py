@@ -14,17 +14,17 @@ from dfvfs.file_io import file_io
 
 
 class GzipMember(object):
-  """Implementation of a single gzip member.
+  """Single gzip member.
 
   Attributes:
-    comment (str|None): comment stored in the member
+    comment (str): comment stored in the member.
     member_end_offset (int): offset to the end of the member in the parent file
         object.
     member_start_offset (int): offset to the start of the member in the parent
         file object.
-    operating_system (int|None): type of file system on which the compression
+    operating_system (int): type of file system on which the compression
         took place.
-    original_filename (str|None): original filename of the uncompressed file.
+    original_filename (str): original filename of the uncompressed file.
     uncompressed_data_offset (int): offset of the start of the uncompressed
         data in this member relative to the whole gzip file's uncompressed data.
     uncompressed_data_size (int): total size of the data in this gzip member
@@ -124,7 +124,7 @@ class GzipMember(object):
     self._cache_start_offset = None
     self._cache_end_offset = None
 
-  def read(self, offset, size=None):
+  def ReadAtOffset(self, offset, size=None):
     """Reads a byte string from the file-like object at the specified offset.
 
     The function will read a byte string of the specified size or
@@ -184,7 +184,7 @@ class GzipMember(object):
     current_offset = 0
     compressed_data = b''
     while not (self.IsCacheFull() and not read_all_data):
-      compressed_data += file_object.read(self._MAXIMUM_READ_SIZE)
+      compressed_data += file_object.ReadAtOffset(self._MAXIMUM_READ_SIZE)
       decompressed_data, compressed_data = decompressor.Decompress(
           compressed_data)
       decompressed_data_length = len(decompressed_data)
@@ -286,6 +286,10 @@ class GzipFile(file_io.FileIO):
   """File-like object of a gzip file.
 
   The gzip file format is defined in RFC1952: http://www.zlib.org/rfc-gzip.html
+
+  Attributes:
+    uncompressed_data_size (int): total size of the decompressed data stored
+        in the gzip file.
   """
 
   def __init__(self, resolver_context):
@@ -306,22 +310,22 @@ class GzipFile(file_io.FileIO):
 
   @property
   def original_filenames(self):
-    """The original filenames stored in the gzip file."""
+    """list(str): The original filenames stored in the gzip file."""
     return [member.original_filename for member in self._members]
 
   @property
   def modification_times(self):
-    """The modification times stored in the gzip file."""
+    """list(int): The modification times stored in the gzip file."""
     return [member.modification_time for member in self._members]
 
   @property
   def operating_systems(self):
-    """The operating system values stored in the gzip file."""
+    """list(int): The operating system values stored in the gzip file."""
     return [member.operating_system for member in self._members]
 
   @property
   def comments(self):
-    """The comments in the gzip file."""
+    """list(str): The comments in the gzip file."""
     return [member.comment for member in self._members]
 
   def _GetMemberForOffset(self, offset):
@@ -340,8 +344,8 @@ class GzipFile(file_io.FileIO):
           offset, self.uncompressed_data_size))
 
     for member in self._members:
-      if offset < member.uncompressed_data_offset + \
-          member.uncompressed_data_size:
+      if (offset < member.uncompressed_data_offset +
+          member.uncompressed_data_size):
         return member
 
   def seek(self, offset, whence=os.SEEK_SET):
@@ -353,7 +357,7 @@ class GzipFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed or the file has not been opened..
+      IOError: if the seek failed or the file has not been opened.
     """
     if not self._gzip_file_object:
       raise IOError('Not opened.')
@@ -391,7 +395,7 @@ class GzipFile(file_io.FileIO):
         data) < size) and self._current_offset < self.uncompressed_data_size:
       member = self._GetMemberForOffset(self._current_offset)
       member_offset = self._current_offset - member.uncompressed_data_offset
-      data_read = member.read(member_offset, size)
+      data_read = member.ReadAtOffset(member_offset, size)
       if data_read:
         self._current_offset += len(data_read)
         data = data.join([data_read])

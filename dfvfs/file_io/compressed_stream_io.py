@@ -2,7 +2,6 @@
 """The compressed stream file-like object implementation."""
 
 from __future__ import unicode_literals
-from __future__ import print_function
 
 import os
 
@@ -172,11 +171,8 @@ class CompressedStream(file_io.FileIO):
 
     self._compressed_data = b''.join([self._compressed_data, compressed_data])
 
-    try:
-      self._uncompressed_data, self._compressed_data = (
-          self._decompressor.Decompress(self._compressed_data))
-    except Exception as exception: # pylint: disable=broad-except
-      print(exception)
+    self._uncompressed_data, self._compressed_data = (
+        self._decompressor.Decompress(self._compressed_data))
 
     self._uncompressed_data_size = len(self._uncompressed_data)
 
