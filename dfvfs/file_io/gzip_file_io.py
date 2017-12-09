@@ -184,7 +184,7 @@ class GzipMember(object):
     current_offset = 0
     compressed_data = b''
     while not (self.IsCacheFull() and not read_all_data):
-      compressed_data += file_object.ReadAtOffset(self._MAXIMUM_READ_SIZE)
+      compressed_data += file_object.read(self._MAXIMUM_READ_SIZE)
       decompressed_data, compressed_data = decompressor.Decompress(
           compressed_data)
       decompressed_data_length = len(decompressed_data)
