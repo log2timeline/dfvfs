@@ -39,6 +39,14 @@ class DataStream(object):
     """str: name."""
     return ''
 
+  @abc.abstractmethod
+  def IsDefault(self):
+    """Determines if the data stream is the default data stream.
+
+    Returns:
+      bool: True if the data stream is the default data stream.
+    """
+
 
 class Directory(object):
   """VFS directory interface.
