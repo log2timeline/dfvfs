@@ -65,10 +65,104 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
     self.assertEqual(ntfs_attribute.attribute_type, 0x00000010)
 
 
-# TODO: add tests for FileNameNTFSAttribute.
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
+class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the NTFS $FILE_NAME attribute."""
+
+  # pylint: disable=protected-access
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
+        location='\\', parent=self._qcow_path_spec)
+
+    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
+    self._file_system.Open(self._ntfs_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testIntialize(self):
+    """Tests the __init__ function."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(1)
+    ntfs_attribute = ntfs_file_entry.FileNameNTFSAttribute(fsntfs_attribute)
+    self.assertIsNotNone(ntfs_attribute)
+
+    with self.assertRaises(errors.BackEndError):
+      ntfs_file_entry.FileNameNTFSAttribute(None)
+
+  def testAttributeType(self):
+    """Test the attribute_type property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(1)
+    ntfs_attribute = ntfs_file_entry.FileNameNTFSAttribute(fsntfs_attribute)
+
+    self.assertEqual(ntfs_attribute.attribute_type, 0x00000030)
+
+
 # TODO: add tests for ObjectIdentifierNTFSAttribute.
 # TODO: add tests for SecurityDescriptorNTFSAttribute.
-# TODO: add tests for StandardInformationNTFSAttribute.
+
+
+@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
+class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the NTFS attribute."""
+
+  # pylint: disable=protected-access
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
+        location='\\', parent=self._qcow_path_spec)
+
+    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
+    self._file_system.Open(self._ntfs_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testIntialize(self):
+    """Tests the __init__ function."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
+    ntfs_attribute = ntfs_file_entry.StandardInformationNTFSAttribute(
+        fsntfs_attribute)
+    self.assertIsNotNone(ntfs_attribute)
+
+    with self.assertRaises(errors.BackEndError):
+      ntfs_file_entry.StandardInformationNTFSAttribute(None)
+
+  def testAttributeType(self):
+    """Test the attribute_type property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
+    ntfs_attribute = ntfs_file_entry.StandardInformationNTFSAttribute(
+        fsntfs_attribute)
+
+    self.assertEqual(ntfs_attribute.attribute_type, 0x00000010)
 
 
 @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
