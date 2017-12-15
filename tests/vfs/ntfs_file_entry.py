@@ -22,6 +22,8 @@ from tests import test_lib as shared_test_lib
 class NTFSAttributeTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS attribute."""
 
+  # pylint: disable=protected-access
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()

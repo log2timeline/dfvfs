@@ -165,8 +165,11 @@ class TSKDataStream(file_entry.DataStream):
     Returns:
       bool: True if the data stream is the default data stream.
     """
+    if not self._tsk_attribute or not self._file_system:
+      return True
+
     if self._file_system.IsHFS():
-      attribute_type = getattr(tsk_attribute.info, 'type', None)
+      attribute_type = getattr(self._tsk_attribute.info, 'type', None)
       return attribute_type in (
           pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA)
 
