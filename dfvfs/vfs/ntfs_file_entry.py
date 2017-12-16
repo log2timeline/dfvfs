@@ -182,6 +182,14 @@ class NTFSDataStream(file_entry.DataStream):
       return self._fsntfs_data_stream.name
     return ''
 
+  def IsDefault(self):
+    """Determines if the data stream is the default data stream.
+
+    Returns:
+      bool: True if the data stream is the default data stream.
+    """
+    return not self._fsntfs_data_stream
+
 
 class NTFSDirectory(file_entry.Directory):
   """File system directory that uses pyfsntfs."""
@@ -299,10 +307,12 @@ class NTFSFileEntry(file_entry.FileEntry):
     if self._data_streams is None:
       self._data_streams = []
       if self._fsntfs_file_entry.has_default_data_stream():
-        self._data_streams.append(NTFSDataStream(None))
+        data_stream = NTFSDataStream(None)
+        self._data_streams.append(data_stream)
 
       for fsntfs_data_stream in self._fsntfs_file_entry.alternate_data_streams:
-        self._data_streams.append(NTFSDataStream(fsntfs_data_stream))
+        data_stream = NTFSDataStream(fsntfs_data_stream)
+        self._data_streams.append(data_stream)
 
     return self._data_streams
 

@@ -132,13 +132,15 @@ class TSKAttribute(file_entry.Attribute):
 class TSKDataStream(file_entry.DataStream):
   """File system data stream that uses pytks3."""
 
-  def __init__(self, tsk_attribute):
+  def __init__(self, file_system, tsk_attribute):
     """Initializes a data stream.
 
     Args:
+      file_system (TSKFileSystem): file system.
       tsk_attribute (pytsk3.Attribute): TSK attribute.
     """
     super(TSKDataStream, self).__init__()
+    self._file_system = file_system
     self._tsk_attribute = tsk_attribute
 
   @property
@@ -156,6 +158,25 @@ class TSKDataStream(file_entry.DataStream):
           pass
 
     return ''
+
+  def IsDefault(self):
+    """Determines if the data stream is the default data stream.
+
+    Returns:
+      bool: True if the data stream is the default data stream.
+    """
+    if not self._tsk_attribute or not self._file_system:
+      return True
+
+    if self._file_system.IsHFS():
+      attribute_type = getattr(self._tsk_attribute.info, 'type', None)
+      return attribute_type in (
+          pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA)
+
+    elif self._file_system.IsNTFS():
+      return bool(self.name)
+
+    return True
 
 
 class TSKDirectory(file_entry.Directory):
@@ -299,7 +320,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
     Args:
       resolver_context (Context): resolver context.
-      file_system (FileSystem): file system.
+      file_system (TSKFileSystem): file system.
       path_spec (PathSpec): path specification.
       is_root (Optional[bool]): True if the file entry is the root file entry
           of the corresponding file system.
@@ -395,7 +416,8 @@ class TSKFileEntry(file_entry.FileEntry):
         tsk_fs_meta_type = getattr(
             self._tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
         if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
-          self._data_streams.append(TSKDataStream(None))
+          data_stream = TSKDataStream(self._file_system, None)
+          self._data_streams.append(data_stream)
 
       else:
         for tsk_attribute in self._tsk_file:
@@ -404,7 +426,8 @@ class TSKFileEntry(file_entry.FileEntry):
 
           attribute_type = getattr(tsk_attribute.info, 'type', None)
           if attribute_type in known_data_attribute_types:
-            self._data_streams.append(TSKDataStream(tsk_attribute))
+            data_stream = TSKDataStream(self._file_system, tsk_attribute)
+            self._data_streams.append(data_stream)
 
     return self._data_streams
 

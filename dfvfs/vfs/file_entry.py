@@ -39,6 +39,14 @@ class DataStream(object):
     """str: name."""
     return ''
 
+  def IsDefault(self):
+    """Determines if the data stream is the default data stream.
+
+    Returns:
+      bool: True if the data stream is the default data stream.
+    """
+    return True
+
 
 class Directory(object):
   """VFS directory interface.
@@ -141,7 +149,8 @@ class FileEntry(object):
       # It is assumed that directory and link file entries typically
       # do not have data streams.
       if not self._directory and not self.link:
-        self._data_streams.append(DataStream())
+        data_stream = DataStream()
+        self._data_streams.append(data_stream)
 
     return self._data_streams
 
