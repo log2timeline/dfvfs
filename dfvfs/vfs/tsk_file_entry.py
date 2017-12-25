@@ -412,15 +412,21 @@ class TSKFileEntry(file_entry.FileEntry):
 
       self._data_streams = []
 
+      tsk_fs_meta_type = getattr(
+          self._tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
+
       if not known_data_attribute_types:
-        tsk_fs_meta_type = getattr(
-            self._tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
         if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
           data_stream = TSKDataStream(self._file_system, None)
           self._data_streams.append(data_stream)
 
       else:
         for tsk_attribute in self._tsk_file:
+          # NTFS allows directories to have data streams.
+          if (not self._file_system.IsNTFS() and
+              tsk_fs_meta_type != pytsk3.TSK_FS_META_TYPE_REG):
+            continue
+
           if getattr(tsk_attribute, 'info', None) is None:
             continue
 
