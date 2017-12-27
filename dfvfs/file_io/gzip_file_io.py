@@ -338,7 +338,7 @@ class GzipFile(file_io.FileIO):
 
     Raises:
       ValueError: if the provided offset is outside of the bounds of the
-      uncompressed data.
+          uncompressed data.
     """
     if offset < 0 or offset > self.uncompressed_data_size:
       raise ValueError('Offset {0:d} is larger that file size {1:d}.'.format(
