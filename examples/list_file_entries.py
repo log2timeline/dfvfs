@@ -30,7 +30,7 @@ class FileEntryLister(object):
   _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
   def __init__(self):
-    """Initialized a file entry lister."""
+    """Initializes a file entry lister."""
     super(FileEntryLister, self).__init__()
     self._list_only_files = False
 
