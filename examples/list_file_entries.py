@@ -20,7 +20,7 @@ from dfvfs.volume import tsk_volume_system
 
 
 class FileEntryLister(object):
-  """Class that lists file entries."""
+  """File entry lister."""
 
   # Class constant that defines the default read buffer size.
   _READ_BUFFER_SIZE = 32768
@@ -29,14 +29,19 @@ class FileEntryLister(object):
   _UNITS_1000 = ['B', 'kB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB']
   _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
+  def __init__(self):
+    """Initializes a file entry lister."""
+    super(FileEntryLister, self).__init__()
+    self._list_only_files = False
+
   def _GetHumanReadableSize(self, size):
     """Retrieves a human readable string of the size.
 
     Args:
-      size: The size in bytes.
+      size (int): size in bytes.
 
     Returns:
-      A human readable string of the size.
+      str: human readable string of the size.
     """
     magnitude_1000 = 0
     size_1000 = float(size)
@@ -70,12 +75,10 @@ class FileEntryLister(object):
     """Determines the next level volume system path specification.
 
     Args:
-      source_path_spec: the source path specification (instance of
-                        dfvfs.PathSpec).
+      source_path_spec (dfvfs.PathSpec): source path specification.
 
     Returns:
-      The next level volume system path specification (instance of
-      dfvfs.PathSpec).
+      dfvfs.PathSpec: next level volume system path specification.
 
     Raises:
       RuntimeError: if the format of or within the source is not supported.
@@ -146,12 +149,10 @@ class FileEntryLister(object):
     """Determines the next level volume system path specification.
 
     Args:
-      source_path_spec: the source path specification (instance of
-                        dfvfs.PathSpec).
+      source_path_spec (dfvfs.PathSpec): source path specification.
 
     Returns:
-      The next level volume system path specification (instance of
-      dfvfs.PathSpec).
+      dfvfs.PathSpec: next level volume system path specification.
 
     Raises:
       RuntimeError: if the format of or within the source is not supported.
@@ -163,12 +164,10 @@ class FileEntryLister(object):
     """Determines the upper level volume system path specification.
 
     Args:
-      source_path_spec: the source path specification (instance of
-                        dfvfs.PathSpec).
+      source_path_spec (dfvfs.PathSpec): source path specification.
 
     Returns:
-      The upper level volume system path specification (instance of
-      dfvfs.PathSpec).
+      dfvfs.PathSpec: upper level volume system path specification.
 
     Raises:
       RuntimeError: if the format of or within the source is not supported.
@@ -204,16 +203,16 @@ class FileEntryLister(object):
     """Lists a file entry.
 
     Args:
-      file_system: the file system (instance of dfvfs.FileSystem).
-      file_entry: the file entry (instance of dfvfs.FileEntry).
-      parent_full_path: the full path of the parent file entry.
-      output_writer: the output writer (instance of StdoutWriter).
+      file_system (dfvfs.FileSystem): file system that contains the file entry.
+      file_entry (dfvfs.FileEntry): file entry to list.
+      parent_full_path (str): full path of the parent file entry.
+      output_writer (StdoutWriter): output writer.
     """
     # Since every file system implementation can have their own path
     # segment separator we are using JoinPath to be platform and file system
     # type independent.
     full_path = file_system.JoinPath([parent_full_path, file_entry.name])
-    if file_entry.IsFile():
+    if not self._list_only_files or file_entry.IsFile():
       output_writer.WriteFileEntry(full_path)
 
     for sub_file_entry in file_entry.sub_file_entries:
@@ -223,8 +222,8 @@ class FileEntryLister(object):
     """Lists file entries in the base path specification.
 
     Args:
-      base_path_spec: the base path specification (instance of dfvfs.PathSpec).
-      output_writer: the output writer (instance of StdoutWriter).
+      base_path_spec (dfvfs.PathSpec): base path specification.
+      output_writer (StdoutWriter): output writer.
     """
     file_system = resolver.Resolver.OpenFileSystem(base_path_spec)
     file_entry = resolver.Resolver.OpenFileEntry(base_path_spec)
@@ -240,15 +239,15 @@ class FileEntryLister(object):
     """Determines the base path specification.
 
     Args:
-      source_path: the source path.
+      source_path (str): path of the source.
 
     Returns:
-      The base path specification (instance of dfvfs.PathSpec).
+      dfvfs.PathSpec: base path specification.
 
     Raises:
       RuntimeError: if the source path does not exists, or if the source path
-                    is not a file or directory, or if the format of or within
-                    the source file is not supported.
+          is not a file or directory, or if the format of or within the source
+          file is not supported.
     """
     if not os.path.exists(source_path):
       raise RuntimeError('No such source: {0:s}.'.format(source_path))
@@ -329,14 +328,52 @@ class FileEntryLister(object):
     return path_spec
 
 
-class StdoutWriter(object):
-  """Class that defines a stdout output writer."""
+class FileOutputWriter(object):
+  """File output writer."""
+
+  def __init__(self, path):
+    """Initializes a file output writer.
+
+    Args:
+      path (str): path of the file to write.
+    """
+    super(FileOutputWriter, self).__init__()
+    self._file_object = None
+    self._path = path
 
   def Open(self):
-    """Opens the output writer object.
+    """Opens the output writer.
 
     Returns:
-      A boolean containing True if successful or False if not.
+      bool: True if successful or False if not.
+    """
+    self._file_object = open(self._path, 'w')
+    return True
+
+  def Close(self):
+    """Closes the output writer object."""
+    self._file_object.close()
+    self._file_object = None
+
+  def WriteFileEntry(self, path):
+    """Writes the file path to stdout.
+
+    Args:
+      path (str): path of the file.
+    """
+    path = '{0:s}\n'.format(path)
+    path = path.encode('utf-8')
+    self._file_object.write(path)
+
+
+class StdoutWriter(object):
+  """Stdout output writer."""
+
+  def Open(self):
+    """Opens the output writer.
+
+    Returns:
+      bool: True if successful or False if not.
     """
     return True
 
@@ -348,7 +385,7 @@ class StdoutWriter(object):
     """Writes the file path to stdout.
 
     Args:
-      path: the path of the file.
+      path (str): path of the file.
     """
     print('{0:s}'.format(path))
 
@@ -357,10 +394,15 @@ def Main():
   """The main program function.
 
   Returns:
-    A boolean containing True if successful or False if not.
+    bool: True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
       'Lists file entries in a directory or storage media image.'))
+
+  argument_parser.add_argument(
+      '-o', '--output', dest='output', action='store', metavar='PATH',
+      default=None, help=(
+          'path of the output file, default is to output to stdout.'))
 
   argument_parser.add_argument(
       'source', nargs='?', action='store', metavar='image.raw',
@@ -380,7 +422,10 @@ def Main():
   logging.basicConfig(
       level=logging.INFO, format='[%(levelname)s] %(message)s')
 
-  output_writer = StdoutWriter()
+  if options.output:
+    output_writer = FileOutputWriter(options.output)
+  else:
+    output_writer = StdoutWriter()
 
   if not output_writer.Open():
     print('Unable to open output writer.')
