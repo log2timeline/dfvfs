@@ -14,7 +14,7 @@ from dfvfs.file_io import file_io
 
 
 class GzipMember(object):
-  """Single gzip member.
+  """Gzip member.
 
   Attributes:
     comment (str): comment stored in the member.
@@ -94,7 +94,7 @@ class GzipMember(object):
     # Offset to the beginning of the compressed data in the file object.
     self._compressed_data_offset = None
 
-    # Initialize the member with data
+    # Initialize the member with data.
     self._file_object = file_object
     self._ReadHeader(file_object)
     self._LoadDataIntoCache(file_object, 0, read_all_data=True)
@@ -111,7 +111,7 @@ class GzipMember(object):
     return self._cache_end_offset - self._cache_start_offset
 
   def IsCacheFull(self):
-    """Convenience method to check whether the uncompressed data cache is full.
+    """Checks whether the uncompressed data cache is full.
 
     Returns:
       bool: True if the cache is full.
@@ -142,6 +142,7 @@ class GzipMember(object):
 
     Raises:
       IOError: if the read failed.
+      ValueError: if a negative read size is specified.
     """
     if size is not None and size < 0:
       raise ValueError('Invalid size value smaller than zero.')
@@ -218,7 +219,7 @@ class GzipMember(object):
         break
 
   def _ReadHeader(self, file_object):
-    """Reads the file header.
+    """Reads the member header.
 
     Args:
       file_object (FileIO): file-like object to read from.
@@ -269,7 +270,7 @@ class GzipMember(object):
       self._compressed_data_offset += 2
 
   def _ReadFooter(self, file_object):
-    """Reads the file footer.
+    """Reads the member footer.
 
     Args:
       file_object (FileIO): file-like object to read from.
