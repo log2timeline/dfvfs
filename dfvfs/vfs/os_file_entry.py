@@ -196,12 +196,14 @@ class OSFileEntry(file_entry.FileEntry):
   @property
   def access_time(self):
     """dfdatetime.DateTimeValues: access time or None if not available."""
-    return dfdatetime_posix_time.PosixTime(timestamp=self._stat_info.st_atime)
+    timestamp = int(self._stat_info.st_atime)
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   @property
   def change_time(self):
     """dfdatetime.DateTimeValues: change time or None if not available."""
-    return dfdatetime_posix_time.PosixTime(timestamp=self._stat_info.st_ctime)
+    timestamp = int(self._stat_info.st_ctime)
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   @property
   def link(self):
@@ -232,7 +234,8 @@ class OSFileEntry(file_entry.FileEntry):
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
-    return dfdatetime_posix_time.PosixTime(timestamp=self._stat_info.st_mtime)
+    timestamp = int(self._stat_info.st_mtime)
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   @property
   def sub_file_entries(self):
