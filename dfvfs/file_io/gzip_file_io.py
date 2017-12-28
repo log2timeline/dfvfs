@@ -222,7 +222,7 @@ class _GzipMember(object):
     if size is not None and size < 0:
       raise ValueError('Invalid size value smaller than one.')
 
-    if size == 0 or offset >= self.uncompressed_data_offset:
+    if size == 0 or offset >= self.uncompressed_data_size:
       return b''
 
     if self._cache_start_offset is None:
