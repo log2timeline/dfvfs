@@ -158,16 +158,19 @@ class _GzipMember(object):
     self._file_object = file_object
     self._file_object.seek(self.member_start_offset, os.SEEK_SET)
 
+    self._ReadAndParseHeader(file_object)
     # Offset to the beginning of the compressed data in the file object.
-    self._compressed_data_start = self._ReadHeader(file_object)
+    self._compressed_data_start = file_object.get_offset()
 
     self._decompressor_state = _GzipDecompressorState(
         self._compressed_data_start)
 
     self._LoadDataIntoCache(file_object, 0, read_all_data=True)
 
+    self._ReadAndParseFooter(file_object)
+
     # Offset to the end of the member in the parent file object.
-    self.member_end_offset = self._ReadFooter(file_object)
+    self.member_end_offset = file_object.get_offset()
 
   def GetCacheSize(self):
     """Determines the size of the uncompressed cached data.
@@ -217,10 +220,13 @@ class _GzipMember(object):
 
     Raises:
       IOError: if the read failed.
-      ValueError: if a negative read size is specified.
+      ValueError: if a negative read size or offset is specified.
     """
     if size is not None and size < 0:
-      raise ValueError('Invalid size value smaller than one.')
+      raise ValueError('Invalid size value {0!d}'.format(size))
+
+    if offset < 0:
+      raise ValueError('Invalid offset value {0!d}'.format(offset))
 
     if size == 0 or offset >= self.uncompressed_data_size:
       return b''
@@ -301,21 +307,16 @@ class _GzipMember(object):
         self._ResetDecompressorState()
         break
 
-  def _ReadHeader(self, file_object):
-    """Reads the member header.
+  def _ReadAndParseHeader(self, file_object):
+    """Reads the member header and sets relevant member values.
 
     Args:
       file_object (FileIO): file-like object to read from.
-
-    Returns:
-      int: offset to the member's compressed stream within the containing
-          file object.
 
     Raises:
       FileFormatError: if file format related errors are detected.
     """
     member_header = self._MEMBER_HEADER_STRUCT.parse_stream(file_object)
-    compressed_data_start = file_object.get_offset()
 
     if member_header.signature != self._GZIP_SIGNATURE:
       raise errors.FileFormatError(
@@ -334,7 +335,6 @@ class _GzipMember(object):
       extra_field_data_size = construct.ULInt16(
           'extra_field_data_size').parse_stream(file_object)
       file_object.seek(extra_field_data_size, os.SEEK_CUR)
-      compressed_data_start += 2 + extra_field_data_size
 
     if member_header.flags & self._FLAG_FNAME:
       # Since encoding is set construct will convert the C string to Unicode.
@@ -343,7 +343,6 @@ class _GzipMember(object):
       self.original_filename = construct.CString(
           'original_filename', encoding=b'iso-8859-1').parse_stream(
               file_object)
-      compressed_data_start = file_object.get_offset()
 
     if member_header.flags & self._FLAG_FCOMMENT:
       # Since encoding is set construct will convert the C string to Unicode.
@@ -351,28 +350,21 @@ class _GzipMember(object):
       # string.
       self.comment = construct.CString(
           'comment', encoding=b'iso-8859-1').parse_stream(file_object)
-      compressed_data_start = file_object.get_offset()
 
     if member_header.flags & self._FLAG_FHCRC:
-      compressed_data_start += 2
+      file_object.read(2)
 
-    return compressed_data_start
-
-  def _ReadFooter(self, file_object):
-    """Reads the member footer.
+  def _ReadAndParseFooter(self, file_object):
+    """Reads the member footer and sets relevant member values.
 
     Args:
       file_object (FileIO): file-like object to read from.
-
-    Returns:
-      int: offset to end of the member stream within the containing file object.
 
     Raises:
       FileFormatError: if file format related errors are detected.
     """
     file_footer = self._MEMBER_FOOTER_STRUCT.parse_stream(file_object)
     self.uncompressed_data_size = file_footer.uncompressed_data_size
-    return  file_object.get_offset()
 
 
 class GzipFile(file_io.FileIO):
