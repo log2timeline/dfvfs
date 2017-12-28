@@ -100,7 +100,7 @@ class _GzipMember(object):
     uncompressed_data_size (int): total size of the data in this gzip member
         after decompression.
   """
-  _FILE_HEADER_STRUCT = construct.Struct(
+  _MEMBER_HEADER_STRUCT = construct.Struct(
       'file_header',
       construct.ULInt16('signature'),
       construct.UBInt8('compression_method'),
@@ -109,12 +109,12 @@ class _GzipMember(object):
       construct.UBInt8('extra_flags'),
       construct.UBInt8('operating_system'))
 
-  _FILE_FOOTER_STRUCT = construct.Struct(
+  _MEMBER_FOOTER_STRUCT = construct.Struct(
       'file_footer',
       construct.ULInt32('checksum'),
       construct.ULInt32('uncompressed_data_size'))
 
-  _FILE_SIGNATURE = 0x8b1f
+  _GZIP_SIGNATURE = 0x8b1f
 
   _COMPRESSION_METHOD_DEFLATE = 8
 
@@ -161,16 +161,14 @@ class _GzipMember(object):
     self.member_start_offset = member_start_offset
     # Offset to the end of the member in the parent file object.
     self.member_end_offset = None
-    # Offset to the beginning of the compressed data in the file object.
-    self._compressed_data_start = None
 
     # Initialize the member with data.
     self._file_object = file_object
     self._file_object.seek(self.member_start_offset, os.SEEK_SET)
-    self._ReadHeader(file_object)
 
-    # The decompressor can only be initialized once the offset to the compressed
-    # data is determined.
+    # Offset to the beginning of the compressed data in the file object.
+    self._compressed_data_start = self._ReadHeader(file_object)
+
     self._decompressor_state = _GzipDecompressorState(
         self._compressed_data_start)
 
@@ -315,50 +313,56 @@ class _GzipMember(object):
     Args:
       file_object (FileIO): file-like object to read from.
 
+    Returns:
+      int: offset to the member's compressed stream within the containing
+          file object.
+
     Raises:
       FileFormatError: if file format related errors are detected.
     """
-    file_header = self._FILE_HEADER_STRUCT.parse_stream(file_object)
-    self._compressed_data_start = file_object.get_offset()
+    member_header = self._MEMBER_HEADER_STRUCT.parse_stream(file_object)
+    compressed_data_start = file_object.get_offset()
 
-    if file_header.signature != self._FILE_SIGNATURE:
+    if member_header.signature != self._GZIP_SIGNATURE:
       raise errors.FileFormatError(
           'Unsupported file signature: 0x{0:04x}.'.format(
-              file_header.signature))
+              member_header.signature))
 
-    if file_header.compression_method != self._COMPRESSION_METHOD_DEFLATE:
+    if member_header.compression_method != self._COMPRESSION_METHOD_DEFLATE:
       raise errors.FileFormatError(
           'Unsupported compression method: {0:d}.'.format(
-              file_header.compression_method))
+              member_header.compression_method))
 
-    self.modification_time = file_header.modification_time
-    self.operating_system = file_header.operating_system
+    self.modification_time = member_header.modification_time
+    self.operating_system = member_header.operating_system
 
-    if file_header.flags & self._FLAG_FEXTRA:
+    if member_header.flags & self._FLAG_FEXTRA:
       extra_field_data_size = construct.ULInt16(
           'extra_field_data_size').parse_stream(file_object)
       file_object.seek(extra_field_data_size, os.SEEK_CUR)
-      self._compressed_data_start += 2 + extra_field_data_size
+      compressed_data_start += 2 + extra_field_data_size
 
-    if file_header.flags & self._FLAG_FNAME:
+    if member_header.flags & self._FLAG_FNAME:
       # Since encoding is set construct will convert the C string to Unicode.
       # Note that construct 2 does not support the encoding to be a Unicode
       # string.
       self.original_filename = construct.CString(
           'original_filename', encoding=b'iso-8859-1').parse_stream(
               file_object)
-      self._compressed_data_start = file_object.get_offset()
+      compressed_data_start = file_object.get_offset()
 
-    if file_header.flags & self._FLAG_FCOMMENT:
+    if member_header.flags & self._FLAG_FCOMMENT:
       # Since encoding is set construct will convert the C string to Unicode.
       # Note that construct 2 does not support the encoding to be a Unicode
       # string.
       self.comment = construct.CString(
           'comment', encoding=b'iso-8859-1').parse_stream(file_object)
-      self._compressed_data_start = file_object.get_offset()
+      compressed_data_start = file_object.get_offset()
 
-    if file_header.flags & self._FLAG_FHCRC:
-      self._compressed_data_start += 2
+    if member_header.flags & self._FLAG_FHCRC:
+      compressed_data_start += 2
+
+    return compressed_data_start
 
   def _ReadFooter(self, file_object):
     """Reads the member footer.
@@ -369,7 +373,7 @@ class _GzipMember(object):
     Raises:
       FileFormatError: if file format related errors are detected.
     """
-    file_footer = self._FILE_FOOTER_STRUCT.parse_stream(file_object)
+    file_footer = self._MEMBER_FOOTER_STRUCT.parse_stream(file_object)
     self.uncompressed_data_size = file_footer.uncompressed_data_size
     self.member_end_offset = file_object.get_offset()
 
