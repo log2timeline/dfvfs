@@ -74,13 +74,15 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     file_start = file_object.read(4)
     self.assertEqual(file_start, b'1SLD')
-    file_object.seek(506631-4)
+
+    # Read the end of the second member
+    file_object.seek(506631 - 4)
     file_end = file_object.read(4)
     self.assertEqual(file_end, b'\x02\x00\x80\x00')
 
     # Seek backwards, and read across a member boundary.
     file_object.seek(28530)
-    #self.assertEqual(file_object.read(6), b'')
+    self.assertEqual(file_object.read(6), b'OS\x00P\x07\x00')
 
     file_object.close()
 
