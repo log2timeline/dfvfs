@@ -33,10 +33,10 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     self._TestGetSizeFileObject(file_object)
 
-    self.assertEqual(file_object.modification_time, 0x501416d7)
-    self.assertEqual(file_object.operating_system, 0x03)
-    self.assertEqual(file_object.original_filename, 'syslog.1')
-    self.assertIsNone(file_object.comment)
+    self.assertEqual(file_object.modification_times, [0x501416d7])
+    self.assertEqual(file_object.operating_systems, [0x03])
+    self.assertEqual(file_object.original_filenames, ['syslog.1'])
+    self.assertEqual(file_object.comments, [None])
 
     file_object.close()
 
@@ -55,6 +55,34 @@ class GzipFileTest(test_lib.SylogTestCase):
     file_object.open(path_spec=self._gzip_path_spec)
 
     self._TestReadFileObject(file_object)
+
+    file_object.close()
+
+  def testReadMultipleMembers(self):
+    """Tests reading a file that contains multiple gzip members."""
+    test_file = self._GetTestFilePath(['fsevents_000000000000b208'])
+    parent_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = gzip_path_spec.GzipPathSpec(parent=parent_path_spec)
+    file_object = gzip_file_io.GzipFile(self._resolver_context)
+    file_object.open(path_spec=path_spec)
+
+    self.assertEqual(file_object.uncompressed_data_size, 506631)
+    self.assertEqual(file_object.modification_times, [0, 0])
+    self.assertEqual(file_object.operating_systems, [3, 3])
+    self.assertEqual(file_object.original_filenames, [None, None])
+    self.assertEqual(file_object.comments, [None, None])
+
+    file_start = file_object.read(4)
+    self.assertEqual(file_start, b'1SLD')
+
+    # Read the end of the second member
+    file_object.seek(506631 - 4)
+    file_end = file_object.read(4)
+    self.assertEqual(file_end, b'\x02\x00\x80\x00')
+
+    # Seek backwards, and read across a member boundary.
+    file_object.seek(28530)
+    self.assertEqual(file_object.read(6), b'OS\x00P\x07\x00')
 
     file_object.close()
 
