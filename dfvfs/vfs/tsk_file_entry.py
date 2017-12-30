@@ -174,7 +174,7 @@ class TSKDataStream(file_entry.DataStream):
           pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA)
 
     elif self._file_system.IsNTFS():
-      return bool(self.name)
+      return not bool(self.name)
 
     return True
 
