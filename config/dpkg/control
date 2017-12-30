@@ -10,7 +10,7 @@ Homepage: https://github.com/log2timeline/dfvfs
 
 Package: python-dfvfs
 Architecture: all
-Depends: libbde-python (>= 20140531), libewf-python (>= 20131210), libfsntfs-python (>= 20151130), libfvde-python (>= 20160719), libfwnt-python (>= 20160418), libqcow-python (>= 20131204), libsigscan-python (>= 20150627), libsmdev-python (>= 20140529), libsmraw-python (>= 20140612), libvhdi-python (>= 20131210), libvmdk-python (>= 20140421), libvshadow-python (>= 20160109), libvslvm-python (>= 20160109), python-backports.lzma, python-construct (>= 2.5.2), python-crypto (>= 2.6), python-dfdatetime (>= 20160814), python-pysqlite2, python-pytsk3 (>= 20160721), python-six (>= 1.1.0), ${python:Depends}, ${misc:Depends}
+Depends: libbde-python (>= 20140531), libewf-python (>= 20131210), libfsntfs-python (>= 20151130), libfvde-python (>= 20160719), libfwnt-python (>= 20160418), libqcow-python (>= 20131204), libsigscan-python (>= 20150627), libsmdev-python (>= 20140529), libsmraw-python (>= 20140612), libvhdi-python (>= 20131210), libvmdk-python (>= 20140421), libvshadow-python (>= 20160109), libvslvm-python (>= 20160109), python-backports.lzma, python-construct (>= 2.5.2), python-crypto (>= 2.6), python-dfdatetime (>= 20171228), python-pysqlite2, python-pytsk3 (>= 20160721), python-six (>= 1.1.0), ${python:Depends}, ${misc:Depends}
 Description: Python 2 module of dfVFS
  dfVFS, or Digital Forensics Virtual File System, provides read-only access to
  file-system objects from various storage media types and file formats. The goal
@@ -20,7 +20,7 @@ Description: Python 2 module of dfVFS
 
 Package: python3-dfvfs
 Architecture: all
-Depends: libbde-python3 (>= 20140531), libewf-python3 (>= 20131210), libfsntfs-python3 (>= 20151130), libfvde-python3 (>= 20160719), libfwnt-python3 (>= 20160418), libqcow-python3 (>= 20131204), libsigscan-python3 (>= 20150627), libsmdev-python3 (>= 20140529), libsmraw-python3 (>= 20140612), libvhdi-python3 (>= 20131210), libvmdk-python3 (>= 20140421), libvshadow-python3 (>= 20160109), libvslvm-python3 (>= 20160109), python3-construct (>= 2.5.2), python3-crypto (>= 2.6), python3-dfdatetime (>= 20160814), python3-pysqlite2, python3-pytsk3 (>= 20160721), python3-six (>= 1.1.0), ${python3:Depends}, ${misc:Depends}
+Depends: libbde-python3 (>= 20140531), libewf-python3 (>= 20131210), libfsntfs-python3 (>= 20151130), libfvde-python3 (>= 20160719), libfwnt-python3 (>= 20160418), libqcow-python3 (>= 20131204), libsigscan-python3 (>= 20150627), libsmdev-python3 (>= 20140529), libsmraw-python3 (>= 20140612), libvhdi-python3 (>= 20131210), libvmdk-python3 (>= 20140421), libvshadow-python3 (>= 20160109), libvslvm-python3 (>= 20160109), python3-construct (>= 2.5.2), python3-crypto (>= 2.6), python3-dfdatetime (>= 20171228), python3-pysqlite2, python3-pytsk3 (>= 20160721), python3-six (>= 1.1.0), ${python3:Depends}, ${misc:Depends}
 Description: Python 3 module of dfVFS
  dfVFS, or Digital Forensics Virtual File System, provides read-only access to
  file-system objects from various storage media types and file formats. The goal
