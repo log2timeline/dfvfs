@@ -105,7 +105,7 @@ class DependencyHelper(object):
   """Dependency helper.
 
   Attributes:
-    dependencies (list[DependencyDefinition]): dependencies.
+    dependencies (dict[str, DependencyDefinition]): dependencies.
   """
 
   _VERSION_NUMBERS_REGEX = re.compile(r'[0-9.]+')
@@ -334,7 +334,7 @@ class DependencyHelper(object):
       else:
         result, status_message = self._CheckPythonModule(dependency)
 
-      if not result:
+      if not result and not dependency.is_optional:
         check_result = False
 
       self._PrintCheckDependencyStatus(

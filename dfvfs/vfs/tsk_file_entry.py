@@ -39,8 +39,8 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     self.timestamp = timestamp
     self.timestamp_fragment = timestamp_fragment
 
-  def CopyFromString(self, time_string):
-    """Copies a POSIX timestamp from a date and time string.
+  def CopyFromDateTimeString(self, time_string):
+    """Copies a SleuthKit timestamp from a date and time string.
 
     Args:
       time_string (str): date and time value formatted as:
@@ -89,6 +89,36 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
       timestamp_fragment = self.timestamp_fragment
 
     return self.timestamp, timestamp_fragment
+
+  def CopyToDateTimeString(self):
+    """Copies the date time value to a date and time string.
+
+    Returns:
+      str: date and time value formatted as:
+          YYYY-MM-DD hh:mm:ss or
+          YYYY-MM-DD hh:mm:ss.####### or
+          YYYY-MM-DD hh:mm:ss.#########
+    """
+    if self.timestamp is None:
+      return
+
+    number_of_days, hours, minutes, seconds = self._GetTimeValues(
+        self.timestamp)
+
+    year, month, day_of_month = self._GetDateValues(number_of_days, 1970, 1, 1)
+
+    if self.timestamp_fragment is None:
+      return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}'.format(
+          year, month, day_of_month, hours, minutes, seconds)
+
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:09d}'.format(
+          year, month, day_of_month, hours, minutes, seconds,
+          self.timestamp_fragment)
+
+    return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:07d}'.format(
+        year, month, day_of_month, hours, minutes, seconds,
+        self.timestamp_fragment)
 
   def GetPlasoTimestamp(self):
     """Retrieves a timestamp that is compatible with plaso.
@@ -174,7 +204,7 @@ class TSKDataStream(file_entry.DataStream):
           pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA)
 
     elif self._file_system.IsNTFS():
-      return bool(self.name)
+      return not bool(self.name)
 
     return True
 
