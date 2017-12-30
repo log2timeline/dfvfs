@@ -113,10 +113,12 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
 
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
       return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:09d}'.format(
-          year, month, day_of_month, hours, minutes, seconds, timestamp_fragment)
+          year, month, day_of_month, hours, minutes, seconds,
+          self.timestamp_fragment)
 
     return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:07d}'.format(
-        year, month, day_of_month, hours, minutes, seconds, timestamp_fragment)
+        year, month, day_of_month, hours, minutes, seconds,
+        self.timestamp_fragment)
 
   def GetPlasoTimestamp(self):
     """Retrieves a timestamp that is compatible with plaso.
