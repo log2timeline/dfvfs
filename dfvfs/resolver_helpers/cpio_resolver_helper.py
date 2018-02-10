@@ -3,13 +3,11 @@
 
 from __future__ import unicode_literals
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.cpio_file_system
-
 from dfvfs.file_io import cpio_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
+from dfvfs.vfs import cpio_file_system
 
 
 class CPIOResolverHelper(resolver_helper.ResolverHelper):
@@ -37,7 +35,7 @@ class CPIOResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileSystem: file system.
     """
-    return dfvfs.vfs.cpio_file_system.CPIOFileSystem(resolver_context)
+    return cpio_file_system.CPIOFileSystem(resolver_context)
 
 
 # Register the resolver helpers with the resolver.

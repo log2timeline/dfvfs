@@ -3,13 +3,11 @@
 
 from __future__ import unicode_literals
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.encrypted_stream_file_system
-
 from dfvfs.file_io import encrypted_stream_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
+from dfvfs.vfs import encrypted_stream_file_system
 
 
 class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
@@ -37,7 +35,7 @@ class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileSystem: file system.
     """
-    return dfvfs.vfs.encrypted_stream_file_system.EncryptedStreamFileSystem(
+    return encrypted_stream_file_system.EncryptedStreamFileSystem(
         resolver_context)
 
 

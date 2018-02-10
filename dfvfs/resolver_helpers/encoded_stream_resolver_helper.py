@@ -3,13 +3,11 @@
 
 from __future__ import unicode_literals
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.encoded_stream_file_system
-
 from dfvfs.file_io import encoded_stream_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
+from dfvfs.vfs import encoded_stream_file_system
 
 
 class EncodedStreamResolverHelper(resolver_helper.ResolverHelper):
@@ -37,8 +35,7 @@ class EncodedStreamResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileSystem: file system.
     """
-    return dfvfs.vfs.encoded_stream_file_system.EncodedStreamFileSystem(
-        resolver_context)
+    return encoded_stream_file_system.EncodedStreamFileSystem(resolver_context)
 
 
 resolver.Resolver.RegisterHelper(EncodedStreamResolverHelper())

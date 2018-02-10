@@ -3,13 +3,11 @@
 
 from __future__ import unicode_literals
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.lvm_file_system
-
 from dfvfs.file_io import lvm_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
+from dfvfs.vfs import lvm_file_system
 
 
 class LVMResolverHelper(resolver_helper.ResolverHelper):
@@ -37,7 +35,7 @@ class LVMResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileSystem: file system.
     """
-    return dfvfs.vfs.lvm_file_system.LVMFileSystem(resolver_context)
+    return lvm_file_system.LVMFileSystem(resolver_context)
 
 
 resolver.Resolver.RegisterHelper(LVMResolverHelper())

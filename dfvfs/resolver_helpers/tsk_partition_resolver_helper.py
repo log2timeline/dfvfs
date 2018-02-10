@@ -3,13 +3,11 @@
 
 from __future__ import unicode_literals
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.tsk_partition_file_system
-
 from dfvfs.file_io import tsk_partition_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
+from dfvfs.vfs import tsk_partition_file_system
 
 
 class TSKPartitionResolverHelper(resolver_helper.ResolverHelper):
@@ -37,8 +35,7 @@ class TSKPartitionResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileSystem: file system.
     """
-    return dfvfs.vfs.tsk_partition_file_system.TSKPartitionFileSystem(
-        resolver_context)
+    return tsk_partition_file_system.TSKPartitionFileSystem(resolver_context)
 
 
 resolver.Resolver.RegisterHelper(TSKPartitionResolverHelper())
