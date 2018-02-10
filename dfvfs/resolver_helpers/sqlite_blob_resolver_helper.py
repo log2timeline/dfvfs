@@ -4,9 +4,9 @@
 from __future__ import unicode_literals
 
 # This is necessary to prevent a circular import.
-import dfvfs.file_io.sqlite_blob_file_io
 import dfvfs.vfs.sqlite_blob_file_system
 
+from dfvfs.file_io import sqlite_blob_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
@@ -26,7 +26,7 @@ class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       SQLiteBlobFile: file-like object.
     """
-    return dfvfs.file_io.sqlite_blob_file_io.SQLiteBlobFile(resolver_context)
+    return sqlite_blob_file_io.SQLiteBlobFile(resolver_context)
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system object.

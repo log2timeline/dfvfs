@@ -4,9 +4,9 @@
 from __future__ import unicode_literals
 
 # This is necessary to prevent a circular import.
-import dfvfs.file_io.tsk_partition_file_io
 import dfvfs.vfs.tsk_partition_file_system
 
+from dfvfs.file_io import tsk_partition_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
@@ -26,8 +26,7 @@ class TSKPartitionResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileIO: file-like object.
     """
-    return dfvfs.file_io.tsk_partition_file_io.TSKPartitionFile(
-        resolver_context)
+    return tsk_partition_file_io.TSKPartitionFile(resolver_context)
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system object.

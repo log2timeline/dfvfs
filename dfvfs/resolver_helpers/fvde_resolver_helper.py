@@ -4,9 +4,9 @@
 from __future__ import unicode_literals
 
 # This is necessary to prevent a circular import.
-import dfvfs.file_io.fvde_file_io
 import dfvfs.vfs.fvde_file_system
 
+from dfvfs.file_io import fvde_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
@@ -26,7 +26,7 @@ class FVDEResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FVDEFile: file-like object.
     """
-    return dfvfs.file_io.fvde_file_io.FVDEFile(resolver_context)
+    return fvde_file_io.FVDEFile(resolver_context)
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system.

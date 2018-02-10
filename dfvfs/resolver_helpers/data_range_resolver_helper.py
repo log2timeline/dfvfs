@@ -4,9 +4,9 @@
 from __future__ import unicode_literals
 
 # This is necessary to prevent a circular import.
-import dfvfs.file_io.data_range_io
 import dfvfs.vfs.data_range_file_system
 
+from dfvfs.file_io import data_range_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
@@ -26,7 +26,7 @@ class DataRangeResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileIO: file-like object.
     """
-    return dfvfs.file_io.data_range_io.DataRange(resolver_context)
+    return data_range_io.DataRange(resolver_context)
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system object.

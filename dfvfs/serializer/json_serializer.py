@@ -9,6 +9,7 @@ from dfvfs.path import factory as path_spec_factory
 from dfvfs.path import path_spec
 from dfvfs.serializer import serializer
 
+
 class _PathSpecJsonDecoder(json.JSONDecoder):
   """Path specification JSON decoder."""
 

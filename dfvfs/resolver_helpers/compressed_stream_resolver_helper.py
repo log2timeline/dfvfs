@@ -4,9 +4,9 @@
 from __future__ import unicode_literals
 
 # This is necessary to prevent a circular import.
-import dfvfs.file_io.compressed_stream_io
 import dfvfs.vfs.compressed_stream_file_system
 
+from dfvfs.file_io import compressed_stream_io
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.resolver_helpers import resolver_helper
@@ -26,7 +26,7 @@ class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileIO: file-like object.
     """
-    return dfvfs.file_io.compressed_stream_io.CompressedStream(resolver_context)
+    return compressed_stream_io.CompressedStream(resolver_context)
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system object.
