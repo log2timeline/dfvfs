@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import sqlite_blob_file_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import sqlite_blob_file_system
 
@@ -38,4 +38,4 @@ class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
     return sqlite_blob_file_system.SQLiteBlobFileSystem(resolver_context)
 
 
-resolver.Resolver.RegisterHelper(SQLiteBlobResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(SQLiteBlobResolverHelper())

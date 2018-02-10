@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import encoded_stream_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import encoded_stream_file_system
 
@@ -38,4 +38,4 @@ class EncodedStreamResolverHelper(resolver_helper.ResolverHelper):
     return encoded_stream_file_system.EncodedStreamFileSystem(resolver_context)
 
 
-resolver.Resolver.RegisterHelper(EncodedStreamResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(EncodedStreamResolverHelper())

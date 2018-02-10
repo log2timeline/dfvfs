@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import encrypted_stream_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import encrypted_stream_file_system
 
@@ -39,4 +39,4 @@ class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
         resolver_context)
 
 
-resolver.Resolver.RegisterHelper(EncryptedStreamResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(EncryptedStreamResolverHelper())

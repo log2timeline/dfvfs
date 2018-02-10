@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import ntfs_file_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import ntfs_file_system
 
@@ -38,4 +38,4 @@ class NTFSResolverHelper(resolver_helper.ResolverHelper):
     return ntfs_file_system.NTFSFileSystem(resolver_context)
 
 
-resolver.Resolver.RegisterHelper(NTFSResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(NTFSResolverHelper())

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import os_file_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import os_file_system
 
@@ -38,4 +38,4 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
     return os_file_system.OSFileSystem(resolver_context)
 
 
-resolver.Resolver.RegisterHelper(OSResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(OSResolverHelper())

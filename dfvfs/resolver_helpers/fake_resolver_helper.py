@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 
 
@@ -17,4 +17,4 @@ class FakeResolverHelper(resolver_helper.ResolverHelper):
   # should raise RuntimeError.
 
 
-resolver.Resolver.RegisterHelper(FakeResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(FakeResolverHelper())

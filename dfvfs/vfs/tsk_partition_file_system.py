@@ -5,9 +5,6 @@ from __future__ import unicode_literals
 
 import pytsk3
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.tsk_partition_file_entry
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import tsk_image
@@ -15,6 +12,7 @@ from dfvfs.lib import tsk_partition
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
+from dfvfs.vfs import tsk_partition_file_entry
 
 
 class TSKPartitionFileSystem(file_system.FileSystem):
@@ -113,14 +111,14 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     if tsk_vs_part is None:
       if location is None or location != self.LOCATION_ROOT:
         return
-      return dfvfs.vfs.tsk_partition_file_entry.TSKPartitionFileEntry(
+      return tsk_partition_file_entry.TSKPartitionFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
     if location is None and partition_index is not None:
       path_spec.location = '/p{0:d}'.format(partition_index)
 
-    return dfvfs.vfs.tsk_partition_file_entry.TSKPartitionFileEntry(
+    return tsk_partition_file_entry.TSKPartitionFileEntry(
         self._resolver_context, self, path_spec)
 
   def GetRootFileEntry(self):

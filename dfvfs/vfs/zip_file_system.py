@@ -5,14 +5,12 @@ from __future__ import unicode_literals
 
 import zipfile
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.zip_file_entry
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import zip_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
+from dfvfs.vfs import zip_file_entry
 
 
 class ZipFileSystem(file_system.FileSystem):
@@ -126,7 +124,7 @@ class ZipFileSystem(file_system.FileSystem):
     location = getattr(path_spec, 'location', None)
 
     if len(location) == 1:
-      return dfvfs.vfs.zip_file_entry.ZipFileEntry(
+      return zip_file_entry.ZipFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
@@ -136,7 +134,7 @@ class ZipFileSystem(file_system.FileSystem):
     except KeyError:
       kwargs['is_virtual'] = True
 
-    return dfvfs.vfs.zip_file_entry.ZipFileEntry(
+    return zip_file_entry.ZipFileEntry(
         self._resolver_context, self, path_spec, **kwargs)
 
   def GetRootFileEntry(self):

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import ewf_file_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 
 
@@ -26,4 +26,4 @@ class EWFResolverHelper(resolver_helper.ResolverHelper):
     return ewf_file_io.EWFFile(resolver_context)
 
 
-resolver.Resolver.RegisterHelper(EWFResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(EWFResolverHelper())

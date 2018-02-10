@@ -5,15 +5,13 @@ from __future__ import unicode_literals
 
 import pytsk3
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.tsk_file_entry
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import tsk_image
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
+from dfvfs.vfs import tsk_file_entry
 
 
 class TSKFileSystem(file_system.FileSystem):
@@ -118,7 +116,7 @@ class TSKFileSystem(file_system.FileSystem):
     if (location == self.LOCATION_ROOT or
         (inode is not None and root_inode is not None and inode == root_inode)):
       tsk_file = self._tsk_file_system.open(self.LOCATION_ROOT)
-      return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
+      return tsk_file_entry.TSKFileEntry(
           self._resolver_context, self, path_spec, tsk_file=tsk_file,
           is_root=True)
 
@@ -135,7 +133,7 @@ class TSKFileSystem(file_system.FileSystem):
       return
 
     # TODO: is there a way to determine the parent inode number here?
-    return dfvfs.vfs.tsk_file_entry.TSKFileEntry(
+    return tsk_file_entry.TSKFileEntry(
         self._resolver_context, self, path_spec, tsk_file=tsk_file)
 
   def GetFsInfo(self):

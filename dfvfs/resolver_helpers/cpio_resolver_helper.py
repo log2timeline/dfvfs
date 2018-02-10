@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import cpio_file_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import cpio_file_system
 
@@ -39,4 +39,4 @@ class CPIOResolverHelper(resolver_helper.ResolverHelper):
 
 
 # Register the resolver helpers with the resolver.
-resolver.Resolver.RegisterHelper(CPIOResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(CPIOResolverHelper())

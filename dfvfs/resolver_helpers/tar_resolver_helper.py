@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import tar_file_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import tar_file_system
 
@@ -38,4 +38,4 @@ class TARResolverHelper(resolver_helper.ResolverHelper):
     return tar_file_system.TARFileSystem(resolver_context)
 
 
-resolver.Resolver.RegisterHelper(TARResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(TARResolverHelper())

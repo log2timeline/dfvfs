@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from dfvfs.file_io import bde_file_io
 from dfvfs.lib import definitions
-from dfvfs.resolver import resolver
+from dfvfs.resolver_helpers import manager
 from dfvfs.resolver_helpers import resolver_helper
 from dfvfs.vfs import bde_file_system
 
@@ -38,4 +38,4 @@ class BDEResolverHelper(resolver_helper.ResolverHelper):
     return bde_file_system.BDEFileSystem(resolver_context)
 
 
-resolver.Resolver.RegisterHelper(BDEResolverHelper())
+manager.ResolverHelperManager.RegisterHelper(BDEResolverHelper())

@@ -5,15 +5,13 @@ from __future__ import unicode_literals
 
 import pyvshadow
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.vshadow_file_entry
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import vshadow
 from dfvfs.path import vshadow_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
+from dfvfs.vfs import vshadow_file_entry
 
 
 class VShadowFileSystem(file_system.FileSystem):
@@ -111,13 +109,13 @@ class VShadowFileSystem(file_system.FileSystem):
       location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
         return
-      return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(
+      return vshadow_file_entry.VShadowFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
     if store_index < 0 or store_index >= self._vshadow_volume.number_of_stores:
       return
-    return dfvfs.vfs.vshadow_file_entry.VShadowFileEntry(
+    return vshadow_file_entry.VShadowFileEntry(
         self._resolver_context, self, path_spec)
 
   def GetRootFileEntry(self):

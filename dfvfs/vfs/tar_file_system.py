@@ -6,14 +6,12 @@ from __future__ import unicode_literals
 import os
 import tarfile
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.tar_file_entry
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import tar_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
+from dfvfs.vfs import tar_file_entry
 
 
 class TARFileSystem(file_system.FileSystem):
@@ -132,7 +130,7 @@ class TARFileSystem(file_system.FileSystem):
     location = getattr(path_spec, 'location', None)
 
     if len(location) == 1:
-      return dfvfs.vfs.tar_file_entry.TARFileEntry(
+      return tar_file_entry.TARFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
@@ -142,7 +140,7 @@ class TARFileSystem(file_system.FileSystem):
     except KeyError:
       kwargs['is_virtual'] = True
 
-    return dfvfs.vfs.tar_file_entry.TARFileEntry(
+    return tar_file_entry.TARFileEntry(
         self._resolver_context, self, path_spec, **kwargs)
 
   def GetRootFileEntry(self):
