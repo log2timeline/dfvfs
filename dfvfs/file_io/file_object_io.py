@@ -32,7 +32,11 @@ class FileObjectIO(file_io.FileIO):
     and should not actually close it.
     """
     if not self._file_object_set_in_init:
-      self._file_object.close()
+      try:
+        # TODO: fix close being called for the same object multiple times.
+        self._file_object.close()
+      except IOError:
+        pass
       self._file_object = None
 
   def _Open(self, path_spec=None, mode='rb'):
