@@ -6,6 +6,8 @@ from __future__ import unicode_literals
 
 import unittest
 
+import pytsk3
+
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_path_spec
@@ -14,6 +16,92 @@ from dfvfs.vfs import tsk_file_entry
 from dfvfs.vfs import tsk_file_system
 
 from tests import test_lib as shared_test_lib
+
+
+class TSKTimeTest(unittest.TestCase):
+  """Tests for the SleuthKit timestamp."""
+
+  def testCopyFromDateTimeString(self):
+    """Tests the CopyFromDateTimeString function."""
+    tsk_time_object = tsk_file_entry.TSKTime()
+
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      expected_fraction_of_second = 546875000
+    else:
+      expected_fraction_of_second = 5468750
+
+    tsk_time_object.CopyFromDateTimeString('2010-08-12 21:06:31.546875')
+    self.assertEqual(tsk_time_object.timestamp, 1281647191)
+    self.assertEqual(
+        tsk_time_object.fraction_of_second, expected_fraction_of_second)
+
+  def testCopyToStatTimeTuple(self):
+    """Tests the CopyToStatTimeTuple function."""
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      fraction_of_second = 546875000
+    else:
+      fraction_of_second = 5468750
+    tsk_time_object = tsk_file_entry.TSKTime(
+        fraction_of_second=fraction_of_second, timestamp=1281643591)
+
+    stat_time_tuple = tsk_time_object.CopyToStatTimeTuple()
+    self.assertEqual(stat_time_tuple, (1281643591, 5468750))
+
+    tsk_time_object = tsk_file_entry.TSKTime()
+
+    stat_time_tuple = tsk_time_object.CopyToStatTimeTuple()
+    self.assertEqual(stat_time_tuple, (None, None))
+
+  def testCopyToDateTimeString(self):
+    """Tests the CopyToDateTimeString function."""
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      fraction_of_second = 546875000
+    else:
+      fraction_of_second = 5468750
+    tsk_time_object = tsk_file_entry.TSKTime(
+        fraction_of_second=fraction_of_second, timestamp=1281643591)
+
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      expected_date_time_string = '2010-08-12 20:06:31.546875000'
+    else:
+      expected_date_time_string = '2010-08-12 20:06:31.5468750'
+    date_time_string = tsk_time_object.CopyToDateTimeString()
+    self.assertEqual(date_time_string, expected_date_time_string)
+
+    tsk_time_object = tsk_file_entry.TSKTime()
+
+    date_time_string = tsk_time_object.CopyToDateTimeString()
+    self.assertIsNone(date_time_string)
+
+  def testGetDate(self):
+    """Tests the GetDate function."""
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      fraction_of_second = 546875000
+    else:
+      fraction_of_second = 5468750
+    tsk_time_object = tsk_file_entry.TSKTime(
+        fraction_of_second=fraction_of_second, timestamp=1281643591)
+
+    date_tuple = tsk_time_object.GetDate()
+    self.assertEqual(date_tuple, (2010, 8, 12))
+
+    tsk_time_object = tsk_file_entry.TSKTime()
+
+    date_tuple = tsk_time_object.GetDate()
+    self.assertEqual(date_tuple, (None, None, None))
+
+  def testGetPlasoTimestamp(self):
+    """Tests the GetPlasoTimestamp function."""
+    tsk_time_object = tsk_file_entry.TSKTime(
+        fraction_of_second=546875000, timestamp=1281643591)
+
+    micro_posix_timestamp = tsk_time_object.GetPlasoTimestamp()
+    self.assertEqual(micro_posix_timestamp, 1281643591546875)
+
+    tsk_time_object = tsk_file_entry.TSKTime()
+
+    micro_posix_timestamp = tsk_time_object.GetPlasoTimestamp()
+    self.assertIsNone(micro_posix_timestamp)
 
 
 @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])

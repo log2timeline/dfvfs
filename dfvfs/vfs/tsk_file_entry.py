@@ -18,14 +18,19 @@ from dfvfs.vfs import file_entry
 
 
 class TSKTime(dfdatetime_interface.DateTimeValues):
-  """SleuthKit timestamp."""
+  """SleuthKit timestamp.
 
-  def __init__(self, timestamp=None, timestamp_fragment=None):
+  Attributes:
+    fraction_of_second (int): fraction of second.
+    timestamp (int): POSIX timestamp.
+  """
+
+  def __init__(self, fraction_of_second=None, timestamp=None):
     """Initializes a SleuthKit timestamp.
 
     Args:
+      fraction_of_second (Optional[int]): fraction of second.
       timestamp (Optional[int]): POSIX timestamp.
-      timestamp_fragment (Optional[int]): POSIX timestamp fragment.
     """
     # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
     # 1 nano second precision.
@@ -35,9 +40,9 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
       precision = dfdatetime_definitions.PRECISION_100_NANOSECONDS
 
     super(TSKTime, self).__init__()
+    self.fraction_of_second = fraction_of_second
     self.precision = precision
     self.timestamp = timestamp
-    self.timestamp_fragment = timestamp_fragment
 
   def CopyFromDateTimeString(self, time_string):
     """Copies a SleuthKit timestamp from a date and time string.
@@ -63,12 +68,12 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
 
     self.timestamp = self._GetNumberOfSecondsFromElements(
         year, month, day_of_month, hours, minutes, seconds)
-    self.timestamp_fragment = microseconds
+    self.fraction_of_second = microseconds
 
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
-      self.timestamp_fragment *= 1000
+      self.fraction_of_second *= 1000
     else:
-      self.timestamp_fragment *= 10
+      self.fraction_of_second *= 10
 
     self.is_local_time = False
 
@@ -82,13 +87,13 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     if self.timestamp is None:
       return None, None
 
-    if (self.timestamp_fragment is not None and
+    if (self.fraction_of_second is not None and
         pytsk3.TSK_VERSION_NUM >= 0x040200ff):
-      timestamp_fragment, _ = divmod(self.timestamp_fragment, 100)
+      fraction_of_second, _ = divmod(self.fraction_of_second, 100)
     else:
-      timestamp_fragment = self.timestamp_fragment
+      fraction_of_second = self.fraction_of_second
 
-    return self.timestamp, timestamp_fragment
+    return self.timestamp, fraction_of_second
 
   def CopyToDateTimeString(self):
     """Copies the date time value to a date and time string.
@@ -107,18 +112,34 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
 
     year, month, day_of_month = self._GetDateValues(number_of_days, 1970, 1, 1)
 
-    if self.timestamp_fragment is None:
+    if self.fraction_of_second is None:
       return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}'.format(
           year, month, day_of_month, hours, minutes, seconds)
 
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
       return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:09d}'.format(
           year, month, day_of_month, hours, minutes, seconds,
-          self.timestamp_fragment)
+          self.fraction_of_second)
 
     return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:07d}'.format(
         year, month, day_of_month, hours, minutes, seconds,
-        self.timestamp_fragment)
+        self.fraction_of_second)
+
+  def GetDate(self):
+    """Retrieves the date represented by the date and time values.
+
+    Returns:
+       tuple[int, int, int]: year, month, day of month or (None, None, None)
+           if the date and time values do not represent a date.
+    """
+    if self.timestamp is None:
+      return None, None, None
+
+    try:
+      number_of_days, _, _, _ = self._GetTimeValues(self.timestamp)
+      return self._GetDateValues(number_of_days, 1970, 1, 1)
+    except ValueError:
+      return None, None, None
 
   def GetPlasoTimestamp(self):
     """Retrieves a timestamp that is compatible with plaso.
@@ -130,13 +151,13 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
       return
 
     timestamp = self.timestamp * 1000000
-    if self.timestamp_fragment is not None:
+    if self.fraction_of_second is not None:
       if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
-        timestamp_fragment, _ = divmod(self.timestamp_fragment, 1000)
+        microseconds, _ = divmod(self.fraction_of_second, 1000)
       else:
-        timestamp_fragment, _ = divmod(self.timestamp_fragment, 10)
+        microseconds, _ = divmod(self.fraction_of_second, 10)
 
-      timestamp += timestamp_fragment
+      timestamp += microseconds
 
     return timestamp
 
@@ -571,12 +592,12 @@ class TSKFileEntry(file_entry.FileEntry):
 
     if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
       name_fragment = '{0:s}_nano'.format(name)
-      timestamp_fragment = getattr(
+      fraction_of_second = getattr(
           self._tsk_file.info.meta, name_fragment, None)
     else:
-      timestamp_fragment = None
+      fraction_of_second = None
 
-    return TSKTime(timestamp=timestamp, timestamp_fragment=timestamp_fragment)
+    return TSKTime(timestamp=timestamp, fraction_of_second=fraction_of_second)
 
   def _TSKFileTimeCopyToStatTimeTuple(self, tsk_file, time_value):
     """Copies a SleuthKit file object time value to a stat timestamp tuple.
