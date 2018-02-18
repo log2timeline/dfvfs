@@ -110,15 +110,15 @@ class TARFileEntry(file_entry.FileEntry):
     self._tar_info = tar_info
 
     if self._is_virtual or self._tar_info.isdir():
-      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     elif self._tar_info.isfile():
-      self._type = definitions.FILE_ENTRY_TYPE_FILE
+      self.type = definitions.FILE_ENTRY_TYPE_FILE
     elif self._tar_info.issym() or self._tar_info.islnk():
-      self._type = definitions.FILE_ENTRY_TYPE_LINK
+      self.type = definitions.FILE_ENTRY_TYPE_LINK
     elif self._tar_info.ischr() or self._tar_info.isblk():
-      self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+      self.type = definitions.FILE_ENTRY_TYPE_DEVICE
     elif self._tar_info.isfifo():
-      self._type = definitions.FILE_ENTRY_TYPE_PIPE
+      self.type = definitions.FILE_ENTRY_TYPE_PIPE
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -126,7 +126,7 @@ class TARFileEntry(file_entry.FileEntry):
     Returns:
       TARDirectory: a directory or None if not available.
     """
-    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return TARDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):

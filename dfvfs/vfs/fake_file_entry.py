@@ -68,7 +68,7 @@ class FakeFileEntry(file_entry.FileEntry):
         is_virtual=True)
     self._date_time = dfdatetime_fake_time.FakeTime()
     self._name = None
-    self._type = file_entry_type
+    self.type = file_entry_type
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -76,7 +76,7 @@ class FakeFileEntry(file_entry.FileEntry):
     Returns:
       FakeDirectory: a directory or None if not available.
     """
-    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return FakeDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):

@@ -85,7 +85,12 @@ class Directory(object):
 
 
 class FileEntry(object):
-  """VFS file entry interface."""
+  """VFS file entry interface.
+
+  Attributes:
+    path_spec (PathSpec): path specification.
+    type (int): file entry type or None if not available.
+  """
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
@@ -111,8 +116,8 @@ class FileEntry(object):
     self._link = None
     self._resolver_context = resolver_context
     self._stat_object = None
-    self._type = None
     self.path_spec = path_spec
+    self.type = None
 
     self._file_system.Open(path_spec)
 
@@ -214,8 +219,8 @@ class FileEntry(object):
         stat_object.mtime_nano = stat_time_nano
 
     # File entry type stat information.
-    if self._type:
-      stat_object.type = self._type
+    if self.type:
+      stat_object.type = self.type
 
     return stat_object
 
@@ -449,8 +454,8 @@ class FileEntry(object):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     if self._stat_object is not None:
-      self._type = self._stat_object.type
-    return self._type == definitions.FILE_ENTRY_TYPE_DEVICE
+      self.type = self._stat_object.type
+    return self.type == definitions.FILE_ENTRY_TYPE_DEVICE
 
   def IsDirectory(self):
     """Determines if the file entry is a directory.
@@ -461,8 +466,8 @@ class FileEntry(object):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     if self._stat_object is not None:
-      self._type = self._stat_object.type
-    return self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.type = self._stat_object.type
+    return self.type == definitions.FILE_ENTRY_TYPE_DIRECTORY
 
   def IsFile(self):
     """Determines if the file entry is a file.
@@ -473,8 +478,8 @@ class FileEntry(object):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     if self._stat_object is not None:
-      self._type = self._stat_object.type
-    return self._type == definitions.FILE_ENTRY_TYPE_FILE
+      self.type = self._stat_object.type
+    return self.type == definitions.FILE_ENTRY_TYPE_FILE
 
   def IsLink(self):
     """Determines if the file entry is a link.
@@ -485,8 +490,8 @@ class FileEntry(object):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     if self._stat_object is not None:
-      self._type = self._stat_object.type
-    return self._type == definitions.FILE_ENTRY_TYPE_LINK
+      self.type = self._stat_object.type
+    return self.type == definitions.FILE_ENTRY_TYPE_LINK
 
   def IsPipe(self):
     """Determines if the file entry is a pipe.
@@ -497,8 +502,8 @@ class FileEntry(object):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     if self._stat_object is not None:
-      self._type = self._stat_object.type
-    return self._type == definitions.FILE_ENTRY_TYPE_PIPE
+      self.type = self._stat_object.type
+    return self.type == definitions.FILE_ENTRY_TYPE_PIPE
 
   def IsRoot(self):
     """Determines if the file entry is the root file entry.
@@ -517,8 +522,8 @@ class FileEntry(object):
     if self._stat_object is None:
       self._stat_object = self._GetStat()
     if self._stat_object is not None:
-      self._type = self._stat_object.type
-    return self._type == definitions.FILE_ENTRY_TYPE_SOCKET
+      self.type = self._stat_object.type
+    return self.type == definitions.FILE_ENTRY_TYPE_SOCKET
 
   def IsVirtual(self):
     """Determines if the file entry is virtual (emulated by dfVFS).

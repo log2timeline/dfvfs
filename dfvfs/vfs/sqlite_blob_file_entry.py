@@ -89,9 +89,9 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     self._number_of_entries = None
 
     if is_virtual:
-      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     else:
-      self._type = definitions.FILE_ENTRY_TYPE_FILE
+      self.type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -99,7 +99,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     Returns:
       SQLiteBlobDirectory: a directory or None if not available.
     """
-    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return SQLiteBlobDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):

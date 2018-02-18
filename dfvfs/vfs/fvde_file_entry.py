@@ -38,7 +38,7 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._fvde_volume = fvde_volume
-    self._type = definitions.FILE_ENTRY_TYPE_FILE
+    self.type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetStat(self):
     """Retrieves information about the file entry.
