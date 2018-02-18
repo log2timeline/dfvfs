@@ -41,7 +41,7 @@ class VFSStat(object):
     self.gid = None
 
     # File entry type stat information.
-    self.entry_type = None
+    self.type = None
 
     # Other stat information.
     # self.ino = None
