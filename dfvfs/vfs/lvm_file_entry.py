@@ -73,9 +73,9 @@ class LVMFileEntry(file_entry.FileEntry):
     self._vslvm_logical_volume = vslvm_logical_volume
 
     if self._is_virtual:
-      self.type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     else:
-      self.type = definitions.FILE_ENTRY_TYPE_FILE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetDirectory(self):
     """Retrieves the directory.
@@ -83,7 +83,7 @@ class LVMFileEntry(file_entry.FileEntry):
     Returns:
       LVMDirectory: a directory or None if not available.
     """
-    if self.type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return LVMDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):

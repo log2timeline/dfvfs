@@ -76,9 +76,9 @@ class VShadowFileEntry(file_entry.FileEntry):
     self._vshadow_store = vshadow_store
 
     if self._is_virtual:
-      self.type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     else:
-      self.type = definitions.FILE_ENTRY_TYPE_FILE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -86,7 +86,7 @@ class VShadowFileEntry(file_entry.FileEntry):
     Returns:
       VShadowDirectory: a directory None if not available.
     """
-    if self.type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return VShadowDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
