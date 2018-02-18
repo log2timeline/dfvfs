@@ -89,7 +89,7 @@ class FileEntry(object):
 
   Attributes:
     path_spec (PathSpec): path specification.
-    type (int): file entry type or None if not available.
+    type (str): file entry type or None if not available.
   """
 
   def __init__(
