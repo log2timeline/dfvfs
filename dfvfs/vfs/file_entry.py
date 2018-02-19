@@ -89,7 +89,9 @@ class FileEntry(object):
 
   Attributes:
     entry_type (str): file entry type, such as device, directory, file, link,
-        socket and pipe or None if not available.
+        socket and pipe or None if not available. The available file entry
+        types are defined in dfvfs.lib.definitions for example
+        FILE_ENTRY_TYPE_FILE.
     path_spec (PathSpec): path specification.
   """
 
