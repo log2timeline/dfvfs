@@ -41,7 +41,7 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._gzip_file = gzip_file
-    self._type = definitions.FILE_ENTRY_TYPE_FILE
+    self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
   def __del__(self):
     """Cleans up the file entry."""

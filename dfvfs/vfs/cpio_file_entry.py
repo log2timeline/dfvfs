@@ -93,18 +93,18 @@ class CPIOFileEntry(file_entry.FileEntry):
     # for LINK first.
     mode = getattr(cpio_archive_file_entry, 'mode', 0)
     if stat.S_ISLNK(mode):
-      self._type = definitions.FILE_ENTRY_TYPE_LINK
+      self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
     # The root file entry is virtual and should have type directory.
     elif is_virtual or stat.S_ISDIR(mode):
-      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     elif stat.S_ISREG(mode):
-      self._type = definitions.FILE_ENTRY_TYPE_FILE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
     elif stat.S_ISCHR(mode) or stat.S_ISBLK(mode):
-      self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
     elif stat.S_ISFIFO(mode):
-      self._type = definitions.FILE_ENTRY_TYPE_PIPE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
     elif stat.S_ISSOCK(mode):
-      self._type = definitions.FILE_ENTRY_TYPE_SOCKET
+      self.entry_type = definitions.FILE_ENTRY_TYPE_SOCKET
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -112,7 +112,7 @@ class CPIOFileEntry(file_entry.FileEntry):
     Returns:
       CPIODirectory: a directory or None if not available.
     """
-    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return CPIODirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
@@ -124,7 +124,7 @@ class CPIOFileEntry(file_entry.FileEntry):
     if self._link is None:
       self._link = ''
 
-      if self._type != definitions.FILE_ENTRY_TYPE_LINK:
+      if self.entry_type != definitions.FILE_ENTRY_TYPE_LINK:
         return self._link
 
       cpio_archive_file = self._file_system.GetCPIOArchiveFile()

@@ -275,11 +275,11 @@ class NTFSFileEntry(file_entry.FileEntry):
     self._fsntfs_file_entry = fsntfs_file_entry
 
     if self._IsLink(fsntfs_file_entry.file_attribute_flags):
-      self._type = definitions.FILE_ENTRY_TYPE_LINK
+      self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
     elif fsntfs_file_entry.has_directory_entries_index():
-      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     else:
-      self._type = definitions.FILE_ENTRY_TYPE_FILE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetAttributes(self):
     """Retrieves the attributes.

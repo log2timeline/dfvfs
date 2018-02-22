@@ -39,7 +39,7 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._bde_volume = bde_volume
-    self._type = definitions.FILE_ENTRY_TYPE_FILE
+    self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetStat(self):
     """Retrieves information about the file entry.

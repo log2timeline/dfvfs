@@ -42,7 +42,7 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._compressed_stream = compressed_stream
-    self._type = definitions.FILE_ENTRY_TYPE_FILE
+    self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
   def __del__(self):
     """Cleans up the file entry."""
@@ -64,6 +64,6 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     if self._compressed_stream:
       stat_object.size = self._compressed_stream.get_size()
 
-    stat_object.type = self._type
+    stat_object.type = self.entry_type
 
     return stat_object

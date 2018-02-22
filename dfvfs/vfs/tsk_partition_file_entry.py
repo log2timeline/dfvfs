@@ -101,9 +101,9 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     self._tsk_vs_part = tsk_vs_part
 
     if is_virtual:
-      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     else:
-      self._type = definitions.FILE_ENTRY_TYPE_FILE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -111,7 +111,7 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     Returns:
       TSKPartitionDirectory: a directory or None if not available.
     """
-    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return TSKPartitionDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):

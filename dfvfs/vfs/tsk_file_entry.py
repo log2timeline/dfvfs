@@ -383,18 +383,18 @@ class TSKFileEntry(file_entry.FileEntry):
         tsk_file.info.meta, 'type', pytsk3.TSK_FS_META_TYPE_UNDEF)
 
     if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
-      self._type = definitions.FILE_ENTRY_TYPE_FILE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_DIR:
-      self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_LNK:
-      self._type = definitions.FILE_ENTRY_TYPE_LINK
+      self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
     elif (tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_CHR or
           tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_BLK):
-      self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_FIFO:
-      self._type = definitions.FILE_ENTRY_TYPE_PIPE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_SOCK:
-      self._type = definitions.FILE_ENTRY_TYPE_SOCKET
+      self.entry_type = definitions.FILE_ENTRY_TYPE_SOCKET
 
     # TODO: implement support for:
     # pytsk3.TSK_FS_META_TYPE_UNDEF
@@ -473,7 +473,7 @@ class TSKFileEntry(file_entry.FileEntry):
     Returns:
       TSKDirectory: directory or None.
     """
-    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return TSKDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
@@ -485,7 +485,7 @@ class TSKFileEntry(file_entry.FileEntry):
     if self._link is None:
       self._link = ''
 
-      if self._type != definitions.FILE_ENTRY_TYPE_LINK:
+      if self.entry_type != definitions.FILE_ENTRY_TYPE_LINK:
         return self._link
 
       # Note that the SleuthKit does not expose NTFS

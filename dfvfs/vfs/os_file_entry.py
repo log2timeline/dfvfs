@@ -116,7 +116,7 @@ class OSFileEntry(file_entry.FileEntry):
     self._stat_info = stat_info
 
     if is_windows_device:
-      self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
 
     elif stat_info:
       # If location contains a trailing segment separator and points to
@@ -130,18 +130,18 @@ class OSFileEntry(file_entry.FileEntry):
       # dfVFS currently only supports one type so we need to check
       # for LINK first.
       if stat.S_ISLNK(stat_info.st_mode) or is_link:
-        self._type = definitions.FILE_ENTRY_TYPE_LINK
+        self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
       elif stat.S_ISREG(stat_info.st_mode):
-        self._type = definitions.FILE_ENTRY_TYPE_FILE
+        self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
       elif stat.S_ISDIR(stat_info.st_mode):
-        self._type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+        self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
       elif (stat.S_ISCHR(stat_info.st_mode) or
             stat.S_ISBLK(stat_info.st_mode)):
-        self._type = definitions.FILE_ENTRY_TYPE_DEVICE
+        self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
       elif stat.S_ISFIFO(stat_info.st_mode):
-        self._type = definitions.FILE_ENTRY_TYPE_PIPE
+        self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
       elif stat.S_ISSOCK(stat_info.st_mode):
-        self._type = definitions.FILE_ENTRY_TYPE_SOCKET
+        self.entry_type = definitions.FILE_ENTRY_TYPE_SOCKET
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -149,7 +149,7 @@ class OSFileEntry(file_entry.FileEntry):
     Returns:
       OSDirectory: a directory object or None if not available.
     """
-    if self._type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return OSDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
