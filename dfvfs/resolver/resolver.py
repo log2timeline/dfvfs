@@ -15,27 +15,28 @@ class Resolver(object):
   """Path specification resolver."""
 
   _resolver_context = context.Context()
-  _resolver_helpers = {}
+  _resolver_helpers_manager = None
 
   key_chain = keychain.KeyChain()
 
   @classmethod
-  def DeregisterHelper(cls, resolver_helper):
-    """Deregisters a path specification resolver helper.
+  def _GetResolverHelper(cls, type_indicator):
+    """Retrieves the path specification resolver helper for the specified type.
 
     Args:
-      resolver_helper (ResolverHelper): resolver helper.
+      type_indicator (str): type indicator.
 
-    Raises:
-      KeyError: if resolver helper object is not set for the corresponding
-          type indicator.
+    Returns:
+      ResolverHelper: a resolver helper.
     """
-    if resolver_helper.type_indicator not in cls._resolver_helpers:
-      raise KeyError(
-          'Resolver helper object not set for type indicator: {0:s}.'.format(
-              resolver_helper.type_indicator))
+    if not cls._resolver_helpers_manager:
+      # Delay the import of the resolver helpers manager to prevent circular
+      # imports.
+      from dfvfs.resolver_helpers import manager
 
-    del cls._resolver_helpers[resolver_helper.type_indicator]
+      cls._resolver_helpers_manager = manager.ResolverHelperManager
+
+    return cls._resolver_helpers_manager.GetHelper(type_indicator)
 
   @classmethod
   def OpenFileEntry(cls, path_spec_object, resolver_context=None):
@@ -78,8 +79,6 @@ class Resolver(object):
           be resolved.
 
     Raises:
-      KeyError: if resolver helper object is not set for the corresponding
-          type indicator.
       PathSpecError: if the path specification is incorrect.
       TypeError: if the path specification type is unsupported.
     """
@@ -107,12 +106,7 @@ class Resolver(object):
 
     file_object = resolver_context.GetFileObject(path_spec_object)
     if not file_object:
-      if path_spec_object.type_indicator not in cls._resolver_helpers:
-        raise KeyError((
-            'Resolver helper object not set for type indicator: '
-            '{0:s}.').format(path_spec_object.type_indicator))
-
-      resolver_helper = cls._resolver_helpers[path_spec_object.type_indicator]
+      resolver_helper = cls._GetResolverHelper(path_spec_object.type_indicator)
       file_object = resolver_helper.NewFileObject(resolver_context)
 
     file_object.open(path_spec=path_spec_object)
@@ -134,8 +128,6 @@ class Resolver(object):
     Raises:
       AccessError: if the access to open the file system was denied.
       BackEndError: if the file system cannot be opened.
-      KeyError: if resolver helper object is not set for the corresponding
-          type indicator.
       PathSpecError: if the path specification is incorrect.
       TypeError: if the path specification type is unsupported.
     """
@@ -163,12 +155,7 @@ class Resolver(object):
 
     file_system = resolver_context.GetFileSystem(path_spec_object)
     if not file_system:
-      if path_spec_object.type_indicator not in cls._resolver_helpers:
-        raise KeyError((
-            'Resolver helper object not set for type indicator: '
-            '{0:s}.').format(path_spec_object.type_indicator))
-
-      resolver_helper = cls._resolver_helpers[path_spec_object.type_indicator]
+      resolver_helper = cls._GetResolverHelper(path_spec_object.type_indicator)
       file_system = resolver_helper.NewFileSystem(resolver_context)
 
     try:
@@ -180,21 +167,3 @@ class Resolver(object):
           'Unable to open file system with error: {0:s}'.format(exception))
 
     return file_system
-
-  @classmethod
-  def RegisterHelper(cls, resolver_helper):
-    """Registers a path specification resolver helper.
-
-    Args:
-      resolver_helper (ResolverHelper): resolver helper.
-
-    Raises:
-      KeyError: if resolver helper object is already set for the corresponding
-          type indicator.
-    """
-    if resolver_helper.type_indicator in cls._resolver_helpers:
-      raise KeyError((
-          'Resolver helper object already set for type indicator: '
-          '{0!s}.').format(resolver_helper.type_indicator))
-
-    cls._resolver_helpers[resolver_helper.type_indicator] = resolver_helper

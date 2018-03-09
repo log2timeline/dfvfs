@@ -5,15 +5,13 @@ from __future__ import unicode_literals
 
 import pyvslvm
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.lvm_file_entry
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import lvm
 from dfvfs.path import lvm_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
+from dfvfs.vfs import lvm_file_entry
 
 
 class LVMFileSystem(file_system.FileSystem):
@@ -117,14 +115,14 @@ class LVMFileSystem(file_system.FileSystem):
       location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
         return
-      return dfvfs.vfs.lvm_file_entry.LVMFileEntry(
+      return lvm_file_entry.LVMFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
     if (volume_index < 0 or
         volume_index >= self._vslvm_volume_group.number_of_logical_volumes):
       return
-    return dfvfs.vfs.lvm_file_entry.LVMFileEntry(
+    return lvm_file_entry.LVMFileEntry(
         self._resolver_context, self, path_spec)
 
   def GetLVMLogicalVolumeByPathSpec(self, path_spec):

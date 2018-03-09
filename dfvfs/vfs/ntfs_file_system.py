@@ -5,14 +5,12 @@ from __future__ import unicode_literals
 
 import pyfsntfs
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.ntfs_file_entry
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
+from dfvfs.vfs import ntfs_file_entry
 
 
 class NTFSFileSystem(file_system.FileSystem):
@@ -127,7 +125,7 @@ class NTFSFileSystem(file_system.FileSystem):
     if (location == self.LOCATION_ROOT or
         mft_entry == self.MFT_ENTRY_ROOT_DIRECTORY):
       fsntfs_file_entry = self._fsntfs_volume.get_root_directory()
-      return dfvfs.vfs.ntfs_file_entry.NTFSFileEntry(
+      return ntfs_file_entry.NTFSFileEntry(
           self._resolver_context, self, path_spec,
           fsntfs_file_entry=fsntfs_file_entry, is_root=True)
 
@@ -143,7 +141,7 @@ class NTFSFileSystem(file_system.FileSystem):
     if fsntfs_file_entry is None:
       return
 
-    return dfvfs.vfs.ntfs_file_entry.NTFSFileEntry(
+    return ntfs_file_entry.NTFSFileEntry(
         self._resolver_context, self, path_spec,
         fsntfs_file_entry=fsntfs_file_entry)
 

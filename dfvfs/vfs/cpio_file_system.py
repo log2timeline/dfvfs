@@ -3,14 +3,12 @@
 
 from __future__ import unicode_literals
 
-# This is necessary to prevent a circular import.
-import dfvfs.vfs.cpio_file_entry
-
 from dfvfs.lib import cpio
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import cpio_path_spec
 from dfvfs.resolver import resolver
+from dfvfs.vfs import cpio_file_entry
 from dfvfs.vfs import file_system
 
 
@@ -143,7 +141,7 @@ class CPIOFileSystem(file_system.FileSystem):
       return
 
     if len(location) == 1:
-      return dfvfs.vfs.cpio_file_entry.CPIOFileEntry(
+      return cpio_file_entry.CPIOFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
@@ -151,7 +149,7 @@ class CPIOFileSystem(file_system.FileSystem):
         location[1:])
     if cpio_archive_file_entry is None:
       return
-    return dfvfs.vfs.cpio_file_entry.CPIOFileEntry(
+    return cpio_file_entry.CPIOFileEntry(
         self._resolver_context, self, path_spec,
         cpio_archive_file_entry=cpio_archive_file_entry)
 
