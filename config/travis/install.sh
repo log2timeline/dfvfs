@@ -48,7 +48,11 @@ then
 	sudo add-apt-repository ppa:gift/dev -y;
 	sudo apt-get update -q;
 
-	if test ${TRAVIS_PYTHON_VERSION} = "2.7";
+	if test ${TARGET} = "pylint";
+	then
+		sudo apt-get install -y pylint;
+
+	elif test ${TRAVIS_PYTHON_VERSION} = "2.7";
 	then
 		sudo apt-get install -y ${COVERALLS_DEPENDENCIES} ${PYTHON2_DEPENDENCIES} ${PYTHON2_TEST_DEPENDENCIES};
 	else
