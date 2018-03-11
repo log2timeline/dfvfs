@@ -35,10 +35,11 @@ matrix:
     os: osx
     osx_image: xcode8.3
     language: generic
+  allow_failures:
+  - env: TARGET="linux-python34"
 install:
 - ./config/travis/install.sh
 script:
 - ./config/travis/runtests.sh
 after_success:
 - if test ${TARGET} = "linux-python27"; then coveralls --verbose; fi
-
