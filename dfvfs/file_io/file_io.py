@@ -46,6 +46,7 @@ class FileIO(object):
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
+  # pylint: disable=invalid-name
 
   def open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.

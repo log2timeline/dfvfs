@@ -35,6 +35,7 @@ class TSKFileSystemImage(pytsk3.Img_Info):
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the pytsk3.Img_Info object interface.
+  # pylint: disable=invalid-name
 
   def close(self):
     """Closes the volume IO object."""
