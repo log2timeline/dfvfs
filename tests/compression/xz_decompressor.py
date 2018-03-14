@@ -34,13 +34,13 @@ class LZMADecompressorTestCase(test_lib.DecompressorTestCase):
 
     # Test to trigger lzma raising EOFError.
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
     # Test to trigger lzma raising IOError.
     decompressor = xz_decompressor.LZMADecompressor()
 
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
 
 @unittest.skipIf(xz_decompressor is None, 'requires LZMA compression support')
@@ -62,13 +62,13 @@ class XZDecompressorTestCase(test_lib.DecompressorTestCase):
 
     # Test to trigger xz raising EOFError.
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
     # Test to trigger xz raising IOError.
     decompressor = xz_decompressor.XZDecompressor()
 
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
 
 if __name__ == '__main__':

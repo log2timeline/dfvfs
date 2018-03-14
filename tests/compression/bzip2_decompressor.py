@@ -29,13 +29,13 @@ class BZIP2DecompressorTestCase(test_lib.DecompressorTestCase):
 
     # Test to trigger bz2 raising EOFError.
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
     # Test to trigger bz2 raising IOError.
     decompressor = bzip2_decompressor.BZIP2Decompressor()
 
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
 
 if __name__ == '__main__':

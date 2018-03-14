@@ -29,7 +29,7 @@ class ZlibDecompressorTestCase(test_lib.DecompressorTestCase):
     decompressor = zlib_decompressor.ZlibDecompressor()
 
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
 
 class DeflateDecompressorTestCase(test_lib.DecompressorTestCase):
@@ -49,7 +49,7 @@ class DeflateDecompressorTestCase(test_lib.DecompressorTestCase):
     decompressor = zlib_decompressor.DeflateDecompressor()
 
     with self.assertRaises(errors.BackEndError):
-      _, _ = decompressor.Decompress(b'This is a test.')
+      decompressor.Decompress(b'This is a test.')
 
 
 if __name__ == '__main__':
