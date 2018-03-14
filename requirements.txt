@@ -1,4 +1,5 @@
 pip >= 7.0.0
+backports.lzma ; python_version < '3.0'
 construct >= 2.5.2,<= 2.5.3
 dfdatetime >= 20171228
 libbde-python >= 20140531
