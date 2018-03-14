@@ -7,9 +7,9 @@ from __future__ import unicode_literals
 import os
 import unittest
 
-try: 
-  import lzma 
-except ImportError: 
+try:
+  import lzma
+except ImportError:
   try:
     from backports import lzma
   except ImportError:
