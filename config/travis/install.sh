@@ -4,7 +4,7 @@
 
 COVERALLS_DEPENDENCIES="python-coverage python-coveralls python-docopt";
 
-L2TBINARIES_DEPENDENCIES="construct dfdatetime libbde libewf libfsntfs libfvde libfwnt libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvshadow libvslvm lzma pycrypto pysqlite pytsk3 six";
+L2TBINARIES_DEPENDENCIES="backports.lzma construct dfdatetime libbde libewf libfsntfs libfvde libfwnt libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvshadow libvslvm pycrypto pysqlite pytsk3 six";
 
 L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr";
 
