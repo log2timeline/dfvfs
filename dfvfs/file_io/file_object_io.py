@@ -78,6 +78,7 @@ class FileObjectIO(file_io.FileIO):
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
+  # pylint: disable=invalid-name
 
   def read(self, size=None):
     """Reads a byte string from the file-like object at the current offset.
