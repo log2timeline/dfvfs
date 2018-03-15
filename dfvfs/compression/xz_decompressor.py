@@ -3,16 +3,18 @@
 
 from __future__ import unicode_literals
 
-import sys
-
-import lzma  # pylint: disable=wrong-import-order
-
-# Different versions of lzma define LZMAError in different places.
-# pylint: disable=no-name-in-module
 try:
-  from lzma import LZMAError
+  import lzma
 except ImportError:
-  from lzma import error as LZMAError
+  from backports import lzma
+
+try:
+  from lzma import LZMAError  # pylint: disable=no-name-in-module
+except ImportError:
+  try:
+    from lzma import error as LZMAError
+  except ImportError:
+    from backports.lzma import LZMAError
 
 from dfvfs.compression import decompressor
 from dfvfs.compression import manager
@@ -44,7 +46,7 @@ class XZDecompressor(decompressor.Decompressor):
       BackEndError: if the XZ compressed stream cannot be decompressed.
     """
     try:
-      if sys.version_info[0] < 3:
+      if hasattr(lzma, 'LZMA_VERSION'):
         # Note that we cannot use max_length=0 here due to different
         # versions of the lzma code.
         uncompressed_data = self._lzma_decompressor.decompress(
