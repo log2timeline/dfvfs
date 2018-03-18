@@ -149,7 +149,7 @@ class DependencyHelper(object):
     module_object = self._ImportPythonModule(dependency.name)
     if not module_object:
       status_message = 'missing: {0:s}'.format(dependency.name)
-      return dependency.is_optional, status_message
+      return False, status_message
 
     if not dependency.version_property:
       return True, dependency.name
