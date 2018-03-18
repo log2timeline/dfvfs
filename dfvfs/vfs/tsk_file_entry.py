@@ -23,7 +23,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
   Attributes:
     fraction_of_second (int): fraction of second, which is an integer that
         contains the number 100 nano seconds before Sleuthkit 4.2.0 or
-        nano seconds in Sleuthkit 4.2.0 and later. 
+        nano seconds in Sleuthkit 4.2.0 and later.
     timestamp (int): POSIX timestamp.
   """
 
