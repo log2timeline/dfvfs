@@ -24,7 +24,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
   Attributes:
     fraction_of_second (int): fraction of second, which is an integer that
         contains the number 100 nano seconds before Sleuthkit 4.2.0 or
-        nano seconds in Sleuthkit 4.2.0 and later.
+        number of nano seconds in Sleuthkit 4.2.0 and later.
   """
 
   _100_NANOSECONDS_PER_SECOND = 10000000
@@ -36,7 +36,8 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     Args:
       fraction_of_second (Optional[int]): fraction of second, which is
           an integer that contains the number 100 nano seconds before
-          Sleuthkit 4.2.0 or nano seconds in Sleuthkit 4.2.0 and later.
+          Sleuthkit 4.2.0 or number of nano seconds in Sleuthkit 4.2.0
+          and later.
       timestamp (Optional[int]): POSIX timestamp.
     """
     # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
