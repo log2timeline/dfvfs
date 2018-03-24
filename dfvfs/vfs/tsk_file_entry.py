@@ -78,7 +78,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
           else:
             fraction_of_second /= self._100_NANOSECONDS_PER_SECOND
 
-        self._normalized_timestamp += fraction_of_second
+          self._normalized_timestamp += fraction_of_second
 
     return self._normalized_timestamp
 
