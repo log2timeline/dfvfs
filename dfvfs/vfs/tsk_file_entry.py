@@ -48,9 +48,9 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
       precision = dfdatetime_definitions.PRECISION_100_NANOSECONDS
 
     super(TSKTime, self).__init__()
+    self._precision = precision
     self._timestamp = timestamp
     self.fraction_of_second = fraction_of_second
-    self.precision = precision
 
   @property
   def timestamp(self):
@@ -68,19 +68,17 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     """
     if self._normalized_timestamp is None:
       if self._timestamp is not None:
-        normalized_timestamp = decimal.Decimal(self._timestamp)
+        self._normalized_timestamp = decimal.Decimal(self._timestamp)
 
         if self.fraction_of_second is not None:
           fraction_of_second = decimal.Decimal(self.fraction_of_second)
 
-          if self.precision == dfdatetime_definitions.PRECISION_1_NANOSECOND:
+          if self._precision == dfdatetime_definitions.PRECISION_1_NANOSECOND:
             fraction_of_second /= self._NANOSECONDS_PER_SECOND
           else:
             fraction_of_second /= self._100_NANOSECONDS_PER_SECOND
 
-          normalized_timestamp += fraction_of_second
-
-        self._SetNormalizedTimestamp(normalized_timestamp)
+          self._normalized_timestamp += fraction_of_second
 
     return self._normalized_timestamp
 
