@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import warnings
 
 
-def deprecated(function):
+def deprecated(function):  # pylint: disable=invalid-name
   """Decorator to mark functions or methods as deprecated."""
 
   def IssueDeprecationWarning(*args, **kwargs):
