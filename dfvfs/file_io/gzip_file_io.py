@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+import collections
 import os
 
 from dfvfs.file_io import file_io
@@ -32,34 +33,35 @@ class GzipFile(file_io.FileIO):
     """
     super(GzipFile, self).__init__(resolver_context)
     self._compressed_data_size = -1
-    self.uncompressed_data_size = 0
     self._current_offset = 0
     self._gzip_file_object = None
-    self._members_by_end_offset = {}
+    self._members_by_end_offset = collections.OrderedDict()
+
+    self.uncompressed_data_size = 0
 
   @property
   def original_filenames(self):
     """list(str): The original filenames stored in the gzip file."""
-    return [member.original_filename for member in
-            sorted(self._members_by_end_offset.values())]
+    return [member.original_filename
+            for member in self._members_by_end_offset.values()]
 
   @property
   def modification_times(self):
     """list(int): The modification times stored in the gzip file."""
-    return [member.modification_time for member in
-            sorted(self._members_by_end_offset.values())]
+    return [member.modification_time
+            for member in self._members_by_end_offset.values()]
 
   @property
   def operating_systems(self):
     """list(int): The operating system values stored in the gzip file."""
-    return [member.operating_system for member in
-            sorted(self._members_by_end_offset.values())]
+    return [member.operating_system
+            for member in self._members_by_end_offset.values()]
 
   @property
   def comments(self):
     """list(str): The comments in the gzip file."""
-    return [member.comment for member in
-            sorted(self._members_by_end_offset.values())]
+    return [member.comment
+            for member in self._members_by_end_offset.values()]
 
   def _GetMemberForOffset(self, offset):
     """Finds the member whose data includes the provided offset.

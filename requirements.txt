@@ -1,4 +1,5 @@
 pip >= 7.0.0
+PyYAML >= 3.10
 backports.lzma ; python_version < '3.0'
 dfdatetime >= 20180324
 dtfabric >= 20170524
