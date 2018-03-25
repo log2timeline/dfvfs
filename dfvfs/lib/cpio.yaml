@@ -27,7 +27,6 @@ members:
 ---
 name: cpio_binary_big_endian_file_entry
 type: structure
-urls: ["https://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"]
 description: big-endian CPIO file entry
 attributes:
   byte_order: big-endian
