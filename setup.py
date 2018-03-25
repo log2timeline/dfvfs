@@ -101,6 +101,7 @@ else:
               '%defattr(644,root,root,755)',
               '%doc ACKNOWLEDGEMENTS AUTHORS LICENSE README',
               '%{_prefix}/lib/python*/site-packages/**/*.py',
+              '%{_prefix}/lib/python*/site-packages/**/*.yaml',
               '%{_prefix}/lib/python*/site-packages/dfvfs*.egg-info/*',
               '',
               '%exclude %{_prefix}/share/doc/*',
@@ -168,6 +169,10 @@ setup(
         'examples', 'tests', 'tests.*', 'utils']),
     package_dir={
         'dfvfs': 'dfvfs'
+    },
+    include_package_data=True,
+    package_data={
+        'dfvfs.lib': ['*.yaml'],
     },
     data_files=[
         ('share/doc/dfvfs', [

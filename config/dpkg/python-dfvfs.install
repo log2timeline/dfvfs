@@ -1,3 +1,4 @@
 usr/lib/python2*/dist-packages/dfvfs/*.py
 usr/lib/python2*/dist-packages/dfvfs/*/*.py
+usr/lib/python2*/dist-packages/dfvfs/*/*.yaml
 usr/lib/python2*/dist-packages/dfvfs*.egg-info/*

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import os
 
-import construct
+from dtfabric.runtime import fabric as dtfabric_fabric
 
 
 class CPIOArchiveFileEntry(object):
@@ -43,7 +43,37 @@ class CPIOArchiveFile(object):
   Attributes:
     file_format (str): CPIO file format.
   """
-  # pylint: disable=no-member
+  _DATA_TYPE_FABRIC_DEFINITION_FILE = os.path.join(
+      os.path.dirname(__file__), 'cpio.yaml')
+
+  with open(_DATA_TYPE_FABRIC_DEFINITION_FILE, 'rb') as file_object:
+    _DATA_TYPE_FABRIC_DEFINITION = file_object.read()
+
+  _DATA_TYPE_FABRIC = dtfabric_fabric.DataTypeFabric(
+      yaml_definition=_DATA_TYPE_FABRIC_DEFINITION)
+
+  _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
+      'cpio_binary_big_endian_file_entry')
+
+  _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_SIZE = (
+      _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY.GetByteSize())
+
+  _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
+      'cpio_binary_little_endian_file_entry')
+
+  _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_SIZE = (
+      _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY.GetByteSize())
+
+  _CPIO_PORTABLE_ASCII_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
+      'cpio_portable_ascii_file_entry')
+
+  _CPIO_PORTABLE_ASCII_FILE_ENTRY_SIZE = (
+      _CPIO_PORTABLE_ASCII_FILE_ENTRY.GetByteSize())
+
+  _CPIO_NEW_ASCII_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
+      'cpio_new_ascii_file_entry')
+
+  _CPIO_NEW_ASCII_FILE_ENTRY_SIZE = _CPIO_NEW_ASCII_FILE_ENTRY.GetByteSize()
 
   _CPIO_SIGNATURE_BINARY_BIG_ENDIAN = b'\x71\xc7'
   _CPIO_SIGNATURE_BINARY_LITTLE_ENDIAN = b'\xc7\x71'
@@ -51,68 +81,17 @@ class CPIOArchiveFile(object):
   _CPIO_SIGNATURE_NEW_ASCII = b'070701'
   _CPIO_SIGNATURE_NEW_ASCII_WITH_CHECKSUM = b'070702'
 
-  _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_STRUCT = construct.Struct(
-      'cpio_binary_big_endian_file_entry',
-      construct.UBInt16('signature'),
-      construct.UBInt16('device_number'),
-      construct.UBInt16('inode_number'),
-      construct.UBInt16('mode'),
-      construct.UBInt16('user_identifier'),
-      construct.UBInt16('group_identifier'),
-      construct.UBInt16('number_of_links'),
-      construct.UBInt16('special_device_number'),
-      construct.UBInt16('modification_time_upper'),
-      construct.UBInt16('modification_time_lower'),
-      construct.UBInt16('path_string_size'),
-      construct.UBInt16('file_size_upper'),
-      construct.UBInt16('file_size_lower'))
+  _CPIO_ATTRIBUTE_NAMES_ODC = (
+      'device_number', 'inode_number', 'mode', 'user_identifier',
+      'group_identifier', 'number_of_links', 'special_device_number',
+      'modification_time', 'path_size', 'file_size')
 
-  _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_STRUCT = construct.Struct(
-      'cpio_binary_little_endian_file_entry',
-      construct.ULInt16('signature'),
-      construct.ULInt16('device_number'),
-      construct.ULInt16('inode_number'),
-      construct.ULInt16('mode'),
-      construct.ULInt16('user_identifier'),
-      construct.ULInt16('group_identifier'),
-      construct.ULInt16('number_of_links'),
-      construct.ULInt16('special_device_number'),
-      construct.ULInt16('modification_time_upper'),
-      construct.ULInt16('modification_time_lower'),
-      construct.ULInt16('path_string_size'),
-      construct.ULInt16('file_size_upper'),
-      construct.ULInt16('file_size_lower'))
-
-  _CPIO_PORTABLE_ASCII_FILE_ENTRY_STRUCT = construct.Struct(
-      'cpio_portable_ascii_file_entry',
-      construct.Bytes('signature', 6),
-      construct.Bytes('device_number', 6),
-      construct.Bytes('inode_number', 6),
-      construct.Bytes('mode', 6),
-      construct.Bytes('user_identifier', 6),
-      construct.Bytes('group_identifier', 6),
-      construct.Bytes('number_of_links', 6),
-      construct.Bytes('special_device_number', 6),
-      construct.Bytes('modification_time', 11),
-      construct.Bytes('path_string_size', 6),
-      construct.Bytes('file_size', 11))
-
-  _CPIO_NEW_ASCII_FILE_ENTRY_STRUCT = construct.Struct(
-      'cpio_portable_ascii_file_entry',
-      construct.Bytes('signature', 6),
-      construct.Bytes('inode_number', 8),
-      construct.Bytes('mode', 8),
-      construct.Bytes('user_identifier', 8),
-      construct.Bytes('group_identifier', 8),
-      construct.Bytes('number_of_links', 8),
-      construct.Bytes('modification_time', 8),
-      construct.Bytes('file_size', 8),
-      construct.Bytes('device_major_number', 8),
-      construct.Bytes('device_minor_number', 8),
-      construct.Bytes('special_device_major_number', 8),
-      construct.Bytes('special_device_minor_number', 8),
-      construct.Bytes('path_string_size', 8),
-      construct.Bytes('checksum', 8))
+  _CPIO_ATTRIBUTE_NAMES_CRC = (
+      'inode_number', 'mode', 'user_identifier', 'group_identifier',
+      'number_of_links', 'modification_time', 'path_size',
+      'file_size', 'device_major_number', 'device_minor_number',
+      'special_device_major_number', 'special_device_minor_number',
+      'checksum')
 
   def __init__(self):
     """Initializes the CPIO archive file object."""
@@ -124,78 +103,115 @@ class CPIOArchiveFile(object):
 
     self.file_format = None
 
+  def _ReadData(self, file_object, file_offset, data_size, description):
+    """Reads data.
+
+    Args:
+      file_object (FileIO): file-like object.
+      file_offset (int): offset of the data relative from the start of
+          the file-like object.
+      data_size (int): size of the data.
+      description (str): description of the data.
+
+    Returns:
+      bytes: byte stream containing the data.
+
+    Raises:
+      ParseError: if the structure cannot be read.
+      ValueError: if file-like object or date type map are invalid.
+    """
+    if not file_object:
+      raise ValueError('Invalid file-like object.')
+
+    file_object.seek(file_offset, os.SEEK_SET)
+
+    read_error = ''
+
+    try:
+      data = file_object.read(data_size)
+
+      if len(data) != data_size:
+        read_error = 'missing data'
+
+    except IOError as exception:
+      read_error = '{0!s}'.format(exception)
+
+    if read_error:
+      raise errors.ParseError((
+          'Unable to read {0:s} data at offset: 0x{1:08x} with error: '
+          '{2:s}').format(description, file_offset, read_error))
+
+    return data
+
   def _ReadFileEntry(self, file_object, file_offset):
     """Reads a file entry.
 
     Args:
       file_object (FileIO): file-like object.
-      file_offset (int): current file offset.
+      file_offset (int): offset of the data relative from the start of
+          the file-like object.
 
     Raises:
-      IOError: if the file entry cannot be read.
+      ParseError: if the file entry cannot be read.
     """
-    file_object.seek(file_offset, os.SEEK_SET)
-
     if self.file_format == 'bin-big-endian':
-      file_entry_struct = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_STRUCT
+      data_type_map = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY
+      file_entry_data_size = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_SIZE
     elif self.file_format == 'bin-little-endian':
-      file_entry_struct = self._CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_STRUCT
+      data_type_map = self._CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY
+      file_entry_data_size = self._CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_SIZE
     elif self.file_format == 'odc':
-      file_entry_struct = self._CPIO_PORTABLE_ASCII_FILE_ENTRY_STRUCT
+      data_type_map = self._CPIO_PORTABLE_ASCII_FILE_ENTRY
+      file_entry_data_size = self._CPIO_PORTABLE_ASCII_FILE_ENTRY_SIZE
     elif self.file_format in ('crc', 'newc'):
-      file_entry_struct = self._CPIO_NEW_ASCII_FILE_ENTRY_STRUCT
+      data_type_map = self._CPIO_NEW_ASCII_FILE_ENTRY
+      file_entry_data_size = self._CPIO_NEW_ASCII_FILE_ENTRY_SIZE
 
-    file_entry_struct_size = file_entry_struct.sizeof()
+    file_entry = self._ReadStructure(
+        file_object, file_offset, file_entry_data_size, data_type_map,
+        'file entry')
 
-    try:
-      file_entry_struct = file_entry_struct.parse_stream(file_object)
-    except construct.FieldError as exception:
-      raise IOError((
-          'Unable to parse file entry data section with error: '
-          '{0:s}').format(exception))
-
-    file_offset += file_entry_struct_size
+    file_offset += file_entry_data_size
 
     if self.file_format in ('bin-big-endian', 'bin-little-endian'):
-      inode_number = file_entry_struct.inode_number
-      mode = file_entry_struct.mode
-      user_identifier = file_entry_struct.user_identifier
-      group_identifier = file_entry_struct.group_identifier
+      file_entry.modification_time = (
+          (file_entry.modification_time.upper << 16) |
+          file_entry.modification_time.lower)
 
-      modification_time = (
-          (file_entry_struct.modification_time_upper << 16) |
-          file_entry_struct.modification_time_lower)
+      file_entry.file_size = (
+          (file_entry.file_size.upper << 16) | file_entry.file_size.lower)
 
-      path_string_size = file_entry_struct.path_string_size
+    if self.file_format == 'odc':
+      for attribute_name in self._CPIO_ATTRIBUTE_NAMES_ODC:
+        value = getattr(file_entry, attribute_name, None)
+        try:
+          value = int(value, 8)
+        except ValueError:
+          raise errors.ParseError(
+              'Unable to convert attribute: {0:s} into an integer'.format(
+                  attribute_name))
 
-      file_size = (
-          (file_entry_struct.file_size_upper << 16) |
-          file_entry_struct.file_size_lower)
-
-    elif self.file_format == 'odc':
-      inode_number = int(file_entry_struct.inode_number, 8)
-      mode = int(file_entry_struct.mode, 8)
-      user_identifier = int(file_entry_struct.user_identifier, 8)
-      group_identifier = int(file_entry_struct.group_identifier, 8)
-      modification_time = int(file_entry_struct.modification_time, 8)
-      path_string_size = int(file_entry_struct.path_string_size, 8)
-      file_size = int(file_entry_struct.file_size, 8)
+        value = setattr(file_entry, attribute_name, value)
 
     elif self.file_format in ('crc', 'newc'):
-      inode_number = int(file_entry_struct.inode_number, 16)
-      mode = int(file_entry_struct.mode, 16)
-      user_identifier = int(file_entry_struct.user_identifier, 16)
-      group_identifier = int(file_entry_struct.group_identifier, 16)
-      modification_time = int(file_entry_struct.modification_time, 16)
-      path_string_size = int(file_entry_struct.path_string_size, 16)
-      file_size = int(file_entry_struct.file_size, 16)
+      for attribute_name in self._CPIO_ATTRIBUTE_NAMES_CRC:
+        value = getattr(file_entry, attribute_name, None)
+        try:
+          value = int(value, 16)
+        except ValueError:
+          raise errors.ParseError(
+              'Unable to convert attribute: {0:s} into an integer'.format(
+                  attribute_name))
 
-    path_string_data = file_object.read(path_string_size)
-    file_offset += path_string_size
+        value = setattr(file_entry, attribute_name, value)
+
+    path_data = file_object.read(file_entry.path_size)
+
+    file_offset += file_entry.path_size
 
     # TODO: should this be ASCII?
-    path_string = path_string_data.decode('ascii')
-    path_string, _, _ = path_string.partition('\x00')
+    path = path_data.decode('ascii')
+    path, _, _ = path.partition('\x00')
 
     if self.file_format in ('bin-big-endian', 'bin-little-endian'):
       padding_size = file_offset % 2
@@ -212,19 +228,21 @@ class CPIOArchiveFile(object):
 
     file_offset += padding_size
 
-    file_entry = CPIOArchiveFileEntry()
-    file_entry.data_offset = file_offset
-    file_entry.data_size = file_size
-    file_entry.group_identifier = group_identifier
-    file_entry.inode_number = inode_number
-    file_entry.modification_time = modification_time
-    file_entry.path = path_string
-    file_entry.mode = mode
-    file_entry.size = (
-        file_entry_struct_size + path_string_size + padding_size + file_size)
-    file_entry.user_identifier = user_identifier
+    archive_file_entry = CPIOArchiveFileEntry()
 
-    file_offset += file_size
+    archive_file_entry.data_offset = file_offset
+    archive_file_entry.data_size = file_entry.file_size
+    archive_file_entry.group_identifier = file_entry.group_identifier
+    archive_file_entry.inode_number = file_entry.inode_number
+    archive_file_entry.modification_time = file_entry.modification_time
+    archive_file_entry.path = path
+    archive_file_entry.mode = file_entry.mode
+    archive_file_entry.size = (
+        file_entry_data_size + file_entry.path_size + padding_size +
+        file_entry.file_size)
+    archive_file_entry.user_identifier = file_entry.user_identifier
+
+    file_offset += file_entry.file_size
 
     if self.file_format in ('bin-big-endian', 'bin-little-endian'):
       padding_size = file_offset % 2
@@ -240,9 +258,9 @@ class CPIOArchiveFile(object):
         padding_size = 4 - padding_size
 
     if padding_size > 0:
-      file_entry.size += padding_size
+      archive_file_entry.size += padding_size
 
-    return file_entry
+    return archive_file_entry
 
   def _ReadFileEntries(self, file_object):
     """Reads the file entries from the cpio archive.
@@ -253,7 +271,7 @@ class CPIOArchiveFile(object):
     self._file_entries = {}
 
     file_offset = 0
-    while file_offset < self._file_size:
+    while file_offset < self._file_size or self._file_size == 0:
       file_entry = self._ReadFileEntry(file_object, file_offset)
       file_offset += file_entry.size
       if file_entry.path == 'TRAILER!!!':
@@ -264,6 +282,64 @@ class CPIOArchiveFile(object):
         continue
 
       self._file_entries[file_entry.path] = file_entry
+
+    self.size = file_offset
+
+  def _ReadStructure(
+      self, file_object, file_offset, data_size, data_type_map, description):
+    """Reads a structure.
+
+    Args:
+      file_object (FileIO): file-like object.
+      file_offset (int): offset of the data relative from the start of
+          the file-like object.
+      data_size (int): data size of the structure.
+      data_type_map (dtfabric.DataTypeMap): data type map of the structure.
+      description (str): description of the structure.
+
+    Returns:
+      object: structure values object.
+
+    Raises:
+      ParseError: if the structure cannot be read.
+      ValueError: if file-like object or date type map are invalid.
+    """
+    data = self._ReadData(file_object, file_offset, data_size, description)
+
+    return self._ReadStructureFromByteStream(
+        data, file_offset, data_type_map, description)
+
+  def _ReadStructureFromByteStream(
+      self, byte_stream, file_offset, data_type_map, description, context=None):
+    """Reads a structure from a byte stream.
+
+    Args:
+      byte_stream (bytes): byte stream.
+      file_offset (int): offset of the data relative from the start of
+          the file-like object.
+      data_type_map (dtfabric.DataTypeMap): data type map of the structure.
+      description (str): description of the structure.
+      context (Optional[dtfabric.DataTypeMapContext]): data type map context.
+
+    Returns:
+      object: structure values object.
+
+    Raises:
+      ParseError: if the structure cannot be read.
+      ValueError: if file-like object or date type map are invalid.
+    """
+    if not byte_stream:
+      raise ValueError('Invalid byte stream.')
+
+    if not data_type_map:
+      raise ValueError('Invalid data type map.')
+
+    try:
+      return data_type_map.MapByteStream(byte_stream, context=context)
+    except dtfabric_errors.MappingError as exception:
+      raise errors.ParseError((
+          'Unable to map {0:s} data at offset: 0x{1:08x} with error: '
+          '{2!s}').format(description, file_offset, exception))
 
   def Close(self):
     """Closes the CPIO archive file."""
