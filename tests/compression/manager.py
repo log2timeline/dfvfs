@@ -15,7 +15,7 @@ from tests import test_lib as shared_test_lib
 
 
 class TestDecompressor(decompressor.Decompressor):
-  """Class that implements a test decompressor."""
+  """Decompressor for testing."""
 
   COMPRESSION_METHOD = 'test'
 
@@ -33,7 +33,7 @@ class TestDecompressor(decompressor.Decompressor):
 
 
 class CompressionManagerTest(shared_test_lib.BaseTestCase):
-  """Class to test the compression manager."""
+  """Tests for the compression manager."""
 
   def testDecompressorRegistration(self):
     """Tests the DeregisterDecompressor and DeregisterDecompressor functions."""

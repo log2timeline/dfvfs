@@ -72,7 +72,7 @@ class Analyzer(object):
     """Flushes the cached objects for the specified format categories.
 
     Args:
-      format_categories (list[str]): format categories.
+      format_categories (set[str]): format categories.
     """
     if definitions.FORMAT_CATEGORY_ARCHIVE in format_categories:
       cls._archive_remainder_list = None
