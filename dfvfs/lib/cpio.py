@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for Copy in and out (CPIO) archive file support."""
+"""Copy in and out (CPIO) archive file."""
 
 from __future__ import unicode_literals
 
 import os
 
+from dtfabric import errors as dtfabric_errors
 from dtfabric.runtime import fabric as dtfabric_fabric
+
+from dfvfs.lib import errors
 
 
 class CPIOArchiveFileEntry(object):
@@ -117,7 +120,7 @@ class CPIOArchiveFile(object):
       bytes: byte stream containing the data.
 
     Raises:
-      ParseError: if the structure cannot be read.
+      FileFormatError: if the structure cannot be read.
       ValueError: if file-like object or date type map are invalid.
     """
     if not file_object:
@@ -137,7 +140,7 @@ class CPIOArchiveFile(object):
       read_error = '{0!s}'.format(exception)
 
     if read_error:
-      raise errors.ParseError((
+      raise errors.FileFormatError((
           'Unable to read {0:s} data at offset: 0x{1:08x} with error: '
           '{2:s}').format(description, file_offset, read_error))
 
@@ -152,7 +155,7 @@ class CPIOArchiveFile(object):
           the file-like object.
 
     Raises:
-      ParseError: if the file entry cannot be read.
+      FileFormatError: if the file entry cannot be read.
     """
     if self.file_format == 'bin-big-endian':
       data_type_map = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY
@@ -187,7 +190,7 @@ class CPIOArchiveFile(object):
         try:
           value = int(value, 8)
         except ValueError:
-          raise errors.ParseError(
+          raise errors.FileFormatError(
               'Unable to convert attribute: {0:s} into an integer'.format(
                   attribute_name))
 
@@ -199,7 +202,7 @@ class CPIOArchiveFile(object):
         try:
           value = int(value, 16)
         except ValueError:
-          raise errors.ParseError(
+          raise errors.FileFormatError(
               'Unable to convert attribute: {0:s} into an integer'.format(
                   attribute_name))
 
@@ -283,8 +286,6 @@ class CPIOArchiveFile(object):
 
       self._file_entries[file_entry.path] = file_entry
 
-    self.size = file_offset
-
   def _ReadStructure(
       self, file_object, file_offset, data_size, data_type_map, description):
     """Reads a structure.
@@ -301,7 +302,7 @@ class CPIOArchiveFile(object):
       object: structure values object.
 
     Raises:
-      ParseError: if the structure cannot be read.
+      FileFormatError: if the structure cannot be read.
       ValueError: if file-like object or date type map are invalid.
     """
     data = self._ReadData(file_object, file_offset, data_size, description)
@@ -325,7 +326,7 @@ class CPIOArchiveFile(object):
       object: structure values object.
 
     Raises:
-      ParseError: if the structure cannot be read.
+      FileFormatError: if the structure cannot be read.
       ValueError: if file-like object or date type map are invalid.
     """
     if not byte_stream:
@@ -337,7 +338,7 @@ class CPIOArchiveFile(object):
     try:
       return data_type_map.MapByteStream(byte_stream, context=context)
     except dtfabric_errors.MappingError as exception:
-      raise errors.ParseError((
+      raise errors.FileFormatError((
           'Unable to map {0:s} data at offset: 0x{1:08x} with error: '
           '{2!s}').format(description, file_offset, exception))
 
