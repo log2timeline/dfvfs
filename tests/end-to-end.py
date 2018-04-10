@@ -485,12 +485,11 @@ class RecursiveHasherTestCase(TestCase):
     Returns:
       bool: True if recursive_hasher ran successfully.
     """
-    output_file_path = os.path.join(temp_directory, 'export')
+    output_file_path = None
+    if test_definition.output_file:
+      output_file_path = os.path.join(
+          temp_directory, test_definition.output_file)
     output_options = ['-w', output_file_path]
-
-    logging_options = [
-        option.replace('%command%', 'recursive_hasher')
-        for option in test_definition.logging_options]
 
     stdout_file = os.path.join(
         temp_directory, '{0:s}-recursive_hasher.out'.format(
@@ -501,8 +500,6 @@ class RecursiveHasherTestCase(TestCase):
 
     command = [self._recursive_hasher_path]
     command.extend(output_options)
-    command.extend(logging_options)
-    command.extend(test_definition.profiling_options)
     command.append(source_path)
 
     with open(stdout_file, 'w') as stdout:
@@ -513,6 +510,9 @@ class RecursiveHasherTestCase(TestCase):
       with open(stderr_file, 'rb') as file_object:
         output_data = file_object.read()
         print(output_data)
+
+    if output_file_path and os.path.exists(output_file_path):
+      shutil.copy(output_file_path, self._test_results_path)
 
     if os.path.exists(stdout_file):
       shutil.copy(stdout_file, self._test_results_path)
@@ -531,15 +531,8 @@ class RecursiveHasherTestCase(TestCase):
     Returns:
       bool: True if the read was successful.
     """
-    test_definition.filter_file = test_definition_reader.GetConfigValue(
-        test_definition.name, 'filter_file')
-
-    test_definition.logging_options = test_definition_reader.GetConfigValue(
-        test_definition.name, 'logging_options', default=[], split_string=True)
-
-    test_definition.profiling_options = test_definition_reader.GetConfigValue(
-        test_definition.name, 'profiling_options', default=[],
-        split_string=True)
+    test_definition.output_file = test_definition_reader.GetConfigValue(
+        test_definition.name, 'output_file')
 
     test_definition.source = test_definition_reader.GetConfigValue(
         test_definition.name, 'source')

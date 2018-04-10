@@ -30,7 +30,7 @@ class RecursiveHasherVolumeScannerMediator(
   _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
   def __init__(self):
-    """Initializes the scanner mediator object."""
+    """Initializes the volume scanner mediator."""
     super(RecursiveHasherVolumeScannerMediator, self).__init__()
     self._encode_errors = 'strict'
     self._preferred_encoding = locale.getpreferredencoding()
@@ -39,7 +39,7 @@ class RecursiveHasherVolumeScannerMediator(
     """Encodes a string in the preferred encoding.
 
     Returns:
-      A byte string containing the encoded string.
+      bytes: encoded string.
     """
     try:
       # Note that encode() will first convert string into a Unicode string
@@ -64,10 +64,10 @@ class RecursiveHasherVolumeScannerMediator(
     """Formats the size as a human readable string.
 
     Args:
-      size: The size in bytes.
+      size (int): size in bytes.
 
     Returns:
-      A human readable string of the size.
+      str: human readable string of the size.
     """
     magnitude_1000 = 0
     size_1000 = float(size)
@@ -157,11 +157,11 @@ class RecursiveHasherVolumeScannerMediator(
     This method can be used to prompt the user to provide partition identifiers.
 
     Args:
-      volume_system: the volume system (instance of dfvfs.TSKVolumeSystem).
-      volume_identifiers: a list of strings containing the volume identifiers.
+      volume_system (dfvfs.TSKVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers.
 
     Returns:
-      A list of strings containing the selected partition identifiers or None.
+      list[str]: selected partition identifiers or None.
 
     Raises:
       ScannerError: if the source cannot be processed.
@@ -311,12 +311,11 @@ class RecursiveHasherVolumeScannerMediator(
     credentials.
 
     Args:
-      source_scanner_object: the source scanner (instance of SourceScanner).
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      locked_scan_node: the locked scan node (instance of SourceScanNode).
-      credentials: the credentials supported by the locked scan node (instance
-                   of dfvfs.Credentials).
+      source_scanner_object (dfvfs.SourceScanner): source scanner.
+      scan_context (dfvfs.SourceScannerContext): source scanner context.
+      locked_scan_node (dfvfs.SourceScanNode): locked scan node.
+      credentials (dfvfs.Credentials): credentials supported by the locked
+          scan node.
 
     Returns:
       A boolean value indicating whether the volume was unlocked.
@@ -386,20 +385,20 @@ class RecursiveHasherVolumeScannerMediator(
 
 
 class RecursiveHasher(volume_scanner.VolumeScanner):
-  """Class that recursively calculates message digest hashes of files."""
+  """Recursively calculates message digest hashes of data streams."""
 
   # Class constant that defines the default read buffer size.
   _READ_BUFFER_SIZE = 32768
 
-  def _CalculateHashFileEntry(self, file_entry, data_stream_name):
+  def _CalculateHashDataStream(self, file_entry, data_stream_name):
     """Calculates a message digest hash of the data of the file entry.
 
     Args:
-      file_entry: the file entry (instance of dfvfs.FileEntry).
-      data_stream_name: the data stream name.
+      file_entry (dfvfs.FileEntry): file entry.
+      data_stream_name (str): name of the data stream.
 
     Returns:
-      A binary string containing the digest hash or None.
+      bytes: digest hash or None.
     """
     hash_context = hashlib.md5()
 
@@ -437,17 +436,17 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
     """Recursive calculates hashes starting with the file entry.
 
     Args:
-      file_system: the file system (instance of dfvfs.FileSystem).
-      file_entry: the file entry (instance of dfvfs.FileEntry).
-      parent_full_path: the full path of the parent file entry.
-      output_writer: the output writer (instance of StdoutWriter).
+      file_system (dfvfs.FileSystem): file system.
+      file_entry (dfvfs.FileEntry): file entry.
+      parent_full_path (str): full path of the parent file entry.
+      output_writer (StdoutWriter): output writer.
     """
     # Since every file system implementation can have their own path
     # segment separator we are using JoinPath to be platform and file system
     # type independent.
     full_path = file_system.JoinPath([parent_full_path, file_entry.name])
     for data_stream in file_entry.data_streams:
-      hash_value = self._CalculateHashFileEntry(file_entry, data_stream.name)
+      hash_value = self._CalculateHashDataStream(file_entry, data_stream.name)
       if not hash_value:
         hash_value = 'N/A'
 
@@ -467,9 +466,8 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
     """Recursive calculates hashes starting with the base path specification.
 
     Args:
-      base_path_specs: a list of source path specification (instances
-                       of dfvfs.PathSpec).
-      output_writer: the output writer (instance of StdoutWriter).
+      base_path_specs (list[dfvfs.PathSpec]): source path specification.
+      output_writer (StdoutWriter): output writer.
     """
     for base_path_spec in base_path_specs:
       file_system = resolver.Resolver.OpenFileSystem(base_path_spec)
@@ -485,13 +483,13 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
 
 
 class StdoutWriter(object):
-  """Class that defines a stdout output writer."""
+  """Output writer that writes to stdout."""
 
   def __init__(self, encoding='utf-8'):
-    """Initializes the output writer object.
+    """Initializes the output writer.
 
     Args:
-      encoding: optional input encoding.
+      encoding (Optional[str]): input encoding.
     """
     super(StdoutWriter, self).__init__()
     self._encoding = encoding
@@ -501,7 +499,7 @@ class StdoutWriter(object):
     """Opens the output writer object.
 
     Returns:
-      A boolean containing True if successful or False if not.
+      bool: True if successful or False if not.
     """
     return True
 
@@ -513,8 +511,8 @@ class StdoutWriter(object):
     """Writes the file path and hash to stdout.
 
     Args:
-      path: the path of the file.
-      hash_value: the message digest hash calculated over the file data.
+      path (str): path of the file.
+      hash_value (str): message digest hash calculated over the file data.
     """
     string = '{0:s}\t{1:s}'.format(hash_value, path)
 
@@ -540,11 +538,13 @@ def Main():
   """The main program function.
 
   Returns:
-    A boolean containing True if successful or False if not.
+    bool: True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
       'Calculates a message digest hash for every file in a directory or '
       'storage media image.'))
+
+  # TODO: add option to write hashes to file.
 
   argument_parser.add_argument(
       'source', nargs='?', action='store', metavar='image.raw',
