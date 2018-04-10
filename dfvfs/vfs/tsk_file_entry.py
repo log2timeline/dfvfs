@@ -735,6 +735,12 @@ class TSKFileEntry(file_entry.FileEntry):
 
     path_spec = copy.deepcopy(self.path_spec)
     if data_stream_name:
+      # For HFS DECOMP fork name is exposed however libtsk seems to handle
+      # these differently when opened and the correct behavior seems to be
+      # treating this as the default (nameless) fork instead.
+      if self._file_system.IsHFS() and data_stream_name == 'DECOMP':
+        data_stream_name = ''
+
       setattr(path_spec, 'data_stream', data_stream_name)
 
     return resolver.Resolver.OpenFileObject(
