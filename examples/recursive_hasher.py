@@ -24,14 +24,14 @@ from dfvfs.resolver import resolver
 
 class RecursiveHasherVolumeScannerMediator(
     volume_scanner.VolumeScannerMediator):
-  """Class that defines a volume scanner mediator."""
+  """Volume scanner mediator for the recursive hasher."""
 
   # For context see: http://en.wikipedia.org/wiki/Byte
   _UNITS_1000 = ['B', 'kB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB']
   _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
   def __init__(self):
-    """Initializes the volume scanner mediator."""
+    """Initializes a volume scanner mediator."""
     super(RecursiveHasherVolumeScannerMediator, self).__init__()
     self._encode_errors = 'strict'
     self._preferred_encoding = locale.getpreferredencoding()
@@ -319,7 +319,7 @@ class RecursiveHasherVolumeScannerMediator(
           scan node.
 
     Returns:
-      A boolean value indicating whether the volume was unlocked.
+      bool: True if the volume was unlocked.
     """
     # TODO: print volume description.
     if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
