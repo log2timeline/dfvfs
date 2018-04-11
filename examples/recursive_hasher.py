@@ -587,7 +587,7 @@ class FileOutputWriter(OutputWriter):
     self._file_object.write(encoded_string)
 
 
-class StdoutWriter(object):
+class StdoutWriter(OutputWriter):
   """Output writer that writes to stdout."""
 
   def Close(self):
