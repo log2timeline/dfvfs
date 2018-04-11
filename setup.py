@@ -99,19 +99,13 @@ else:
               '%files -n {0:s}-%{{name}}'.format(python_package),
               '%defattr(644,root,root,755)',
               '%doc ACKNOWLEDGEMENTS AUTHORS LICENSE README',
-              '%{_prefix}/lib/python*/site-packages/dfvfs/*.py',
-              '%{_prefix}/lib/python*/site-packages/dfvfs/*/*.py',
+              '%{_prefix}/lib/python*/site-packages/**/*.py',
               '%{_prefix}/lib/python*/site-packages/dfvfs*.egg-info/*',
               '',
               '%exclude %{_prefix}/share/doc/*',
-              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*.pyc',
-              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*.pyo',
-              ('%exclude %{_prefix}/lib/python*/site-packages/dfvfs/'
-               '__pycache__/*'),
-              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/*.pyc',
-              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/*.pyo',
-              ('%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/'
-               '__pycache__/*')]
+              '%exclude %{_prefix}/lib/python*/site-packages/**/*.pyc',
+              '%exclude %{_prefix}/lib/python*/site-packages/**/*.pyo',
+              '%exclude %{_prefix}/lib/python*/site-packages/**/__pycache__/*']
 
           python_spec_file.extend(lines)
           break
@@ -143,9 +137,12 @@ dfvfs_description = (
     'Digital Forensics Virtual File System (dfVFS).')
 
 dfvfs_long_description = (
-    'dfVFS, or Digital Forensics Virtual File System, is a Python module '
-    'that provides read-only access to file-system objects from various '
-    'storage media types and file formats.')
+    'dfVFS, or Digital Forensics Virtual File System, provides read-only '
+    'access to file-system objects from various storage media types and file '
+    'formats. The goal of dfVFS is to provide a generic interface for '
+    'accessing file-system objects, for which it uses several back-ends that '
+    'provide the actual implementation of the various storage media types, '
+    'volume systems and file systems.')
 
 setup(
     name='dfvfs',
