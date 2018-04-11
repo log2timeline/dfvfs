@@ -8,6 +8,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import abc
 import argparse
 import getpass
 import hashlib
@@ -482,40 +483,28 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
           file_system, file_entry, '', output_writer)
 
 
-class StdoutWriter(object):
-  """Output writer that writes to stdout."""
+class OutputWriter(object):
+  """Output writer interface."""
 
   def __init__(self, encoding='utf-8'):
-    """Initializes the output writer.
+    """Initializes an output writer.
 
     Args:
       encoding (Optional[str]): input encoding.
     """
-    super(StdoutWriter, self).__init__()
+    super(OutputWriter, self).__init__()
     self._encoding = encoding
     self._errors = 'strict'
 
-  def Open(self):
-    """Opens the output writer object.
-
-    Returns:
-      bool: True if successful or False if not.
-    """
-    return True
-
-  def Close(self):
-    """Closes the output writer object."""
-    pass
-
-  def WriteFileHash(self, path, hash_value):
-    """Writes the file path and hash to stdout.
+  def _EncodeString(self, string):
+    """Encodes the string.
 
     Args:
-      path (str): path of the file.
-      hash_value (str): message digest hash calculated over the file data.
-    """
-    string = '{0:s}\t{1:s}'.format(hash_value, path)
+      string (str): string to encode.
 
+    Returns:
+      bytes: encoded string.
+    """
     try:
       # Note that encode() will first convert string into a Unicode string
       # if necessary.
@@ -531,6 +520,98 @@ class StdoutWriter(object):
 
       encoded_string = string.encode(self._encoding, errors=self._errors)
 
+    return encoded_string
+
+  @abc.abstractmethod
+  def Close(self):
+    """Closes the output writer object."""
+
+  @abc.abstractmethod
+  def Open(self):
+    """Opens the output writer object.
+
+    Returns:
+      bool: True if successful or False if not.
+    """
+    return True
+
+  @abc.abstractmethod
+  def WriteFileHash(self, path, hash_value):
+    """Writes the file path and hash to stdout.
+
+    Args:
+      path (str): path of the file.
+      hash_value (str): message digest hash calculated over the file data.
+    """
+
+
+class FileOutputWriter(OutputWriter):
+  """Output writer that writes to a file."""
+
+  def __init__(self, path, encoding='utf-8'):
+    """Initializes an output writer.
+
+    Args:
+      path (str): name of the path.
+      encoding (Optional[str]): input encoding.
+    """
+    super(FileOutputWriter, self).__init__(encoding=encoding)
+    self._file_object = None
+    self._path = path
+
+  def Close(self):
+    """Closes the output writer object."""
+    self._file_object.close()
+
+  def Open(self):
+    """Opens the output writer object.
+
+    Returns:
+      bool: True if successful or False if not.
+    """
+    # Using binary mode to make sure to write Unix end of lines, so we can
+    # compare output files cross-platform.
+    self._file_object = open(self._path, 'wb')
+    return True
+
+  def WriteFileHash(self, path, hash_value):
+    """Writes the file path and hash to file.
+
+    Args:
+      path (str): path of the file.
+      hash_value (str): message digest hash calculated over the file data.
+    """
+    string = '{0:s}\t{1:s}\n'.format(hash_value, path)
+
+    encoded_string = self._EncodeString(string)
+    self._file_object.write(encoded_string)
+
+
+class StdoutWriter(object):
+  """Output writer that writes to stdout."""
+
+  def Close(self):
+    """Closes the output writer object."""
+    pass
+
+  def Open(self):
+    """Opens the output writer object.
+
+    Returns:
+      bool: True if successful or False if not.
+    """
+    return True
+
+  def WriteFileHash(self, path, hash_value):
+    """Writes the file path and hash to stdout.
+
+    Args:
+      path (str): path of the file.
+      hash_value (str): message digest hash calculated over the file data.
+    """
+    string = '{0:s}\t{1:s}'.format(hash_value, path)
+
+    encoded_string = self._EncodeString(string)
     print(encoded_string)
 
 
@@ -544,7 +625,10 @@ def Main():
       'Calculates a message digest hash for every file in a directory or '
       'storage media image.'))
 
-  # TODO: add option to write hashes to file.
+  argument_parser.add_argument(
+      '--output_file', '--output-file', dest='output_file', action='store',
+      metavar='source.hashes', default=None, help=(
+          'path of the output file to write to.'))
 
   argument_parser.add_argument(
       'source', nargs='?', action='store', metavar='image.raw',
@@ -564,7 +648,10 @@ def Main():
   logging.basicConfig(
       level=logging.INFO, format='[%(levelname)s] %(message)s')
 
-  output_writer = StdoutWriter()
+  if options.output_file:
+    output_writer = FileOutputWriter(options.output_file)
+  else:
+    output_writer = StdoutWriter()
 
   if not output_writer.Open():
     print('Unable to open output writer.')

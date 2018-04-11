@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import abc
 import argparse
+import difflib
 import logging
 import os
 import shutil
@@ -466,6 +467,50 @@ class RecursiveHasherTestCase(TestCase):
     self._recursive_hasher_path = None
     self._InitializeRecursiveHasherPath()
 
+  def _CompareOutputFile(self, test_definition, temp_directory):
+    """Compares the output file with a reference output file.
+
+    Args:
+      test_definition (TestDefinition): test definition.
+      temp_directory (str): name of a temporary directory.
+
+    Returns:
+      bool: True if he output files are identical.
+    """
+    output_file_path = os.path.join(temp_directory, test_definition.output_file)
+
+    result = False
+    if test_definition.reference_output_file:
+      reference_output_file_path = test_definition.reference_output_file
+      if self._test_references_path:
+        reference_output_file_path = os.path.join(
+            self._test_references_path, reference_output_file_path)
+
+      if not os.path.exists(reference_output_file_path):
+        logging.error('No such reference output file: {0:s}'.format(
+            reference_output_file_path))
+        return False
+
+      with open(reference_output_file_path, 'r') as reference_output_file:
+        with open(output_file_path, 'r') as output_file:
+          reference_output_list = reference_output_file.readlines()
+          output_list = output_file.readlines()
+          differences = list(difflib.unified_diff(
+              reference_output_list, output_list,
+              fromfile=reference_output_file_path, tofile=output_file_path))
+
+      if differences:
+        differences_output = []
+        for difference in differences:
+          differences_output.append(difference)
+        differences_output = '\n'.join(differences_output)
+        logging.error('Differences: {0:s}'.format(differences_output))
+
+      if not differences:
+        result = True
+
+    return result
+
   def _InitializeRecursiveHasherPath(self):
     """Initializes the location of recursive_hasher.py."""
     for filename in (
@@ -489,7 +534,7 @@ class RecursiveHasherTestCase(TestCase):
     if test_definition.output_file:
       output_file_path = os.path.join(
           temp_directory, test_definition.output_file)
-    output_options = ['-w', output_file_path]
+    output_options = ['--output-file', output_file_path]
 
     stdout_file = os.path.join(
         temp_directory, '{0:s}-recursive_hasher.out'.format(
@@ -534,6 +579,10 @@ class RecursiveHasherTestCase(TestCase):
     test_definition.output_file = test_definition_reader.GetConfigValue(
         test_definition.name, 'output_file')
 
+    test_definition.reference_output_file = (
+        test_definition_reader.GetConfigValue(
+            test_definition.name, 'reference_output_file'))
+
     test_definition.source = test_definition_reader.GetConfigValue(
         test_definition.name, 'source')
 
@@ -557,10 +606,15 @@ class RecursiveHasherTestCase(TestCase):
       return False
 
     with TempDirectory() as temp_directory:
-      # Extract files with recursive_hasher.
+      # Recursively hash data streams with recursive_hasher.
       if not self._RunRecursiveHasher(
           test_definition, temp_directory, source_path):
         return False
+
+      # Compare output file with a reference output file.
+      if test_definition.output_file and test_definition.reference_output_file:
+        if not self._CompareOutputFile(test_definition, temp_directory):
+          return False
 
     return True
 
