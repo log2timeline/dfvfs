@@ -528,12 +528,7 @@ class OutputWriter(object):
 
   @abc.abstractmethod
   def Open(self):
-    """Opens the output writer object.
-
-    Returns:
-      bool: True if successful or False if not.
-    """
-    return True
+    """Opens the output writer object."""
 
   @abc.abstractmethod
   def WriteFileHash(self, path, hash_value):
@@ -564,15 +559,10 @@ class FileOutputWriter(OutputWriter):
     self._file_object.close()
 
   def Open(self):
-    """Opens the output writer object.
-
-    Returns:
-      bool: True if successful or False if not.
-    """
+    """Opens the output writer object."""
     # Using binary mode to make sure to write Unix end of lines, so we can
     # compare output files cross-platform.
     self._file_object = open(self._path, 'wb')
-    return True
 
   def WriteFileHash(self, path, hash_value):
     """Writes the file path and hash to file.
@@ -595,12 +585,8 @@ class StdoutWriter(OutputWriter):
     pass
 
   def Open(self):
-    """Opens the output writer object.
-
-    Returns:
-      bool: True if successful or False if not.
-    """
-    return True
+    """Opens the output writer object."""
+    pass
 
   def WriteFileHash(self, path, hash_value):
     """Writes the file path and hash to stdout.
@@ -653,8 +639,11 @@ def Main():
   else:
     output_writer = StdoutWriter()
 
-  if not output_writer.Open():
-    print('Unable to open output writer.')
+  try:
+    output_writer.Open()
+  except IOError as exception:
+    print('Unable to open output writer with error: {0!s}.'.format(
+        exception))
     print('')
     return False
 
