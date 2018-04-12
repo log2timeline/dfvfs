@@ -16,7 +16,7 @@ import locale
 import logging
 import sys
 
-from dfvfs.lib import definitions
+from dfvfs.lib import definitions as dfvfs_definitions
 from dfvfs.lib import errors
 from dfvfs.helpers import volume_scanner
 from dfvfs.resolver import resolver
@@ -322,7 +322,7 @@ class RecursiveHasherVolumeScannerMediator(
       bool: True if the volume was unlocked.
     """
     # TODO: print volume description.
-    if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+    if locked_scan_node.type_indicator == dfvfs_definitions.TYPE_INDICATOR_BDE:
       print('Found a BitLocker encrypted volume.')
     else:
       print('Found an encrypted volume.')
@@ -401,14 +401,14 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
     Returns:
       bytes: digest hash or None.
     """
-    hash_context = hashlib.md5()
+    hash_context = hashlib.sha256()
 
     try:
       file_object = file_entry.GetFileObject(data_stream_name=data_stream_name)
     except IOError as exception:
       logging.warning((
           'Unable to open path specification:\n{0:s}'
-          'with error: {1:s}').format(
+          'with error: {1!s}').format(
               file_entry.path_spec.comparable, exception))
       return
 
@@ -423,7 +423,7 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
     except IOError as exception:
       logging.warning((
           'Unable to read from path specification:\n{0:s}'
-          'with error: {1:s}').format(
+          'with error: {1!s}').format(
               file_entry.path_spec.comparable, exception))
       return
 
@@ -448,20 +448,75 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
     full_path = file_system.JoinPath([parent_full_path, file_entry.name])
     for data_stream in file_entry.data_streams:
       hash_value = self._CalculateHashDataStream(file_entry, data_stream.name)
-      if not hash_value:
-        hash_value = 'N/A'
-
-      # TODO: print volume.
-      if data_stream.name:
-        display_path = '{0:s}:{1:s}'.format(full_path, data_stream.name)
-      else:
-        display_path = full_path
-
-      output_writer.WriteFileHash(display_path, hash_value)
+      display_path = self._GetDisplayPath(
+          file_entry.path_spec, full_path, data_stream.name)
+      output_writer.WriteFileHash(display_path, hash_value or 'N/A')
 
     for sub_file_entry in file_entry.sub_file_entries:
       self._CalculateHashesFileEntry(
           file_system, sub_file_entry, full_path, output_writer)
+
+  def _GetDisplayPath(self, path_spec, full_path, data_stream_name):
+    """Retrieves a path to display.
+
+    Args:
+      path_spec (dfvfs.PathSpec): path specification of the file entry.
+      full_path (str): full path of the file entry.
+      data_stream_name (str): name of the data stream.
+
+    Returns:
+      str: path to display.
+    """
+    display_path = ''
+
+    if path_spec.HasParent():
+      parent_path_spec = path_spec.parent
+      if parent_path_spec and parent_path_spec.type_indicator == (
+          dfvfs_definitions.TYPE_INDICATOR_TSK_PARTITION):
+        display_path = ''.join([display_path, parent_path_spec.location])
+
+    display_path = ''.join([display_path, full_path])
+    if data_stream_name:
+      display_path = ':'.join([display_path, data_stream_name])
+
+    return display_path
+
+  def _FormatPathSpecAsHumanReadablePath(self, path_spec):
+    """Formats a path specification as a human readable path.
+
+    Args:
+      path_spec (dfvfs.PathSpec): path specification.
+
+    Returns:
+      str: human readable version of the path specification or None.
+    """
+    if not path_spec:
+      return None
+
+    if path_spec.HasParent():
+      location = getattr(path_spec.parent, 'location', None)
+
+    data_stream = getattr(path_spec, 'data_stream', None)
+    if data_stream:
+      location = '{0:s}:{1:s}'.format(location, data_stream)
+
+    if not location:
+      return path_spec.type_indicator
+
+    parent_path_spec = path_spec.parent
+    if parent_path_spec and path_spec.type_indicator in [
+        dfvfs_definitions.TYPE_INDICATOR_BZIP2,
+        dfvfs_definitions.TYPE_INDICATOR_GZIP]:
+      parent_path_spec = parent_path_spec.parent
+
+    if parent_path_spec and parent_path_spec.type_indicator in [
+        dfvfs_definitions.TYPE_INDICATOR_VSHADOW]:
+      store_index = getattr(path_spec.parent, 'store_index', None)
+      if store_index is not None:
+        return 'VSS{0:d}:{1:s}:{2:s}'.format(
+            store_index + 1, path_spec.type_indicator, location)
+
+    return '{0:s}:{1:s}'.format(path_spec.type_indicator, location)
 
   def CalculateHashes(self, base_path_specs, output_writer):
     """Recursive calculates hashes starting with the base path specification.
