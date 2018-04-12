@@ -481,43 +481,6 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
 
     return display_path
 
-  def _FormatPathSpecAsHumanReadablePath(self, path_spec):
-    """Formats a path specification as a human readable path.
-
-    Args:
-      path_spec (dfvfs.PathSpec): path specification.
-
-    Returns:
-      str: human readable version of the path specification or None.
-    """
-    if not path_spec:
-      return None
-
-    if path_spec.HasParent():
-      location = getattr(path_spec.parent, 'location', None)
-
-    data_stream = getattr(path_spec, 'data_stream', None)
-    if data_stream:
-      location = '{0:s}:{1:s}'.format(location, data_stream)
-
-    if not location:
-      return path_spec.type_indicator
-
-    parent_path_spec = path_spec.parent
-    if parent_path_spec and path_spec.type_indicator in [
-        dfvfs_definitions.TYPE_INDICATOR_BZIP2,
-        dfvfs_definitions.TYPE_INDICATOR_GZIP]:
-      parent_path_spec = parent_path_spec.parent
-
-    if parent_path_spec and parent_path_spec.type_indicator in [
-        dfvfs_definitions.TYPE_INDICATOR_VSHADOW]:
-      store_index = getattr(path_spec.parent, 'store_index', None)
-      if store_index is not None:
-        return 'VSS{0:d}:{1:s}:{2:s}'.format(
-            store_index + 1, path_spec.type_indicator, location)
-
-    return '{0:s}:{1:s}'.format(path_spec.type_indicator, location)
-
   def CalculateHashes(self, base_path_specs, output_writer):
     """Recursive calculates hashes starting with the base path specification.
 
