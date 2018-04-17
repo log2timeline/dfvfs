@@ -16,12 +16,15 @@ import locale
 import logging
 import sys
 
+from dfvfs.analyzer import analyzer as dfvfs_analyzer
+from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.lib import definitions as dfvfs_definitions
 from dfvfs.lib import errors
 from dfvfs.helpers import volume_scanner
 from dfvfs.resolver import resolver
 
 
+<<<<<<< Updated upstream
 class RecursiveHasherVolumeScannerMediator(
     volume_scanner.VolumeScannerMediator):
   """Volume scanner mediator for the recursive hasher."""
@@ -383,6 +386,14 @@ class RecursiveHasherVolumeScannerMediator(
         print('')
 
     return result
+=======
+try:
+  # Disable experimental FVDE support.
+  dfvfs_analyzer.Analyzer.DeregisterHelper(
+      fvde_analyzer_helper.FVDEAnalyzerHelper())
+except KeyError:
+  pass
+>>>>>>> Stashed changes
 
 
 class RecursiveHasher(volume_scanner.VolumeScanner):
