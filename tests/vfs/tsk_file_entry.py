@@ -124,7 +124,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testInitialize(self):
-    """Test the __init__ function."""
+    """Tests the __init__ function."""
     file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
 
@@ -197,7 +197,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Tests the Is? functions."""
     test_location = '/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=test_location, parent=self._os_path_spec)
@@ -249,7 +249,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
   def testSubFileEntries(self):
-    """Test the sub file entries iteration functionality."""
+    """Tests the number_of_sub_file_entries and sub_file_entries properties."""
     path_spec = tsk_path_spec.TSKPathSpec(
         location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -276,7 +276,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
   def testDataStreams(self):
-    """Test the data streams functionality."""
+    """Tests the data streams functionality."""
     test_location = '/a_directory/another_file'
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=16, location=test_location, parent=self._os_path_spec)
@@ -373,7 +373,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.mtime_nano, 5179783)
 
   def testAttributes(self):
-    """Test the attributes functionality."""
+    """Tests the number_of_attributes property."""
     test_location = (
         '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
@@ -384,7 +384,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     self.assertEqual(file_entry.number_of_attributes, 4)
 
   def testDataStream(self):
-    """Test the data streams functionality."""
+    """Tests the number_of_data_streams and data_streams properties."""
     test_location = (
         '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
@@ -429,7 +429,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     self.assertEqual(sorted(data_stream_names), sorted(['', '$Config']))
 
   def testGetDataStream(self):
-    """Test the retrieve data stream functionality."""
+    """Tests the retrieve data stream functionality."""
     test_location = (
         '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = tsk_path_spec.TSKPathSpec(
