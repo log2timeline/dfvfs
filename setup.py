@@ -3,6 +3,7 @@
 """Installation and deployment script."""
 
 from __future__ import print_function
+
 import sys
 
 try:
@@ -34,6 +35,7 @@ if sys.version < '2.7':
 sys.path.insert(0, '.')
 
 import dfvfs  # pylint: disable=wrong-import-position
+
 
 
 if not bdist_msi:
