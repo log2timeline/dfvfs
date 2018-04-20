@@ -512,6 +512,17 @@ class ExampleScriptTestCase(TestCase):
 
     return True
 
+  @abc.abstractmethod
+  def Run(self, test_definition):
+    """Runs the test case with the parameters specified by the test definition.
+
+    Args:
+      test_definition (TestDefinition): test definition.
+
+    Returns:
+      bool: True if the test ran successfully.
+    """
+
 
 class ListFileEntriesTestCase(ExampleScriptTestCase):
   """List file entries test case.
