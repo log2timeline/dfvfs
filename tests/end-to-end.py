@@ -443,32 +443,8 @@ class TestLauncher(object):
     return failed_tests
 
 
-class RecursiveHasherTestCase(TestCase):
-  """Recursive hasher test case.
-
-  The recursive hasher test case runs the recursive_hasher.py example script
-  on a storage media image, specified by the test definition.
-  """
-
-  NAME = 'recursive_hasher'
-
-  def __init__(
-      self, scripts_path, test_sources_path, test_references_path,
-      test_results_path, debug_output=False):
-    """Initializes a test case.
-
-    Args:
-      scripts_path (str): path to the example scripts.
-      test_sources_path (str): path to the test sources.
-      test_references_path (str): path to the test references.
-      test_results_path (str): path to store test results.
-      debug_output (Optional[bool]): True if debug output should be generated.
-    """
-    super(RecursiveHasherTestCase, self).__init__(
-        scripts_path, test_sources_path, test_references_path,
-        test_results_path, debug_output=debug_output)
-    self._recursive_hasher_path = None
-    self._InitializeRecursiveHasherPath()
+class ExampleScriptTestCase(TestCase):
+  """Common functionality for example script-based test cases."""
 
   def _CompareOutputFile(self, test_definition, temp_directory):
     """Compares the output file with a reference output file.
@@ -513,6 +489,170 @@ class RecursiveHasherTestCase(TestCase):
         result = True
 
     return result
+
+  def ReadAttributes(self, test_definition_reader, test_definition):
+    """Reads the test definition attributes into to the test definition.
+
+    Args:
+      test_definition_reader (TestDefinitionReader): test definition reader.
+      test_definition (TestDefinition): test definition.
+
+    Returns:
+      bool: True if the read was successful.
+    """
+    test_definition.output_file = test_definition_reader.GetConfigValue(
+        test_definition.name, 'output_file')
+
+    test_definition.reference_output_file = (
+        test_definition_reader.GetConfigValue(
+            test_definition.name, 'reference_output_file'))
+
+    test_definition.source = test_definition_reader.GetConfigValue(
+        test_definition.name, 'source')
+
+    return True
+
+
+class ListFileEntriesTestCase(ExampleScriptTestCase):
+  """List file entries test case.
+
+  The list file entries test case runs the list_file_entries.py example script
+  on a storage media image, specified by the test definition.
+  """
+
+  NAME = 'list_file_entries'
+
+  def __init__(
+      self, scripts_path, test_sources_path, test_references_path,
+      test_results_path, debug_output=False):
+    """Initializes a test case.
+
+    Args:
+      scripts_path (str): path to the example scripts.
+      test_sources_path (str): path to the test sources.
+      test_references_path (str): path to the test references.
+      test_results_path (str): path to store test results.
+      debug_output (Optional[bool]): True if debug output should be generated.
+    """
+    super(ListFileEntriesTestCase, self).__init__(
+        scripts_path, test_sources_path, test_references_path,
+        test_results_path, debug_output=debug_output)
+    self._list_file_entries_path = None
+    self._InitializeListFileEntriesPath()
+
+  def _InitializeListFileEntriesPath(self):
+    """Initializes the location of list_file_entries.py."""
+    for filename in (
+        'list_file_entries.exe', 'list_file_entries.sh',
+        'list_file_entries.py'):
+      self._list_file_entries_path = os.path.join(self._scripts_path, filename)
+      if os.path.exists(self._list_file_entries_path):
+        break
+
+  def _RunListFileEntries(self, test_definition, temp_directory, source_path):
+    """Runs list_file_entries on a storage media image.
+
+    Args:
+      test_definition (TestDefinition): test definition.
+      temp_directory (str): name of a temporary directory.
+      source_path (str): path of the source.
+
+    Returns:
+      bool: True if list_file_entries ran successfully.
+    """
+    output_file_path = None
+    if test_definition.output_file:
+      output_file_path = os.path.join(
+          temp_directory, test_definition.output_file)
+    output_options = ['--output-file', output_file_path]
+
+    stdout_file = os.path.join(
+        temp_directory, '{0:s}-list_file_entries.out'.format(
+            test_definition.name))
+    stderr_file = os.path.join(
+        temp_directory, '{0:s}-list_file_entries.err'.format(
+            test_definition.name))
+
+    command = [self._list_file_entries_path]
+    command.extend(output_options)
+    command.append(source_path)
+
+    with open(stdout_file, 'w') as stdout:
+      with open(stderr_file, 'w') as stderr:
+        result = self._RunCommand(command, stdout=stdout, stderr=stderr)
+
+    if self._debug_output:
+      with open(stderr_file, 'rb') as file_object:
+        output_data = file_object.read()
+        print(output_data)
+
+    if output_file_path and os.path.exists(output_file_path):
+      shutil.copy(output_file_path, self._test_results_path)
+
+    if os.path.exists(stdout_file):
+      shutil.copy(stdout_file, self._test_results_path)
+    if os.path.exists(stderr_file):
+      shutil.copy(stderr_file, self._test_results_path)
+
+    return result
+
+  def Run(self, test_definition):
+    """Runs the test case with the parameters specified by the test definition.
+
+    Args:
+      test_definition (TestDefinition): test definition.
+
+    Returns:
+      bool: True if the test ran successfully.
+    """
+    source_path = test_definition.source
+    if self._test_sources_path:
+      source_path = os.path.join(self._test_sources_path, source_path)
+
+    if not os.path.exists(source_path):
+      logging.error('No such source: {0:s}'.format(source_path))
+      return False
+
+    with TempDirectory() as temp_directory:
+      # List file entries with list_file_entries.
+      if not self._RunListFileEntries(
+          test_definition, temp_directory, source_path):
+        return False
+
+      # Compare output file with a reference output file.
+      if test_definition.output_file and test_definition.reference_output_file:
+        if not self._CompareOutputFile(test_definition, temp_directory):
+          return False
+
+    return True
+
+
+class RecursiveHasherTestCase(ExampleScriptTestCase):
+  """Recursive hasher test case.
+
+  The recursive hasher test case runs the recursive_hasher.py example script
+  on a storage media image, specified by the test definition.
+  """
+
+  NAME = 'recursive_hasher'
+
+  def __init__(
+      self, scripts_path, test_sources_path, test_references_path,
+      test_results_path, debug_output=False):
+    """Initializes a test case.
+
+    Args:
+      scripts_path (str): path to the example scripts.
+      test_sources_path (str): path to the test sources.
+      test_references_path (str): path to the test references.
+      test_results_path (str): path to store test results.
+      debug_output (Optional[bool]): True if debug output should be generated.
+    """
+    super(RecursiveHasherTestCase, self).__init__(
+        scripts_path, test_sources_path, test_references_path,
+        test_results_path, debug_output=debug_output)
+    self._recursive_hasher_path = None
+    self._InitializeRecursiveHasherPath()
 
   def _InitializeRecursiveHasherPath(self):
     """Initializes the location of recursive_hasher.py."""
@@ -569,28 +709,6 @@ class RecursiveHasherTestCase(TestCase):
 
     return result
 
-  def ReadAttributes(self, test_definition_reader, test_definition):
-    """Reads the test definition attributes into to the test definition.
-
-    Args:
-      test_definition_reader (TestDefinitionReader): test definition reader.
-      test_definition (TestDefinition): test definition.
-
-    Returns:
-      bool: True if the read was successful.
-    """
-    test_definition.output_file = test_definition_reader.GetConfigValue(
-        test_definition.name, 'output_file')
-
-    test_definition.reference_output_file = (
-        test_definition_reader.GetConfigValue(
-            test_definition.name, 'reference_output_file'))
-
-    test_definition.source = test_definition_reader.GetConfigValue(
-        test_definition.name, 'source')
-
-    return True
-
   def Run(self, test_definition):
     """Runs the test case with the parameters specified by the test definition.
 
@@ -622,7 +740,8 @@ class RecursiveHasherTestCase(TestCase):
     return True
 
 
-TestCasesManager.RegisterTestCases([RecursiveHasherTestCase])
+TestCasesManager.RegisterTestCases([
+    ListFileEntriesTestCase, RecursiveHasherTestCase])
 
 
 def Main():

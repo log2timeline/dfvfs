@@ -16,7 +16,7 @@ import locale
 import logging
 import sys
 
-from dfvfs.analyzer import analyzer as dfvfs_analyzer
+from dfvfs.analyzer import analyzer as analyzer
 from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.lib import definitions as dfvfs_definitions
 from dfvfs.lib import errors
@@ -26,8 +26,7 @@ from dfvfs.resolver import resolver
 
 try:
   # Disable experimental FVDE support.
-  dfvfs_analyzer.Analyzer.DeregisterHelper(
-      fvde_analyzer_helper.FVDEAnalyzerHelper())
+  analyzer.Analyzer.DeregisterHelper(fvde_analyzer_helper.FVDEAnalyzerHelper())
 except KeyError:
   pass
 
@@ -560,7 +559,7 @@ class OutputWriter(object):
 
   @abc.abstractmethod
   def WriteFileHash(self, path, hash_value):
-    """Writes the file path and hash to stdout.
+    """Writes the file path and hash.
 
     Args:
       path (str): path of the file.
@@ -642,13 +641,11 @@ def Main():
   argument_parser.add_argument(
       '--output_file', '--output-file', dest='output_file', action='store',
       metavar='source.hashes', default=None, help=(
-          'path of the output file to write to.'))
+          'path of the output file, default is to output to stdout.'))
 
   argument_parser.add_argument(
       'source', nargs='?', action='store', metavar='image.raw',
-      default=None, help=(
-          'path of the directory or filename of a storage media image '
-          'containing the file.'))
+      default=None, help='path of the directory or storage media image.')
 
   options = argument_parser.parse_args()
 

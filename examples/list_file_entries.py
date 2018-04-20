@@ -5,6 +5,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import abc
 import argparse
 import logging
 import os
@@ -12,11 +13,19 @@ import stat
 import sys
 
 from dfvfs.analyzer import analyzer
+from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import raw
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import tsk_volume_system
+
+
+try:
+  # Disable experimental FVDE support.
+  analyzer.Analyzer.DeregisterHelper(fvde_analyzer_helper.FVDEAnalyzerHelper())
+except KeyError:
+  pass
 
 
 class FileEntryLister(object):
@@ -328,57 +337,107 @@ class FileEntryLister(object):
     return path_spec
 
 
-class FileOutputWriter(object):
-  """File output writer."""
+class OutputWriter(object):
+  """Output writer interface."""
 
-  def __init__(self, path):
-    """Initializes a file output writer.
+  def __init__(self, encoding='utf-8'):
+    """Initializes an output writer.
 
     Args:
-      path (str): path of the file to write.
+      encoding (Optional[str]): input encoding.
     """
-    super(FileOutputWriter, self).__init__()
-    self._file_object = None
-    self._path = path
+    super(OutputWriter, self).__init__()
+    self._encoding = encoding
+    self._errors = 'strict'
 
-  def Open(self):
-    """Opens the output writer.
+  def _EncodeString(self, string):
+    """Encodes the string.
+
+    Args:
+      string (str): string to encode.
 
     Returns:
-      bool: True if successful or False if not.
+      bytes: encoded string.
     """
-    self._file_object = open(self._path, 'w')
-    return True
+    try:
+      # Note that encode() will first convert string into a Unicode string
+      # if necessary.
+      encoded_string = string.encode(self._encoding, errors=self._errors)
+    except UnicodeEncodeError:
+      if self._errors == 'strict':
+        logging.error(
+            'Unable to properly write output due to encoding error. '
+            'Switching to error tolerant encoding which can result in '
+            'non Basic Latin (C0) characters to be replaced with "?" or '
+            '"\\ufffd".')
+        self._errors = 'replace'
 
+      encoded_string = string.encode(self._encoding, errors=self._errors)
+
+    return encoded_string
+
+  @abc.abstractmethod
   def Close(self):
     """Closes the output writer object."""
-    self._file_object.close()
-    self._file_object = None
 
+  @abc.abstractmethod
+  def Open(self):
+    """Opens the output writer object."""
+
+  @abc.abstractmethod
   def WriteFileEntry(self, path):
-    """Writes the file path to stdout.
+    """Writes the file path.
 
     Args:
       path (str): path of the file.
     """
-    path = '{0:s}\n'.format(path)
-    path = path.encode('utf-8')
-    self._file_object.write(path)
 
 
-class StdoutWriter(object):
-  """Stdout output writer."""
+class FileOutputWriter(OutputWriter):
+  """Output writer that writes to a file."""
 
-  def Open(self):
-    """Opens the output writer.
+  def __init__(self, path, encoding='utf-8'):
+    """Initializes an output writer.
 
-    Returns:
-      bool: True if successful or False if not.
+    Args:
+      path (str): name of the path.
+      encoding (Optional[str]): input encoding.
     """
-    return True
+    super(FileOutputWriter, self).__init__(encoding=encoding)
+    self._file_object = None
+    self._path = path
 
   def Close(self):
     """Closes the output writer object."""
+    self._file_object.close()
+
+  def Open(self):
+    """Opens the output writer object."""
+    # Using binary mode to make sure to write Unix end of lines, so we can
+    # compare output files cross-platform.
+    self._file_object = open(self._path, 'wb')
+
+  def WriteFileEntry(self, path):
+    """Writes the file path to file.
+
+    Args:
+      path (str): path of the file.
+    """
+    string = '{0:s}\n'.format(path)
+
+    encoded_string = self._EncodeString(string)
+    self._file_object.write(encoded_string)
+
+
+class StdoutWriter(OutputWriter):
+  """Output writer that writes to stdout."""
+
+  def Close(self):
+    """Closes the output writer object."""
+    pass
+
+  def Open(self):
+    """Opens the output writer object."""
     pass
 
   def WriteFileEntry(self, path):
@@ -387,7 +446,10 @@ class StdoutWriter(object):
     Args:
       path (str): path of the file.
     """
-    print('{0:s}'.format(path))
+    string = '{0:s}\n'.format(path)
+
+    encoded_string = self._EncodeString(string)
+    print(encoded_string)
 
 
 def Main():
@@ -400,15 +462,13 @@ def Main():
       'Lists file entries in a directory or storage media image.'))
 
   argument_parser.add_argument(
-      '-o', '--output', dest='output', action='store', metavar='PATH',
-      default=None, help=(
+      '--output_file', '--output-file', dest='output_file', action='store',
+      metavar='source.hashes', default=None, help=(
           'path of the output file, default is to output to stdout.'))
 
   argument_parser.add_argument(
       'source', nargs='?', action='store', metavar='image.raw',
-      default=None, help=(
-          'path of the directory or filename of a storage media image '
-          'containing the file.'))
+      default=None, help='path of the directory or storage media image.')
 
   options = argument_parser.parse_args()
 
@@ -422,13 +482,16 @@ def Main():
   logging.basicConfig(
       level=logging.INFO, format='[%(levelname)s] %(message)s')
 
-  if options.output:
-    output_writer = FileOutputWriter(options.output)
+  if options.output_file:
+    output_writer = FileOutputWriter(options.output_file)
   else:
     output_writer = StdoutWriter()
 
-  if not output_writer.Open():
-    print('Unable to open output writer.')
+  try:
+    output_writer.Open()
+  except IOError as exception:
+    print('Unable to open output writer with error: {0!s}.'.format(
+        exception))
     print('')
     return False
 
