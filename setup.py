@@ -37,7 +37,6 @@ sys.path.insert(0, '.')
 import dfvfs  # pylint: disable=wrong-import-position
 
 
-
 if not bdist_msi:
   BdistMSICommand = None
 else:
