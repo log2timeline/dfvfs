@@ -8,7 +8,11 @@
 # Exit on error.
 set -e;
 
-if test "${TARGET}" = "pylint";
+if test "${TARGET}" = "jenkins";
+then
+	./config/jenkins/linux/run_end_to_end_tests.sh;
+
+elif test "${TARGET}" = "pylint";
 then
 	pylint --version
 
@@ -28,6 +32,11 @@ then
 	python ./setup.py sdist
 
 	python ./setup.py bdist
+
+	if test -f tests/end-to-end.py;
+	then
+		PYTHONPATH=. python ./tests/end-to-end.py --debug -c config/end-to-end.ini;
+	fi
 
 elif test "${TRAVIS_OS_NAME}" = "linux";
 then
@@ -55,4 +64,9 @@ then
 	mkdir -p ${TMPSITEPACKAGES};
 
 	PYTHONPATH=${TMPSITEPACKAGES} python ./setup.py install --prefix=${TMPDIR};
+
+	if test -f tests/end-to-end.py;
+	then
+		PYTHONPATH=. python ./tests/end-to-end.py --debug -c config/end-to-end.ini;
+	fi
 fi

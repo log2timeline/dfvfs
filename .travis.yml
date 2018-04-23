@@ -37,6 +37,12 @@ matrix:
     os: osx
     osx_image: xcode9.2
     language: generic
+  - env: [TARGET="jenkins", JOB_NAME="travis"]
+    os: linux
+    dist: trusty
+    sudo: required
+    group: edge
+    python: 2.7
   allow_failures:
   - env: TARGET="linux-python34"
   - env: [TARGET="linux-python34-tox", TOXENV="py34"]
@@ -44,6 +50,5 @@ install:
 - ./config/travis/install.sh
 script:
 - ./config/travis/run_with_timeout.sh 30 ./config/travis/runtests.sh
-- if test -f tests/end-to-end.py; then PYTHONPATH=. ./tests/end-to-end.py --debug -c config/end-to-end.ini; fi
 after_success:
 - if test ${TARGET} = "linux-python27"; then curl -o codecov.sh -s https://codecov.io/bash && /bin/bash ./codecov.sh; fi
