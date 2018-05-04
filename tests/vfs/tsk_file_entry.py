@@ -130,6 +130,18 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  def testBackupTime(self):
+    """Test the backup_time property."""
+    test_file_entry = file_entry.FileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+    self.assertIsNone(test_file_entry.backup_time)
+
+  def testDeletionTime(self):
+    """Test the deletion_time property."""
+    test_file_entry = file_entry.FileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+    self.assertIsNone(test_file_entry.deletion_time)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
@@ -343,6 +355,18 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+
+  def testBackupTime(self):
+    """Test the backup_time property."""
+    test_file_entry = file_entry.FileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+    self.assertIsNone(test_file_entry.backup_time)
+
+  def testDeletionTime(self):
+    """Test the deletion_time property."""
+    test_file_entry = file_entry.FileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+    self.assertIsNone(test_file_entry.deletion_time)
 
   def testGetStat(self):
     """Tests the GetStat function."""

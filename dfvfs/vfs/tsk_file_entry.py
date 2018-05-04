@@ -657,6 +657,14 @@ class TSKFileEntry(file_entry.FileEntry):
     return self._GetTimeValue('atime')
 
   @property
+  def backup_time(self):
+    """dfdatetime.DateTimeValues: backup time or None if not available."""
+    if self._file_system_type in self._TSK_NO_CRTIME_FS_TYPES:
+      return
+
+    return self._GetTimeValue('bkup')
+
+  @property
   def change_time(self):
     """dfdatetime.DateTimeValues: change time or None if not available."""
     if self._file_system_type in self._TSK_NO_CTIME_FS_TYPES:
@@ -671,6 +679,14 @@ class TSKFileEntry(file_entry.FileEntry):
       return
 
     return self._GetTimeValue('crtime')
+
+  @property
+  def deletion_time(self):
+    """dfdatetime.DateTimeValues: deletion time or None if not available."""
+    if self._file_system_type in self._TSK_NO_CRTIME_FS_TYPES:
+      return
+
+    return self._GetTimeValue('dtime')
 
   @property
   def name(self):
