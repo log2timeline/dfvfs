@@ -132,15 +132,19 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
   def testBackupTime(self):
     """Test the backup_time property."""
-    test_file_entry = tsk_file_entry.TSKFileEntry(
-        self._resolver_context, self._file_system, self._tsk_path_spec)
-    self.assertIsNone(test_file_entry.backup_time)
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location=test_location, parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNone(file_entry.backup_time)
 
   def testDeletionTime(self):
     """Test the deletion_time property."""
-    test_file_entry = tsk_file_entry.TSKFileEntry(
-        self._resolver_context, self._file_system, self._tsk_path_spec)
-    self.assertIsNone(test_file_entry.deletion_time)
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location=test_location, parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry.deletion_time)
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -358,15 +362,21 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testBackupTime(self):
     """Test the backup_time property."""
-    test_file_entry = tsk_file_entry.TSKFileEntry(
-        self._resolver_context, self._file_system, self._tsk_path_spec)
-    self.assertIsNone(test_file_entry.backup_time)
+    test_location = (
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=38, location=test_location, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNone(file_entry.backup_time)
 
   def testDeletionTime(self):
     """Test the deletion_time property."""
-    test_file_entry = tsk_file_entry.TSKFileEntry(
-        self._resolver_context, self._file_system, self._tsk_path_spec)
-    self.assertIsNone(test_file_entry.deletion_time)
+    test_location = (
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=38, location=test_location, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNone(file_entry.deletion_time)
 
   def testGetStat(self):
     """Tests the GetStat function."""

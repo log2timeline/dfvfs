@@ -126,7 +126,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
           YYYY-MM-DD hh:mm:ss.#########
     """
     if self._timestamp is None:
-      return
+      return None
 
     number_of_days, hours, minutes, seconds = self._GetTimeValues(
         self._timestamp)
@@ -276,79 +276,77 @@ class TSKDirectory(file_entry.Directory):
       raise errors.BackEndError(
           'Unable to open directory with error: {0:s}'.format(exception))
 
-    if not tsk_directory:
-      return
-
-    for tsk_directory_entry in tsk_directory:
-      # Note that because pytsk3.Directory does not explicitly defines info
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(tsk_directory_entry, 'info', None) is None:
-        continue
-
-      # Note that because pytsk3.TSK_FS_FILE does not explicitly defines fs_info
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(tsk_directory_entry.info, 'fs_info', None) is None:
-        continue
-
-      # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(tsk_directory_entry.info, 'meta', None) is None:
-        # Most directory entries will have an "inode" but not all, e.g.
-        # previously deleted files. Currently directory entries without
-        # a pytsk3.TSK_FS_META object are ignored.
-        continue
-
-      # Note that because pytsk3.TSK_FS_META does not explicitly defines addr
-      # we need to check if the attribute exists.
-      if not hasattr(tsk_directory_entry.info.meta, 'addr'):
-        continue
-
-      directory_entry_inode = tsk_directory_entry.info.meta.addr
-      directory_entry = None
-
-      # Ignore references to self.
-      if directory_entry_inode == inode:
-        continue
-
-      # On non-NTFS file systems ignore inode 0.
-      if directory_entry_inode == 0 and not self._file_system.IsNTFS():
-        continue
-
-      # Note that because pytsk3.TSK_FS_FILE does not explicitly defines name
-      # we need to check if the attribute exists and has a value other
-      # than None.
-      if getattr(tsk_directory_entry.info, 'name', None) is not None:
-        # Ignore file entries marked as "unallocated".
-        flags = getattr(tsk_directory_entry.info.name, 'flags', 0)
-        if int(flags) & pytsk3.TSK_FS_NAME_FLAG_UNALLOC:
+    if tsk_directory:
+      for tsk_directory_entry in tsk_directory:
+        # Note that because pytsk3.Directory does not explicitly defines info
+        # we need to check if the attribute exists and has a value other
+        # than None.
+        if getattr(tsk_directory_entry, 'info', None) is None:
           continue
 
-        directory_entry = getattr(tsk_directory_entry.info.name, 'name', '')
-
-        try:
-          # pytsk3 returns an UTF-8 encoded byte string.
-          directory_entry = directory_entry.decode('utf8')
-        except UnicodeError:
-          # Continue here since we cannot represent the directory entry.
+        # Note that because pytsk3.TSK_FS_FILE does not explicitly defines
+        # fs_info we need to check if the attribute exists and has a value
+        # other than None.
+        if getattr(tsk_directory_entry.info, 'fs_info', None) is None:
           continue
 
-        if directory_entry:
-          # Ignore references to self or parent.
-          if directory_entry in ['.', '..']:
+        # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
+        # we need to check if the attribute exists and has a value other
+        # than None.
+        if getattr(tsk_directory_entry.info, 'meta', None) is None:
+          # Most directory entries will have an "inode" but not all, e.g.
+          # previously deleted files. Currently directory entries without
+          # a pytsk3.TSK_FS_META object are ignored.
+          continue
+
+        # Note that because pytsk3.TSK_FS_META does not explicitly defines addr
+        # we need to check if the attribute exists.
+        if not hasattr(tsk_directory_entry.info.meta, 'addr'):
+          continue
+
+        directory_entry_inode = tsk_directory_entry.info.meta.addr
+        directory_entry = None
+
+        # Ignore references to self.
+        if directory_entry_inode == inode:
+          continue
+
+        # On non-NTFS file systems ignore inode 0.
+        if directory_entry_inode == 0 and not self._file_system.IsNTFS():
+          continue
+
+        # Note that because pytsk3.TSK_FS_FILE does not explicitly defines name
+        # we need to check if the attribute exists and has a value other
+        # than None.
+        if getattr(tsk_directory_entry.info, 'name', None) is not None:
+          # Ignore file entries marked as "unallocated".
+          flags = getattr(tsk_directory_entry.info.name, 'flags', 0)
+          if int(flags) & pytsk3.TSK_FS_NAME_FLAG_UNALLOC:
             continue
 
-          if location == self._file_system.PATH_SEPARATOR:
-            directory_entry = self._file_system.JoinPath([directory_entry])
-          else:
-            directory_entry = self._file_system.JoinPath([
-                location, directory_entry])
+          directory_entry = getattr(tsk_directory_entry.info.name, 'name', '')
 
-      yield tsk_path_spec.TSKPathSpec(
-          inode=directory_entry_inode, location=directory_entry,
-          parent=self.path_spec.parent)
+          try:
+            # pytsk3 returns an UTF-8 encoded byte string.
+            directory_entry = directory_entry.decode('utf8')
+          except UnicodeError:
+            # Continue here since we cannot represent the directory entry.
+            continue
+
+          if directory_entry:
+            # Ignore references to self or parent.
+            if directory_entry in ['.', '..']:
+              continue
+
+            if location == self._file_system.PATH_SEPARATOR:
+              directory_entry = self._file_system.JoinPath([directory_entry])
+            else:
+              directory_entry = self._file_system.JoinPath([
+                  location, directory_entry])
+
+        yield tsk_path_spec.TSKPathSpec(
+            inode=directory_entry_inode, location=directory_entry,
+            parent=self.path_spec.parent)
 
 
 class TSKFileEntry(file_entry.FileEntry):
@@ -359,23 +357,67 @@ class TSKFileEntry(file_entry.FileEntry):
   # pytsk3.TSK_FS_TYPE_ENUM is unhashable, preventing a set
   # based lookup, hence lists are used.
 
-  _TSK_NO_ATIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_ISO9660]
+  _TSK_EXT_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_EXT2,
+      pytsk3.TSK_FS_TYPE_EXT3,
+      pytsk3.TSK_FS_TYPE_EXT4,
+      pytsk3.TSK_FS_TYPE_EXT_DETECT]
 
-  _TSK_NO_MTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_ISO9660]
+  _TSK_FAT_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_EXFAT,
+      pytsk3.TSK_FS_TYPE_FAT_DETECT,
+      pytsk3.TSK_FS_TYPE_FAT12,
+      pytsk3.TSK_FS_TYPE_FAT16,
+      pytsk3.TSK_FS_TYPE_FAT32]
 
-  _TSK_NO_CTIME_FS_TYPES = [
-      pytsk3.TSK_FS_TYPE_FAT12, pytsk3.TSK_FS_TYPE_FAT16,
-      pytsk3.TSK_FS_TYPE_FAT32, pytsk3.TSK_FS_TYPE_ISO9660,
-      pytsk3.TSK_FS_TYPE_EXFAT]
+  _TSK_HFS_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_HFS,
+      pytsk3.TSK_FS_TYPE_HFS_DETECT]
 
-  _TSK_NO_CRTIME_FS_TYPES = [
-      pytsk3.TSK_FS_TYPE_FFS1, pytsk3.TSK_FS_TYPE_FFS1B,
-      pytsk3.TSK_FS_TYPE_FFS2, pytsk3.TSK_FS_TYPE_YAFFS2,
-      pytsk3.TSK_FS_TYPE_EXT2, pytsk3.TSK_FS_TYPE_EXT3]
+  _TSK_NTFS_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_NTFS,
+      pytsk3.TSK_FS_TYPE_NTFS_DETECT]
+
+  _TSK_UFS_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_FFS_DETECT,
+      pytsk3.TSK_FS_TYPE_FFS1,
+      pytsk3.TSK_FS_TYPE_FFS1B,
+      pytsk3.TSK_FS_TYPE_FFS2]
+
+  _TSK_ATIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_YAFFS2]
+  _TSK_ATIME_FS_TYPES.extend(_TSK_EXT_FS_TYPES)
+  _TSK_ATIME_FS_TYPES.extend(_TSK_FAT_FS_TYPES)
+  _TSK_ATIME_FS_TYPES.extend(_TSK_HFS_FS_TYPES)
+  _TSK_ATIME_FS_TYPES.extend(_TSK_NTFS_FS_TYPES)
+  _TSK_ATIME_FS_TYPES.extend(_TSK_UFS_FS_TYPES)
+
+  _TSK_BKUP_FS_TYPES = _TSK_HFS_FS_TYPES
+
+  _TSK_CTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_YAFFS2]
+  _TSK_CTIME_FS_TYPES.extend(_TSK_EXT_FS_TYPES)
+  _TSK_CTIME_FS_TYPES.extend(_TSK_HFS_FS_TYPES)
+  _TSK_CTIME_FS_TYPES.extend(_TSK_NTFS_FS_TYPES)
+  _TSK_CTIME_FS_TYPES.extend(_TSK_UFS_FS_TYPES)
+
+  _TSK_CRTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_EXT4]
+  _TSK_CRTIME_FS_TYPES.extend(_TSK_FAT_FS_TYPES)
+  _TSK_CRTIME_FS_TYPES.extend(_TSK_NTFS_FS_TYPES)
+
+  _TSK_DTIME_FS_TYPES = _TSK_EXT_FS_TYPES
+
+  _TSK_MTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_YAFFS2]
+  _TSK_MTIME_FS_TYPES.extend(_TSK_EXT_FS_TYPES)
+  _TSK_MTIME_FS_TYPES.extend(_TSK_FAT_FS_TYPES)
+  _TSK_MTIME_FS_TYPES.extend(_TSK_HFS_FS_TYPES)
+  _TSK_MTIME_FS_TYPES.extend(_TSK_NTFS_FS_TYPES)
+  _TSK_MTIME_FS_TYPES.extend(_TSK_UFS_FS_TYPES)
 
   _TSK_HAS_NANO_FS_TYPES = [
-      pytsk3.TSK_FS_TYPE_EXT4, pytsk3.TSK_FS_TYPE_NTFS, pytsk3.TSK_FS_TYPE_HFS,
-      pytsk3.TSK_FS_TYPE_FFS2, pytsk3.TSK_FS_TYPE_EXFAT]
+      pytsk3.TSK_FS_TYPE_EXFAT,
+      pytsk3.TSK_FS_TYPE_EXT4,
+      pytsk3.TSK_FS_TYPE_FFS2,
+      pytsk3.TSK_FS_TYPE_HFS,
+      pytsk3.TSK_FS_TYPE_NTFS]
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
@@ -651,40 +693,40 @@ class TSKFileEntry(file_entry.FileEntry):
   @property
   def access_time(self):
     """dfdatetime.DateTimeValues: access time or None if not available."""
-    if self._file_system_type in self._TSK_NO_ATIME_FS_TYPES:
-      return
+    if self._file_system_type not in self._TSK_ATIME_FS_TYPES:
+      return None
 
     return self._GetTimeValue('atime')
 
   @property
   def backup_time(self):
     """dfdatetime.DateTimeValues: backup time or None if not available."""
-    if self._file_system_type in self._TSK_NO_CRTIME_FS_TYPES:
-      return
+    if self._file_system_type not in self._TSK_BKUP_FS_TYPES:
+      return None
 
     return self._GetTimeValue('bkup')
 
   @property
   def change_time(self):
     """dfdatetime.DateTimeValues: change time or None if not available."""
-    if self._file_system_type in self._TSK_NO_CTIME_FS_TYPES:
-      return
+    if self._file_system_type not in self._TSK_CTIME_FS_TYPES:
+      return None
 
     return self._GetTimeValue('ctime')
 
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
-    if self._file_system_type in self._TSK_NO_CRTIME_FS_TYPES:
-      return
+    if self._file_system_type not in self._TSK_CRTIME_FS_TYPES:
+      return None
 
     return self._GetTimeValue('crtime')
 
   @property
   def deletion_time(self):
     """dfdatetime.DateTimeValues: deletion time or None if not available."""
-    if self._file_system_type in self._TSK_NO_CRTIME_FS_TYPES:
-      return
+    if self._file_system_type not in self._TSK_DTIME_FS_TYPES:
+      return None
 
     return self._GetTimeValue('dtime')
 
@@ -719,8 +761,8 @@ class TSKFileEntry(file_entry.FileEntry):
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
-    if self._file_system_type in self._TSK_NO_MTIME_FS_TYPES:
-      return
+    if self._file_system_type not in self._TSK_MTIME_FS_TYPES:
+      return None
 
     return self._GetTimeValue('mtime')
 
@@ -747,7 +789,7 @@ class TSKFileEntry(file_entry.FileEntry):
     data_stream_names = [
         data_stream.name for data_stream in self._GetDataStreams()]
     if data_stream_name and data_stream_name not in data_stream_names:
-      return
+      return None
 
     path_spec = copy.deepcopy(self.path_spec)
     if data_stream_name:
@@ -771,7 +813,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """
     link = self._GetLink()
     if not link:
-      return
+      return None
 
     # TODO: is there a way to determine the link inode number here?
     link_inode = None
@@ -797,11 +839,12 @@ class TSKFileEntry(file_entry.FileEntry):
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return
+      return None
     parent_inode = self._parent_inode
     parent_location = self._file_system.DirnamePath(location)
     if parent_inode is None and parent_location is None:
-      return
+      return None
+
     if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
 
