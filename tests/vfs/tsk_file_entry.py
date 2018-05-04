@@ -132,13 +132,13 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
   def testBackupTime(self):
     """Test the backup_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
     self.assertIsNone(test_file_entry.backup_time)
 
   def testDeletionTime(self):
     """Test the deletion_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
     self.assertIsNone(test_file_entry.deletion_time)
 
@@ -358,13 +358,13 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testBackupTime(self):
     """Test the backup_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
     self.assertIsNone(test_file_entry.backup_time)
 
   def testDeletionTime(self):
     """Test the deletion_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = tsk_file_entry.TSKFileEntry(
         self._resolver_context, self._file_system, self._tsk_path_spec)
     self.assertIsNone(test_file_entry.deletion_time)
 
