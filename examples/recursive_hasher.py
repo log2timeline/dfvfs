@@ -284,8 +284,9 @@ class RecursiveHasherVolumeScannerMediator(
     for volume_identifier in sorted(volume_identifiers):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
-        raise ScannerError('Partition missing for identifier: {0:s}.'.format(
-            volume_identifier))
+        raise errors.ScannerError(
+            'Partition missing for identifier: {0:s}.'.format(
+                volume_identifier))
 
       volume_extent = volume.extents[0]
       volume_offset = '{0:d} (0x{0:08x})'.format(volume_extent.offset)
