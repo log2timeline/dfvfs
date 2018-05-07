@@ -815,6 +815,12 @@ def Main():
     print('')
     print('[ERROR] {0!s}'.format(exception))
 
+  except errors.UserAbort as exception:
+    return_value = False
+
+    print('')
+    print('Aborted.')
+
   output_writer.Close()
 
   return return_value

@@ -122,7 +122,7 @@ class VolumeScanner(object):
           volume_system, volume_identifiers)
 
     except KeyboardInterrupt:
-      raise errors.ScannerError('File system scan aborted.')
+      raise errors.UserAbort('File system scan aborted.')
 
     if partition_identifiers is None:
       return []
