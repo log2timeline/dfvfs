@@ -45,7 +45,7 @@ wait ${PID_COMMAND};
 
 RESULT=$?;
 
-# On Travis-Ci print the stdout and stderr output to troubleshoot potential issues.
+# On Travis-CI print the stdout and stderr output to troubleshoot potential issues.
 if test ${CONFIGURATION} = 'travis';
 then
 	for FILE in `find ${RESULTS_DIRECTORY} -name \*.out -type f`;
