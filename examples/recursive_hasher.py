@@ -21,6 +21,8 @@ try:
 except ImportError:
   win32console = None
 
+from dfdatetime import filetime as dfdatetime_filetime
+
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.lib import definitions as dfvfs_definitions
@@ -360,7 +362,9 @@ class RecursiveHasherVolumeScannerMediator(
     while True:
       if print_header:
         print('The following Volume Shadow Snapshots (VSS) were found:')
-        print('Identifier\tVSS store identifier')
+
+        table_view = CLITabularTableView(column_names=[
+            'Identifier', 'Creation Time'])
 
         for volume_identifier in volume_identifiers:
           volume = volume_system.GetVolumeByIdentifier(volume_identifier)
@@ -369,10 +373,20 @@ class RecursiveHasherVolumeScannerMediator(
                 'Volume missing for identifier: {0:s}.'.format(
                     volume_identifier))
 
-          vss_identifier = volume.GetAttribute('identifier')
-          print('{0:s}\t\t{1:s}'.format(
-              volume.identifier, vss_identifier.value))
+          vss_creation_time = volume.GetAttribute('creation_time')
+          filetime = dfdatetime_filetime.Filetime(
+              timestamp=vss_creation_time.value)
+          vss_creation_time = filetime.CopyToDateTimeString()
 
+          if volume.HasExternalData():
+            vss_creation_time = (
+                '{0:s}\tWARNING: data stored outside volume').format(
+                    vss_creation_time)
+
+          table_view.AddRow([volume.identifier, vss_creation_time])
+
+        print('')
+        table_view.Print()
         print('')
 
         print_header = False
