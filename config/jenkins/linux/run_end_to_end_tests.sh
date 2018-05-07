@@ -12,7 +12,7 @@ CONFIGURATION_FILE="${CONFIGURATION}.ini";
 SOURCES_DIRECTORY="/media/greendale_images";
 REFERENCES_DIRECTORY="/media/greendale_images";
 
-RESULTS_DIRECTORY="dfvfs_out";
+RESULTS_DIRECTORY="dfvfs-out";
 
 ./config/linux/gift_ppa_install.sh include-test;
 
@@ -39,7 +39,7 @@ PYTHONPATH=. ./tests/end-to-end.py --config ${CONFIGURATION_FILE} --sources-dire
 
 PID_COMMAND=$!;
 
-echo "End-to-end tests stared (PID: ${PID_COMMAND})";
+echo "End-to-end tests started (PID: ${PID_COMMAND})";
 
 wait ${PID_COMMAND};
 
