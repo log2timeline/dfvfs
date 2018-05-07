@@ -282,7 +282,7 @@ class RecursiveHasherVolumeScannerMediator(
     for volume_identifier in sorted(volume_identifiers):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
-        raise ScannerError('Volume missing for identifier: {0:s}.'.format(
+        raise ScannerError('Partition missing for identifier: {0:s}.'.format(
             volume_identifier))
 
       volume_extent = volume.extents[0]
@@ -303,18 +303,20 @@ class RecursiveHasherVolumeScannerMediator(
           'All partitions can be defined as: "all". Note that you can abort '
           'with Ctrl^C.')
 
-      selected_partition_identifiers = sys.stdin.readline()
-      selected_partition_identifiers = selected_partition_identifiers.strip()
+      selected_partition_identifier = sys.stdin.readline()
+      selected_partition_identifier = selected_partition_identifier.strip()
 
-      if not selected_partition_identifiers.startswith('p'):
+      if not selected_partition_identifier.startswith('p'):
         try:
-          partition_number = int(selected_partition_identifiers, 10)
-          selected_partition_identifiers = 'p{0:d}'.format(partition_number)
+          partition_number = int(selected_partition_identifier, 10)
+          selected_partition_identifier = 'p{0:d}'.format(partition_number)
         except ValueError:
           pass
 
-      if (selected_partition_identifiers == 'all' or
-          selected_partition_identifiers in volume_identifiers):
+      if selected_partition_identifier == 'all':
+        return volume_identifiers
+
+      if selected_partition_identifier in volume_identifiers:
         break
 
       print('')
@@ -324,7 +326,7 @@ class RecursiveHasherVolumeScannerMediator(
       print('')
 
     print('')
-    return selected_partition_identifiers
+    return [selected_partition_identifier]
 
   def GetVSSStoreIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves VSS store identifiers.
