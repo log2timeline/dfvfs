@@ -404,8 +404,9 @@ class RecursiveHasherVolumeScannerMediator(
       print(
           'also be combined as: 1,3..5. The first store is 1. All stores '
           'can be defined')
-      print('as "all". If no stores are specified none will be processed. Yo')
-      print('can abort with Ctrl^C.')
+      print(
+          'as "all". If no stores are specified none will be processed. You '
+          'can abort with Ctrl^C.')
 
       selected_vss_stores = sys.stdin.readline()
 
