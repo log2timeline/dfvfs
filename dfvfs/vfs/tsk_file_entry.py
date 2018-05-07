@@ -278,19 +278,19 @@ class TSKDirectory(file_entry.Directory):
 
     if tsk_directory:
       for tsk_directory_entry in tsk_directory:
-        # Note that because pytsk3.Directory does not explicitly defines info
+        # Note that because pytsk3.Directory does not explicitly define info
         # we need to check if the attribute exists and has a value other
         # than None.
         if getattr(tsk_directory_entry, 'info', None) is None:
           continue
 
-        # Note that because pytsk3.TSK_FS_FILE does not explicitly defines
+        # Note that because pytsk3.TSK_FS_FILE does not explicitly define
         # fs_info we need to check if the attribute exists and has a value
         # other than None.
         if getattr(tsk_directory_entry.info, 'fs_info', None) is None:
           continue
 
-        # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
+        # Note that because pytsk3.TSK_FS_FILE does not explicitly define meta
         # we need to check if the attribute exists and has a value other
         # than None.
         if getattr(tsk_directory_entry.info, 'meta', None) is None:
@@ -299,7 +299,7 @@ class TSKDirectory(file_entry.Directory):
           # a pytsk3.TSK_FS_META object are ignored.
           continue
 
-        # Note that because pytsk3.TSK_FS_META does not explicitly defines addr
+        # Note that because pytsk3.TSK_FS_META does not explicitly define addr
         # we need to check if the attribute exists.
         if not hasattr(tsk_directory_entry.info.meta, 'addr'):
           continue
@@ -315,7 +315,7 @@ class TSKDirectory(file_entry.Directory):
         if directory_entry_inode == 0 and not self._file_system.IsNTFS():
           continue
 
-        # Note that because pytsk3.TSK_FS_FILE does not explicitly defines name
+        # Note that because pytsk3.TSK_FS_FILE does not explicitly define name
         # we need to check if the attribute exists and has a value other
         # than None.
         if getattr(tsk_directory_entry.info, 'name', None) is not None:
