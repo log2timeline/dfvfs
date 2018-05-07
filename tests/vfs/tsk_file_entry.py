@@ -130,6 +130,22 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  def testBackupTime(self):
+    """Test the backup_time property."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location=test_location, parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNone(file_entry.backup_time)
+
+  def testDeletionTime(self):
+    """Test the deletion_time property."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=16, location=test_location, parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry.deletion_time)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
@@ -343,6 +359,24 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+
+  def testBackupTime(self):
+    """Test the backup_time property."""
+    test_location = (
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=38, location=test_location, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNone(file_entry.backup_time)
+
+  def testDeletionTime(self):
+    """Test the deletion_time property."""
+    test_location = (
+        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=38, location=test_location, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNone(file_entry.deletion_time)
 
   def testGetStat(self):
     """Tests the GetStat function."""
