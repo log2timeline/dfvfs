@@ -299,6 +299,7 @@ class RecursiveHasherVolumeScannerMediator(
     print('')
 
     while True:
+      # TODO: use textwrap
       print(
           'Please specify the identifier of the partition that should be '
           'processed.')
@@ -322,6 +323,7 @@ class RecursiveHasherVolumeScannerMediator(
       if selected_partition_identifier in volume_identifiers:
         break
 
+      # TODO: use textwrap
       print('')
       print(
           'Unsupported partition identifier, please try again or abort '
@@ -392,6 +394,7 @@ class RecursiveHasherVolumeScannerMediator(
 
         print_header = False
 
+      # TODO: use textwrap
       print(
           'Please specify the identifier(s) of the VSS that should be '
           'processed:')
@@ -406,7 +409,8 @@ class RecursiveHasherVolumeScannerMediator(
           'can be defined')
       print(
           'as "all". If no stores are specified none will be processed. You '
-          'can abort with Ctrl^C.')
+          'can abort')
+      print('with Ctrl^C.')
 
       selected_vss_stores = sys.stdin.readline()
 
@@ -427,6 +431,7 @@ class RecursiveHasherVolumeScannerMediator(
       if not set(selected_vss_stores).difference(normalized_volume_identifiers):
         break
 
+      # TODO: use textwrap
       print('')
       print(
           'Unsupported VSS identifier(s), please try again or abort with '
