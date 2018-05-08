@@ -336,15 +336,15 @@ class GzipMember(object):
       # CString does not support latin-1 (iso-8859-1),
       # We used null terminated byte and decode ourselves
       self.original_filename = construct.NullTerminated(
-        construct.GreedyBytes, term=b'\x00')\
-        .parse_stream(file_object).decode('iso-8859-1')
+          construct.GreedyBytes, term=b'\x00')\
+          .parse_stream(file_object).decode('iso-8859-1')
 
     if member_header.flags & self._FLAG_FCOMMENT:
       # CString does not support latin-1 (iso-8859-1),
       # We used null terminated byte and decode ourselves
       self.comment = construct.NullTerminated(
-        construct.GreedyBytes, term=b'\x00')\
-        .parse_stream(file_object).decode('iso-8859-1')
+          construct.GreedyBytes, term=b'\x00')\
+          .parse_stream(file_object).decode('iso-8859-1')
 
     if member_header.flags & self._FLAG_FHCRC:
       file_object.read(2)
