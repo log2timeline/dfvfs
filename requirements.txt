@@ -1,6 +1,6 @@
 pip >= 7.0.0
 backports.lzma ; python_version < '3.0'
-construct >= 2.5.2,<= 2.5.3
+construct == 2.9.45
 dfdatetime >= 20180324
 libbde-python >= 20140531
 libewf-python >= 20131210
