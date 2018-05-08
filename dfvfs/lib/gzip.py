@@ -93,18 +93,16 @@ class GzipMember(object):
         after decompression.
   """
   _MEMBER_HEADER_STRUCT = construct.Struct(
-      'file_header',
-      construct.ULInt16('signature'),
-      construct.UBInt8('compression_method'),
-      construct.UBInt8('flags'),
-      construct.SLInt32('modification_time'),
-      construct.UBInt8('extra_flags'),
-      construct.UBInt8('operating_system'))
+      'signature' / construct.Int16ul,
+      'compression_method' / construct.Int8ub,
+      'flags' / construct.Int8ub,
+      'modification_time' / construct.Int32sl,
+      'extra_flags' / construct.Int8ub,
+      'operating_system' / construct.Int8ub)
 
   _MEMBER_FOOTER_STRUCT = construct.Struct(
-      'file_footer',
-      construct.ULInt32('checksum'),
-      construct.ULInt32('uncompressed_data_size'))
+      'checksum' / construct.Int32ul,
+      'uncompressed_data_size' / construct.Int32ul)
 
   _GZIP_SIGNATURE = 0x8b1f
 
@@ -330,24 +328,17 @@ class GzipMember(object):
     self.operating_system = member_header.operating_system
 
     if member_header.flags & self._FLAG_FEXTRA:
-      extra_field_data_size = construct.ULInt16(
+      extra_field_data_size = construct.Int16ul(
           'extra_field_data_size').parse_stream(file_object)
       file_object.seek(extra_field_data_size, os.SEEK_CUR)
 
     if member_header.flags & self._FLAG_FNAME:
-      # Since encoding is set construct will convert the C string to Unicode.
-      # Note that construct 2 does not support the encoding to be a Unicode
-      # string.
-      self.original_filename = construct.CString(
-          'original_filename', encoding=b'iso-8859-1').parse_stream(
-              file_object)
+      # CString does not support latin-1 (iso-8859-1), We used null terminated byte and decode ourselves
+      self.original_filename = construct.NullTerminated(construct.GreedyBytes, term=b'\x00').parse_stream(file_object).decode('iso-8859-1')
 
     if member_header.flags & self._FLAG_FCOMMENT:
-      # Since encoding is set construct will convert the C string to Unicode.
-      # Note that construct 2 does not support the encoding to be a Unicode
-      # string.
-      self.comment = construct.CString(
-          'comment', encoding=b'iso-8859-1').parse_stream(file_object)
+      # CString does not support latin-1 (iso-8859-1), We used null terminated byte and decode ourselves
+      self.comment = construct.NullTerminated(construct.GreedyBytes, term=b'\x00').parse_stream(file_object).decode('iso-8859-1')
 
     if member_header.flags & self._FLAG_FHCRC:
       file_object.read(2)
