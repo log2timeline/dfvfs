@@ -15,6 +15,7 @@ import hashlib
 import locale
 import logging
 import sys
+import textwrap
 
 try:
   import win32console
@@ -144,6 +145,7 @@ class RecursiveHasherVolumeScannerMediator(
     super(RecursiveHasherVolumeScannerMediator, self).__init__()
     self._encode_errors = 'strict'
     self._preferred_encoding = locale.getpreferredencoding()
+    self._textwrapper = textwrap.TextWrapper()
 
   def _EncodeString(self, string):
     """Encodes a string in the preferred encoding.
@@ -299,13 +301,13 @@ class RecursiveHasherVolumeScannerMediator(
     print('')
 
     while True:
-      # TODO: use textwrap
-      print(
+      text = (
           'Please specify the identifier of the partition that should be '
-          'processed.')
-      print(
-          'All partitions can be defined as: "all". Note that you can abort '
-          'with Ctrl^C.')
+          'processed. All partitions can be defined as: "all". Note that '
+          'you can abort with Ctrl^C.')
+
+      for line in self._textwrapper.wrap(text):
+        print(line)
 
       selected_partition_identifier = sys.stdin.readline()
       selected_partition_identifier = selected_partition_identifier.strip()
@@ -323,11 +325,15 @@ class RecursiveHasherVolumeScannerMediator(
       if selected_partition_identifier in volume_identifiers:
         break
 
-      # TODO: use textwrap
       print('')
-      print(
+
+      text = (
           'Unsupported partition identifier, please try again or abort '
           'with Ctrl^C.')
+
+      for line in self._textwrapper.wrap(text):
+        print(line)
+
       print('')
 
     print('')
@@ -394,23 +400,17 @@ class RecursiveHasherVolumeScannerMediator(
 
         print_header = False
 
-      # TODO: use textwrap
-      print(
+      text = (
           'Please specify the identifier(s) of the VSS that should be '
-          'processed:')
-      print(
-          'Note that a range of stores can be defined as: 3..5. Multiple '
-          'stores can')
-      print(
-          'be defined as: 1,3,5 (a list of comma separated values). Ranges '
-          'and lists can')
-      print(
-          'also be combined as: 1,3..5. The first store is 1. All stores '
-          'can be defined')
-      print(
-          'as "all". If no stores are specified none will be processed. You '
-          'can abort')
-      print('with Ctrl^C.')
+          'processed: Note that a range of stores can be defined as: 3..5. '
+          'Multiple stores can be defined as: 1,3,5 (a list of comma '
+          'separated values). Ranges and lists can also be combined as: '
+          '1,3..5. The first store is 1. All stores can be defined as "all". '
+          'If no stores are specified none will be processed. You can abort '
+          'with Ctrl^C.')
+
+      for line in self._textwrapper.wrap(text):
+        print(line)
 
       selected_vss_stores = sys.stdin.readline()
 
@@ -431,11 +431,15 @@ class RecursiveHasherVolumeScannerMediator(
       if not set(selected_vss_stores).difference(normalized_volume_identifiers):
         break
 
-      # TODO: use textwrap
       print('')
-      print(
+
+      text = (
           'Unsupported VSS identifier(s), please try again or abort with '
           'Ctrl^C.')
+
+      for line in self._textwrapper.wrap(text):
+        print(line)
+
       print('')
 
     return selected_vss_stores
