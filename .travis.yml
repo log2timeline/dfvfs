@@ -43,8 +43,6 @@ matrix:
     sudo: required
     group: edge
     python: 2.7
-  allow_failures:
-  - env: TARGET="linux-python34"
 install:
 - ./config/travis/install.sh
 script:
