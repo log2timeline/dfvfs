@@ -5,17 +5,19 @@
 # Fail on error.
 set -e
 
-CONFIGURATION_FILE="${JOB_NAME}.ini";
+CONFIGURATION=$1;
+
+CONFIGURATION_FILE="${CONFIGURATION}.ini";
 
 SOURCES_DIRECTORY="/media/greendale_images";
 REFERENCES_DIRECTORY="/media/greendale_images";
 
-RESULTS_DIRECTORY="dfvfs_out";
+RESULTS_DIRECTORY="dfvfs-out";
 
 ./config/linux/gift_ppa_install.sh include-test;
 
 # Change path to test this script on Travis-CI.
-if test ${JOB_NAME} = 'travis';
+if test ${CONFIGURATION} = 'travis';
 then
 	SOURCES_DIRECTORY="test_data";
 	REFERENCES_DIRECTORY="test_data/end_to_end";
@@ -37,14 +39,14 @@ PYTHONPATH=. ./tests/end-to-end.py --config ${CONFIGURATION_FILE} --sources-dire
 
 PID_COMMAND=$!;
 
-echo "End-to-end tests stared (PID: ${PID_COMMAND})";
+echo "End-to-end tests started (PID: ${PID_COMMAND})";
 
 wait ${PID_COMMAND};
 
 RESULT=$?;
 
-# On Travis-Ci print the stdout and stderr output to troubleshoot potential issues.
-if test ${JOB_NAME} = 'travis';
+# On Travis-CI print the stdout and stderr output to troubleshoot potential issues.
+if test ${CONFIGURATION} = 'travis';
 then
 	for FILE in `find ${RESULTS_DIRECTORY} -name \*.out -type f`;
 	do
