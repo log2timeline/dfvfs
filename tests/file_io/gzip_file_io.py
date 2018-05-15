@@ -86,7 +86,8 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     # Read with a size greater than the file size.
     file_object.seek(0)
-    data = file_object.read(size=506631+4)
+    data = file_object.read(size=506631 + 4)
+    self.assertEqual(len(data), 506631)
     self.assertEqual(data[-4:], b'\x02\x00\x80\x00')
 
     file_object.close()
