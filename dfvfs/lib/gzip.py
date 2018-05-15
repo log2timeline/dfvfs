@@ -301,10 +301,10 @@ class GzipMember(data_format.DataFormat):
       ValueError: if a negative read size or offset is specified.
     """
     if size is not None and size < 0:
-      raise ValueError('Invalid size value {0!d}'.format(size))
+      raise ValueError('Invalid size value {0!s}'.format(size))
 
     if offset < 0:
-      raise ValueError('Invalid offset value {0!d}'.format(offset))
+      raise ValueError('Invalid offset value {0!s}'.format(offset))
 
     if size == 0 or offset >= self.uncompressed_data_size:
       return b''
