@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """Gzip compressed stream file."""
 
+# Note: do not rename file to gzip.py this can cause the exception:
+# AttributeError: 'module' object has no attribute 'GzipFile'
+# when using pip.
+
 from __future__ import unicode_literals
 
 import os
@@ -95,7 +99,7 @@ class GzipMember(data_format.DataFormat):
   """
 
   _DATA_TYPE_FABRIC_DEFINITION_FILE = os.path.join(
-      os.path.dirname(__file__), 'gzip.yaml')
+      os.path.dirname(__file__), 'gzip_file.yaml')
 
   with open(_DATA_TYPE_FABRIC_DEFINITION_FILE, 'rb') as file_object:
     _DATA_TYPE_FABRIC_DEFINITION = file_object.read()
