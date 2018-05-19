@@ -99,7 +99,7 @@ class GzipMember(data_format.DataFormat):
   """
 
   _DATA_TYPE_FABRIC_DEFINITION_FILE = os.path.join(
-      os.path.dirname(__file__), 'gzip_file.yaml')
+      os.path.dirname(__file__), 'gzipfile.yaml')
 
   with open(_DATA_TYPE_FABRIC_DEFINITION_FILE, 'rb') as file_object:
     _DATA_TYPE_FABRIC_DEFINITION = file_object.read()
