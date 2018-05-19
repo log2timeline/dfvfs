@@ -8,7 +8,7 @@ import os
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
-from dfvfs.lib import gzip_file
+from dfvfs.lib import gzipfile
 from dfvfs.resolver import resolver
 
 
@@ -194,7 +194,7 @@ class GzipFile(file_io.FileIO):
     uncompressed_data_offset = 0
     next_member_offset = 0
     while next_member_offset < self._gzip_file_object.get_size():
-      member = gzip_file.GzipMember(
+      member = gzipfile.GzipMember(
           self._gzip_file_object, next_member_offset, uncompressed_data_offset)
       uncompressed_data_offset = (
           uncompressed_data_offset + member.uncompressed_data_size)
