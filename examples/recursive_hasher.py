@@ -15,11 +15,20 @@ import hashlib
 import locale
 import logging
 import sys
+import textwrap
+
+try:
+  import win32console
+except ImportError:
+  win32console = None
+
+from dfdatetime import filetime as dfdatetime_filetime
 
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.lib import definitions as dfvfs_definitions
 from dfvfs.lib import errors
+from dfvfs.lib import py2to3
 from dfvfs.helpers import volume_scanner
 from dfvfs.resolver import resolver
 
@@ -29,6 +38,98 @@ try:
   analyzer.Analyzer.DeregisterHelper(fvde_analyzer_helper.FVDEAnalyzerHelper())
 except KeyError:
   pass
+
+
+class CLITabularTableView(object):
+  """Command line interface tabular table view."""
+
+  _NUMBER_OF_SPACES_IN_TAB = 8
+
+  def __init__(self, column_names=None, column_sizes=None):
+    """Initializes a command line interface tabular table view.
+
+    Args:
+      column_names (Optional[list[str]]): column names.
+      column_sizes (Optional[list[int]]): minimum column sizes, in number of
+          characters. If a column name or row value is larger than the
+          minimum column size the column will be enlarged. Note that the
+          minimum columns size will be rounded up to the number of spaces
+          of the next tab.
+    """
+    super(CLITabularTableView, self).__init__()
+    self._columns = column_names or []
+    self._column_sizes = column_sizes or []
+    self._number_of_columns = len(self._columns)
+    self._rows = []
+
+  def _PrintRow(self, values, in_bold=False):
+    """Prints a row of values aligned to the column width to stdout.
+
+    Args:
+      values (list[object]): values.
+      in_bold (Optional[bool]): True if the row should be written in bold.
+    """
+    row_strings = []
+    for value_index, value_string in enumerate(values):
+      padding_size = self._column_sizes[value_index] - len(value_string)
+      padding_string = ' ' * padding_size
+
+      row_strings.extend([value_string, padding_string])
+
+    row_strings.pop()
+
+    row_strings = ''.join(row_strings)
+
+    if in_bold and not win32console:
+      # TODO: for win32console get current color and set intensity,
+      # write the header separately then reset intensity.
+      row_strings = '\x1b[1m{0:s}\x1b[0m'.format(row_strings)
+
+    row_strings = '{0:s}'.format(row_strings)
+    print(row_strings)
+
+  def AddRow(self, values):
+    """Adds a row of values.
+
+    Args:
+      values (list[object]): values.
+
+    Raises:
+      ValueError: if the number of values is out of bounds.
+    """
+    if self._number_of_columns and len(values) != self._number_of_columns:
+      raise ValueError('Number of values is out of bounds.')
+
+    if not self._column_sizes and self._columns:
+      self._column_sizes = [len(column) for column in self._columns]
+
+    value_strings = []
+    for value_index, value_string in enumerate(values):
+      if not isinstance(value_string, py2to3.UNICODE_TYPE):
+        value_string = '{0!s}'.format(value_string)
+      value_strings.append(value_string)
+
+      self._column_sizes[value_index] = max(
+          self._column_sizes[value_index], len(value_string))
+
+    self._rows.append(value_strings)
+
+    if not self._number_of_columns:
+      self._number_of_columns = len(value_strings)
+
+  def Print(self):
+    """Prints the table to stdout."""
+    # Round up the column sizes to the nearest tab.
+    for column_index, column_size in enumerate(self._column_sizes):
+      column_size, _ = divmod(column_size, self._NUMBER_OF_SPACES_IN_TAB)
+      column_size = (column_size + 1) * self._NUMBER_OF_SPACES_IN_TAB
+      self._column_sizes[column_index] = column_size
+
+    if self._columns:
+      self._PrintRow(self._columns, in_bold=True)
+
+    for values in self._rows:
+      self._PrintRow(values)
 
 
 class RecursiveHasherVolumeScannerMediator(
@@ -44,6 +145,7 @@ class RecursiveHasherVolumeScannerMediator(
     super(RecursiveHasherVolumeScannerMediator, self).__init__()
     self._encode_errors = 'strict'
     self._preferred_encoding = locale.getpreferredencoding()
+    self._textwrapper = textwrap.TextWrapper()
 
   def _EncodeString(self, string):
     """Encodes a string in the preferred encoding.
@@ -177,50 +279,65 @@ class RecursiveHasherVolumeScannerMediator(
       ScannerError: if the source cannot be processed.
     """
     print('The following partitions were found:')
-    print('Identifier\tOffset (in bytes)\tSize (in bytes)')
+
+    table_view = CLITabularTableView(column_names=[
+        'Identifier', 'Offset (in bytes)', 'Size (in bytes)'])
 
     for volume_identifier in sorted(volume_identifiers):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
-            'Volume missing for identifier: {0:s}.'.format(volume_identifier))
+            'Partition missing for identifier: {0:s}.'.format(
+                volume_identifier))
 
       volume_extent = volume.extents[0]
-      print('{0:s}\t\t{1:d} (0x{1:08x})\t{2:s}'.format(
-          volume.identifier, volume_extent.offset,
-          self._FormatHumanReadableSize(volume_extent.size)))
+      volume_offset = '{0:d} (0x{0:08x})'.format(volume_extent.offset)
+      volume_size = self._FormatHumanReadableSize(volume_extent.size)
+
+      table_view.AddRow([volume.identifier, volume_offset, volume_size])
+
+    print('')
+    table_view.Print()
+    print('')
 
     while True:
-      print(
+      text = (
           'Please specify the identifier of the partition that should be '
-          'processed.')
-      print(
-          'All partitions can be defined as: "all". Note that you '
-          'can abort with Ctrl^C.')
+          'processed. All partitions can be defined as: "all". Note that '
+          'you can abort with Ctrl^C.')
 
-      selected_volume_identifier = sys.stdin.readline()
-      selected_volume_identifier = selected_volume_identifier.strip()
+      for line in self._textwrapper.wrap(text):
+        print(line)
 
-      if not selected_volume_identifier.startswith('p'):
+      selected_partition_identifier = sys.stdin.readline()
+      selected_partition_identifier = selected_partition_identifier.strip()
+
+      if not selected_partition_identifier.startswith('p'):
         try:
-          partition_number = int(selected_volume_identifier, 10)
-          selected_volume_identifier = 'p{0:d}'.format(partition_number)
+          partition_number = int(selected_partition_identifier, 10)
+          selected_partition_identifier = 'p{0:d}'.format(partition_number)
         except ValueError:
           pass
 
-      if selected_volume_identifier == 'all':
+      if selected_partition_identifier == 'all':
         return volume_identifiers
 
-      if selected_volume_identifier in volume_identifiers:
+      if selected_partition_identifier in volume_identifiers:
         break
 
       print('')
-      print(
+
+      text = (
           'Unsupported partition identifier, please try again or abort '
           'with Ctrl^C.')
+
+      for line in self._textwrapper.wrap(text):
+        print(line)
+
       print('')
 
-    return [selected_volume_identifier]
+    print('')
+    return [selected_partition_identifier]
 
   def GetVSSStoreIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves VSS store identifiers.
@@ -254,7 +371,9 @@ class RecursiveHasherVolumeScannerMediator(
     while True:
       if print_header:
         print('The following Volume Shadow Snapshots (VSS) were found:')
-        print('Identifier\tVSS store identifier')
+
+        table_view = CLITabularTableView(column_names=[
+            'Identifier', 'Creation Time'])
 
         for volume_identifier in volume_identifiers:
           volume = volume_system.GetVolumeByIdentifier(volume_identifier)
@@ -263,28 +382,35 @@ class RecursiveHasherVolumeScannerMediator(
                 'Volume missing for identifier: {0:s}.'.format(
                     volume_identifier))
 
-          vss_identifier = volume.GetAttribute('identifier')
-          print('{0:s}\t\t{1:s}'.format(
-              volume.identifier, vss_identifier.value))
+          vss_creation_time = volume.GetAttribute('creation_time')
+          filetime = dfdatetime_filetime.Filetime(
+              timestamp=vss_creation_time.value)
+          vss_creation_time = filetime.CopyToDateTimeString()
 
+          if volume.HasExternalData():
+            vss_creation_time = (
+                '{0:s}\tWARNING: data stored outside volume').format(
+                    vss_creation_time)
+
+          table_view.AddRow([volume.identifier, vss_creation_time])
+
+        print('')
+        table_view.Print()
         print('')
 
         print_header = False
 
-      print(
+      text = (
           'Please specify the identifier(s) of the VSS that should be '
-          'processed:')
-      print(
-          'Note that a range of stores can be defined as: 3..5. Multiple '
-          'stores can')
-      print(
-          'be defined as: 1,3,5 (a list of comma separated values). Ranges '
-          'and lists can')
-      print(
-          'also be combined as: 1,3..5. The first store is 1. All stores '
-          'can be defined')
-      print('as "all". If no stores are specified none will be processed. Yo')
-      print('can abort with Ctrl^C.')
+          'processed: Note that a range of stores can be defined as: 3..5. '
+          'Multiple stores can be defined as: 1,3,5 (a list of comma '
+          'separated values). Ranges and lists can also be combined as: '
+          '1,3..5. The first store is 1. All stores can be defined as "all". '
+          'If no stores are specified none will be processed. You can abort '
+          'with Ctrl^C.')
+
+      for line in self._textwrapper.wrap(text):
+        print(line)
 
       selected_vss_stores = sys.stdin.readline()
 
@@ -306,9 +432,14 @@ class RecursiveHasherVolumeScannerMediator(
         break
 
       print('')
-      print(
+
+      text = (
           'Unsupported VSS identifier(s), please try again or abort with '
           'Ctrl^C.')
+
+      for line in self._textwrapper.wrap(text):
+        print(line)
+
       print('')
 
     return selected_vss_stores
@@ -688,11 +819,17 @@ def Main():
     print('')
     print('Completed.')
 
-  except KeyboardInterrupt:
+  except errors.ScannerError as exception:
     return_value = False
 
     print('')
-    print('Aborted by user.')
+    print('[ERROR] {0!s}'.format(exception))
+
+  except errors.UserAbort as exception:
+    return_value = False
+
+    print('')
+    print('Aborted.')
 
   output_writer.Close()
 
