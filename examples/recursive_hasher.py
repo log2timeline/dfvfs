@@ -16,7 +16,7 @@ import locale
 import logging
 import sys
 
-from dfvfs.analyzer import analyzer as analyzer
+from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.lib import definitions as dfvfs_definitions
 from dfvfs.lib import errors
