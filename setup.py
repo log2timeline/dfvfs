@@ -165,6 +165,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
+    zip_safe = False,
     packages=find_packages('.', exclude=[
         'examples', 'tests', 'tests.*', 'utils']),
     package_dir={
