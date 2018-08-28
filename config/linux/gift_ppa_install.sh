@@ -22,12 +22,12 @@ PYTHON2_DEPENDENCIES="libbde-python
                       libvshadow-python
                       libvslvm-python
                       python-backports.lzma
-                      python-construct
                       python-crypto
                       python-dfdatetime
+                      python-dtfabric
                       python-pysqlite2
                       python-pytsk3
-                      python-six";
+                      python-yaml";
 
 # Additional dependencies for running dfvfs tests, alphabetized,
 # one per line.
