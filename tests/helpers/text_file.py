@@ -115,6 +115,29 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
   @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
+  def testReadlineWithEndOfFileTruncation(self):
+    """Test the readline() function with specified size at end of file."""
+    test_file = self._GetTestFilePath(['password.txt'])
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(test_path_spec)
+    text_file_object = text_file.TextFile(file_object)
+
+    line = text_file_object.readline(size=24)
+    self.assertEqual(line, 'place,user,password\n')
+    line = text_file_object.readline(size=24)
+    self.assertEqual(line, 'bank,joesmith,superrich\n')
+    line = text_file_object.readline(size=24)
+    self.assertEqual(line, 'alarm system,-,1234\n')
+    line = text_file_object.readline(size=24)
+    self.assertEqual(line, 'treasure chest,-,1111\n')
+    line = text_file_object.readline(size=30)
+    self.assertEqual(line, 'uber secret laire,admin,admin\n')
+
+    file_object.close()
+
+  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testReadlines(self):
     """Test the readlines() function."""
     test_file = self._GetTestFilePath(['password.txt'])
