@@ -426,8 +426,7 @@ class SourceScanner(object):
 
       elif scan_node.type_indicator in (
           definitions.ENCRYPTED_VOLUME_TYPE_INDICATORS):
-        self._ScanEncryptedVolumeNode(
-            scan_context, scan_node, auto_recurse=auto_recurse)
+        self._ScanEncryptedVolumeNode(scan_context, scan_node)
 
       if not auto_recurse and scan_context.updated:
         return
@@ -489,15 +488,12 @@ class SourceScanner(object):
 
     return
 
-  def _ScanEncryptedVolumeNode(
-      self, scan_context, scan_node, auto_recurse=True):
+  def _ScanEncryptedVolumeNode(self, scan_context, scan_node):
     """Scans an encrypted volume node for supported formats.
 
     Args:
       scan_context (SourceScannerContext): source scanner context.
       scan_node (SourceScanNode): source scan node.
-      auto_recurse (Optional[bool]): True if the scan should automatically
-          recurse as far as possible.
 
     Raises:
       BackEndError: if the source cannot be scanned.
