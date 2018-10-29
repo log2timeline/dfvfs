@@ -352,7 +352,7 @@ class VolumeScanner(object):
       self._source_scanner.Scan(scan_context)
     except (ValueError, errors.BackEndError) as exception:
       raise errors.ScannerError(
-          'Unable to scan source with error: {0:s}.'.format(exception))
+          'Unable to scan source with error: {0!s}'.format(exception))
 
     self._source_path = source_path
     self._source_type = scan_context.source_type

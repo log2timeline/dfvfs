@@ -338,7 +338,7 @@ class SourceScanner(object):
   # FS type, etc.
 
   def _ScanNode(self, scan_context, scan_node, auto_recurse=True):
-    """Scans for supported formats using a scan node.
+    """Scans a node for supported formats.
 
     Args:
       scan_context (SourceScannerContext): source scanner context.
@@ -418,46 +418,15 @@ class SourceScanner(object):
               definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
       if scan_node.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
-        # For VSS add a scan node for the current volume.
-        if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-          path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
-          if path_spec:
-            scan_context.AddScanNode(path_spec, scan_node.parent_node)
+        self._ScanVolumeSystemNode(
+            scan_context, scan_node, auto_recurse=auto_recurse)
 
-        # Determine the path specifications of the sub file entries.
-        file_entry = resolver.Resolver.OpenFileEntry(
-            scan_node.path_spec, resolver_context=self._resolver_context)
-
-        for sub_file_entry in file_entry.sub_file_entries:
-          sub_scan_node = scan_context.AddScanNode(
-              sub_file_entry.path_spec, scan_node)
-
-          # Since scanning for file systems in VSS snapshot volumes can
-          # be expensive we only do this when explicitly asked for.
-          if scan_node.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
-            if auto_recurse or not scan_context.updated:
-              self._ScanNode(
-                  scan_context, sub_scan_node, auto_recurse=auto_recurse)
-
-        # We already have already scanned for the file systems in _ScanNode().
+        # We already have already scanned for the file systems.
         return
 
       elif scan_node.type_indicator in (
           definitions.ENCRYPTED_VOLUME_TYPE_INDICATORS):
-        file_object = resolver.Resolver.OpenFileObject(
-            scan_node.path_spec, resolver_context=self._resolver_context)
-        is_locked = not file_object or file_object.is_locked
-        file_object.close()
-
-        if is_locked:
-          scan_context.LockScanNode(scan_node.path_spec)
-
-          # For BitLocker To Go add a scan node for the unencrypted part
-          # of the volume.
-          if scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-            path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
-            if path_spec:
-              scan_context.AddScanNode(path_spec, scan_node.parent_node)
+        self._ScanEncryptedVolumeNode(scan_context, scan_node)
 
       if not auto_recurse and scan_context.updated:
         return
@@ -518,6 +487,65 @@ class SourceScanner(object):
       scan_node.scanned = True
 
     return
+
+  def _ScanEncryptedVolumeNode(self, scan_context, scan_node):
+    """Scans an encrypted volume node for supported formats.
+
+    Args:
+      scan_context (SourceScannerContext): source scanner context.
+      scan_node (SourceScanNode): source scan node.
+
+    Raises:
+      BackEndError: if the source cannot be scanned.
+      ValueError: if the scan context or scan node is invalid.
+    """
+    file_object = resolver.Resolver.OpenFileObject(
+        scan_node.path_spec, resolver_context=self._resolver_context)
+    is_locked = not file_object or file_object.is_locked
+    file_object.close()
+
+    if is_locked:
+      scan_context.LockScanNode(scan_node.path_spec)
+
+      # For BitLocker To Go add a scan node for the unencrypted part of
+      # the volume.
+      if scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+        path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
+        if path_spec:
+          scan_context.AddScanNode(path_spec, scan_node.parent_node)
+
+  def _ScanVolumeSystemNode(self, scan_context, scan_node, auto_recurse=True):
+    """Scans a volume system node for supported formats.
+
+    Args:
+      scan_context (SourceScannerContext): source scanner context.
+      scan_node (SourceScanNode): source scan node.
+      auto_recurse (Optional[bool]): True if the scan should automatically
+          recurse as far as possible.
+
+    Raises:
+      BackEndError: if the source cannot be scanned.
+      ValueError: if the scan context or scan node is invalid.
+    """
+    # For VSS add a scan node for the current volume.
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+      path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
+      if path_spec:
+        scan_context.AddScanNode(path_spec, scan_node.parent_node)
+
+    # Determine the path specifications of the sub file entries.
+    file_entry = resolver.Resolver.OpenFileEntry(
+        scan_node.path_spec, resolver_context=self._resolver_context)
+
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_scan_node = scan_context.AddScanNode(
+          sub_file_entry.path_spec, scan_node)
+
+      # Since scanning for file systems in VSS snapshot volumes can
+      # be expensive we only do this when explicitly asked for.
+      if scan_node.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
+        if auto_recurse or not scan_context.updated:
+          self._ScanNode(scan_context, sub_scan_node, auto_recurse=auto_recurse)
 
   def GetVolumeIdentifiers(self, volume_system):
     """Retrieves the volume identifiers.
@@ -584,7 +612,7 @@ class SourceScanner(object):
     except RuntimeError as exception:
       raise errors.BackEndError((
           'Unable to process source path specification with error: '
-          '{0:s}').format(exception))
+          '{0!s}').format(exception))
 
     if not type_indicators:
       return
@@ -625,7 +653,7 @@ class SourceScanner(object):
     except RuntimeError as exception:
       raise errors.BackEndError((
           'Unable to process source path specification with error: '
-          '{0:s}').format(exception))
+          '{0!s}').format(exception))
 
     if not type_indicators:
       # The RAW storage media image type cannot be detected based on
@@ -685,7 +713,7 @@ class SourceScanner(object):
     except (IOError, RuntimeError) as exception:
       raise errors.BackEndError((
           'Unable to process source path specification with error: '
-          '{0:s}').format(exception))
+          '{0!s}').format(exception))
 
     if not type_indicators:
       return
