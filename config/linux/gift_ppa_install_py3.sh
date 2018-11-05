@@ -8,26 +8,24 @@ set -e
 
 # Dependencies for running dfvfs, alphabetized, one per line.
 # This should not include packages only required for testing or development.
-PYTHON2_DEPENDENCIES="libbde-python
-                      libewf-python
-                      libfsntfs-python
-                      libfvde-python
-                      libfwnt-python
-                      libqcow-python
-                      libsigscan-python
-                      libsmdev-python
-                      libsmraw-python
-                      libvhdi-python
-                      libvmdk-python
-                      libvshadow-python
-                      libvslvm-python
-                      python-backports.lzma
-                      python-crypto
-                      python-dfdatetime
-                      python-dtfabric
-                      python-pysqlite2
-                      python-pytsk3
-                      python-yaml";
+PYTHON3_DEPENDENCIES="libbde-python3
+                      libewf-python3
+                      libfsntfs-python3
+                      libfvde-python3
+                      libfwnt-python3
+                      libqcow-python3
+                      libsigscan-python3
+                      libsmdev-python3
+                      libsmraw-python3
+                      libvhdi-python3
+                      libvmdk-python3
+                      libvshadow-python3
+                      libvslvm-python3
+                      python3-crypto
+                      python3-dfdatetime
+                      python3-dtfabric
+                      python3-pytsk3
+                      python3-yaml";
 
 # Additional dependencies for running tests, alphabetized, one per line.
 TEST_DEPENDENCIES="python-mock";
@@ -37,39 +35,39 @@ DEVELOPMENT_DEPENDENCIES="pylint";
 
 # Additional dependencies for debugging, alphabetized, one per line.
 DEBUG_DEPENDENCIES="libbde-dbg
-                    libbde-python-dbg
+                    libbde-python3-dbg
                     libewf-dbg
-                    libewf-python-dbg
+                    libewf-python3-dbg
                     libfsntfs-dbg
-                    libfsntfs-python-dbg
+                    libfsntfs-python3-dbg
                     libfvde-dbg
-                    libfvde-python-dbg
+                    libfvde-python3-dbg
                     libfwnt-dbg
-                    libfwnt-python-dbg
+                    libfwnt-python3-dbg
                     libqcow-dbg
-                    libqcow-python-dbg
+                    libqcow-python3-dbg
                     libsigscan-dbg
-                    libsigscan-python-dbg
+                    libsigscan-python3-dbg
                     libsmdev-dbg
-                    libsmdev-python-dbg
+                    libsmdev-python3-dbg
                     libsmraw-dbg
-                    libsmraw-python-dbg
+                    libsmraw-python3-dbg
                     libvhdi-dbg
-                    libvhdi-python-dbg
+                    libvhdi-python3-dbg
                     libvmdk-dbg
-                    libvmdk-python-dbg
+                    libvmdk-python3-dbg
                     libvshadow-dbg
-                    libvshadow-python-dbg
+                    libvshadow-python3-dbg
                     libvslvm-dbg
-                    libvslvm-python-dbg";
+                    libvslvm-python3-dbg";
 
 if [[ "$*" =~ "include-development" ]]; then
-  sudo add-apt-repository ppa:gift/pylint2 -y
+  sudo add-apt-repository ppa:gift/pylint3 -y
 fi
 
 sudo add-apt-repository ppa:gift/dev -y
 sudo apt-get update -q
-sudo apt-get install -y ${PYTHON2_DEPENDENCIES}
+sudo apt-get install -y ${PYTHON3_DEPENDENCIES}
 
 if [[ "$*" =~ "include-debug" ]]; then
     sudo apt-get install -y ${DEBUG_DEPENDENCIES}
