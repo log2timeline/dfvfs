@@ -3,16 +3,16 @@
 
 from __future__ import unicode_literals
 
-# Since abc does not seem to have an @abc.abstractclassmethod we're using
-# @abc.abstractmethod instead and shutting up pylint about:
-# E0213: Method should have "self" as first argument.
-# pylint: disable=no-self-argument
-
 import abc
 
 
 class PathSpecSerializer(object):
-  """Class that implements the path specification serializer interface."""
+  """Path specification serializer interface."""
+
+  # Since abc does not seem to have an @abc.abstractclassmethod we're using
+  # @abc.abstractmethod instead and shutting up pylint about:
+  # E0213: Method should have "self" as first argument.
+  # pylint: disable=no-self-argument,redundant-returns-doc
 
   @abc.abstractmethod
   def ReadSerialized(cls, serialized):

@@ -41,7 +41,8 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
 
     Args:
       path_spec (PathSpec): path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.

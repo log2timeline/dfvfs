@@ -24,25 +24,24 @@ class FakeDirectory(file_entry.Directory):
       FakePathSpec: a path specification.
     """
     location = getattr(self.path_spec, 'location', None)
-    if location is None:
-      return
+    if location is not None:
+      paths = self._file_system.GetPaths()
 
-    paths = self._file_system.GetPaths()
+      for path in iter(paths.keys()):
+        # Determine if the start of the path is similar to the location string.
+        # If not the file the path refers to is not in the same directory.
+        if not path or not path.startswith(location):
+          continue
 
-    for path in iter(paths.keys()):
-      # Determine if the start of the path is similar to the location string.
-      # If not the file the path refers to is not in the same directory.
-      if not path or not path.startswith(location):
-        continue
+        _, suffix = self._file_system.GetPathSegmentAndSuffix(location, path)
 
-      _, suffix = self._file_system.GetPathSegmentAndSuffix(location, path)
+        # Ignore anything that is part of a sub directory or the directory
+        # itself.
+        if suffix or path == location:
+          continue
 
-      # Ignore anything that is part of a sub directory or the directory itself.
-      if suffix or path == location:
-        continue
-
-      path_spec_location = self._file_system.JoinPath([path])
-      yield fake_path_spec.FakePathSpec(location=path_spec_location)
+        path_spec_location = self._file_system.JoinPath([path])
+        yield fake_path_spec.FakePathSpec(location=path_spec_location)
 
 
 class FakeFileEntry(file_entry.FileEntry):
@@ -76,8 +75,9 @@ class FakeFileEntry(file_entry.FileEntry):
     Returns:
       FakeDirectory: a directory or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return FakeDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return FakeDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
     """Retrieves information about the file entry.
@@ -95,6 +95,19 @@ class FakeFileEntry(file_entry.FileEntry):
         stat_object.size = len(file_data)
 
     return stat_object
+
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      FakeFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield self._file_system.GetFileEntryByPathSpec(path_spec)
 
   @property
   def access_time(self):
@@ -132,16 +145,6 @@ class FakeFileEntry(file_entry.FileEntry):
         self._name = self._file_system.BasenamePath(location)
     return self._name
 
-  @property
-  def sub_file_entries(self):
-    """generator[FakeFileEntry]: sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield self._file_system.GetFileEntryByPathSpec(path_spec)
-
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.
 
@@ -154,16 +157,17 @@ class FakeFileEntry(file_entry.FileEntry):
 
     Raises:
       IOError: if the file entry is not a file.
+      OSError: if the file entry is not a file.
     """
     if not self.IsFile():
       raise IOError('Cannot open non-file.')
 
     if data_stream_name:
-      return
+      return None
 
     location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return
+      return None
 
     file_data = self._file_system.GetDataByPath(location)
     file_object = fake_file_io.FakeFile(self._resolver_context, file_data)
@@ -178,11 +182,11 @@ class FakeFileEntry(file_entry.FileEntry):
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return
+      return None
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
-      return
+      return None
 
     if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR

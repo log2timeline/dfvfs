@@ -36,33 +36,31 @@ class OSDirectory(file_entry.Directory):
       BackEndError: if the directory could not be listed.
     """
     location = getattr(self.path_spec, 'location', None)
-    if location is None:
-      return
+    if location is not None:
+      # Windows will raise WindowsError, which can be caught by OSError,
+      # if the process has not access to list the directory. The os.access()
+      # function cannot be used since it will return true even when os.listdir()
+      # fails.
+      try:
+        for directory_entry in os.listdir(location):
+          directory_entry_location = self._file_system.JoinPath([
+              location, directory_entry])
+          yield os_path_spec.OSPathSpec(location=directory_entry_location)
 
-    # Windows will raise WindowsError, which can be caught by OSError,
-    # if the process has not access to list the directory. The os.access()
-    # function cannot be used since it will return true even when os.listdir()
-    # fails.
-    try:
-      for directory_entry in os.listdir(location):
-        directory_entry_location = self._file_system.JoinPath([
-            location, directory_entry])
-        yield os_path_spec.OSPathSpec(location=directory_entry_location)
+      except OSError as exception:
+        if exception.errno == errno.EACCES:
+          exception_string = str(exception)
+          if not isinstance(exception_string, py2to3.UNICODE_TYPE):
+            exception_string = py2to3.UNICODE_TYPE(
+                exception_string, errors='replace')
 
-    except OSError as exception:
-      if exception.errno == errno.EACCES:
-        exception_string = str(exception)
-        if not isinstance(exception_string, py2to3.UNICODE_TYPE):
-          exception_string = py2to3.UNICODE_TYPE(
-              exception_string, errors='replace')
-
-        raise errors.AccessError(
-            'Access to directory denied with error: {0:s}'.format(
-                exception_string))
-      else:
-        raise errors.BackEndError(
-            'Unable to list directory: {0:s} with error: {1:s}'.format(
-                location, exception))
+          raise errors.AccessError(
+              'Access to directory denied with error: {0:s}'.format(
+                  exception_string))
+        else:
+          raise errors.BackEndError(
+              'Unable to list directory: {0:s} with error: {1:s}'.format(
+                  location, exception))
 
 
 class OSFileEntry(file_entry.FileEntry):
@@ -149,8 +147,9 @@ class OSFileEntry(file_entry.FileEntry):
     Returns:
       OSDirectory: a directory object or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return OSDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return OSDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link."""
@@ -192,6 +191,19 @@ class OSFileEntry(file_entry.FileEntry):
       # stat_info.st_nlink
 
     return stat_object
+
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      OSFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield OSFileEntry(self._resolver_context, self._file_system, path_spec)
 
   @property
   def access_time(self):
@@ -237,16 +249,6 @@ class OSFileEntry(file_entry.FileEntry):
     timestamp = int(self._stat_info.st_mtime)
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
-  @property
-  def sub_file_entries(self):
-    """generator[OSFileEntry]: sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield OSFileEntry(self._resolver_context, self._file_system, path_spec)
-
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, for example for a symbolic link.
 
@@ -255,7 +257,7 @@ class OSFileEntry(file_entry.FileEntry):
     """
     link = self._GetLink()
     if not link:
-      return
+      return None
 
     path_spec = os_path_spec.OSPathSpec(location=link)
     return OSFileEntry(self._resolver_context, self._file_system, path_spec)
@@ -268,11 +270,11 @@ class OSFileEntry(file_entry.FileEntry):
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return
+      return None
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
-      return
+      return None
 
     if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR

@@ -25,7 +25,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Initializes a file system object.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): a resolver context.
     """
     super(TSKPartitionFileSystem, self).__init__(resolver_context)
     self._file_object = None
@@ -46,8 +46,9 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): a path specification.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -76,10 +77,10 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists or false otherwise.
     """
     tsk_vs_part, _ = tsk_partition.GetTSKVsPartByPathSpec(
         self._tsk_volume, path_spec)
@@ -96,10 +97,10 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      A file entry (instance of vfs.TSKPartitionFileEntry) or None.
+      TSKPartitionFileEntry: a file entry or None of not available.
     """
     tsk_vs_part, partition_index = tsk_partition.GetTSKVsPartByPathSpec(
         self._tsk_volume, path_spec)
@@ -110,7 +111,8 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     # but should have a location.
     if tsk_vs_part is None:
       if location is None or location != self.LOCATION_ROOT:
-        return
+        return None
+
       return tsk_partition_file_entry.TSKPartitionFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
@@ -125,7 +127,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry).
+      TSKPartitionFileEntry: a file entry or None of not available.
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
@@ -135,6 +137,6 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     """Retrieves the TSK volume object.
 
     Returns:
-      The TSK volume object (instance of pytsk3.Volume_Info).
+      pytsk3.Volume_Info: a TSK volume object.
     """
     return self._tsk_volume

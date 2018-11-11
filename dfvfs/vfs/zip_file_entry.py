@@ -26,57 +26,54 @@ class ZipDirectory(file_entry.Directory):
     """
     location = getattr(self.path_spec, 'location', None)
 
-    if (location is None or
-        not location.startswith(self._file_system.PATH_SEPARATOR)):
-      return
+    if location and location.startswith(self._file_system.PATH_SEPARATOR):
+      # The zip_info filename does not have the leading path separator
+      # as the location string does.
+      zip_path = location[1:]
 
-    # The zip_info filename does not have the leading path separator
-    # as the location string does.
-    zip_path = location[1:]
+      # Set of top level sub directories that have been yielded.
+      processed_directories = set()
 
-    # Set of top level sub directories that have been yielded.
-    processed_directories = set()
+      zip_file = self._file_system.GetZipFile()
+      for zip_info in zip_file.infolist():
+        path = getattr(zip_info, 'filename', None)
+        if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
+          try:
+            path = path.decode(self._file_system.encoding)
+          except UnicodeDecodeError:
+            path = None
 
-    zip_file = self._file_system.GetZipFile()
-    for zip_info in zip_file.infolist():
-      path = getattr(zip_info, 'filename', None)
-      if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
-        try:
-          path = path.decode(self._file_system.encoding)
-        except UnicodeDecodeError:
-          path = None
-
-      if not path or not path.startswith(zip_path):
-        continue
-
-      # Ignore the directory itself.
-      if path == zip_path:
-        continue
-
-      path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
-          zip_path, path)
-      if not path_segment:
-        continue
-
-      # Some times the ZIP file lacks directories, therefore we will
-      # provide virtual ones.
-      if suffix:
-        path_spec_location = self._file_system.JoinPath([
-            location, path_segment])
-        is_directory = True
-      else:
-        path_spec_location = self._file_system.JoinPath([path])
-        is_directory = path.endswith('/')
-
-      if is_directory:
-        if path_spec_location in processed_directories:
+        if not path or not path.startswith(zip_path):
           continue
-        processed_directories.add(path_spec_location)
-        # Restore / at end path to indicate a directory.
-        path_spec_location += self._file_system.PATH_SEPARATOR
 
-      yield zip_path_spec.ZipPathSpec(
-          location=path_spec_location, parent=self.path_spec.parent)
+        # Ignore the directory itself.
+        if path == zip_path:
+          continue
+
+        path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
+            zip_path, path)
+        if not path_segment:
+          continue
+
+        # Some times the ZIP file lacks directories, therefore we will
+        # provide virtual ones.
+        if suffix:
+          path_spec_location = self._file_system.JoinPath([
+              location, path_segment])
+          is_directory = True
+        else:
+          path_spec_location = self._file_system.JoinPath([path])
+          is_directory = path.endswith('/')
+
+        if is_directory:
+          if path_spec_location in processed_directories:
+            continue
+          processed_directories.add(path_spec_location)
+          # Restore / at end path to indicate a directory.
+          path_spec_location += self._file_system.PATH_SEPARATOR
+
+        yield zip_path_spec.ZipPathSpec(
+            location=path_spec_location, parent=self.path_spec.parent)
 
 
 class ZipFileEntry(file_entry.FileEntry):
@@ -136,8 +133,9 @@ class ZipFileEntry(file_entry.FileEntry):
     Returns:
       ZipDirectory: a directory or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return ZipDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return ZipDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
     """Retrieves information about the file entry.
@@ -170,27 +168,12 @@ class ZipFileEntry(file_entry.FileEntry):
 
     return stat_object
 
-  @property
-  def name(self):
-    """str: name of the file entry, without the full path."""
-    path = getattr(self.path_spec, 'location', None)
-    if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
-      try:
-        path = path.decode(self._file_system.encoding)
-      except UnicodeDecodeError:
-        path = None
-    return self._file_system.BasenamePath(path)
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
 
-  @property
-  def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
-    if self._zip_info is not None:
-      time_elements = getattr(self._zip_info, 'date_time', None)
-      return dfdatetime_time_elements.TimeElements(time_elements)
-
-  @property
-  def sub_file_entries(self):
-    """generator[ZipFileEntry]: sub file entries."""
+    Yields:
+      ZipFileEntry: a sub file entry.
+    """
     if self._directory is None:
       self._directory = self._GetDirectory()
 
@@ -210,6 +193,26 @@ class ZipFileEntry(file_entry.FileEntry):
         yield ZipFileEntry(
             self._resolver_context, self._file_system, path_spec, **kwargs)
 
+  @property
+  def name(self):
+    """str: name of the file entry, without the full path."""
+    path = getattr(self.path_spec, 'location', None)
+    if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
+      try:
+        path = path.decode(self._file_system.encoding)
+      except UnicodeDecodeError:
+        path = None
+    return self._file_system.BasenamePath(path)
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    if self._zip_info is None:
+      return None
+
+    time_elements = getattr(self._zip_info, 'date_time', None)
+    return dfdatetime_time_elements.TimeElements(time_elements)
+
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
 
@@ -218,11 +221,11 @@ class ZipFileEntry(file_entry.FileEntry):
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return
+      return None
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
-      return
+      return None
 
     parent_path_spec = getattr(self.path_spec, 'parent', None)
 
@@ -258,7 +261,7 @@ class ZipFileEntry(file_entry.FileEntry):
         raise errors.PathSpecError('Invalid location in path specification.')
 
       if len(location) == 1:
-        return
+        return None
 
       zip_file = self._file_system.GetZipFile()
       try:

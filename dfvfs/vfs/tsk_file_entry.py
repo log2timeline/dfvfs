@@ -6,10 +6,10 @@ from __future__ import unicode_literals
 import copy
 import decimal
 
-import pytsk3
-
 from dfdatetime import definitions as dfdatetime_definitions
 from dfdatetime import interface as dfdatetime_interface
+
+import pytsk3
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -227,7 +227,7 @@ class TSKDataStream(file_entry.DataStream):
     """Determines if the data stream is the default data stream.
 
     Returns:
-      bool: True if the data stream is the default data stream.
+      bool: True if the data stream is the default data stream, false if not.
     """
     if not self._tsk_attribute or not self._file_system:
       return True
@@ -237,7 +237,7 @@ class TSKDataStream(file_entry.DataStream):
       return attribute_type in (
           pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA)
 
-    elif self._file_system.IsNTFS():
+    if self._file_system.IsNTFS():
       return not bool(self.name)
 
     return True
@@ -464,8 +464,8 @@ class TSKFileEntry(file_entry.FileEntry):
       self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_LNK:
       self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
-    elif (tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_CHR or
-          tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_BLK):
+    elif tsk_fs_meta_type in (
+        pytsk3.TSK_FS_META_TYPE_CHR, pytsk3.TSK_FS_META_TYPE_BLK):
       self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_FIFO:
       self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
@@ -549,8 +549,9 @@ class TSKFileEntry(file_entry.FileEntry):
     Returns:
       TSKDirectory: directory or None.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return TSKDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return TSKDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.
@@ -633,6 +634,19 @@ class TSKFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      TSKFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield TSKFileEntry(self._resolver_context, self._file_system, path_spec)
+
   def _GetTimeValue(self, name):
     """Retrieves a date and time value.
 
@@ -662,11 +676,11 @@ class TSKFileEntry(file_entry.FileEntry):
       time_value (str): name of the time value.
 
     Returns:
-     tuple containing:
-        int: POSIX timestamp in seconds. None on error, or if the file system
-          does not include the requested timestamp.
-        int: remainder in 100 nano seconds. None on error, or if the file system
-          does not support sub-second precision.
+      tuple[int, int]: number of seconds since 1970-01-01 00:00:00 and fraction
+          of second in 100 nano seconds intervals. The number of seconds is None
+          on error, or if the file system does not include the requested
+          timestamp. The fraction of second is None on error, or if the file
+          system does not support sub-second precision.
 
     Raises:
       BackEndError: if the TSK File .info, .info.meta or info.fs_info
@@ -730,6 +744,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
     return self._GetTimeValue('dtime')
 
+  # pylint: disable=missing-return-doc,missing-return-type-doc
   @property
   def name(self):
     """str: name of the file entry, which does not include the full path.
@@ -765,16 +780,6 @@ class TSKFileEntry(file_entry.FileEntry):
       return None
 
     return self._GetTimeValue('mtime')
-
-  @property
-  def sub_file_entries(self):
-    """generator(TSKFileEntry): sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield TSKFileEntry(self._resolver_context, self._file_system, path_spec)
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.

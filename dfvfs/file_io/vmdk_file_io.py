@@ -21,10 +21,11 @@ class VMDKFile(file_object_io.FileObjectIO):
       path_spec (PathSpec): path specification.
 
     Returns:
-      FileIO: a file-like object.
+      pyvmdk.handle: a file-like object.
 
     Raises:
       IOError: if the file-like object could not be opened.
+      OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
     if not path_spec.HasParent():
@@ -112,6 +113,7 @@ class VMDKFile(file_object_io.FileObjectIO):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
       raise IOError('Not opened.')

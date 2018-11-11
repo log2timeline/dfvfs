@@ -27,7 +27,7 @@ class ZipFileSystem(file_system.FileSystem):
     """Initializes a file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): a resolver context.
       encoding (Optional[str]): encoding of the file entry name.
     """
     super(ZipFileSystem, self).__init__(resolver_context)
@@ -52,7 +52,8 @@ class ZipFileSystem(file_system.FileSystem):
 
     Args:
       path_spec (PathSpec): path specification of the file system.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -119,7 +120,7 @@ class ZipFileSystem(file_system.FileSystem):
       ZipFileEntry: a file entry or None.
     """
     if not self.FileEntryExistsByPathSpec(path_spec):
-      return
+      return None
 
     location = getattr(path_spec, 'location', None)
 
@@ -176,3 +177,5 @@ class ZipFileSystem(file_system.FileSystem):
 
     if len(location) > 1:
       return self._zip_file.getinfo(location[1:])
+
+    return None

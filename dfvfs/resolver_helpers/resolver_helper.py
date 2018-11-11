@@ -7,6 +7,8 @@ from __future__ import unicode_literals
 class ResolverHelper(object):
   """Resolver helper object interface."""
 
+  # pylint: disable=missing-raises-doc,redundant-returns-doc,unused-argument
+
   @property
   def type_indicator(self):
     """str: type indicator."""
@@ -16,7 +18,7 @@ class ResolverHelper(object):
           'Invalid resolver helper missing type indicator.')
     return type_indicator
 
-  def NewFileObject(self, unused_resolver_context):
+  def NewFileObject(self, resolver_context):
     """Creates a new file-like object.
 
     Args:
@@ -33,7 +35,7 @@ class ResolverHelper(object):
     # abstract methods, which should not be the the case.
     raise RuntimeError('Missing implemention to create file object.')
 
-  def NewFileSystem(self, unused_resolver_context):
+  def NewFileSystem(self, resolver_context):
     """Creates a new file system.
 
     Args:

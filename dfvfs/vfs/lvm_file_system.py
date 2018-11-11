@@ -48,7 +48,8 @@ class LVMFileSystem(file_system.FileSystem):
 
     Args:
       path_spec (PathSpec): path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -95,8 +96,8 @@ class LVMFileSystem(file_system.FileSystem):
       location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
-    return (volume_index >= 0 and
-            volume_index < self._vslvm_volume_group.number_of_logical_volumes)
+    return (
+        0 <= volume_index < self._vslvm_volume_group.number_of_logical_volumes)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -114,16 +115,17 @@ class LVMFileSystem(file_system.FileSystem):
     if volume_index is None:
       location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
-        return
+        return None
+
       return lvm_file_entry.LVMFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
     if (volume_index < 0 or
         volume_index >= self._vslvm_volume_group.number_of_logical_volumes):
-      return
-    return lvm_file_entry.LVMFileEntry(
-        self._resolver_context, self, path_spec)
+      return None
+
+    return lvm_file_entry.LVMFileEntry(self._resolver_context, self, path_spec)
 
   def GetLVMLogicalVolumeByPathSpec(self, path_spec):
     """Retrieves a LVM logical volume for a path specification.
@@ -135,8 +137,9 @@ class LVMFileSystem(file_system.FileSystem):
       pyvslvm.logical_volume: a LVM logical volume or None if not available.
     """
     volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
-    if volume_index is not None:
-      return self._vslvm_volume_group.get_logical_volume(volume_index)
+    if volume_index is None:
+      return None
+    return self._vslvm_volume_group.get_logical_volume(volume_index)
 
   def GetLVMVolumeGroup(self):
     """Retrieves the LVM volume group.

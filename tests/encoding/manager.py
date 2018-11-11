@@ -19,21 +19,20 @@ class TestDecoder(decoder.Decoder):
 
   ENCODING_METHOD = 'test'
 
-  def Decode(self, unused_encoded_data):
+  def Decode(self, encoded_data):
     """Decode the encoded data.
 
     Args:
-      encoded_data: a byte string containing the encoded data.
+      encoded_data (byte): encoded data.
 
     Returns:
-      A tuple containing a byte string of the decoded data and
-      the remaining encoded data.
+      tuple(bytes, bytes): decoded data and remaining encoded data.
     """
     return b'', b''
 
 
 class EncodingManagerTest(shared_test_lib.BaseTestCase):
-  """Class to test the encoding manager."""
+  """Encoding manager tests."""
 
   def testDecoderRegistration(self):
     """Tests the DeregisterDecoder and DeregisterDecoder functions."""

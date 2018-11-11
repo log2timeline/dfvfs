@@ -25,7 +25,7 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
   _BDE_PASSWORD = 'bde-TEST'
 
-  def GetPartitionIdentifiers(self, unused_volume_system, volume_identifiers):
+  def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves partition identifiers.
 
     This method can be used to prompt the user to provide partition identifiers.
@@ -42,7 +42,7 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     """
     return volume_identifiers
 
-  def GetVSSStoreIdentifiers(self, unused_volume_system, volume_identifiers):
+  def GetVSSStoreIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves VSS store identifiers.
 
     This method can be used to prompt the user to provide VSS store identifiers.
@@ -62,8 +62,7 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
         for volume_identifier in volume_identifiers]
 
   def UnlockEncryptedVolume(
-      self, source_scanner_object, scan_context, locked_scan_node,
-      unused_credentials):
+      self, source_scanner_object, scan_context, locked_scan_node, credentials):
     """Unlocks an encrypted volume.
 
     This method can be used to prompt the user to provide encrypted volume

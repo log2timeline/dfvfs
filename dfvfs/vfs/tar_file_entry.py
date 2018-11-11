@@ -26,54 +26,51 @@ class TARDirectory(file_entry.Directory):
     """
     location = getattr(self.path_spec, 'location', None)
 
-    if (location is None or
-        not location.startswith(self._file_system.PATH_SEPARATOR)):
-      return
+    if location and location.startswith(self._file_system.PATH_SEPARATOR):
+      # The TAR info name does not have the leading path separator as
+      # the location string does.
+      tar_path = location[1:]
 
-    # The TAR info name does not have the leading path separator as
-    # the location string does.
-    tar_path = location[1:]
+      # Set of top level sub directories that have been yielded.
+      processed_directories = set()
 
-    # Set of top level sub directories that have been yielded.
-    processed_directories = set()
+      tar_file = self._file_system.GetTARFile()
+      for tar_info in iter(tar_file.getmembers()):
+        path = tar_info.name
 
-    tar_file = self._file_system.GetTARFile()
-    for tar_info in iter(tar_file.getmembers()):
-      path = tar_info.name
-
-      # Determine if the start of the TAR info name is similar to
-      # the location string. If not the file TAR info refers to is not in
-      # the same directory.
-      if not path or not path.startswith(tar_path):
-        continue
-
-      # Ignore the directory itself.
-      if path == tar_path:
-        continue
-
-      path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
-          tar_path, path)
-      if not path_segment:
-        continue
-
-      # Sometimes the TAR file lacks directories, therefore we will
-      # provide virtual ones.
-      if suffix:
-        path_spec_location = self._file_system.JoinPath([
-            location, path_segment])
-        is_directory = True
-
-      else:
-        path_spec_location = self._file_system.JoinPath([path])
-        is_directory = tar_info.isdir()
-
-      if is_directory:
-        if path_spec_location in processed_directories:
+        # Determine if the start of the TAR info name is similar to
+        # the location string. If not the file TAR info refers to is not in
+        # the same directory.
+        if not path or not path.startswith(tar_path):
           continue
-        processed_directories.add(path_spec_location)
 
-      yield tar_path_spec.TARPathSpec(
-          location=path_spec_location, parent=self.path_spec.parent)
+        # Ignore the directory itself.
+        if path == tar_path:
+          continue
+
+        path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
+            tar_path, path)
+        if not path_segment:
+          continue
+
+        # Sometimes the TAR file lacks directories, therefore we will
+        # provide virtual ones.
+        if suffix:
+          path_spec_location = self._file_system.JoinPath([
+              location, path_segment])
+          is_directory = True
+
+        else:
+          path_spec_location = self._file_system.JoinPath([path])
+          is_directory = tar_info.isdir()
+
+        if is_directory:
+          if path_spec_location in processed_directories:
+            continue
+          processed_directories.add(path_spec_location)
+
+        yield tar_path_spec.TARPathSpec(
+            location=path_spec_location, parent=self.path_spec.parent)
 
 
 class TARFileEntry(file_entry.FileEntry):
@@ -126,8 +123,9 @@ class TARFileEntry(file_entry.FileEntry):
     Returns:
       TARDirectory: a directory or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return TARDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return TARDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.
@@ -174,27 +172,12 @@ class TARFileEntry(file_entry.FileEntry):
 
     return stat_object
 
-  @property
-  def name(self):
-    """str: name of the file entry, which does not include the full path."""
-    path = getattr(self.path_spec, 'location', None)
-    if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
-      try:
-        path = path.decode(self._file_system.encoding)
-      except UnicodeDecodeError:
-        path = None
-    return self._file_system.BasenamePath(path)
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
 
-  @property
-  def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
-    timestamp = getattr(self._tar_info, 'mtime', None)
-    if timestamp is not None:
-      return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
-
-  @property
-  def sub_file_entries(self):
-    """generator(TARFileEntry): sub file entries."""
+    Yields:
+      TARFileEntry: a sub file entry.
+    """
     tar_file = self._file_system.GetTARFile()
 
     if self._directory is None:
@@ -215,6 +198,25 @@ class TARFileEntry(file_entry.FileEntry):
         yield TARFileEntry(
             self._resolver_context, self._file_system, path_spec, **kwargs)
 
+  @property
+  def name(self):
+    """str: name of the file entry, which does not include the full path."""
+    path = getattr(self.path_spec, 'location', None)
+    if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
+      try:
+        path = path.decode(self._file_system.encoding)
+      except UnicodeDecodeError:
+        path = None
+    return self._file_system.BasenamePath(path)
+
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    timestamp = getattr(self._tar_info, 'mtime', None)
+    if timestamp is None:
+      return None
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
 
@@ -223,11 +225,11 @@ class TARFileEntry(file_entry.FileEntry):
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return
+      return None
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
-      return
+      return None
 
     if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR
@@ -262,7 +264,7 @@ class TARFileEntry(file_entry.FileEntry):
         raise errors.PathSpecError('Invalid location in path specification.')
 
       if len(location) == 1:
-        return
+        return None
 
       tar_file = self._file_system.GetTARFile()
       try:

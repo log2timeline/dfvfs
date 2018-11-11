@@ -42,12 +42,11 @@ class BaseTestCase(unittest.TestCase):
   maxDiff = None
 
   def _assertSubFileEntries(self, file_entry, expected_sub_file_entry_names):
-    """Helper function that asserts the sub file entries have the
-    expected names.
+    """Asserts that sub file entries have match the expected names.
 
     Args:
       file_entry (FileEntry): file entry.
-      sub_file_entry_names (list[str]): sub file entry names.
+      expected_sub_file_entry_names (list[str]): expected sub file entry names.
     """
     self.assertEqual(
         file_entry.number_of_sub_file_entries,

@@ -9,6 +9,8 @@ import abc
 class Decoder(object):
   """Decoder interface."""
 
+  # pylint: disable=redundant-returns-doc
+
   @abc.abstractmethod
   def Decode(self, encoded_data):
     """Decodes the encoded data.

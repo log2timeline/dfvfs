@@ -22,21 +22,20 @@ class LVMDirectory(file_entry.Directory):
     Yields:
       LVMPathSpec: a path specification.
     """
-    # Only the virtual root file has directory entries.
     volume_index = getattr(self.path_spec, 'volume_index', None)
-    if volume_index is not None:
-      return
-
     location = getattr(self.path_spec, 'location', None)
-    if location is None or location != self._file_system.LOCATION_ROOT:
-      return
 
-    vslvm_volume_group = self._file_system.GetLVMVolumeGroup()
+    # Only the virtual root file has directory entries.
+    if (volume_index is None and location is not None and
+        location == self._file_system.LOCATION_ROOT):
+      vslvm_volume_group = self._file_system.GetLVMVolumeGroup()
 
-    for volume_index in range(0, vslvm_volume_group.number_of_logical_volumes):
-      yield lvm_path_spec.LVMPathSpec(
-          location='/lvm{0:d}'.format(volume_index + 1),
-          parent=self.path_spec.parent, volume_index=volume_index)
+      for volume_index in range(
+          0, vslvm_volume_group.number_of_logical_volumes):
+        location = '/lvm{0:d}'.format(volume_index + 1)
+        yield lvm_path_spec.LVMPathSpec(
+            location=location, parent=self.path_spec.parent,
+            volume_index=volume_index)
 
 
 class LVMFileEntry(file_entry.FileEntry):
@@ -83,8 +82,9 @@ class LVMFileEntry(file_entry.FileEntry):
     Returns:
       LVMDirectory: a directory or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return LVMDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return LVMDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
     """Retrieves information about the file entry.
@@ -98,6 +98,19 @@ class LVMFileEntry(file_entry.FileEntry):
       stat_object.size = self._vslvm_logical_volume.size
 
     return stat_object
+
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      LVMFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield LVMFileEntry(self._resolver_context, self._file_system, path_spec)
 
   # TODO: implement creation_time property after implementing
   # vslvm_logical_volume.get_creation_time_as_integer()
@@ -117,16 +130,6 @@ class LVMFileEntry(file_entry.FileEntry):
           self._name = ''
     return self._name
 
-  @property
-  def sub_file_entries(self):
-    """generator[LVMFileEntry]: sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield LVMFileEntry(self._resolver_context, self._file_system, path_spec)
-
   def GetLVMLogicalVolume(self):
     """Retrieves the LVM logical volume.
 
@@ -143,6 +146,6 @@ class LVMFileEntry(file_entry.FileEntry):
     """
     volume_index = lvm.LVMPathSpecGetVolumeIndex(self.path_spec)
     if volume_index is None:
-      return
+      return None
 
     return self._file_system.GetRootFileEntry()

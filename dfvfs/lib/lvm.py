@@ -11,7 +11,7 @@ def LVMPathSpecGetVolumeIndex(path_spec):
     path_spec (PathSpec): path specification.
 
   Returns:
-    int: volume index.
+    int: volume index or None if not available.
   """
   volume_index = getattr(path_spec, 'volume_index', None)
 
@@ -19,7 +19,7 @@ def LVMPathSpecGetVolumeIndex(path_spec):
     location = getattr(path_spec, 'location', None)
 
     if location is None or not location.startswith('/lvm'):
-      return
+      return None
 
     volume_index = None
     try:
@@ -28,6 +28,6 @@ def LVMPathSpecGetVolumeIndex(path_spec):
       pass
 
     if volume_index is None or volume_index < 0:
-      return
+      return None
 
   return volume_index

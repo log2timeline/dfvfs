@@ -15,25 +15,25 @@ from tests import test_lib as shared_test_lib
 
 
 class TestDecrypter(decrypter.Decrypter):
-  """Class that implements a test decrypter."""
+  """Test decrypter."""
 
   ENCRYPTION_METHOD = 'test'
 
-  def Decrypt(self, unused_encrypted_data):
+  def Decrypt(self, encrypted_data):
     """Decrypt the encrypted data.
 
     Args:
-      encrypted_data: a byte string containing the encrypted data.
+      encrypted_data (bytes): the encrypted data.
 
     Returns:
-      A tuple containing a byte string of the decrypted data and
-      the remaining encrypted data.
+      tuple[bytes, bytes]: byte string of the decrypted data and the remaining
+          encrypted data.
     """
     return b'', b''
 
 
 class EncryptionManagerTest(shared_test_lib.BaseTestCase):
-  """Class to test the encryption manager."""
+  """Encryption manager tests."""
 
   def testDecrypterRegistration(self):
     """Tests the DeregisterDecrypter and DeregisterDecrypter functions."""

@@ -34,7 +34,7 @@ class TSKPartitionAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     try:
       pytsk3.Volume_Info(tsk_image_object)
     except IOError:
-      return
+      return None
 
     return self.type_indicator
 

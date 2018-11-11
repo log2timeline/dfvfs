@@ -48,7 +48,7 @@ class CredentialsManager(object):
           credentials support.
     """
     if not path_spec:
-      return
+      return None
 
     return cls._credentials.get(path_spec.type_indicator, None)
 

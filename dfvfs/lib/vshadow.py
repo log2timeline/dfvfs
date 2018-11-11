@@ -9,6 +9,9 @@ def VShadowPathSpecGetStoreIndex(path_spec):
 
   Args:
     path_spec (PathSpec): path specification.
+
+  Returns:
+    int: store index or None if not available.
   """
   store_index = getattr(path_spec, 'store_index', None)
 
@@ -16,7 +19,7 @@ def VShadowPathSpecGetStoreIndex(path_spec):
     location = getattr(path_spec, 'location', None)
 
     if location is None or not location.startswith('/vss'):
-      return
+      return None
 
     store_index = None
     try:
@@ -25,6 +28,6 @@ def VShadowPathSpecGetStoreIndex(path_spec):
       pass
 
     if store_index is None or store_index < 0:
-      return
+      return None
 
   return store_index

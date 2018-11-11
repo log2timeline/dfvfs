@@ -47,7 +47,7 @@ class RawFile(file_object_io.FileObjectIO):
       path_spec (PathSpec): path specification.
 
     Returns:
-      FileIO: a file-like object or None.
+      pysmraw.handle: a file-like object or None.
 
     Raises:
       PathSpecError: if the path specification is invalid.
@@ -65,7 +65,7 @@ class RawFile(file_object_io.FileObjectIO):
     # handle the file system abstraction dfvfs provides.
     segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
     if not segment_file_path_specs:
-      return
+      return None
 
     if parent_path_spec.IsSystemLevel():
       # Typically the file-like object cache should have room for 127 items.
@@ -90,6 +90,7 @@ class RawFile(file_object_io.FileObjectIO):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
       raise IOError('Not opened.')

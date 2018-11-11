@@ -44,7 +44,7 @@ class EncryptionManager(object):
     encryption_method = encryption_method.lower()
     decrypter = cls._decrypters.get(encryption_method, None)
     if not decrypter:
-      return
+      return None
 
     return decrypter(**kwargs)
 
