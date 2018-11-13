@@ -10,6 +10,7 @@ set -e
 # This should not include packages only required for testing or development.
 PYTHON3_DEPENDENCIES="libbde-python3
                       libewf-python3
+                      libfsapfs-python3
                       libfsntfs-python3
                       libfvde-python3
                       libfwnt-python3
@@ -38,6 +39,8 @@ DEBUG_DEPENDENCIES="libbde-dbg
                     libbde-python3-dbg
                     libewf-dbg
                     libewf-python3-dbg
+                    libfsapfs-dbg
+                    libfsapfs-python3-dbg
                     libfsntfs-dbg
                     libfsntfs-python3-dbg
                     libfvde-dbg

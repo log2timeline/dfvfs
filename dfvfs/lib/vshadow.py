@@ -24,7 +24,7 @@ def VShadowPathSpecGetStoreIndex(path_spec):
     store_index = None
     try:
       store_index = int(location[4:], 10) - 1
-    except ValueError:
+    except (TypeError, ValueError):
       pass
 
     if store_index is None or store_index < 0:

@@ -10,6 +10,7 @@ set -e
 # This should not include packages only required for testing or development.
 PYTHON2_DEPENDENCIES="libbde-python
                       libewf-python
+                      libfsapfs-python
                       libfsntfs-python
                       libfvde-python
                       libfwnt-python
@@ -40,6 +41,8 @@ DEBUG_DEPENDENCIES="libbde-dbg
                     libbde-python-dbg
                     libewf-dbg
                     libewf-python-dbg
+                    libfsapfs-dbg
+                    libfsapfs-python-dbg
                     libfsntfs-dbg
                     libfsntfs-python-dbg
                     libfvde-dbg

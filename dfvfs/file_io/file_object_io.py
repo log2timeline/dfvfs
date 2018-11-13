@@ -65,6 +65,7 @@ class FileObjectIO(file_io.FileIO):
     if not self._file_object:
       raise IOError('Unable to open missing file-like object.')
 
+  # pylint: disable=redundant-returns-doc
   @abc.abstractmethod
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.

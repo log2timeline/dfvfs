@@ -11,6 +11,7 @@ set -e
 PYTHON2_DEPENDENCIES="PyYAML
                       libbde-python
                       libewf-python
+                      libfsapfs-python2
                       libfsntfs-python
                       libfvde-python
                       libfwnt-python
@@ -40,6 +41,8 @@ DEBUG_DEPENDENCIES="libbde-debuginfo
                     libbde-python-debuginfo
                     libewf-debuginfo
                     libewf-python-debuginfo
+                    libfsapfs-debuginfo
+                    libfsapfs-python2-debuginfo
                     libfsntfs-debuginfo
                     libfsntfs-python-debuginfo
                     libfvde-debuginfo
