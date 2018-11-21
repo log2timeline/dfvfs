@@ -36,7 +36,9 @@ class TSKPathSpec(path_spec.PathSpec):
     Raises:
       ValueError: when inode and location, or parent are not set.
     """
-    if (not inode and not location) or not parent:
+    # Note that pytsk/libtsk overloads inode and a value of 0 is valid in
+    # contrast to an ext file system.
+    if (inode is None and not location) or not parent:
       raise ValueError('Missing inode and location, or parent value.')
 
     super(TSKPathSpec, self).__init__(parent=parent, **kwargs)
