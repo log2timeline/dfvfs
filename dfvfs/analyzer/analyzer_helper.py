@@ -13,7 +13,7 @@ class AnalyzerHelper(object):
   def format_categories(self):
     """set[str]: format categories, such as archive file or file system.
 
-    The format categores are defined in defintions.FORMAT_CATEGORIES.
+    The format categories are defined in definitions.FORMAT_CATEGORIES.
     """
     format_categories = getattr(self, 'FORMAT_CATEGORIES', None)
     if format_categories is None:
