@@ -36,7 +36,7 @@ class TSKPathSpec(path_spec.PathSpec):
     Raises:
       ValueError: when inode and location, or parent are not set.
     """
-    if (not inode and not location) or not parent:
+    if (inode is None and not location) or not parent:
       raise ValueError('Missing inode and location, or parent value.')
 
     super(TSKPathSpec, self).__init__(parent=parent, **kwargs)

@@ -27,7 +27,7 @@ class TSKPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=1, parent=self._path_spec)
+        inode=0, parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
