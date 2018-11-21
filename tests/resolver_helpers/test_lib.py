@@ -33,7 +33,7 @@ class TestResolverHelper(resolver_helper.ResolverHelper):
 
 
 class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
-  """The unit test case for resolver helper implementions."""
+  """The unit test case for resolver helper implementations."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

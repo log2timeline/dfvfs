@@ -25,7 +25,7 @@ class TestPathSpec(path_spec.PathSpec):
 
 
 class PathSpecTestCase(shared_test_lib.BaseTestCase):
-  """The unit test case for path specification implementions."""
+  """The unit test case for path specification implementations."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

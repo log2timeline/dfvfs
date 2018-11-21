@@ -33,7 +33,7 @@ class ResolverHelper(object):
     # Note: not using NotImplementedError or @abc.abstractmethod here since
     # pylint then will complain derived classes will need to implement
     # abstract methods, which should not be the the case.
-    raise RuntimeError('Missing implemention to create file object.')
+    raise RuntimeError('Missing implementation to create file object.')
 
   def NewFileSystem(self, resolver_context):
     """Creates a new file system.
@@ -50,4 +50,4 @@ class ResolverHelper(object):
     # Note: not using NotImplementedError or @abc.abstractmethod here since
     # pylint then will complain derived classes will need to implement
     # abstract methods, which should not be the the case.
-    raise RuntimeError('Missing implemention to create file system.')
+    raise RuntimeError('Missing implementation to create file system.')

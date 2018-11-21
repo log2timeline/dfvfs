@@ -370,7 +370,7 @@ class FileEntry(object):
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, for example for a symbolic link.
 
-    Retruns:
+    Returns:
       FileEntry: linked file entry or None if not available.
     """
     return

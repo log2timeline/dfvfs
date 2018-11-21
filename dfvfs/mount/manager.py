@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 
 
 class MountPointManager(object):
-  """Path specification moint point manager."""
+  """Path specification mount point manager."""
 
   _mount_points = {}
 

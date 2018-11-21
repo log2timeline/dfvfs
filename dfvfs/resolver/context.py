@@ -220,7 +220,7 @@ class Context(object):
     return result
 
   def SetMaximumNumberOfFileObjects(self, maximum_number_of_file_objects):
-    """Sets the maximum number of cached filei-like objects.
+    """Sets the maximum number of cached file-like objects.
 
     Args:
       maximum_number_of_file_objects (int): maximum number of file-like

@@ -48,7 +48,7 @@ class AnalyzerHelper(object):
     # Note: not using NotImplementedError here since pylint then will complain
     # derived classes will need to implement the method, which should not
     # be the the case.
-    raise RuntimeError('Missing implemention to analyze file object.')
+    raise RuntimeError('Missing implementation to analyze file object.')
 
   def GetFormatSpecification(self):
     """Retrieves the format specification.
