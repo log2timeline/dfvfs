@@ -26,7 +26,7 @@ class NTFSPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        mft_entry=1, parent=self._path_spec)
+        mft_entry=0, parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
