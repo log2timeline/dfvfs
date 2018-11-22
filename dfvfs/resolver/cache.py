@@ -142,7 +142,7 @@ class ObjectsCache(object):
     """
     cache_value = self._values.get(identifier, None)
     if not cache_value:
-      return
+      return None
 
     return cache_value.vfs_object
 

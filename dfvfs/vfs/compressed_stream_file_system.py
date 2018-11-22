@@ -11,21 +11,21 @@ from dfvfs.vfs import root_only_file_system
 
 
 class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
-  """Class that implements a compresses stream file system object."""
+  """Compressed stream file system."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
   def __init__(self, resolver_context):
-    """Initializes a file system object.
+    """Initializes a compressed stream file system.
 
     Args:
-      resolver_context: the resolver context (instance of resolver.Context).
+      resolver_context (Context): a resolver context.
     """
     super(CompressedStreamFileSystem, self).__init__(resolver_context)
     self._compression_method = None
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.
@@ -33,15 +33,16 @@ class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     self._compression_method = None
 
   def _Open(self, path_spec, mode='rb'):
-    """Opens the file system object defined by path specification.
+    """Opens the file system defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): a path specification.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      IOError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -60,10 +61,10 @@ class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      CompressedStreamFileEntry: a file entry or None if not available.
     """
     return compressed_stream_file_entry.CompressedStreamFileEntry(
         self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
@@ -72,7 +73,7 @@ class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      CompressedStreamFileEntry: a file entry or None if not available.
     """
     path_spec = compressed_stream_path_spec.CompressedStreamPathSpec(
         compression_method=self._compression_method,

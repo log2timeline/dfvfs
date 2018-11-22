@@ -37,31 +37,27 @@ class SQLiteBlobDirectory(file_entry.Directory):
       BackEndError: if the directory could not be listed.
     """
     table_name = getattr(self.path_spec, 'table_name', None)
-    if table_name is None:
-      return
-
     column_name = getattr(self.path_spec, 'column_name', None)
-    if column_name is None:
-      return
 
-    if self._number_of_entries is None:
-      # Open the first entry to determine how many entries we have.
-      # TODO: change this when there is a move this to a central temp file
-      # manager. https://github.com/log2timeline/dfvfs/issues/92
-      path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=table_name, column_name=column_name, row_index=0,
-          parent=self.path_spec.parent)
+    if table_name and column_name:
+      if self._number_of_entries is None:
+        # Open the first entry to determine how many entries we have.
+        # TODO: change this when there is a move this to a central temp file
+        # manager. https://github.com/log2timeline/dfvfs/issues/92
+        path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
+            table_name=table_name, column_name=column_name, row_index=0,
+            parent=self.path_spec.parent)
 
-      sub_file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-      if not file_entry:
-        self._number_of_entries = 0
-      else:
-        self._number_of_entries = sub_file_entry.GetNumberOfRows()
+        sub_file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+        if not file_entry:
+          self._number_of_entries = 0
+        else:
+          self._number_of_entries = sub_file_entry.GetNumberOfRows()
 
-    for row_index in range(0, self._number_of_entries):
-      yield sqlite_blob_path_spec.SQLiteBlobPathSpec(
-          table_name=table_name, column_name=column_name, row_index=row_index,
-          parent=self.path_spec.parent)
+      for row_index in range(0, self._number_of_entries):
+        yield sqlite_blob_path_spec.SQLiteBlobPathSpec(
+            table_name=table_name, column_name=column_name, row_index=row_index,
+            parent=self.path_spec.parent)
 
 
 class SQLiteBlobFileEntry(file_entry.FileEntry):
@@ -99,8 +95,9 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     Returns:
       SQLiteBlobDirectory: a directory or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return SQLiteBlobDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return SQLiteBlobDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
     """Retrieves the stat object.
@@ -126,6 +123,20 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      SQLiteBlobFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield SQLiteBlobFileEntry(
+            self._resolver_context, self._file_system, path_spec)
+
   @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
@@ -147,17 +158,6 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
       return '{0:s}.{1:s}'.format(table_name, column_name)
 
     return ''
-
-  @property
-  def sub_file_entries(self):
-    """generator(SQLiteBlobFileEntry): sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield SQLiteBlobFileEntry(
-            self._resolver_context, self._file_system, path_spec)
 
   def GetNumberOfRows(self):
     """Retrieves the number of rows in the table.
@@ -189,7 +189,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     """
     # If the file entry is a sub entry, return the SQLite blob directory.
     if self._is_virtual:
-      return
+      return None
 
     path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name=self.path_spec.table_name,

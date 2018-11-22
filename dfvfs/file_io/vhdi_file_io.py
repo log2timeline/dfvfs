@@ -45,7 +45,7 @@ class VHDIFile(file_object_io.FileObjectIO):
       path_spec (PathSpec): path specification.
 
     Returns:
-      A file-like object.
+      pyvhdi.file: a file-like object.
 
     Raises:
       PathSpecError: if the path specification is incorrect.
@@ -139,6 +139,7 @@ class VHDIFile(file_object_io.FileObjectIO):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
       raise IOError('Not opened.')

@@ -97,7 +97,7 @@ class CPIOArchiveFile(data_format.DataFormat):
       'checksum')
 
   def __init__(self):
-    """Initializes the CPIO archive file object."""
+    """Initializes a CPIO archive file."""
     super(CPIOArchiveFile, self).__init__()
     self._file_entries = None
     self._file_object = None
@@ -113,6 +113,9 @@ class CPIOArchiveFile(data_format.DataFormat):
       file_object (FileIO): file-like object.
       file_offset (int): offset of the data relative from the start of
           the file-like object.
+
+    Returns:
+      CPIOArchiveFileEntry: a file entry.
 
     Raises:
       FileFormatError: if the file entry cannot be read.
@@ -283,8 +286,9 @@ class CPIOArchiveFile(data_format.DataFormat):
     Returns:
       CPIOArchiveFileEntry: a CPIO archive file entry or None if not available.
     """
-    if self._file_entries:
-      return self._file_entries.get(path, None)
+    if not self._file_entries:
+      return None
+    return self._file_entries.get(path, None)
 
   def Open(self, file_object):
     """Opens the CPIO archive file.
@@ -294,6 +298,7 @@ class CPIOArchiveFile(data_format.DataFormat):
 
     Raises:
       IOError: if the file format signature is not supported.
+      OSError: if the file format signature is not supported.
     """
     file_object.seek(0, os.SEEK_SET)
     signature_data = file_object.read(6)
@@ -331,6 +336,7 @@ class CPIOArchiveFile(data_format.DataFormat):
 
     Raises:
       IOError: if the read failed.
+      OSError: if the read failed.
     """
     self._file_object.seek(file_offset, os.SEEK_SET)
     return self._file_object.read(size)

@@ -70,6 +70,9 @@ class GzipFile(file_io.FileIO):
       offset (int): offset in the uncompressed data to find the
           containing member for.
 
+    Returns:
+      gzipfile.GzipMember: gzip file member or None if not available.
+
     Raises:
       ValueError: if the provided offset is outside of the bounds of the
           uncompressed data.
@@ -82,6 +85,8 @@ class GzipFile(file_io.FileIO):
       if offset < end_offset:
         return member
 
+    return None
+
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks to an offset within the file-like object.
 
@@ -92,6 +97,7 @@ class GzipFile(file_io.FileIO):
 
     Raises:
       IOError: if the seek failed or the file has not been opened.
+      OSError: if the seek failed or the file has not been opened.
     """
     if not self._gzip_file_object:
       raise IOError('Not opened.')
@@ -123,6 +129,7 @@ class GzipFile(file_io.FileIO):
 
     Raises:
       IOError: if the read failed.
+      OSError: if the read failed.
     """
     data = b''
     while ((size and len(data) < size) and
@@ -139,11 +146,12 @@ class GzipFile(file_io.FileIO):
   def get_offset(self):
     """Retrieves the current offset into the file-like object.
 
-    Return:
+    Returns:
       int: current offset into the file-like object.
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._gzip_file_object:
       raise IOError('Not opened.')
@@ -157,6 +165,7 @@ class GzipFile(file_io.FileIO):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._gzip_file_object:
       raise IOError('Not opened.')
@@ -178,6 +187,7 @@ class GzipFile(file_io.FileIO):
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file-like object could not be opened.
+      OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """

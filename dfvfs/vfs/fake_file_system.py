@@ -18,10 +18,10 @@ class FakeFileSystem(file_system.FileSystem):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
   def __init__(self, resolver_context):
-    """Initializes a file system object.
+    """Initializes a file system.
 
     Args:
-      resolver_context (Context): resolver context.
+      resolver_context (Context): a resolver context.
     """
     super(FakeFileSystem, self).__init__(resolver_context)
     self._paths = {}
@@ -29,7 +29,7 @@ class FakeFileSystem(file_system.FileSystem):
         '/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.
@@ -37,15 +37,16 @@ class FakeFileSystem(file_system.FileSystem):
     return
 
   def _Open(self, path_spec, mode='rb'):
-    """Opens the file system object defined by path specification.
+    """Opens the file system defined by path specification.
 
     Args:
       path_spec (PathSpec): path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      IOError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -129,14 +130,14 @@ class FakeFileSystem(file_system.FileSystem):
       path (str): path of the file entry.
 
     Returns:
-      FileEntry: a file entry or None if not available.
+      FakeFileEntry: a file entry or None if not available.
     """
     if path is None:
-      return
+      return None
 
     file_entry_type, _ = self._paths.get(path, (None, None))
     if not file_entry_type:
-      return
+      return None
 
     path_spec = fake_path_spec.FakePathSpec(location=path)
     return fake_file_entry.FakeFileEntry(
@@ -150,7 +151,7 @@ class FakeFileSystem(file_system.FileSystem):
       path_spec (PathSpec): path specification.
 
     Returns:
-      FileEntry: a file entry or None if not available.
+      FakeFileEntry: a file entry or None if not available.
     """
     location = getattr(path_spec, 'location', None)
     return self.GetFileEntryByPath(location)
@@ -167,7 +168,7 @@ class FakeFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      FileEntry: a file entry or None if not available.
+      FakeFileEntry: a file entry or None if not available.
     """
     path_spec = fake_path_spec.FakePathSpec(location=self.LOCATION_ROOT)
     return self.GetFileEntryByPathSpec(path_spec)

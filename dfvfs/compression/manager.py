@@ -41,7 +41,7 @@ class CompressionManager(object):
     compression_method = compression_method.lower()
     decompressor = cls._decompressors.get(compression_method, None)
     if not decompressor:
-      return
+      return None
 
     return decompressor()
 

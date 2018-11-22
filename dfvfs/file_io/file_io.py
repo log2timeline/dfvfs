@@ -10,6 +10,8 @@ import os
 class FileIO(object):
   """VFS file-like object interface."""
 
+  # pylint: disable=redundant-returns-doc
+
   def __init__(self, resolver_context):
     """Initializes a file-like object.
 
@@ -27,6 +29,7 @@ class FileIO(object):
 
     Raises:
       IOError: if the close failed.
+      OSError: if the close failed.
     """
 
   @abc.abstractmethod
@@ -40,6 +43,7 @@ class FileIO(object):
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file-like object could not be opened.
+      OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -58,6 +62,7 @@ class FileIO(object):
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file-like object was already opened or the open failed.
+      OSError: if the file-like object was already opened or the open failed.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
@@ -83,6 +88,7 @@ class FileIO(object):
 
     Raises:
       IOError: if the file-like object was not opened or the close failed.
+      OSError: if the file-like object was not opened or the close failed.
     """
     if not self._is_open:
       raise IOError('Not opened.')
@@ -115,6 +121,7 @@ class FileIO(object):
 
     Raises:
       IOError: if the read failed.
+      OSError: if the read failed.
     """
 
   @abc.abstractmethod
@@ -128,6 +135,7 @@ class FileIO(object):
 
     Raises:
       IOError: if the seek failed.
+      OSError: if the seek failed.
     """
 
   # get_offset() is preferred above tell() by the libbfio layer used in libyal.
@@ -135,11 +143,12 @@ class FileIO(object):
   def get_offset(self):
     """Retrieves the current offset into the file-like object.
 
-    Return:
+    Returns:
       int: current offset into the file-like object.
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
 
   # Pythonesque alias for get_offset().
@@ -156,6 +165,7 @@ class FileIO(object):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
 
   def seekable(self):

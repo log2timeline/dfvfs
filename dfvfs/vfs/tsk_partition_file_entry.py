@@ -22,43 +22,39 @@ class TSKPartitionDirectory(file_entry.Directory):
     Yields:
       TSKPartitionPathSpec: a path specification.
     """
-    # Only the virtual root file has directory entries.
+    location = getattr(self.path_spec, 'location', None)
     part_index = getattr(self.path_spec, 'part_index', None)
     start_offset = getattr(self.path_spec, 'start_offset', None)
 
-    if part_index is not None or start_offset is not None:
-      return
+    # Only the virtual root file has directory entries.
+    if (part_index is None and start_offset is None and
+        location is not None and location == self._file_system.LOCATION_ROOT):
+      tsk_volume = self._file_system.GetTSKVolume()
+      bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(tsk_volume)
+      part_index = 0
+      partition_index = 0
 
-    location = getattr(self.path_spec, 'location', None)
-    if location is None or location != self._file_system.LOCATION_ROOT:
-      return
+      # pytsk3 does not handle the Volume_Info iterator correctly therefore
+      # the explicit list is needed to prevent the iterator terminating too
+      # soon or looping forever.
+      for tsk_vs_part in list(tsk_volume):
+        kwargs = {}
 
-    tsk_volume = self._file_system.GetTSKVolume()
-    bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(tsk_volume)
-    part_index = 0
-    partition_index = 0
+        if tsk_partition.TSKVsPartIsAllocated(tsk_vs_part):
+          partition_index += 1
+          kwargs['location'] = '/p{0:d}'.format(partition_index)
 
-    # pytsk3 does not handle the Volume_Info iterator correctly therefore
-    # the explicit list is needed to prevent the iterator terminating too
-    # soon or looping forever.
-    for tsk_vs_part in list(tsk_volume):
-      kwargs = {}
+        kwargs['part_index'] = part_index
+        part_index += 1
 
-      if tsk_partition.TSKVsPartIsAllocated(tsk_vs_part):
-        partition_index += 1
-        kwargs['location'] = '/p{0:d}'.format(partition_index)
+        start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
 
-      kwargs['part_index'] = part_index
-      part_index += 1
+        if start_sector is not None:
+          kwargs['start_offset'] = start_sector * bytes_per_sector
 
-      start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
+        kwargs['parent'] = self.path_spec.parent
 
-      if start_sector is not None:
-        kwargs['start_offset'] = start_sector * bytes_per_sector
-
-      kwargs['parent'] = self.path_spec.parent
-
-      yield tsk_partition_path_spec.TSKPartitionPathSpec(**kwargs)
+        yield tsk_partition_path_spec.TSKPartitionPathSpec(**kwargs)
 
 
 class TSKPartitionFileEntry(file_entry.FileEntry):
@@ -111,8 +107,9 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
     Returns:
       TSKPartitionDirectory: a directory or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return TSKPartitionDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return TSKPartitionDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
     """Retrieves the stat object.
@@ -146,6 +143,20 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      TSKPartitionFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield TSKPartitionFileEntry(
+            self._resolver_context, self._file_system, path_spec)
+
   @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
@@ -159,17 +170,7 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
         self._name = ''
     return self._name
 
-  @property
-  def sub_file_entries(self):
-    """generator(TSKPartitionFileEntry): sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield TSKPartitionFileEntry(
-            self._resolver_context, self._file_system, path_spec)
-
+  # pylint: disable=redundant-returns-doc
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
 
@@ -177,7 +178,7 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
       TSKPartitionFileEntry: parent file entry or None if not available.
     """
     # TODO: implement https://github.com/log2timeline/dfvfs/issues/76.
-    return
+    return None
 
   def GetTSKVsPart(self):
     """Retrieves the TSK volume system part.

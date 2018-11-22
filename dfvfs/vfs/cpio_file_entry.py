@@ -27,27 +27,26 @@ class CPIODirectory(file_entry.Directory):
     """
     location = getattr(self.path_spec, 'location', None)
 
-    if (location is None or
-        not location.startswith(self._file_system.PATH_SEPARATOR)):
-      return
+    if location and location.startswith(self._file_system.PATH_SEPARATOR):
+      cpio_archive_file = self._file_system.GetCPIOArchiveFile()
+      for cpio_archive_file_entry in cpio_archive_file.GetFileEntries(
+          path_prefix=location[1:]):
 
-    cpio_archive_file = self._file_system.GetCPIOArchiveFile()
-    for cpio_archive_file_entry in cpio_archive_file.GetFileEntries(
-        path_prefix=location[1:]):
+        path = cpio_archive_file_entry.path
+        if not path:
+          continue
 
-      path = cpio_archive_file_entry.path
-      if not path:
-        continue
+        _, suffix = self._file_system.GetPathSegmentAndSuffix(
+            location[1:], path)
 
-      _, suffix = self._file_system.GetPathSegmentAndSuffix(location[1:], path)
+        # Ignore anything that is part of a sub directory or the directory
+        # itself.
+        if suffix or path == location:
+          continue
 
-      # Ignore anything that is part of a sub directory or the directory itself.
-      if suffix or path == location:
-        continue
-
-      path_spec_location = self._file_system.JoinPath([path])
-      yield cpio_path_spec.CPIOPathSpec(
-          location=path_spec_location, parent=self.path_spec.parent)
+        path_spec_location = self._file_system.JoinPath([path])
+        yield cpio_path_spec.CPIOPathSpec(
+            location=path_spec_location, parent=self.path_spec.parent)
 
 
 class CPIOFileEntry(file_entry.FileEntry):
@@ -112,8 +111,9 @@ class CPIOFileEntry(file_entry.FileEntry):
     Returns:
       CPIODirectory: a directory or None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return CPIODirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return CPIODirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.
@@ -159,6 +159,20 @@ class CPIOFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      CPIOFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield CPIOFileEntry(
+            self._resolver_context, self._file_system, path_spec)
+
   @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
@@ -174,19 +188,9 @@ class CPIOFileEntry(file_entry.FileEntry):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     timestamp = getattr(
         self._cpio_archive_file_entry, 'modification_time', None)
-    if timestamp is not None:
-      return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
-
-  @property
-  def sub_file_entries(self):
-    """generator(CPIOFileEntry): sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield CPIOFileEntry(
-            self._resolver_context, self._file_system, path_spec)
+    if timestamp is None:
+      return None
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   def GetCPIOArchiveFileEntry(self):
     """Retrieves the CPIO archive file entry object.
@@ -207,11 +211,11 @@ class CPIOFileEntry(file_entry.FileEntry):
     """
     location = getattr(self.path_spec, 'location', None)
     if location is None:
-      return
+      return None
 
     parent_location = self._file_system.DirnamePath(location)
     if parent_location is None:
-      return
+      return None
 
     if parent_location == '':
       parent_location = self._file_system.PATH_SEPARATOR

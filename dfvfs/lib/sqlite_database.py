@@ -42,6 +42,7 @@ class SQLiteDatabaseFile(object):
 
     Raises:
       IOError: if the close failed.
+      OSError: if the close failed.
     """
     if self._connection:
       self._cursor = None
@@ -52,7 +53,7 @@ class SQLiteDatabaseFile(object):
     # https://github.com/log2timeline/dfvfs/issues/92
     try:
       os.remove(self._temp_file_path)
-    except (OSError, IOError):
+    except (IOError, OSError):
       pass
 
     self._temp_file_path = ''
@@ -68,6 +69,7 @@ class SQLiteDatabaseFile(object):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._connection:
       raise IOError('Not opened.')
@@ -102,6 +104,7 @@ class SQLiteDatabaseFile(object):
 
     Raises:
       IOError: if the database file is not opened.
+      OSError: if the database file is not opened.
     """
     if not self._connection:
       raise IOError('Not opened.')
@@ -141,6 +144,7 @@ class SQLiteDatabaseFile(object):
 
     Raises:
       IOError: if the database file is not opened.
+      OSError: if the database file is not opened.
     """
     if not self._connection:
       raise IOError('Not opened.')
@@ -173,6 +177,7 @@ class SQLiteDatabaseFile(object):
 
     Raises:
       IOError: if the SQLite database signature does not match.
+      OSError: if the SQLite database signature does not match.
       ValueError: if the file-like object is invalid.
     """
     if not file_object:

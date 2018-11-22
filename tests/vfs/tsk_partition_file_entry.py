@@ -17,7 +17,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
 class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the TSK partition file entry object."""
+  """TSK partition file entry tests."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

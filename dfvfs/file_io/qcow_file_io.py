@@ -20,7 +20,7 @@ class QCOWFile(file_object_io.FileObjectIO):
       path_spec (PathSpec): path specification.
 
     Returns:
-      FileIO: a file-like object.
+      pyqcow.file: a file-like object.
 
     Raises:
       PathSpecError: if the path specification is incorrect.
@@ -43,6 +43,7 @@ class QCOWFile(file_object_io.FileObjectIO):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
       raise IOError('Not opened.')

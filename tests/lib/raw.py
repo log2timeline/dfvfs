@@ -23,7 +23,6 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     """Builds a fake file system containing storage media RAW segment files.
 
     Args:
-      filename (str): filename of the first segment file with extension.
       segment_filenames (list[str]): segment filenames.
       segment_file_path_specs (list[PathSpec]): resulting segment file path
           specifications.

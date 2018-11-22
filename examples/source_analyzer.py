@@ -18,18 +18,17 @@ from dfvfs.lib import definitions
 
 
 class SourceAnalyzer(object):
-  """Class that recursively calculates message digest hashes of files."""
+  """Analyzer to recursively check for volumes and file systems."""
 
   # Class constant that defines the default read buffer size.
   _READ_BUFFER_SIZE = 32768
 
   def __init__(self, auto_recurse=True):
-    """Initializes the source analyzer object.
+    """Initializes a source analyzer.
 
     Args:
-      auto_recurse: optional boolean value to indicate if the scan should
-                    automatically recurse as far as possible. The default
-                    is True.
+      auto_recurse (Optional[bool]): True if the scan should automatically
+          recurse as far as possible.
     """
     super(SourceAnalyzer, self).__init__()
     self._auto_recurse = auto_recurse
@@ -41,7 +40,7 @@ class SourceAnalyzer(object):
     """Encodes a string in the preferred encoding.
 
     Returns:
-      A byte string containing the encoded string.
+      bytes: encoded string.
     """
     try:
       # Note that encode() will first convert string into a Unicode string
@@ -67,10 +66,9 @@ class SourceAnalyzer(object):
     """Prompts the user to provide a credential for an encrypted volume.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      locked_scan_node: the locked scan node (instance of SourceScanNode).
-      output_writer: the output writer (instance of StdoutWriter).
+      scan_context (SourceScannerContext): the source scanner context.
+      locked_scan_node (SourceScanNode): the locked scan node.
+      output_writer (StdoutWriter): the output writer.
     """
     credentials = credentials_manager.CredentialsManager.GetCredentials(
         locked_scan_node.path_spec)
@@ -134,13 +132,13 @@ class SourceAnalyzer(object):
     """Analyzes the source.
 
     Args:
-      source_path: the source path.
-      output_writer: the output writer (instance of StdoutWriter).
+      source_path (str): the source path.
+      output_writer (StdoutWriter): the output writer.
 
     Raises:
       RuntimeError: if the source path does not exists, or if the source path
-                    is not a file or directory, or if the format of or within
-                    the source file is not supported.
+          is not a file or directory, or if the format of or within the source
+          file is not supported.
     """
     if not os.path.exists(source_path):
       raise RuntimeError('No such source: {0:s}.'.format(source_path))
@@ -185,13 +183,13 @@ class SourceAnalyzer(object):
 
 
 class StdoutWriter(object):
-  """Class that defines a stdout output writer."""
+  """Stdout output writer."""
 
   def Open(self):
     """Opens the output writer object.
 
     Returns:
-      A boolean containing True if successful or False if not.
+      bool: True if open was successful or False if not.
     """
     return True
 
@@ -203,7 +201,7 @@ class StdoutWriter(object):
     """Writes a line of text to stdout.
 
     Args:
-      line: line of text without a new line indicator.
+      line (str): line of text without a new line indicator.
     """
     print(line)
 
@@ -211,9 +209,8 @@ class StdoutWriter(object):
     """Writes the source scanner context to stdout.
 
     Args:
-      scan_context: the source scanner context (instance of
-                    SourceScannerContext).
-      scan_step: optional integer indicating the scan step.
+      scan_context (SourceScannerContext): the source scanner context.
+      scan_step (Optional[int]): the scan step, where None represents no step.
     """
     if scan_step is not None:
       print('Scan step: {0:d}'.format(scan_step))
@@ -229,9 +226,8 @@ class StdoutWriter(object):
     """Writes the source scanner node to stdout.
 
     Args:
-      scan_node: the scan node (instance of SourceScanNode).
-      indentation: optional indentation string.
-      scan_step: optional integer indicating the scan step.
+      scan_node (SourceScanNode): the scan node.
+      indentation (Optional[str]): indentation.
     """
     if not scan_node:
       return
@@ -265,7 +261,7 @@ class StdoutWriter(object):
     """Writes a string of text to stdout.
 
     Args:
-      line: string of text.
+      string (str): string of text.
     """
     print(string, end='')
 
@@ -274,16 +270,16 @@ def Main():
   """The main program function.
 
   Returns:
-    A boolean containing True if successful or False if not.
+    bool: True if successful or False if not.
   """
   argument_parser = argparse.ArgumentParser(description=(
       'Calculates a message digest hash for every file in a directory or '
       'storage media image.'))
 
   argument_parser.add_argument(
-      'source', nargs='?', action='store', metavar='image.raw',
-      default=None, help=('path of the directory or filename of a storage '
-                          'media image containing the file.'))
+      'source', nargs='?', action='store', metavar='image.raw', default=None,
+      help=('path of the directory or filename of a storage media image '
+            'containing the file.'))
 
   argument_parser.add_argument(
       '--no-auto-recurse', '--no_auto_recurse', dest='no_auto_recurse',

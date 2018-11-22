@@ -47,7 +47,8 @@ class VShadowFileSystem(file_system.FileSystem):
 
     Args:
       path_spec (PathSpec): path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -89,8 +90,7 @@ class VShadowFileSystem(file_system.FileSystem):
       location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
-    return (store_index >= 0 and
-            store_index < self._vshadow_volume.number_of_stores)
+    return 0 <= store_index < self._vshadow_volume.number_of_stores
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -108,13 +108,15 @@ class VShadowFileSystem(file_system.FileSystem):
     if store_index is None:
       location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
-        return
+        return None
+
       return vshadow_file_entry.VShadowFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
     if store_index < 0 or store_index >= self._vshadow_volume.number_of_stores:
-      return
+      return None
+
     return vshadow_file_entry.VShadowFileEntry(
         self._resolver_context, self, path_spec)
 
@@ -138,8 +140,10 @@ class VShadowFileSystem(file_system.FileSystem):
       pyvshadow.store: a VSS store or None if not available.
     """
     store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
-    if store_index is not None:
-      return self._vshadow_volume.get_store(store_index)
+    if store_index is None:
+      return None
+
+    return self._vshadow_volume.get_store(store_index)
 
   def GetVShadowVolume(self):
     """Retrieves a VSS volume.

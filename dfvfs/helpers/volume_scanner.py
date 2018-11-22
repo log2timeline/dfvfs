@@ -20,6 +20,8 @@ from dfvfs.volume import vshadow_volume_system
 class VolumeScannerMediator(object):
   """Volume scanner mediator."""
 
+  # pylint: disable=redundant-returns-doc
+
   @abc.abstractmethod
   def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves partition identifiers.
@@ -471,7 +473,7 @@ class WindowsVolumeScanner(VolumeScanner):
     """
     path_spec = self._path_resolver.ResolvePath(windows_path)
     if path_spec is None:
-      return
+      return None
 
     return self._file_system.GetFileObjectByPathSpec(path_spec)
 

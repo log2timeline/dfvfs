@@ -127,7 +127,7 @@ class Volume(object):
       self._is_parsed = True
 
     if identifier not in self._attributes:
-      return
+      return None
 
     return self._attributes[identifier]
 
@@ -222,8 +222,10 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
-    if section_index >= 0 and section_index < len(self._sections):
-      return self._sections[section_index]
+    if section_index < 0 or section_index >= len(self._sections):
+      return None
+
+    return self._sections[section_index]
 
   def GetVolumeByIdentifier(self, volume_identifier):
     """Retrieves a specific volume based on the identifier.
@@ -254,9 +256,11 @@ class VolumeSystem(object):
       self._Parse()
       self._is_parsed = True
 
-    if volume_index >= 0 and volume_index < len(self._volume_identifiers):
-      volume_identifier = self._volume_identifiers[volume_index]
-      return self._volumes[volume_identifier]
+    if volume_index < 0 or volume_index >= len(self._volume_identifiers):
+      return None
+
+    volume_identifier = self._volume_identifiers[volume_index]
+    return self._volumes[volume_identifier]
 
   @abc.abstractmethod
   def Open(self, path_spec):

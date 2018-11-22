@@ -54,13 +54,15 @@ class SourceScanNode(object):
       location (str): location that should match the location of the path
           specification of a sub scan node.
 
-    Return:
+    Returns:
       SourceScanNode: sub scan node or None if not available.
     """
     for sub_node in self.sub_nodes:
       sub_node_location = getattr(sub_node.path_spec, 'location', None)
       if location == sub_node_location:
         return sub_node
+
+    return None
 
   def GetUnscannedSubNode(self):
     """Retrieves the first unscanned sub node.
@@ -75,6 +77,8 @@ class SourceScanNode(object):
       result = sub_node.GetUnscannedSubNode()
       if result:
         return result
+
+    return None
 
   def IsSystemLevel(self):
     """Determines if the path specification is at system-level.
@@ -226,8 +230,10 @@ class SourceScannerContext(object):
       bool: True if the source type is a directory, False if not or
           None if not set.
     """
-    if self.source_type:
-      return self.source_type == definitions.SOURCE_TYPE_DIRECTORY
+    if not self.source_type:
+      return None
+
+    return self.source_type == definitions.SOURCE_TYPE_DIRECTORY
 
   def IsSourceTypeFile(self):
     """Determines if the source type is a file.
@@ -235,8 +241,10 @@ class SourceScannerContext(object):
     Returns:
       bool: True if the source type is a file, False if not or None if not set.
     """
-    if self.source_type:
-      return self.source_type == definitions.SOURCE_TYPE_FILE
+    if not self.source_type:
+      return None
+
+    return self.source_type == definitions.SOURCE_TYPE_FILE
 
   def LockScanNode(self, path_spec):
     """Marks a scan node as locked.
@@ -278,7 +286,7 @@ class SourceScannerContext(object):
     """
     scan_node = self._scan_nodes.get(path_spec, None)
     if not scan_node:
-      return
+      return None
 
     if scan_node.sub_nodes:
       raise RuntimeError('Scan node has sub nodes.')
@@ -370,7 +378,7 @@ class SourceScanner(object):
 
       if system_level_file_entry.IsDirectory():
         scan_context.SetSourceType(definitions.SOURCE_TYPE_DIRECTORY)
-        return
+        return None
 
       source_path_spec = self.ScanForStorageMediaImage(scan_node.path_spec)
       if source_path_spec:
@@ -385,7 +393,7 @@ class SourceScanner(object):
               definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
         if not auto_recurse:
-          return
+          return None
 
       # In case we did not find a storage media image type we keep looking
       # since not all RAW storage media image naming schemas are known and
@@ -422,14 +430,14 @@ class SourceScanner(object):
             scan_context, scan_node, auto_recurse=auto_recurse)
 
         # We already have already scanned for the file systems.
-        return
+        return None
 
-      elif scan_node.type_indicator in (
+      if scan_node.type_indicator in (
           definitions.ENCRYPTED_VOLUME_TYPE_INDICATORS):
         self._ScanEncryptedVolumeNode(scan_context, scan_node)
 
       if not auto_recurse and scan_context.updated:
-        return
+        return None
 
       # Nothing new found.
       if not scan_context.updated:
@@ -486,7 +494,7 @@ class SourceScanner(object):
     if not scan_node.scanned:
       scan_node.scanned = True
 
-    return
+    return None
 
   def _ScanEncryptedVolumeNode(self, scan_context, scan_node):
     """Scans an encrypted volume node for supported formats.
@@ -615,7 +623,7 @@ class SourceScanner(object):
           '{0!s}').format(exception))
 
     if not type_indicators:
-      return
+      return None
 
     type_indicator = type_indicators[0]
     if len(type_indicators) > 1:
@@ -671,7 +679,7 @@ class SourceScanner(object):
         glob_results = None
 
       if not glob_results:
-        return
+        return None
 
       return raw_path_spec
 
@@ -699,7 +707,7 @@ class SourceScanner(object):
     # It is technically possible to scan for VSS-in-VSS but makes no sense
     # to do so.
     if source_path_spec.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-      return
+      return None
 
     # Check if we already have a volume system root path specification.
     if source_path_spec.type_indicator in (
@@ -716,7 +724,7 @@ class SourceScanner(object):
           '{0!s}').format(exception))
 
     if not type_indicators:
-      return
+      return None
 
     if len(type_indicators) > 1:
       raise errors.BackEndError(
@@ -725,7 +733,7 @@ class SourceScanner(object):
     if (type_indicators[0] == definitions.TYPE_INDICATOR_TSK_PARTITION and
         source_path_spec.type_indicator in [
             definitions.TYPE_INDICATOR_TSK_PARTITION]):
-      return
+      return None
 
     if type_indicators[0] in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
       return path_spec_factory.Factory.NewPathSpec(

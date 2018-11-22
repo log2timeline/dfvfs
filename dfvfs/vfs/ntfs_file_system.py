@@ -49,7 +49,8 @@ class NTFSFileSystem(file_system.FileSystem):
 
     Args:
       path_spec (PathSpec): path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -139,7 +140,7 @@ class NTFSFileSystem(file_system.FileSystem):
       raise errors.BackEndError(exception)
 
     if fsntfs_file_entry is None:
-      return
+      return None
 
     return ntfs_file_entry.NTFSFileEntry(
         self._resolver_context, self, path_spec,

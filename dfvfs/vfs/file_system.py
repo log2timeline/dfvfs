@@ -9,6 +9,8 @@ import abc
 class FileSystem(object):
   """VFS file system interface."""
 
+  # pylint: disable=missing-raises-doc,redundant-returns-doc
+
   LOCATION_ROOT = '/'
   PATH_SEPARATOR = '/'
 
@@ -47,7 +49,8 @@ class FileSystem(object):
 
     Args:
       path_spec (PathSpec): a path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -75,6 +78,7 @@ class FileSystem(object):
 
     Raises:
       IOError: if the file system object was not opened or the close failed.
+      OSError: if the file system object was not opened or the close failed.
     """
     if not self._is_open:
       raise IOError('Not opened.')
@@ -106,7 +110,8 @@ class FileSystem(object):
     if path.endswith(self.PATH_SEPARATOR):
       path = path[:-1]
     if not path:
-      return
+      return None
+
     dirname, _, _ = path.rpartition(self.PATH_SEPARATOR)
     return dirname
 
@@ -131,9 +136,11 @@ class FileSystem(object):
       DataStream: a data stream or None if not available.
     """
     file_entry = self.GetFileEntryByPathSpec(path_spec)
-    if file_entry:
-      data_stream_name = getattr(path_spec, 'data_stream', None)
-      return file_entry.GetDataStream(data_stream_name)
+    if not file_entry:
+      return None
+
+    data_stream_name = getattr(path_spec, 'data_stream', None)
+    return file_entry.GetDataStream(data_stream_name)
 
   @abc.abstractmethod
   def GetFileEntryByPathSpec(self, path_spec):
@@ -156,8 +163,10 @@ class FileSystem(object):
       FileIO: a file-like object or None if not available.
     """
     file_entry = self.GetFileEntryByPathSpec(path_spec)
-    if file_entry:
-      return file_entry.GetFileObject()
+    if not file_entry:
+      return None
+
+    return file_entry.GetFileObject()
 
   def GetPathSegmentAndSuffix(self, base_path, path):
     """Determines the path segment and suffix of the path.
@@ -224,11 +233,13 @@ class FileSystem(object):
 
     Args:
       path_spec (PathSpec): a path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file system object was already opened or the open failed.
+      OSError: if the file system object was already opened or the open failed.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """

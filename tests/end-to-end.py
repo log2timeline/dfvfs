@@ -59,6 +59,8 @@ class TestCase(object):
   easily run on different input files.
   """
 
+  # pylint: disable=redundant-returns-doc
+
   NAME = None
 
   def __init__(
@@ -185,7 +187,7 @@ class TestCasesManager(object):
             test_results_path, debug_output=debug_output)
 
       if not test_case_object:
-        return
+        return None
 
       cls._test_case_objects[name] = test_case_object
 
@@ -445,6 +447,8 @@ class TestLauncher(object):
 
 class ExampleScriptTestCase(TestCase):
   """Common functionality for example script-based test cases."""
+
+  # pylint: disable=redundant-returns-doc
 
   def _CompareOutputFile(self, test_definition, temp_directory):
     """Compares the output file with a reference output file.

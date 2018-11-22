@@ -132,9 +132,8 @@ class FormatSpecificationStore(object):
           specification.identifier, signature_index)
 
       if signature_identifier in self._signature_map:
-        raise KeyError(
-            'Signature {0:s} is already defined in map.'.format(
-                signature_identifier))
+        raise KeyError('Signature {0:s} is already defined in map.'.format(
+            signature_identifier))
 
       signature.SetIdentifier(signature_identifier)
       self._signature_map[signature_identifier] = specification
@@ -143,7 +142,8 @@ class FormatSpecificationStore(object):
     """Retrieves a specification mapped to a signature identifier.
 
     Args:
-      identifier (str): unique signature identifier for a specification store.
+      signature_identifier (str): unique signature identifier for
+          a specification store.
 
     Returns:
       FormatSpecification: A format specification or None if the signature

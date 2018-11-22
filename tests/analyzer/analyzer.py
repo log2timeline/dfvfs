@@ -27,13 +27,14 @@ class TestAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
   TYPE_INDICATOR = 'test'
 
-  def AnalyzeFileObject(self, unused_file_object):
+  # pylint: disable=redundant-returns-doc,unused-argument
+  def AnalyzeFileObject(self, file_object):
     """Retrieves the format specification.
 
     This is the fall through implementation that raises a RuntimeError.
 
     Args:
-      unused_file_object (FileIO): file-like object.
+      file_object (FileIO): file-like object.
 
     Returns:
       str: type indicator if the file-like object contains a supported format
@@ -43,7 +44,7 @@ class TestAnalyzerHelper(analyzer_helper.AnalyzerHelper):
 
 
 class AnalyzerTest(shared_test_lib.BaseTestCase):
-  """Tests for the format analyzer."""
+  """Format analyzer tests."""
 
   # pylint: disable=protected-access
 

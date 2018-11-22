@@ -40,7 +40,7 @@ class EncodingManager(object):
     encoding_method = encoding_method.lower()
     decoder = cls._decoders.get(encoding_method, None)
     if not decoder:
-      return
+      return None
 
     return decoder()
 

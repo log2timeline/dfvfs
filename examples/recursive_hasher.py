@@ -194,12 +194,12 @@ class RecursiveHasherVolumeScannerMediator(
       magnitude_1024 += 1
 
     size_string_1000 = None
-    if magnitude_1000 > 0 and magnitude_1000 <= 7:
+    if 0 <= magnitude_1000 <= 7:
       size_string_1000 = '{0:.1f}{1:s}'.format(
           size_1000, self._UNITS_1000[magnitude_1000])
 
     size_string_1024 = None
-    if magnitude_1024 > 0 and magnitude_1024 <= 7:
+    if 0 <= magnitude_1024 <= 7:
       size_string_1024 = '{0:.1f}{1:s}'.format(
           size_1024, self._UNITS_1024[magnitude_1024])
 
@@ -550,10 +550,10 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
           'Unable to open path specification:\n{0:s}'
           'with error: {1!s}').format(
               file_entry.path_spec.comparable, exception))
-      return
+      return None
 
     if not file_object:
-      return
+      return None
 
     try:
       data = file_object.read(self._READ_BUFFER_SIZE)
@@ -565,7 +565,7 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
           'Unable to read from path specification:\n{0:s}'
           'with error: {1!s}').format(
               file_entry.path_spec.comparable, exception))
-      return
+      return None
 
     finally:
       file_object.close()
