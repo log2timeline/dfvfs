@@ -9,6 +9,8 @@ import abc
 class Decompressor(object):
   """Decompressor interface."""
 
+  # pylint: disable=redundant-returns-doc
+
   @abc.abstractmethod
   def Decompress(self, compressed_data):
     """Decompresses the compressed data.

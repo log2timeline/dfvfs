@@ -53,7 +53,8 @@ class TARFileSystem(file_system.FileSystem):
 
     Args:
       path_spec (PathSpec): path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
@@ -125,7 +126,7 @@ class TARFileSystem(file_system.FileSystem):
       TARFileEntry: file entry or None.
     """
     if not self.FileEntryExistsByPathSpec(path_spec):
-      return
+      return None
 
     location = getattr(path_spec, 'location', None)
 
@@ -181,7 +182,7 @@ class TARFileSystem(file_system.FileSystem):
       raise errors.PathSpecError('Invalid location in path specification.')
 
     if len(location) == 1:
-      return
+      return None
 
     try:
       return self._tar_file.getmember(location[1:])

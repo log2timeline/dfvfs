@@ -124,13 +124,13 @@ class FindSpec(object):
       bool: True if the file entry matches the find specification, False if
           not or None if no file entry type specification is defined.
     """
-    if self._file_entry_types:
-      return (self._CheckIsDevice(file_entry) or
-              self._CheckIsDirectory(file_entry) or
-              self._CheckIsFile(file_entry) or
-              self._CheckIsLink(file_entry) or
-              self._CheckIsPipe(file_entry) or
-              self._CheckIsSocket(file_entry))
+    if not self._file_entry_types:
+      return None
+
+    return (
+        self._CheckIsDevice(file_entry) or self._CheckIsDirectory(file_entry) or
+        self._CheckIsFile(file_entry) or self._CheckIsLink(file_entry) or
+        self._CheckIsPipe(file_entry) or self._CheckIsSocket(file_entry))
 
   def _CheckIsAllocated(self, file_entry):
     """Checks the is_allocated find specification.
@@ -143,7 +143,7 @@ class FindSpec(object):
           not or None if no allocation specification is defined.
     """
     if self._is_allocated is None:
-      return
+      return None
     return self._is_allocated == file_entry.IsAllocated()
 
   def _CheckIsDevice(self, file_entry):
@@ -429,6 +429,7 @@ class FileSystemSearcher(object):
       if match:
         yield file_entry.path_spec
 
+      # pylint: disable=singleton-comparison
       if location_match != False and not find_spec.AtMaximumDepth(search_depth):
         sub_find_specs.append(find_spec)
 

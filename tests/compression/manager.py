@@ -19,21 +19,20 @@ class TestDecompressor(decompressor.Decompressor):
 
   COMPRESSION_METHOD = 'test'
 
-  def Decompress(self, unused_compressed_data):
+  def Decompress(self, compressed_data):
     """Decompresses the compressed data.
 
     Args:
-      compressed_data: a byte string containing the compressed data.
+      compressed_data (bytes): compressed data.
 
     Returns:
-      A tuple containing a byte string of the uncompressed data and
-      the remaining compressed data.
+      tuple(bytes, bytes): uncompressed data and remaining compressed data.
     """
     return b'', b''
 
 
 class CompressionManagerTest(shared_test_lib.BaseTestCase):
-  """Tests for the compression manager."""
+  """Compression manager tests."""
 
   def testDecompressorRegistration(self):
     """Tests the DeregisterDecompressor and DeregisterDecompressor functions."""

@@ -65,13 +65,16 @@ class Factory(object):
     Args:
       path_spec (PathSpec): path specification.
 
+    Returns:
+      dict[str, str]: path specification properties.
+
     Raises:
       dict: path specification properties.
     """
     properties = {}
 
     for property_name in cls.PROPERTY_NAMES:
-      # Note that we don't want to set the properties when not used.
+      # Note that we do not want to set the properties when not used.
       if hasattr(path_spec, property_name):
         properties[property_name] = getattr(path_spec, property_name)
 

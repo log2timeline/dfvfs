@@ -13,6 +13,8 @@ class PathSpec(object):
     parent (PathSpec): parent path specification.
   """
 
+  # pylint: disable=missing-raises-doc
+
   _IS_SYSTEM_LEVEL = False
 
   def __init__(self, parent=None, **kwargs):

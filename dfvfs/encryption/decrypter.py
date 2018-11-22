@@ -24,6 +24,7 @@ class Decrypter(object):
 
     super(Decrypter, self).__init__()
 
+  # pylint: disable=redundant-returns-doc
   @abc.abstractmethod
   def Decrypt(self, encrypted_data):
     """Decrypts the encrypted data.
@@ -32,5 +33,5 @@ class Decrypter(object):
       encrypted_data (bytes): encrypted data.
 
     Returns:
-      tuple[bytes,bytes]: decrypted data and remaining encrypted data.
+      tuple[bytes, bytes]: decrypted data and remaining encrypted data.
     """

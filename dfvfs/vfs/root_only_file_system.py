@@ -12,6 +12,8 @@ from dfvfs.vfs import file_system
 class RootOnlyFileSystem(file_system.FileSystem):
   """Root only file system object."""
 
+  # pylint: disable=redundant-returns-doc
+
   def _Close(self):
     """Closes the file system object.
 
@@ -25,7 +27,8 @@ class RootOnlyFileSystem(file_system.FileSystem):
 
     Args:
       path_spec (PathSpec): path specification.
-      mode (Optional[str]): file access mode.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.

@@ -12,20 +12,22 @@ from tests import test_lib as shared_test_lib
 class TestResolverHelper(resolver_helper.ResolverHelper):
   """Test resolver helper."""
 
+  # pylint: disable=redundant-returns-doc,unused-argument
+
   TYPE_INDICATOR = 'TEST'
 
   def __init__(self, **kwargs):
-    """Initializes the resolver helper object."""
+    """Initializes the test resolver helper."""
     super(TestResolverHelper, self).__init__(parent=None, **kwargs)
 
-  def NewFileObject(self, unused_resolver_context):
+  def NewFileObject(self, resolver_context):
     """Creates a new file-like object.
 
     Args:
       resolver_context (Context): resolver context.
 
     Returns:
-      FileIO: file-like object.
+      FileIO: file-like object, which is None for testing.
     """
     return
 
@@ -41,7 +43,7 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
     """Tests the NewFileObject function.
 
     Args:
-      resolver_context (Context): resolver context.
+      resolver_helper_object (ResolverHelper): resolver helper.
     """
     file_object = resolver_helper_object.NewFileObject(self._resolver_context)
 
@@ -51,7 +53,7 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
     """Tests the NewFileSystem function.
 
     Args:
-      resolver_context (Context): resolver context.
+      resolver_helper_object (ResolverHelper): resolver helper.
     """
     file_system = resolver_helper_object.NewFileSystem(self._resolver_context)
 
@@ -61,7 +63,7 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
     """Tests the NewFileSystem function raises a RuntimeError.
 
     Args:
-      resolver_context (Context): resolver context.
+      resolver_helper_object (ResolverHelper): resolver helper.
     """
     with self.assertRaises(RuntimeError):
       resolver_helper_object.NewFileSystem(self._resolver_context)
@@ -70,7 +72,7 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
     """Tests the OpenFileObject function.
 
     Args:
-      resolver_context (Context): resolver context.
+      resolver_helper_object (ResolverHelper): resolver helper.
       path_spec (PathSpec): path specification.
     """
     file_object = resolver_helper_object.OpenFileObject(

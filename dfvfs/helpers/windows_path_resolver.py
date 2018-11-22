@@ -79,18 +79,20 @@ class WindowsPathResolver(object):
     if path.startswith('\\\\.\\') or path.startswith('\\\\?\\'):
       if len(path) < 7 or path[5] != ':' or path[6] != self._PATH_SEPARATOR:
         # Cannot handle a non-volume path.
-        return
+        return None
+
       path = path[7:]
 
     elif path.startswith('\\\\'):
       # Cannot handle an UNC path.
-      return
+      return None
 
     elif len(path) >= 3 and path[1] == ':':
       # Check if the path is a Volume 'absolute' path.
       if path[2] != self._PATH_SEPARATOR:
         # Cannot handle a Volume 'relative' path.
-        return
+        return None
+
       path = path[3:]
 
     elif path.startswith('\\'):
@@ -98,7 +100,7 @@ class WindowsPathResolver(object):
 
     else:
       # Cannot handle a relative path.
-      return
+      return None
 
     return path
 
@@ -241,7 +243,7 @@ class WindowsPathResolver(object):
         path, expand_variables=expand_variables)
 
     if not location or not path_spec:
-      return
+      return None
 
     # Note that we don't want to set the keyword arguments when not used because
     # the path specification base class will check for unused keyword arguments

@@ -110,7 +110,7 @@ FORMAT_CATEGORIES = frozenset([
     FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE,
     FORMAT_CATEGORY_VOLUME_SYSTEM])
 
-# The source type defintions.
+# The source type definitions.
 SOURCE_TYPE_DIRECTORY = 'directory'
 SOURCE_TYPE_FILE = 'file'
 SOURCE_TYPE_STORAGE_MEDIA_DEVICE = 'storage media device'

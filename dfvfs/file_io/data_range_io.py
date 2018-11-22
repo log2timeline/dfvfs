@@ -65,6 +65,7 @@ class DataRange(file_io.FileIO):
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file-like object could not be opened.
+      OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -99,6 +100,7 @@ class DataRange(file_io.FileIO):
 
     Raises:
       IOError: if the file-like object is already open.
+      OSError: if the file-like object is already open.
       ValueError: if the range offset or range size is invalid.
     """
     if self._is_open:
@@ -137,6 +139,7 @@ class DataRange(file_io.FileIO):
 
     Raises:
       IOError: if the read failed.
+      OSError: if the read failed.
     """
     if not self._is_open:
       raise IOError('Not opened.')
@@ -176,6 +179,7 @@ class DataRange(file_io.FileIO):
 
     Raises:
       IOError: if the seek failed.
+      OSError: if the seek failed.
     """
     if not self._is_open:
       raise IOError('Not opened.')
@@ -203,6 +207,7 @@ class DataRange(file_io.FileIO):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
       raise IOError('Not opened.')
@@ -217,6 +222,7 @@ class DataRange(file_io.FileIO):
 
     Raises:
       IOError: if the file-like object has not been opened.
+      OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
       raise IOError('Not opened.')

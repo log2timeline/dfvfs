@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The operating system file system implementation."""
+"""The file system implementation that is provided by the operating system."""
 
 from __future__ import unicode_literals
 
@@ -17,7 +17,7 @@ from dfvfs.vfs import os_file_entry
 
 
 class OSFileSystem(file_system.FileSystem):
-  """Class that implements an operating system file system object."""
+  """File system provided by the operating system."""
 
   if platform.system() == 'Windows':
     PATH_SEPARATOR = '\\'
@@ -27,7 +27,7 @@ class OSFileSystem(file_system.FileSystem):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.
@@ -35,15 +35,16 @@ class OSFileSystem(file_system.FileSystem):
     return
 
   def _Open(self, path_spec, mode='rb'):
-    """Opens the file system object defined by path specification.
+    """Opens the file system defined by path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
-      mode: optional file access mode. The default is 'rb' read-only binary.
+      path_spec (PathSpec): a path specification.
+      mode (Optional[str]): file access mode. The default is 'rb' which
+          represents read-only binary.
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      IOError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -55,10 +56,10 @@ class OSFileSystem(file_system.FileSystem):
     """Determines if a file entry for a path specification exists.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      Boolean indicating if the file entry exists.
+      bool: True if the file entry exists, false otherwise.
     """
     location = getattr(path_spec, 'location', None)
 
@@ -94,20 +95,20 @@ class OSFileSystem(file_system.FileSystem):
     """Retrieves a file entry for a path specification.
 
     Args:
-      path_spec: a path specification (instance of PathSpec).
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      OSFileEntry: a file entry or None if not available.
     """
     if not self.FileEntryExistsByPathSpec(path_spec):
-      return
+      return None
     return os_file_entry.OSFileEntry(self._resolver_context, self, path_spec)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
 
     Returns:
-      A file entry (instance of vfs.FileEntry) or None.
+      OSFileEntry: a file entry or None if not available.
     """
     if platform.system() == 'Windows':
       # Return the root with the drive letter of the volume the current
@@ -119,7 +120,7 @@ class OSFileSystem(file_system.FileSystem):
       location = '/'
 
     if not os.path.exists(location):
-      return
+      return None
 
     path_spec = os_path_spec.OSPathSpec(location=location)
     return self.GetFileEntryByPathSpec(path_spec)
@@ -128,11 +129,10 @@ class OSFileSystem(file_system.FileSystem):
     """Joins the path segments into a path.
 
     Args:
-      path_segments: a list of path segments.
+      path_segments (list[str]): path segments.
 
     Returns:
-      A string containing the joined path segments prefixed with the path
-      separator.
+      str: joined path segments prefixed with the path separator.
     """
     # For paths on Windows we need to make sure to handle the first path
     # segment correctly.

@@ -18,6 +18,8 @@ from dfvfs.vfs import vfs_stat
 class Attribute(object):
   """VFS attribute interface."""
 
+  # pylint: disable=missing-raises-doc
+
   @property
   def type_indicator(self):
     """str: type indicator."""
@@ -73,8 +75,8 @@ class Directory(object):
     Since a directory can contain a vast number of entries using
     a generator is more memory efficient.
 
-    Yields:
-      PathSpec: path specification.
+    Returns:
+      generator[PathSpec]: path specification generator.
     """
     return iter(())
 
@@ -94,6 +96,8 @@ class FileEntry(object):
         FILE_ENTRY_TYPE_FILE.
     path_spec (PathSpec): path specification.
   """
+
+  # pylint: disable=missing-raises-doc,redundant-returns-doc,redundant-yields-doc
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
@@ -227,6 +231,14 @@ class FileEntry(object):
 
     return stat_object
 
+  @abc.abstractmethod
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      FileEntry: a sub file entry.
+    """
+
   @property
   def access_time(self):
     """dfdatetime.DateTimeValues: access time or None if not available."""
@@ -290,9 +302,10 @@ class FileEntry(object):
     # We cannot use len(self._directory.entries) since entries is a generator.
     return sum(1 for path_spec in self._directory.entries)
 
-  @abc.abstractproperty
+  @property
   def sub_file_entries(self):
     """generator[FileEntry]: sub file entries."""
+    return self._GetSubFileEntries()
 
   @property
   def type_indicator(self):
@@ -308,7 +321,7 @@ class FileEntry(object):
 
     Args:
       name (str): name of the data stream.
-      case_sentitive (Optional[bool]): True if the name is case sensitive.
+      case_sensitive (Optional[bool]): True if the name is case sensitive.
 
     Returns:
       DataStream: a data stream or None if not available.
@@ -375,7 +388,7 @@ class FileEntry(object):
 
     Args:
       name (str): name of the file entry.
-      case_sentitive (Optional[bool]): True if the name is case sensitive.
+      case_sensitive (Optional[bool]): True if the name is case sensitive.
 
     Returns:
       FileEntry: a file entry or None if not available.
@@ -408,7 +421,7 @@ class FileEntry(object):
 
     Args:
       name (str): name of the data stream.
-      case_sentitive (Optional[bool]): True if the name is case sensitive.
+      case_sensitive (Optional[bool]): True if the name is case sensitive.
 
     Returns:
       bool: True if the file entry has the data stream.

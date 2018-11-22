@@ -130,7 +130,7 @@ class TSKFileSystem(file_system.FileSystem):
       pass
 
     if tsk_file is None:
-      return
+      return None
 
     # TODO: is there a way to determine the parent inode number here?
     return tsk_file_entry.TSKFileEntry(
@@ -189,7 +189,7 @@ class TSKFileSystem(file_system.FileSystem):
     # we need to check if the attribute exists and has a value other
     # than None
     if getattr(self._tsk_file_system, 'info', None) is None:
-      return
+      return None
 
     # Note that because pytsk3.TSK_FS_INFO does not explicitly define
     # root_inum we need to check if the attribute exists and has a value

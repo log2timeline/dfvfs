@@ -24,21 +24,18 @@ class VShadowDirectory(file_entry.Directory):
     Yields:
       VShadowPathSpec: a path specification.
     """
-    # Only the virtual root file has directory entries.
-    store_index = getattr(self.path_spec, 'store_index', None)
-    if store_index is not None:
-      return
-
     location = getattr(self.path_spec, 'location', None)
-    if location is None or location != self._file_system.LOCATION_ROOT:
-      return
+    store_index = getattr(self.path_spec, 'store_index', None)
 
-    vshadow_volume = self._file_system.GetVShadowVolume()
+    # Only the virtual root file has directory entries.
+    if (store_index is None and location is not None and
+        location == self._file_system.LOCATION_ROOT):
+      vshadow_volume = self._file_system.GetVShadowVolume()
 
-    for store_index in range(0, vshadow_volume.number_of_stores):
-      yield vshadow_path_spec.VShadowPathSpec(
-          location='/vss{0:d}'.format(store_index + 1),
-          store_index=store_index, parent=self.path_spec.parent)
+      for store_index in range(0, vshadow_volume.number_of_stores):
+        yield vshadow_path_spec.VShadowPathSpec(
+            location='/vss{0:d}'.format(store_index + 1),
+            store_index=store_index, parent=self.path_spec.parent)
 
 
 class VShadowFileEntry(file_entry.FileEntry):
@@ -86,8 +83,9 @@ class VShadowFileEntry(file_entry.FileEntry):
     Returns:
       VShadowDirectory: a directory None if not available.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return VShadowDirectory(self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
+    return VShadowDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
     """Retrieves information about the file entry.
@@ -108,12 +106,28 @@ class VShadowFileEntry(file_entry.FileEntry):
     # The root file entry is virtual and should have type directory.
     return stat_object
 
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      VShadowFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield VShadowFileEntry(
+            self._resolver_context, self._file_system, path_spec)
+
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
-    if self._vshadow_store is not None:
-      timestamp = self._vshadow_store.get_creation_time_as_integer()
-      return dfdatetime_filetime.Filetime(timestamp=timestamp)
+    if self._vshadow_store is None:
+      return None
+
+    timestamp = self._vshadow_store.get_creation_time_as_integer()
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def name(self):
@@ -130,17 +144,6 @@ class VShadowFileEntry(file_entry.FileEntry):
           self._name = ''
     return self._name
 
-  @property
-  def sub_file_entries(self):
-    """generator[FileEntry]: sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield VShadowFileEntry(
-            self._resolver_context, self._file_system, path_spec)
-
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
 
@@ -149,7 +152,7 @@ class VShadowFileEntry(file_entry.FileEntry):
     """
     store_index = vshadow.VShadowPathSpecGetStoreIndex(self.path_spec)
     if store_index is None:
-      return
+      return None
 
     return self._file_system.GetRootFileEntry()
 

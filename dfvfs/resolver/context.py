@@ -107,7 +107,7 @@ class Context(object):
     """
     cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
     if not cache_value:
-      return
+      return None
 
     return cache_value.reference_count
 
@@ -136,7 +136,7 @@ class Context(object):
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     cache_value = self._file_system_cache.GetCacheValue(identifier)
     if not cache_value:
-      return
+      return None
 
     return cache_value.reference_count
 

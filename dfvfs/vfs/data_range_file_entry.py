@@ -14,10 +14,10 @@ class DataRangeFileEntry(root_only_file_entry.RootOnlyFileEntry):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_DATA_RANGE
 
   def _GetStat(self):
-    """Retrieves the stat object.
+    """Retrieves a stat object.
 
     Returns:
-      The stat object (instance of vfs.VFSStat).
+      VFSStat: a stat object.
 
     Raises:
       BackEndError: when the encoded stream is missing.

@@ -207,31 +207,32 @@ class NTFSDirectory(file_entry.Directory):
       fsntfs_file_entry = self._file_system.GetNTFSFileEntryByPathSpec(
           self.path_spec)
     except errors.PathSpecError:
-      return
+      fsntfs_file_entry = None
 
-    location = getattr(self.path_spec, 'location', None)
+    if fsntfs_file_entry:
+      location = getattr(self.path_spec, 'location', None)
 
-    for fsntfs_sub_file_entry in fsntfs_file_entry.sub_file_entries:
-      directory_entry = fsntfs_sub_file_entry.name
+      for fsntfs_sub_file_entry in fsntfs_file_entry.sub_file_entries:
+        directory_entry = fsntfs_sub_file_entry.name
 
-      # Ignore references to self or parent.
-      if directory_entry in ('.', '..'):
-        continue
+        # Ignore references to self or parent.
+        if directory_entry in ('.', '..'):
+          continue
 
-      file_reference = fsntfs_sub_file_entry.file_reference
-      directory_entry_mft_entry = (
-          file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
+        file_reference = fsntfs_sub_file_entry.file_reference
+        directory_entry_mft_entry = (
+            file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
 
-      if location == self._file_system.PATH_SEPARATOR:
-        directory_entry = self._file_system.JoinPath([directory_entry])
-      else:
-        directory_entry = self._file_system.JoinPath([
-            location, directory_entry])
+        if location == self._file_system.PATH_SEPARATOR:
+          directory_entry = self._file_system.JoinPath([directory_entry])
+        else:
+          directory_entry = self._file_system.JoinPath([
+              location, directory_entry])
 
-      yield ntfs_path_spec.NTFSPathSpec(
-          location=directory_entry,
-          mft_attribute=fsntfs_sub_file_entry.name_attribute_index,
-          mft_entry=directory_entry_mft_entry, parent=self.path_spec.parent)
+        yield ntfs_path_spec.NTFSPathSpec(
+            location=directory_entry,
+            mft_attribute=fsntfs_sub_file_entry.name_attribute_index,
+            mft_entry=directory_entry_mft_entry, parent=self.path_spec.parent)
 
 
 class NTFSFileEntry(file_entry.FileEntry):
@@ -322,8 +323,9 @@ class NTFSFileEntry(file_entry.FileEntry):
     Returns:
       NTFSDirectory: directory or None if not available.
     """
-    if self._fsntfs_file_entry.number_of_sub_file_entries > 0:
-      return NTFSDirectory(self._file_system, self.path_spec)
+    if self._fsntfs_file_entry.number_of_sub_file_entries == 0:
+      return None
+    return NTFSDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.
@@ -378,11 +380,28 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetSubFileEntries(self):
+    """Retrieves sub file entries.
+
+    Yields:
+      NTFSFileEntry: a sub file entry.
+    """
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
+        yield NTFSFileEntry(
+            self._resolver_context, self._file_system, path_spec)
+
   def _IsLink(self, file_attribute_flags):
     """Determines if a file entry is a link.
 
     Args:
       file_attribute_flags (int): file attribute flags.
+
+    Returns:
+      bool: True if a file entry is a link, false otherwise.
     """
     return bool(
         file_attribute_flags & pyfsntfs.file_attribute_flags.REPARSE_POINT)
@@ -423,17 +442,6 @@ class NTFSFileEntry(file_entry.FileEntry):
     timestamp = self._fsntfs_file_entry.get_modification_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
-  @property
-  def sub_file_entries(self):
-    """generator(NTFSFileEntry): sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield NTFSFileEntry(
-            self._resolver_context, self._file_system, path_spec)
-
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.
 
@@ -446,7 +454,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     """
     if (not data_stream_name and
         not self._fsntfs_file_entry.has_default_data_stream()):
-      return
+      return None
 
     # Make sure to make the changes on a copy of the path specification, so we
     # do not alter self.path_spec.
@@ -465,7 +473,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     """
     link = self._GetLink()
     if not link:
-      return
+      return None
 
     # TODO: is there a way to determine the MFT entry here?
     link_mft_entry = None
@@ -512,7 +520,7 @@ class NTFSFileEntry(file_entry.FileEntry):
           self._fsntfs_file_entry.get_parent_file_reference())
 
     if parent_file_reference is None:
-      return
+      return None
 
     parent_mft_entry = (
         parent_file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
