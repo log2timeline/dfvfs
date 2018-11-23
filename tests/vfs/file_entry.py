@@ -80,14 +80,14 @@ class DirectoryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testEntriesGenerator(self):
-    """Test the _EntriesGenerator function."""
+    """Tests the _EntriesGenerator function."""
     test_directory = file_entry.Directory(self._file_system, self._path_spec)
 
     generator = test_directory._EntriesGenerator()
     self.assertIsNotNone(generator)
 
   def testEntries(self):
-    """Test the entries property."""
+    """Tests the entries property."""
     test_directory = file_entry.Directory(self._file_system, self._path_spec)
 
     self.assertEqual(list(test_directory.entries), [])
@@ -111,13 +111,13 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self._file_system.Close()
 
   def testIntialize(self):
-    """Test the __init__ function."""
+    """Tests the __init__ function."""
     with self.assertRaises(ValueError):
       file_entry.FileEntry(
           self._resolver_context, self._file_system, self._path_spec)
 
   def testGetAttributes(self):
-    """Test the _GetAttributes function."""
+    """Tests the _GetAttributes function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -125,7 +125,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(attributes, [])
 
   def testGetDataStreams(self):
-    """Test the _GetDataStreams function."""
+    """Tests the _GetDataStreams function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -133,7 +133,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(data_streams, [])
 
   def testGetLink(self):
-    """Test the _GetLink function."""
+    """Tests the _GetLink function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -141,7 +141,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(symbolic_link)
 
   def testGetStatProtected(self):
-    """Test the _GetStat function."""
+    """Tests the _GetStat function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -149,98 +149,98 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(stat_object)
 
   def testAccessTime(self):
-    """Test the access_time property."""
+    """Tests the access_time property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNone(test_file_entry.access_time)
 
   def testAttributes(self):
-    """Test the attributes property."""
+    """Tests the attributes property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertEqual(test_file_entry.attributes, [])
 
   def testChangeTime(self):
-    """Test the change_time property."""
+    """Tests the change_time property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNone(test_file_entry.change_time)
 
   def testCreationTime(self):
-    """Test the creation_time property."""
+    """Tests the creation_time property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNone(test_file_entry.creation_time)
 
   def testDataStreams(self):
-    """Test the data_streams property."""
+    """Tests the data_streams property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertEqual(test_file_entry.data_streams, [])
 
   def testLink(self):
-    """Test the link property."""
+    """Tests the link property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNotNone(test_file_entry.link)
 
   def testModificationTime(self):
-    """Test the modification_time property."""
+    """Tests the modification_time property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNone(test_file_entry.modification_time)
 
   def testName(self):
-    """Test the name property."""
+    """Tests the name property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNone(test_file_entry.name)
 
   def testNumberOfAttributes(self):
-    """Test the number_of_attributes property."""
+    """Tests the number_of_attributes property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertEqual(test_file_entry.number_of_attributes, 0)
 
   def testNumberOfDataStreams(self):
-    """Test the number_of_data_streams property."""
+    """Tests the number_of_data_streams property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertEqual(test_file_entry.number_of_data_streams, 0)
 
   def testNumberOfSubFileEntries(self):
-    """Test the number_of_sub_file_entries property."""
+    """Tests the number_of_sub_file_entries property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertEqual(test_file_entry.number_of_sub_file_entries, 0)
 
   def testSubFileEntries(self):
-    """Test the sub_file_entries property."""
+    """Tests the sub_file_entries property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNotNone(test_file_entry.sub_file_entries)
 
   def testTypeIndicator(self):
-    """Test the type_indicator property."""
+    """Tests the type_indicator property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertEqual(test_file_entry.type_indicator, 'test')
 
   def testGetDataStream(self):
-    """Test the GetDataStream function."""
+    """Tests the GetDataStream function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -251,7 +251,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
       test_file_entry.GetDataStream(0)
 
   def testGetFileObject(self):
-    """Test the GetFileObject function."""
+    """Tests the GetFileObject function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -262,7 +262,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
       test_file_entry.GetFileObject('')
 
   def testGetFileSystem(self):
-    """Test the GetFileSystem function."""
+    """Tests the GetFileSystem function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -270,7 +270,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_system)
 
   def testGetLinkedFileEntry(self):
-    """Test the GetLinkedFileEntry function."""
+    """Tests the GetLinkedFileEntry function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -278,7 +278,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(linked_file_entry)
 
   def testGetParentFileEntry(self):
-    """Test the GetParentFileEntry function."""
+    """Tests the GetParentFileEntry function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -286,7 +286,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(parent_file_entry)
 
   def testGetSubFileEntryByName(self):
-    """Test the GetSubFileEntryByName function."""
+    """Tests the GetSubFileEntryByName function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -294,7 +294,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(sub_file_entry)
 
   def testGetStat(self):
-    """Test the GetStat function."""
+    """Tests the GetStat function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -302,7 +302,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(stat_object)
 
   def testHasDataStream(self):
-    """Test the HasDataStream function."""
+    """Tests the HasDataStream function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
@@ -312,70 +312,70 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
       test_file_entry.HasDataStream(0)
 
   def testHasExternalData(self):
-    """Test the HasExternalData function."""
+    """Tests the HasExternalData function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.HasExternalData())
 
   def testIsAllocated(self):
-    """Test the IsAllocated function."""
+    """Tests the IsAllocated function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertTrue(test_file_entry.IsAllocated())
 
   def testIsDevice(self):
-    """Test the IsDevice function."""
+    """Tests the IsDevice function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.IsDevice())
 
   def testIsDirectory(self):
-    """Test the IsDirectory function."""
+    """Tests the IsDirectory function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.IsDirectory())
 
   def testIsFile(self):
-    """Test the IsFile function."""
+    """Tests the IsFile function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.IsFile())
 
   def testIsLink(self):
-    """Test the IsLink function."""
+    """Tests the IsLink function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.IsLink())
 
   def testIsPipe(self):
-    """Test the IsPipe function."""
+    """Tests the IsPipe function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.IsPipe())
 
   def testIsRoot(self):
-    """Test the IsRoot function."""
+    """Tests the IsRoot function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.IsRoot())
 
   def testIsSocket(self):
-    """Test the IsSocket function."""
+    """Tests the IsSocket function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertFalse(test_file_entry.IsSocket())
 
   def testIsVirtual(self):
-    """Test the IsVirtual function."""
+    """Tests the IsVirtual function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
