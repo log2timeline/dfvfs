@@ -3,44 +3,44 @@
 
 
 class Error(Exception):
-  """Generic error."""
+  """Parent class for dfVFS specific errors."""
 
 
 class AccessError(Error):
-  """Access error."""
+  """Error indicating that a resource could not be accessed."""
 
 
 class BackEndError(Error):
-  """Back-end error."""
+  """Error indicating that a dependency has encountered a problem."""
 
 
 class CacheFullError(Error):
-  """Cache full error."""
+  """Error indicating a cache is full."""
 
 
 class FileFormatError(Error):
-  """File format error."""
+  """Error indicating a problem in the format of a file."""
 
 
 class MountPointError(Error):
-  """Mount point error."""
+  """Error indicating a mount point doesn't exist."""
 
 
 class NotSupported(Error):
-  """Not supported exception."""
+  """Error indicating that unsupported functionality was requested."""
 
 
 class PathSpecError(Error):
-  """Path specification error."""
+  """Error indicating a problem with a path specification."""
 
 
 class ScannerError(Error):
-  """Scanner error."""
+  """Error indicating that an item could not be scanned."""
 
 
 class UserAbort(Error):
-  """User initiated abort exception."""
+  """Exception indicating that the user initiated an abort."""
 
 
 class VolumeSystemError(Error):
-  """Volume system error."""
+  """Error indicating a problem with a volume system."""
