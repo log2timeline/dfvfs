@@ -23,7 +23,7 @@ class FileFormatError(Error):
 
 
 class MountPointError(Error):
-  """Error indicating a mount point doesn't exist."""
+  """Error indicating a mount point does not exist."""
 
 
 class NotSupported(Error):
