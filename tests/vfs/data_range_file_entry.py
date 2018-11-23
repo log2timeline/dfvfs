@@ -17,7 +17,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['syslog'])
 class DataRangeFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the data range file entry object."""
+  """Tests the data range file entry."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

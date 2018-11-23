@@ -17,7 +17,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the BDE file system object."""
+  """Tests the BDE file system."""
 
   _BDE_PASSWORD = 'bde-TEST'
 

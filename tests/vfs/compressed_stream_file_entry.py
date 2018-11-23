@@ -18,7 +18,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['syslog.bz2'])
 class CompressedStreamFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the compressed stream file entry object."""
+  """Tests the compressed stream file entry."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

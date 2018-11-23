@@ -17,7 +17,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the NTFS file system object."""
+  """Tests the NTFS file system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

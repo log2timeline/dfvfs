@@ -20,7 +20,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['fvdetest.qcow2'])
 class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the FVDE file entry object."""
+  """Tests the FVDE file entry."""
 
   _FVDE_PASSWORD = 'fvde-TEST'
 

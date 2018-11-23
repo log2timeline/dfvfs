@@ -16,7 +16,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['testdir_os', 'file1.txt'])
 class OSFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the operating system file entry object."""
+  """Tests the operating system file entry."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
