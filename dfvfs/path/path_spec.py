@@ -26,7 +26,8 @@ class PathSpec(object):
           specification.
 
     Raises:
-      ValueError: when there are unused keyword arguments.
+      ValueError: if a derived path specification class does not define a type
+          indicator or when there are unused keyword arguments.
     """
     if kwargs:
       raise ValueError('Unused keyword arguments: {0:s}.'.format(
@@ -34,6 +35,9 @@ class PathSpec(object):
 
     super(PathSpec, self).__init__()
     self.parent = parent
+
+    if not getattr(self, 'TYPE_INDICATOR', None):
+      raise ValueError('Missing type indicator.')
 
   def __eq__(self, other):
     """Determines if the path specification is equal to the other."""
@@ -72,17 +76,14 @@ class PathSpec(object):
   @property
   def type_indicator(self):
     """str: type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
-    if type_indicator is None:
-      raise NotImplementedError(
-          'Invalid path specification missing type indicator.')
-    return type_indicator
+    # pylint: disable=no-member
+    return self.TYPE_INDICATOR
 
   def CopyToDict(self):
     """Copies the path specification to a dictionary.
 
     Returns:
-      dict: path specification attributes.
+      dict[str, object]: path specification attributes.
     """
     path_spec_dict = {}
     for attribute_name, attribute_value in iter(self.__dict__.items()):

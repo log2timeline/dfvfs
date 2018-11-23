@@ -22,7 +22,7 @@ class QCOWResolverHelperTest(test_lib.ResolverHelperTestCase):
   def testNewFileSystem(self):
     """Tests the NewFileSystem function."""
     resolver_helper_object = qcow_resolver_helper.QCOWResolverHelper()
-    self._TestNewFileSystemRaisesRuntimeError(resolver_helper_object)
+    self._TestNewFileSystemRaisesNotSupported(resolver_helper_object)
 
 
 if __name__ == '__main__':

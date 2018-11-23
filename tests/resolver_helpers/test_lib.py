@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+from dfvfs.lib import errors
 from dfvfs.resolver import context
 from dfvfs.resolver_helpers import resolver_helper
 
@@ -59,13 +60,13 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_system)
 
-  def _TestNewFileSystemRaisesRuntimeError(self, resolver_helper_object):
-    """Tests the NewFileSystem function raises a RuntimeError.
+  def _TestNewFileSystemRaisesNotSupported(self, resolver_helper_object):
+    """Tests the NewFileSystem function raises NotSupported.
 
     Args:
       resolver_helper_object (ResolverHelper): resolver helper.
     """
-    with self.assertRaises(RuntimeError):
+    with self.assertRaises(errors.NotSupported):
       resolver_helper_object.NewFileSystem(self._resolver_context)
 
   def _TestOpenFileObject(self, resolver_helper_object, path_spec):

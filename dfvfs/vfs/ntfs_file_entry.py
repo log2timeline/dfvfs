@@ -178,9 +178,7 @@ class NTFSDataStream(file_entry.DataStream):
   @property
   def name(self):
     """str: name."""
-    if self._fsntfs_data_stream:
-      return self._fsntfs_data_stream.name
-    return ''
+    return getattr(self._fsntfs_data_stream, 'name', '')
 
   def IsDefault(self):
     """Determines if the data stream is the default data stream.

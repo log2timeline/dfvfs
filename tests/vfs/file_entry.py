@@ -14,15 +14,21 @@ from dfvfs.vfs import file_entry
 from tests import test_lib as shared_test_lib
 
 
+class TestFileEntry(file_entry.FileEntry):
+  """File entry for testing."""
+
+  # pylint: disable=abstract-method
+
+  TYPE_INDICATOR = 'test'
+
+
 class AttributeTest(shared_test_lib.BaseTestCase):
   """Tests the VFS attribute interface."""
 
   def testTypeIndicator(self):
     """Test the type_indicator property."""
-    test_attribute = file_entry.Attribute()
-
-    with self.assertRaises(NotImplementedError):
-      _ = test_attribute.type_indicator
+    attribute = file_entry.Attribute()
+    self.assertIsNone(attribute.type_indicator)
 
 
 class DataStreamTest(shared_test_lib.BaseTestCase):
@@ -77,10 +83,9 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIntialize(self):
     """Test the __init__ function."""
-    test_file_entry = file_entry.FileEntry(
-        self._resolver_context, self._file_system, self._path_spec)
-
-    self.assertIsNotNone(test_file_entry)
+    with self.assertRaises(ValueError):
+      file_entry.FileEntry(
+          self._resolver_context, self._file_system, self._path_spec)
 
   # TODO: add tests for _GetAttributes function.
   # TODO: add tests for _GetDataStreams function.
@@ -90,7 +95,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
 
   def testAccessTime(self):
     """Test the access_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
     self.assertIsNone(test_file_entry.access_time)
 
@@ -98,13 +103,13 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
 
   def testChangeTime(self):
     """Test the change_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
     self.assertIsNone(test_file_entry.change_time)
 
   def testCreationTime(self):
     """Test the creation_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
     self.assertIsNone(test_file_entry.creation_time)
 
@@ -113,7 +118,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
 
   def testModificationTime(self):
     """Test the modification_time property."""
-    test_file_entry = file_entry.FileEntry(
+    test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
     self.assertIsNone(test_file_entry.modification_time)
 

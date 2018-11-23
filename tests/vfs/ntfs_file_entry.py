@@ -18,6 +18,14 @@ from dfvfs.vfs import ntfs_file_system
 from tests import test_lib as shared_test_lib
 
 
+class TestNTFSAttribute(ntfs_file_entry.NTFSAttribute):
+  """NTFS attribute for testing."""
+
+  # pylint: disable=abstract-method
+
+  TYPE_INDICATOR = 'test'
+
+
 @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class NTFSAttributeTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS attribute."""
@@ -47,11 +55,11 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
-    ntfs_attribute = ntfs_file_entry.NTFSAttribute(fsntfs_attribute)
+    ntfs_attribute = TestNTFSAttribute(fsntfs_attribute)
     self.assertIsNotNone(ntfs_attribute)
 
     with self.assertRaises(errors.BackEndError):
-      ntfs_file_entry.NTFSAttribute(None)
+      TestNTFSAttribute(None)
 
   def testAttributeType(self):
     """Test the attribute_type property."""
@@ -60,7 +68,7 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
-    ntfs_attribute = ntfs_file_entry.NTFSAttribute(fsntfs_attribute)
+    ntfs_attribute = TestNTFSAttribute(fsntfs_attribute)
 
     self.assertEqual(ntfs_attribute.attribute_type, 0x00000010)
 
