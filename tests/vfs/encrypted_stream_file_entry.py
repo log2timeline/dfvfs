@@ -19,7 +19,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['syslog.rc4'])
 class EncryptedStreamFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the encrypted stream file entry object."""
+  """Tests for the encrypted stream file entry."""
 
   _RC4_KEY = b'rc4test'
 

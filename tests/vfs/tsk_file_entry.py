@@ -106,7 +106,7 @@ class TSKTimeTest(unittest.TestCase):
 
 @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
 class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
-  """The unit test for the SleuthKit (TSK) file entry object on ext2."""
+  """Tests the SleuthKit (TSK) file entry on ext2."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -335,14 +335,14 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
 
 class TSKFileEntryTestHFS(unittest.TestCase):
-  """The unit test for the SleuthKit (TSK) file entry object on HFS."""
+  """Tests the SleuthKit (TSK) file entry on HFS."""
 
   # TODO: implement.
 
 
 @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
-  """The unit test for the SleuthKit (TSK) file entry object on NTFS."""
+  """Tests the SleuthKit (TSK) file entry on NTFS."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

@@ -17,7 +17,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class LVMFileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the LVM file system object."""
+  """Tests the LVM file system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

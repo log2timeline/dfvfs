@@ -13,7 +13,7 @@ from tests import test_lib as shared_test_lib
 
 
 class FileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the VFS file system object interface."""
+  """Tests the VFS file system object interface."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

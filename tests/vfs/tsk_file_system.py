@@ -16,7 +16,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
 class TSKFileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the SleuthKit (TSK) file system object."""
+  """Tests the SleuthKit (TSK) file system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

@@ -20,7 +20,7 @@ def TestPlatformSystem():
 
 @shared_test_lib.skipUnlessHasTestFile(['testdir_os', 'file1.txt'])
 class OSFileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the operating system file system object."""
+  """Tests the operating system file system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

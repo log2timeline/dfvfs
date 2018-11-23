@@ -16,7 +16,7 @@ from tests import test_lib as shared_test_lib
 
 
 class FakeFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the fake file entry object."""
+  """Tests for the fake file entry."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

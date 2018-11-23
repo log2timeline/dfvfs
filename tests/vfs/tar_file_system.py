@@ -16,7 +16,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['syslog.tar'])
 class TARFileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the TAR file system object."""
+  """Tests the TAR file system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

@@ -16,7 +16,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['syslog.zip'])
 class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the ZIP file system object."""
+  """Tests the ZIP file system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

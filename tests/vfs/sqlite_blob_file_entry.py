@@ -17,7 +17,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['blob.db'])
 class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
-  """The unit test for the sqlite blob file entry object."""
+  """Tests for the sqlite blob file entry."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
