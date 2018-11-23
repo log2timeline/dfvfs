@@ -9,6 +9,8 @@ import abc
 class FileSystem(object):
   """Virtual file system interface."""
 
+  # Note that redundant-returns-doc is broken for pylint 1.7.x for abstract
+  # methods
   # pylint: disable=redundant-returns-doc
 
   LOCATION_ROOT = '/'
