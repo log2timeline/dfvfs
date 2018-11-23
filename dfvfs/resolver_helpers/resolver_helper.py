@@ -15,7 +15,8 @@ class ResolverHelper(object):
     """Initializes a resolver helper.
 
     Raises:
-      ValueError: if a derived resolver helper class does not a type indicator.
+      ValueError: if a derived resolver helper class does not define a type
+          indicator.
     """
     super(ResolverHelper, self).__init__()
 
@@ -40,9 +41,6 @@ class ResolverHelper(object):
     Raises:
       RuntimeError: if there is no implementation to create a file-like object.
     """
-    # Note: not using NotImplementedError or @abc.abstractmethod here since
-    # pylint then will complain derived classes will need to implement
-    # abstract methods, which should not be the the case.
     raise errors.NotSupported(
         'Missing implementation to create file-like object.')
 
@@ -58,7 +56,4 @@ class ResolverHelper(object):
     Raises:
       RuntimeError: if there is no implementation to create a file system.
     """
-    # Note: not using NotImplementedError or @abc.abstractmethod here since
-    # pylint then will complain derived classes will need to implement
-    # abstract methods, which should not be the the case.
     raise errors.NotSupported('Missing implementation to create file system.')

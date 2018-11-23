@@ -15,7 +15,7 @@ class AnalyzerHelper(object):
     """Initializes an analyzer helper.
 
     Raises:
-      ValueError: if a derived analyze helper class does not define format
+      ValueError: if a derived analyzer helper class does not define format
           categories or a type indicator.
     """
     super(AnalyzerHelper, self).__init__()
@@ -56,9 +56,6 @@ class AnalyzerHelper(object):
     Raises:
       NotSupported: since this is the fall through implementation.
     """
-    # Note: not using NotImplementedError here since pylint then will complain
-    # derived classes will need to implement the method, which should not
-    # be the the case.
     raise errors.NotSupported(
         'Missing implementation to analyze file-like object.')
 
