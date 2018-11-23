@@ -24,7 +24,7 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter()
 
-    # Test unsupport block cipher mode.
+    # Test unsupported block cipher mode.
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
           cipher_mode='bogus', key=self._BLOWFISH_KEY)

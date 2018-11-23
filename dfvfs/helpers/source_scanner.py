@@ -120,7 +120,7 @@ class SourceScannerContext(object):
     return iter(self._locked_scan_nodes.values())
 
   def AddScanNode(self, path_spec, parent_scan_node):
-    """Adds a scan node for a certain path specifiation.
+    """Adds a scan node for a certain path specification.
 
     Args:
       path_spec (PathSpec): path specification.
@@ -168,7 +168,7 @@ class SourceScannerContext(object):
     return self._locked_scan_nodes != {}
 
   def HasScanNode(self, path_spec):
-    """Determines if there is a scan node for a certain path specifiation.
+    """Determines if there is a scan node for a certain path specification.
 
     Args:
       path_spec (PathSpec): path specification.
@@ -187,7 +187,7 @@ class SourceScannerContext(object):
     return self._scan_nodes.get(self._root_path_spec, None)
 
   def GetScanNode(self, path_spec):
-    """Retrieves a scan node for a certain path specifiation.
+    """Retrieves a scan node for a certain path specification.
 
     Args:
       path_spec (PathSpec): path specification.
@@ -273,7 +273,7 @@ class SourceScannerContext(object):
     self.AddScanNode(source_path_spec, None)
 
   def RemoveScanNode(self, path_spec):
-    """Removes a scan node of a certain path specifiation.
+    """Removes a scan node of a certain path specification.
 
     Args:
       path_spec (PathSpec): path specification.

@@ -229,7 +229,7 @@ class FindSpec(object):
 
     Args:
       file_entry (FileEntry): file entry.
-      search_depth (int): number of location path segements to compare.
+      search_depth (int): number of location path segments to compare.
 
     Returns:
       bool: True if the file entry matches the find specification, False if not.
@@ -305,7 +305,7 @@ class FindSpec(object):
       path_separator (str): path separator.
 
     Returns:
-      list[str]: path segements without the root path segment, which is
+      list[str]: path segments without the root path segment, which is
           an empty string.
     """
     # Split the path with the path separator and remove empty path segments.
@@ -315,7 +315,7 @@ class FindSpec(object):
     """Determines if the find specification is at maximum depth.
 
     Args:
-      search_depth (int): number of location path segements to compare.
+      search_depth (int): number of location path segments to compare.
 
     Returns:
       bool: True if at maximum depth, False if not.
@@ -331,7 +331,7 @@ class FindSpec(object):
 
     Args:
       file_entry (FileEntry): file entry.
-      search_depth (int): number of location path segements to compare.
+      search_depth (int): number of location path segments to compare.
 
     Returns:
       tuple: contains:
@@ -418,7 +418,7 @@ class FileSystemSearcher(object):
     Args:
       file_entry (FileEntry): file entry.
       find_specs (list[FindSpec]): find specifications.
-      search_depth (int): number of location path segements to compare.
+      search_depth (int): number of location path segments to compare.
 
     Yields:
       PathSpec: path specification of a matching file entry.
@@ -533,7 +533,7 @@ class FileSystemSearcher(object):
       path (str): path.
 
     Returns:
-      list[str]: path segements without the root path segment, which is an
+      list[str]: path segments without the root path segment, which is an
           empty string.
     """
     return self._file_system.SplitPath(path)

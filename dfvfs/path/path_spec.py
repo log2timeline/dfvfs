@@ -22,7 +22,7 @@ class PathSpec(object):
 
     Args:
       parent (Optional[PathSpec]): parent path specification.
-      kwargs (dict[str, object]): keyword arguments dependending on the path
+      kwargs (dict[str, object]): keyword arguments depending on the path
           specification.
 
     Raises:

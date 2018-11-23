@@ -98,7 +98,7 @@ class Factory(object):
 
     Args:
       type_indicator (str): type indicator.
-      kwargs (dict): keyword arguments dependending on the path specification.
+      kwargs (dict): keyword arguments depending on the path specification.
 
     Returns:
       PathSpec: path specification.
