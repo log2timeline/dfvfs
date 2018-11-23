@@ -32,8 +32,8 @@ def APFSContainerPathSpecGetVolumeIndex(path_spec):
   return volume_index
 
 
-def APFSContainerOpenVolume(apfs_volume, path_spec, key_chain):
-  """Opens the APFS volume using the path specification.
+def APFSUnlockVolume(apfs_volume, path_spec, key_chain):
+  """Unlocks an APFS volume using the path specification.
 
   Args:
     apfs_volume (pyapfs.volume): APFS volume.

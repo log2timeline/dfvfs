@@ -66,7 +66,7 @@ class APFSFileSystem(file_system.FileSystem):
     if not fsapfs_volume:
       raise IOError('Unable to retrieve APFS volume')
 
-    apfs_helper.APFSContainerOpenVolume(
+    apfs_helper.APFSUnlockVolume(
         fsapfs_volume, path_spec, resolver.Resolver.key_chain)
 
     self._fsapfs_volume = fsapfs_volume
