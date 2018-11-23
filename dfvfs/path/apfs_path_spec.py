@@ -22,7 +22,7 @@ class APFSPathSpec(path_spec.PathSpec):
       self, identifier=None, location=None, parent=None, **kwargs):
     """Initializes a path specification.
 
-    Note that the APFS path specification must have a parent.
+    Note that an APFS path specification must have a parent.
 
     Args:
       identifier (Optional[int]): identifier.
@@ -30,7 +30,7 @@ class APFSPathSpec(path_spec.PathSpec):
       parent (Optional[PathSpec]): parent path specification.
 
     Raises:
-      ValueError: when identifier and location, or parent are not set.
+      ValueError: when parent or both identifier and location are not set.
     """
     if (not identifier and not location) or not parent:
       raise ValueError('Missing identifier and location, or parent value.')

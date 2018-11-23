@@ -22,7 +22,7 @@ class APFSContainerPathSpec(path_spec.PathSpec):
       self, location=None, parent=None, volume_index=None, **kwargs):
     """Initializes a path specification.
 
-    Note that the APFS container path specification must have a parent.
+    Note that an APFS container path specification must have a parent.
 
     Args:
       location (Optional[str]): location.

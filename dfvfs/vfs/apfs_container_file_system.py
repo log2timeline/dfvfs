@@ -96,7 +96,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
     """Retrieves the APFS container.
 
     Returns:
-      pyfsapfs.containter: the APFS container.
+      pyfsapfs.container: the APFS container.
     """
     return self._fsapfs_container
 

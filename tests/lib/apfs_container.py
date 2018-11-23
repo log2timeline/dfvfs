@@ -49,6 +49,18 @@ class APFSContainerHelperTest(test_lib.PathSpecTestCase):
     volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(path_spec)
     self.assertEqual(volume_index, 1)
 
+    path_spec = apfs_container_path_spec.APFSContainerPathSpec(
+        location='/apfs', parent=self._path_spec)
+
+    volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(path_spec)
+    self.assertIsNone(volume_index)
+
+    path_spec = apfs_container_path_spec.APFSContainerPathSpec(
+        location='/apfs101', parent=self._path_spec)
+
+    volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(path_spec)
+    self.assertIsNone(volume_index)
+
 
 if __name__ == '__main__':
   unittest.main()

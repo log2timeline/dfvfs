@@ -41,7 +41,7 @@ class APFSContainerFileEntryTest(shared_test_lib.BaseTestCase):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
-  def testIntialize(self):
+  def testInitialize(self):
     """Test the __init__ function."""
     file_entry = apfs_container_file_entry.APFSContainerFileEntry(
         self._resolver_context, self._file_system,

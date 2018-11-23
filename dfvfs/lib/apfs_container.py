@@ -11,7 +11,7 @@ def APFSContainerPathSpecGetVolumeIndex(path_spec):
     path_spec (PathSpec): path specification.
 
   Returns:
-    int: volume index.
+    int: volume index or None if the index cannot be determined.
   """
   volume_index = getattr(path_spec, 'volume_index', None)
   if volume_index is not None:
