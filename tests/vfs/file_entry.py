@@ -43,7 +43,7 @@ class AttributeTest(shared_test_lib.BaseTestCase):
   """Tests the VFS attribute interface."""
 
   def testTypeIndicator(self):
-    """Test the type_indicator property."""
+    """Tests the type_indicator property."""
     attribute = file_entry.Attribute()
     self.assertIsNone(attribute.type_indicator)
 
