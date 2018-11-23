@@ -12,7 +12,7 @@ from dfvfs.lib import definitions
 
 
 class FVDECredentials(credentials.Credentials):
-  """FVDE credentials."""
+  """FileVault Drive Encryption (FVDE) credentials."""
 
   # TODO: add support for key_data credential, needs pyfvde update.
   CREDENTIALS = frozenset([

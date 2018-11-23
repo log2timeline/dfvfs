@@ -12,7 +12,7 @@ from dfvfs.lib import definitions
 
 
 class BDECredentials(credentials.Credentials):
-  """BDE credentials."""
+  """BitLocker Drive Encryption (BDE) credentials."""
 
   # TODO: add support for key_data credential, needs pybde update.
   CREDENTIALS = frozenset([

@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import apfs_path_spec
@@ -63,7 +64,10 @@ class APFSFileSystem(file_system.FileSystem):
 
     fsapfs_volume = apfs_file_system.GetAPFSVolumeByPathSpec(path_spec.parent)
     if not fsapfs_volume:
-      raise IOError('Unable to open APFS volume')
+      raise IOError('Unable to retrieve APFS volume')
+
+    apfs_helper.APFSContainerOpenVolume(
+        fsapfs_volume, path_spec, resolver.Resolver.key_chain)
 
     self._fsapfs_volume = fsapfs_volume
 

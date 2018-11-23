@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for the keychain object."""
+"""Tests for the key chain."""
 
 from __future__ import unicode_literals
 
@@ -14,11 +14,14 @@ from tests import test_lib as shared_test_lib
 
 
 class KeychainTest(shared_test_lib.BaseTestCase):
-  """Class to test the keychain object."""
+  """Tests the key chain."""
+
+  # TODO: add tests for Empty
+  # TODO: add tests for ExtractCredentialsFromPathSpec
 
   def testCredentialGetSet(self):
     """Tests the GetCredential and SetCredential functions."""
-    keychain_object = keychain.KeyChain()
+    test_keychain = keychain.KeyChain()
 
     fake_path_spec = factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_FAKE, location='/test')
@@ -26,21 +29,17 @@ class KeychainTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_BDE, parent=fake_path_spec)
 
     with self.assertRaises(AttributeError):
-      keychain_object.SetCredential(
-          fake_path_spec, 'password', 'TEST')
+      test_keychain.SetCredential(fake_path_spec, 'password', 'TEST')
 
-    keychain_object.SetCredential(
-        bde_path_spec, 'password', 'TEST')
+    test_keychain.SetCredential(bde_path_spec, 'password', 'TEST')
 
-    credential = keychain_object.GetCredential(
-        fake_path_spec, 'password')
+    credential = test_keychain.GetCredential(fake_path_spec, 'password')
     self.assertIsNone(credential)
 
-    credential = keychain_object.GetCredential(
-        bde_path_spec, 'password')
+    credential = test_keychain.GetCredential(bde_path_spec, 'password')
     self.assertEqual(credential, 'TEST')
 
-    credentials = keychain_object.GetCredentials(bde_path_spec)
+    credentials = test_keychain.GetCredentials(bde_path_spec)
     self.assertEqual(credentials, {'password': 'TEST'})
 
 

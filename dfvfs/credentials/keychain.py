@@ -72,7 +72,7 @@ class KeyChain(object):
 
     Raises:
       KeyError: if the credential is not supported by the path specification
-                type.
+          type.
     """
     supported_credentials = manager.CredentialsManager.GetCredentials(path_spec)
 

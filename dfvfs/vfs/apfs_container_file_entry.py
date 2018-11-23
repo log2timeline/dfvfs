@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 
-from dfvfs.lib import apfs_container
+from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import apfs_container_path_spec
@@ -23,7 +23,7 @@ class APFSContainerDirectory(file_entry.Directory):
       APFSContainerPathSpec: a path specification.
     """
     # Only the virtual root file has directory entries.
-    volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(
+    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(
         self.path_spec)
     if volume_index is not None:
       return
@@ -135,7 +135,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
       else:
-        volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(
+        volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(
             self.path_spec)
         if volume_index is not None:
           self._name = 'apfs{0:d}'.format(volume_index + 1)
@@ -162,7 +162,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
     Returns:
       APFSContainerFileEntry: parent file entry or None if not available.
     """
-    volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(
+    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(
         self.path_spec)
     if volume_index is None:
       return None
