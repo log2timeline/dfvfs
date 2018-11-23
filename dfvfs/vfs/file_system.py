@@ -247,7 +247,7 @@ class FileSystem(object):
       raise IOError('Already open.')
 
     if mode != 'rb':
-      raise ValueError('Unsupportedmode: {0:s}.'.format(mode))
+      raise ValueError('Unsupported mode: {0:s}.'.format(mode))
 
     if not path_spec:
       raise ValueError('Missing path specification.')
