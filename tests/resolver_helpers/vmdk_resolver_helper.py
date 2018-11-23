@@ -22,7 +22,7 @@ class VMDKResolverHelperTest(test_lib.ResolverHelperTestCase):
   def testNewFileSystem(self):
     """Tests the NewFileSystem function."""
     resolver_helper_object = vmdk_resolver_helper.VMDKResolverHelper()
-    self._TestNewFileSystemRaisesRuntimeError(resolver_helper_object)
+    self._TestNewFileSystemRaisesNotSupported(resolver_helper_object)
 
 
 if __name__ == '__main__':

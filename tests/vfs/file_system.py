@@ -12,6 +12,14 @@ from dfvfs.vfs import file_system
 from tests import test_lib as shared_test_lib
 
 
+class TestFileSystem(file_system.FileSystem):
+  """File system for testing."""
+
+  # pylint: disable=abstract-method
+
+  TYPE_INDICATOR = 'test'
+
+
 class FileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the VFS file system object interface."""
 
@@ -21,9 +29,8 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
 
   def testIntialize(self):
     """Test the __init__ function."""
-    test_file_system = file_system.FileSystem(self._resolver_context)
-
-    self.assertIsNotNone(test_file_system)
+    with self.assertRaises(ValueError):
+      file_system.FileSystem(self._resolver_context)
 
   # TODO: add tests for type_indicator property.
   # TODO: add tests for _Close function.
@@ -37,7 +44,7 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
 
   def testJoinPath(self):
     """Test the join path functionality."""
-    test_file_system = file_system.FileSystem(self._resolver_context)
+    test_file_system = TestFileSystem(self._resolver_context)
 
     expected_path = '/test1/test2/test3'
 
@@ -57,7 +64,7 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
 
   def testSplitPath(self):
     """Test the split path functionality."""
-    test_file_system = file_system.FileSystem(self._resolver_context)
+    test_file_system = TestFileSystem(self._resolver_context)
 
     expected_path_segments = ['test1', 'test2', 'test3']
 

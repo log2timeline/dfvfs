@@ -26,7 +26,7 @@ class Base64DecoderTestCase(test_lib.DecoderTestCase):
     decoder = base64_decoder.Base64Decoder()
 
     with self.assertRaises(errors.BackEndError):
-      _, _ = decoder.Decode(b'\x01\x02\x03\x04\x05\x06\x07\x08A')
+      decoder.Decode(b'\x01\x02\x03\x04\x05\x06\x07\x08A')
 
 
 if __name__ == '__main__':

@@ -7,11 +7,20 @@ from __future__ import unicode_literals
 class Credentials(object):
   """Credentials interface."""
 
+  def __init__(self):
+    """Initializes credentials.
+
+    Raises:
+      ValueError: if a derived credentials class does not define a type
+          indicator.
+    """
+    super(Credentials, self).__init__()
+
+    if not getattr(self, 'TYPE_INDICATOR', None):
+      raise ValueError('Missing type indicator.')
+
   @property
   def type_indicator(self):
-    """The type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
-    if type_indicator is None:
-      raise NotImplementedError(
-          'Invalid resolver helper missing type indicator.')
-    return type_indicator
+    """str: type indicator."""
+    # pylint: disable=no-member
+    return self.TYPE_INDICATOR

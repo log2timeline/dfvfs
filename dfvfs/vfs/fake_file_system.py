@@ -25,8 +25,10 @@ class FakeFileSystem(file_system.FileSystem):
     """
     super(FakeFileSystem, self).__init__(resolver_context)
     self._paths = {}
+
     self.AddFileEntry(
-        '/', file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
+        self.LOCATION_ROOT,
+        file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
 
   def _Close(self):
     """Closes the file system.

@@ -3,40 +3,44 @@
 
 
 class Error(Exception):
-  """Class that defines a generic error."""
+  """Generic error."""
 
 
 class AccessError(Error):
-  """Class that defines access errors."""
+  """Access error."""
 
 
 class BackEndError(Error):
-  """Class that defines back-end errors."""
+  """Back-end error."""
 
 
 class CacheFullError(Error):
-  """Class that defines cache full errors."""
+  """Cache full error."""
 
 
 class FileFormatError(Error):
-  """Class that defines file format errors."""
+  """File format error."""
 
 
 class MountPointError(Error):
-  """Class that defines mount point errors."""
+  """Mount point error."""
+
+
+class NotSupported(Error):
+  """Not supported exception."""
 
 
 class PathSpecError(Error):
-  """Class that defines path specification errors."""
+  """Path specification error."""
 
 
 class ScannerError(Error):
-  """Class that defines scanner errors."""
+  """Scanner error."""
 
 
 class UserAbort(Error):
-  """Class that defines an user initiated abort exception."""
+  """User initiated abort exception."""
 
 
 class VolumeSystemError(Error):
-  """Class that defines volume system errors."""
+  """Volume system error."""

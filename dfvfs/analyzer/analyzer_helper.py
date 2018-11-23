@@ -3,11 +3,28 @@
 
 from __future__ import unicode_literals
 
+from dfvfs.lib import errors
+
 
 class AnalyzerHelper(object):
   """Analyzer helper interface."""
 
-  # pylint: disable=missing-raises-doc,redundant-returns-doc
+  # pylint: disable=redundant-returns-doc
+
+  def __init__(self):
+    """Initializes an analyzer helper.
+
+    Raises:
+      ValueError: if a derived analyzer helper class does not define format
+          categories or a type indicator.
+    """
+    super(AnalyzerHelper, self).__init__()
+
+    if not getattr(self, 'TYPE_INDICATOR', None):
+      raise ValueError('Missing type indicator.')
+
+    if not getattr(self, 'FORMAT_CATEGORIES', None):
+      raise ValueError('Missing format categories.')
 
   @property
   def format_categories(self):
@@ -15,20 +32,14 @@ class AnalyzerHelper(object):
 
     The format categories are defined in definitions.FORMAT_CATEGORIES.
     """
-    format_categories = getattr(self, 'FORMAT_CATEGORIES', None)
-    if format_categories is None:
-      raise NotImplementedError(
-          'Invalid analyzer helper missing format categories.')
-    return format_categories
+    # pylint: disable=no-member
+    return self.FORMAT_CATEGORIES
 
   @property
   def type_indicator(self):
     """str: type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
-    if type_indicator is None:
-      raise NotImplementedError(
-          'Invalid analyzer helper missing type indicator.')
-    return type_indicator
+    # pylint: disable=no-member
+    return self.TYPE_INDICATOR
 
   def AnalyzeFileObject(self, unused_file_object):
     """Retrieves the format specification.
@@ -43,12 +54,10 @@ class AnalyzerHelper(object):
           or None otherwise.
 
     Raises:
-      RuntimeError: since this is the fall through implementation.
+      NotSupported: since this is the fall through implementation.
     """
-    # Note: not using NotImplementedError here since pylint then will complain
-    # derived classes will need to implement the method, which should not
-    # be the the case.
-    raise RuntimeError('Missing implementation to analyze file object.')
+    raise errors.NotSupported(
+        'Missing implementation to analyze file-like object.')
 
   def GetFormatSpecification(self):
     """Retrieves the format specification.

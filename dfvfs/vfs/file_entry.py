@@ -18,16 +18,10 @@ from dfvfs.vfs import vfs_stat
 class Attribute(object):
   """VFS attribute interface."""
 
-  # pylint: disable=missing-raises-doc
-
   @property
   def type_indicator(self):
-    """str: type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
-    if type_indicator is None:
-      raise NotImplementedError(
-          'Invalid attribute missing type indicator.')
-    return type_indicator
+    """str: type indicator or None if not known."""
+    return getattr(self, 'TYPE_INDICATOR', None)
 
 
 class DataStream(object):
@@ -87,7 +81,7 @@ class Directory(object):
 
 
 class FileEntry(object):
-  """VFS file entry interface.
+  """Virtual file entry interface.
 
   Attributes:
     entry_type (str): file entry type, such as device, directory, file, link,
@@ -97,7 +91,7 @@ class FileEntry(object):
     path_spec (PathSpec): path specification.
   """
 
-  # pylint: disable=missing-raises-doc,redundant-returns-doc,redundant-yields-doc
+  # pylint: disable=redundant-returns-doc,redundant-yields-doc
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
@@ -112,12 +106,16 @@ class FileEntry(object):
           of the corresponding file system.
       is_virtual (Optional[bool]): True if the file entry is a virtual file
           entry emulated by the corresponding file system.
+
+    Raises:
+      ValueError: if a derived file entry class does not define a type
+          indicator.
     """
     super(FileEntry, self).__init__()
     self._attributes = None
     self._data_streams = None
     self._directory = None
-    self._file_system = file_system
+    self._file_system = None
     self._is_root = is_root
     self._is_virtual = is_virtual
     self._link = None
@@ -126,7 +124,14 @@ class FileEntry(object):
     self.entry_type = None
     self.path_spec = path_spec
 
-    self._file_system.Open(path_spec)
+    if not getattr(self, 'TYPE_INDICATOR', None):
+      raise ValueError('Missing type indicator.')
+
+    file_system.Open(path_spec)
+
+    # Set file_system attribute when open was successful otherwise
+    # it will interfere with the __del__ function.
+    self._file_system = file_system
 
   def __del__(self):
     """Cleans up the file entry."""
@@ -310,11 +315,8 @@ class FileEntry(object):
   @property
   def type_indicator(self):
     """str: type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
-    if type_indicator is None:
-      raise NotImplementedError(
-          'Invalid file entry missing type indicator.')
-    return type_indicator
+    # pylint: disable=no-member
+    return self.TYPE_INDICATOR
 
   def GetDataStream(self, name, case_sensitive=True):
     """Retrieves a data stream by name.
@@ -355,9 +357,11 @@ class FileEntry(object):
     Returns:
       FileIO: a file-like object or None if not available.
     """
-    if not data_stream_name:
-      return resolver.Resolver.OpenFileObject(
-          self.path_spec, resolver_context=self._resolver_context)
+    if data_stream_name:
+      return None
+
+    return resolver.Resolver.OpenFileObject(
+        self.path_spec, resolver_context=self._resolver_context)
 
   def GetFileSystem(self):
     """Retrieves the file system which contains the file entry.

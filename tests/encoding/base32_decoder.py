@@ -26,7 +26,7 @@ class Base32DecoderTestCase(test_lib.DecoderTestCase):
     decoder = base32_decoder.Base32Decoder()
 
     with self.assertRaises(errors.BackEndError):
-      _, _ = decoder.Decode(b'\x01\x02\x03\x04\x05\x06\x07\x08')
+      decoder.Decode(b'\x01\x02\x03\x04\x05\x06\x07\x08')
 
 
 if __name__ == '__main__':

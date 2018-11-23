@@ -7,9 +7,9 @@ import abc
 
 
 class FileSystem(object):
-  """VFS file system interface."""
+  """Virtual file system interface."""
 
-  # pylint: disable=missing-raises-doc,redundant-returns-doc
+  # pylint: disable=redundant-returns-doc
 
   LOCATION_ROOT = '/'
   PATH_SEPARATOR = '/'
@@ -19,6 +19,10 @@ class FileSystem(object):
 
     Args:
       resolver_context (Context): resolver context.
+
+    Raises:
+      ValueError: if a derived file system class does not define a type
+          indicator.
     """
     super(FileSystem, self).__init__()
     self._is_cached = False
@@ -26,18 +30,18 @@ class FileSystem(object):
     self._path_spec = None
     self._resolver_context = resolver_context
 
+    if not getattr(self, 'TYPE_INDICATOR', None):
+      raise ValueError('Missing type indicator.')
+
   @property
   def type_indicator(self):
     """str: type indicator."""
-    type_indicator = getattr(self, 'TYPE_INDICATOR', None)
-    if type_indicator is None:
-      raise NotImplementedError(
-          'Invalid file system missing type indicator.')
-    return type_indicator
+    # pylint: disable=no-member
+    return self.TYPE_INDICATOR
 
   @abc.abstractmethod
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.

@@ -22,7 +22,7 @@ class RawResolverHelperTest(test_lib.ResolverHelperTestCase):
   def testNewFileSystem(self):
     """Tests the NewFileSystem function."""
     resolver_helper_object = raw_resolver_helper.RawResolverHelper()
-    self._TestNewFileSystemRaisesRuntimeError(resolver_helper_object)
+    self._TestNewFileSystemRaisesNotSupported(resolver_helper_object)
 
 
 if __name__ == '__main__':
