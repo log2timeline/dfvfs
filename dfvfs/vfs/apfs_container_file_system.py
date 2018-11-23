@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import pyfsapfs
 
-from dfvfs.lib import apfs_container
+from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import apfs_container_path_spec
@@ -81,8 +81,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(
-        path_spec)
+    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(path_spec)
 
     # The virtual root file has not corresponding volume index but
     # should have a location.
@@ -109,8 +108,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
     Returns:
       pyfsapfs.volume: an APFS volume or None if not available.
     """
-    volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(
-        path_spec)
+    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(path_spec)
     if volume_index is None:
       return None
 
@@ -125,8 +123,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
     Returns:
       APFSContainerFileEntry: a file entry or None if not exists.
     """
-    volume_index = apfs_container.APFSContainerPathSpecGetVolumeIndex(
-        path_spec)
+    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(path_spec)
 
     # The virtual root file has not corresponding volume index but
     # should have a location.

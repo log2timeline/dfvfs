@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for APFS container support."""
+"""Helper functions for Apple File System (APFS) support."""
 
 from __future__ import unicode_literals
 
@@ -30,3 +30,21 @@ def APFSContainerPathSpecGetVolumeIndex(path_spec):
     volume_index = None
 
   return volume_index
+
+
+def APFSUnlockVolume(apfs_volume, path_spec, key_chain):
+  """Unlocks an APFS volume using the path specification.
+
+  Args:
+    apfs_volume (pyapfs.volume): APFS volume.
+    path_spec (PathSpec): path specification.
+    key_chain (KeyChain): key chain.
+  """
+  if apfs_volume.is_locked():
+    password = key_chain.GetCredential(path_spec, 'password')
+    if password:
+      apfs_volume.set_password(password)
+
+    recovery_password = key_chain.GetCredential(path_spec, 'recovery_password')
+    if recovery_password:
+      apfs_volume.set_recovery_password(recovery_password)

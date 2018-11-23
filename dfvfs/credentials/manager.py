@@ -3,7 +3,7 @@
 
 The credentials manager uses credential (instances of Credentials) to specify
 which credentials a specific path specification type supports. E.g. in case
-of  BitLocker Drive Encryption (BDE):
+of BitLocker Drive Encryption (BDE):
   * password;
   * recovery password;
   * startup key;
