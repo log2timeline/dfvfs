@@ -16,8 +16,8 @@ class Credentials(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Tests the __init__ function."""
-    test_credentials = credentials.Credentials()
-    self.assertIsNotNone(test_credentials)
+    with self.assertRaises(ValueError):
+      credentials.Credentials()
 
 
 if __name__ == '__main__':
