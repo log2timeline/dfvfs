@@ -181,7 +181,7 @@ class TextFile(object):
     """Retrieves the current offset into the file-like object.
 
     Returns:
-      int: cuffent offset into the file-like object.
+      int: current offset into the file-like object.
     """
     return self._current_offset
 
@@ -190,6 +190,6 @@ class TextFile(object):
     """Retrieves the current offset into the file-like object.
 
     Returns:
-      int: cuffent offset into the file-like object.
+      int: current offset into the file-like object.
     """
     return self._current_offset

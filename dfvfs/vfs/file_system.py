@@ -247,7 +247,7 @@ class FileSystem(object):
       raise IOError('Already open.')
 
     if mode != 'rb':
-      raise ValueError('Unsupport mode: {0:s}.'.format(mode))
+      raise ValueError('Unsupported mode: {0:s}.'.format(mode))
 
     if not path_spec:
       raise ValueError('Missing path specification.')
@@ -271,7 +271,7 @@ class FileSystem(object):
       path (str): path.
 
     Returns:
-      list[str]: path segements without the root path segment, which is
+      list[str]: path segments without the root path segment, which is
           an empty string.
     """
     # Split the path with the path separator and remove empty path segments.

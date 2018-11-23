@@ -24,7 +24,7 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter()
 
-    # Test unsupport block cipher mode.
+    # Test unsupported block cipher mode.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
           cipher_mode='bogus', key=self._AES_KEY)

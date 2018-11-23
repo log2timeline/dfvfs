@@ -24,7 +24,7 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter()
 
-    # Test unsupport block cipher mode.
+    # Test unsupported block cipher mode.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
           cipher_mode='bogus', key=self._DES3_KEY)

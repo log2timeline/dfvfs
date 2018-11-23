@@ -651,7 +651,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """Retrieves a date and time value.
 
     Args:
-      name (str): name of the date and time value, for exmample "atime" or
+      name (str): name of the date and time value, for example "atime" or
           "mtime".
 
     Returns:

@@ -55,7 +55,7 @@ class DataRangeTest(test_lib.SylogTestCase):
     file_object.close()
     os_file_object.close()
 
-    # TODO: add some edge case tesing here.
+    # TODO: add some edge case testing here.
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""

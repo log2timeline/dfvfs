@@ -252,7 +252,7 @@ class OSFileEntry(file_entry.FileEntry):
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, for example for a symbolic link.
 
-    Retruns:
+    Returns:
       OSFileEntry: linked file entry or None if not available.
     """
     link = self._GetLink()

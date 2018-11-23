@@ -27,7 +27,7 @@ class FVDEPathSpec(path_spec.PathSpec):
     Note that the FVDE path specification must have a parent.
 
     Args:
-      encrypted_root_plist (Optionla[str]): path to the
+      encrypted_root_plist (Optional[str]): path to the
           EncryptedRoot.plist.wipekey file.
       password (Optional[str]): password.
       parent (Optional[PathSpec]): parent path specification.
