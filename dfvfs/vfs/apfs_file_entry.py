@@ -233,6 +233,8 @@ class APFSFileEntry(file_entry.FileEntry):
     Returns:
       APFSFileEntry: parent file entry or None if not available.
     """
+    parent_location = None
+
     location = getattr(self.path_spec, 'location', None)
     if location is not None:
       parent_location = self._file_system.DirnamePath(location)
