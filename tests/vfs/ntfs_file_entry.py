@@ -118,7 +118,7 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
 
 @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
-  """Tests the NTFS attribute."""
+  """Tests the NTFS $STANDARD_INFORMATION attribute."""
 
   # pylint: disable=protected-access
 
