@@ -135,10 +135,15 @@ class FileEntry(object):
 
   def __del__(self):
     """Cleans up the file entry."""
-    # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, '_file_system'):
-      self._file_system.Close()
-      self._file_system = None
+    # Note that __del__ can be invoked before __init__ has completed.
+
+    # Make a local copy of file_system in case the attribute is set to None
+    # after the check and before the call to Close.
+    file_system = getattr(self, '_file_system', None)
+    if file_system:
+      file_system.Close()
+
+    self._file_system = None
 
   def _GetAttributes(self):
     """Retrieves the attributes.
