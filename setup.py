@@ -113,14 +113,20 @@ else:
               '%files -n {0:s}-%{{name}}'.format(python_package),
               '%defattr(644,root,root,755)',
               '%doc ACKNOWLEDGEMENTS AUTHORS LICENSE README',
-              '%{_prefix}/lib/python*/site-packages/**/*.py',
-              '%{_prefix}/lib/python*/site-packages/**/*.yaml',
+              '%{_prefix}/lib/python*/site-packages/dfvfs/*.py',
+              '%{_prefix}/lib/python*/site-packages/dfvfs/*/*.py',
+              '%{_prefix}/lib/python*/site-packages/dfvfs/*/*.yaml',
               '%{_prefix}/lib/python*/site-packages/dfvfs*.egg-info/*',
               '',
               '%exclude %{_prefix}/share/doc/*',
-              '%exclude %{_prefix}/lib/python*/site-packages/**/*.pyc',
-              '%exclude %{_prefix}/lib/python*/site-packages/**/*.pyo',
-              '%exclude %{_prefix}/lib/python*/site-packages/**/__pycache__/*']
+              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*.pyc',
+              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*.pyo',
+              ('%exclude %{_prefix}/lib/python*/site-packages/dfvfs/'
+               '__pycache__/*'),
+              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/*.pyc',
+              '%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/*.pyo',
+              ('%exclude %{_prefix}/lib/python*/site-packages/dfvfs/*/'
+               '__pycache__/*')]
 
           python_spec_file.extend(lines)
           break

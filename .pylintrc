@@ -56,23 +56,23 @@ confidence=
 # --disable=W"
 #
 disable=
-    assignment-from-none,
-    bad-inline-option,
-    deprecated-pragma,
     duplicate-code,
-    eq-without-hash,
-    file-ignored,
-    fixme,
-    locally-disabled,
-    locally-enabled,
-    logging-format-interpolation,
-    metaclass-assignment,
-    missing-param-doc,
-    no-absolute-import,
-    no-self-use,
     parameter-unpacking,
     raw-checker-failed,
+    bad-inline-option,
+    locally-disabled,
+    locally-enabled,
+    file-ignored,
     suppressed-message,
+    useless-suppression,
+    deprecated-pragma,
+    no-absolute-import,
+    missing-param-doc,
+    metaclass-assignment,
+    eq-without-hash,
+    fixme,
+    logging-format-interpolation,
+    no-self-use,
     too-few-public-methods,
     too-many-ancestors,
     too-many-boolean-expressions,
@@ -84,9 +84,7 @@ disable=
     too-many-public-methods,
     too-many-return-statements,
     too-many-statements,
-    unsubscriptable-object,
-    useless-object-inheritance,
-    useless-suppression
+    unsubscriptable-object
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
