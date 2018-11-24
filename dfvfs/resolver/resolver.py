@@ -128,6 +128,8 @@ class Resolver(object):
     Raises:
       AccessError: if the access to open the file system was denied.
       BackEndError: if the file system cannot be opened.
+      MountPointError: if the mount point specified in the path specification
+          does not exist.
       PathSpecError: if the path specification is incorrect.
       TypeError: if the path specification type is unsupported.
     """
