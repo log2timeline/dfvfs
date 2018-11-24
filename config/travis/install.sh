@@ -15,7 +15,7 @@ PYTHON2_TEST_DEPENDENCIES="python-coverage python-funcsigs python-mock python-pb
 
 PYTHON3_DEPENDENCIES="libbde-python3 libewf-python3 libfsapfs-python3 libfsntfs-python3 libfvde-python3 libfwnt-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvshadow-python3 libvslvm-python3 python3-crypto python3-dfdatetime python3-dtfabric python3-pytsk3 python3-yaml";
 
-PYTHON3_TEST_DEPENDENCIES="python3-funcsigs python3-mock python3-pbr python3-setuptools python3-six python3-tox";
+PYTHON3_TEST_DEPENDENCIES="python3-mock python3-pbr python3-setuptools python3-six python3-tox";
 
 # Exit on error.
 set -e;
