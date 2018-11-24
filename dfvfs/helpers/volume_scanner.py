@@ -370,6 +370,12 @@ class VolumeScanner(object):
     while len(scan_node.sub_nodes) == 1:
       scan_node = scan_node.sub_nodes[0]
 
+    # TODO: implement
+    # The source scanner found a volume system and we need to determine which
+    # volume needs to be processed.
+    # volume_identifiers = []
+    # if scan_node.IsVolumeSystem():
+
     # The source scanner found a partition table and we need to determine
     # which partition needs to be processed.
     if scan_node.type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:

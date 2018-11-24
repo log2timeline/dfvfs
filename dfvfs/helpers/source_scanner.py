@@ -80,16 +80,49 @@ class SourceScanNode(object):
 
     return None
 
+  def IsEncryptedVolume(self):
+    """Determines if the scan node represents an encrypted volume.
+
+    Returns:
+      bool: True if the scan node represents an encrypted volume.
+    """
+    return self.path_spec.type_indicator in (
+        definitions.ENCRYPTED_VOLUME_TYPE_INDICATORS)
+
+  def IsFileSystem(self):
+    """Determines if the scan node represents a file system.
+
+    Returns:
+      bool: True if the scan node represents a file system.
+    """
+    return self.path_spec.IsFileSystem()
+
   def IsSystemLevel(self):
-    """Determines if the path specification is at system-level.
+    """Determines if the scan node has a path specification at system-level.
 
     System-level is an indication used if the path specification is
     handled by the operating system and should not have a parent.
 
     Returns:
-      bool: True if the path specification is at system-level.
+      bool: True if the scan node has a path specification at system-level.
     """
     return self.path_spec.IsSystemLevel()
+
+  def IsVolumeSystem(self):
+    """Determines if the scan node represents a volume system.
+
+    Returns:
+      bool: True if the scan node represents a volume system.
+    """
+    return self.path_spec.IsVolumeSystem()
+
+  def IsVolumeSystemRoot(self):
+    """Determines if the scan node represents the root of a volume system.
+
+    Returns:
+      bool: True if the scan node represents the root of a volume system.
+    """
+    return self.path_spec.IsVolumeSystemRoot()
 
 
 class SourceScannerContext(object):
@@ -116,7 +149,7 @@ class SourceScannerContext(object):
 
   @property
   def locked_scan_nodes(self):
-    """SourceScanNode: locked scan nodes."""
+    """generator[SourceScanNode]: locked scan nodes."""
     return iter(self._locked_scan_nodes.values())
 
   def AddScanNode(self, path_spec, parent_scan_node):
@@ -149,34 +182,11 @@ class SourceScannerContext(object):
 
     self._scan_nodes[path_spec] = scan_node
 
-    if path_spec.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS:
+    if path_spec.IsFileSystem():
       self._file_system_scan_nodes[path_spec] = scan_node
 
     self.updated = True
     return scan_node
-
-  def HasFileSystemScanNodes(self):
-    """Determines if a file system was detected during the scan."""
-    return self._file_system_scan_nodes != {}
-
-  def HasLockedScanNodes(self):
-    """Determines if a locked scan node was detected during the scan.
-
-    A locked scan node is e.g. an encrypted volume for which a credential,
-    e.g. password, to unlock the volume is not available.
-    """
-    return self._locked_scan_nodes != {}
-
-  def HasScanNode(self, path_spec):
-    """Determines if there is a scan node for a certain path specification.
-
-    Args:
-      path_spec (PathSpec): path specification.
-
-    Returns:
-      bool: True if there is a scan node for the path specification.
-    """
-    return self._scan_nodes.get(path_spec, None) is not None
 
   def GetRootScanNode(self):
     """Retrieves the root scan node.
@@ -208,6 +218,36 @@ class SourceScannerContext(object):
       return root_scan_node
 
     return root_scan_node.GetUnscannedSubNode()
+
+  def HasFileSystemScanNodes(self):
+    """Determines if a file system was detected during the scan.
+
+    Returns:
+      bool: True if a file system was detected during the scan.
+    """
+    return self._file_system_scan_nodes != {}
+
+  def HasLockedScanNodes(self):
+    """Determines if a locked scan node was detected during the scan.
+
+    A locked scan node is e.g. an encrypted volume for which a credential,
+    e.g. password, to unlock the volume is not available.
+
+    Returns:
+      bool: True if a locked scan node was detected during the scan.
+    """
+    return self._locked_scan_nodes != {}
+
+  def HasScanNode(self, path_spec):
+    """Determines if there is a scan node for a certain path specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
+
+    Returns:
+      bool: True if there is a scan node for the path specification.
+    """
+    return self._scan_nodes.get(path_spec, None) is not None
 
   def IsLockedScanNode(self, path_spec):
     """Determines if a scan node is locked.
@@ -299,7 +339,7 @@ class SourceScannerContext(object):
       self._root_path_spec = None
     del self._scan_nodes[path_spec]
 
-    if path_spec.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS:
+    if path_spec.IsFileSystem():
       del self._file_system_scan_nodes[path_spec]
 
     return parent_scan_node
@@ -366,10 +406,8 @@ class SourceScanner(object):
 
     scan_path_spec = scan_node.path_spec
 
-    if not scan_node.IsSystemLevel():
-      system_level_file_entry = None
-
-    else:
+    system_level_file_entry = None
+    if scan_node.IsSystemLevel():
       system_level_file_entry = resolver.Resolver.OpenFileEntry(
           scan_node.path_spec, resolver_context=self._resolver_context)
 
@@ -386,11 +424,11 @@ class SourceScanner(object):
         scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
         if system_level_file_entry.IsDevice():
-          scan_context.SetSourceType(
-              definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+          source_type = definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE
         else:
-          scan_context.SetSourceType(
-              definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+          source_type = definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
+
+        scan_context.SetSourceType(source_type)
 
         if not auto_recurse:
           return None
@@ -401,17 +439,17 @@ class SourceScanner(object):
 
     source_path_spec = None
     while True:
-      # No need to scan a file systems scan node for volume systems.
-      if scan_node.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS:
+      if scan_node.IsFileSystem():
+        # No need to scan a file systems scan node for volume systems.
         break
 
-      # No need to scan a locked scan node e.g. an encrypted volume.
       if scan_context.IsLockedScanNode(scan_node.path_spec):
+        # No need to scan a locked scan node such as an encrypted volume.
         break
 
       source_path_spec = self.ScanForVolumeSystem(scan_node.path_spec)
-      # Nothing found in the volume system scan.
       if not source_path_spec:
+        # Nothing found in the volume system scan.
         break
 
       if not scan_context.HasScanNode(source_path_spec):
@@ -419,21 +457,20 @@ class SourceScanner(object):
         scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
         if system_level_file_entry and system_level_file_entry.IsDevice():
-          scan_context.SetSourceType(
-              definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+          source_type = definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE
         else:
-          scan_context.SetSourceType(
-              definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+          source_type = definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
 
-      if scan_node.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
+        scan_context.SetSourceType(source_type)
+
+      if scan_node.IsVolumeSystem():
         self._ScanVolumeSystemNode(
             scan_context, scan_node, auto_recurse=auto_recurse)
 
         # We already have already scanned for the file systems.
         return None
 
-      if scan_node.type_indicator in (
-          definitions.ENCRYPTED_VOLUME_TYPE_INDICATORS):
+      if scan_node.IsEncryptedVolume():
         self._ScanEncryptedVolumeNode(scan_context, scan_node)
 
       if not auto_recurse and scan_context.updated:
@@ -448,12 +485,10 @@ class SourceScanner(object):
     # a single volume.
 
     # No need to scan the root of a volume system for a file system.
-    if (scan_node.path_spec.type_indicator in (
-        definitions.VOLUME_SYSTEM_TYPE_INDICATORS) and
-        getattr(scan_node.path_spec, 'location', None) == '/'):
+    if scan_node.IsVolumeSystemRoot():
       pass
 
-    # No need to scan a locked scan node e.g. an encrypted volume.
+    # No need to scan a locked scan node such as an encrypted volume.
     elif scan_context.IsLockedScanNode(scan_node.path_spec):
       pass
 
@@ -463,8 +498,7 @@ class SourceScanner(object):
           auto_recurse and scan_node.path_spec != scan_path_spec):
       pass
 
-    elif scan_node.type_indicator not in (
-        definitions.FILE_SYSTEM_TYPE_INDICATORS):
+    elif not scan_node.IsFileSystem():
       source_path_spec = self.ScanForFileSystem(scan_node.path_spec)
       if not source_path_spec:
         # Since RAW storage media image can only be determined by naming schema
@@ -535,8 +569,8 @@ class SourceScanner(object):
       BackEndError: if the source cannot be scanned.
       ValueError: if the scan context or scan node is invalid.
     """
-    # For VSS add a scan node for the current volume.
     if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+      # For VSS add a scan node for the current volume.
       path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
       if path_spec:
         scan_context.AddScanNode(path_spec, scan_node.parent_node)
@@ -549,11 +583,19 @@ class SourceScanner(object):
       sub_scan_node = scan_context.AddScanNode(
           sub_file_entry.path_spec, scan_node)
 
-      # Since scanning for file systems in VSS snapshot volumes can
-      # be expensive we only do this when explicitly asked for.
-      if scan_node.type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
-        if auto_recurse or not scan_context.updated:
-          self._ScanNode(scan_context, sub_scan_node, auto_recurse=auto_recurse)
+      if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
+        # TODO: consider changes this when upstream changes have been made.
+        # Currently pyfsapfs does not support reading from a volume as a device.
+        # Also see: https://github.com/log2timeline/dfvfs/issues/332
+        continue
+
+      if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+        # Since scanning for file systems in VSS snapshot volumes can
+        # be expensive we only do this when explicitly asked for.
+        continue
+
+      if auto_recurse or not scan_context.updated:
+        self._ScanNode(scan_context, sub_scan_node, auto_recurse=auto_recurse)
 
   def GetVolumeIdentifiers(self, volume_system):
     """Retrieves the volume identifiers.
@@ -614,6 +656,15 @@ class SourceScanner(object):
       BackEndError: if the source cannot be scanned or more than one file
           system type is found.
     """
+    if source_path_spec.type_indicator == (
+        definitions.TYPE_INDICATOR_APFS_CONTAINER):
+      # TODO: consider changes this when upstream changes have been made.
+      # Currently pyfsapfs does not support reading from a volume as a device.
+      # Also see: https://github.com/log2timeline/dfvfs/issues/332
+      return path_spec_factory.Factory.NewPathSpec(
+          definitions.TYPE_INDICATOR_APFS, location='/',
+          parent=source_path_spec)
+
     try:
       type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(
           source_path_spec, resolver_context=self._resolver_context)
@@ -704,16 +755,20 @@ class SourceScanner(object):
       BackEndError: if the source cannot be scanned or more than one volume
           system type is found.
     """
-    # It is technically possible to scan for VSS-in-VSS but makes no sense
-    # to do so.
-    if source_path_spec.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+    if source_path_spec.type_indicator == (
+        definitions.TYPE_INDICATOR_APFS_CONTAINER):
+      # TODO: consider changes this when upstream changes have been made.
+      # Currently pyfsapfs does not support reading from a volume as a device.
+      # Also see: https://github.com/log2timeline/dfvfs/issues/332
       return None
 
-    # Check if we already have a volume system root path specification.
-    if source_path_spec.type_indicator in (
-        definitions.VOLUME_SYSTEM_TYPE_INDICATORS):
-      if getattr(source_path_spec, 'location', None) == '/':
-        return source_path_spec
+    if source_path_spec.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+      # It is technically possible to scan for VSS-in-VSS but makes no sense
+      # to do so.
+      return None
+
+    if source_path_spec.IsVolumeSystemRoot():
+      return source_path_spec
 
     try:
       type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
