@@ -29,10 +29,5 @@ class VHDIPathSpec(path_spec.PathSpec):
 
     super(VHDIPathSpec, self).__init__(parent=parent, **kwargs)
 
-  @property
-  def comparable(self):
-    """str: comparable representation of the path specification."""
-    return self._GetComparable()
-
 
 factory.Factory.RegisterPathSpec(VHDIPathSpec)
