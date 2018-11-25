@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for the volume system implementation using pyvslvm."""
+"""Tests for the Logical Volume Manager (LVM) volume system."""
 
 from __future__ import unicode_literals
 
@@ -16,7 +16,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the Logical Volume Manager (LVM) volume system object."""
+  """Tests the Logical Volume Manager (LVM) volume system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -88,7 +88,7 @@ class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 
-    volume = volume_system.GetVolumeByIndex(7)
+    volume = volume_system.GetVolumeByIndex(99)
     self.assertIsNone(volume)
 
 
