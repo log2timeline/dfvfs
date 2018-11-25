@@ -17,8 +17,8 @@ install:
 - cmd: '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86 /release'
 - ps: >-
     "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12"
-    $SQLiteReleaseYear = 2018
-    $SQLiteVersion = 3250300
+    $SQLiteReleaseYear = "2018"
+    $SQLiteVersion = "3250300"
     If ($env:MACHINE_TYPE -eq "x86") {
       $SQLitePlatform = "win32-x86"
     } Else {
