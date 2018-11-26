@@ -31,7 +31,10 @@ PYTHON2_DEPENDENCIES="libbde-python
                       python-yaml";
 
 # Additional dependencies for running tests, alphabetized, one per line.
-TEST_DEPENDENCIES="python-mock";
+TEST_DEPENDENCIES="python-funcsigs
+                   python-mock
+                   python-pbr
+                   python-six";
 
 # Additional dependencies for development, alphabetized, one per line.
 DEVELOPMENT_DEPENDENCIES="pylint";
