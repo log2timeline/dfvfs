@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 
-import abc
+from dfvfs.lib import definitions
 
 
 class PathSpec(object):
@@ -69,9 +69,10 @@ class PathSpec(object):
 
     return ''.join(string_parts)
 
-  @abc.abstractproperty
+  @property
   def comparable(self):
     """str: comparable representation of the path specification."""
+    return self._GetComparable()
 
   @property
   def type_indicator(self):
@@ -105,6 +106,14 @@ class PathSpec(object):
     """
     return self.parent is not None
 
+  def IsFileSystem(self):
+    """Determines if the path specification is a file system.
+
+    Returns:
+      bool: True if the path specification is a file system.
+    """
+    return self.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS
+
   def IsSystemLevel(self):
     """Determines if the path specification is at system-level.
 
@@ -115,3 +124,19 @@ class PathSpec(object):
       bool: True if the path specification is at system-level.
     """
     return getattr(self, '_IS_SYSTEM_LEVEL', False)
+
+  def IsVolumeSystem(self):
+    """Determines if the path specification is a volume system.
+
+    Returns:
+      bool: True if the path specification is a volume system.
+    """
+    return self.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS
+
+  def IsVolumeSystemRoot(self):
+    """Determines if the path specification is the root of a volume system.
+
+    Returns:
+      bool: True if the path specification is the root of a volume system.
+    """
+    return self.IsVolumeSystem() and getattr(self, 'location', None) == '/'
