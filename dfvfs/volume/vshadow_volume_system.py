@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Volume system object implementation using Volume Shadow Snapshots (VSS)."""
+"""The Volume Shadow Snapshots (VSS) volume system."""
 
 from __future__ import unicode_literals
 
@@ -79,9 +79,8 @@ class VShadowVolumeSystem(volume_system.VolumeSystem):
     """
     self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
     if self._file_system is None:
-      raise errors.VolumeSystemError(
-          'Unable to resolve file system from path specification.')
+      raise errors.VolumeSystemError('Unable to resolve path specification.')
 
     type_indicator = self._file_system.type_indicator
     if type_indicator != definitions.TYPE_INDICATOR_VSHADOW:
-      raise errors.VolumeSystemError('Unsupported file system type.')
+      raise errors.VolumeSystemError('Unsupported type indicator.')
