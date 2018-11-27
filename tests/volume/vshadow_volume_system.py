@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for the volume system implementation using pyvshadow."""
+"""Tests for the Volume Shadow Snapshots (VSS) volume system."""
 
 from __future__ import unicode_literals
 
@@ -16,7 +16,7 @@ from tests import test_lib as shared_test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class VShadowVolumeSystemTest(shared_test_lib.BaseTestCase):
-  """The unit test for the Volume Shadow Snapshot (VSS) volume system object."""
+  """Tests the Volume Shadow Snapshot (VSS) volume system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
