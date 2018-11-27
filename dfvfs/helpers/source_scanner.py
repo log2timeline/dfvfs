@@ -583,12 +583,6 @@ class SourceScanner(object):
       sub_scan_node = scan_context.AddScanNode(
           sub_file_entry.path_spec, scan_node)
 
-      if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
-        # TODO: consider changes this when upstream changes have been made.
-        # Currently pyfsapfs does not support reading from a volume as a device.
-        # Also see: https://github.com/log2timeline/dfvfs/issues/332
-        continue
-
       if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
         # Since scanning for file systems in VSS snapshot volumes can
         # be expensive we only do this when explicitly asked for.
