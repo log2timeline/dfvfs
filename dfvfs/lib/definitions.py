@@ -59,7 +59,6 @@ TYPE_INDICATOR_ZIP = 'ZIP'
 
 # Volume types that support encryption.
 ENCRYPTED_VOLUME_TYPE_INDICATORS = frozenset([
-    TYPE_INDICATOR_APFS,
     TYPE_INDICATOR_BDE,
     TYPE_INDICATOR_FVDE])
 
