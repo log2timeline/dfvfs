@@ -137,13 +137,11 @@ class RecursiveHasher(volume_scanner.VolumeScanner):
       file_system = resolver.Resolver.OpenFileSystem(base_path_spec)
       file_entry = resolver.Resolver.OpenFileEntry(base_path_spec)
       if file_entry is None:
-        logging.warning(
-            'Unable to open base path specification:\n{0:s}'.format(
-                base_path_spec.comparable))
+        logging.warning('Unable to open base path specification:\n{0:s}'.format(
+            base_path_spec.comparable))
         continue
 
-      self._CalculateHashesFileEntry(
-          file_system, file_entry, '', output_writer)
+      self._CalculateHashesFileEntry(file_system, file_entry, '', output_writer)
 
 
 class OutputWriter(object):
