@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Classes to implement volume scanners."""
+"""Scanner for volume systems."""
 
 from __future__ import unicode_literals
 
