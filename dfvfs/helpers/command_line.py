@@ -4,6 +4,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import abc
+import codecs
 import getpass
 import locale
 import logging
@@ -21,6 +23,168 @@ from dfvfs.helpers import volume_scanner
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import py2to3
+
+
+class CLIInputReader(object):
+  """Command line interface input reader interface."""
+
+  def __init__(self, encoding='utf-8'):
+    """Initializes an input reader.
+
+    Args:
+      encoding (Optional[str]): input encoding.
+    """
+    super(CLIInputReader, self).__init__()
+    self._encoding = encoding
+
+  # pylint: disable=redundant-returns-doc
+  @abc.abstractmethod
+  def Read(self):
+    """Reads a string from the input.
+
+    Returns:
+      str: input.
+    """
+
+
+class FileObjectInputReader(CLIInputReader):
+  """File object command line interface input reader.
+
+  This input reader relies on the file-like object having a readline method.
+  """
+
+  def __init__(self, file_object, encoding='utf-8'):
+    """Initializes a file object input reader.
+
+    Args:
+      file_object (file): file-like object to read from.
+      encoding (Optional[str]): input encoding.
+    """
+    super(FileObjectInputReader, self).__init__(encoding=encoding)
+    self._errors = 'strict'
+    self._file_object = file_object
+
+  def Read(self):
+    """Reads a string from the input.
+
+    Returns:
+      str: input.
+    """
+    encoded_string = self._file_object.readline()
+
+    try:
+      string = codecs.decode(encoded_string, self._encoding, self._errors)
+    except UnicodeDecodeError:
+      if self._errors == 'strict':
+        logging.error(
+            'Unable to properly read input due to encoding error. '
+            'Switching to error tolerant encoding which can result in '
+            'non Basic Latin (C0) characters to be replaced with "?" or '
+            '"\\ufffd".')
+        self._errors = 'replace'
+
+      string = codecs.decode(encoded_string, self._encoding, self._errors)
+
+    return string
+
+
+class StdinInputReader(FileObjectInputReader):
+  """Stdin command line interface input reader."""
+
+  def __init__(self, encoding='utf-8'):
+    """Initializes a stdin input reader.
+
+    Args:
+      encoding (Optional[str]): input encoding.
+    """
+    super(StdinInputReader, self).__init__(sys.stdin, encoding=encoding)
+
+
+class CLIOutputWriter(object):
+  """Command line interface output writer interface."""
+
+  def __init__(self, encoding='utf-8'):
+    """Initializes an output writer.
+
+    Args:
+      encoding (Optional[str]): output encoding.
+    """
+    super(CLIOutputWriter, self).__init__()
+    self._encoding = encoding
+
+  @abc.abstractmethod
+  def Write(self, string):
+    """Writes a string to the output.
+
+    Args:
+      string (str): output.
+    """
+
+
+class FileObjectOutputWriter(CLIOutputWriter):
+  """File object command line interface output writer.
+
+  This output writer relies on the file-like object having a write method.
+  """
+
+  def __init__(self, file_object, encoding='utf-8'):
+    """Initializes a file object output writer.
+
+    Args:
+      file_object (file): file-like object to read from.
+      encoding (Optional[str]): output encoding.
+    """
+    super(FileObjectOutputWriter, self).__init__(encoding=encoding)
+    self._errors = 'strict'
+    self._file_object = file_object
+
+  def Write(self, string):
+    """Writes a string to the output.
+
+    Args:
+      string (str): output.
+    """
+    try:
+      # Note that encode() will first convert string into a Unicode string
+      # if necessary.
+      encoded_string = codecs.encode(string, self._encoding, self._errors)
+    except UnicodeEncodeError:
+      if self._errors == 'strict':
+        logging.error(
+            'Unable to properly write output due to encoding error. '
+            'Switching to error tolerant encoding which can result in '
+            'non Basic Latin (C0) characters to be replaced with "?" or '
+            '"\\ufffd".')
+        self._errors = 'replace'
+
+      encoded_string = codecs.encode(string, self._encoding, self._errors)
+
+    self._file_object.write(encoded_string)
+
+
+class StdoutOutputWriter(FileObjectOutputWriter):
+  """Stdout command line interface output writer."""
+
+  def __init__(self, encoding='utf-8'):
+    """Initializes a stdout output writer.
+
+    Args:
+      encoding (Optional[str]): output encoding.
+    """
+    super(StdoutOutputWriter, self).__init__(sys.stdout, encoding=encoding)
+
+  def Write(self, string):
+    """Writes a string to the output.
+
+    Args:
+      string (str): output.
+    """
+    if sys.version_info[0] < 3:
+      super(StdoutOutputWriter, self).Write(string)
+    else:
+      # sys.stdout.write() on Python 3 by default will error if string is
+      # of type bytes.
+      sys.stdout.write(string)
 
 
 class CLITabularTableView(object):
@@ -45,10 +209,11 @@ class CLITabularTableView(object):
     self._number_of_columns = len(self._columns)
     self._rows = []
 
-  def _PrintRow(self, values, in_bold=False):
-    """Prints a row of values aligned to the column width to stdout.
+  def _WriteRow(self, output_writer, values, in_bold=False):
+    """Writes a row of values aligned with the width to the output writer.
 
     Args:
+      output_writer (CLIOutputWriter): output writer.
       values (list[object]): values.
       in_bold (Optional[bool]): True if the row should be written in bold.
     """
@@ -68,8 +233,7 @@ class CLITabularTableView(object):
       # write the header separately then reset intensity.
       row_strings = '\x1b[1m{0:s}\x1b[0m'.format(row_strings)
 
-    row_strings = '{0:s}'.format(row_strings)
-    print(row_strings)
+    output_writer.Write('{0:s}\n'.format(row_strings))
 
   def AddRow(self, values):
     """Adds a row of values.
@@ -100,8 +264,12 @@ class CLITabularTableView(object):
     if not self._number_of_columns:
       self._number_of_columns = len(value_strings)
 
-  def Print(self):
-    """Prints the table to stdout."""
+  def Write(self, output_writer):
+    """Writes the table to output writer.
+
+    Args:
+      output_writer (CLIOutputWriter): output writer.
+    """
     # Round up the column sizes to the nearest tab.
     for column_index, column_size in enumerate(self._column_sizes):
       column_size, _ = divmod(column_size, self._NUMBER_OF_SPACES_IN_TAB)
@@ -109,10 +277,12 @@ class CLITabularTableView(object):
       self._column_sizes[column_index] = column_size
 
     if self._columns:
-      self._PrintRow(self._columns, in_bold=True)
+      self._WriteRow(output_writer, self._columns, in_bold=True)
 
     for values in self._rows:
-      self._PrintRow(values)
+      self._WriteRow(output_writer, values)
+
+    output_writer.Write('\n')
 
 
 class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
@@ -122,10 +292,47 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
   _UNITS_1000 = ['B', 'kB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB']
   _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
-  def __init__(self):
-    """Initializes a volume scanner mediator."""
+  _USER_PROMPT_APFS = (
+      'Please specify the identifier(s) of the APFS volume that should be '
+      'processed: Note that a range of volumes can be defined as: 3..5. '
+      'Multiple volumes can be defined as: 1,3,5 (a list of comma separated '
+      'values). Ranges and lists can also be combined as: 1,3..5. The first '
+      'volume is 1. All volumes can be defined as "all". If no volumes are '
+      'specified none will be processed. You can abort with Ctrl^C.')
+
+  _USER_PROMPT_TSK = (
+      'Please specify the identifier of the partition that should be '
+      'processed. All partitions can be defined as: "all". Note that you can '
+      'abort with Ctrl^C.')
+
+  _USER_PROMPT_VSS = (
+      'Please specify the identifier(s) of the VSS that should be processed: '
+      'Note that a range of stores can be defined as: 3..5. Multiple stores '
+      'can be defined as: 1,3,5 (a list of comma separated values). Ranges '
+      'and lists can also be combined as: 1,3..5. The first store is 1. All '
+      'stores can be defined as "all". If no stores are specified none will '
+      'be processed. You can abort with Ctrl^C.')
+
+  def __init__(self, input_reader=None, output_writer=None):
+    """Initializes a volume scanner mediator.
+
+    Args:
+      input_reader (Optional[CLIInputReader]): input reader, where None
+          indicates that the stdin input reader should be used.
+      output_writer (Optional[CLIOutputWriter]): output writer, where None
+          indicates that the stdout output writer should be used.
+    """
+    preferred_encoding = locale.getpreferredencoding()
+
+    if not input_reader:
+      input_reader = StdinInputReader(encoding=preferred_encoding)
+    if not output_writer:
+      output_writer = StdoutOutputWriter(encoding=preferred_encoding)
+
     super(CLIVolumeScannerMediator, self).__init__()
     self._encode_errors = 'strict'
+    self._input_reader = input_reader
+    self._output_writer = output_writer
     self._preferred_encoding = locale.getpreferredencoding()
     self._textwrapper = textwrap.TextWrapper()
 
@@ -191,79 +398,121 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     return '{0:s} / {1:s} ({2:d} B)'.format(
         size_string_1024, size_string_1000, size)
 
-  def _ParseVSSStoresString(self, vss_stores):
-    """Parses the user specified VSS stores string.
-
-    A range of stores can be defined as: 3..5. Multiple stores can
-    be defined as: 1,3,5 (a list of comma separated values). Ranges
-    and lists can also be combined as: 1,3..5. The first store is 1.
-    All stores can be defined as "all".
+  def _ParseVolumeIdentifiersString(
+      self, volume_identifiers_string, prefix='v'):
+    """Parses a user specified volume identifiers string.
 
     Args:
-      vss_stores (str): user specified VSS stores.
+      volume_identifiers_string (str): user specified volume identifiers. A
+          range of volumes can be defined as: "3..5". Multiple volumes can be
+          defined as: "1,3,5" (a list of comma separated values). Ranges and
+          lists can also be combined as: "1,3..5". The first volume is 1. All
+          volumes can be defined as: "all".
+      prefix (Optional[str]): volume identifier prefix.
 
     Returns:
-      list[int|str]: Individual VSS stores numbers or the string "all".
+      list[str]: volume identifiers with prefix or the string "all".
 
     Raises:
-      ValueError: if the VSS stores option is invalid.
+      ValueError: if the volume identifiers string is invalid.
     """
-    if not vss_stores:
+    prefix_length = 0
+    if prefix:
+      prefix_length = len(prefix)
+
+    if not volume_identifiers_string:
       return []
 
-    if vss_stores == 'all':
+    if volume_identifiers_string == 'all':
       return ['all']
 
-    stores = []
-    for vss_store_range in vss_stores.split(','):
+    volume_identifiers = set()
+    for identifiers_range in volume_identifiers_string.split(','):
       # Determine if the range is formatted as 1..3 otherwise it indicates
-      # a single store number.
-      if '..' in vss_store_range:
-        first_store, last_store = vss_store_range.split('..')
-        try:
-          first_store = int(first_store, 10)
-          last_store = int(last_store, 10)
-        except ValueError:
-          raise ValueError('Invalid VSS store range: {0:s}.'.format(
-              vss_store_range))
+      # a single volume identifier.
+      if '..' in identifiers_range:
+        first_identifier, last_identifier = identifiers_range.split('..')
 
-        for store_number in range(first_store, last_store + 1):
-          if store_number not in stores:
-            stores.append(store_number)
+        if first_identifier.startswith(prefix):
+          first_identifier = first_identifier[prefix_length:]
+
+        if last_identifier.startswith(prefix):
+          last_identifier = last_identifier[prefix_length:]
+
+        try:
+          first_identifier = int(first_identifier, 10)
+          last_identifier = int(last_identifier, 10)
+        except ValueError:
+          raise ValueError('Invalid volume identifiers range: {0:s}.'.format(
+              identifiers_range))
+
+        for volume_identifier in range(first_identifier, last_identifier + 1):
+          if volume_identifier not in volume_identifiers:
+            volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+            volume_identifiers.add(volume_identifier)
       else:
-        if vss_store_range.startswith('vss'):
-          vss_store_range = vss_store_range[3:]
+        identifier = identifiers_range
+        if identifier.startswith(prefix):
+          identifier = identifiers_range[prefix_length:]
 
         try:
-          store_number = int(vss_store_range, 10)
+          volume_identifier = int(identifier, 10)
         except ValueError:
-          raise ValueError('Invalid VSS store range: {0:s}.'.format(
-              vss_store_range))
+          raise ValueError('Invalid volume identifier range: {0:s}.'.format(
+              identifiers_range))
 
-        if store_number not in stores:
-          stores.append(store_number)
+        volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+        volume_identifiers.add(volume_identifier)
 
-    return sorted(stores)
+    # Note that sorted will return a list.
+    return sorted(volume_identifiers)
 
-  def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
-    """Retrieves partition identifiers.
-
-    This method can be used to prompt the user to provide partition identifiers.
+  def _PrintAPFSVolumeIdentifiersOverview(
+      self, volume_system, volume_identifiers):
+    """Prints an overview of APFS volume identifiers.
 
     Args:
-      volume_system (dfvfs.TSKVolumeSystem): volume system.
-      volume_identifiers (list[str]): volume identifiers.
-
-    Returns:
-      list[str]: selected partition identifiers or None.
+      volume_system (APFSVolumeSystem): volume system.
+      volume_identifiers (list[str]): allowed volume identifiers.
 
     Raises:
-      ScannerError: if the source cannot be processed.
+      ScannerError: if a volume cannot be resolved from the volume identifier.
     """
-    print('The following partitions were found:')
+    header = 'The following Apple File System (APFS) volumes were found:\n'
+    self._output_writer.Write(header)
 
-    table_view = CLITabularTableView(column_names=[
-        'Identifier', 'Offset (in bytes)', 'Size (in bytes)'])
+    column_names = ['Identifier', 'Name']
+    table_view = CLITabularTableView(column_names=column_names)
+
+    for volume_identifier in volume_identifiers:
+      volume = volume_system.GetVolumeByIdentifier(volume_identifier)
+      if not volume:
+        raise errors.ScannerError(
+            'Volume missing for identifier: {0:s}.'.format(
+                volume_identifier))
+
+      volume_attribute = volume.GetAttribute('name')
+      table_view.AddRow([volume.identifier, volume_attribute.value])
+
+    self._output_writer.Write('\n')
+    table_view.Write(self._output_writer)
+
+  def _PrintTSKPartitionIdentifiersOverview(
+      self, volume_system, volume_identifiers):
+    """Prints an overview of TSK partition identifiers.
+
+    Args:
+      volume_system (TSKVolumeSystem): volume system.
+      volume_identifiers (list[str]): allowed volume identifiers.
+
+    Raises:
+      ScannerError: if a volume cannot be resolved from the volume identifier.
+    """
+    header = 'The following partitions were found:\n'
+    self._output_writer.Write(header)
+
+    column_names = ['Identifier', 'Offset (in bytes)', 'Size (in bytes)']
+    table_view = CLITabularTableView(column_names=column_names)
 
     for volume_identifier in sorted(volume_identifiers):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
@@ -278,48 +527,161 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
       table_view.AddRow([volume.identifier, volume_offset, volume_size])
 
-    print('')
-    table_view.Print()
-    print('')
+    self._output_writer.Write('\n')
+    table_view.Write(self._output_writer)
 
+  def _PrintVSSStoreIdentifiersOverview(
+      self, volume_system, volume_identifiers):
+    """Prints an overview of VSS store identifiers.
+
+    Args:
+      volume_system (VShadowVolumeSystem): volume system.
+      volume_identifiers (list[str]): allowed volume identifiers.
+
+    Raises:
+      ScannerError: if a volume cannot be resolved from the volume identifier.
+    """
+    header = 'The following Volume Shadow Snapshots (VSS) were found:\n'
+    self._output_writer.Write(header)
+
+    column_names = ['Identifier', 'Creation Time']
+    table_view = CLITabularTableView(column_names=column_names)
+
+    for volume_identifier in volume_identifiers:
+      volume = volume_system.GetVolumeByIdentifier(volume_identifier)
+      if not volume:
+        raise errors.ScannerError(
+            'Volume missing for identifier: {0:s}.'.format(
+                volume_identifier))
+
+      volume_attribute = volume.GetAttribute('creation_time')
+      filetime = dfdatetime_filetime.Filetime(timestamp=volume_attribute.value)
+      creation_time = filetime.CopyToDateTimeString()
+
+      if volume.HasExternalData():
+        creation_time = '{0:s}\tWARNING: data stored outside volume'.format(
+            creation_time)
+
+      table_view.AddRow([volume.identifier, creation_time])
+
+    self._output_writer.Write('\n')
+    table_view.Write(self._output_writer)
+
+  def _ReadSelectedVolumes(self, volume_system, prefix='v'):
+    """Reads the selected volumes provided by the user.
+
+    Args:
+      volume_system (APFSVolumeSystem): volume system.
+      prefix (Optional[str]): volume identifier prefix.
+
+    Returns:
+      list[str]: selected volume identifiers including prefix.
+
+    Raises:
+      KeyboardInterrupt: if the user requested to abort.
+      ValueError: if the volume identifiers string could not be parsed.
+    """
+    volume_identifiers_string = self._input_reader.Read()
+    volume_identifiers_string = volume_identifiers_string.strip()
+
+    if not volume_identifiers_string:
+      return []
+
+    selected_volumes = self._ParseVolumeIdentifiersString(
+        volume_identifiers_string, prefix=prefix)
+
+    if selected_volumes == ['all']:
+      return [
+          '{0:s}{1:d}'.format(prefix, volume_index)
+          for volume_index in range(1, volume_system.number_of_volumes + 1)]
+
+    return selected_volumes
+
+  def GetAPFSVolumeIdentifiers(self, volume_system, volume_identifiers):
+    """Retrieves APFS volume identifiers.
+
+    This method can be used to prompt the user to provide APFS volume
+    identifiers.
+
+    Args:
+      volume_system (APFSVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers including prefix.
+
+    Returns:
+      list[str]: selected volume identifiers including prefix or None.
+    """
+    print_header = True
     while True:
-      text = (
-          'Please specify the identifier of the partition that should be '
-          'processed. All partitions can be defined as: "all". Note that '
-          'you can abort with Ctrl^C.')
+      if print_header:
+        self._PrintAPFSVolumeIdentifiersOverview(
+            volume_system, volume_identifiers)
 
-      for line in self._textwrapper.wrap(text):
-        print(line)
+        print_header = False
 
-      selected_partition_identifier = sys.stdin.readline()
-      selected_partition_identifier = selected_partition_identifier.strip()
+      lines = self._textwrapper.wrap(self._USER_PROMPT_APFS)
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n')
 
-      if not selected_partition_identifier.startswith('p'):
-        try:
-          partition_number = int(selected_partition_identifier, 10)
-          selected_partition_identifier = 'p{0:d}'.format(partition_number)
-        except ValueError:
-          pass
+      try:
+        selected_volumes = self._ReadSelectedVolumes(
+            volume_system, prefix='apfs')
+        if (not selected_volumes or
+            not set(selected_volumes).difference(volume_identifiers)):
+          break
+      except ValueError:
+        pass
 
-      if selected_partition_identifier == 'all':
-        return volume_identifiers
+      self._output_writer.Write('\n')
 
-      if selected_partition_identifier in volume_identifiers:
-        break
+      lines = self._textwrapper.wrap(
+          'Unsupported volume identifier(s), please try again or abort with '
+          'Ctrl^C.')
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n\n')
 
-      print('')
+    return selected_volumes
 
-      text = (
-          'Unsupported partition identifier, please try again or abort '
-          'with Ctrl^C.')
+  def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
+    """Retrieves partition identifiers.
 
-      for line in self._textwrapper.wrap(text):
-        print(line)
+    This method can be used to prompt the user to provide partition identifiers.
 
-      print('')
+    Args:
+      volume_system (TSKVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers including prefix.
 
-    print('')
-    return [selected_partition_identifier]
+    Returns:
+      list[str]: selected volume identifiers including prefix or None.
+    """
+    print_header = True
+    while True:
+      if print_header:
+        self._PrintTSKPartitionIdentifiersOverview(
+            volume_system, volume_identifiers)
+
+        print_header = False
+
+      lines = self._textwrapper.wrap(self._USER_PROMPT_TSK)
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n')
+
+      try:
+        selected_volumes = self._ReadSelectedVolumes(volume_system, prefix='p')
+        if (not selected_volumes or
+            not set(selected_volumes).difference(volume_identifiers)):
+          break
+      except ValueError:
+        pass
+
+      self._output_writer.Write('\n')
+
+      lines = self._textwrapper.wrap(
+          'Unsupported partition identifier(s), please try again or abort with '
+          'Ctrl^C.')
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n\n')
+
+    return selected_volumes
 
   def GetVSSStoreIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves VSS store identifiers.
@@ -328,103 +690,41 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
     Args:
       volume_system (VShadowVolumeSystem): volume system.
-      volume_identifiers (list[str]): volume identifiers.
+      volume_identifiers (list[str]): volume identifiers including prefix.
 
     Returns:
-      list[int]: selected VSS store numbers or None.
-
-    Raises:
-      ScannerError: if the source cannot be processed.
+      list[str]: selected volume identifiers including prefix or None.
     """
-    normalized_volume_identifiers = []
-    for volume_identifier in volume_identifiers:
-      volume = volume_system.GetVolumeByIdentifier(volume_identifier)
-      if not volume:
-        raise errors.ScannerError(
-            'Volume missing for identifier: {0:s}.'.format(volume_identifier))
-
-      try:
-        volume_identifier = int(volume.identifier[3:], 10)
-        normalized_volume_identifiers.append(volume_identifier)
-      except ValueError:
-        pass
-
     print_header = True
     while True:
       if print_header:
-        print('The following Volume Shadow Snapshots (VSS) were found:')
-
-        table_view = CLITabularTableView(column_names=[
-            'Identifier', 'Creation Time'])
-
-        for volume_identifier in volume_identifiers:
-          volume = volume_system.GetVolumeByIdentifier(volume_identifier)
-          if not volume:
-            raise errors.ScannerError(
-                'Volume missing for identifier: {0:s}.'.format(
-                    volume_identifier))
-
-          vss_creation_time = volume.GetAttribute('creation_time')
-          filetime = dfdatetime_filetime.Filetime(
-              timestamp=vss_creation_time.value)
-          vss_creation_time = filetime.CopyToDateTimeString()
-
-          if volume.HasExternalData():
-            vss_creation_time = (
-                '{0:s}\tWARNING: data stored outside volume').format(
-                    vss_creation_time)
-
-          table_view.AddRow([volume.identifier, vss_creation_time])
-
-        print('')
-        table_view.Print()
-        print('')
+        self._PrintVSSStoreIdentifiersOverview(
+            volume_system, volume_identifiers)
 
         print_header = False
 
-      text = (
-          'Please specify the identifier(s) of the VSS that should be '
-          'processed: Note that a range of stores can be defined as: 3..5. '
-          'Multiple stores can be defined as: 1,3,5 (a list of comma '
-          'separated values). Ranges and lists can also be combined as: '
-          '1,3..5. The first store is 1. All stores can be defined as "all". '
-          'If no stores are specified none will be processed. You can abort '
-          'with Ctrl^C.')
-
-      for line in self._textwrapper.wrap(text):
-        print(line)
-
-      selected_vss_stores = sys.stdin.readline()
-
-      selected_vss_stores = selected_vss_stores.strip()
-      if not selected_vss_stores:
-        selected_vss_stores = []
-        break
+      lines = self._textwrapper.wrap(self._USER_PROMPT_VSS)
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n')
 
       try:
-        selected_vss_stores = self._ParseVSSStoresString(selected_vss_stores)
+        selected_volumes = self._ReadSelectedVolumes(
+            volume_system, prefix='vss')
+        if (not selected_volumes or
+            not set(selected_volumes).difference(volume_identifiers)):
+          break
       except ValueError:
-        selected_vss_stores = []
+        pass
 
-      if selected_vss_stores == ['all']:
-        # We need to set the stores to cover all vss stores.
-        selected_vss_stores = range(1, volume_system.number_of_volumes + 1)
+      self._output_writer.Write('\n')
 
-      if not set(selected_vss_stores).difference(normalized_volume_identifiers):
-        break
-
-      print('')
-
-      text = (
+      lines = self._textwrapper.wrap(
           'Unsupported VSS identifier(s), please try again or abort with '
           'Ctrl^C.')
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n\n')
 
-      for line in self._textwrapper.wrap(text):
-        print(line)
-
-      print('')
-
-    return selected_vss_stores
+    return selected_volumes
 
   def UnlockEncryptedVolume(
       self, source_scanner_object, scan_context, locked_scan_node, credentials):
@@ -434,11 +734,10 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     credentials.
 
     Args:
-      source_scanner_object (dfvfs.SourceScanner): source scanner.
-      scan_context (dfvfs.SourceScannerContext): source scanner context.
-      locked_scan_node (dfvfs.SourceScanNode): locked scan node.
-      credentials (dfvfs.Credentials): credentials supported by the locked
-          scan node.
+      source_scanner_object (SourceScanner): source scanner.
+      scan_context (SourceScannerContext): source scanner context.
+      locked_scan_node (SourceScanNode): locked scan node.
+      credentials (Credentials): credentials supported by the locked scan node.
 
     Returns:
       bool: True if the volume was unlocked.
@@ -464,7 +763,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     while not result:
       print('Select a credential to unlock the volume: ', end='')
       # TODO: add an input reader.
-      input_line = sys.stdin.readline()
+      input_line = self._input_reader.Read()
       input_line = input_line.strip()
 
       if input_line in credentials_list:
