@@ -517,11 +517,11 @@ class SourceScanner(object):
         scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
 
         if system_level_file_entry and system_level_file_entry.IsDevice():
-          scan_context.SetSourceType(
-              definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE)
+          source_type = definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE
         else:
-          scan_context.SetSourceType(
-              definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+          source_type = definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
+
+        scan_context.SetSourceType(source_type)
 
     # If all scans failed mark the scan node as scanned so we do not scan it
     # again.
@@ -680,11 +680,23 @@ class SourceScanner(object):
 
     # TODO: determine root location from file system or path specification.
     if type_indicator == definitions.TYPE_INDICATOR_NTFS:
-      return path_spec_factory.Factory.NewPathSpec(
+      file_system_path_spec = path_spec_factory.Factory.NewPathSpec(
           type_indicator, location='\\', parent=source_path_spec)
+    else:
+      file_system_path_spec = path_spec_factory.Factory.NewPathSpec(
+          type_indicator, location='/', parent=source_path_spec)
 
-    return path_spec_factory.Factory.NewPathSpec(
-        type_indicator, location='/', parent=source_path_spec)
+    if type_indicator == definitions.TYPE_INDICATOR_TSK:
+      # Check if the file system can be opened since the file system by
+      # signature detection results in false positives.
+      try:
+        file_system = resolver.Resolver.OpenFileSystem(
+            file_system_path_spec, resolver_context=self._resolver_context)
+        file_system.Close()
+      except errors.BackEndError:
+        file_system_path_spec = None
+
+    return file_system_path_spec
 
   def ScanForStorageMediaImage(self, source_path_spec):
     """Scans the path specification for a supported storage media image format.
@@ -722,6 +734,8 @@ class SourceScanner(object):
         glob_results = raw.RawGlobPathSpec(file_system, raw_path_spec)
       except errors.PathSpecError:
         glob_results = None
+
+      file_system.Close()
 
       if not glob_results:
         return None

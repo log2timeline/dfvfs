@@ -74,7 +74,7 @@ class OSFile(file_io.FileIO):
 
       if ' access denied ' in exception_string:
         raise errors.AccessError(
-            'Access denied to file: {0:s} with error: {1:s}'.format(
+            'Access denied to file: {0:s} with error: {1!s}'.format(
                 location, exception_string))
       is_device = False
 
@@ -82,7 +82,7 @@ class OSFile(file_io.FileIO):
       try:
         stat_info = os.stat(location)
       except OSError as exception:
-        raise IOError('Unable to open file with error: {0:s}.'.format(
+        raise IOError('Unable to open file with error: {0!s}.'.format(
             exception))
 
       # In case the libsmdev check is not able to detect the device also use
