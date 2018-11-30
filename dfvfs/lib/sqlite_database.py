@@ -88,7 +88,7 @@ class SQLiteDatabaseFile(object):
       except ValueError as exception:
         raise IOError((
             'Unable to determine number of rows of table: {0:s} '
-            'with error: {1:s}').format(table_name, exception))
+            'with error: {1!s}').format(table_name, exception))
 
     return number_of_rows
 

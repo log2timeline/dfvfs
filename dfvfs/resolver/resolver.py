@@ -164,6 +164,6 @@ class Resolver(object):
       file_system.Open(path_spec_object)
     except (IOError, ValueError) as exception:
       raise errors.BackEndError(
-          'Unable to open file system with error: {0:s}'.format(exception))
+          'Unable to open file system with error: {0!s}'.format(exception))
 
     return file_system
