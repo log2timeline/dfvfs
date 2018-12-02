@@ -200,10 +200,14 @@ class GzipFile(file_io.FileIO):
 
     self._gzip_file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
+    file_size = self._gzip_file_object.get_size()
+
     self._gzip_file_object.seek(0, os.SEEK_SET)
+
     uncompressed_data_offset = 0
     next_member_offset = 0
-    while next_member_offset < self._gzip_file_object.get_size():
+
+    while next_member_offset < file_size:
       member = gzipfile.GzipMember(
           self._gzip_file_object, next_member_offset, uncompressed_data_offset)
       uncompressed_data_offset = (

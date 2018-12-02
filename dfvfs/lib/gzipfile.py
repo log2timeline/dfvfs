@@ -354,6 +354,11 @@ class GzipMember(data_format.DataFormat):
 
     while not self.IsCacheFull() or read_all_data:
       decompressed_data = self._decompressor_state.Read(file_object)
+      # Note that decompressed_data will be empty if there is no data left
+      # to read and decompress.
+      if not decompressed_data:
+        break
+
       decompressed_data_length = len(decompressed_data)
       decompressed_end_offset = self._decompressor_state.uncompressed_offset
       decompressed_start_offset = (

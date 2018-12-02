@@ -7,8 +7,9 @@ from __future__ import unicode_literals
 import unittest
 
 from dfvfs.file_io import gzip_file_io
-from dfvfs.path import gzip_path_spec
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
 from tests import test_lib as shared_test_lib
@@ -17,14 +18,16 @@ from tests.file_io import test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['syslog.gz'])
 class GzipFileTest(test_lib.SylogTestCase):
-  """The unit test for a gzip file-like object."""
+  """Tests a gzip file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.gz'])
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
+    test_path = self._GetTestFilePath(['syslog.gz'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GZIP, parent=test_os_path_spec)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -58,13 +61,32 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     file_object.close()
 
+  @shared_test_lib.skipUnlessHasTestFile(['corrupt1.gz'])
+  def testReadCorrupt(self):
+    """Tests reading a file that is corrupt."""
+    # The corrupt gzip has no member footer.
+    test_path = self._GetTestFilePath(['corrupt1.gz'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GZIP, parent=test_os_path_spec)
+
+    file_object = gzip_file_io.GzipFile(self._resolver_context)
+
+    with self.assertRaises(errors.FileFormatError):
+      file_object.open(path_spec=test_gzip_path_spec)
+
+  @shared_test_lib.skipUnlessHasTestFile(['fsevents_000000000000b208'])
   def testReadMultipleMembers(self):
     """Tests reading a file that contains multiple gzip members."""
-    test_file = self._GetTestFilePath(['fsevents_000000000000b208'])
-    parent_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = gzip_path_spec.GzipPathSpec(parent=parent_path_spec)
+    test_path = self._GetTestFilePath(['fsevents_000000000000b208'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GZIP, parent=test_os_path_spec)
+
     file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.open(path_spec=path_spec)
+    file_object.open(path_spec=test_gzip_path_spec)
 
     self.assertEqual(file_object.uncompressed_data_size, 506631)
     self.assertEqual(file_object.modification_times, [0, 0])
