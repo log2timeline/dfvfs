@@ -182,6 +182,7 @@ class GzipMember(data_format.DataFormat):
 
     self._LoadDataIntoCache(file_object, 0, read_all_data=True)
 
+    # TODO: gracefully handle missing footer.
     self._ReadMemberFooter(file_object)
 
     # Offset to the end of the member in the parent file object.
@@ -196,7 +197,7 @@ class GzipMember(data_format.DataFormat):
     Raises:
       FileFormatError: if the member header cannot be read.
     """
-    file_offset = file_object.tell()
+    file_offset = file_object.get_offset()
     member_header = self._ReadStructure(
         file_object, file_offset, self._MEMBER_HEADER_SIZE,
         self._MEMBER_HEADER, 'member header')
@@ -214,7 +215,7 @@ class GzipMember(data_format.DataFormat):
     self.operating_system = member_header.operating_system
 
     if member_header.flags & self._FLAG_FEXTRA:
-      file_offset = file_object.tell()
+      file_offset = file_object.get_offset()
       extra_field_data_size = self._ReadStructure(
           file_object, file_offset, self._UINT16LE_SIZE,
           self._UINT16LE, 'extra field data size')
@@ -222,14 +223,14 @@ class GzipMember(data_format.DataFormat):
       file_object.seek(extra_field_data_size, os.SEEK_CUR)
 
     if member_header.flags & self._FLAG_FNAME:
-      file_offset = file_object.tell()
+      file_offset = file_object.get_offset()
       string_value = self._ReadString(
           file_object, file_offset, self._CSTRING, 'original filename')
 
       self.original_filename = string_value.rstrip('\x00')
 
     if member_header.flags & self._FLAG_FCOMMENT:
-      file_offset = file_object.tell()
+      file_offset = file_object.get_offset()
       string_value = self._ReadString(
           file_object, file_offset, self._CSTRING, 'comment')
 
@@ -247,7 +248,7 @@ class GzipMember(data_format.DataFormat):
     Raises:
       FileFormatError: if the member footer cannot be read.
     """
-    file_offset = file_object.tell()
+    file_offset = file_object.get_offset()
     member_footer = self._ReadStructure(
         file_object, file_offset, self._MEMBER_FOOTER_SIZE,
         self._MEMBER_FOOTER, 'member footer')
@@ -354,6 +355,11 @@ class GzipMember(data_format.DataFormat):
 
     while not self.IsCacheFull() or read_all_data:
       decompressed_data = self._decompressor_state.Read(file_object)
+      # Note that decompressed_data will be empty if there is no data left
+      # to read and decompress.
+      if not decompressed_data:
+        break
+
       decompressed_data_length = len(decompressed_data)
       decompressed_end_offset = self._decompressor_state.uncompressed_offset
       decompressed_start_offset = (
