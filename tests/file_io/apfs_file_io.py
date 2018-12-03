@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for the file-like object implementation using pyfsapfs."""
+"""Tests for the Apple File System (APFS) file-like object."""
 
 from __future__ import unicode_literals
 
@@ -8,12 +8,9 @@ import os
 import unittest
 
 from dfvfs.file_io import apfs_file_io
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import apfs_container_path_spec
-from dfvfs.path import apfs_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import raw_path_spec
-from dfvfs.path import tsk_partition_path_spec
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
 from tests import test_lib as shared_test_lib
@@ -22,7 +19,7 @@ from tests.file_io import test_lib
 
 @shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
 class APFSFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the APFS file-like object."""
+  """Tests the file-like object implementation using pyfsapfs.file_entry."""
 
   _IDENTIFIER_ANOTHER_FILE = 21
   _IDENTIFIER_PASSWORDS_TXT = 19
@@ -31,18 +28,22 @@ class APFSFileTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(APFSFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['apfs.dmg'])
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
-    partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
-    self._apfs_container_path_spec = (
-        apfs_container_path_spec.APFSContainerPathSpec(
-            location='/apfs1', parent=partition_path_spec))
+    test_path = self._GetTestFilePath(['apfs.dmg'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=test_raw_path_spec)
+    self._apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
+        parent=test_tsk_partition_path_spec)
 
   def testOpenCloseIdentifier(self):
     """Test the open and close functionality using an identifier."""
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_PASSWORDS_TXT,
         parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
@@ -55,8 +56,9 @@ class APFSFileTest(test_lib.ImageFileTestCase):
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/passwords.txt', parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/passwords.txt',
+        parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -71,8 +73,8 @@ class APFSFileTest(test_lib.ImageFileTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/a_directory/another_file',
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/a_directory/another_file',
         identifier=self._IDENTIFIER_ANOTHER_FILE,
         parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
@@ -112,8 +114,9 @@ class APFSFileTest(test_lib.ImageFileTestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/passwords.txt', identifier=self._IDENTIFIER_PASSWORDS_TXT,
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/passwords.txt',
+        identifier=self._IDENTIFIER_PASSWORDS_TXT,
         parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
 

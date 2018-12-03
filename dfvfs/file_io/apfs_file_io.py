@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The APFS file-like object implementation."""
+"""The Apple File System (APFS) file-like object implementation."""
 
 from __future__ import unicode_literals
 
@@ -10,7 +10,7 @@ from dfvfs.resolver import resolver
 
 
 class APFSFile(file_io.FileIO):
-  """File-like object using pyfsapfs."""
+  """File-like object using pyfsapfs.file_entry"""
 
   def __init__(self, resolver_context):
     """Initializes a file-like object.
@@ -20,12 +20,10 @@ class APFSFile(file_io.FileIO):
     """
     super(APFSFile, self).__init__(resolver_context)
     self._file_system = None
-    self._fsapfs_data_stream = None
     self._fsapfs_file_entry = None
 
   def _Close(self):
     """Closes the file-like object."""
-    self._fsapfs_data_stream = None
     self._fsapfs_file_entry = None
 
     self._file_system.Close()
@@ -49,6 +47,8 @@ class APFSFile(file_io.FileIO):
       raise ValueError('Missing path specification.')
 
     data_stream = getattr(path_spec, 'data_stream', None)
+    if data_stream:
+      raise IOError('Unable to open data stream: {0:s}.'.format(data_stream))
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
@@ -57,19 +57,10 @@ class APFSFile(file_io.FileIO):
     if not file_entry:
       raise IOError('Unable to open file entry.')
 
-    fsapfs_data_stream = None
     fsapfs_file_entry = file_entry.GetAPFSFileEntry()
     if not fsapfs_file_entry:
       raise IOError('Unable to open APFS file entry.')
 
-    if data_stream:
-      fsapfs_data_stream = fsapfs_file_entry.get_alternate_data_stream_by_name(
-          data_stream)
-      if not fsapfs_data_stream:
-        raise IOError('Unable to open data stream: {0:s}.'.format(
-            data_stream))
-
-    self._fsapfs_data_stream = fsapfs_data_stream
     self._fsapfs_file_entry = fsapfs_file_entry
 
   # Note: that the following functions do not follow the style guide
@@ -96,8 +87,6 @@ class APFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    if self._fsapfs_data_stream:
-      return self._fsapfs_data_stream.read(size=size)
     return self._fsapfs_file_entry.read(size=size)
 
   def seek(self, offset, whence=os.SEEK_SET):
@@ -115,10 +104,7 @@ class APFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    if self._fsapfs_data_stream:
-      self._fsapfs_data_stream.seek(offset, whence)
-    else:
-      self._fsapfs_file_entry.seek(offset, whence)
+    self._fsapfs_file_entry.seek(offset, whence)
 
   def get_offset(self):
     """Retrieves the current offset into the file-like object.
@@ -133,8 +119,6 @@ class APFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    if self._fsapfs_data_stream:
-      return self._fsapfs_data_stream.get_offset()
     return self._fsapfs_file_entry.get_offset()
 
   def get_size(self):
@@ -150,6 +134,4 @@ class APFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    if self._fsapfs_data_stream:
-      return self._fsapfs_data_stream.get_size()
     return self._fsapfs_file_entry.get_size()

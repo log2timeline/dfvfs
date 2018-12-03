@@ -6,11 +6,8 @@ from __future__ import unicode_literals
 
 import unittest
 
-from dfvfs.path import apfs_container_path_spec
-from dfvfs.path import apfs_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import raw_path_spec
-from dfvfs.path import tsk_partition_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import apfs_file_system
 
@@ -24,16 +21,20 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['apfs.dmg'])
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
-    partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
-    self._apfs_container_path_spec = (
-        apfs_container_path_spec.APFSContainerPathSpec(
-            location='/apfs1', parent=partition_path_spec))
-    self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    test_path = self._GetTestFilePath(['apfs.dmg'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=test_raw_path_spec)
+    self._apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
+        parent=test_tsk_partition_path_spec)
+    self._apfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
@@ -51,13 +52,14 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open(self._apfs_path_spec)
 
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/passwords.txt', identifier=19,
-        parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/passwords.txt',
+        identifier=19, parent=self._apfs_container_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/bogus.txt', parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/bogus.txt',
+        parent=self._apfs_container_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -69,8 +71,9 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open(self._apfs_path_spec)
 
-    path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=19, parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, identifier=19,
+        parent=self._apfs_container_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -78,16 +81,17 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
     # There is no way to determine the file_entry.name without a location string
     # in the path_spec or retrieving the file_entry from its parent.
 
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/passwords.txt', identifier=19,
-        parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/passwords.txt',
+        identifier=19, parent=self._apfs_container_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'passwords.txt')
 
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/bogus.txt', parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/bogus.txt',
+        parent=self._apfs_container_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)

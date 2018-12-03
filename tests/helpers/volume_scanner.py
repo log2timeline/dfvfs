@@ -6,12 +6,11 @@ from __future__ import unicode_literals
 
 import unittest
 
-from dfvfs.lib import definitions
-from dfvfs.lib import errors
-from dfvfs.path import fake_path_spec
-from dfvfs.path import factory as path_spec_factory
 from dfvfs.helpers import source_scanner
 from dfvfs.helpers import volume_scanner
+from dfvfs.lib import definitions
+from dfvfs.lib import errors
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
@@ -20,9 +19,11 @@ from tests import test_lib as shared_test_lib
 
 
 class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
-  """Class that defines a volume scanner mediator for testing."""
+  """Volume scanner mediator for testing."""
 
+  _APFS_PASSWORD = 'apfs-TEST'
   _BDE_PASSWORD = 'bde-TEST'
+  _FVDE_PASSWORD = 'fvde-TEST'
 
   def GetAPFSVolumeIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves APFS volume identifiers.
@@ -83,9 +84,18 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Returns:
       bool: True if the volume was unlocked.
     """
+    if locked_scan_node.type_indicator == (
+        definitions.TYPE_INDICATOR_APFS_CONTAINER):
+      password = self._APFS_PASSWORD
+
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+      password = self._BDE_PASSWORD
+
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_FVDE:
+      password = self._FVDE_PASSWORD
+
     return source_scanner_object.Unlock(
-        scan_context, locked_scan_node.path_spec, 'password',
-        self._BDE_PASSWORD)
+        scan_context, locked_scan_node.path_spec, 'password', password)
 
 
 class VolumeScannerTest(shared_test_lib.BaseTestCase):
@@ -234,6 +244,10 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(volume_identifiers, ['p1', 'p2'])
 
     volume_identifiers = test_scanner._NormalizedVolumeIdentifiers(
+        volume_system, ['1', '2'], prefix='p')
+    self.assertEqual(volume_identifiers, ['p1', 'p2'])
+
+    volume_identifiers = test_scanner._NormalizedVolumeIdentifiers(
         volume_system, [1, 2], prefix='p')
     self.assertEqual(volume_identifiers, ['p1', 'p2'])
 
@@ -272,40 +286,75 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
       test_scanner._NormalizedVolumeIdentifiers(
           volume_system, ['vss3'], prefix='vss')
 
-  def testScanFileSystem(self):
-    """Tests the _ScanFileSystem function."""
+  def testScanEncryptedVolume(self):
+    """Tests the _ScanEncryptedVolume function."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    path_spec = fake_path_spec.FakePathSpec(location='/')
-    scan_node = source_scanner.SourceScanNode(path_spec)
-
-    base_path_specs = []
-    test_scanner._ScanFileSystem(scan_node, base_path_specs)
-    self.assertEqual(len(base_path_specs), 1)
+    scan_context = source_scanner.SourceScannerContext()
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanFileSystem(None, [])
+      test_scanner._ScanEncryptedVolume(scan_context, None)
 
     scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanFileSystem(scan_node, [])
+      test_scanner._ScanEncryptedVolume(scan_context, scan_node)
+
+  @shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
+  def testScanEncryptedVolumeOnBDE(self):
+    """Tests the _ScanEncryptedVolume function on a BDE image."""
+    resolver.Resolver.key_chain.Empty()
+
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+
+    test_path = self._GetTestFilePath(['bdetogo.raw'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
+
+    bde_scan_node = scan_node.sub_nodes[0]
+
+    test_scanner._ScanEncryptedVolume(scan_context, bde_scan_node)
+
+  @shared_test_lib.skipUnlessHasTestFile(['apfs_encrypted.dmg'])
+  def testScanEncryptedVolumeOnEncryptedAPFS(self):
+    """Tests the _ScanEncryptedVolume function on an encrypted APFS image."""
+    resolver.Resolver.key_chain.Empty()
+
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+
+    test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
+
+    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
+
+    # Test on volume system sub node.
+    test_scanner._ScanEncryptedVolume(
+        scan_context, apfs_container_scan_node.sub_nodes[0])
 
   def testScanVolume(self):
     """Tests the _ScanVolume function."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    # Test error conditions.
     scan_context = source_scanner.SourceScannerContext()
 
+    # Test error conditions.
     with self.assertRaises(errors.ScannerError):
       test_scanner._ScanVolume(scan_context, None, [])
 
-    volume_scan_node = source_scanner.SourceScanNode(None)
+    scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolume(scan_context, volume_scan_node, [])
+      test_scanner._ScanVolume(scan_context, scan_node, [])
 
   @shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
   def testScanVolumeOnAPFS(self):
@@ -320,13 +369,20 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
 
-    apfs_container_scan_node = volume_scan_node.sub_nodes[4].sub_nodes[0]
+    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
 
+    # Test on volume system root node.
     base_path_specs = []
     test_scanner._ScanVolume(
         scan_context, apfs_container_scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 1)
+
+    # Test on volume system sub node.
+    base_path_specs = []
+    test_scanner._ScanVolume(
+        scan_context, apfs_container_scan_node.sub_nodes[0], base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   @shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
@@ -342,11 +398,41 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
+
+    bde_scan_node = scan_node.sub_nodes[0]
 
     base_path_specs = []
+    test_scanner._ScanVolume(scan_context, bde_scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 1)
+
+  @shared_test_lib.skipUnlessHasTestFile(['apfs_encrypted.dmg'])
+  def testScanVolumeOnEncryptedAPFS(self):
+    """Tests the _ScanVolume function on an encrypted APFS image."""
+    resolver.Resolver.key_chain.Empty()
+
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+
+    test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
+
+    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
+
+    # Test on volume system root node.
+    base_path_specs = []
     test_scanner._ScanVolume(
-        scan_context, volume_scan_node.sub_nodes[0], base_path_specs)
+        scan_context, apfs_container_scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 1)
+
+    # Test on volume system sub node.
+    base_path_specs = []
+    test_scanner._ScanVolume(
+        scan_context, apfs_container_scan_node.sub_nodes[0], base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
@@ -360,10 +446,10 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = scan_context.GetRootScanNode()
+    scan_node = scan_context.GetRootScanNode()
 
     base_path_specs = []
-    test_scanner._ScanVolume(scan_context, volume_scan_node, base_path_specs)
+    test_scanner._ScanVolume(scan_context, scan_node, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
@@ -377,31 +463,39 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
 
+    vss_scan_node = scan_node.sub_nodes[0]
+
+    # Test on volume system root node.
+    base_path_specs = []
+    test_scanner._ScanVolume(scan_context, vss_scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 2)
+
+    # Test on volume system sub node.
     base_path_specs = []
     test_scanner._ScanVolume(
-        scan_context, volume_scan_node, base_path_specs)
-    self.assertEqual(len(base_path_specs), 3)
+        scan_context, vss_scan_node.sub_nodes[0], base_path_specs)
+    self.assertEqual(len(base_path_specs), 1)
 
-  def testScanVolumeScanNode(self):
-    """Tests the _ScanVolumeScanNode function."""
+  def testScanVolumeSystemRoot(self):
+    """Tests the _ScanVolumeSystemRoot function."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    # Test error conditions.
     scan_context = source_scanner.SourceScannerContext()
 
+    # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeScanNode(scan_context, None, [])
+      test_scanner._ScanVolumeSystemRoot(scan_context, None, [])
 
-    volume_scan_node = source_scanner.SourceScanNode(None)
+    scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeScanNode(scan_context, volume_scan_node, [])
+      test_scanner._ScanVolumeSystemRoot(scan_context, scan_node, [])
 
   @shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
-  def testScanVolumeScanNodeOnAPFS(self):
-    """Tests the _ScanVolumeScanNode function on an APFS image."""
+  def testScanVolumeSystemRootOnAPFS(self):
+    """Tests the _ScanVolumeSystemRoot function on an APFS image."""
     resolver.Resolver.key_chain.Empty()
 
     test_mediator = TestVolumeScannerMediator()
@@ -412,125 +506,56 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
 
-    apfs_container_scan_node = volume_scan_node.sub_nodes[4].sub_nodes[0]
+    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
 
     base_path_specs = []
-    test_scanner._ScanVolumeScanNode(
+    test_scanner._ScanVolumeSystemRoot(
         scan_context, apfs_container_scan_node, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
-  @shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
-  def testScanVolumeScanNodeOnBDE(self):
-    """Tests the _ScanVolumeScanNode function on a BDE image."""
-    resolver.Resolver.key_chain.Empty()
+    # Test error conditions.
+    with self.assertRaises(errors.ScannerError):
+      test_scanner._ScanVolumeSystemRoot(
+          scan_context, apfs_container_scan_node.sub_nodes[0], base_path_specs)
 
+  @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
+  def testScanVolumeSystemRootOnPartitionedImage(self):
+    """Tests the _ScanVolumeSystemRoot function on a partitioned image."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    test_path = self._GetTestFilePath(['bdetogo.raw'])
+    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
-
-    base_path_specs = []
-    test_scanner._ScanVolumeScanNode(
-        scan_context, volume_scan_node.sub_nodes[0], base_path_specs)
-    self.assertEqual(len(base_path_specs), 1)
-
-  @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
-  def testScanVolumeScanNodeOnRAW(self):
-    """Tests the _ScanVolumeScanNode function on a RAW image."""
-    test_mediator = TestVolumeScannerMediator()
-    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
-
-    test_path = self._GetTestFilePath(['ímynd.dd'])
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_path)
-
-    test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = scan_context.GetRootScanNode()
-
-    base_path_specs = []
-    test_scanner._ScanVolumeScanNode(
-        scan_context, volume_scan_node, base_path_specs)
-    self.assertEqual(len(base_path_specs), 1)
-
-  @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
-  def testScanVolumeScanNodeOnVSS(self):
-    """Tests the _ScanVolumeScanNode function on VSS."""
-    test_mediator = TestVolumeScannerMediator()
-    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
-
-    # Test function on VSS root.
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_path)
-
-    test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
-
-    base_path_specs = []
-    test_scanner._ScanVolumeScanNode(
-        scan_context, volume_scan_node, base_path_specs)
-    self.assertEqual(len(base_path_specs), 0)
-
-    # Test function on VSS volume.
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_path)
-
-    test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
-
-    base_path_specs = []
-    test_scanner._ScanVolumeScanNode(
-        scan_context, volume_scan_node.sub_nodes[0], base_path_specs)
-    self.assertEqual(len(base_path_specs), 2)
-
-  @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
-  def testScanVolumeScanNodeVSS(self):
-    """Tests the _ScanVolumeScanNodeVSS function."""
-    test_mediator = TestVolumeScannerMediator()
-    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
-
-    # Test function on VSS root.
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_path)
-
-    test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = scan_context.GetRootScanNode()
-
-    base_path_specs = []
-    test_scanner._ScanVolumeScanNodeVSS(volume_scan_node, base_path_specs)
-    self.assertEqual(len(base_path_specs), 0)
-
-    # Test function on VSS volume.
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_path)
-
-    test_scanner._source_scanner.Scan(scan_context)
-    volume_scan_node = self._GetTestScanNode(scan_context)
-
-    base_path_specs = []
-    test_scanner._ScanVolumeScanNodeVSS(
-        volume_scan_node.sub_nodes[0], base_path_specs)
-    self.assertEqual(len(base_path_specs), 2)
+    scan_node = self._GetTestScanNode(scan_context)
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeScanNodeVSS(None, [])
+      test_scanner._ScanVolumeSystemRoot(scan_context, scan_node, [])
 
-    volume_scan_node = source_scanner.SourceScanNode(None)
-    with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeScanNodeVSS(volume_scan_node, [])
+  @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
+  def testScanVolumeSystemRootOnVSS(self):
+    """Tests the _ScanVolumeSystemRoot function on VSS."""
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-  # TODO: add tests for _UnlockEncryptedVolumeScanNode
+    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
+
+    vss_scan_node = scan_node.sub_nodes[0]
+
+    base_path_specs = []
+    test_scanner._ScanVolumeSystemRoot(
+        scan_context, vss_scan_node, base_path_specs)
+    self.assertEqual(len(base_path_specs), 2)
 
   @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
   def testGetBasePathSpecsOnRAW(self):

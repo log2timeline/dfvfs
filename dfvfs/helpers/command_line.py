@@ -282,8 +282,6 @@ class CLITabularTableView(object):
     for values in self._rows:
       self._WriteRow(output_writer, values)
 
-    output_writer.Write('\n')
-
 
 class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
   """Command line volume scanner mediator."""
@@ -620,7 +618,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
       lines = self._textwrapper.wrap(self._USER_PROMPT_APFS)
       self._output_writer.Write('\n'.join(lines))
-      self._output_writer.Write('\n')
+      self._output_writer.Write('\n\nVolume identifier(s):')
 
       try:
         selected_volumes = self._ReadSelectedVolumes(
@@ -663,7 +661,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
       lines = self._textwrapper.wrap(self._USER_PROMPT_TSK)
       self._output_writer.Write('\n'.join(lines))
-      self._output_writer.Write('\n')
+      self._output_writer.Write('\n\nPartition identifier(s):')
 
       try:
         selected_volumes = self._ReadSelectedVolumes(volume_system, prefix='p')
@@ -705,7 +703,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
       lines = self._textwrapper.wrap(self._USER_PROMPT_VSS)
       self._output_writer.Write('\n'.join(lines))
-      self._output_writer.Write('\n')
+      self._output_writer.Write('\n\nVSS identifier(s):')
 
       try:
         selected_volumes = self._ReadSelectedVolumes(
@@ -743,26 +741,33 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       bool: True if the volume was unlocked.
     """
     # TODO: print volume description.
-    if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-      print('Found a BitLocker encrypted volume.')
+    if locked_scan_node.type_indicator == (
+        definitions.TYPE_INDICATOR_APFS_CONTAINER):
+      header = 'Found an APFS encrypted volume.'
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+      header = 'Found a BitLocker encrypted volume.'
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_FVDE:
+      header = 'Found a CoreStorage (FVDE) encrypted volume.'
     else:
-      print('Found an encrypted volume.')
+      header = 'Found an encrypted volume.'
+
+    self._output_writer.Write(header)
 
     credentials_list = list(credentials.CREDENTIALS)
     credentials_list.append('skip')
 
-    print('Supported credentials:')
-    print('')
+    self._output_writer.Write('Supported credentials:\n\n')
+
     for index, name in enumerate(credentials_list):
-      print('  {0:d}. {1:s}'.format(index, name))
-    print('')
-    print('Note that you can abort with Ctrl^C.')
-    print('')
+      available_credential = '  {0:d}. {1:s}\n'.format(index + 1, name)
+      self._output_writer.Write(available_credential)
+
+    self._output_writer.Write('\nNote that you can abort with Ctrl^C.\n\n')
 
     result = False
     while not result:
-      print('Select a credential to unlock the volume: ', end='')
-      # TODO: add an input reader.
+      self._output_writer.Write('Select a credential to unlock the volume: ')
+
       input_line = self._input_reader.Read()
       input_line = input_line.strip()
 
@@ -771,9 +776,10 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       else:
         try:
           credential_type = int(input_line, 10)
-          credential_type = credentials_list[credential_type]
+          credential_type = credentials_list[credential_type - 1]
         except (IndexError, ValueError):
-          print('Unsupported credential: {0:s}'.format(input_line))
+          self._output_writer.Write(
+              'Unsupported credential: {0:s}\n'.format(input_line))
           continue
 
       if credential_type == 'skip':
@@ -786,13 +792,13 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
         getpass_string = self._EncodeString(getpass_string)
 
       credential_data = getpass.getpass(getpass_string)
-      print('')
+      self._output_writer.Write('\n')
 
       if credential_type == 'key':
         try:
           credential_data = credential_data.decode('hex')
         except TypeError:
-          print('Unsupported credential data.')
+          self._output_writer.Write('Unsupported credential data.\n')
           continue
 
       result = source_scanner_object.Unlock(
@@ -800,7 +806,6 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
           credential_data)
 
       if not result:
-        print('Unable to unlock volume.')
-        print('')
+        self._output_writer.Write('Unable to unlock volume.\n\n')
 
     return result

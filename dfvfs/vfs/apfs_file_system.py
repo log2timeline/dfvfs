@@ -45,8 +45,8 @@ class APFSFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
-      OSError: if the file system object could not be opened.
+      IOError: if the APFS volume could not be retrieved or unlocked.
+      OSError: if the APFS volume could not be retrieved or unlocked.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -59,15 +59,23 @@ class APFSFileSystem(file_system.FileSystem):
       raise errors.PathSpecError(
           'Unsupported path specification not type APFS container.')
 
-    apfs_file_system = resolver.Resolver.OpenFileSystem(
+    apfs_container_file_system = resolver.Resolver.OpenFileSystem(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    fsapfs_volume = apfs_file_system.GetAPFSVolumeByPathSpec(path_spec.parent)
+    fsapfs_volume = apfs_container_file_system.GetAPFSVolumeByPathSpec(
+        path_spec.parent)
     if not fsapfs_volume:
       raise IOError('Unable to retrieve APFS volume')
 
-    apfs_helper.APFSUnlockVolume(
-        fsapfs_volume, path_spec, resolver.Resolver.key_chain)
+    try:
+      is_locked = not apfs_helper.APFSUnlockVolume(
+          fsapfs_volume, path_spec.parent, resolver.Resolver.key_chain)
+    except IOError as exception:
+      raise IOError('Unable to unlock APFS volume with error: {0!s}'.format(
+          exception))
+
+    if is_locked:
+      raise IOError('Unable to unlock APFS volume.')
 
     self._fsapfs_volume = fsapfs_volume
 

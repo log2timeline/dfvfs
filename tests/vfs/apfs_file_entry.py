@@ -310,8 +310,9 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
             location='/apfs1', parent=partition_path_spec))
     self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
         location='/', parent=self._apfs_container_path_spec)
+
     resolver.Resolver.key_chain.SetCredential(
-        self._apfs_path_spec, 'password', self._APFS_PASSWORD)
+        self._apfs_container_path_spec, 'password', self._APFS_PASSWORD)
 
     self._file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
     self._file_system.Open(self._apfs_path_spec)

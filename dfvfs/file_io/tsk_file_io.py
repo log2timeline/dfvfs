@@ -123,8 +123,7 @@ class TSKFile(file_io.FileIO):
 
       if tsk_attribute is None:
         file_system.Close()
-        raise IOError('Unable to open data stream: {0:s}.'.format(
-            data_stream))
+        raise IOError('Unable to open data stream: {0:s}.'.format(data_stream))
 
     if (not tsk_attribute and
         tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG):
