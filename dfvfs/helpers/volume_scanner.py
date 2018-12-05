@@ -279,19 +279,22 @@ class VolumeScanner(object):
 
     Raises:
       ScannerError: if the format of or within the source is not supported,
-          the scan node is invalid, or no mediator is provided and a locked
-          scan node was found, e.g. an encrypted volume.
+          the scan node is invalid, there are no credentials defined for
+          the format or no mediator is provided and a locked scan node was
+          found, e.g. an encrypted volume,
     """
     if not scan_node or not scan_node.path_spec:
       raise errors.ScannerError('Invalid or missing scan node.')
+
+    credentials = credentials_manager.CredentialsManager.GetCredentials(
+        scan_node.path_spec)
+    if not credentials:
+      raise errors.SourceScannerError('Missing credentials for scan node.')
 
     if not self._mediator:
       raise errors.ScannerError(
           'Unable to proceed. Encrypted volume found but no mediator to '
           'determine how it should be unlocked.')
-
-    credentials = credentials_manager.CredentialsManager.GetCredentials(
-        scan_node.path_spec)
 
     if self._mediator.UnlockEncryptedVolume(
         self._source_scanner, scan_context, scan_node, credentials):
