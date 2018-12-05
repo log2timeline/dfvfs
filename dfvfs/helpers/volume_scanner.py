@@ -283,7 +283,7 @@ class VolumeScanner(object):
           scan node was found, e.g. an encrypted volume.
     """
     if not scan_node or not scan_node.path_spec:
-      raise errors.ScannerError('Invalid or missing volume scan node.')
+      raise errors.ScannerError('Invalid or missing scan node.')
 
     if not self._mediator:
       raise errors.ScannerError(
@@ -326,7 +326,7 @@ class VolumeScanner(object):
           is not supported or the scan node is invalid.
     """
     if not scan_node or not scan_node.path_spec:
-      raise errors.ScannerError('Invalid or missing volume scan node.')
+      raise errors.ScannerError('Invalid or missing scan node.')
 
     if scan_context.IsLockedScanNode(scan_node.path_spec):
       # The source scanner found a locked volume and we need a credential to
