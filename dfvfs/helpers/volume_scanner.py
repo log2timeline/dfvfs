@@ -197,9 +197,8 @@ class VolumeScanner(object):
       list[str]: VSS store identifiers.
 
     Raises:
-      ScannerError: if the format
-          the scan node is invalid or no mediator is provided and VSS store
-          identifiers are found.
+      ScannerError: if the format the scan node is invalid or no mediator
+          is provided and VSS store identifiers are found.
       UserAbort: if the user requested to abort.
     """
     if not scan_node or not scan_node.path_spec:
