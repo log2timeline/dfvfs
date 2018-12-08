@@ -288,7 +288,7 @@ class VolumeScanner(object):
     credentials = credentials_manager.CredentialsManager.GetCredentials(
         scan_node.path_spec)
     if not credentials:
-      raise errors.SourceScannerError('Missing credentials for scan node.')
+      raise errors.ScannerError('Missing credentials for scan node.')
 
     if not self._mediator:
       raise errors.ScannerError(
