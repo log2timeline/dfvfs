@@ -9,47 +9,267 @@ import unittest
 from dfvfs.helpers import source_scanner
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
-from dfvfs.path import vshadow_path_spec
+from dfvfs.path import factory as path_spec_factory
+from dfvfs.path import fake_path_spec
 from dfvfs.resolver import resolver
+from dfvfs.volume import tsk_volume_system
 
 from tests import test_lib as shared_test_lib
 
 
 class SourceScanNodeTest(shared_test_lib.BaseTestCase):
-  """The unit test for the source scanner node."""
+  """Tests the source scanner node."""
 
-  # TODO: add test for type_indicator.
-  # TODO: add test for GetSubNodeByLocation.
-  # TODO: add test for GetUnscannedSubNode.
-  # TODO: add test for IsSystemLevel.
+  def testTypeIndicator(self):
+    """Test the type_indicator property."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_node = source_scanner.SourceScanNode(test_fake_path_spec)
+
+    self.assertEqual(test_node.type_indicator, definitions.TYPE_INDICATOR_FAKE)
+
+  def testGetSubNodeByLocation(self):
+    """Test the GetSubNodeByLocation function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_node = source_scanner.SourceScanNode(test_fake_path_spec)
+
+    sub_node = test_node.GetSubNodeByLocation('/')
+    self.assertIsNone(sub_node)
+
+  def testGetUnscannedSubNode(self):
+    """Test the GetUnscannedSubNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_node = source_scanner.SourceScanNode(test_fake_path_spec)
+
+    sub_node = test_node.GetUnscannedSubNode()
+    self.assertIsNotNone(sub_node)
+
+  def testIsSystemLevel(self):
+    """Test the IsSystemLevel function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_node = source_scanner.SourceScanNode(test_fake_path_spec)
+
+    self.assertTrue(test_node.IsSystemLevel())
+
+  def testSupportsEncryption(self):
+    """Test the SupportsEncryption function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_node = source_scanner.SourceScanNode(test_fake_path_spec)
+
+    self.assertFalse(test_node.SupportsEncryption())
 
 
 class SourceScannerContextTest(shared_test_lib.BaseTestCase):
-  """The unit test for the source scanner context."""
+  """Tests the source scanner context."""
 
-  # TODO: add test for locked_scan_nodes.
-  # TODO: add test for AddScanNode.
-  # TODO: add test for HasFileSystemScanNodes.
-  # TODO: add test for HasLockedScanNodes.
-  # TODO: add test for HasScanNode.
-  # TODO: add test for GetRootScanNode.
-  # TODO: add test for GetScanNode.
-  # TODO: add test for GetUnscannedScanNode.
-  # TODO: add test for IsLockedScanNode.
-  # TODO: add test for IsSourceTypeDirectory.
-  # TODO: add test for IsSourceTypeFile.
-  # TODO: add test for LockScanNode.
-  # TODO: add test for OpenSourcePath.
-  # TODO: add test for RemoveScanNode.
-  # TODO: add test for SetSourceType.
-  # TODO: add test for UnlockScanNode.
+  # pylint: disable=protected-access
+
+  def testLockedScanNodes(self):
+    """Test the locked_scan_nodes property."""
+    test_context = source_scanner.SourceScannerContext()
+
+    locked_scan_nodes = list(test_context.locked_scan_nodes)
+    self.assertEqual(locked_scan_nodes, [])
+
+  def testAddScanNode(self):
+    """Test the AddScanNode function."""
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertEqual(len(test_context._scan_nodes), 0)
+
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    self.assertEqual(len(test_context._scan_nodes), 1)
+
+  def testGetRootScanNode(self):
+    """Test the GetRootScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    root_node = test_context.GetRootScanNode()
+    self.assertIsNone(root_node)
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    root_node = test_context.GetRootScanNode()
+    self.assertIsNotNone(root_node)
+
+  def testGetScanNode(self):
+    """Test the GetScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    scan_node = test_context.GetScanNode(test_fake_path_spec)
+    self.assertIsNone(scan_node)
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    scan_node = test_context.GetScanNode(test_fake_path_spec)
+    self.assertIsNotNone(scan_node)
+
+  def testGetUnscannedScanNode(self):
+    """Test the GetUnscannedScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    scan_node = test_context.GetUnscannedScanNode()
+    self.assertIsNone(scan_node)
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    scan_node = test_context.GetUnscannedScanNode()
+    self.assertIsNotNone(scan_node)
+
+  def testHasFileSystemScanNodes(self):
+    """Test the HasFileSystemScanNodes function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertFalse(test_context.HasFileSystemScanNodes())
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    self.assertTrue(test_context.HasFileSystemScanNodes())
+
+  def testHasLockedScanNodes(self):
+    """Test the HasLockedScanNodes function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertFalse(test_context.HasLockedScanNodes())
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    self.assertFalse(test_context.HasLockedScanNodes())
+
+    test_context.LockScanNode(test_fake_path_spec)
+
+    self.assertTrue(test_context.HasLockedScanNodes())
+
+  def testHasScanNode(self):
+    """Test the HasScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertFalse(test_context.HasScanNode(test_fake_path_spec))
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    self.assertTrue(test_context.HasScanNode(test_fake_path_spec))
+
+  def testIsLockedScanNode(self):
+    """Test the IsLockedScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertFalse(test_context.IsLockedScanNode(test_fake_path_spec))
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    self.assertFalse(test_context.IsLockedScanNode(test_fake_path_spec))
+
+    test_context.LockScanNode(test_fake_path_spec)
+
+    self.assertTrue(test_context.IsLockedScanNode(test_fake_path_spec))
+
+  def testIsSourceTypeDirectory(self):
+    """Test the IsSourceTypeDirectory function."""
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertIsNone(test_context.IsSourceTypeDirectory())
+
+    test_context.source_type = definitions.SOURCE_TYPE_DIRECTORY
+    self.assertTrue(test_context.IsSourceTypeDirectory())
+
+    test_context.source_type = definitions.SOURCE_TYPE_FILE
+    self.assertFalse(test_context.IsSourceTypeDirectory())
+
+  def testIsSourceTypeFile(self):
+    """Test the IsSourceTypeFile function."""
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertIsNone(test_context.IsSourceTypeFile())
+
+    test_context.source_type = definitions.SOURCE_TYPE_FILE
+    self.assertTrue(test_context.IsSourceTypeFile())
+
+    test_context.source_type = definitions.SOURCE_TYPE_DIRECTORY
+    self.assertFalse(test_context.IsSourceTypeFile())
+
+  def testLockScanNode(self):
+    """Test the LockScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    with self.assertRaises(KeyError):
+      test_context.LockScanNode(test_fake_path_spec)
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    test_context.LockScanNode(test_fake_path_spec)
+
+  def testOpenSourcePath(self):
+    """Test the OpenSourcePath function."""
+    test_context = source_scanner.SourceScannerContext()
+
+    self.assertEqual(len(test_context._scan_nodes), 0)
+
+    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    test_context.OpenSourcePath(test_path)
+
+    self.assertEqual(len(test_context._scan_nodes), 1)
+
+  def testRemoveScanNode(self):
+    """Test the RemoveScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    parent_node = test_context.RemoveScanNode(test_fake_path_spec)
+    self.assertIsNone(parent_node)
+
+    self.assertEqual(len(test_context._scan_nodes), 0)
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    self.assertEqual(len(test_context._scan_nodes), 1)
+
+    parent_node = test_context.RemoveScanNode(test_fake_path_spec)
+    self.assertIsNone(parent_node)
+
+    self.assertEqual(len(test_context._scan_nodes), 0)
+
+  def testSetSourceType(self):
+    """Test the SetSourceType function."""
+    test_context = source_scanner.SourceScannerContext()
+
+    test_context.SetSourceType(definitions.SOURCE_TYPE_FILE)
+    self.assertEqual(test_context.source_type, definitions.SOURCE_TYPE_FILE)
+
+    test_context.SetSourceType(definitions.SOURCE_TYPE_DIRECTORY)
+    self.assertEqual(test_context.source_type, definitions.SOURCE_TYPE_FILE)
+
+  def testUnlockScanNode(self):
+    """Test the UnlockScanNode function."""
+    test_fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    test_context = source_scanner.SourceScannerContext()
+
+    with self.assertRaises(KeyError):
+      test_context.UnlockScanNode(test_fake_path_spec)
+
+    test_context.AddScanNode(test_fake_path_spec, None)
+
+    with self.assertRaises(KeyError):
+      test_context.UnlockScanNode(test_fake_path_spec)
+
+    test_context.LockScanNode(test_fake_path_spec)
+
+    test_context.UnlockScanNode(test_fake_path_spec)
 
 
 class SourceScannerTest(shared_test_lib.BaseTestCase):
   """The unit test for the source scanner."""
 
+  _APFS_PASSWORD = 'apfs-TEST'
   _BDE_PASSWORD = 'bde-TEST'
   _FVDE_PASSWORD = 'fvde-TEST'
 
@@ -75,15 +295,115 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     return scan_node
 
-  # TODO: add test for _ScanNode.
-  # TODO: add test for GetVolumeIdentifiers.
+  # TODO: add tests for _ScanEncryptedVolumeNode.
+  # TODO: add tests for _ScanNode.
+  # TODO: add tests for _ScanVolumeSystemRootNode.
 
   @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
-  def testScanPartitionedImage(self):
-    """Test the Scan function on a partitioned image."""
-    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+  def testGetVolumeIdentifiers(self):
+    """Test the GetVolumeIdentifiers function."""
+    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=test_raw_path_spec)
+
+    volume_system = tsk_volume_system.TSKVolumeSystem()
+    volume_system.Open(test_tsk_partition_path_spec)
+
+    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
+        volume_system)
+    self.assertEqual(volume_identifiers, ['p1', 'p2'])
+
+  @shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
+  def testScanOnAPFS(self):
+    """Test the Scan function on an APFS image."""
+    test_path = self._GetTestFilePath(['apfs.dmg'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+
+    self.assertEqual(len(scan_node.sub_nodes), 6)
+
+    scan_node = scan_node.sub_nodes[4].GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS_CONTAINER)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS_CONTAINER)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS)
+
+  @shared_test_lib.skipUnlessHasTestFile(['apfs_encrypted.dmg'])
+  def testScanOnEncryptedAPFS(self):
+    """Test the Scan function on an encrypted APFS image."""
+    resolver.Resolver.key_chain.Empty()
+
+    test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+
+    self.assertEqual(len(scan_node.sub_nodes), 6)
+
+    scan_node = scan_node.sub_nodes[4].GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS_CONTAINER)
+
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS_CONTAINER)
+    self.assertEqual(len(scan_node.sub_nodes), 0)
+
+    self.assertTrue(scan_context.IsLockedScanNode(scan_node.path_spec))
+
+    self._source_scanner.Unlock(
+        scan_context, scan_node.path_spec, 'password', self._APFS_PASSWORD)
+
+    self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
+
+    self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS)
+
+  @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
+  def testScanOnPartitionedImage(self):
+    """Test the Scan function on a partitioned image."""
+    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
@@ -101,11 +421,11 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
   @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
-  def testScanVSS(self):
+  def testScanOnVSS(self):
     """Test the Scan function on VSS."""
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vsstest.qcow2'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
@@ -138,13 +458,13 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(scan_node.type_indicator, expected_type_indicator)
 
   @shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
-  def testScanBDE(self):
+  def testScanOnBDE(self):
     """Test the Scan function on BDE."""
     resolver.Resolver.key_chain.Empty()
 
-    test_file = self._GetTestFilePath(['bdetogo.raw'])
+    test_path = self._GetTestFilePath(['bdetogo.raw'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
@@ -159,8 +479,12 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_BDE)
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
+    self.assertTrue(scan_context.IsLockedScanNode(scan_node.path_spec))
+
     self._source_scanner.Unlock(
         scan_context, scan_node.path_spec, 'password', self._BDE_PASSWORD)
+
+    self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
 
     self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
     self.assertEqual(len(scan_node.sub_nodes), 1)
@@ -171,13 +495,13 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
   @shared_test_lib.skipUnlessHasTestFile(['fvdetest.qcow2'])
-  def testScanFVDE(self):
+  def testScanOnFVDE(self):
     """Test the Scan function on FVDE."""
     resolver.Resolver.key_chain.Empty()
 
-    test_file = self._GetTestFilePath(['fvdetest.qcow2'])
+    test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
@@ -195,8 +519,12 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_FVDE)
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
+    self.assertTrue(scan_context.IsLockedScanNode(scan_node.path_spec))
+
     self._source_scanner.Unlock(
         scan_context, scan_node.path_spec, 'password', self._FVDE_PASSWORD)
+
+    self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
 
     self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
     self.assertEqual(len(scan_node.sub_nodes), 1)
@@ -206,12 +534,12 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
 
-  @shared_test_lib.skipUnlessHasTestFile(['testdir_os', 'file1.txt'])
-  def testScanDirectory(self):
+  @shared_test_lib.skipUnlessHasTestFile(['testdir_os'])
+  def testScanOnDirectory(self):
     """Test the Scan function on a directory."""
-    test_file = self._GetTestFilePath(['testdir_os'])
+    test_path = self._GetTestFilePath(['testdir_os'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
@@ -220,46 +548,29 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     scan_node = self._GetTestScanNode(scan_context)
     self.assertIsNotNone(scan_node)
     self.assertIsNotNone(scan_node.path_spec)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
-    test_file = self._GetTestFilePath(['testdir_os', 'file1.txt'])
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
-
-    self._source_scanner.Scan(scan_context)
-    self.assertEqual(
-        scan_context.source_type, definitions.SOURCE_TYPE_FILE)
-
-    scan_node = self._GetTestScanNode(scan_context)
-    self.assertIsNotNone(scan_node)
-    self.assertIsNotNone(scan_node.path_spec)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
-
-  @shared_test_lib.skipUnlessHasTestFile(['bogus.001'])
-  def testScanFile(self):
+  @shared_test_lib.skipUnlessHasTestFile(['testdir_os', 'file1.txt'])
+  def testScanOnFile(self):
     """Test the Scan function on a file."""
-    test_file = self._GetTestFilePath(['bogus.001'])
+    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
 
     self._source_scanner.Scan(scan_context)
-    self.assertEqual(
-        scan_context.source_type, definitions.SOURCE_TYPE_FILE)
+    self.assertEqual(scan_context.source_type, definitions.SOURCE_TYPE_FILE)
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertIsNotNone(scan_node)
     self.assertIsNotNone(scan_node.path_spec)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
 
   @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
-  def testScanRAW(self):
+  def testScanOnRAW(self):
     """Test the Scan function on a RAW image."""
-    test_file = self._GetTestFilePath(['ímynd.dd'])
+    test_path = self._GetTestFilePath(['ímynd.dd'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
 
     self._source_scanner.Scan(scan_context)
     self.assertEqual(
@@ -272,153 +583,169 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
-  def testScanNonExisting(self):
-    """Test the Scan function."""
-    test_file = self._GetTestFilePath(['nosuchfile.raw'])
+  def testScanOnNonExisting(self):
+    """Test the Scan function on non-existing image file."""
+    test_path = self._GetTestFilePath(['nosuchfile.raw'])
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(test_file)
+    scan_context.OpenSourcePath(test_path)
 
     with self.assertRaises(errors.BackEndError):
       self._source_scanner.Scan(scan_context)
 
   @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
-  def testScanForFileSystemVSS(self):
+  def testScanForFileSystemOnVSS(self):
     """Test the ScanForFileSystem function on VSS."""
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    source_path_spec = qcow_path_spec.QCOWPathSpec(parent=source_path_spec)
-    source_path_spec = vshadow_path_spec.VShadowPathSpec(
-        store_index=1, parent=source_path_spec)
+    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VSHADOW, store_index=1,
+        parent=test_qcow_path_spec)
 
-    path_spec = self._source_scanner.ScanForFileSystem(source_path_spec)
+    path_spec = self._source_scanner.ScanForFileSystem(test_vss_path_spec)
     self.assertIsNotNone(path_spec)
 
     expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
     self.assertEqual(path_spec.type_indicator, expected_type_indicator)
 
   @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
-  def testScanForFileSystemBodyFile(self):
+  def testScanForFileSystemOnBodyFile(self):
     """Test the ScanForFileSystem function on a body file."""
-    test_file = self._GetTestFilePath(['mactime.body'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['mactime.body'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForFileSystem(source_path_spec)
+    path_spec = self._source_scanner.ScanForFileSystem(test_os_path_spec)
     self.assertIsNone(path_spec)
 
   @shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
-  def testScanForStorageMediaImageRAW(self):
+  def testScanForStorageMediaImageOnRAW(self):
     """Test the ScanForStorageMediaImage function on a RAW image."""
-    test_file = self._GetTestFilePath(['ímynd.dd'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['ímynd.dd'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
   @shared_test_lib.skipUnlessHasTestFile(['image.raw.000'])
-  def testScanForStorageMediaImageSplitRAW(self):
+  def testScanForStorageMediaImageOnSplitRAW(self):
     """Test the ScanForStorageMediaImage function on a split RAW image."""
-    test_file = self._GetTestFilePath(['image.raw.000'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['image.raw.000'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
 
   @shared_test_lib.skipUnlessHasTestFile(['image.E01'])
-  def testScanForStorageMediaImageEWF(self):
+  def testScanForStorageMediaImageOnEWF(self):
     """Test the ScanForStorageMediaImage function on an EWF image."""
-    test_file = self._GetTestFilePath(['image.E01'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['image.E01'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_EWF)
 
   @shared_test_lib.skipUnlessHasTestFile(['image.qcow2'])
-  def testScanForStorageMediaImageQCOW(self):
+  def testScanForStorageMediaImageOnQCOW(self):
     """Test the ScanForStorageMediaImage function on a QCOW image."""
-    test_file = self._GetTestFilePath(['image.qcow2'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['image.qcow2'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_QCOW)
 
   @shared_test_lib.skipUnlessHasTestFile(['image.vhd'])
-  def testScanForStorageMediaImageVHDI(self):
+  def testScanForStorageMediaImageOnVHDI(self):
     """Test the ScanForStorageMediaImage function on a VHD image."""
-    test_file = self._GetTestFilePath(['image.vhd'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['image.vhd'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
 
   @shared_test_lib.skipUnlessHasTestFile(['image.vmdk'])
-  def testScanForStorageMediaImageVMDK(self):
+  def testScanForStorageMediaImageOnVMDK(self):
     """Test the ScanForStorageMediaImage function on a VMDK image."""
-    test_file = self._GetTestFilePath(['image.vmdk'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['image.vmdk'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VMDK)
 
   @shared_test_lib.skipUnlessHasTestFile(['mactime.body'])
-  def testScanForStorageMediaImageBodyFile(self):
+  def testScanForStorageMediaImageOnBodyFile(self):
     """Test the ScanForStorageMediaImage function on a body file."""
-    test_file = self._GetTestFilePath(['mactime.body'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['mactime.body'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForStorageMediaImage(source_path_spec)
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
     self.assertIsNone(path_spec)
 
   @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
-  def testScanForVolumeSystemPartitionedImage(self):
+  def testScanForVolumeSystemOnPartitionedImage(self):
     """Test the ScanForVolumeSystem function on a partitioned image."""
-    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
+    path_spec = self._source_scanner.ScanForVolumeSystem(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
 
   @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
-  def testScanForVolumeSystemVSS(self):
+  def testScanForVolumeSystemOnVSS(self):
     """Test the ScanForVolumeSystem function on VSS."""
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    source_path_spec = qcow_path_spec.QCOWPathSpec(parent=source_path_spec)
+    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
 
-    path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
+    path_spec = self._source_scanner.ScanForVolumeSystem(test_qcow_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
 
   @shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
-  def testScanForVolumeSystem(self):
+  def testScanForVolumeSystemOnBDE(self):
     """Test the ScanForVolumeSystem function on BDE."""
     resolver.Resolver.key_chain.Empty()
 
-    test_file = self._GetTestFilePath(['bdetogo.raw'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['bdetogo.raw'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
+    path_spec = self._source_scanner.ScanForVolumeSystem(test_os_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_BDE)
 
   @shared_test_lib.skipUnlessHasTestFile(['mactime.body'])
-  def testScanForVolumeSystemBodyFile(self):
+  def testScanForVolumeSystemOnBodyFile(self):
     """Test the ScanForVolumeSystem function on a body file."""
-    test_file = self._GetTestFilePath(['mactime.body'])
-    source_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['mactime.body'])
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = self._source_scanner.ScanForVolumeSystem(source_path_spec)
+    path_spec = self._source_scanner.ScanForVolumeSystem(test_os_path_spec)
     self.assertIsNone(path_spec)
 
 

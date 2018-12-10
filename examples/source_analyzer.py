@@ -74,10 +74,17 @@ class SourceAnalyzer(object):
         locked_scan_node.path_spec)
 
     # TODO: print volume description.
-    if locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-      output_writer.WriteLine('Found a BitLocker encrypted volume.')
+    if locked_scan_node.type_indicator == (
+        definitions.TYPE_INDICATOR_APFS_CONTAINER):
+      line = 'Found an APFS encrypted volume.'
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
+      line = 'Found a BitLocker encrypted volume.'
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_FVDE:
+      line = 'Found a CoreStorage (FVDE) encrypted volume.'
     else:
-      output_writer.WriteLine('Found an encrypted volume.')
+      line = 'Found an encrypted volume.'
+
+    output_writer.WriteLine(line)
 
     credentials_list = list(credentials.CREDENTIALS)
     credentials_list.append('skip')
@@ -86,7 +93,7 @@ class SourceAnalyzer(object):
     output_writer.WriteLine('Supported credentials:')
     output_writer.WriteLine('')
     for index, name in enumerate(credentials_list):
-      output_writer.WriteLine('  {0:d}. {1:s}'.format(index, name))
+      output_writer.WriteLine('  {0:d}. {1:s}'.format(index + 1, name))
     output_writer.WriteLine('')
 
     result = False
@@ -102,7 +109,7 @@ class SourceAnalyzer(object):
       else:
         try:
           credential_identifier = int(input_line, 10)
-          credential_identifier = credentials_list[credential_identifier]
+          credential_identifier = credentials_list[credential_identifier - 1]
         except (IndexError, ValueError):
           output_writer.WriteLine(
               'Unsupported credential: {0:s}'.format(input_line))
@@ -219,13 +226,14 @@ class StdoutWriter(object):
     print('')
 
     scan_node = scan_context.GetRootScanNode()
-    self.WriteScanNode(scan_node)
+    self.WriteScanNode(scan_context, scan_node)
     print('')
 
-  def WriteScanNode(self, scan_node, indentation=''):
+  def WriteScanNode(self, scan_context, scan_node, indentation=''):
     """Writes the source scanner node to stdout.
 
     Args:
+      scan_context (SourceScannerContext): the source scanner context.
       scan_node (SourceScanNode): the scan node.
       indentation (Optional[str]): indentation.
     """
@@ -250,12 +258,18 @@ class StdoutWriter(object):
     if location is not None:
       values.append('location: {0:s}'.format(location))
 
-    print('{0:s}{1:s}: {2:s}'.format(
-        indentation, scan_node.path_spec.type_indicator, ', '.join(values)))
+    values = ', '.join(values)
+
+    flags = ''
+    if scan_node in scan_context.locked_scan_nodes:
+      flags = ' [LOCKED]'
+
+    print('{0:s}{1:s}: {2:s}{3:s}'.format(
+        indentation, scan_node.path_spec.type_indicator, values, flags))
 
     indentation = '  {0:s}'.format(indentation)
     for sub_scan_node in scan_node.sub_nodes:
-      self.WriteScanNode(sub_scan_node, indentation=indentation)
+      self.WriteScanNode(scan_context, sub_scan_node, indentation=indentation)
 
   def WriteString(self, string):
     """Writes a string of text to stdout.

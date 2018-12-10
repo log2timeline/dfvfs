@@ -14,7 +14,7 @@ class APFSCredentials(credentials.Credentials):
   # TODO: add support for key_data credential, needs pyfsapfs update.
   CREDENTIALS = frozenset(['password', 'recovery_password'])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
 
 
 manager.CredentialsManager.RegisterCredentials(APFSCredentials())

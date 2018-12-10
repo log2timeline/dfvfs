@@ -279,7 +279,6 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         b'',
         b'Identifier      Name',
         b'apfs1           SingleVolume',
-        b'',
         b'']
 
     if not win32console:
@@ -322,7 +321,6 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         (b'p1              512 (0x00000200)        175.0KiB / 179.2kB '
          b'(179200 B)'),
         b'p2              180224 (0x0002c000)     1.2MiB / 1.3MB (1294336 B)',
-        b'',
         b'']
 
     if not win32console:
@@ -364,7 +362,6 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         b'Identifier      Creation Time',
         b'vss1            2013-12-03 06:35:09.7363787',
         b'vss2            2013-12-03 06:37:48.9190583',
-        b'',
         b'']
 
     if not win32console:
