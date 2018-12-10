@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import os
 
 from dfvfs.file_io import file_io
+from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
@@ -39,6 +40,8 @@ class APFSFile(file_io.FileIO):
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file-like object could not be opened.
+      NotSupported: if a data stream, like the resource or named fork, is
+          requested to be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
@@ -48,7 +51,8 @@ class APFSFile(file_io.FileIO):
 
     data_stream = getattr(path_spec, 'data_stream', None)
     if data_stream:
-      raise IOError('Unable to open data stream: {0:s}.'.format(data_stream))
+      raise errors.NotSupported(
+          'Open data stream: {0:s} not supported.'.format(data_stream))
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         path_spec, resolver_context=self._resolver_context)
