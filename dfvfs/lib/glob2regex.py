@@ -8,6 +8,8 @@ from __future__ import unicode_literals
 
 import re
 
+from dfvfs.lib import py2to3
+
 
 def Glob2Regex(glob_pattern):
   """Converts a glob pattern to a regular expression.
@@ -71,6 +73,8 @@ def Glob2Regex(glob_pattern):
       glob_pattern_index = glob_group_index + 1
 
       glob_group = glob_group.replace('\\', '\\\\')
+      if py2to3.PY_3_7_AND_LATER:
+        glob_group = glob_group.replace('|', '\\|')
 
       regex_pattern.append('[')
 
