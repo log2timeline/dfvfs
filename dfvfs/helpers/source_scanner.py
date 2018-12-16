@@ -389,8 +389,8 @@ class SourceScanner(object):
     super(SourceScanner, self).__init__()
     self._resolver_context = resolver_context
 
-  # TODO: add functions to check if path spec type is an Image type,
-  # FS type, etc.
+  # TODO: add functions to check if path spec type is a storage media image
+  # type, file system type, etc.
 
   def _ScanNode(self, scan_context, scan_node, auto_recurse=True):
     """Scans a node for supported formats.

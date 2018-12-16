@@ -15,7 +15,7 @@ class DataRange(file_io.FileIO):
 
   The data range object allows to expose a single partition within
   a full disk image as a separate file-like object by mapping
-  the data range (offset and size) fo the volume on top of the full disk
+  the data range (offset and size) of the volume on top of the full disk
   image.
   """
 

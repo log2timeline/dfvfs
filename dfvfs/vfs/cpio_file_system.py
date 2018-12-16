@@ -95,7 +95,7 @@ class CPIOFileSystem(file_system.FileSystem):
     """Retrieves the CPIO archive file.
 
     Returns:
-      CPIOArchiveFile: a CPIO archvie file.
+      CPIOArchiveFile: a CPIO archive file.
     """
     return self._cpio_archive_file
 

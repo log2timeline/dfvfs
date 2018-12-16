@@ -21,7 +21,7 @@ from tests import test_lib as shared_test_lib
 @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
 @shared_test_lib.skipUnlessHasTestFile(['another_file'])
 class OSFileTest(shared_test_lib.BaseTestCase):
-  """The unit test for the operating systesm file-like object."""
+  """The unit test for the operating system file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
