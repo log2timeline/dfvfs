@@ -99,6 +99,8 @@ class APFSContainerHelperTest(shared_test_lib.BaseTestCase):
   @shared_test_lib.skipUnlessHasTestFile(['apfs_encrypted.dmg'])
   def testAPFSUnlockVolumeOnEncryptedAPFS(self):
     """Tests the APFSUnlockVolume function on an encrypted APFS image."""
+    resolver.Resolver.key_chain.Empty()
+
     resolver_context = context.Context()
 
     test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
