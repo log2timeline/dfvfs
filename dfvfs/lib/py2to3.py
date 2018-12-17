@@ -16,3 +16,6 @@ else:
   INTEGER_TYPES = (int, )
   STRING_TYPES = (str, )
   UNICODE_TYPE = str
+
+
+PY_3_7_AND_LATER = bool(tuple(sys.version_info[0:2]) >= (3, 7))

@@ -18,7 +18,7 @@ class Glob2RegexTest(test_lib.BaseTestCase):
   _TEST_PATTERNS = [
       'plain.txt', '*.txt', 'plain?.txt', 'plain[?].txt', 'plai[nN].txt',
       'plai[!nN].txt', 'plai[nN.txt', 'plain.(jpg|txt)', '.^$*+?{}\\[]|()',
-      'plai[^nN].txt', '[.^$*+?{}\\|()]', '[\\]]', '[]]']
+      'plai[^nN].txt', '!%&`~:', '[.^$*+?{}\\|()]', '[\\]]', '[]]']
 
   def _Glob2Regex(self, glob_pattern):
     """Converts a glob pattern to a regular expression.
@@ -47,9 +47,7 @@ class Glob2RegexTest(test_lib.BaseTestCase):
       if fnmatch_regex.startswith('(?s:'):
         fnmatch_regex = fnmatch_regex[len('(?s:'):]
 
-    fnmatch_regex = fnmatch_regex.replace('\\/', '/')
-
-    return fnmatch_regex
+    return fnmatch_regex.replace('\\/', '/')
 
   def testGlob2Regex(self):
     """Tests the Glob2Regex function."""
