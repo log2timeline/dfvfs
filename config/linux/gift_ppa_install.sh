@@ -26,7 +26,7 @@ PYTHON2_DEPENDENCIES="libbde-python
                       python-crypto
                       python-dfdatetime
                       python-dtfabric
-                      python-pysqlite2
+                      python-pysqlite
                       python-pytsk3
                       python-yaml";
 
