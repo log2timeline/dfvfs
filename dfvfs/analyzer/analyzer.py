@@ -138,7 +138,7 @@ class Analyzer(object):
       format_category (str): format category.
 
     Returns:
-      tuple[FormatSpecificationStore,list[AnalyserHelper]]: a format
+      tuple[FormatSpecificationStore, list[AnalyzerHelper]]: a format
           specification store and remaining analyzer helpers that do not have
           a format specification.
     """
