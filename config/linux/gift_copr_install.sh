@@ -8,27 +8,27 @@ set -e
 
 # Dependencies for running dfvfs, alphabetized, one per line.
 # This should not include packages only required for testing or development.
-PYTHON2_DEPENDENCIES="PyYAML
-                      libbde-python
-                      libewf-python
+PYTHON2_DEPENDENCIES="libbde-python2
+                      libewf-python2
                       libfsapfs-python2
-                      libfsntfs-python
-                      libfvde-python
-                      libfwnt-python
-                      libqcow-python
-                      libsigscan-python
-                      libsmdev-python
-                      libsmraw-python
-                      libvhdi-python
-                      libvmdk-python
-                      libvshadow-python
-                      libvslvm-python
-                      python-backports-lzma
-                      python-crypto
-                      python-dfdatetime
-                      python-dtfabric
-                      python-pysqlite
-                      python-pytsk3";
+                      libfsntfs-python2
+                      libfvde-python2
+                      libfwnt-python2
+                      libqcow-python2
+                      libsigscan-python2
+                      libsmdev-python2
+                      libsmraw-python2
+                      libvhdi-python2
+                      libvmdk-python2
+                      libvshadow-python2
+                      libvslvm-python2
+                      python2-backports-lzma
+                      python2-crypto
+                      python2-dfdatetime
+                      python2-dtfabric
+                      python2-pysqlite
+                      python2-pytsk3
+                      python2-pyyaml";
 
 # Additional dependencies for running tests, alphabetized, one per line.
 TEST_DEPENDENCIES="python2-funcsigs
@@ -41,33 +41,33 @@ DEVELOPMENT_DEPENDENCIES="pylint";
 
 # Additional dependencies for debugging, alphabetized, one per line.
 DEBUG_DEPENDENCIES="libbde-debuginfo
-                    libbde-python-debuginfo
+                    libbde-python2-debuginfo
                     libewf-debuginfo
-                    libewf-python-debuginfo
+                    libewf-python2-debuginfo
                     libfsapfs-debuginfo
                     libfsapfs-python2-debuginfo
                     libfsntfs-debuginfo
-                    libfsntfs-python-debuginfo
+                    libfsntfs-python2-debuginfo
                     libfvde-debuginfo
-                    libfvde-python-debuginfo
+                    libfvde-python2-debuginfo
                     libfwnt-debuginfo
-                    libfwnt-python-debuginfo
+                    libfwnt-python2-debuginfo
                     libqcow-debuginfo
-                    libqcow-python-debuginfo
+                    libqcow-python2-debuginfo
                     libsigscan-debuginfo
-                    libsigscan-python-debuginfo
+                    libsigscan-python2-debuginfo
                     libsmdev-debuginfo
-                    libsmdev-python-debuginfo
+                    libsmdev-python2-debuginfo
                     libsmraw-debuginfo
-                    libsmraw-python-debuginfo
+                    libsmraw-python2-debuginfo
                     libvhdi-debuginfo
-                    libvhdi-python-debuginfo
+                    libvhdi-python2-debuginfo
                     libvmdk-debuginfo
-                    libvmdk-python-debuginfo
+                    libvmdk-python2-debuginfo
                     libvshadow-debuginfo
-                    libvshadow-python-debuginfo
+                    libvshadow-python2-debuginfo
                     libvslvm-debuginfo
-                    libvslvm-python-debuginfo";
+                    libvslvm-python2-debuginfo";
 
 sudo dnf install dnf-plugins-core
 sudo dnf copr -y enable @gift/dev
