@@ -96,7 +96,7 @@ else:
       python_spec_file = []
       for line in iter(spec_file):
         if line.startswith('Summary: '):
-          summary = line
+          summary = line[9:]
 
         elif line.startswith('BuildRequires: '):
           line = 'BuildRequires: {0:s}-setuptools, {0:s}-devel'.format(
@@ -107,6 +107,7 @@ else:
           if python_package == 'python3':
             requires = requires.replace('python-', 'python3-')
             requires = requires.replace('python2-', 'python3-')
+          continue
 
         elif line.startswith('%description'):
           in_description = True
@@ -166,10 +167,15 @@ else:
             python_spec_file.extend([
                 'Obsoletes: python-dfvfs < %{version}',
                 'Provides: python-dfvfs = %{version}'])
+            python_summary = 'Python 2 module of {0:s}'.format(summary)
+          else:
+            python_summary = 'Python 3 module of {0:s}'.format(summary)
+
+          if requires:
+            python_spec_file.append('Requires: {0:s}'.format(requires))
 
           python_spec_file.extend([
-              'Requires: {0:s}'.format(requires),
-              '{0:s}'.format(summary),
+              'Summary: {0:s}'.format(python_summary),
               '',
               '%description -n {0:s}-%{{name}}'.format(python_package)])
 
