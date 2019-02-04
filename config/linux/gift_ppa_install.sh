@@ -31,10 +31,12 @@ PYTHON2_DEPENDENCIES="libbde-python
                       python-yaml";
 
 # Additional dependencies for running tests, alphabetized, one per line.
-TEST_DEPENDENCIES="python-funcsigs
+TEST_DEPENDENCIES="python-coverage
+                   python-funcsigs
                    python-mock
                    python-pbr
-                   python-six";
+                   python-six
+                   python-tox";
 
 # Additional dependencies for development, alphabetized, one per line.
 DEVELOPMENT_DEPENDENCIES="pylint";
