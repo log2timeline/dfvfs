@@ -70,22 +70,23 @@ class FileObjectInputReader(CLIInputReader):
     Returns:
       str: input.
     """
-    encoded_string = self._file_object.readline()
+    input_string = self._file_object.readline()
 
-    try:
-      string = codecs.decode(encoded_string, self._encoding, self._errors)
-    except UnicodeDecodeError:
-      if self._errors == 'strict':
-        logging.error(
-            'Unable to properly read input due to encoding error. '
-            'Switching to error tolerant encoding which can result in '
-            'non Basic Latin (C0) characters to be replaced with "?" or '
-            '"\\ufffd".')
-        self._errors = 'replace'
+    if isinstance(input_string, py2to3.BYTES_TYPE):
+      try:
+        input_string = codecs.decode(input_string, self._encoding, self._errors)
+      except UnicodeDecodeError:
+        if self._errors == 'strict':
+          logging.error(
+              'Unable to properly read input due to encoding error. '
+              'Switching to error tolerant encoding which can result in '
+              'non Basic Latin (C0) characters to be replaced with "?" or '
+              '"\\ufffd".')
+          self._errors = 'replace'
 
-      string = codecs.decode(encoded_string, self._encoding, self._errors)
+        input_string = codecs.decode(input_string, self._encoding, self._errors)
 
-    return string
+    return input_string
 
 
 class StdinInputReader(FileObjectInputReader):
@@ -616,9 +617,11 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
         print_header = False
 
+      self._output_writer.Write('\n')
+
       lines = self._textwrapper.wrap(self._USER_PROMPT_APFS)
       self._output_writer.Write('\n'.join(lines))
-      self._output_writer.Write('\n\nVolume identifier(s):')
+      self._output_writer.Write('\n\nVolume identifier(s): ')
 
       try:
         selected_volumes = self._ReadSelectedVolumes(
@@ -659,9 +662,11 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
         print_header = False
 
+      self._output_writer.Write('\n')
+
       lines = self._textwrapper.wrap(self._USER_PROMPT_TSK)
       self._output_writer.Write('\n'.join(lines))
-      self._output_writer.Write('\n\nPartition identifier(s):')
+      self._output_writer.Write('\n\nPartition identifier(s): ')
 
       try:
         selected_volumes = self._ReadSelectedVolumes(volume_system, prefix='p')
@@ -701,9 +706,11 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
         print_header = False
 
+      self._output_writer.Write('\n')
+
       lines = self._textwrapper.wrap(self._USER_PROMPT_VSS)
       self._output_writer.Write('\n'.join(lines))
-      self._output_writer.Write('\n\nVSS identifier(s):')
+      self._output_writer.Write('\n\nVSS identifier(s): ')
 
       try:
         selected_volumes = self._ReadSelectedVolumes(
