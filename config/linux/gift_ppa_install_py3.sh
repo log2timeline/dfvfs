@@ -32,8 +32,7 @@ PYTHON3_DEPENDENCIES="libbde-python3
 TEST_DEPENDENCIES="python3-mock
                    python3-pbr
                    python3-setuptools
-                   python3-six
-                   python3-tox";
+                   python3-six";
 
 # Additional dependencies for development, alphabetized, one per line.
 DEVELOPMENT_DEPENDENCIES="pylint";
@@ -67,10 +66,6 @@ DEBUG_DEPENDENCIES="libbde-dbg
                     libvshadow-python3-dbg
                     libvslvm-dbg
                     libvslvm-python3-dbg";
-
-if [[ "$*" =~ "include-development" ]]; then
-  sudo add-apt-repository ppa:gift/pylint3 -y
-fi
 
 sudo add-apt-repository ppa:gift/dev -y
 sudo apt-get update -q

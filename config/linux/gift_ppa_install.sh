@@ -35,8 +35,7 @@ TEST_DEPENDENCIES="python-coverage
                    python-funcsigs
                    python-mock
                    python-pbr
-                   python-six
-                   python-tox";
+                   python-six";
 
 # Additional dependencies for development, alphabetized, one per line.
 DEVELOPMENT_DEPENDENCIES="pylint";
@@ -70,10 +69,6 @@ DEBUG_DEPENDENCIES="libbde-dbg
                     libvshadow-python-dbg
                     libvslvm-dbg
                     libvslvm-python-dbg";
-
-if [[ "$*" =~ "include-development" ]]; then
-  sudo add-apt-repository ppa:gift/pylint2 -y
-fi
 
 sudo add-apt-repository ppa:gift/dev -y
 sudo apt-get update -q
