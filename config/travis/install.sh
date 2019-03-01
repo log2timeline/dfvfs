@@ -11,11 +11,11 @@ L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr six";
 
 DPKG_PYTHON2_DEPENDENCIES="libbde-python libewf-python libfsapfs-python libfsntfs-python libfvde-python libfwnt-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python libvslvm-python python-backports.lzma python-crypto python-dfdatetime python-dtfabric python-pysqlite2 python-pytsk3 python-yaml";
 
-DPKG_PYTHON2_TEST_DEPENDENCIES="python-coverage python-funcsigs python-mock python-pbr python-six tox";
+DPKG_PYTHON2_TEST_DEPENDENCIES="python-coverage python-funcsigs python-mock python-pbr python-six";
 
 DPKG_PYTHON3_DEPENDENCIES="libbde-python3 libewf-python3 libfsapfs-python3 libfsntfs-python3 libfvde-python3 libfwnt-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvshadow-python3 libvslvm-python3 python3-crypto python3-dfdatetime python3-dtfabric python3-pytsk3 python3-yaml";
 
-DPKG_PYTHON3_TEST_DEPENDENCIES="python3-mock python3-pbr python3-setuptools python3-six tox";
+DPKG_PYTHON3_TEST_DEPENDENCIES="python3-mock python3-pbr python3-setuptools python3-six";
 
 RPM_PYTHON2_DEPENDENCIES="libbde-python2 libewf-python2 libfsapfs-python2 libfsntfs-python2 libfvde-python2 libfwnt-python2 libqcow-python2 libsigscan-python2 libsmdev-python2 libsmraw-python2 libvhdi-python2 libvmdk-python2 libvshadow-python2 libvslvm-python2 python2-backports-lzma python2-crypto python2-dfdatetime python2-dtfabric python2-pysqlite python2-pytsk3 python2-pyyaml";
 
@@ -62,12 +62,51 @@ then
 
 	docker exec ${CONTAINER_NAME} dnf copr -y enable @gift/dev;
 
-	if test ${TRAVIS_PYTHON_VERSION} = "2.7";
+	if test -n "${TOXENV}";
+	then
+		docker exec ${CONTAINER_NAME} dnf install -y python3-tox;
+
+	elif test ${TRAVIS_PYTHON_VERSION} = "2.7";
 	then
 		docker exec ${CONTAINER_NAME} dnf install -y git python2 ${RPM_PYTHON2_DEPENDENCIES} ${RPM_PYTHON2_TEST_DEPENDENCIES};
 	else
 		docker exec ${CONTAINER_NAME} dnf install -y git python3 ${RPM_PYTHON3_DEPENDENCIES} ${RPM_PYTHON3_TEST_DEPENDENCIES};
 	fi
+
+	docker cp ../dfvfs ${CONTAINER_NAME}:/
+
+elif test -n "${UBUNTU_VERSION}";
+then
+	CONTAINER_NAME="ubuntu${UBUNTU_VERSION}";
+
+	docker pull ubuntu:${UBUNTU_VERSION};
+
+	docker run --name=${CONTAINER_NAME} --detach -i ubuntu:${UBUNTU_VERSION};
+
+	docker exec ${CONTAINER_NAME} apt-get update -q;
+	docker exec ${CONTAINER_NAME} sh -c "DEBIAN_FRONTEND=noninteractive apt-get install -y locales software-properties-common";
+
+	docker exec ${CONTAINER_NAME} add-apt-repository ppa:gift/dev -y;
+
+	docker exec ${CONTAINER_NAME} locale-gen en_US.UTF-8;
+
+	if test -n "${TOXENV}";
+	then
+		docker exec ${CONTAINER_NAME} add-apt-repository universe;
+		docker exec ${CONTAINER_NAME} add-apt-repository ppa:deadsnakes/ppa -y;
+
+		DPKG_PYTHON="python${TRAVIS_PYTHON_VERSION} python${TRAVIS_PYTHON_VERSION}-dev";
+
+		docker exec ${CONTAINER_NAME} sh -c "DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential liblzma-dev ${DPKG_PYTHON} tox";
+
+	elif test ${TRAVIS_PYTHON_VERSION} = "2.7";
+	then
+		docker exec ${CONTAINER_NAME} sh -c "DEBIAN_FRONTEND=noninteractive apt-get install -y git python ${DPKG_PYTHON2_DEPENDENCIES} ${DPKG_PYTHON2_TEST_DEPENDENCIES}";
+	else
+		docker exec ${CONTAINER_NAME} sh -c "DEBIAN_FRONTEND=noninteractive apt-get install -y git python3 ${DPKG_PYTHON3_DEPENDENCIES} ${DPKG_PYTHON3_TEST_DEPENDENCIES}";
+	fi
+
+	docker cp ../dfvfs ${CONTAINER_NAME}:/
 
 elif test ${TRAVIS_OS_NAME} = "linux" && test ${TARGET} != "jenkins";
 then
