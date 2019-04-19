@@ -68,8 +68,8 @@ class OSFileSystem(file_system.FileSystem):
 
     is_device = False
     if platform.system() == 'Windows':
-      # Windows does not support running os.path.exists on device files
-      # so we use libsmdev to do the check.
+      # Note that os.path.exists() returns False for Windows device files so
+      # instead use libsmdev to do the check.
       try:
         is_device = pysmdev.check_device(location)
       except IOError as exception:
@@ -86,10 +86,9 @@ class OSFileSystem(file_system.FileSystem):
         if ' access denied ' in exception_string:
           is_device = True
 
-    if not is_device and not os.path.exists(location):
-      return False
-
-    return True
+    # Note that os.path.exists() returns False for broken symbolic links hence
+    # an additional check using os.path.islink() is necessary.
+    return is_device or os.path.exists(location) or os.path.islink(location)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
