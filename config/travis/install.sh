@@ -11,19 +11,19 @@ L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr six";
 
 DPKG_PYTHON2_DEPENDENCIES="libbde-python libewf-python libfsapfs-python libfsntfs-python libfvde-python libfwnt-python libqcow-python libsigscan-python libsmdev-python libsmraw-python libvhdi-python libvmdk-python libvshadow-python libvslvm-python python-backports.lzma python-crypto python-dfdatetime python-dtfabric python-pysqlite2 python-pytsk3 python-yaml";
 
-DPKG_PYTHON2_TEST_DEPENDENCIES="python-coverage python-funcsigs python-mock python-pbr python-six";
+DPKG_PYTHON2_TEST_DEPENDENCIES="python-coverage python-funcsigs python-mock python-pbr python-setuptools python-six";
 
 DPKG_PYTHON3_DEPENDENCIES="libbde-python3 libewf-python3 libfsapfs-python3 libfsntfs-python3 libfvde-python3 libfwnt-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvshadow-python3 libvslvm-python3 python3-crypto python3-dfdatetime python3-dtfabric python3-pytsk3 python3-yaml";
 
-DPKG_PYTHON3_TEST_DEPENDENCIES="python3-mock python3-pbr python3-setuptools python3-six";
+DPKG_PYTHON3_TEST_DEPENDENCIES="python3-distutils python3-mock python3-pbr python3-setuptools python3-six";
 
 RPM_PYTHON2_DEPENDENCIES="libbde-python2 libewf-python2 libfsapfs-python2 libfsntfs-python2 libfvde-python2 libfwnt-python2 libqcow-python2 libsigscan-python2 libsmdev-python2 libsmraw-python2 libvhdi-python2 libvmdk-python2 libvshadow-python2 libvslvm-python2 python2-backports-lzma python2-crypto python2-dfdatetime python2-dtfabric python2-pysqlite python2-pytsk3 python2-pyyaml";
 
-RPM_PYTHON2_TEST_DEPENDENCIES="python2-funcsigs python2-mock python2-pbr python2-six";
+RPM_PYTHON2_TEST_DEPENDENCIES="python2-funcsigs python2-mock python2-pbr python2-setuptools python2-six";
 
 RPM_PYTHON3_DEPENDENCIES="libbde-python3 libewf-python3 libfsapfs-python3 libfsntfs-python3 libfvde-python3 libfwnt-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvshadow-python3 libvslvm-python3 python3-crypto python3-dfdatetime python3-dtfabric python3-pytsk3 python3-pyyaml";
 
-RPM_PYTHON3_TEST_DEPENDENCIES="python3-mock python3-pbr python3-six";
+RPM_PYTHON3_TEST_DEPENDENCIES="python3-mock python3-pbr python3-setuptools python3-six";
 
 # Exit on error.
 set -e;
@@ -96,7 +96,7 @@ then
 
 	# Install add-apt-repository and locale-gen.
 	docker exec ${CONTAINER_NAME} apt-get update -q;
-	docker exec ${CONTAINER_NAME} sh -c "DEBIAN_FRONTEND=noninteractive apt-get install -y locales software-properties-common";
+	docker exec -e "DEBIAN_FRONTEND=noninteractive" ${CONTAINER_NAME} sh -c "apt-get install -y locales software-properties-common";
 
 	# Add additional apt repositories.
 	if test -n "${TOXENV}";
@@ -123,7 +123,11 @@ then
 	else
 		DPKG_PACKAGES="";
 
-		if test ${TARGET} = "pylint";
+		if test "${TARGET}" = "coverage";
+		then
+			DPKG_PACKAGES="${DPKG_PACKAGES} curl git";
+
+		elif test ${TARGET} = "pylint";
 		then
 			DPKG_PACKAGES="${DPKG_PACKAGES} python3-distutils pylint";
 		fi
@@ -134,7 +138,7 @@ then
 			DPKG_PACKAGES="${DPKG_PACKAGES} python3 ${DPKG_PYTHON3_DEPENDENCIES} ${DPKG_PYTHON3_TEST_DEPENDENCIES}";
 		fi
 	fi
-	docker exec ${CONTAINER_NAME} sh -c "DEBIAN_FRONTEND=noninteractive apt-get install -y ${DPKG_PACKAGES}";
+	docker exec -e "DEBIAN_FRONTEND=noninteractive" ${CONTAINER_NAME} sh -c "apt-get install -y ${DPKG_PACKAGES}";
 
 	docker cp ../dfvfs ${CONTAINER_NAME}:/
 

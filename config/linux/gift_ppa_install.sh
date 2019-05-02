@@ -35,6 +35,7 @@ TEST_DEPENDENCIES="python-coverage
                    python-funcsigs
                    python-mock
                    python-pbr
+                   python-setuptools
                    python-six";
 
 # Additional dependencies for development, alphabetized, one per line.
