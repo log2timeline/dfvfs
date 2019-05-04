@@ -245,10 +245,11 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(ValueError):
       test_mediator._ParseVolumeIdentifiersString('1..bogus')
 
-  @shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
   def testPrintAPFSVolumeIdentifiersOverview(self):
     """Tests the _PrintAPFSVolumeIdentifiersOverview function."""
     test_path = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -288,10 +289,11 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(output_data.split(b'\n'), expected_output_data)
 
-  @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
   def testPrintTSKPartitionIdentifiersOverview(self):
     """Tests the _PrintTSKPartitionIdentifiersOverview function."""
     test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -330,10 +332,11 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(output_data.split(b'\n'), expected_output_data)
 
-  @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
   def testPrintVSSStoreIdentifiersOverview(self):
     """Tests the _PrintVSSStoreIdentifiersOverview function."""
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -373,10 +376,11 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
   # TODO: add tests for _ReadSelectedVolumes
 
-  @shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
   def testGetAPFSVolumeIdentifiers(self):
     """Tests the GetAPFSVolumeIdentifiers function."""
     test_path = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -466,10 +470,11 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(volume_identifiers, [])
 
-  @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
   def testGetPartitionIdentifiers(self):
     """Tests the GetPartitionIdentifiers function."""
     test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -561,10 +566,11 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(volume_identifiers, [])
 
-  @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
   def testGetVSSStoreIdentifiers(self):
     """Tests the GetVSSStoreIdentifiers function."""
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(

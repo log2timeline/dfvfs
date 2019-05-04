@@ -14,7 +14,6 @@ from dfvfs.vfs import tsk_partition_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
 class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the TSK partition file system."""
 
@@ -22,6 +21,8 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_partition_path_spec = (
         tsk_partition_path_spec.TSKPartitionPathSpec(

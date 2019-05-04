@@ -15,13 +15,14 @@ from dfvfs.volume import apfs_volume_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
 class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
   """Tests the Apple File System (APFS) volume system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(

@@ -17,7 +17,6 @@ from dfvfs.vfs import apfs_container_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
 class APFSContainerFileEntryTest(shared_test_lib.BaseTestCase):
   """APFS container file entry tests."""
 
@@ -25,6 +24,8 @@ class APFSContainerFileEntryTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(

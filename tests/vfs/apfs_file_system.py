@@ -14,7 +14,6 @@ from dfvfs.vfs import apfs_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
 class APFSFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the APFS file entry."""
 
@@ -22,6 +21,8 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(

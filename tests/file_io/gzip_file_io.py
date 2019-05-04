@@ -12,11 +12,9 @@ from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.gz'])
 class GzipFileTest(test_lib.SylogTestCase):
   """Tests a gzip file-like object."""
 
@@ -24,6 +22,8 @@ class GzipFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['syslog.gz'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     self._gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -61,11 +61,12 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['corrupt1.gz'])
   def testReadCorrupt(self):
     """Tests reading a file that is corrupt."""
     # The corrupt gzip has no member footer.
     test_path = self._GetTestFilePath(['corrupt1.gz'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -76,10 +77,11 @@ class GzipFileTest(test_lib.SylogTestCase):
     with self.assertRaises(errors.FileFormatError):
       file_object.open(path_spec=test_gzip_path_spec)
 
-  @shared_test_lib.skipUnlessHasTestFile(['fsevents_000000000000b208'])
   def testReadMultipleMembers(self):
     """Tests reading a file that contains multiple gzip members."""
     test_path = self._GetTestFilePath(['fsevents_000000000000b208'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_gzip_path_spec = path_spec_factory.Factory.NewPathSpec(

@@ -13,11 +13,9 @@ from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import resolver
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['fvdetest.qcow2'])
 class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
   """Tests for the FileVault Drive Encryption (FVDE) file-like object.
 
@@ -33,6 +31,8 @@ class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(FVDEFileTestWithKeyChainTest, self).setUp()
     test_file = self._GetTestFilePath(['fvdetest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_partition_path_spec = (
@@ -68,7 +68,6 @@ class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
     self._TestRead(self._fvde_path_spec)
 
 
-@shared_test_lib.skipUnlessHasTestFile(['fvdetest.qcow2'])
 class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
   """Tests the BitLocker Drive Encryption (FVDE) file-like object.
 
@@ -83,6 +82,8 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(FVDEFileWithPathSpecCredentialsTest, self).setUp()
     test_file = self._GetTestFilePath(['fvdetest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_partition_path_spec = (

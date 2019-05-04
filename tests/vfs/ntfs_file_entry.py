@@ -26,7 +26,6 @@ class TestNTFSAttribute(ntfs_file_entry.NTFSAttribute):
   TYPE_INDICATOR = 'test'
 
 
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class NTFSAttributeTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS attribute."""
 
@@ -36,6 +35,8 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -73,7 +74,6 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
     self.assertEqual(ntfs_attribute.attribute_type, 0x00000010)
 
 
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS $FILE_NAME attribute."""
 
@@ -83,6 +83,8 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -124,7 +126,6 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
 # TODO: add tests for SecurityDescriptorNTFSAttribute.
 
 
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS $STANDARD_INFORMATION attribute."""
 
@@ -134,6 +135,8 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -173,7 +176,6 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
     self.assertEqual(ntfs_attribute.attribute_type, 0x00000010)
 
 
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class NTFSDataStream(shared_test_lib.BaseTestCase):
   """Tests the NTFS data stream."""
 
@@ -181,6 +183,8 @@ class NTFSDataStream(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -219,7 +223,6 @@ class NTFSDataStream(shared_test_lib.BaseTestCase):
 # TODO: add tests for NTFSDirectory.
 
 
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS file entry."""
 
@@ -227,6 +230,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(

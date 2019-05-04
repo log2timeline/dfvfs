@@ -14,7 +14,6 @@ from dfvfs.vfs import data_range_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog'])
 class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the data range file system."""
 
@@ -22,6 +21,8 @@ class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._data_range_path_spec = (
         data_range_path_spec.DataRangePathSpec(

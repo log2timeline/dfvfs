@@ -4,32 +4,7 @@
 from __future__ import unicode_literals
 
 import os
-import sys
 import unittest
-
-
-def skipUnlessHasTestFile(path_segments):  # pylint: disable=invalid-name
-  """Decorator to skip a test if the test file does not exist.
-
-  Args:
-    path_segments (list[str]): path segments inside the test data directory.
-
-  Returns:
-    function: to invoke.
-  """
-  fail_unless_has_test_file = getattr(
-      unittest, 'fail_unless_has_test_file', False)
-
-  path = os.path.join('test_data', *path_segments)
-  if fail_unless_has_test_file or os.path.exists(path):
-    return lambda function: function
-
-  if sys.version_info[0] < 3:
-    path = path.encode('utf-8')
-
-  # Note that the message should be of type str which is different for
-  # different versions of Python.
-  return unittest.skip('missing test file: {0:s}'.format(path))
 
 
 class BaseTestCase(unittest.TestCase):
@@ -71,3 +46,16 @@ class BaseTestCase(unittest.TestCase):
     # Note that we need to pass the individual path segments to os.path.join
     # and not a list.
     return os.path.join(self._TEST_DATA_PATH, *path_segments)
+
+  def _SkipIfPathNotExists(self, path):
+    """Skips the test if the path does not exist.
+
+    Args:
+      path (str): path of a test file.
+
+    Raises:
+      SkipTest: if the path path does not exist and the test should be skipped.
+    """
+    if not os.path.exists(path):
+      filename = os.path.basename(path)
+      raise unittest.SkipTest('missing test file: {0:s}'.format(filename))

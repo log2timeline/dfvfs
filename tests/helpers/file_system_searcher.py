@@ -290,21 +290,23 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertEqual(find_spec._number_of_location_segments, 6)
 
 
-@shared_test_lib.skipUnlessHasTestFile(['password.txt'])
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
   """Tests for the file system searcher."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._os_path = self._GetTestFilePath([])
-    self._os_path_spec = os_path_spec.OSPathSpec(location=self._os_path)
+    test_file = self._GetTestFilePath([])
+    self._SkipIfPathNotExists(test_file)
+
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     # TODO: add RAW volume only test image.
 
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(

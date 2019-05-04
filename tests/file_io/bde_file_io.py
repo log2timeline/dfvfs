@@ -11,11 +11,9 @@ from dfvfs.path import bde_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import resolver
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileWithKeyChainTest(test_lib.ImageFileTestCase):
   """Tests the BitLocker Drive Encryption (BDE) file-like object.
 
@@ -30,6 +28,8 @@ class BDEFileWithKeyChainTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(BDEFileWithKeyChainTest, self).setUp()
     test_file = self._GetTestFilePath(['bdetogo.raw'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=self._os_path_spec)
     resolver.Resolver.key_chain.SetCredential(
@@ -59,7 +59,6 @@ class BDEFileWithKeyChainTest(test_lib.ImageFileTestCase):
     self._TestRead(self._bde_path_spec)
 
 
-@shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
   """Tests the BitLocker Drive Encryption (BDE) file-like object.
 
@@ -74,6 +73,8 @@ class BDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(BDEFileWithPathSpecCredentialsTest, self).setUp()
     test_file = self._GetTestFilePath(['bdetogo.raw'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(
         password=self._BDE_PASSWORD, parent=self._os_path_spec)

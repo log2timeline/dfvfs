@@ -16,7 +16,6 @@ from dfvfs.vfs import encrypted_stream_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.rc4'])
 class EncryptedStreamFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the compressed stream file system."""
 
@@ -26,6 +25,8 @@ class EncryptedStreamFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.rc4'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(

@@ -104,7 +104,6 @@ class TSKTimeTest(unittest.TestCase):
     self.assertIsNone(micro_posix_timestamp)
 
 
-@shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
 class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file entry on ext2."""
 
@@ -112,6 +111,8 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['ímynd.dd'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location='/', parent=self._os_path_spec)
@@ -340,7 +341,6 @@ class TSKFileEntryTestHFS(unittest.TestCase):
   # TODO: implement.
 
 
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file entry on NTFS."""
 
@@ -348,6 +348,8 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(

@@ -18,7 +18,6 @@ from tests import test_lib as shared_test_lib
 # TODO: add tests for ZipDirectory.
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.zip'])
 class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the ZIP extracted file entry."""
 
@@ -28,6 +27,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.zip'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location='/', parent=self._os_path_spec)
@@ -146,6 +147,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
     # Test on a zip file that has missing directory entries.
     test_file = self._GetTestFilePath(['missing_directory_entries.zip'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = zip_path_spec.ZipPathSpec(location='/', parent=path_spec)
 

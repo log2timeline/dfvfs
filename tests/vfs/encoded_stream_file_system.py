@@ -15,7 +15,6 @@ from dfvfs.vfs import encoded_stream_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.base64'])
 class EncodedStreamFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the compressed stream file system."""
 
@@ -23,6 +22,8 @@ class EncodedStreamFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.base64'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(

@@ -15,7 +15,6 @@ from dfvfs.vfs import tar_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.tar'])
 class TARFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the TAR extracted file entry."""
 
@@ -23,6 +22,8 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.tar'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tar_path_spec = tar_path_spec.TARPathSpec(
         location='/syslog', parent=self._os_path_spec)
@@ -119,6 +120,8 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
 
     # Test on a tar file that has missing directory entries.
     test_file = self._GetTestFilePath(['missing_directory_entries.tar'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = tar_path_spec.TARPathSpec(location='/', parent=path_spec)
 

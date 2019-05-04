@@ -85,10 +85,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         len(analyzer.Analyzer._analyzer_helpers), number_of_helpers)
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.tar'])
   def testGetArchiveTypeIndicatorsTAR(self):
     """Tests the GetArchiveTypeIndicators function on a .tar file."""
     test_file = self._GetTestFilePath(['syslog.tar'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_TAR]
@@ -96,10 +97,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.zip'])
   def testGetArchiveTypeIndicatorsZIP(self):
     """Tests the GetArchiveTypeIndicators function on a .zip file."""
     test_file = self._GetTestFilePath(['syslog.zip'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_ZIP]
@@ -107,10 +109,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.gz'])
   def testGetCompressedStreamTypeIndicatorsGZIP(self):
     """Tests the GetCompressedStreamTypeIndicators function on a .gz file."""
     test_file = self._GetTestFilePath(['syslog.gz'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_GZIP]
@@ -118,10 +121,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.tgz'])
   def testGetCompressedArchiveTypeIndicators(self):
     """Tests the GetCompressedStreamTypeIndicators function on a .tgz file."""
     test_file = self._GetTestFilePath(['syslog.tgz'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_GZIP]
@@ -136,10 +140,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
   def testGetFileSystemTypeIndicators(self):
     """Tests the GetFileSystemTypeIndicators function on a .qcow2 file."""
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -150,10 +155,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['image.E01'])
   def testGetStorageMediaImageTypeIndicatorsEWF(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .E01 file."""
     test_file = self._GetTestFilePath(['image.E01'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_EWF]
@@ -161,10 +167,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['image.qcow2'])
   def testGetStorageMediaImageTypeIndicatorsQCOW(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .qcow2 file."""
     test_file = self._GetTestFilePath(['image.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_QCOW]
@@ -172,10 +179,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['image.vhd'])
   def testGetStorageMediaImageTypeIndicatorsVHDI(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .vhd file."""
     test_file = self._GetTestFilePath(['image.vhd'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_VHDI]
@@ -183,10 +191,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['image.vmdk'])
   def testGetStorageMediaImageTypeIndicatorsVMDK(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .vmdk file."""
     test_file = self._GetTestFilePath(['image.vmdk'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_VMDK]
@@ -194,10 +203,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['mactime.body'])
   def testGetStorageMediaImageTypeIndicatorsBodyFile(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a bodyfile."""
     test_file = self._GetTestFilePath(['mactime.body'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = []
@@ -205,10 +215,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
   def testGetVolumeSystemTypeIndicatorsTSK(self):
     """Tests the GetVolumeSystemTypeIndicators function on partitions."""
     test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_TSK_PARTITION]
@@ -216,10 +227,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
   def testGetVolumeSystemTypeIndicatorsVSS(self):
     """Tests the GetVolumeSystemTypeIndicators function on a VSS volume."""
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
 
@@ -228,10 +240,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
   def testGetVolumeSystemTypeIndicatorsBDE(self):
     """Tests the GetVolumeSystemTypeIndicators function on a BDE ToGo drive."""
     test_file = self._GetTestFilePath(['bdetogo.raw'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_BDE]
@@ -239,10 +252,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  @shared_test_lib.skipUnlessHasTestFile(['fvdetest.qcow2'])
   def testGetVolumeSystemTypeIndicatorsFVDE(self):
     """Tests the GetVolumeSystemTypeIndicators function on a FVDE volume."""
     test_file = self._GetTestFilePath(['fvdetest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(

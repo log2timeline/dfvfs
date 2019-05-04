@@ -13,11 +13,9 @@ from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
 class APFSFileTest(test_lib.ImageFileTestCase):
   """Tests the file-like object implementation using pyfsapfs.file_entry."""
 
@@ -29,6 +27,8 @@ class APFSFileTest(test_lib.ImageFileTestCase):
     super(APFSFileTest, self).setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(

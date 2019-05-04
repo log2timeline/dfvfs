@@ -18,7 +18,6 @@ from dfvfs.resolver import resolver
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['image.qcow2'])
 class MountPointManagerTest(shared_test_lib.BaseTestCase):
   """Class to test the mount point manager."""
 
@@ -26,6 +25,8 @@ class MountPointManagerTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['image.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
 
