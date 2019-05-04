@@ -34,6 +34,7 @@ PYTHON2_DEPENDENCIES="libbde-python2
 TEST_DEPENDENCIES="python2-funcsigs
                    python2-mock
                    python2-pbr
+                   python2-setuptools
                    python2-six";
 
 # Additional dependencies for development, alphabetized, one per line.
