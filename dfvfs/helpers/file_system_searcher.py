@@ -326,12 +326,14 @@ class FindSpec(object):
 
     return False
 
-  def Matches(self, file_entry, search_depth):
+  def Matches(self, file_entry, search_depth=None):
     """Determines if the file entry matches the find specification.
 
     Args:
       file_entry (FileEntry): file entry.
-      search_depth (int): number of location path segments to compare.
+      search_depth (Optional[int]): number of location path segments to compare,
+          where None represents the maximum search depth for the find
+          specification.
 
     Returns:
       tuple: contains:
@@ -344,6 +346,9 @@ class FindSpec(object):
     if self._location_segments is None:
       location_match = None
     else:
+      if search_depth is None:
+        search_depth = self._number_of_location_segments
+
       location_match = self._CheckLocation(file_entry, search_depth)
       if not location_match:
         return False, location_match
@@ -425,7 +430,8 @@ class FileSystemSearcher(object):
     """
     sub_find_specs = []
     for find_spec in find_specs:
-      match, location_match = find_spec.Matches(file_entry, search_depth)
+      match, location_match = find_spec.Matches(
+          file_entry, search_depth=search_depth)
       if match:
         yield file_entry.path_spec
 

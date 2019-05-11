@@ -260,17 +260,20 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
     find_spec.PrepareMatches(file_system)
 
-    result = find_spec.Matches(file_entry, 6)
+    result = find_spec.Matches(file_entry)
     self.assertEqual(result, (True, True))
 
-    result = find_spec.Matches(file_entry, 0)
+    result = find_spec.Matches(file_entry, search_depth=6)
+    self.assertEqual(result, (True, True))
+
+    result = find_spec.Matches(file_entry, search_depth=0)
     self.assertEqual(result, (False, True))
 
     find_spec = file_system_searcher.FindSpec(
         location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
     find_spec.PrepareMatches(file_system)
 
-    result = find_spec.Matches(file_entry, 6)
+    result = find_spec.Matches(file_entry, search_depth=6)
     self.assertEqual(result, (False, False))
 
   def testPrepareMatches(self):
