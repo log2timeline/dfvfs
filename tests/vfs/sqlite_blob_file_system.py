@@ -14,7 +14,6 @@ from dfvfs.vfs import sqlite_blob_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['blob.db'])
 class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests for the sqlite blob file system."""
 
@@ -22,6 +21,8 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['blob.db'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name='myblobs', column_name='blobs',

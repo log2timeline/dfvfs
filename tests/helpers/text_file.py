@@ -26,10 +26,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
 
-  @shared_test_lib.skipUnlessHasTestFile(['another_file'])
   def testReadline(self):
     """Test the readline() function."""
     test_file = self._GetTestFilePath(['another_file'])
+    self._SkipIfPathNotExists(test_file)
+
     test_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     file_object = os_file_io.OSFile(self._resolver_context)
@@ -52,10 +53,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['another_file.utf16'])
   def testReadlineUTF16(self):
     """Test the readline() function on UTF-16 encoded text."""
     test_file = self._GetTestFilePath(['another_file.utf16'])
+    self._SkipIfPathNotExists(test_file)
+
     test_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     file_object = os_file_io.OSFile(self._resolver_context)
@@ -78,10 +80,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testReadlineMultipleLines(self):
     """Test the readline() function on multiple lines."""
     test_file = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     test_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     file_object = os_file_io.OSFile(self._resolver_context)
@@ -114,10 +117,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testReadlineWithEndOfFileTruncation(self):
     """Test the readline() function with specified size at end of file."""
     test_file = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     test_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     file_object = os_file_io.OSFile(self._resolver_context)
@@ -137,10 +141,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testReadlines(self):
     """Test the readlines() function."""
     test_file = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     test_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     file_object = os_file_io.OSFile(self._resolver_context)
@@ -158,10 +163,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testReadlinesWithSizeHint(self):
     """Test the readlines() function."""
     test_file = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     test_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     file_object = os_file_io.OSFile(self._resolver_context)
@@ -177,10 +183,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['fls_bodyfile.txt'])
   def testReadlinesWithFileWithoutNewLineAtEnd(self):
     """Test reading lines from a file without a new line char at the end."""
     test_file = self._GetTestFilePath(['fls_bodyfile.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_object = os_file_io.OSFile(self._resolver_context)
     file_object.open(test_file_path_spec)
@@ -190,10 +197,11 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(len(lines), 25)
 
-  @shared_test_lib.skipUnlessHasTestFile(['password.txt'])
   def testIterator(self):
     """Test the iterator functionality."""
     test_file = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     test_path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     file_object = os_file_io.OSFile(self._resolver_context)

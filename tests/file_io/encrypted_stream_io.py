@@ -15,11 +15,9 @@ from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.aes'])
 class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   """Tests the RC4 encrypted stream file-like object.
 
@@ -33,6 +31,8 @@ class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.aes'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -101,7 +101,6 @@ class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.aes'])
 class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
   """The unit test for a AES encrypted stream file-like object.
 
@@ -116,6 +115,8 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.aes'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -179,7 +180,6 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.blowfish'])
 class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   """Tests the Blowfish encrypted stream file-like object.
 
@@ -193,6 +193,8 @@ class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.blowfish'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -261,7 +263,6 @@ class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.des3'])
 class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
   """Tests the Triple DES encrypted stream file-like object.
 
@@ -275,6 +276,8 @@ class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.des3'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(
@@ -343,7 +346,6 @@ class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.rc4'])
 class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
   """Tests the RC4 encrypted stream file-like object.
 
@@ -355,6 +357,8 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.rc4'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encrypted_stream_path_spec = (
         encrypted_stream_path_spec.EncryptedStreamPathSpec(

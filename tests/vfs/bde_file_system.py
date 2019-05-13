@@ -15,7 +15,6 @@ from dfvfs.vfs import bde_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['bdetogo.raw'])
 class BDEFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the BDE file system."""
 
@@ -25,6 +24,8 @@ class BDEFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['bdetogo.raw'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
     resolver.Resolver.key_chain.SetCredential(

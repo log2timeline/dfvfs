@@ -14,11 +14,9 @@ from dfvfs.path import encoded_stream_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.base16'])
 class Base16EncodedStreamTest(test_lib.SylogTestCase):
   """The unit test for a base16 encoded stream file-like object."""
 
@@ -26,6 +24,8 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.base16'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(
@@ -86,7 +86,6 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.base32'])
 class Base32EncodedStreamTest(test_lib.SylogTestCase):
   """The unit test for a base32 encoded stream file-like object."""
 
@@ -94,6 +93,8 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.base32'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(
@@ -154,7 +155,6 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.base64'])
 class Base64EncodedStreamTest(test_lib.SylogTestCase):
   """The unit test for a base64 encoded stream file-like object."""
 
@@ -162,6 +162,8 @@ class Base64EncodedStreamTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.base64'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._encoded_stream_path_spec = (
         encoded_stream_path_spec.EncodedStreamPathSpec(

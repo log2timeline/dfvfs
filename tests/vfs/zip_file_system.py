@@ -14,7 +14,6 @@ from dfvfs.vfs import zip_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.zip'])
 class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the ZIP file system."""
 
@@ -22,6 +21,8 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.zip'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location='/', parent=self._os_path_spec)
@@ -35,7 +36,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['missing_directory_entries.zip'])
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
@@ -55,6 +55,8 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     # Test on a zip file that has missing directory entries.
     test_file = self._GetTestFilePath(['missing_directory_entries.zip'])
+    self._SkipIfPathNotExists(test_file)
+
     test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = zip_path_spec.ZipPathSpec(
         location='/', parent=test_file_path_spec)
@@ -73,7 +75,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['missing_directory_entries.zip'])
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)
@@ -98,6 +99,8 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     # Test on a tar file that has missing directory entries.
     test_file = self._GetTestFilePath(['missing_directory_entries.zip'])
+    self._SkipIfPathNotExists(test_file)
+
     test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = zip_path_spec.ZipPathSpec(
         location='/', parent=test_file_path_spec)

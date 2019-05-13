@@ -11,11 +11,9 @@ from dfvfs.path import sqlite_blob_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.resolver import context
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.db'])
 class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
   """The unit test for a SQLite blob file-like object using row condition."""
 
@@ -23,6 +21,8 @@ class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.db'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name='blobs', column_name='blob',
@@ -56,7 +56,6 @@ class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.db'])
 class SQLiteBlobFileWithIndexTest(test_lib.SylogTestCase):
   """The unit test for a SQLite blob file-like object using row index."""
 
@@ -64,6 +63,8 @@ class SQLiteBlobFileWithIndexTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.db'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name='blobs', column_name='blob', row_index=0, parent=path_spec)

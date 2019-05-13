@@ -70,12 +70,13 @@ class APFSContainerHelperTest(shared_test_lib.BaseTestCase):
     volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(path_spec)
     self.assertIsNone(volume_index)
 
-  @shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
   def testAPFSUnlockVolumeOnAPFS(self):
     """Tests the APFSUnlockVolume function on an APFS image."""
     resolver_context = context.Context()
 
     test_path = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -96,7 +97,6 @@ class APFSContainerHelperTest(shared_test_lib.BaseTestCase):
         resolver.Resolver.key_chain)
     self.assertTrue(is_unlocked)
 
-  @shared_test_lib.skipUnlessHasTestFile(['apfs_encrypted.dmg'])
   def testAPFSUnlockVolumeOnEncryptedAPFS(self):
     """Tests the APFSUnlockVolume function on an encrypted APFS image."""
     resolver.Resolver.key_chain.Empty()
@@ -104,6 +104,8 @@ class APFSContainerHelperTest(shared_test_lib.BaseTestCase):
     resolver_context = context.Context()
 
     test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
+    self._SkipIfPathNotExists(test_path)
+
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(

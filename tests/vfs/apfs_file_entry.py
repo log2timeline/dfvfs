@@ -22,7 +22,6 @@ from tests import test_lib as shared_test_lib
 # TODO: add tests for APFSDirectory.
 
 
-@shared_test_lib.skipUnlessHasTestFile(['apfs.dmg'])
 class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the APFS file entry."""
 
@@ -30,6 +29,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['apfs.dmg'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
@@ -291,7 +292,6 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(data_stream)
 
 
-@shared_test_lib.skipUnlessHasTestFile(['apfs_encrypted.dmg'])
 class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   """Tests the APFS file entry on an encrypted file system."""
 
@@ -301,6 +301,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['apfs_encrypted.dmg'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(

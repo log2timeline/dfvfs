@@ -14,13 +14,14 @@ from dfvfs.volume import vshadow_volume_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class VShadowVolumeSystemTest(shared_test_lib.BaseTestCase):
   """Tests the Volume Shadow Snapshot (VSS) volume system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(

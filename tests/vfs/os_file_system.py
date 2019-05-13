@@ -18,7 +18,6 @@ def TestPlatformSystem():
   return 'Windows'
 
 
-@shared_test_lib.skipUnlessHasTestFile(['testdir_os', 'file1.txt'])
 class OSFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the operating system file system."""
 
@@ -37,6 +36,8 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     test_file = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
@@ -49,6 +50,8 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     file_system = os_file_system.OSFileSystem(self._resolver_context)
 
     test_file = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 

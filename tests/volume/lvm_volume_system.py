@@ -14,13 +14,14 @@ from dfvfs.volume import lvm_volume_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['lvmtest.qcow2'])
 class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
   """Tests the Logical Volume Manager (LVM) volume system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = self._GetTestFilePath(['lvmtest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(

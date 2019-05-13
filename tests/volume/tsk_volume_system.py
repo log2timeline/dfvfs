@@ -13,13 +13,13 @@ from dfvfs.volume import tsk_volume_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['tsk_volume_system.raw'])
 class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) volume system."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(

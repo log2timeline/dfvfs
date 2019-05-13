@@ -14,7 +14,6 @@ from dfvfs.vfs import cpio_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
 class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the CPIO file system."""
 
@@ -22,6 +21,8 @@ class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=self._os_path_spec)

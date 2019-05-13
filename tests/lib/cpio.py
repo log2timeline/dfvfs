@@ -26,13 +26,14 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
   # pylint: disable=protected-access
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
   def testReadFileEntryOnBinary(self):
     """Tests the _ReadFileEntry function on binary format."""
     test_file = cpio.CPIOArchiveFile()
     test_file.file_format = 'bin-little-endian'
 
     test_file_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -43,13 +44,14 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.newc.cpio'])
   def testReadFileEntryOnNewASCII(self):
     """Tests the _ReadFileEntry function on new ASCII format."""
     test_file = cpio.CPIOArchiveFile()
     test_file.file_format = 'newc'
 
     test_file_path = self._GetTestFilePath(['syslog.newc.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -60,13 +62,14 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.crc.cpio'])
   def testReadFileEntryOnNewASCIIWithCRC(self):
     """Tests the _ReadFileEntry function on new ASCII with CRC format."""
     test_file = cpio.CPIOArchiveFile()
     test_file.file_format = 'crc'
 
     test_file_path = self._GetTestFilePath(['syslog.crc.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -77,13 +80,14 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.odc.cpio'])
   def testReadFileEntryOnPortableASCII(self):
     """Tests the _ReadFileEntry function on portable ASCII format."""
     test_file = cpio.CPIOArchiveFile()
     test_file.file_format = 'odc'
 
     test_file_path = self._GetTestFilePath(['syslog.odc.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -94,13 +98,14 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
   def testReadFileEntriesOnBinary(self):
     """Tests the _ReadFileEntries function on binary format."""
     test_file = cpio.CPIOArchiveFile()
     test_file.file_format = 'bin-little-endian'
 
     test_file_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -112,12 +117,13 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
   def testFileEntryExistsByPathOnBinary(self):
     """Tests the FileEntryExistsByPath function on binary format."""
     test_file = cpio.CPIOArchiveFile()
 
     test_file_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -134,12 +140,13 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
       test_file.Close()
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
   def testGetFileEntriesOnBinary(self):
     """Tests the GetFileEntries function on binary format."""
     test_file = cpio.CPIOArchiveFile()
 
     test_file_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -157,12 +164,13 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
   def testGetFileEntryByPathOnBinary(self):
     """Tests the GetFileEntryByPath function on binary format."""
     test_file = cpio.CPIOArchiveFile()
 
     test_file_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -183,12 +191,13 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for GetFileEntries
   # TODO: add tests for GetFileEntryByPath
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.bin.cpio'])
   def testOpenAndCloseOnBinary(self):
     """Tests the Open and Close functions on binary format."""
     test_file = cpio.CPIOArchiveFile()
 
     test_file_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -201,12 +210,13 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
       test_file.Close()
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.newc.cpio'])
   def testOpenAndCloseOnNewASCII(self):
     """Tests the Open and Close functions on new ASCII format."""
     test_file = cpio.CPIOArchiveFile()
 
     test_file_path = self._GetTestFilePath(['syslog.newc.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -219,12 +229,13 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
       test_file.Close()
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.crc.cpio'])
   def testOpenAndCloseOnNewASCIIWithCRC(self):
     """Tests the Open and Close functions on new ASCII with CRC format."""
     test_file = cpio.CPIOArchiveFile()
 
     test_file_path = self._GetTestFilePath(['syslog.crc.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)
@@ -237,12 +248,13 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
       test_file.Close()
       file_io_object.close()
 
-  @shared_test_lib.skipUnlessHasTestFile(['syslog.odc.cpio'])
   def testOpenAndCloseOnPortableASCII(self):
     """Tests the Open and Close functions on portable ASCII format."""
     test_file = cpio.CPIOArchiveFile()
 
     test_file_path = self._GetTestFilePath(['syslog.odc.cpio'])
+    self._SkipIfPathNotExists(test_file_path)
+
     with open(test_file_path, 'rb') as file_object:
       file_io_object = file_object_io.FileObjectIO(
           None, file_object=file_object)

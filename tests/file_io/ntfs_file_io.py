@@ -14,11 +14,9 @@ from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.resolver import context
 
-from tests import test_lib as shared_test_lib
 from tests.file_io import test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['vsstest.qcow2'])
 class NTFSFileTest(test_lib.ImageFileTestCase):
   """The unit test for the NTFS file-like object."""
 
@@ -30,6 +28,8 @@ class NTFSFileTest(test_lib.ImageFileTestCase):
     super(NTFSFileTest, self).setUp()
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
         parent=self._os_path_spec)

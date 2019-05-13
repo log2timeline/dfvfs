@@ -14,7 +14,6 @@ from dfvfs.vfs import tsk_file_system
 from tests import test_lib as shared_test_lib
 
 
-@shared_test_lib.skipUnlessHasTestFile(['ímynd.dd'])
 class TSKFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file system."""
 
@@ -22,6 +21,8 @@ class TSKFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
     test_file = self._GetTestFilePath(['ímynd.dd'])
+    self._SkipIfPathNotExists(test_file)
+
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location='/', parent=self._os_path_spec)
