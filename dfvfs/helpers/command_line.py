@@ -803,7 +803,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
       if credential_type == 'key':
         try:
-          credential_data = credential_data.decode('hex')
+          credential_data = codecs.decode(credential_data, 'hex')
         except TypeError:
           self._output_writer.Write('Unsupported credential data.\n')
           continue
