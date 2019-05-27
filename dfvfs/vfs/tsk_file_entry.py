@@ -194,7 +194,7 @@ class TSKAttribute(file_entry.Attribute):
 
 
 class TSKDataStream(file_entry.DataStream):
-  """File system data stream that uses pytks3."""
+  """File system data stream that uses pytsk3."""
 
   def __init__(self, file_system, tsk_attribute):
     """Initializes a data stream.
@@ -558,6 +558,9 @@ class TSKFileEntry(file_entry.FileEntry):
 
     Returns:
       str: path of the linked file.
+
+    Raises:
+      BackEndError: if the link is not formatted in UTF-8.
     """
     if self._link is None:
       self._link = ''
@@ -578,8 +581,7 @@ class TSKFileEntry(file_entry.FileEntry):
         link = '{0:s}{1:s}'.format(
             self._file_system.PATH_SEPARATOR, link.decode('utf8'))
       except UnicodeError:
-        raise errors.BackEndError(
-            'pytsk3 returned a non UTF-8 formatted link.')
+        raise errors.BackEndError('pytsk3 returned a non UTF-8 formatted link.')
 
       self._link = link
 
