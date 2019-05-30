@@ -54,7 +54,7 @@ class BaseTestCase(unittest.TestCase):
       path (str): path of a test file.
 
     Raises:
-      SkipTest: if the path path does not exist and the test should be skipped.
+      SkipTest: if the path does not exist and the test should be skipped.
     """
     if not os.path.exists(path):
       filename = os.path.basename(path)
