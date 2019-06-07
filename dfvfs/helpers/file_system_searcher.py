@@ -18,7 +18,8 @@ class FindSpec(object):
 
   def __init__(
       self, case_sensitive=True, file_entry_types=None, is_allocated=True,
-      location=None, location_glob=None, location_regex=None):
+      location=None, location_glob=None, location_regex=None,
+      location_separator='/'):
     """Initializes a find specification.
 
     Args:
@@ -44,12 +45,14 @@ class FindSpec(object):
           relative to the root of the file system. The default is None. Note
           that the string will be split into segments based on the file system
           specific path segment separator.
+      location_separator (str): location segment separator.
 
     Raises:
       TypeError: if the location, location_glob or location_regex type
           is not supported.
       ValueError: if the location, location_glob or location_regex arguments
-          are used at the same time.
+          are used at the same time, or if location separator is missing and
+          the location argument is of type string.
     """
     location_arguments = [argument for argument in (
         location, location_glob, location_regex) if argument]
@@ -59,6 +62,10 @@ class FindSpec(object):
           'The location, location_glob and location_regex arguments cannot '
           'be used at same time.'))
 
+    if (location_arguments and isinstance(
+        location_arguments[0], py2to3.STRING_TYPES) and not location_separator):
+      raise ValueError('Missing location separator.')
+
     super(FindSpec, self).__init__()
     self._file_entry_types = file_entry_types
     self._is_allocated = is_allocated
@@ -67,15 +74,17 @@ class FindSpec(object):
     self._location = None
     self._location_regex = None
     self._location_segments = None
-    self._number_of_location_segments = 0
+    self._number_of_location_segments = None
 
     if location is not None:
       if isinstance(location, py2to3.STRING_TYPES):
         self._location = location
+
       elif isinstance(location, list):
         self._location_segments = location
+
       else:
-        raise TypeError('Unsupported location type: {0:s}.'.format(
+        raise TypeError('Unsupported location type: {0!s}.'.format(
             type(location)))
 
     elif location_glob is not None:
@@ -90,7 +99,7 @@ class FindSpec(object):
           self._location_segments.append(location_regex)
 
       else:
-        raise TypeError('Unsupported location_glob type: {0:s}.'.format(
+        raise TypeError('Unsupported location_glob type: {0!s}.'.format(
             type(location_glob)))
 
       self._is_regex = True
@@ -98,13 +107,29 @@ class FindSpec(object):
     elif location_regex is not None:
       if isinstance(location_regex, py2to3.STRING_TYPES):
         self._location_regex = location_regex
+
       elif isinstance(location_regex, list):
         self._location_segments = location_regex
+
       else:
-        raise TypeError('Unsupported location_regex type: {0:s}.'.format(
+        raise TypeError('Unsupported location_regex type: {0!s}.'.format(
             type(location_regex)))
 
       self._is_regex = True
+
+    if self._location:
+      self._location_segments = self._SplitPath(
+          self._location, location_separator)
+
+    elif self._location_regex:
+      if location_separator == '\\':
+        # The backslash '\' is escaped within a regular expression.
+        location_separator = '\\\\'
+      self._location_segments = self._SplitPath(
+          self._location_regex, location_separator)
+
+    if self._location_segments is not None:
+      self._number_of_location_segments = len(self._location_segments)
 
     # TODO: add support for name
     # TODO: add support for owner (user, group)

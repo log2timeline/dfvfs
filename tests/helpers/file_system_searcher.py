@@ -50,36 +50,43 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Test the __init__ function."""
-    find_spec = file_system_searcher.FindSpec(location='location')
+    find_spec = file_system_searcher.FindSpec(
+        location='location', location_separator='/')
     self.assertIsNotNone(find_spec)
 
     find_spec = file_system_searcher.FindSpec(location=['location'])
     self.assertIsNotNone(find_spec)
 
-    with self.assertRaises(TypeError):
-      find_spec = file_system_searcher.FindSpec(location={})
-
-    find_spec = file_system_searcher.FindSpec(location_glob='loca?ion')
+    find_spec = file_system_searcher.FindSpec(
+        location_glob='loca?ion', location_separator='/')
     self.assertIsNotNone(find_spec)
 
     find_spec = file_system_searcher.FindSpec(location_glob=['loca?ion'])
     self.assertIsNotNone(find_spec)
 
-    with self.assertRaises(TypeError):
-      find_spec = file_system_searcher.FindSpec(location_glob={})
-
-    find_spec = file_system_searcher.FindSpec(location_regex='loca.ion')
+    find_spec = file_system_searcher.FindSpec(
+        location_regex='loca.ion', location_separator='/')
     self.assertIsNotNone(find_spec)
 
     find_spec = file_system_searcher.FindSpec(location_regex=['loca.ion'])
     self.assertIsNotNone(find_spec)
 
-    with self.assertRaises(TypeError):
-      find_spec = file_system_searcher.FindSpec(location_regex={})
-
     with self.assertRaises(ValueError):
       find_spec = file_system_searcher.FindSpec(
           location='location', location_glob='loca?ion')
+
+    with self.assertRaises(ValueError):
+      find_spec = file_system_searcher.FindSpec(
+          location='location', location_separator=None)
+
+    with self.assertRaises(TypeError):
+      find_spec = file_system_searcher.FindSpec(location={})
+
+    with self.assertRaises(TypeError):
+      find_spec = file_system_searcher.FindSpec(location_glob={})
+
+    with self.assertRaises(TypeError):
+      find_spec = file_system_searcher.FindSpec(location_regex={})
 
   def testCheckFileEntryType(self):
     """Test the _CheckFileEntryType() function."""
@@ -212,8 +219,8 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
-    find_spec.PrepareMatches(file_system)
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
 
     result = find_spec._CheckLocation(file_entry, 6)
     self.assertTrue(result)
@@ -225,8 +232,8 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertFalse(result)
 
     find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
-    find_spec.PrepareMatches(file_system)
+        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py',
+        location_separator='/')
 
     result = find_spec._CheckLocation(file_entry, 6)
     self.assertFalse(result)
@@ -257,8 +264,8 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
-    find_spec.PrepareMatches(file_system)
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
 
     result = find_spec.Matches(file_entry)
     self.assertEqual(result, (True, True))
@@ -270,27 +277,11 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertEqual(result, (False, True))
 
     find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py')
-    find_spec.PrepareMatches(file_system)
+        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py',
+        location_separator='/')
 
     result = find_spec.Matches(file_entry, search_depth=6)
     self.assertEqual(result, (False, False))
-
-  def testPrepareMatches(self):
-    """Test the PrepareMatches function."""
-    file_system = self._CreateTestFileSystem()
-
-    find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
-
-    self.assertIsNone(find_spec._location_segments)
-    self.assertEqual(find_spec._number_of_location_segments, 0)
-
-    find_spec.PrepareMatches(file_system)
-    self.assertEqual(find_spec._location_segments, [
-        'usr', 'lib', 'python2.7', 'site-packages', 'dfvfs',
-        '__init__.py'])
-    self.assertEqual(find_spec._number_of_location_segments, 6)
 
 
 class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
@@ -403,11 +394,13 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # Find all the file entries with a location.
     find_spec1 = file_system_searcher.FindSpec(
-        location='/$Extend/$RmMetadata')
+        location='/$Extend/$RmMetadata',
+        location_separator='/')
     find_spec2 = file_system_searcher.FindSpec(
         location=['$Extend', '$RmMetadata', '$TxfLog', '$TxfLog.blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location='/PASSWORD.TXT')
+        location='/PASSWORD.TXT',
+        location_separator='/')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
@@ -424,7 +417,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # Find all the file entries with a case insensitive location.
     find_spec = file_system_searcher.FindSpec(
-        location='/PASSWORD.TXT', case_sensitive=False)
+        case_sensitive=False, location='/PASSWORD.TXT', location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
@@ -445,11 +438,11 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # Find all the file entries with a location glob.
     find_spec1 = file_system_searcher.FindSpec(
-        location_glob='/*/$RmMetadata')
+        location_glob='/*/$RmMetadata', location_separator='/')
     find_spec2 = file_system_searcher.FindSpec(
         location_glob=['$Extend', '$RmMetadata', '*', '*.blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location_glob='/PASSWORD.TXT')
+        location_glob='/PASSWORD.TXT', location_separator='/')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
@@ -466,11 +459,11 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # Find all the file entries with a location regular expression.
     find_spec1 = file_system_searcher.FindSpec(
-        location_regex=r'/.*/\$RmMetadata')
+        location_regex=r'/.*/\$RmMetadata', location_separator='/')
     find_spec2 = file_system_searcher.FindSpec(
         location_regex=[r'\$Extend', r'\$RmMetadata', '.*', '.*[.]blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location_regex='/PASSWORD.TXT')
+        location_regex='/PASSWORD.TXT', location_separator='/')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
@@ -487,7 +480,8 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # Find all the file entries with a case insensitive location glob.
     find_spec = file_system_searcher.FindSpec(
-        location_glob='/PASSWORD.TXT', case_sensitive=False)
+        case_sensitive=False, location_glob='/PASSWORD.TXT',
+        location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
@@ -503,7 +497,8 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     # Find all the file entries with a case insensitive location regular
     # expression.
     find_spec = file_system_searcher.FindSpec(
-        location_regex='/PASSWORD.TXT', case_sensitive=False)
+        case_sensitive=False, location_regex='/PASSWORD.TXT',
+        location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
@@ -522,7 +517,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     location = '{0:s}syslog.*'.format(os.path.sep)
     find_spec = file_system_searcher.FindSpec(
-        location_glob=location, case_sensitive=False)
+        case_sensitive=False, location_glob=location, location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
@@ -574,7 +569,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
       location = '{0:s}syslog[.].*'.format(os.path.sep)
 
     find_spec = file_system_searcher.FindSpec(
-        location_regex=location, case_sensitive=False)
+        case_sensitive=False, location_regex=location, location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
