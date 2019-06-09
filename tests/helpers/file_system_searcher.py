@@ -53,23 +53,59 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     find_spec = file_system_searcher.FindSpec(
         location='location', location_separator='/')
     self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['location'])
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/location', location_separator='/')
+    self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['location'])
+
+    find_spec = file_system_searcher.FindSpec(
+        location='\\location', location_separator='\\')
+    self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['location'])
 
     find_spec = file_system_searcher.FindSpec(location=['location'])
     self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['location'])
 
     find_spec = file_system_searcher.FindSpec(
         location_glob='loca?ion', location_separator='/')
     self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
+
+    find_spec = file_system_searcher.FindSpec(
+        location_glob='/loca?ion', location_separator='/')
+    self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
+
+    find_spec = file_system_searcher.FindSpec(
+        location_glob='\\loca?ion', location_separator='\\')
+    self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
 
     find_spec = file_system_searcher.FindSpec(location_glob=['loca?ion'])
     self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
 
     find_spec = file_system_searcher.FindSpec(
         location_regex='loca.ion', location_separator='/')
     self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
+
+    find_spec = file_system_searcher.FindSpec(
+        location_regex='/loca.ion', location_separator='/')
+    self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
+
+    find_spec = file_system_searcher.FindSpec(
+        location_regex='\\\\loca.ion', location_separator='\\')
+    self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
 
     find_spec = file_system_searcher.FindSpec(location_regex=['loca.ion'])
     self.assertIsNotNone(find_spec)
+    self.assertEqual(find_spec._location_segments, ['loca.ion'])
 
     with self.assertRaises(ValueError):
       find_spec = file_system_searcher.FindSpec(
@@ -517,7 +553,8 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     location = '{0:s}syslog.*'.format(os.path.sep)
     find_spec = file_system_searcher.FindSpec(
-        case_sensitive=False, location_glob=location, location_separator='/')
+        case_sensitive=False, location_glob=location,
+        location_separator=os.path.sep)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
@@ -569,7 +606,8 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
       location = '{0:s}syslog[.].*'.format(os.path.sep)
 
     find_spec = file_system_searcher.FindSpec(
-        case_sensitive=False, location_regex=location, location_separator='/')
+        case_sensitive=False, location_regex=location,
+        location_separator=os.path.sep)
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
