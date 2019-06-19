@@ -391,28 +391,6 @@ class FindSpec(object):
 
     return True, location_match
 
-  def PrepareMatches(self, file_system):
-    """Prepare find specification for matching.
-
-    Args:
-      file_system (FileSystem): file system.
-    """
-    if self._location is not None:
-      self._location_segments = self._SplitPath(
-          self._location, file_system.PATH_SEPARATOR)
-
-    elif self._location_regex is not None:
-      path_separator = file_system.PATH_SEPARATOR
-      if path_separator == '\\':
-        # The backslash '\' is escaped within a regular expression.
-        path_separator = '\\\\'
-
-      self._location_segments = self._SplitPath(
-          self._location_regex, path_separator)
-
-    if self._location_segments is not None:
-      self._number_of_location_segments = len(self._location_segments)
-
 
 class FileSystemSearcher(object):
   """Searcher to find file entries within a file system."""
@@ -488,9 +466,6 @@ class FileSystemSearcher(object):
     """
     if not find_specs:
       find_specs.append(FindSpec())
-
-    for find_spec in find_specs:
-      find_spec.PrepareMatches(self._file_system)
 
     if path_spec_factory.Factory.IsSystemLevelTypeIndicator(
         self._file_system.type_indicator):
