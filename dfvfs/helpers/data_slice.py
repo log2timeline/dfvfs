@@ -10,9 +10,6 @@ from dfvfs.lib import py2to3
 class DataSlice(object):
   """Data slice interface for file-like objects."""
 
-  # The maximum allowed size of the read buffer.
-  _MAXIMUM_READ_BUFFER_SIZE = 16 * 1024 * 1024
-
   def __init__(self, file_object):
     """Initializes the data slice.
 
@@ -67,7 +64,7 @@ class DataSlice(object):
     if start_offset < 0:
       start_offset = 0
 
-    end_offset = key.stop or self._file_object.get_size()
+    end_offset = key.stop or self._file_object_size
 
     if end_offset < 0:
       self._file_object.seek(end_offset, os.SEEK_END)
@@ -78,3 +75,11 @@ class DataSlice(object):
       read_size = end_offset - start_offset
 
     return self._file_object.read(read_size)
+
+  def __len__(self):
+    """Retrieves the file data size.
+
+    Returns:
+      int: file data size.
+    """
+    return self._file_object_size

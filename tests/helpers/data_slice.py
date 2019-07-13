@@ -61,6 +61,24 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     finally:
       file_object.close()
 
+  def testLen(self):
+    """Test the __len__ function."""
+    test_file = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_file)
+
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(test_path_spec)
+
+    try:
+      file_data = data_slice.DataSlice(file_object)
+
+      self.assertEqual(len(file_data), 116)
+
+    finally:
+      file_object.close()
+
 
 if __name__ == '__main__':
   unittest.main()
