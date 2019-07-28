@@ -23,13 +23,11 @@ class _GzipDecompressorState(object):
   as the location of the decompressor's source data.
 
   Attributes:
-    last_read (int): offset into the gzip file of the next data to be fed to the
-        decompression object.
     uncompressed_offset (int): offset into the uncompressed data in a gzip
         member last emitted by the state object.
   """
 
-  _MAXIMUM_READ_SIZE = 1024 * 1024
+  _MAXIMUM_READ_SIZE = 16 * 1024 * 1024
 
   def __init__(self, stream_start):
     """Initializes a gzip member decompressor wrapper.
@@ -38,10 +36,10 @@ class _GzipDecompressorState(object):
       stream_start (int): offset to the compressed stream within the containing
           file object.
     """
-    self._decompressor = zlib_decompressor.DeflateDecompressor()
-    self.last_read = stream_start
-    self.uncompressed_offset = 0
     self._compressed_data = b''
+    self._decompressor = zlib_decompressor.DeflateDecompressor()
+    self._last_read = stream_start
+    self.uncompressed_offset = 0
 
   def Read(self, file_object):
     """Reads the next uncompressed data from the gzip stream.
@@ -52,15 +50,17 @@ class _GzipDecompressorState(object):
     Returns:
       bytes: next uncompressed data from the compressed stream.
     """
-    file_object.seek(self.last_read, os.SEEK_SET)
+    file_object.seek(self._last_read, os.SEEK_SET)
     read_data = file_object.read(self._MAXIMUM_READ_SIZE)
-    self.last_read = file_object.get_offset()
+    self._last_read = file_object.get_offset()
+
     compressed_data = b''.join([self._compressed_data, read_data])
-    decompressed, extra_compressed = self._decompressor.Decompress(
-        compressed_data)
-    self._compressed_data = extra_compressed
-    self.uncompressed_offset += len(decompressed)
-    return decompressed
+    decompressed_data, remaining_compressed_data = (
+        self._decompressor.Decompress(compressed_data))
+
+    self._compressed_data = remaining_compressed_data
+    self.uncompressed_offset += len(decompressed_data)
+    return decompressed_data
 
   def GetUnusedData(self):
     """Retrieves any bytes past the end of the compressed data.
@@ -152,41 +152,71 @@ class GzipMember(data_format.DataFormat):
     self.operating_system = None
     self.original_filename = None
 
+    # Read the member data to determine the uncompressed data size and
+    # the offset of the member footer.
+    file_size = file_object.get_size()
+
+    file_object.seek(member_start_offset, os.SEEK_SET)
+    self._ReadMemberHeader(file_object)
+
+    uncompressed_data_size = 0
+
+    compressed_data_offset = file_object.get_offset()
+    decompressor_state = _GzipDecompressorState(compressed_data_offset)
+
+    file_offset = compressed_data_offset
+    while file_offset < file_size:
+      decompressed_data = decompressor_state.Read(file_object)
+      uncompressed_data_size += len(decompressed_data)
+
+      # Note that unused data will be set when the decompressor reads beyond
+      # the end of the compressed data stream.
+      unused_data = decompressor_state.GetUnusedData()
+      if unused_data:
+        file_object.seek(-len(unused_data), os.SEEK_CUR)
+        file_offset = file_object.get_offset()
+        break
+
+      file_offset = file_object.get_offset()
+
+    # Do not read the the last member footer if it is missing, which is
+    # a common corruption scenario.
+    if file_offset < file_size:
+      self._ReadStructure(
+          file_object, file_offset, self._MEMBER_FOOTER_SIZE,
+          self._MEMBER_FOOTER, 'member footer')
+
+    member_end_offset = file_object.get_offset()
+
+    # Initialize the member with data.
+    self._file_object = file_object
+    self._file_object.seek(member_start_offset, os.SEEK_SET)
+
     # Offset into this member's uncompressed data of the first item in
     # the cache.
     self._cache_start_offset = None
+
     # Offset into this member's uncompressed data of the last item in
     # the cache.
     self._cache_end_offset = None
     self._cache = b''
 
-    # Total size of the data in this gzip member after decompression.
-    self.uncompressed_data_size = None
-    # Offset of the start of the uncompressed data in this member relative to
-    # the whole gzip file's uncompressed data.
-    self.uncompressed_data_offset = uncompressed_data_offset
+    # Offset to the beginning of the compressed data in the file object.
+    self._compressed_data_start = compressed_data_offset
+    self._decompressor_state = _GzipDecompressorState(compressed_data_offset)
 
     # Offset to the start of the member in the parent file object.
     self.member_start_offset = member_start_offset
 
-    # Initialize the member with data.
-    self._file_object = file_object
-    self._file_object.seek(self.member_start_offset, os.SEEK_SET)
-
-    self._ReadMemberHeader(file_object)
-    # Offset to the beginning of the compressed data in the file object.
-    self._compressed_data_start = file_object.get_offset()
-
-    self._decompressor_state = _GzipDecompressorState(
-        self._compressed_data_start)
-
-    self._LoadDataIntoCache(file_object, 0, read_all_data=True)
-
-    # TODO: gracefully handle missing footer.
-    self._ReadMemberFooter(file_object)
-
     # Offset to the end of the member in the parent file object.
-    self.member_end_offset = file_object.get_offset()
+    self.member_end_offset = member_end_offset
+
+    # Total size of the data in this gzip member after decompression.
+    self.uncompressed_data_size = uncompressed_data_size
+
+    # Offset of the start of the uncompressed data in this member relative to
+    # the whole gzip file's uncompressed data.
+    self.uncompressed_data_offset = uncompressed_data_offset
 
   def _ReadMemberHeader(self, file_object):
     """Reads a member header.
@@ -238,22 +268,6 @@ class GzipMember(data_format.DataFormat):
 
     if member_header.flags & self._FLAG_FHCRC:
       file_object.read(2)
-
-  def _ReadMemberFooter(self, file_object):
-    """Reads a member footer.
-
-    Args:
-      file_object (FileIO): file-like object to read from.
-
-    Raises:
-      FileFormatError: if the member footer cannot be read.
-    """
-    file_offset = file_object.get_offset()
-    member_footer = self._ReadStructure(
-        file_object, file_offset, self._MEMBER_FOOTER_SIZE,
-        self._MEMBER_FOOTER, 'member footer')
-
-    self.uncompressed_data_size = member_footer.uncompressed_data_size
 
   def _ResetDecompressorState(self):
     """Resets the state of the internal decompression object."""
@@ -332,8 +346,7 @@ class GzipMember(data_format.DataFormat):
 
     return self._cache[cache_offset:data_end_offset]
 
-  def _LoadDataIntoCache(
-      self, file_object, minimum_offset, read_all_data=False):
+  def _LoadDataIntoCache(self, file_object, minimum_offset):
     """Reads and decompresses the data in the member.
 
     This function already loads as much data as possible in the cache, up to
@@ -343,8 +356,6 @@ class GzipMember(data_format.DataFormat):
       file_object (FileIO): file-like object.
       minimum_offset (int): offset into this member's uncompressed data at
           which the cache should start.
-      read_all_data (bool): True if all the compressed data should be read
-          from the member.
     """
     # Decompression can only be performed from beginning to end of the stream.
     # So, if data before the current position of the decompressor in the stream
@@ -353,7 +364,7 @@ class GzipMember(data_format.DataFormat):
     if minimum_offset < self._decompressor_state.uncompressed_offset:
       self._ResetDecompressorState()
 
-    while not self.IsCacheFull() or read_all_data:
+    while not self.IsCacheFull():
       decompressed_data = self._decompressor_state.Read(file_object)
       # Note that decompressed_data will be empty if there is no data left
       # to read and decompress.
@@ -373,7 +384,7 @@ class GzipMember(data_format.DataFormat):
 
       if decompressed_start_offset < minimum_offset < decompressed_end_offset:
         data_add_offset = decompressed_end_offset - minimum_offset
-        data_to_add = decompressed_data[-data_add_offset]
+        data_to_add = decompressed_data[-data_add_offset:]
         added_data_start_offset = decompressed_end_offset - data_add_offset
 
       if not self.IsCacheFull() and data_to_add:

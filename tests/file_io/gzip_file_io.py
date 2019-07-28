@@ -8,7 +8,6 @@ import unittest
 
 from dfvfs.file_io import gzip_file_io
 from dfvfs.lib import definitions
-from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
@@ -74,8 +73,8 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     file_object = gzip_file_io.GzipFile(self._resolver_context)
 
-    with self.assertRaises(errors.FileFormatError):
-      file_object.open(path_spec=test_gzip_path_spec)
+    file_object.open(path_spec=test_gzip_path_spec)
+    self.assertEqual(file_object.uncompressed_data_size, 2994187)
 
   def testReadMultipleMembers(self):
     """Tests reading a file that contains multiple gzip members."""
