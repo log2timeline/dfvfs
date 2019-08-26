@@ -79,6 +79,8 @@ class Resolver(object):
           be resolved.
 
     Raises:
+      MountPointError: if the mount point specified in the path specification
+          does not exist.
       PathSpecError: if the path specification is incorrect.
       TypeError: if the path specification type is unsupported.
     """

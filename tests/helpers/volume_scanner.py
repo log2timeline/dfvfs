@@ -451,7 +451,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    test_path = self._GetTestFilePath(['ímynd.dd'])
+    test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -575,7 +575,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
   def testGetBasePathSpecsOnRAW(self):
     """Tests the GetBasePathSpecs function on a RAW image."""
-    test_path = self._GetTestFilePath(['ímynd.dd'])
+    test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(

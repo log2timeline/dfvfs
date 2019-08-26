@@ -24,7 +24,7 @@ class MountPointManagerTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['image.qcow2'])
+    test_file = self._GetTestFilePath(['ext2.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)

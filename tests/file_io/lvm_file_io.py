@@ -24,7 +24,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -33,7 +33,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
   def testOpenClose(self):
     """Test the open and close functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=1)
+        parent=self._qcow_path_spec, volume_index=0)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -41,7 +41,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=13)
+        parent=self._qcow_path_spec, volume_index=9)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
@@ -52,7 +52,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 8388608)
+    self.assertEqual(file_object.get_size(), 4194304)
     file_object.close()
 
     path_spec = lvm_path_spec.LVMPathSpec(
@@ -63,7 +63,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
       file_object.open(path_spec=path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/lvm13', parent=self._qcow_path_spec)
+        location='/lvm9', parent=self._qcow_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
@@ -76,26 +76,26 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 8388608)
+    self.assertEqual(file_object.get_size(), 4194304)
 
     file_object.seek(0x488)
-    self.assertEqual(file_object.get_offset(), 0x488)
-    self.assertEqual(file_object.read(16), b'/home/username/s')
-    self.assertEqual(file_object.get_offset(), 0x498)
+    self.assertEqual(file_object.get_offset(), 0x00000488)
+    self.assertEqual(file_object.read(11), b'/mnt/dfvfs\x00')
+    self.assertEqual(file_object.get_offset(), 0x00000493)
 
     file_object.seek(-1047544, os.SEEK_END)
-    self.assertEqual(file_object.get_offset(), 0x00700408)
+    self.assertEqual(file_object.get_offset(), 0x00300408)
     self.assertEqual(file_object.read(8), b'er,passw')
-    self.assertEqual(file_object.get_offset(), 0x00700410)
+    self.assertEqual(file_object.get_offset(), 0x00300410)
 
     file_object.seek(3, os.SEEK_CUR)
-    self.assertEqual(file_object.get_offset(), 0x00700413)
+    self.assertEqual(file_object.get_offset(), 0x00300413)
     self.assertEqual(file_object.read(7), b'\nbank,j')
-    self.assertEqual(file_object.get_offset(), 0x0070041a)
+    self.assertEqual(file_object.get_offset(), 0x0030041a)
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
-    expected_offset = 8388608 + 100
+    expected_offset = 4194304 + 100
     file_object.seek(expected_offset, os.SEEK_SET)
     self.assertEqual(file_object.get_offset(), expected_offset)
     self.assertEqual(file_object.read(20), b'')
@@ -121,7 +121,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 8388608)
+    self.assertEqual(file_object.get_size(), 4194304)
 
     file_object.seek(0x80400)
 
@@ -132,16 +132,13 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
 
-class LVMImageFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the Logical Volume Manager (LVM) file-like object."""
-
-  _INODE_ANOTHER_FILE = 14
-  _INODE_PASSWORDS_TXT = 15
+class LVMImageFileTest(test_lib.Ext2ImageFileTestCase):
+  """Tests the Logical Volume Manager (LVM) file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(LVMImageFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)

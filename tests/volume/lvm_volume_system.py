@@ -19,7 +19,7 @@ class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -27,47 +27,35 @@ class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
         location='/', parent=path_spec)
 
-  # qcowmount test_data/lvmtest.qcow2 fuse/
+  # qcowmount test_data/lvm.qcow2 fuse/
   # vslvminfo fuse/qcow1
   #
   # Linux Logical Volume Manager (LVM) information:
   # Volume Group (VG):
-  #   Name:                       vg_test
-  #   Identifier:                 kZ4S06-lhFY-G4cB-8OQx-SWVg-GrI6-1jEYEf
-  #   Sequence number:            3
-  #   Extent size:                4194304 bytes
-  #   Number of physical volumes: 1
-  #   Number of logical volumes:  2
+  #   Name:                         test_volume_group
+  #   Identifier:                   SN0dH9-7Eic-NCvi-WHj8-76G8-za0g-iJobeq
+  #   Sequence number:              2
+  #   Extent size:                  4.0 MiB (4194304 bytes)
+  #   Number of physical volumes:   1
+  #   Number of logical volumes:    1
   #
   # Physical Volume (PV): 1
-  #   Name:                       pv0
-  #   Identifier:                 btEzLa-i0aL-sfS8-Ae9P-QKGU-IhtA-CkpWm7
-  #   Device path:                /dev/loop1
-  #   Volume size:                16777216 bytes
+  #   Name:                         pv0
+  #   Identifier:                   K994MB-Sn1r-7rpS-hQEW-DgUP-87Dr-9d0MFa
+  #   Device path:                  /dev/loop0
+  #   Volume size:                  8.0 MiB (8388608 bytes)
   #
   # Logical Volume (LV): 1
-  #   Name:                       lv_test1
-  #   Identifier:                 ldAb7Y-GU1t-qDml-VkAp-qt46-0meR-qJS3vC
-  #   Number of segments:         1
+  #   Name:                         test_logical_volume
+  #   Identifier:                   0MUZZr-7jgO-iFwW-sSG3-Rb8W-w5td-qAOF8e
+  #   Number of segments:           1
   #   Segment: 1
-  #     Offset:                   0x00000000 (0)
-  #     Size:                     8.0 MiB (8388608 bytes)
-  #     Number of stripes:        1
+  #     Offset:                     0x00000000 (0)
+  #     Size:                       4.0 MiB (4194304 bytes)
+  #     Number of stripes:          1
   #     Stripe: 1
-  #       Physical volume:        pv0
-  #       Data area offset:       0x00000000 (0)
-  #
-  # Logical Volume (LV): 2
-  #   Name:                       lv_test2
-  #   Identifier:                 bJxmc8-JEMZ-jXT9-oVeY-40AY-ROro-mCO8Zz
-  #   Number of segments:         1
-  #   Segment: 1
-  #     Offset:                   0x00000000 (0)
-  #     Size:                     4.0 MiB (4194304 bytes)
-  #     Number of stripes:        1
-  #     Stripe: 1
-  #       Physical volume:        pv0
-  #       Data area offset:       0x00800000 (8388608)
+  #       Physical volume:          pv0
+  #       Data area offset:         0x00000000 (0)
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
@@ -75,16 +63,16 @@ class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
 
     volume_system.Open(self._lvm_path_spec)
 
-    self.assertEqual(volume_system.number_of_volumes, 2)
+    self.assertEqual(volume_system.number_of_volumes, 1)
 
-    volume = volume_system.GetVolumeByIndex(1)
+    volume = volume_system.GetVolumeByIndex(0)
     self.assertIsNotNone(volume)
 
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 1)
-    self.assertEqual(volume.identifier, 'lvm2')
+    self.assertEqual(volume.identifier, 'lvm1')
 
-    expected_value = 'bJxmc8-JEMZ-jXT9-oVeY-40AY-ROro-mCO8Zz'
+    expected_value = '0MUZZr-7jgO-iFwW-sSG3-Rb8W-w5td-qAOF8e'
     volume_attribute = volume.GetAttribute('identifier')
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)

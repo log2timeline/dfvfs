@@ -39,7 +39,7 @@ class ResolverHelper(object):
       FileIO: file-like object.
 
     Raises:
-      RuntimeError: if there is no implementation to create a file-like object.
+      NotSupported: if there is no implementation to create a file-like object.
     """
     raise errors.NotSupported(
         'Missing implementation to create file-like object.')
@@ -54,6 +54,6 @@ class ResolverHelper(object):
       FileSystem: file system.
 
     Raises:
-      RuntimeError: if there is no implementation to create a file system.
+      NotSupported: if there is no implementation to create a file system.
     """
     raise errors.NotSupported('Missing implementation to create file system.')

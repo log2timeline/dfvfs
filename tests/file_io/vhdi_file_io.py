@@ -13,13 +13,13 @@ from dfvfs.path import vhdi_path_spec
 from tests.file_io import test_lib
 
 
-class DynamicVHDIFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the VHD image file-like object."""
+class DynamicVHDIFileTest(test_lib.Ext2ImageFileTestCase):
+  """Tests the VHD image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(DynamicVHDIFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['image.vhd'])
+    test_file = self._GetTestFilePath(['ext2.vhd'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
