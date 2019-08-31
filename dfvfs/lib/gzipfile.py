@@ -144,28 +144,38 @@ class GzipMember(data_format.DataFormat):
       file_object (FileIO): file-like object, containing the gzip member.
       member_start_offset (int): offset to the beginning of the gzip member
           in the containing file.
-      uncompressed_data_offset (int): current offset into the uncompressed data
-          in the containing file.
+      uncompressed_data_offset (int): offset of the start of the uncompressed
+          data in this member relative to the whole gzip file's uncompressed
+          data.
     """
+    self._cache = b''
+    # End offset of the cached uncompressed data of the member.
+    self._cache_end_offset = None
+    # Start offset of the cached uncompressed data of the member.
+    self._cache_start_offset = None
+
     self.comment = None
     self.modification_time = None
     self.operating_system = None
     self.original_filename = None
 
-    # Read the member data to determine the uncompressed data size and
-    # the offset of the member footer.
     file_size = file_object.get_size()
 
     file_object.seek(member_start_offset, os.SEEK_SET)
     self._ReadMemberHeader(file_object)
 
+    data_offset = 0
     uncompressed_data_size = 0
 
     compressed_data_offset = file_object.get_offset()
     decompressor_state = _GzipDecompressorState(compressed_data_offset)
 
+    # Read the member data to determine the uncompressed data size and
+    # the offset of the member footer.
     file_offset = compressed_data_offset
     while file_offset < file_size:
+      data_offset += uncompressed_data_size
+
       decompressed_data = decompressor_state.Read(file_object)
       uncompressed_data_size += len(decompressed_data)
 
@@ -192,14 +202,12 @@ class GzipMember(data_format.DataFormat):
     self._file_object = file_object
     self._file_object.seek(member_start_offset, os.SEEK_SET)
 
-    # Offset into this member's uncompressed data of the first item in
-    # the cache.
-    self._cache_start_offset = None
-
-    # Offset into this member's uncompressed data of the last item in
-    # the cache.
-    self._cache_end_offset = None
-    self._cache = b''
+    # Cache uncompressed data of gzip files that fit entirely in the cache.
+    if (data_offset == 0 and
+        uncompressed_data_size < self._UNCOMPRESSED_DATA_CACHE_SIZE):
+      self._cache = decompressed_data
+      self._cache_start_offset = 0
+      self._cache_end_offset = uncompressed_data_size
 
     # Offset to the beginning of the compressed data in the file object.
     self._compressed_data_start = compressed_data_offset
