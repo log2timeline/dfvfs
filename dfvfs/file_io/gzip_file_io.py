@@ -136,10 +136,13 @@ class GzipFile(file_io.FileIO):
            self._current_offset < self.uncompressed_data_size):
       member = self._GetMemberForOffset(self._current_offset)
       member_offset = self._current_offset - member.uncompressed_data_offset
+
       data_read = member.ReadAtOffset(member_offset, size)
-      if data_read:
-        self._current_offset += len(data_read)
-        data = b''.join([data, data_read])
+      if not data_read:
+        break
+
+      self._current_offset += len(data_read)
+      data = b''.join([data, data_read])
 
     return data
 
