@@ -16,7 +16,7 @@ REFERENCES_DIRECTORY="/media/greendale_images";
 
 RESULTS_DIRECTORY="dfvfs-out";
 
-./config/linux/gift_ppa_install.sh include-test;
+./config/linux/gift_ppa_install_py3.sh include-test;
 
 # Change path to test this script on Travis-CI.
 if test ${CONFIGURATION_NAME} = 'travis';
