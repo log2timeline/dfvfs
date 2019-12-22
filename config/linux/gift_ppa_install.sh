@@ -32,7 +32,6 @@ PYTHON2_DEPENDENCIES="libbde-python
 
 # Additional dependencies for running tests, alphabetized, one per line.
 TEST_DEPENDENCIES="python-coverage
-                   python-funcsigs
                    python-mock
                    python-pbr
                    python-setuptools
