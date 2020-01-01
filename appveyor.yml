@@ -18,7 +18,7 @@ install:
 - cmd: if [%PYTHON_VERSION%]==[3.7] (
     mkdir dependencies &&
     set PYTHONPATH=..\l2tdevtools &&
-    "%PYTHON%\\python.exe" ..\l2tdevtools\tools\update.py --download-directory dependencies --machine-type %MACHINE_TYPE% --msi-targetdir "%PYTHON%" --track dev PyYAML cffi cryptography dfdatetime dtfabric idna libbde libewf libfsapfs libfsntfs libfvde libfwnt libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvshadow libvslvm mock pbr pytsk3 six )
+    "%PYTHON%\\python.exe" ..\l2tdevtools\tools\update.py --download-directory dependencies --machine-type %MACHINE_TYPE% --msi-targetdir "%PYTHON%" --track dev PyYAML cffi cryptography dfdatetime dtfabric idna libbde libewf libfsapfs libfsntfs libfvde libfwnt libluksde libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvshadow libvslvm mock pbr pytsk3 six )
 
 build: off
 

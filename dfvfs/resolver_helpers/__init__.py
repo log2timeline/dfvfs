@@ -33,6 +33,11 @@ except ImportError:
 from dfvfs.resolver_helpers import gzip_resolver_helper
 
 try:
+  from dfvfs.resolver_helpers import luksde_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver_helpers import lvm_resolver_helper
 except ImportError:
   pass
