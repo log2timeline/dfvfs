@@ -31,8 +31,7 @@ PYTHON2_DEPENDENCIES="libbde-python2
                       python2-pyyaml";
 
 # Additional dependencies for running tests, alphabetized, one per line.
-TEST_DEPENDENCIES="python2-funcsigs
-                   python2-mock
+TEST_DEPENDENCIES="python2-mock
                    python2-pbr
                    python2-setuptools
                    python2-six";
