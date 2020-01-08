@@ -78,4 +78,4 @@ matrix:
 install:
 - ./config/travis/install.sh
 script:
-- ./config/travis/run_with_timeout.sh 30 ./config/travis/runtests.sh
+- ./config/travis/run_with_timeout.sh 45 ./config/travis/runtests.sh

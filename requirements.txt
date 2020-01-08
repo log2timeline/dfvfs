@@ -1,6 +1,5 @@
 pip >= 7.0.0
 PyYAML >= 3.10
-backports.lzma ; python_version < '3.0'
 dfdatetime >= 20181025
 dtfabric >= 20170524
 libbde-python >= 20140531
