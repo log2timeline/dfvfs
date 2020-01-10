@@ -13,13 +13,13 @@ from dfvfs.path import os_path_spec
 from tests.file_io import test_lib
 
 
-class EWFFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the EWF image file-like object."""
+class EWFFileTest(test_lib.Ext2ImageFileTestCase):
+  """Tests the EWF image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(EWFFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['image.E01'])
+    test_file = self._GetTestFilePath(['ext2.E01'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -49,21 +49,32 @@ class EWFFileTest(test_lib.ImageFileTestCase):
     self._TestRead(self._ewf_path_spec)
 
 
-class SplitEWFFileTest(test_lib.PartitionedImageFileTestCase):
-  """The unit test for the split EWF image file-like object."""
+class SplitEWFFileTest(test_lib.Ext2ImageFileTestCase):
+  """Tests the EWF image file-like object on a split EWF image."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(SplitEWFFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['image-split.E01'])
+    test_file = self._GetTestFilePath(['ext2.split.E01'])
     self._SkipIfPathNotExists(test_file)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=self._os_path_spec)
 
-  def testOpenClose(self):
-    """Test the open and close functionality."""
-    self._TestOpenClose(self._ewf_path_spec)
+  def testOpenCloseInode(self):
+    """Test the open and close functionality using an inode."""
+    self._TestOpenCloseInode(self._ewf_path_spec)
+
+  def testOpenCloseLocation(self):
+    """Test the open and close functionality using a location."""
+    self._TestOpenCloseLocation(self._ewf_path_spec)
+
+    # Try open with a path specification that has no parent.
+    path_spec = ewf_path_spec.EWFPathSpec(parent=self._os_path_spec)
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""

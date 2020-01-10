@@ -13,13 +13,13 @@ from dfvfs.path import qcow_path_spec
 from tests.file_io import test_lib
 
 
-class QCOWFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the QCOW image file-like object."""
+class QCOWFileTest(test_lib.Ext2ImageFileTestCase):
+  """Tests the QCOW image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(QCOWFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['image.qcow2'])
+    test_file = self._GetTestFilePath(['ext2.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)

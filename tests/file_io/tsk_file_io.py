@@ -4,24 +4,22 @@
 
 from __future__ import unicode_literals
 
-import os
 import unittest
 
 from dfvfs.file_io import tsk_file_io
 from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
 from dfvfs.path import tsk_path_spec
 
 from tests.file_io import test_lib
 
 
-class TSKFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the SleuthKit (TSK) file-like object."""
+class TSKFileTestExt2(test_lib.Ext2ImageFileTestCase):
+  """Tests the SleuthKit (TSK) file-like object on ext2."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(TSKFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['ímynd.dd'])
+    super(TSKFileTestExt2, self).setUp()
+    test_file = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -42,37 +40,60 @@ class TSKFileTest(test_lib.ImageFileTestCase):
     """Test the read functionality."""
     self._TestRead(self._os_path_spec)
 
-  def testReadADS(self):
-    """Test the read functionality on an alternate data stream (ADS)."""
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+
+class TSKFileTestNTFS(test_lib.NTFSImageFileTestCase):
+  """Tests the SleuthKit (TSK) file-like object on NTFS."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    super(TSKFileTestNTFS, self).setUp()
+    test_file = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_file)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+  def testOpenCloseMFTEntry(self):
+    """Test the open and close functionality using a MFT entry."""
     path_spec = tsk_path_spec.TSKPathSpec(
-        data_stream='$SDS', inode=9, location='\\$Secure', parent=path_spec)
+        inode=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._os_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    self._TestOpenCloseMFTEntry(path_spec, file_object)
 
-    expected_buffer = (
-        b'H\n\x80\xb9\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+  def testOpenCloseLocation(self):
+    """Test the open and close functionality using a location."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location='/passwords.txt', parent=self._os_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    read_buffer = file_object.read(size=16)
-    self.assertEqual(read_buffer, expected_buffer)
+    self._TestOpenCloseLocation(path_spec, file_object)
 
-    file_object.seek(0x00040000, os.SEEK_SET)
+  def testSeek(self):
+    """Test the seek functionality."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location='/a_directory/another_file',
+        inode=self._MFT_ENTRY_ANOTHER_FILE, parent=self._os_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    read_buffer = file_object.read(size=16)
-    self.assertEqual(read_buffer, expected_buffer)
+    self._TestSeek(path_spec, file_object)
 
-    file_object.seek(0x000401a0, os.SEEK_SET)
+  def testRead(self):
+    """Test the read functionality."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location='/passwords.txt', inode=self._MFT_ENTRY_PASSWORDS_TXT,
+        parent=self._os_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
 
-    expected_buffer = (
-        b'\xc3\xb4\xb1\x34\x03\x01\x00\x00\xa0\x01\x00\x00\x00\x00\x00\x00')
+    self._TestRead(path_spec, file_object)
 
-    read_buffer = file_object.read(size=16)
-    self.assertEqual(read_buffer, expected_buffer)
+  def testReadADS(self):
+    """Test the read functionality on an alternate data stream (ADS)."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        data_stream='$SDS', location='/$Secure', inode=9,
+        parent=self._os_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
+
+    self._TestReadADS(path_spec, file_object)
 
 
 if __name__ == '__main__':

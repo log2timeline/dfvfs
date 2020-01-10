@@ -57,6 +57,10 @@ class LVMFileEntry(file_entry.FileEntry):
       is_virtual (Optional[bool]): True if the file entry is a virtual file
       vslvm_logical_volume (Optional[pyvslvm.logical_volume]): a LVM logical
           volume.
+
+    Raises:
+      BackEndError: when LVM logical volume is missing for a non-virtual file
+          entry.
     """
     if not is_virtual and vslvm_logical_volume is None:
       vslvm_logical_volume = file_system.GetLVMLogicalVolumeByPathSpec(

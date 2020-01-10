@@ -17,10 +17,12 @@ from tests import test_lib as shared_test_lib
 class TSKFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file system."""
 
+  _INODE_PASSWORDS_TXT = 14
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['ímynd.dd'])
+    test_file = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -44,11 +46,12 @@ class TSKFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._tsk_path_spec)
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=15, location='/password.txt', parent=self._os_path_spec)
+        inode=self._INODE_PASSWORDS_TXT, location='/password.txt',
+        parent=self._os_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=19, location='/bogus.txt', parent=self._os_path_spec)
+        inode=9999, location='/bogus.txt', parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -69,14 +72,15 @@ class TSKFileSystemTest(shared_test_lib.BaseTestCase):
     # in the path_spec or retrieving the file_entry from its parent.
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=15, location='/password.txt', parent=self._os_path_spec)
+        inode=self._INODE_PASSWORDS_TXT, location='/password.txt',
+        parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'password.txt')
 
     path_spec = tsk_path_spec.TSKPathSpec(
-        inode=19, location='/bogus.txt', parent=self._os_path_spec)
+        inode=9999, location='/bogus.txt', parent=self._os_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)

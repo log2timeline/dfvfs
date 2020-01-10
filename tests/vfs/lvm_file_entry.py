@@ -22,7 +22,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['lvmtest.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -37,47 +37,35 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
-  # qcowmount test_data/lvmtest.qcow2 fuse/
+  # qcowmount test_data/lvm.qcow2 fuse/
   # vslvminfo fuse/qcow1
   #
   # Linux Logical Volume Manager (LVM) information:
   # Volume Group (VG):
-  #   Name:                       vg_test
-  #   Identifier:                 kZ4S06-lhFY-G4cB-8OQx-SWVg-GrI6-1jEYEf
-  #   Sequence number:            3
-  #   Extent size:                4194304 bytes
-  #   Number of physical volumes: 1
-  #   Number of logical volumes:  2
+  #   Name:                         test_volume_group
+  #   Identifier:                   SN0dH9-7Eic-NCvi-WHj8-76G8-za0g-iJobeq
+  #   Sequence number:              2
+  #   Extent size:                  4.0 MiB (4194304 bytes)
+  #   Number of physical volumes:   1
+  #   Number of logical volumes:    1
   #
   # Physical Volume (PV): 1
-  #   Name:                       pv0
-  #   Identifier:                 btEzLa-i0aL-sfS8-Ae9P-QKGU-IhtA-CkpWm7
-  #   Device path:                /dev/loop1
-  #   Volume size:                16777216 bytes
+  #   Name:                         pv0
+  #   Identifier:                   K994MB-Sn1r-7rpS-hQEW-DgUP-87Dr-9d0MFa
+  #   Device path:                  /dev/loop0
+  #   Volume size:                  8.0 MiB (8388608 bytes)
   #
   # Logical Volume (LV): 1
-  #   Name:                       lv_test1
-  #   Identifier:                 ldAb7Y-GU1t-qDml-VkAp-qt46-0meR-qJS3vC
-  #   Number of segments:         1
+  #   Name:                         test_logical_volume
+  #   Identifier:                   0MUZZr-7jgO-iFwW-sSG3-Rb8W-w5td-qAOF8e
+  #   Number of segments:           1
   #   Segment: 1
-  #     Offset:                   0x00000000 (0)
-  #     Size:                     8.0 MiB (8388608 bytes)
-  #     Number of stripes:        1
+  #     Offset:                     0x00000000 (0)
+  #     Size:                       4.0 MiB (4194304 bytes)
+  #     Number of stripes:          1
   #     Stripe: 1
-  #       Physical volume:        pv0
-  #       Data area offset:       0x00000000 (0)
-  #
-  # Logical Volume (LV): 2
-  #   Name:                       lv_test2
-  #   Identifier:                 bJxmc8-JEMZ-jXT9-oVeY-40AY-ROro-mCO8Zz
-  #   Number of segments:         1
-  #   Segment: 1
-  #     Offset:                   0x00000000 (0)
-  #     Size:                     4.0 MiB (4194304 bytes)
-  #     Number of stripes:        1
-  #     Stripe: 1
-  #       Physical volume:        pv0
-  #       Data area offset:       0x00800000 (8388608)
+  #       Physical volume:          pv0
+  #       Data area offset:         0x00000000 (0)
 
   def testIntialize(self):
     """Test the __init__ function."""
@@ -90,7 +78,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=1)
+        parent=self._qcow_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -108,7 +96,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetStat(self):
     """Tests the GetStat function."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=1)
+        parent=self._qcow_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -125,7 +113,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testIsFunctions(self):
     """Test the Is? functions."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=1)
+        parent=self._qcow_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -163,9 +151,9 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 1)
 
-    expected_sub_file_entry_names = ['lvm1', 'lvm2']
+    expected_sub_file_entry_names = ['lvm1']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -179,7 +167,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testDataStreams(self):
     """Test the data streams functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=1)
+        parent=self._qcow_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -207,7 +195,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=1)
+        parent=self._qcow_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 

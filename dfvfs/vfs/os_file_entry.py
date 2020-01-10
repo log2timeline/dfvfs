@@ -57,10 +57,10 @@ class OSDirectory(file_entry.Directory):
           raise errors.AccessError(
               'Access to directory denied with error: {0!s}'.format(
                   exception_string))
-        else:
-          raise errors.BackEndError(
-              'Unable to list directory: {0:s} with error: {1!s}'.format(
-                  location, exception))
+
+        raise errors.BackEndError(
+            'Unable to list directory: {0:s} with error: {1!s}'.format(
+                location, exception))
 
 
 class OSFileEntry(file_entry.FileEntry):

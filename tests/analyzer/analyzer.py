@@ -157,7 +157,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
   def testGetStorageMediaImageTypeIndicatorsEWF(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .E01 file."""
-    test_file = self._GetTestFilePath(['image.E01'])
+    test_file = self._GetTestFilePath(['ext2.E01'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -169,7 +169,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
   def testGetStorageMediaImageTypeIndicatorsQCOW(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .qcow2 file."""
-    test_file = self._GetTestFilePath(['image.qcow2'])
+    test_file = self._GetTestFilePath(['ext2.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -181,7 +181,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
   def testGetStorageMediaImageTypeIndicatorsVHDI(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .vhd file."""
-    test_file = self._GetTestFilePath(['image.vhd'])
+    test_file = self._GetTestFilePath(['ext2.vhd'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -193,7 +193,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
   def testGetStorageMediaImageTypeIndicatorsVMDK(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .vmdk file."""
-    test_file = self._GetTestFilePath(['image.vmdk'])
+    test_file = self._GetTestFilePath(['ext2.vmdk'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)

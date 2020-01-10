@@ -21,7 +21,7 @@ class JsonPathSpecSerializerTest(shared_test_lib.BaseTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = self._GetTestFilePath(['image.qcow2'])
+    test_file = self._GetTestFilePath(['ext2.qcow2'])
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(
         parent=self._os_path_spec)

@@ -173,11 +173,11 @@ class StdoutWriter(OutputWriter):
 
   def Close(self):
     """Closes the output writer object."""
-    pass
+    return
 
   def Open(self):
     """Opens the output writer object."""
-    pass
+    return
 
   def WriteFileEntry(self, path):
     """Writes the file path to stdout.

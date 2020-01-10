@@ -576,7 +576,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanOnRAW(self):
     """Test the Scan function on a RAW image."""
-    test_path = self._GetTestFilePath(['ímynd.dd'])
+    test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -634,7 +634,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForStorageMediaImageOnRAW(self):
     """Test the ScanForStorageMediaImage function on a RAW image."""
-    test_path = self._GetTestFilePath(['ímynd.dd'])
+    test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -646,7 +646,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForStorageMediaImageOnSplitRAW(self):
     """Test the ScanForStorageMediaImage function on a split RAW image."""
-    test_path = self._GetTestFilePath(['image.raw.000'])
+    test_path = self._GetTestFilePath(['ext2.splitraw.000'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -658,7 +658,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForStorageMediaImageOnEWF(self):
     """Test the ScanForStorageMediaImage function on an EWF image."""
-    test_path = self._GetTestFilePath(['image.E01'])
+    test_path = self._GetTestFilePath(['ext2.E01'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -670,7 +670,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForStorageMediaImageOnQCOW(self):
     """Test the ScanForStorageMediaImage function on a QCOW image."""
-    test_path = self._GetTestFilePath(['image.qcow2'])
+    test_path = self._GetTestFilePath(['ext2.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -683,7 +683,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForStorageMediaImageOnVHDI(self):
     """Test the ScanForStorageMediaImage function on a VHD image."""
-    test_path = self._GetTestFilePath(['image.vhd'])
+    test_path = self._GetTestFilePath(['ext2.vhd'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -696,7 +696,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForStorageMediaImageOnVMDK(self):
     """Test the ScanForStorageMediaImage function on a VMDK image."""
-    test_path = self._GetTestFilePath(['image.vmdk'])
+    test_path = self._GetTestFilePath(['ext2.vmdk'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(

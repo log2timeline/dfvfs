@@ -13,13 +13,13 @@ from dfvfs.path import vmdk_path_spec
 from tests.file_io import test_lib
 
 
-class VMDKFileTest(test_lib.ImageFileTestCase):
-  """The unit test for the VMDK image file-like object."""
+class VMDKFileTest(test_lib.Ext2ImageFileTestCase):
+  """Tests the VMDK image file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(VMDKFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['image.vmdk'])
+    test_file = self._GetTestFilePath(['ext2.vmdk'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)

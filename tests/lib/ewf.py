@@ -79,10 +79,10 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     """Test the glob function."""
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
-        'image.E01', 1, expected_segment_file_path_specs)
+        'ext2.E01', 1, expected_segment_file_path_specs)
 
     # Test single segment file: E01.
-    path_spec = fake_path_spec.FakePathSpec(location='/image.E01')
+    path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
@@ -106,9 +106,9 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     # Test multiple segment files: E01-E10.
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
-        'image.E01', 10, expected_segment_file_path_specs)
+        'ext2.E01', 10, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location='/image.E01')
+    path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
@@ -120,9 +120,9 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     # Test multiple segment files: E01-E99,EAA.
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
-        'image.E01', 100, expected_segment_file_path_specs)
+        'ext2.E01', 100, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location='/image.E01')
+    path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
@@ -134,9 +134,9 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     # Test multiple segment files: E01-E99,EAA-EBA.
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
-        'image.E01', 126, expected_segment_file_path_specs)
+        'ext2.E01', 126, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location='/image.E01')
+    path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
@@ -148,9 +148,9 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     # Test multiple segment files: E01-E99,EAA-EZZ.
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
-        'image.E01', 775, expected_segment_file_path_specs)
+        'ext2.E01', 775, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location='/image.E01')
+    path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
@@ -162,9 +162,9 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     # Test multiple segment files: E01-E99,EAA-ZZZ.
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
-        'image.E01', 14970, expected_segment_file_path_specs)
+        'ext2.E01', 14970, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location='/image.E01')
+    path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
@@ -176,9 +176,9 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     # Test multiple segment files: E01-E99,EAA-[ZZ.
     expected_segment_file_path_specs = []
     file_system = self._BuildFileFakeFileSystem(
-        'image.E01', 14971, expected_segment_file_path_specs)
+        'ext2.E01', 14971, expected_segment_file_path_specs)
 
-    path_spec = fake_path_spec.FakePathSpec(location='/image.E01')
+    path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     with self.assertRaises(RuntimeError):
