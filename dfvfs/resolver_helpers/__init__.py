@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """Imports for the path specification resolver."""
 
-from dfvfs.resolver_helpers import apfs_container_resolver_helper
-from dfvfs.resolver_helpers import apfs_resolver_helper
+try:
+  from dfvfs.resolver_helpers import apfs_container_resolver_helper
+  from dfvfs.resolver_helpers import apfs_resolver_helper
+except ImportError:
+  pass
 
 try:
   from dfvfs.resolver_helpers import bde_resolver_helper
