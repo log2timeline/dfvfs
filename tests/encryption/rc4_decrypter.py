@@ -16,9 +16,9 @@ class RC4DecrypterTestCase(test_lib.DecrypterTestCase):
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
-    decrypter = rc4_decrypter.RC4Decrypter(key=b'test')
+    decrypter = rc4_decrypter.RC4Decrypter(key=b'test1')
 
-    decrypted_data, _ = decrypter.Decrypt(b'\xaf\x8d\x24\x15\xe5\x2c\x7a\x2d')
+    decrypted_data, _ = decrypter.Decrypt(b'\xef6\xcd\x14\xfe\xf5+y')
     expected_decrypted_data = b'\x01\x02\x03\x04\x05\x06\x07\x08'
     self.assertEqual(decrypted_data, expected_decrypted_data)
 

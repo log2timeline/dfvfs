@@ -3,7 +3,9 @@
 
 from __future__ import unicode_literals
 
-from Crypto.Cipher import ARC4
+from cryptography.hazmat.primitives.ciphers import algorithms
+from cryptography.hazmat import backends
+from cryptography.hazmat.primitives import ciphers
 
 from dfvfs.encryption import decrypter
 from dfvfs.encryption import manager
@@ -11,7 +13,7 @@ from dfvfs.lib import definitions
 
 
 class RC4Decrypter(decrypter.Decrypter):
-  """RC4 decrypter using pycrypto."""
+  """RC4 decrypter using Cryptography."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_RC4
 
@@ -28,19 +30,27 @@ class RC4Decrypter(decrypter.Decrypter):
     if not key:
       raise ValueError('Missing key.')
 
-    super(RC4Decrypter, self).__init__()
-    self._rc4_cipher = ARC4.new(key)
+    algorithm = algorithms.ARC4(key)
 
-  def Decrypt(self, encrypted_data):
+    backend = backends.default_backend()
+    cipher = ciphers.Cipher(algorithm, mode=None, backend=backend)
+
+    super(RC4Decrypter, self).__init__(**kwargs)
+    self._cipher_context = cipher.decryptor()
+
+  # pylint: disable=unused-argument
+  def Decrypt(self, encrypted_data, finalize=False):
     """Decrypts the encrypted data.
 
     Args:
       encrypted_data (bytes): encrypted data.
+      finalize (Optional[bool]): True if the end of data has been reached and
+          the cipher context should be finalized.
 
     Returns:
       tuple[bytes,bytes]: decrypted data and remaining encrypted data.
     """
-    decrypted_data = self._rc4_cipher.decrypt(encrypted_data)
+    decrypted_data = self._cipher_context.update(encrypted_data)
     return decrypted_data, b''
 
 

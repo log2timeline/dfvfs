@@ -15,8 +15,8 @@ from tests.encryption import test_lib
 class AESDecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the AES decrypter object."""
 
-  _AES_INITIALIZATION_VECTOR = 'This is an IV456'
-  _AES_KEY = 'This is a key123'
+  _AES_INITIALIZATION_VECTOR = b'This is an IV456'
+  _AES_KEY = b'This is a key123'
 
   def testInitialization(self):
     """Tests the initialization method."""
@@ -41,13 +41,19 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key='Wrong key size')
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=b'Wrong key size')
+
+    # Test incorrect initialization vector type.
+    with self.assertRaises(TypeError):
+      aes_decrypter.AESDecrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector='Wrong IV type', key=self._AES_KEY)
 
     # Test incorrect initialization vector size.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector='Wrong IV size', key=self._AES_KEY)
+          initialization_vector=b'Wrong IV size', key=self._AES_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
@@ -57,11 +63,14 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
         key=self._AES_KEY)
 
     # Test full decryption.
-    decrypted_data, _ = decrypter.Decrypt(
-        b'2|\x7f\xd7\xff\xbay\xf9\x95?\x81\xc7\xaafV\xceB\x01\xdb8E7\xfe'
-        b'\x92j\xf0\x1d(\xb9\x9f\xad\x13')
     expected_decrypted_data = b'This is secret encrypted text!!!'
-    self.assertEqual(expected_decrypted_data, decrypted_data)
+
+    decrypted_data, remaining_encrypted_data = decrypter.Decrypt(
+        b'2|\x7f\xd7\xff\xbay\xf9\x95?\x81\xc7\xaafV\xceB\x01\xdb8E7\xfe'
+        b'\x92j\xf0\x1d(\xb9\x9f\xad\x13', finalize=True)
+
+    self.assertEqual(decrypted_data, expected_decrypted_data)
+    self.assertEqual(remaining_encrypted_data, b'')
 
     # Reset decrypter.
     decrypter = aes_decrypter.AESDecrypter(
@@ -70,19 +79,13 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
         key=self._AES_KEY)
 
     # Test partial decryption.
-    decrypted_data, encrypted_data = decrypter.Decrypt(
+    partial_encrypted_data = (
         b'2|\x7f\xd7\xff\xbay\xf9\x95?\x81\xc7\xaafV\xceB\x01\xdb8E7\xfe')
-    expected_decrypted_data = b'This is secret e'
-    expected_encrypted_data = b'B\x01\xdb8E7\xfe'
-    self.assertEqual(expected_decrypted_data, decrypted_data)
-    self.assertEqual(expected_encrypted_data, encrypted_data)
 
-    decrypted_data, encrypted_data = decrypter.Decrypt(
-        b'B\x01\xdb8E7\xfe\x92j\xf0\x1d(\xb9\x9f\xad\x13')
-    expected_decrypted_data = b'ncrypted text!!!'
-    expected_encrypted_data = b''
-    self.assertEqual(expected_decrypted_data, decrypted_data)
-    self.assertEqual(expected_encrypted_data, encrypted_data)
+    decrypted_data, remaining_encrypted_data = decrypter.Decrypt(
+        partial_encrypted_data)
+    self.assertEqual(decrypted_data, b'')
+    self.assertEqual(remaining_encrypted_data, partial_encrypted_data)
 
 
 if __name__ == '__main__':

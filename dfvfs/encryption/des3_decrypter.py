@@ -3,23 +3,23 @@
 
 from __future__ import unicode_literals
 
-from Crypto.Cipher import DES3
+from cryptography.hazmat.primitives.ciphers import algorithms
 
 from dfvfs.encryption import decrypter
 from dfvfs.encryption import manager
 from dfvfs.lib import definitions
 
 
-class DES3Decrypter(decrypter.Decrypter):
-  """Triple DES decrypter using pycrypto."""
+class DES3Decrypter(decrypter.CryptographyBlockCipherDecrypter):
+  """Triple DES decrypter using Cryptography."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_DES3
 
-  ENCRYPTION_MODES = {
-      definitions.ENCRYPTION_MODE_CBC : DES3.MODE_CBC,
-      definitions.ENCRYPTION_MODE_CFB : DES3.MODE_CFB,
-      definitions.ENCRYPTION_MODE_ECB : DES3.MODE_ECB,
-      definitions.ENCRYPTION_MODE_OFB : DES3.MODE_OFB}
+  _ENCRYPTION_MODES = frozenset([
+      definitions.ENCRYPTION_MODE_CBC,
+      definitions.ENCRYPTION_MODE_CFB,
+      definitions.ENCRYPTION_MODE_ECB,
+      definitions.ENCRYPTION_MODE_OFB])
 
   def __init__(
       self, cipher_mode=None, initialization_vector=None, key=None, **kwargs):
@@ -32,47 +32,19 @@ class DES3Decrypter(decrypter.Decrypter):
       kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
-      ValueError: when key is not set, block cipher mode is not supported,
-          or initialization_vector is required and not set.
+      ValueError: when key is not set or the cipher mode is not supported.
     """
     if not key:
       raise ValueError('Missing key.')
 
-    cipher_mode = self.ENCRYPTION_MODES.get(cipher_mode, None)
-    if cipher_mode is None:
+    if cipher_mode not in self._ENCRYPTION_MODES:
       raise ValueError('Unsupported cipher mode: {0!s}'.format(cipher_mode))
 
-    if cipher_mode != DES3.MODE_ECB and not initialization_vector:
-      # Pycrypto does not create a meaningful error when initialization vector
-      # is missing. Therefore, we report it ourselves.
-      raise ValueError('Missing initialization vector.')
+    algorithm = algorithms.TripleDES(key)
 
-    super(DES3Decrypter, self).__init__()
-    if cipher_mode == DES3.MODE_ECB:
-      self._des3_cipher = DES3.new(key, mode=cipher_mode)
-    else:
-      self._des3_cipher = DES3.new(
-          key, IV=initialization_vector, mode=cipher_mode)
-
-  def Decrypt(self, encrypted_data):
-    """Decrypts the encrypted data.
-
-    Args:
-      encrypted_data (bytes): encrypted data.
-
-    Returns:
-      tuple[bytes, bytes]: decrypted data and remaining encrypted data.
-    """
-    index_split = -(len(encrypted_data) % DES3.block_size)
-    if index_split:
-      remaining_encrypted_data = encrypted_data[index_split:]
-      encrypted_data = encrypted_data[:index_split]
-    else:
-      remaining_encrypted_data = b''
-
-    decrypted_data = self._des3_cipher.decrypt(encrypted_data)
-
-    return decrypted_data, remaining_encrypted_data
+    super(DES3Decrypter, self).__init__(
+        algorithm=algorithm, cipher_mode=cipher_mode,
+        initialization_vector=initialization_vector, **kwargs)
 
 
 manager.EncryptionManager.RegisterDecrypter(DES3Decrypter)

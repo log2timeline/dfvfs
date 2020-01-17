@@ -15,8 +15,8 @@ from tests.encryption import test_lib
 class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the triple DES decrypter object."""
 
-  _DES3_INITIALIZATION_VECTOR = 'This IV!'
-  _DES3_KEY = 'This is a key123'
+  _DES3_INITIALIZATION_VECTOR = b'This IV!'
+  _DES3_KEY = b'This is a key123'
 
   def testInitialization(self):
     """Tests the initialization method."""
@@ -41,13 +41,19 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key='Wrong key size')
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=b'Wrong key size')
+
+    # Test incorrect initialization vector type.
+    with self.assertRaises(TypeError):
+      des3_decrypter.DES3Decrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector='Wrong IV type', key=self._DES3_KEY)
 
     # Test incorrect initialization vector size.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-          initialization_vector='Wrong IV size', key=self._DES3_KEY)
+          initialization_vector=b'Wrong IV size', key=self._DES3_KEY)
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
@@ -57,11 +63,14 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
         key=self._DES3_KEY)
 
     # Test full decryption.
-    decrypted_data, _ = decrypter.Decrypt(
-        b'e\x86k\t\x01W\xd7d\xe4\xa4\xb3~\x80\xd3\xc3\x7fq{E}:L\n '
-        b'.2\xd1\xcf\x8a\xf1\xa0!')
     expected_decrypted_data = b'This is secret encrypted text!!!'
-    self.assertEqual(expected_decrypted_data, decrypted_data)
+
+    decrypted_data, remaining_encrypted_data = decrypter.Decrypt(
+        b'e\x86k\t\x01W\xd7d\xe4\xa4\xb3~\x80\xd3\xc3\x7fq{E}:L\n '
+        b'.2\xd1\xcf\x8a\xf1\xa0!', finalize=True)
+
+    self.assertEqual(decrypted_data, expected_decrypted_data)
+    self.assertEqual(remaining_encrypted_data, b'')
 
     # Reset decrypter.
     decrypter = des3_decrypter.DES3Decrypter(
@@ -70,20 +79,12 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
         key=self._DES3_KEY)
 
     # Test partial decryption.
-    decrypted_data, encrypted_data = decrypter.Decrypt(
-        b'e\x86k\t\x01W\xd7d\xe4\xa4\xb3~\x80')
-    expected_decrypted_data = b'This is '
-    expected_encrypted_data = b'\xe4\xa4\xb3~\x80'
-    self.assertEqual(expected_decrypted_data, decrypted_data)
-    self.assertEqual(expected_encrypted_data, encrypted_data)
+    partial_encrypted_data = b'e\x86k\t\x01W\xd7d\xe4\xa4\xb3~\x80'
 
-    decrypted_data, encrypted_data = decrypter.Decrypt(
-        b'\xe4\xa4\xb3~\x80\xd3\xc3\x7fq{E}:L\n '
-        b'.2\xd1\xcf\x8a\xf1\xa0!')
-    expected_decrypted_data = b'secret encrypted text!!!'
-    expected_encrypted_data = b''
-    self.assertEqual(expected_decrypted_data, decrypted_data)
-    self.assertEqual(expected_encrypted_data, encrypted_data)
+    decrypted_data, remaining_encrypted_data = decrypter.Decrypt(
+        partial_encrypted_data)
+    self.assertEqual(decrypted_data, b'')
+    self.assertEqual(remaining_encrypted_data, partial_encrypted_data)
 
 
 if __name__ == '__main__':
