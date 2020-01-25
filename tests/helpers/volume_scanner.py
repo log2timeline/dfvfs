@@ -98,6 +98,15 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
         scan_context, locked_scan_node.path_spec, 'password', password)
 
 
+class VolumeScannerOptionsTest(shared_test_lib.BaseTestCase):
+  """Tests for the volume scanner options."""
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    test_options = volume_scanner.VolumeScannerOptions()
+    self.assertIsNotNone(test_options)
+
+
 class VolumeScannerTest(shared_test_lib.BaseTestCase):
   """Tests for a volume scanner."""
 
@@ -121,24 +130,26 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     return scan_node
 
-  def testGetTSKPartitionIdentifiers(self):
-    """Tests the _GetTSKPartitionIdentifiers function."""
+  def testGetPartitionIdentifiers(self):
+    """Tests the _GetPartitionIdentifiers function."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._GetTSKPartitionIdentifiers(None)
+      test_scanner._GetPartitionIdentifiers(None, test_options)
 
     scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._GetTSKPartitionIdentifiers(scan_node)
+      test_scanner._GetPartitionIdentifiers(scan_node, test_options)
 
   def testGetTSKPartitionIdentifiersOnAPFS(self):
     """Tests the _GetTSKPartitionIdentifiers function on an APFS image."""
     # Test with mediator.
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['apfs.dmg'])
     self._SkipIfPathNotExists(test_path)
@@ -149,7 +160,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner._source_scanner.Scan(scan_context)
     scan_node = self._GetTestScanNode(scan_context)
 
-    identifiers = test_scanner._GetTSKPartitionIdentifiers(scan_node)
+    identifiers = test_scanner._GetPartitionIdentifiers(scan_node, test_options)
     self.assertEqual(len(identifiers), 1)
     self.assertEqual(identifiers, ['p1'])
 
@@ -158,6 +169,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     # Test with mediator.
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -168,12 +180,13 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner._source_scanner.Scan(scan_context)
     scan_node = self._GetTestScanNode(scan_context)
 
-    identifiers = test_scanner._GetTSKPartitionIdentifiers(scan_node)
+    identifiers = test_scanner._GetPartitionIdentifiers(scan_node, test_options)
     self.assertEqual(len(identifiers), 2)
     self.assertEqual(identifiers, ['p1', 'p2'])
 
     # Test without mediator.
     test_scanner = volume_scanner.VolumeScanner()
+    test_options = volume_scanner.VolumeScannerOptions()
 
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_path)
@@ -182,13 +195,14 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_node = self._GetTestScanNode(scan_context)
 
     with self.assertRaises(errors.ScannerError):
-      test_scanner._GetTSKPartitionIdentifiers(scan_node)
+      test_scanner._GetPartitionIdentifiers(scan_node, test_options)
 
   def testGetVSSStoreIdentifiers(self):
     """Tests the _GetVSSStoreIdentifiers function."""
     # Test with mediator.
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
     self._SkipIfPathNotExists(test_path)
@@ -199,12 +213,14 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner._source_scanner.Scan(scan_context)
     scan_node = self._GetTestScanNode(scan_context)
 
-    identifiers = test_scanner._GetVSSStoreIdentifiers(scan_node.sub_nodes[0])
+    identifiers = test_scanner._GetVSSStoreIdentifiers(
+        scan_node.sub_nodes[0], test_options)
     self.assertEqual(len(identifiers), 2)
     self.assertEqual(identifiers, ['vss1', 'vss2'])
 
     # Test without mediator.
     test_scanner = volume_scanner.VolumeScanner()
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
     self._SkipIfPathNotExists(test_path)
@@ -216,15 +232,15 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_node = self._GetTestScanNode(scan_context)
 
     with self.assertRaises(errors.ScannerError):
-      test_scanner._GetVSSStoreIdentifiers(scan_node.sub_nodes[0])
+      test_scanner._GetVSSStoreIdentifiers(scan_node.sub_nodes[0], test_options)
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._GetVSSStoreIdentifiers(None)
+      test_scanner._GetVSSStoreIdentifiers(None, test_options)
 
     scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._GetVSSStoreIdentifiers(scan_node)
+      test_scanner._GetVSSStoreIdentifiers(scan_node, test_options)
 
   def testNormalizedVolumeIdentifiersPartitionedImage(self):
     """Tests the _NormalizedVolumeIdentifiers function."""
@@ -353,16 +369,17 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     """Tests the _ScanVolume function."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     scan_context = source_scanner.SourceScannerContext()
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolume(scan_context, None, [])
+      test_scanner._ScanVolume(scan_context, None, test_options, [])
 
     scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolume(scan_context, scan_node, [])
+      test_scanner._ScanVolume(scan_context, scan_node, test_options, [])
 
   def testScanVolumeOnAPFS(self):
     """Tests the _ScanVolume function on an APFS image."""
@@ -370,6 +387,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['apfs.dmg'])
     self._SkipIfPathNotExists(test_path)
@@ -385,13 +403,14 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     # Test on volume system root node.
     base_path_specs = []
     test_scanner._ScanVolume(
-        scan_context, apfs_container_scan_node, base_path_specs)
+        scan_context, apfs_container_scan_node, test_options, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
     # Test on volume system sub node.
     base_path_specs = []
     test_scanner._ScanVolume(
-        scan_context, apfs_container_scan_node.sub_nodes[0], base_path_specs)
+        scan_context, apfs_container_scan_node.sub_nodes[0], test_options,
+        base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   def testScanVolumeOnBDE(self):
@@ -400,6 +419,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['bdetogo.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -413,7 +433,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     bde_scan_node = scan_node.sub_nodes[0]
 
     base_path_specs = []
-    test_scanner._ScanVolume(scan_context, bde_scan_node, base_path_specs)
+    test_scanner._ScanVolume(
+        scan_context, bde_scan_node, test_options, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   def testScanVolumeOnEncryptedAPFS(self):
@@ -422,6 +443,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
     self._SkipIfPathNotExists(test_path)
@@ -437,19 +459,21 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     # Test on volume system root node.
     base_path_specs = []
     test_scanner._ScanVolume(
-        scan_context, apfs_container_scan_node, base_path_specs)
+        scan_context, apfs_container_scan_node, test_options, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
     # Test on volume system sub node.
     base_path_specs = []
     test_scanner._ScanVolume(
-        scan_context, apfs_container_scan_node.sub_nodes[0], base_path_specs)
+        scan_context, apfs_container_scan_node.sub_nodes[0], test_options,
+        base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   def testScanVolumeOnRAW(self):
     """Tests the _ScanVolume function on a RAW image."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -461,13 +485,15 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_node = scan_context.GetRootScanNode()
 
     base_path_specs = []
-    test_scanner._ScanVolume(scan_context, scan_node, base_path_specs)
+    test_scanner._ScanVolume(
+        scan_context, scan_node, test_options, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   def testScanVolumeOnVSS(self):
     """Tests the _ScanVolume function on VSS."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
     self._SkipIfPathNotExists(test_path)
@@ -482,29 +508,32 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     # Test on volume system root node.
     base_path_specs = []
-    test_scanner._ScanVolume(scan_context, vss_scan_node, base_path_specs)
+    test_scanner._ScanVolume(
+        scan_context, vss_scan_node, test_options, base_path_specs)
     self.assertEqual(len(base_path_specs), 2)
 
     # Test on volume system sub node.
     base_path_specs = []
     test_scanner._ScanVolume(
-        scan_context, vss_scan_node.sub_nodes[0], base_path_specs)
+        scan_context, vss_scan_node.sub_nodes[0], test_options, base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
   def testScanVolumeSystemRoot(self):
     """Tests the _ScanVolumeSystemRoot function."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     scan_context = source_scanner.SourceScannerContext()
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeSystemRoot(scan_context, None, [])
+      test_scanner._ScanVolumeSystemRoot(scan_context, None, test_options, [])
 
     scan_node = source_scanner.SourceScanNode(None)
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeSystemRoot(scan_context, scan_node, [])
+      test_scanner._ScanVolumeSystemRoot(
+          scan_context, scan_node, test_options, [])
 
   def testScanVolumeSystemRootOnAPFS(self):
     """Tests the _ScanVolumeSystemRoot function on an APFS image."""
@@ -512,6 +541,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['apfs.dmg'])
     self._SkipIfPathNotExists(test_path)
@@ -526,18 +556,21 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     base_path_specs = []
     test_scanner._ScanVolumeSystemRoot(
-        scan_context, apfs_container_scan_node, base_path_specs)
+        scan_context, apfs_container_scan_node, test_options,
+        base_path_specs)
     self.assertEqual(len(base_path_specs), 1)
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
       test_scanner._ScanVolumeSystemRoot(
-          scan_context, apfs_container_scan_node.sub_nodes[0], base_path_specs)
+          scan_context, apfs_container_scan_node.sub_nodes[0], test_options,
+          base_path_specs)
 
   def testScanVolumeSystemRootOnPartitionedImage(self):
     """Tests the _ScanVolumeSystemRoot function on a partitioned image."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -550,12 +583,14 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeSystemRoot(scan_context, scan_node, [])
+      test_scanner._ScanVolumeSystemRoot(
+          scan_context, scan_node, test_options, [])
 
   def testScanVolumeSystemRootOnVSS(self):
     """Tests the _ScanVolumeSystemRoot function on VSS."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
 
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
     self._SkipIfPathNotExists(test_path)
@@ -570,7 +605,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     base_path_specs = []
     test_scanner._ScanVolumeSystemRoot(
-        scan_context, vss_scan_node, base_path_specs)
+        scan_context, vss_scan_node, test_options, base_path_specs)
     self.assertEqual(len(base_path_specs), 2)
 
   def testGetBasePathSpecsOnRAW(self):

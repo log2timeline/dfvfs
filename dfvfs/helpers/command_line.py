@@ -406,7 +406,8 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
           range of volumes can be defined as: "3..5". Multiple volumes can be
           defined as: "1,3,5" (a list of comma separated values). Ranges and
           lists can also be combined as: "1,3..5". The first volume is 1. All
-          volumes can be defined as: "all".
+          volumes can be defined as "all". No volumes can be defined as an
+          empty string or "none".
       prefix (Optional[str]): volume identifier prefix.
 
     Returns:
@@ -419,7 +420,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     if prefix:
       prefix_length = len(prefix)
 
-    if not volume_identifiers_string:
+    if not volume_identifiers_string or volume_identifiers_string == 'none':
       return []
 
     if volume_identifiers_string == 'all':
@@ -432,10 +433,10 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       if '..' in identifiers_range:
         first_identifier, last_identifier = identifiers_range.split('..')
 
-        if first_identifier.startswith(prefix):
+        if prefix and first_identifier.startswith(prefix):
           first_identifier = first_identifier[prefix_length:]
 
-        if last_identifier.startswith(prefix):
+        if prefix and last_identifier.startswith(prefix):
           last_identifier = last_identifier[prefix_length:]
 
         try:
@@ -447,11 +448,12 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
         for volume_identifier in range(first_identifier, last_identifier + 1):
           if volume_identifier not in volume_identifiers:
-            volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+            if prefix:
+              volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
             volume_identifiers.add(volume_identifier)
       else:
         identifier = identifiers_range
-        if identifier.startswith(prefix):
+        if prefix and identifier.startswith(prefix):
           identifier = identifiers_range[prefix_length:]
 
         try:
@@ -460,7 +462,8 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
           raise ValueError('Invalid volume identifier range: {0:s}.'.format(
               identifiers_range))
 
-        volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+        if prefix:
+          volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
         volume_identifiers.add(volume_identifier)
 
     # Note that sorted will return a list.
@@ -496,7 +499,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     self._output_writer.Write('\n')
     table_view.Write(self._output_writer)
 
-  def _PrintTSKPartitionIdentifiersOverview(
+  def _PrintPartitionIdentifiersOverview(
       self, volume_system, volume_identifiers):
     """Prints an overview of TSK partition identifiers.
 
@@ -657,7 +660,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     print_header = True
     while True:
       if print_header:
-        self._PrintTSKPartitionIdentifiersOverview(
+        self._PrintPartitionIdentifiersOverview(
             volume_system, volume_identifiers)
 
         print_header = False
@@ -730,6 +733,34 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       self._output_writer.Write('\n\n')
 
     return selected_volumes
+
+  def ParseVolumeIdentifiersString(self, volume_identifiers_string):
+    """Parses a user specified volume identifiers string.
+
+    Args:
+      volume_identifiers_string (str): user specified volume identifiers. A
+          range of volumes can be defined as: "3..5". Multiple volumes can be
+          defined as: "1,3,5" (a list of comma separated values). Ranges and
+          lists can also be combined as: "1,3..5". The first volume is 1. All
+          volumes can be defined as "all". No volumes can be defined as an
+          empty string or "none".
+
+    Returns:
+      list[str]: volume identifiers with prefix or the string "all".
+
+    Raises:
+      ValueError: if the volume identifiers string is invalid.
+    """
+    return self._ParseVolumeIdentifiersString(
+        volume_identifiers_string, prefix=None)
+
+  def PrintWarning(self, warning):
+    """Prints a warning.
+
+    Args:
+      warning (str): warning text.
+    """
+    self._output_writer.Write('[WARNING] {0:s}\n\n'.format(warning))
 
   def UnlockEncryptedVolume(
       self, source_scanner_object, scan_context, locked_scan_node, credentials):
