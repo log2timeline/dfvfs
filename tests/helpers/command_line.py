@@ -310,7 +310,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
     test_mediator = command_line.CLIVolumeScannerMediator(
         output_writer=test_output_writer)
 
-    test_mediator._PrintTSKPartitionIdentifiersOverview(
+    test_mediator._PrintPartitionIdentifiersOverview(
         volume_system, ['p1', 'p2'])
 
     file_object.seek(0, os.SEEK_SET)
