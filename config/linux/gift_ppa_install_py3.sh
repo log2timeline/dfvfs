@@ -24,18 +24,18 @@ PYTHON3_DEPENDENCIES="libbde-python3
                       libvslvm-python3
                       python3-cffi
                       python3-cryptography
-                      python3-idna
                       python3-dfdatetime
                       python3-dtfabric
+                      python3-idna
                       python3-pytsk3
                       python3-yaml";
 
 # Additional dependencies for running tests, alphabetized, one per line.
 TEST_DEPENDENCIES="python3-coverage
                    python3-distutils
-                   python3-setuptools
                    python3-mock
                    python3-pbr
+                   python3-setuptools
                    python3-six";
 
 # Additional dependencies for development, alphabetized, one per line.

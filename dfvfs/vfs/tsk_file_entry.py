@@ -105,7 +105,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     microseconds = date_time_values.get('microseconds', 0)
 
     self._timestamp = self._GetNumberOfSecondsFromElements(
-        year, month, day_of_month, hours, minutes, seconds)
+        year, month, day_of_month, hours, minutes, seconds, None)
     self.fraction_of_second = microseconds
 
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
