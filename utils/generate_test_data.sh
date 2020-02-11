@@ -64,6 +64,7 @@ EOT
 	(cd ${MOUNT_POINT} && ln -s a_directory/another_file a_link);
 }
 
+assert_availability_binary cryptsetup;
 assert_availability_binary dd;
 assert_availability_binary ewfacquire;
 assert_availability_binary losetup;
@@ -175,4 +176,61 @@ sudo losetup -d /dev/loop0;
 qemu-img convert -f raw -O qcow2 test_data/lvm.raw test_data/lvm.qcow2;
 
 rm -f test_data/lvm.raw;
+
+# Create test image with a LUKS 1 and an EXT2 file system
+IMAGE_FILE="test_data/luks1.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+cryptsetup --batch-mode --cipher aes-cbc-plain --hash sha1 --type luks1 luksFormat ${IMAGE_FILE} <<EOT
+luksde-TEST
+EOT
+
+sudo cryptsetup luksOpen ${IMAGE_FILE} dfvfs_luks <<EOT
+luksde-TEST
+EOT
+
+sudo mke2fs -q -t ext2 -L "ext2_test" /dev/mapper/dfvfs_luks;
+
+sudo mount -o loop,rw /dev/mapper/dfvfs_luks ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sleep 1;
+
+sudo cryptsetup luksClose dfvfs_luks;
+
+# Create test image with a LUKS 2 and an EXT2 file system
+IMAGE_SIZE=$(( 4096 * 1024 ));
+
+IMAGE_FILE="test_data/luks2.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+cryptsetup --batch-mode --cipher aes-cbc-plain --hash sha1 --type luks2 luksFormat ${IMAGE_FILE} <<EOT
+luksde-TEST
+EOT
+
+# TODO: fix allow for "Requested offset is beyond real size of device"
+# sudo cryptsetup luksOpen ${IMAGE_FILE} dfvfs_luks <<EOT
+# luksde-TEST
+# EOT
+
+# sudo mke2fs -q -t ext2 -L "ext2_test" /dev/mapper/dfvfs_luks;
+
+# sudo mount -o loop,rw /dev/mapper/dfvfs_luks ${MOUNT_POINT};
+
+# sudo chown ${USERNAME} ${MOUNT_POINT};
+
+# create_test_file_entries ${MOUNT_POINT};
+
+# sudo umount ${MOUNT_POINT};
+
+# sleep 1;
+
+# sudo cryptsetup luksClose dfvfs_luks;
 

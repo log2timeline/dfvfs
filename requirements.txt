@@ -11,6 +11,7 @@ libfsapfs-python >= 20181205
 libfsntfs-python >= 20191221
 libfvde-python >= 20160719
 libfwnt-python >= 20160418
+libluksde-python >= 20200101
 libqcow-python >= 20131204
 libsigscan-python >= 20191221
 libsmdev-python >= 20140529
