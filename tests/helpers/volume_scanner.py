@@ -741,8 +741,13 @@ class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
     file_object = test_scanner.OpenFile('C:\\bogus')
     self.assertIsNone(file_object)
 
-    with self.assertRaises(IOError):
-      test_scanner.OpenFile('C:\\Windows\\System32\\config')
+    location = 'C:\\Windows\\System32\\config'
+    if definitions.PREFERRED_NTFS_BACK_END == definitions.TYPE_INDICATOR_NTFS:
+      file_object = test_scanner.OpenFile(location)
+      self.assertIsNone(file_object)
+    else:
+      with self.assertRaises(IOError):
+        test_scanner.OpenFile(location)
 
   def testScanForWindowsVolume(self):
     """Tests the ScanForWindowsVolume function."""

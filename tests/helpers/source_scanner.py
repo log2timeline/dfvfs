@@ -456,7 +456,12 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
     self.assertEqual(len(scan_node.sub_nodes), 1)
 
-    scan_node = scan_node.GetSubNodeByLocation('/')
+    if definitions.PREFERRED_NTFS_BACK_END == definitions.TYPE_INDICATOR_NTFS:
+      sub_node_location = '\\'
+    else:
+      sub_node_location = '/'
+
+    scan_node = scan_node.GetSubNodeByLocation(sub_node_location)
     self.assertIsNotNone(scan_node)
 
     expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
