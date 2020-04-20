@@ -77,10 +77,6 @@ class OSFileEntry(file_entry.FileEntry):
       path_spec (PathSpec): path specification.
       is_root (Optional[bool]): True if the file entry is the root file entry
           of the corresponding file system.
-
-    Raises:
-      BackEndError: If an OSError comes up it is caught and an
-          BackEndError error is raised instead.
     """
     location = getattr(path_spec, 'location', None)
 
@@ -101,10 +97,8 @@ class OSFileEntry(file_entry.FileEntry):
       # that error does not exist on non-Windows platforms.
       try:
         stat_info = os.lstat(location)
-      except OSError as exception:
-        raise errors.BackEndError(
-            'Unable to retrieve stat object with error: {0!s}'.format(
-                exception))
+      except (IOError, OSError):
+        stat_info = None
 
     super(OSFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
@@ -176,7 +170,7 @@ class OSFileEntry(file_entry.FileEntry):
     """
     stat_object = super(OSFileEntry, self)._GetStat()
 
-    if not self._is_windows_device:
+    if not self._is_windows_device and self._stat_info:
       # File data stat information.
       stat_object.size = self._stat_info.st_size
 
