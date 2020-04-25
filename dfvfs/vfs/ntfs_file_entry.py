@@ -69,7 +69,7 @@ class FileNameNTFSAttribute(NTFSAttribute):
 
   @property
   def file_attribute_flags(self):
-    """int: file attribute flags."""
+    """int: file attribute flags or None if not available."""
     return self._fsntfs_attribute.file_attribute_flags
 
   @property
@@ -138,7 +138,7 @@ class StandardInformationNTFSAttribute(NTFSAttribute):
 
   @property
   def file_attribute_flags(self):
-    """int: file attribute flags."""
+    """int: file attribute flags or None if not available."""
     return self._fsntfs_attribute.file_attribute_flags
 
   @property
@@ -401,6 +401,8 @@ class NTFSFileEntry(file_entry.FileEntry):
     Returns:
       bool: True if a file entry is a link, false otherwise.
     """
+    if file_attribute_flags is None:
+      return False
     return bool(
         file_attribute_flags & pyfsntfs.file_attribute_flags.REPARSE_POINT)
 
