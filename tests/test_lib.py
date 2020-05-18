@@ -7,10 +7,16 @@ import os
 import unittest
 
 
+# The path to top of the dfWinReg source tree.
+PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# The paths below are all derived from the project path directory.
+# They are enumerated explicitly here so that they can be overwritten for
+# compatibility with different build systems.
+TEST_DATA_PATH = os.path.join(PROJECT_PATH, 'test_data')
+
+
 class BaseTestCase(unittest.TestCase):
   """The base test case."""
-
-  _TEST_DATA_PATH = os.path.join(os.getcwd(), 'test_data')
 
   # Show full diff results, part of TestCase so does not follow our naming
   # conventions.
@@ -45,7 +51,7 @@ class BaseTestCase(unittest.TestCase):
     """
     # Note that we need to pass the individual path segments to os.path.join
     # and not a list.
-    return os.path.join(self._TEST_DATA_PATH, *path_segments)
+    return os.path.join(TEST_DATA_PATH, *path_segments)
 
   def _SkipIfPathNotExists(self, path):
     """Skips the test if the path does not exist.
