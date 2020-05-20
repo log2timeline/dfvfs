@@ -32,7 +32,7 @@ class Resolver(object):
     if not cls._resolver_helpers_manager:
       # Delay the import of the resolver helpers manager to prevent circular
       # imports.
-      from dfvfs.resolver_helpers import manager
+      from dfvfs.resolver_helpers import manager  # pylint: disable=import-outside-toplevel
 
       cls._resolver_helpers_manager = manager.ResolverHelperManager
 
