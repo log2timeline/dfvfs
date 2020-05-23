@@ -87,7 +87,7 @@ class PathSpec(object):
       dict[str, object]: path specification attributes.
     """
     path_spec_dict = {}
-    for attribute_name, attribute_value in iter(self.__dict__.items()):
+    for attribute_name, attribute_value in self.__dict__.items():
       if attribute_value is None:
         continue
 

@@ -36,7 +36,7 @@ class TestFileEntry(file_entry.FileEntry):
     Returns:
       generator[FileEntry]: a sub file entry generator.
     """
-    return iter(())
+    return iter([])
 
 
 class AttributeTest(shared_test_lib.BaseTestCase):

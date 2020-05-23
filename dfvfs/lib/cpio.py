@@ -276,7 +276,7 @@ class CPIOArchiveFile(data_format.DataFormat):
       CPIOArchiveFileEntry: a CPIO archive file entry.
     """
     if self._file_entries:
-      for path, file_entry in iter(self._file_entries.items()):
+      for path, file_entry in self._file_entries.items():
         if path.startswith(path_prefix):
           yield file_entry
 

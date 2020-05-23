@@ -102,7 +102,7 @@ class ZipFileSystem(file_system.FileSystem):
       pass
 
     # Check if location could be a virtual directory.
-    for name in iter(self._zip_file.namelist()):
+    for name in self._zip_file.namelist():
       # The ZIP info name does not have the leading path separator as
       # the location string does.
       if name.startswith(location[1:]):
