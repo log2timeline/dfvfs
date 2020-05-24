@@ -60,7 +60,7 @@ class VHDIFile(file_object_io.FileObjectIO):
     vhdi_file = pyvhdi.file()
     vhdi_file.open_file_object(file_object)
 
-    if vhdi_file.parent_identifier:
+    if vhdi_file.parent_identifier:  # pylint: disable=using-constant-test
       file_system = resolver.Resolver.OpenFileSystem(
           path_spec.parent, resolver_context=self._resolver_context)
 
@@ -122,7 +122,7 @@ class VHDIFile(file_object_io.FileObjectIO):
     vhdi_parent_file = pyvhdi.file()
     vhdi_parent_file.open_file_object(file_object)
 
-    if vhdi_parent_file.parent_identifier:
+    if vhdi_parent_file.parent_identifier:  # pylint: disable=using-constant-test
       self._OpenParentFile(
           file_system, parent_file_path_spec, vhdi_parent_file)
 
