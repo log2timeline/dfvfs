@@ -145,7 +145,7 @@ class Analyzer(object):
     specification_store = specification.FormatSpecificationStore()
     remainder_list = []
 
-    for analyzer_helper in iter(cls._analyzer_helpers.values()):
+    for analyzer_helper in cls._analyzer_helpers.values():
       if not analyzer_helper.IsEnabled():
         continue
 

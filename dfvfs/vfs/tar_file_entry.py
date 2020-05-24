@@ -35,7 +35,7 @@ class TARDirectory(file_entry.Directory):
       processed_directories = set()
 
       tar_file = self._file_system.GetTARFile()
-      for tar_info in iter(tar_file.getmembers()):
+      for tar_info in tar_file.getmembers():
         path = tar_info.name
 
         # Determine if the start of the TAR info name is similar to

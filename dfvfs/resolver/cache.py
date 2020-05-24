@@ -120,7 +120,7 @@ class ObjectsCache(object):
     Raises:
       RuntimeError: if the cache value is missing.
     """
-    for identifier, cache_value in iter(self._values.items()):
+    for identifier, cache_value in self._values.items():
       if not cache_value:
         raise RuntimeError('Missing cache value.')
 

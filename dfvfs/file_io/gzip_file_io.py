@@ -81,7 +81,7 @@ class GzipFile(file_io.FileIO):
       raise ValueError('Offset {0:d} is larger than file size {1:d}.'.format(
           offset, self.uncompressed_data_size))
 
-    for end_offset, member in iter(self._members_by_end_offset.items()):
+    for end_offset, member in self._members_by_end_offset.items():
       if offset < end_offset:
         return member
 
