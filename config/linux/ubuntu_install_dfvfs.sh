@@ -8,6 +8,8 @@
 # Exit on error.
 set -e
 
+export DEBIAN_FRONTEND=noninteractive
+
 # Dependencies for running dfvfs, alphabetized, one per line.
 # This should not include packages only required for testing or development.
 PYTHON_DEPENDENCIES="libbde-python3
