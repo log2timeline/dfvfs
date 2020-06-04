@@ -109,6 +109,18 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
+  def testGetCompressedStreamTypeIndicatorsBZIP2(self):
+    """Tests the GetCompressedStreamTypeIndicators function on a .bz2 file."""
+    test_file = self._GetTestFilePath(['syslog.bz2'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_BZIP2]
+    type_indicators = analyzer.Analyzer.GetCompressedStreamTypeIndicators(
+        path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
   def testGetCompressedStreamTypeIndicatorsGZIP(self):
     """Tests the GetCompressedStreamTypeIndicators function on a .gz file."""
     test_file = self._GetTestFilePath(['syslog.gz'])
@@ -117,6 +129,18 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_GZIP]
+    type_indicators = analyzer.Analyzer.GetCompressedStreamTypeIndicators(
+        path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+  def testGetCompressedStreamTypeIndicatorsXZ(self):
+    """Tests the GetCompressedStreamTypeIndicators function on a .xz file."""
+    test_file = self._GetTestFilePath(['syslog.xz'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_XZ]
     type_indicators = analyzer.Analyzer.GetCompressedStreamTypeIndicators(
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
