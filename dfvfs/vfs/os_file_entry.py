@@ -68,6 +68,8 @@ class OSFileEntry(file_entry.FileEntry):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
+  _OS_IS_WINDOWS = platform.system() == 'Windows'
+
   def __init__(self, resolver_context, file_system, path_spec, is_root=False):
     """Initializes a file entry.
 
@@ -83,7 +85,7 @@ class OSFileEntry(file_entry.FileEntry):
     # Windows does not support running os.stat on device files so we use
     # libsmdev to do an initial check.
     is_windows_device = False
-    if platform.system() == 'Windows' and location:
+    if self._OS_IS_WINDOWS and location:
       try:
         # pylint: disable=no-member
         is_windows_device = pysmdev.check_device(location)
@@ -205,6 +207,10 @@ class OSFileEntry(file_entry.FileEntry):
     if self._stat_info is None:
       return None
 
+    timestamp = getattr(self._stat_info, 'st_atime_ns', None)
+    if timestamp is not None:
+      return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
+
     timestamp = int(self._stat_info.st_atime)
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
@@ -214,7 +220,38 @@ class OSFileEntry(file_entry.FileEntry):
     if self._stat_info is None:
       return None
 
+    # Per Python os.stat() documentation the value of stat_results.st_ctime
+    # contains the creation time on Windows.
+    if self._OS_IS_WINDOWS:
+      return None
+
+    timestamp = getattr(self._stat_info, 'st_ctime_ns', None)
+    if timestamp is not None:
+      return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
+
     timestamp = int(self._stat_info.st_ctime)
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
+  @property
+  def creation_time(self):
+    """dfdatetime.DateTimeValues: creation time or None if not available."""
+    if self._stat_info is None:
+      return None
+
+    # Per Python os.stat() documentation the value of stat_results.st_ctime
+    # contains the creation time on Windows.
+    if self._OS_IS_WINDOWS:
+      timestamp = getattr(self._stat_info, 'st_ctime_ns', None)
+      if timestamp is not None:
+        return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
+
+      timestamp = int(self._stat_info.st_ctime)
+
+    else:
+      timestamp = getattr(self._stat_info, 'st_birthtime', None)
+      if timestamp is None:
+        return None
+
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   @property
@@ -248,6 +285,10 @@ class OSFileEntry(file_entry.FileEntry):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     if self._stat_info is None:
       return None
+
+    timestamp = getattr(self._stat_info, 'st_mtime_ns', None)
+    if timestamp is not None:
+      return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
 
     timestamp = int(self._stat_info.st_mtime)
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
