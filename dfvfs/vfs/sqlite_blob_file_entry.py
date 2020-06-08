@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 from dfvfs.path import sqlite_blob_path_spec
 from dfvfs.vfs import file_entry
 
@@ -146,8 +145,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
     row_condition = getattr(self.path_spec, 'row_condition', None)
     if row_condition is not None:
-      if len(row_condition) > 2 and isinstance(
-          row_condition[2], py2to3.STRING_TYPES):
+      if len(row_condition) > 2 and isinstance(row_condition[2], str):
         return 'WHERE {0:s} {1:s} \'{2:s}\''.format(*row_condition)
       return 'WHERE {0:s} {1:s} {2!s}'.format(*row_condition)
 

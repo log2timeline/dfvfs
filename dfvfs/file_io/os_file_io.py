@@ -10,7 +10,6 @@ import pysmdev
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 
 
 class OSFile(file_io.FileIO):
@@ -65,17 +64,11 @@ class OSFile(file_io.FileIO):
       # will return '[Error 87] The parameter is incorrect' we check here
       # if pysmdev exception message contains ' access denied ' and raise
       # AccessError instead.
-
-      # Note that exception.message no longer works in Python 3.
-      exception_string = str(exception)
-      if not isinstance(exception_string, py2to3.UNICODE_TYPE):
-        exception_string = py2to3.UNICODE_TYPE(
-            exception_string, errors='replace')
-
-      if ' access denied ' in exception_string:
+      if ' access denied ' in str(exception):
         raise errors.AccessError(
             'Access denied to file: {0:s} with error: {1!s}'.format(
-                location, exception_string))
+                location, exception))
+
       is_device = False
 
     if not is_device:

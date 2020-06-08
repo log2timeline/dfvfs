@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 import os
 
-from dfvfs.lib import py2to3
 
 class DataSlice(object):
   """Data slice interface for file-like objects."""
@@ -46,7 +45,7 @@ class DataSlice(object):
       TypeError: if the type of the key is not supported.
       ValueError: if the step value of a slice is not None.
     """
-    if isinstance(key, py2to3.INTEGER_TYPES):
+    if isinstance(key, int):
       if key < 0:
         self._file_object.seek(key, os.SEEK_END)
       else:

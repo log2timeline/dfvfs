@@ -7,8 +7,10 @@ Also see: https://en.wikipedia.org/wiki/Glob_(programming)
 from __future__ import unicode_literals
 
 import re
+import sys
 
-from dfvfs.lib import py2to3
+
+PY_3_7_AND_LATER = bool(tuple(sys.version_info[0:2]) >= (3, 7))
 
 
 def Glob2Regex(glob_pattern):
@@ -73,7 +75,7 @@ def Glob2Regex(glob_pattern):
       glob_pattern_index = glob_group_index + 1
 
       glob_group = glob_group.replace('\\', '\\\\')
-      if py2to3.PY_3_7_AND_LATER:
+      if PY_3_7_AND_LATER:
         glob_group = glob_group.replace('|', '\\|')
 
       regex_pattern.append('[')

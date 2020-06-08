@@ -10,7 +10,6 @@ from __future__ import unicode_literals
 import abc
 
 from dfvfs.lib import definitions
-from dfvfs.lib import py2to3
 from dfvfs.resolver import resolver
 from dfvfs.vfs import vfs_stat
 
@@ -336,7 +335,7 @@ class FileEntry(object):
     Raises:
       ValueError: if the name is not string.
     """
-    if not isinstance(name, py2to3.STRING_TYPES):
+    if not isinstance(name, str):
       raise ValueError('Name is not a string.')
 
     name_lower = name.lower()
@@ -438,7 +437,7 @@ class FileEntry(object):
     Raises:
       ValueError: if the name is not string.
     """
-    if not isinstance(name, py2to3.STRING_TYPES):
+    if not isinstance(name, str):
       raise ValueError('Name is not a string.')
 
     name_lower = name.lower()

@@ -7,7 +7,6 @@ from dfdatetime import posix_time as dfdatetime_posix_time
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 from dfvfs.path import tar_path_spec
 from dfvfs.vfs import file_entry
 
@@ -202,11 +201,12 @@ class TARFileEntry(file_entry.FileEntry):
   def name(self):
     """str: name of the file entry, which does not include the full path."""
     path = getattr(self.path_spec, 'location', None)
-    if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
+    if path is not None and not isinstance(path, str):
       try:
         path = path.decode(self._file_system.encoding)
       except UnicodeDecodeError:
         path = None
+
     return self._file_system.BasenamePath(path)
 
   @property
