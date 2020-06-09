@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import abc
 import argparse
+import configparser
 import difflib
 import logging
 import os
@@ -16,16 +17,6 @@ import subprocess
 import sys
 import tempfile
 
-try:
-  import ConfigParser as configparser
-except ImportError:
-  import configparser  # pylint: disable=import-error
-
-
-if sys.version_info[0] < 3:
-  BYTES_TYPE = str
-else:
-  BYTES_TYPE = bytes
 
 # Since os.path.abspath() uses the current working directory (cwd)
 # os.path.abspath(__file__) will point to a different location if
@@ -303,7 +294,7 @@ class TestDefinitionReader(object):
     except configparser.NoOptionError:
       value = None
 
-    if isinstance(value, BYTES_TYPE):
+    if isinstance(value, bytes):
       value = value.decode('utf-8')
 
     if split_string and value:
@@ -329,13 +320,10 @@ class TestDefinitionReader(object):
     Yields:
       TestDefinition: end-to-end test definition.
     """
-    # TODO: replace by:
-    # self._config_parser = configparser.ConfigParser(interpolation=None)
-    self._config_parser = configparser.RawConfigParser()
+    self._config_parser = configparser.ConfigParser(interpolation=None)
 
     try:
-      # pylint: disable=deprecated-method
-      self._config_parser.readfp(file_object)
+      self._config_parser.read_file(file_object)
 
       for section_name in self._config_parser.sections():
         test_definition = TestDefinition(section_name)
