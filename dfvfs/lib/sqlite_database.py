@@ -4,14 +4,8 @@
 from __future__ import unicode_literals
 
 import os
+import sqlite3
 import tempfile
-
-try:
-  from pysqlite2 import dbapi2 as sqlite3
-except ImportError:
-  import sqlite3
-
-from dfvfs.lib import py2to3
 
 
 class SQLiteDatabaseFile(object):
@@ -82,7 +76,7 @@ class SQLiteDatabaseFile(object):
               table_name))
 
     number_of_rows = row[0]
-    if isinstance(number_of_rows, py2to3.STRING_TYPES):
+    if isinstance(number_of_rows, str):
       try:
         number_of_rows = int(number_of_rows, 10)
       except ValueError as exception:

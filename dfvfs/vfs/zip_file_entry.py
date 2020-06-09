@@ -7,7 +7,6 @@ from dfdatetime import time_elements as dfdatetime_time_elements
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 from dfvfs.path import zip_path_spec
 from dfvfs.vfs import file_entry
 
@@ -37,7 +36,7 @@ class ZipDirectory(file_entry.Directory):
       zip_file = self._file_system.GetZipFile()
       for zip_info in zip_file.infolist():
         path = getattr(zip_info, 'filename', None)
-        if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
+        if path is not None and not isinstance(path, str):
           try:
             path = path.decode(self._file_system.encoding)
           except UnicodeDecodeError:
@@ -197,7 +196,7 @@ class ZipFileEntry(file_entry.FileEntry):
   def name(self):
     """str: name of the file entry, without the full path."""
     path = getattr(self.path_spec, 'location', None)
-    if path is not None and not isinstance(path, py2to3.UNICODE_TYPE):
+    if path is not None and not isinstance(path, str):
       try:
         path = path.decode(self._file_system.encoding)
       except UnicodeDecodeError:

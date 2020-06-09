@@ -10,7 +10,6 @@ import pysmdev
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_system
 from dfvfs.vfs import os_file_entry
@@ -75,16 +74,8 @@ class OSFileSystem(file_system.FileSystem):
       except IOError as exception:
         # Since pysmdev will raise IOError when it has no access to the device
         # we check if the exception message contains ' access denied ' and
-        # return true.
-
-        # Note that exception.message no longer works in Python 3.
-        exception_string = str(exception)
-        if not isinstance(exception_string, py2to3.UNICODE_TYPE):
-          exception_string = py2to3.UNICODE_TYPE(
-              exception_string, errors='replace')
-
-        if ' access denied ' in exception_string:
-          is_device = True
+        # set is_device to True.
+        is_device = bool(' access denied ' in str(exception))
 
     # Note that os.path.exists() returns False for broken symbolic links hence
     # an additional check using os.path.islink() is necessary.

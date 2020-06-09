@@ -7,7 +7,6 @@ import os
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 from dfvfs.lib import sqlite_database
 from dfvfs.resolver import resolver
 
@@ -78,10 +77,8 @@ class SQLiteBlobFile(file_io.FileIO):
             '(column_name, operator, value).'))
 
     row_index = getattr(path_spec, 'row_index', None)
-    if row_index is not None:
-      if not isinstance(row_index, py2to3.INTEGER_TYPES):
-        raise errors.PathSpecError(
-            'Unsupported row_index not of integer type.')
+    if row_index is not None and not isinstance(row_index, int):
+      raise errors.PathSpecError('Unsupported row_index not of integer type.')
 
     if not row_condition and row_index is None:
       raise errors.PathSpecError(

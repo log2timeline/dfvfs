@@ -14,7 +14,6 @@ from dfdatetime import posix_time as dfdatetime_posix_time
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import file_entry
 
@@ -49,14 +48,9 @@ class OSDirectory(file_entry.Directory):
 
       except OSError as exception:
         if exception.errno == errno.EACCES:
-          exception_string = str(exception)
-          if not isinstance(exception_string, py2to3.UNICODE_TYPE):
-            exception_string = py2to3.UNICODE_TYPE(
-                exception_string, errors='replace')
-
           raise errors.AccessError(
-              'Access to directory denied with error: {0!s}'.format(
-                  exception_string))
+              'Access to directory: {0:s} denied with error: {1!s}'.format(
+                  location, exception))
 
         raise errors.BackEndError(
             'Unable to list directory: {0:s} with error: {1!s}'.format(

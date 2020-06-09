@@ -22,7 +22,6 @@ from dfdatetime import filetime as dfdatetime_filetime
 from dfvfs.helpers import volume_scanner
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import py2to3
 
 
 class CLIInputReader(object):
@@ -72,7 +71,7 @@ class FileObjectInputReader(CLIInputReader):
     """
     input_string = self._file_object.readline()
 
-    if isinstance(input_string, py2to3.BYTES_TYPE):
+    if isinstance(input_string, bytes):
       try:
         input_string = codecs.decode(input_string, self._encoding, self._errors)
       except UnicodeDecodeError:
@@ -253,7 +252,7 @@ class CLITabularTableView(object):
 
     value_strings = []
     for value_index, value_string in enumerate(values):
-      if not isinstance(value_string, py2to3.UNICODE_TYPE):
+      if not isinstance(value_string, str):
         value_string = '{0!s}'.format(value_string)
       value_strings.append(value_string)
 

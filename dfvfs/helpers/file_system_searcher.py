@@ -9,7 +9,6 @@ import sre_constants
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import glob2regex
-from dfvfs.lib import py2to3
 from dfvfs.path import factory as path_spec_factory
 
 
@@ -62,8 +61,8 @@ class FindSpec(object):
           'The location, location_glob and location_regex arguments cannot '
           'be used at same time.'))
 
-    if (location_arguments and isinstance(
-        location_arguments[0], py2to3.STRING_TYPES) and not location_separator):
+    if (location_arguments and isinstance(location_arguments[0], str) and
+        not location_separator):
       raise ValueError('Missing location separator.')
 
     super(FindSpec, self).__init__()
@@ -77,7 +76,7 @@ class FindSpec(object):
     self._number_of_location_segments = None
 
     if location is not None:
-      if isinstance(location, py2to3.STRING_TYPES):
+      if isinstance(location, str):
         self._location = location
 
       elif isinstance(location, list):
@@ -88,7 +87,7 @@ class FindSpec(object):
             type(location)))
 
     elif location_glob is not None:
-      if isinstance(location_glob, py2to3.STRING_TYPES):
+      if isinstance(location_glob, str):
         self._location_regex = self._ConvertLocationGlob2Regex(location_glob)
 
       elif isinstance(location_glob, list):
@@ -105,7 +104,7 @@ class FindSpec(object):
       self._is_regex = True
 
     elif location_regex is not None:
-      if isinstance(location_regex, py2to3.STRING_TYPES):
+      if isinstance(location_regex, str):
         self._location_regex = location_regex
 
       elif isinstance(location_regex, list):
@@ -273,7 +272,7 @@ class FindSpec(object):
       segment_name = self._location_segments[search_depth - 1]
 
       if self._is_regex:
-        if isinstance(segment_name, py2to3.STRING_TYPES):
+        if isinstance(segment_name, str):
           # Allow '\n' to be matched by '.' and make '\w', '\W', '\b', '\B',
           # '\d', '\D', '\s' and '\S' Unicode safe.
           flags = re.DOTALL | re.UNICODE
