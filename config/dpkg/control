@@ -9,7 +9,7 @@ Homepage: https://github.com/log2timeline/dfvfs
 
 Package: python3-dfvfs
 Architecture: all
-Depends: libbde-python3 (>= 20140531), libewf-python3 (>= 20131210), libfsapfs-python3 (>= 20181205), libfsntfs-python3 (>= 20200424), libfvde-python3 (>= 20160719), libfwnt-python3 (>= 20160418), libluksde-python3 (>= 20200101), libqcow-python3 (>= 20131204), libsigscan-python3 (>= 20191221), libsmdev-python3 (>= 20140529), libsmraw-python3 (>= 20140612), libvhdi-python3 (>= 20131210), libvmdk-python3 (>= 20140421), libvshadow-python3 (>= 20160109), libvslvm-python3 (>= 20160109), python3-cffi (>= 1.9.1), python3-cryptography (>= 2.0.2), python3-dfdatetime (>= 20200121), python3-dtfabric (>= 20170524), python3-idna (>= 2.5), python3-pytsk3 (>= 20160721), python3-yaml (>= 3.10), ${python3:Depends}, ${misc:Depends}
+Depends: libbde-python3 (>= 20140531), libewf-python3 (>= 20131210), libfsapfs-python3 (>= 20181205), libfsntfs-python3 (>= 20200424), libfvde-python3 (>= 20160719), libfwnt-python3 (>= 20160418), libluksde-python3 (>= 20200101), libqcow-python3 (>= 20131204), libsigscan-python3 (>= 20191221), libsmdev-python3 (>= 20140529), libsmraw-python3 (>= 20140612), libvhdi-python3 (>= 20131210), libvmdk-python3 (>= 20140421), libvshadow-python3 (>= 20160109), libvslvm-python3 (>= 20160109), python3-cffi-backend (>= 1.9.1), python3-cryptography (>= 2.0.2), python3-dfdatetime (>= 20200121), python3-dtfabric (>= 20170524), python3-idna (>= 2.5), python3-pytsk3 (>= 20160721), python3-yaml (>= 3.10), ${python3:Depends}, ${misc:Depends}
 Description: Python 3 module of dfVFS
  dfVFS, or Digital Forensics Virtual File System, provides read-only access to
  file-system objects from various storage media types and file formats. The goal
