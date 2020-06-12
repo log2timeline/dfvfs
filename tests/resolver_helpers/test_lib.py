@@ -30,7 +30,7 @@ class TestResolverHelper(resolver_helper.ResolverHelper):
     Returns:
       FileIO: file-like object, which is None for testing.
     """
-    return
+    return None
 
 
 class ResolverHelperTestCase(shared_test_lib.BaseTestCase):

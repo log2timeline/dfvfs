@@ -40,7 +40,7 @@ class TestAnalyzerHelper(analyzer_helper.AnalyzerHelper):
       str: type indicator if the file-like object contains a supported format
           or None otherwise.
     """
-    return
+    return None
 
 
 class AnalyzerTest(shared_test_lib.BaseTestCase):

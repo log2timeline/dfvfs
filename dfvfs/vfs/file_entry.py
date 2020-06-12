@@ -251,7 +251,7 @@ class FileEntry(object):
   @property
   def access_time(self):
     """dfdatetime.DateTimeValues: access time or None if not available."""
-    return
+    return None
 
   @property
   def attributes(self):
@@ -261,12 +261,12 @@ class FileEntry(object):
   @property
   def change_time(self):
     """dfdatetime.DateTimeValues: change time or None if not available."""
-    return
+    return None
 
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
-    return
+    return None
 
   @property
   def data_streams(self):
@@ -281,7 +281,7 @@ class FileEntry(object):
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
-    return
+    return None
 
   @abc.abstractproperty
   def name(self):
@@ -381,7 +381,7 @@ class FileEntry(object):
     Returns:
       FileEntry: linked file entry or None if not available.
     """
-    return
+    return None
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
@@ -389,7 +389,7 @@ class FileEntry(object):
     Returns:
       FileEntry: parent file entry or None if not available.
     """
-    return
+    return None
 
   def GetSubFileEntryByName(self, name, case_sensitive=True):
     """Retrieves a sub file entry by name.

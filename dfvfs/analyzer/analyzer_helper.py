@@ -68,7 +68,7 @@ class AnalyzerHelper(object):
       FormatSpecification: format specification or None if the format cannot
           be defined by a specification object.
     """
-    return
+    return None
 
   def IsEnabled(self):
     """Determines if the analyzer helper is enabled.
