@@ -142,9 +142,10 @@ class FakeFileSystem(file_system.FileSystem):
       return None
 
     path_spec = fake_path_spec.FakePathSpec(location=path)
+    is_root = bool(path == self.LOCATION_ROOT)
     return fake_file_entry.FakeFileEntry(
         self._resolver_context, self, path_spec,
-        file_entry_type=file_entry_type)
+        file_entry_type=file_entry_type, is_root=is_root)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
