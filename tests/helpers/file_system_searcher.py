@@ -125,7 +125,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
       find_spec = file_system_searcher.FindSpec(location_regex={})
 
   def testCheckFileEntryType(self):
-    """Test the _CheckFileEntryType() function."""
+    """Test the _CheckFileEntryType function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -149,7 +149,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(result)
 
   def testCheckIsAllocated(self):
-    """Test the _CheckIsAllocated() function."""
+    """Test the _CheckIsAllocated function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -163,7 +163,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertTrue(result)
 
   def testCheckIsDevice(self):
-    """Test the _CheckIsDevice() function."""
+    """Test the _CheckIsDevice function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -177,7 +177,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertFalse(result)
 
   def testCheckIsDirectory(self):
-    """Test the _CheckIsDirectory() function."""
+    """Test the _CheckIsDirectory function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -191,7 +191,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertFalse(result)
 
   def testCheckIsFile(self):
-    """Test the _CheckIsFile() function."""
+    """Test the _CheckIsFile function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -205,7 +205,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertTrue(result)
 
   def testCheckIsLink(self):
-    """Test the _CheckIsLink() function."""
+    """Test the _CheckIsLink function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -219,7 +219,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertFalse(result)
 
   def testCheckIsPipe(self):
-    """Test the _CheckIsPipe() function."""
+    """Test the _CheckIsPipe function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -233,7 +233,7 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     self.assertFalse(result)
 
   def testCheckIsSocket(self):
-    """Test the _CheckIsSocket() function."""
+    """Test the _CheckIsSocket function."""
     file_system = self._CreateTestFileSystem()
 
     find_spec = file_system_searcher.FindSpec(
@@ -246,32 +246,26 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     result = find_spec._CheckIsSocket(file_entry)
     self.assertFalse(result)
 
-  def testCheckLocation(self):
-    """Test the _CheckLocation() function."""
-    file_system = self._CreateTestFileSystem()
-
-    path_spec = fake_path_spec.FakePathSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
+  def testCompareWithLocationSegment(self):
+    """Test the _CompareWithLocationSegment function."""
     find_spec = file_system_searcher.FindSpec(
         location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
         location_separator='/')
 
-    result = find_spec._CheckLocation(file_entry, 6)
+    result = find_spec._CompareWithLocationSegment('__init__.py', 6)
     self.assertTrue(result)
 
-    result = find_spec._CheckLocation(file_entry, 0)
+    result = find_spec._CompareWithLocationSegment('__init__.py', 0)
     self.assertTrue(result)
 
-    result = find_spec._CheckLocation(file_entry, 5)
+    result = find_spec._CompareWithLocationSegment('__init__.py', 5)
     self.assertFalse(result)
 
     find_spec = file_system_searcher.FindSpec(
         location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py',
         location_separator='/')
 
-    result = find_spec._CheckLocation(file_entry, 6)
+    result = find_spec._CompareWithLocationSegment('__init__.py', 6)
     self.assertFalse(result)
 
   def testConvertLocationGlob2Regex(self):
@@ -289,10 +283,144 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     path_segments = find_spec._SplitPath('/tmp/location', '/')
     self.assertEqual(path_segments, ['tmp', 'location'])
 
-  # TODO: add tests for AtMaximumDepth
+  def testAtLastLocationSegment(self):
+    """Test the AtLastLocationSegment function."""
+    find_spec = file_system_searcher.FindSpec()
+
+    result = find_spec.AtLastLocationSegment(6)
+    self.assertFalse(result)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
+
+    result = find_spec.AtLastLocationSegment(0)
+    self.assertFalse(result)
+
+    result = find_spec.AtLastLocationSegment(6)
+    self.assertTrue(result)
+
+    result = find_spec.AtLastLocationSegment(9)
+    self.assertTrue(result)
+
+  def testAtMaximumDepth(self):
+    """Test the AtMaximumDepth function."""
+    find_spec = file_system_searcher.FindSpec()
+
+    result = find_spec.AtMaximumDepth(6)
+    self.assertFalse(result)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
+
+    result = find_spec.AtMaximumDepth(0)
+    self.assertFalse(result)
+
+    result = find_spec.AtMaximumDepth(6)
+    self.assertTrue(result)
+
+    result = find_spec.AtMaximumDepth(9)
+    self.assertTrue(result)
+
+  def testCompareLocation(self):
+    """Test the CompareLocation function."""
+    file_system = self._CreateTestFileSystem()
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
+
+    result = find_spec.CompareLocation(file_entry)
+    self.assertTrue(result)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py',
+        location_separator='/')
+
+    result = find_spec.CompareLocation(file_entry)
+    self.assertFalse(result)
+
+  def testCompareNameWithLocationSegment(self):
+    """Test the CompareNameWithLocationSegment function."""
+    file_system = self._CreateTestFileSystem()
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
+
+    result = find_spec.CompareNameWithLocationSegment(file_entry, 6)
+    self.assertTrue(result)
+
+    result = find_spec.CompareNameWithLocationSegment(file_entry, 5)
+    self.assertFalse(result)
+
+    # Currently comparing against the root location segment always
+    # returns True.
+    result = find_spec.CompareNameWithLocationSegment(file_entry, 0)
+    self.assertTrue(result)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py',
+        location_separator='/')
+
+    result = find_spec.CompareNameWithLocationSegment(file_entry, 6)
+    self.assertFalse(result)
+
+  def testCompareTraits(self):
+    """Test the CompareTraits function."""
+    file_system = self._CreateTestFileSystem()
+
+    path_spec = fake_path_spec.FakePathSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
+
+    result = find_spec.CompareTraits(file_entry)
+    self.assertTrue(result)
+
+  def testHasLocation(self):
+    """Test the HasLocation function."""
+    find_spec = file_system_searcher.FindSpec()
+
+    result = find_spec.HasLocation()
+    self.assertFalse(result)
+
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
+
+    result = find_spec.HasLocation()
+    self.assertTrue(result)
+
+  def testIsLastLocationSegment(self):
+    """Test the IsLastLocationSegment function."""
+    find_spec = file_system_searcher.FindSpec(
+        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
+        location_separator='/')
+
+    result = find_spec.IsLastLocationSegment(0)
+    self.assertFalse(result)
+
+    result = find_spec.IsLastLocationSegment(6)
+    self.assertTrue(result)
+
+    result = find_spec.IsLastLocationSegment(9)
+    self.assertFalse(result)
 
   def testMatches(self):
-    """Test the Matches() function."""
+    """Test the Matches function."""
     file_system = self._CreateTestFileSystem()
 
     path_spec = fake_path_spec.FakePathSpec(
@@ -347,7 +475,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self._tsk_file_system.Open(self._tsk_path_spec)
 
   def testFind(self):
-    """Test the Find() function."""
+    """Test the Find function."""
     searcher = file_system_searcher.FileSystemSearcher(
         self._tsk_file_system, self._qcow_path_spec)
 

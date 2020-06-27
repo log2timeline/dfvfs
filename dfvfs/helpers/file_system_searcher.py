@@ -9,6 +9,7 @@ import sre_constants
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import glob2regex
+from dfvfs.lib import decorators
 from dfvfs.path import factory as path_spec_factory
 
 
@@ -248,63 +249,58 @@ class FindSpec(object):
       return False
     return file_entry.IsSocket()
 
-  def _CheckLocation(self, file_entry, search_depth):
-    """Checks the location find specification.
+  def _CompareWithLocationSegment(self, location_segment, segment_index):
+    """Compares a location segment against a find specification.
 
     Args:
-      file_entry (FileEntry): file entry.
-      search_depth (int): number of location path segments to compare.
+      location_segment (str): location segment.
+      segment_index (int): index of the location segment to compare against,
+          where 0 represents the root segment.
 
     Returns:
-      bool: True if the file entry matches the find specification, False if not.
+      bool: True if the location segment of the file entry matches that of the
+          find specification, False if not or if the find specification has no
+          location defined.
     """
-    if self._location_segments is None:
-      return False
-
-    if search_depth < 0 or search_depth > self._number_of_location_segments:
+    if (self._location_segments is None or segment_index < 0 or
+        segment_index > self._number_of_location_segments):
       return False
 
     # Note that the root has no entry in the location segments and
     # no name to match.
-    if search_depth == 0:
-      segment_name = ''
-    else:
-      segment_name = self._location_segments[search_depth - 1]
+    if segment_index == 0:
+      return True
 
-      if self._is_regex:
-        if isinstance(segment_name, str):
-          # Allow '\n' to be matched by '.' and make '\w', '\W', '\b', '\B',
-          # '\d', '\D', '\s' and '\S' Unicode safe.
-          flags = re.DOTALL | re.UNICODE
-          if not self._is_case_sensitive:
-            flags |= re.IGNORECASE
+    segment_name = self._location_segments[segment_index - 1]
 
-          try:
-            segment_name = r'^{0:s}$'.format(segment_name)
-            segment_name = re.compile(segment_name, flags=flags)
-          except sre_constants.error:
-            # TODO: set self._location_segments[search_depth - 1] to None ?
-            return False
+    if self._is_regex:
+      if isinstance(segment_name, str):
+        # Allow '\n' to be matched by '.' and make '\w', '\W', '\b', '\B',
+        # '\d', '\D', '\s' and '\S' Unicode safe.
+        flags = re.DOTALL | re.UNICODE
+        if not self._is_case_sensitive:
+          flags |= re.IGNORECASE
 
-          self._location_segments[search_depth - 1] = segment_name
-
-      elif not self._is_case_sensitive:
-        segment_name = segment_name.lower()
-        self._location_segments[search_depth - 1] = segment_name
-
-    if search_depth > 0:
-      if self._is_regex:
-        if not segment_name.match(file_entry.name):  # pylint: disable=no-member
+        try:
+          segment_name = r'^{0:s}$'.format(segment_name)
+          segment_name = re.compile(segment_name, flags=flags)
+        except sre_constants.error:
+          # TODO: set self._location_segments[segment_index - 1] to None ?
           return False
 
-      elif self._is_case_sensitive:
-        if segment_name != file_entry.name:
-          return False
+        self._location_segments[segment_index - 1] = segment_name
 
-      elif segment_name != file_entry.name.lower():
-        return False
+    elif not self._is_case_sensitive:
+      segment_name = segment_name.lower()
+      self._location_segments[segment_index - 1] = segment_name
 
-    return True
+    if self._is_regex:
+      return bool(segment_name.match(location_segment))  # pylint: disable=no-member
+
+    if self._is_case_sensitive:
+      return bool(segment_name == location_segment)
+
+    return bool(segment_name == location_segment.lower())
 
   def _ConvertLocationGlob2Regex(self, location_glob):
     """Converts a location glob into a regular expression.
@@ -335,23 +331,144 @@ class FindSpec(object):
     # Split the path with the path separator and remove empty path segments.
     return list(filter(None, path.split(path_separator)))
 
-  def AtMaximumDepth(self, search_depth):
-    """Determines if the find specification is at maximum depth.
+  def AtLastLocationSegment(self, segment_index):
+    """Determines if the a location segment is the last one or greater.
 
     Args:
-      search_depth (int): number of location path segments to compare.
+      segment_index (int): index of the location path segment.
 
     Returns:
       bool: True if at maximum depth, False if not.
     """
-    if self._location_segments is not None:
-      if search_depth >= self._number_of_location_segments:
-        return True
+    return bool(self._location_segments is not None and
+                segment_index >= self._number_of_location_segments)
 
-    return False
+  @decorators.deprecated
+  def AtMaximumDepth(self, segment_index):
+    """Determines if the find specification is at maximum depth.
 
+    This method is deprecated use AtLastLocationSegment instead.
+
+    Args:
+      segment_index (int): index of the location path segment.
+
+    Returns:
+      bool: True if at maximum depth, False if not.
+    """
+    return self.AtLastLocationSegment(segment_index)
+
+  def CompareLocation(self, file_entry, mount_point=None):
+    """Compares a file entry location against the find specification.
+
+    Args:
+      file_entry (FileEntry): file entry.
+      mount_point (Optional[PathSpec]): mount point path specification that
+          refers to the base location of the file system. The mount point
+          is ignored if it is not an OS path specification.
+
+    Returns:
+      bool: True if the location of the file entry matches that of the find
+          specification, False if not or if the find specification has no
+          location defined.
+
+    Raises:
+      ValueError: if mount point is set and it does not match the type
+          indicator of the path specification of the file entry or file entry
+          location falls outside the mount point.
+    """
+    location = getattr(file_entry.path_spec, 'location', None)
+    if self._location_segments is None or location is None:
+      return False
+
+    if (mount_point and
+        mount_point.type_indicator == definitions.TYPE_INDICATOR_OS):
+      if file_entry.path_spec.type_indicator != definitions.TYPE_INDICATOR_OS:
+        raise ValueError(
+            'File entry path specification and mount point type indicators '
+            'do not match.')
+
+      if not location.startswith(mount_point.location):
+        raise ValueError(
+            'File entry path specification location not inside mount point.')
+
+      location = location[len(mount_point.location):]
+
+    file_system = file_entry.GetFileSystem()
+    location_segments = file_system.SplitPath(location)
+
+    for segment_index in range(self._number_of_location_segments):
+      try:
+        location_segment = location_segments[segment_index]
+      except IndexError:
+        return False
+
+      if not self._CompareWithLocationSegment(
+          location_segment, segment_index + 1):
+        return False
+
+    return True
+
+  def CompareNameWithLocationSegment(self, file_entry, segment_index):
+    """Compares a file entry name against a find specification location segment.
+
+    Args:
+      file_entry (FileEntry): file entry.
+      segment_index (int): index of the location segment to compare against,
+          where 0 represents the root segment.
+
+    Returns:
+      bool: True if the location segment of the file entry matches that of the
+          find specification, False if not or if the find specification has no
+          location defined.
+    """
+    return self._CompareWithLocationSegment(file_entry.name, segment_index)
+
+  def CompareTraits(self, file_entry):
+    """Compares a file entry traits against the find specification.
+
+    Args:
+      file_entry (FileEntry): file entry.
+
+    Returns:
+      bool: True if the traits of the file entry, such as type, matches the
+          find specification, False otherwise.
+    """
+    match = self._CheckFileEntryType(file_entry)
+    if match is not None and not match:
+      return False
+
+    match = self._CheckIsAllocated(file_entry)
+    if match is not None and not match:
+      return False
+
+    return True
+
+  def HasLocation(self):
+    """Determines if the find specification has a location defined.
+
+    Returns:
+      bool: True if find specification has a location defined, False if not.
+    """
+    return bool(self._location_segments)
+
+  def IsLastLocationSegment(self, segment_index):
+    """Determines if the a location segment is the last one.
+
+    Args:
+      segment_index (int): index of the location path segment.
+
+    Returns:
+      bool: True if at maximum depth, False if not.
+    """
+    return bool(self._location_segments is not None and
+                segment_index == self._number_of_location_segments)
+
+  @decorators.deprecated
   def Matches(self, file_entry, search_depth=None):
-    """Determines if the file entry matches the find specification.
+    """Compares a file entry against the find specification.
+
+    This method is deprecated use CompareNameWithLocationSegment, CompareTraits
+    or CompareLocation instead.
 
     Args:
       file_entry (FileEntry): file entry.
@@ -362,8 +479,8 @@ class FindSpec(object):
     Returns:
       tuple: contains:
 
-        bool: True if the file entry matches the find specification, False
-            otherwise.
+        bool: True if the traits of the file entry, such as type, matches the
+            find specification, False otherwise.
         bool: True if the location matches, False if not or None if no location
             specified.
     """
@@ -373,22 +490,14 @@ class FindSpec(object):
       if search_depth is None:
         search_depth = self._number_of_location_segments
 
-      location_match = self._CheckLocation(file_entry, search_depth)
-      if not location_match:
+      location_match = self._CompareWithLocationSegment(
+          file_entry.name, search_depth)
+      is_last_location_segment = self.IsLastLocationSegment(search_depth)
+      if not location_match or not is_last_location_segment:
         return False, location_match
 
-      if search_depth != self._number_of_location_segments:
-        return False, location_match
-
-    match = self._CheckFileEntryType(file_entry)
-    if match is not None and not match:
-      return False, location_match
-
-    match = self._CheckIsAllocated(file_entry)
-    if match is not None and not match:
-      return False, location_match
-
-    return True, location_match
+    match = self.CompareTraits(file_entry)
+    return match, location_match
 
 
 class FileSystemSearcher(object):
@@ -419,39 +528,49 @@ class FileSystemSearcher(object):
     self._file_system = file_system
     self._mount_point = mount_point
 
-  def _FindInFileEntry(self, file_entry, find_specs, search_depth):
+  def _FindInFileEntry(self, file_entry, find_specs, segment_index):
     """Searches for matching file entries within the file entry.
 
     Args:
       file_entry (FileEntry): file entry.
       find_specs (list[FindSpec]): find specifications.
-      search_depth (int): number of location path segments to compare.
+      segment_index (int): index of the location path segment to compare.
 
     Yields:
       PathSpec: path specification of a matching file entry.
     """
     sub_find_specs = []
     for find_spec in find_specs:
-      match, location_match = find_spec.Matches(
-          file_entry, search_depth=search_depth)
-      if match:
-        yield file_entry.path_spec
+      has_location = find_spec.HasLocation()
+      # Do a quick check to see if the current location segment matches.
+      location_match = find_spec.CompareNameWithLocationSegment(
+          file_entry, segment_index)
+      is_last_location_segment = find_spec.IsLastLocationSegment(
+          segment_index)
 
-      # pylint: disable=singleton-comparison
-      if location_match != False and not find_spec.AtMaximumDepth(search_depth):
+      if location_match and is_last_location_segment:
+        # Check if the full location matches.
+        location_match = find_spec.CompareLocation(
+            file_entry, mount_point=self._mount_point)
+
+      if not has_location or (location_match and is_last_location_segment):
+        if find_spec.CompareTraits(file_entry):
+          yield file_entry.path_spec
+
+      at_last_location_segment = find_spec.AtLastLocationSegment(segment_index)
+      if (not has_location or location_match) and not at_last_location_segment:
         sub_find_specs.append(find_spec)
 
-    if not sub_find_specs:
-      return
+    if sub_find_specs:
+      segment_index += 1
+      try:
+        for sub_file_entry in file_entry.sub_file_entries:
+          for matching_path_spec in self._FindInFileEntry(
+              sub_file_entry, sub_find_specs, segment_index):
+            yield matching_path_spec
 
-    search_depth += 1
-    try:
-      for sub_file_entry in file_entry.sub_file_entries:
-        for matching_path_spec in self._FindInFileEntry(
-            sub_file_entry, sub_find_specs, search_depth):
-          yield matching_path_spec
-    except errors.AccessError:
-      pass
+      except errors.AccessError:
+        pass
 
   def Find(self, find_specs=None):
     """Searches for matching file entries within the file system.
