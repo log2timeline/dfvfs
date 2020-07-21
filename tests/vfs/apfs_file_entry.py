@@ -28,16 +28,14 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['apfs.dmg'])
+    test_file = self._GetTestFilePath(['apfs.raw'])
     self._SkipIfPathNotExists(test_file)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
-    partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
+    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
     self._apfs_container_path_spec = (
         apfs_container_path_spec.APFSContainerPathSpec(
-            location='/apfs1', parent=partition_path_spec))
+            location='/apfs1', parent=test_raw_path_spec))
     self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
         location='/', parent=self._apfs_container_path_spec)
 
@@ -303,10 +301,10 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     test_file = self._GetTestFilePath(['apfs_encrypted.dmg'])
     self._SkipIfPathNotExists(test_file)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
     partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
+        location='/p1', parent=test_raw_path_spec)
     self._apfs_container_path_spec = (
         apfs_container_path_spec.APFSContainerPathSpec(
             location='/apfs1', parent=partition_path_spec))

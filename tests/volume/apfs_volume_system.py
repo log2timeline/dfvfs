@@ -9,7 +9,6 @@ import unittest
 from dfvfs.path import apfs_container_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import raw_path_spec
-from dfvfs.path import tsk_partition_path_spec
 from dfvfs.volume import apfs_volume_system
 
 from tests import test_lib as shared_test_lib
@@ -20,18 +19,16 @@ class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = self._GetTestFilePath(['apfs.dmg'])
+    test_file = self._GetTestFilePath(['apfs.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
     self._apfs_container_path_spec = (
         apfs_container_path_spec.APFSContainerPathSpec(
-            location='/', parent=self._partition_path_spec))
+            location='/', parent=path_spec))
 
-  # fsapfsinfo -o $(( 40 * 512 )) test_data/apfs.dmg
+  # fsapfsinfo test_data/apfs.raw
   #
   # Apple File System (APFS) information:
   #
