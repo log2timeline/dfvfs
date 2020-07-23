@@ -9,7 +9,6 @@ import unittest
 from dfvfs.path import apfs_container_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import raw_path_spec
-from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import apfs_container_file_system
 
@@ -22,16 +21,14 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['apfs.dmg'])
+    test_file = self._GetTestFilePath(['apfs.raw'])
     self._SkipIfPathNotExists(test_file)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
+    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
     self._apfs_container_path_spec = (
         apfs_container_path_spec.APFSContainerPathSpec(
-            location='/', parent=self._partition_path_spec))
+            location='/', parent=self._raw_path_spec))
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
@@ -52,27 +49,27 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._apfs_container_path_spec)
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/', parent=self._partition_path_spec)
+        location='/', parent=self._raw_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        parent=self._partition_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/apfs1', parent=self._partition_path_spec)
+        location='/apfs1', parent=self._raw_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        parent=self._partition_path_spec, volume_index=9)
+        parent=self._raw_path_spec, volume_index=9)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/apfs0', parent=self._partition_path_spec)
+        location='/apfs0', parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/apfs9', parent=self._partition_path_spec)
+        location='/apfs9', parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     file_system.Close()
@@ -86,40 +83,40 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._apfs_container_path_spec)
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/', parent=self._partition_path_spec)
+        location='/', parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        parent=self._partition_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'apfs1')
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/apfs1', parent=self._partition_path_spec)
+        location='/apfs1', parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'apfs1')
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        parent=self._partition_path_spec, volume_index=9)
+        parent=self._raw_path_spec, volume_index=9)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/apfs0', parent=self._partition_path_spec)
+        location='/apfs0', parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/apfs9', parent=self._partition_path_spec)
+        location='/apfs9', parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)

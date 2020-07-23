@@ -320,7 +320,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanOnAPFS(self):
     """Test the Scan function on an APFS image."""
-    test_path = self._GetTestFilePath(['apfs.dmg'])
+    test_path = self._GetTestFilePath(['apfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -330,14 +330,10 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
-    scan_node = self._GetTestScanNode(scan_context)
+    scan_node = scan_context.GetRootScanNode()
     self.assertIsNotNone(scan_node)
-    self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
 
-    self.assertEqual(len(scan_node.sub_nodes), 6)
-
-    scan_node = scan_node.sub_nodes[4].GetSubNodeByLocation('/')
+    scan_node = scan_node.sub_nodes[0].sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS_CONTAINER)

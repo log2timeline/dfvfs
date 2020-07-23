@@ -151,7 +151,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['apfs.dmg'])
+    test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -389,16 +389,16 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['apfs.dmg'])
+    test_path = self._GetTestFilePath(['apfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    scan_node = self._GetTestScanNode(scan_context)
+    scan_node = scan_context.GetRootScanNode()
 
-    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
+    apfs_container_scan_node = scan_node.sub_nodes[0].sub_nodes[0]
 
     # Test on volume system root node.
     base_path_specs = []
@@ -543,7 +543,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['apfs.dmg'])
+    test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
