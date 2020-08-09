@@ -52,7 +52,7 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS, location='/passwords.txt',
-        identifier=19, parent=self._apfs_container_path_spec)
+        identifier=20, parent=self._apfs_container_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -70,7 +70,7 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._apfs_path_spec)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_APFS, identifier=19,
+        definitions.TYPE_INDICATOR_APFS, identifier=20,
         parent=self._apfs_container_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
@@ -81,7 +81,7 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS, location='/passwords.txt',
-        identifier=19, parent=self._apfs_container_path_spec)
+        identifier=20, parent=self._apfs_container_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)

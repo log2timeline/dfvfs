@@ -155,7 +155,8 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    path_spec = tsk_path_spec.TSKPathSpec(inode=15, parent=self._os_path_spec)
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -349,10 +350,254 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(data_stream)
 
 
-class TSKFileEntryTestHFS(unittest.TestCase):
+class TSKFileEntryTestHFS(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file entry on HFS."""
 
-  # TODO: implement.
+  _INODE_A_DIRECTORY = 18
+  _INODE_A_LINK = 22
+  _INODE_ANOTHER_FILE = 21
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['hfsplus.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
+        location='/', parent=self._os_path_spec)
+
+    self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
+    self._file_system.Open(self._tsk_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    file_entry = tsk_file_entry.TSKFileEntry(
+        self._resolver_context, self._file_system, self._tsk_path_spec)
+
+    self.assertIsNotNone(file_entry)
+
+  def testBackupTime(self):
+    """Test the backup_time property."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry.backup_time)
+
+  def testDeletionTime(self):
+    """Test the deletion_time property."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNone(file_entry.deletion_time)
+
+  def testGetFileEntryByPathSpec(self):
+    """Tests the GetFileEntryByPathSpec function."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+
+  def testGetLinkedFileEntry(self):
+    """Tests the GetLinkedFileEntry function."""
+    test_location = '/a_link'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_A_LINK, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    linked_file_entry = file_entry.GetLinkedFileEntry()
+
+    self.assertIsNotNone(linked_file_entry)
+
+    self.assertEqual(linked_file_entry.name, 'another_file')
+
+  def testGetParentFileEntry(self):
+    """Tests the GetParentFileEntry function."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    parent_file_entry = file_entry.GetParentFileEntry()
+
+    self.assertIsNotNone(parent_file_entry)
+
+    self.assertEqual(parent_file_entry.name, 'a_directory')
+
+  def testGetStat(self):
+    """Tests the GetStat function."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_object = file_entry.GetStat()
+
+    self.assertIsNotNone(stat_object)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 22)
+
+    self.assertEqual(stat_object.mode, 420)
+    self.assertEqual(stat_object.uid, 501)
+    self.assertEqual(stat_object.gid, 20)
+
+    self.assertEqual(stat_object.atime, 1596950907)
+    self.assertEqual(stat_object.atime_nano, 0)
+
+    self.assertEqual(stat_object.ctime, 1596950907)
+    self.assertEqual(stat_object.ctime_nano, 0)
+
+    # EXT2 has no crtime timestamp.
+    self.assertFalse(hasattr(stat_object, 'crtime'))
+    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
+
+    self.assertEqual(stat_object.mtime, 1596950907)
+    self.assertEqual(stat_object.mtime_nano, 0)
+
+  def testIsFunctions(self):
+    """Tests the Is? functions."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertFalse(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertFalse(file_entry.IsDirectory())
+    self.assertTrue(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
+    test_location = '/a_directory'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_A_DIRECTORY, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertFalse(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertTrue(file_entry.IsDirectory())
+    self.assertFalse(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location='/', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertTrue(file_entry.IsRoot())
+    self.assertFalse(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsAllocated())
+
+    self.assertFalse(file_entry.IsDevice())
+    self.assertTrue(file_entry.IsDirectory())
+    self.assertFalse(file_entry.IsFile())
+    self.assertFalse(file_entry.IsLink())
+    self.assertFalse(file_entry.IsPipe())
+    self.assertFalse(file_entry.IsSocket())
+
+  def testSubFileEntries(self):
+    """Tests the number_of_sub_file_entries and sub_file_entries properties."""
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location='/', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 11)
+
+    expected_sub_file_entry_names = [
+        '$ExtentsFile',
+        '$CatalogFile',
+        '$BadBlockFile',
+        '$AllocationFile',
+        '$AttributesFile',
+        '.fseventsd',
+        '.HFS+ Private Directory Data\r',
+        'a_directory',
+        'a_link',
+        'passwords.txt',
+        '^^^^HFS+ Private Data']
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEqual(
+        len(sub_file_entry_names), len(expected_sub_file_entry_names))
+    self.assertEqual(
+        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+
+  def testDataStreams(self):
+    """Tests the data streams functionality."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [''])
+
+    test_location = '/a_directory'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_A_DIRECTORY, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 0)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [])
+
+  def testGetDataStream(self):
+    """Tests the GetDataStream function."""
+    test_location = '/a_directory/another_file'
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location=test_location,
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream_name = ''
+    data_stream = file_entry.GetDataStream(data_stream_name)
+    self.assertIsNotNone(data_stream)
 
 
 class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):

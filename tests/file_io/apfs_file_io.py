@@ -20,7 +20,7 @@ class APFSFileTest(test_lib.ImageFileTestCase):
   """Tests the file-like object implementation using pyfsapfs.file_entry."""
 
   _IDENTIFIER_ANOTHER_FILE = 21
-  _IDENTIFIER_PASSWORDS_TXT = 19
+  _IDENTIFIER_PASSWORDS_TXT = 20
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
