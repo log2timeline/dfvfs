@@ -66,14 +66,14 @@ class NTFSFileSystem(file_system.FileSystem):
         path_spec.parent, resolver_context=self._resolver_context)
 
     try:
-      fsnfts_volume = pyfsntfs.volume()
-      fsnfts_volume.open_file_object(file_object)
+      fsntfs_volume = pyfsntfs.volume()
+      fsntfs_volume.open_file_object(file_object)
     except:
       file_object.close()
       raise
 
     self._file_object = file_object
-    self._fsntfs_volume = fsnfts_volume
+    self._fsntfs_volume = fsntfs_volume
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.

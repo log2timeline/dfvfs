@@ -6,8 +6,9 @@ from __future__ import unicode_literals
 
 import unittest
 
-from tests.path import test_lib
 from dfvfs.path import ntfs_path_spec
+
+from tests.path import test_lib
 
 
 class NTFSPathSpecTest(test_lib.PathSpecTestCase):

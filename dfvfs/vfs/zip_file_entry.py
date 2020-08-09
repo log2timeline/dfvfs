@@ -134,6 +134,7 @@ class ZipFileEntry(file_entry.FileEntry):
     """
     if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return None
+
     return ZipDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):

@@ -98,7 +98,7 @@ class APFSFileEntry(file_entry.FileEntry):
     Returns:
       APFSDirectory: directory or None if not available.
     """
-    if self._fsapfs_file_entry.number_of_sub_file_entries <= 0:
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return None
 
     return APFSDirectory(self._file_system, self.path_spec)
