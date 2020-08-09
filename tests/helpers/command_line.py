@@ -276,7 +276,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         b'The following Apple File System (APFS) volumes were found:',
         b'',
         b'Identifier      Name',
-        b'apfs1           SingleVolume',
+        b'apfs1           apfs_test',
         b'']
 
     if not win32console:

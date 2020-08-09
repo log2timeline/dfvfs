@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Script to generate dfVFS test files.
+# Script to generate dfVFS test files on Linux.
 #
 # Requires:
 # * Linux

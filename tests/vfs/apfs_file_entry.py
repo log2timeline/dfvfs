@@ -118,7 +118,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(linked_file_entry)
 
-    self.assertEqual(linked_file_entry.name, 'a_file')
+    self.assertEqual(linked_file_entry.name, 'another_file')
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
@@ -154,17 +154,17 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 99)
     self.assertEqual(stat_object.gid, 99)
 
-    self.assertEqual(stat_object.atime, 1539321685)
-    self.assertEqual(stat_object.atime_nano, 4824067)
+    self.assertEqual(stat_object.atime, 1596950905)
+    self.assertEqual(stat_object.atime_nano, 6246998)
 
-    self.assertEqual(stat_object.ctime, 1539321685)
-    self.assertEqual(stat_object.ctime_nano, 4840758)
+    self.assertEqual(stat_object.ctime, 1596950905)
+    self.assertEqual(stat_object.ctime_nano, 6267234)
 
-    self.assertEqual(stat_object.crtime, 1539321685)
-    self.assertEqual(stat_object.crtime_nano, 4840758)
+    self.assertEqual(stat_object.crtime, 1596950905)
+    self.assertEqual(stat_object.crtime_nano, 6267234)
 
-    self.assertEqual(stat_object.mtime, 1539321685)
-    self.assertEqual(stat_object.mtime_nano, 4824067)
+    self.assertEqual(stat_object.mtime, 1596950905)
+    self.assertEqual(stat_object.mtime_nano, 6246998)
 
   def testIsFunctions(self):
     """Tests the Is? functions."""
@@ -375,7 +375,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=19, parent=self._apfs_container_path_spec)
+        identifier=20, parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)

@@ -33,12 +33,12 @@ class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
   # Apple File System (APFS) information:
   #
   # Container information:
-  #  Identifier	                : 0d411731-1854-49a5-8ef7-1b81cdc57dac
+  #  Identifier	                : d6a76f34-de93-426f-b7d2-f3121ebf8fae
   #  Number of volumes          : 1
   #
   # Volume: 1 information:
-  #   Identifier                : 44b5f357-e9b3-483d-893c-3802306b5132
-  #   Name                      : SingleVolume
+  #   Identifier                : 5a4d7f50-726e-4fe9-8c57-8898f0cbaf72
+  #   Name                      : apfs_test
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
@@ -54,14 +54,14 @@ class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
     self.assertEqual(volume.number_of_attributes, 2)
     self.assertEqual(volume.identifier, 'apfs1')
 
-    expected_value = '44b5f357-e9b3-483d-893c-3802306b5132'
+    expected_value = '5a4d7f50-726e-4fe9-8c57-8898f0cbaf72'
     volume_attribute = volume.GetAttribute('identifier')
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
 
     volume_attribute = volume.GetAttribute('name')
     self.assertIsNotNone(volume_attribute)
-    self.assertEqual(volume_attribute.value, 'SingleVolume')
+    self.assertEqual(volume_attribute.value, 'apfs_test')
 
     volume = volume_system.GetVolumeByIndex(99)
     self.assertIsNone(volume)
