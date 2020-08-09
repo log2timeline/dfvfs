@@ -40,18 +40,18 @@ class Factory(object):
 
   @classmethod
   def DeregisterPathSpec(cls, path_spec_type):
-    """Deregisters a path specification.
+    """Deregisters a path specification type.
 
     Args:
       path_spec_type (type): path specification type.
 
     Raises:
-      KeyError: if path specification is not registered.
+      KeyError: if path specification type is not registered.
     """
     type_indicator = path_spec_type.TYPE_INDICATOR
     if type_indicator not in cls._path_spec_types:
-      raise KeyError(
-          'Path specification type: {0:s} not set.'.format(type_indicator))
+      raise KeyError('Path specification type: {0:s} not set.'.format(
+          type_indicator))
 
     del cls._path_spec_types[type_indicator]
 
@@ -107,8 +107,8 @@ class Factory(object):
       KeyError: if path specification is not registered.
     """
     if type_indicator not in cls._path_spec_types:
-      raise KeyError(
-          'Path specification type: {0:s} not set.'.format(type_indicator))
+      raise KeyError('Path specification type: {0:s} not set.'.format(
+          type_indicator))
 
     # An empty parent will cause parentless path specifications to raise
     # so we conveniently remove it here.
@@ -126,13 +126,12 @@ class Factory(object):
       path_spec_type (type): path specification type.
 
     Raises:
-      KeyError: if path specification is already registered.
+      KeyError: if path specification type is already registered.
     """
     type_indicator = path_spec_type.TYPE_INDICATOR
     if type_indicator in cls._path_spec_types:
-      raise KeyError(
-          'Path specification type: {0:s} already set.'.format(
-              type_indicator))
+      raise KeyError('Path specification type: {0:s} already set.'.format(
+          type_indicator))
 
     cls._path_spec_types[type_indicator] = path_spec_type
 
