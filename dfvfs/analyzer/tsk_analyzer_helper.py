@@ -46,8 +46,9 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     # HFSX file system signature.
     format_specification.AddNewSignature(b'HX', offset=1024)
 
-    # Ext file system signature.
-    format_specification.AddNewSignature(b'\x53\xef', offset=1080)
+    if definitions.PREFERRED_EXT_BACK_END == self.TYPE_INDICATOR:
+      # Ext file system signature.
+      format_specification.AddNewSignature(b'\x53\xef', offset=1080)
 
     # ISO9660 file system signature.
     format_specification.AddNewSignature(b'CD001', offset=32769)

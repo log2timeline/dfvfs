@@ -8,6 +8,7 @@ idna >= 2.5
 libbde-python >= 20140531
 libewf-python >= 20131210
 libfsapfs-python >= 20181205
+libfsext-python >= 20200819
 libfsntfs-python >= 20200424
 libfvde-python >= 20160719
 libfwnt-python >= 20160418
