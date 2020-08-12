@@ -188,7 +188,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
-    self.assertIsNotNone(test_file_entry.link)
+    self.assertIsNone(test_file_entry.link)
 
   def testModificationTime(self):
     """Tests the modification_time property."""

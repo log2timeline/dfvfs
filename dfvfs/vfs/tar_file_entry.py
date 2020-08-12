@@ -133,6 +133,7 @@ class TARFileEntry(file_entry.FileEntry):
       str: link.
     """
     if self._link is None:
+      self._link = ''
       if self._tar_info:
         self._link = self._tar_info.linkname
 

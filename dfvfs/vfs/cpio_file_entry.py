@@ -122,11 +122,6 @@ class CPIOFileEntry(file_entry.FileEntry):
       str: full path of the linked file entry.
     """
     if self._link is None:
-      self._link = ''
-
-      if self.entry_type != definitions.FILE_ENTRY_TYPE_LINK:
-        return self._link
-
       cpio_archive_file = self._file_system.GetCPIOArchiveFile()
       link_data = cpio_archive_file.ReadDataAtOffset(
           self._cpio_archive_file_entry.data_offset,

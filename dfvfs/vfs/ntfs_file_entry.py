@@ -332,15 +332,11 @@ class NTFSFileEntry(file_entry.FileEntry):
       str: path of the linked file.
     """
     if self._link is None:
-      self._link = ''
-      if not self._IsLink(self._fsntfs_file_entry.file_attribute_flags):
-        return self._link
-
-      link = self._fsntfs_file_entry.reparse_point_print_name
-      if link:
+      self._link = self._fsntfs_file_entry.reparse_point_print_name
+      if self._link:
         # Strip off the drive letter, we assume the link is within
         # the same volume.
-        _, _, self._link = link.rpartition(':')
+        _, _, self._link = self._link.rpartition(':')
 
     return self._link
 
