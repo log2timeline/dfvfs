@@ -8,7 +8,7 @@ import unittest
 
 from dfvfs.path import lvm_path_spec
 from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
+from dfvfs.path import raw_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import lvm_file_entry
 from dfvfs.vfs import lvm_file_system
@@ -22,13 +22,13 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['lvm.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
-        location='/', parent=self._qcow_path_spec)
+        location='/', parent=self._raw_path_spec)
 
     self._file_system = lvm_file_system.LVMFileSystem(self._resolver_context)
     self._file_system.Open(self._lvm_path_spec)
@@ -37,8 +37,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
 
-  # qcowmount test_data/lvm.qcow2 fuse/
-  # vslvminfo fuse/qcow1
+  # vslvminfo fuse/lvm.raw
   #
   # Linux Logical Volume Manager (LVM) information:
   # Volume Group (VG):
@@ -78,7 +77,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -86,7 +85,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(parent_file_entry)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/', parent=self._qcow_path_spec)
+        location='/', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -96,7 +95,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetStat(self):
     """Tests the GetStat function."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -113,7 +112,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testIsFunctions(self):
     """Test the Is? functions."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -129,7 +128,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/', parent=self._qcow_path_spec)
+        location='/', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -147,7 +146,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/', parent=self._qcow_path_spec)
+        location='/', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -167,7 +166,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testDataStreams(self):
     """Test the data streams functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -180,7 +179,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(data_stream_names, [''])
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/', parent=self._qcow_path_spec)
+        location='/', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -195,7 +194,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 

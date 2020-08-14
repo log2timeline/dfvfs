@@ -11,7 +11,7 @@ from dfvfs.lib import errors
 from dfvfs.file_io import lvm_file_io
 from dfvfs.path import lvm_path_spec
 from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
+from dfvfs.path import raw_path_spec
 from dfvfs.resolver import context
 
 from tests import test_lib as shared_test_lib
@@ -24,16 +24,16 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['lvm.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
   def testOpenClose(self):
     """Test the open and close functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -41,14 +41,14 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=9)
+        parent=self._raw_path_spec, volume_index=9)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.open(path_spec=path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/lvm1', parent=self._qcow_path_spec)
+        location='/lvm1', parent=self._raw_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -56,14 +56,14 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/lvm0', parent=self._qcow_path_spec)
+        location='/lvm0', parent=self._raw_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.open(path_spec=path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
-        location='/lvm9', parent=self._qcow_path_spec)
+        location='/lvm9', parent=self._raw_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
@@ -72,7 +72,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
   def testSeek(self):
     """Test the seek functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -117,7 +117,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
   def testRead(self):
     """Test the read functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
@@ -138,13 +138,13 @@ class LVMImageFileTest(test_lib.Ext2ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(LVMImageFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['lvm.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
-        parent=self._qcow_path_spec, volume_index=0)
+        parent=self._raw_path_spec, volume_index=0)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
