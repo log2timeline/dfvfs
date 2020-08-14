@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import unittest
 
 from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
+from dfvfs.path import raw_path_spec
 from dfvfs.path import lvm_path_spec
 from dfvfs.volume import lvm_volume_system
 
@@ -19,16 +19,15 @@ class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = self._GetTestFilePath(['lvm.qcow2'])
+    test_file = self._GetTestFilePath(['lvm.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
         location='/', parent=path_spec)
 
-  # qcowmount test_data/lvm.qcow2 fuse/
-  # vslvminfo fuse/qcow1
+  # vslvminfo fuse/lvm.raw
   #
   # Linux Logical Volume Manager (LVM) information:
   # Volume Group (VG):
