@@ -96,12 +96,12 @@ class APFSFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      APFSDirectory: directory or None if not available.
+      APFSDirectory: a directory.
     """
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return None
+    if self._directory is None:
+      self._directory = APFSDirectory(self._file_system, self.path_spec)
 
-    return APFSDirectory(self._file_system, self.path_spec)
+    return self._directory
 
   def _GetLink(self):
     """Retrieves the link.
@@ -150,11 +150,9 @@ class APFSFileEntry(file_entry.FileEntry):
     Yields:
       APFSFileEntry: a sub file entry.
     """
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      directory = self._GetDirectory()
+      for path_spec in directory.entries:
         yield APFSFileEntry(
             self._resolver_context, self._file_system, path_spec)
 

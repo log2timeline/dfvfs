@@ -162,14 +162,10 @@ class FileEntry(object):
       list[DataStream]: data streams.
     """
     if self._data_streams is None:
-      if self._directory is None:
-        self._directory = self._GetDirectory()
-
       self._data_streams = []
 
-      # It is assumed that directory and link file entries typically
-      # do not have data streams.
-      if not self._directory and not self.link:
+      # It is assumed that non-file file entries do not have data streams.
+      if self.entry_type == definitions.FILE_ENTRY_TYPE_FILE:
         data_stream = DataStream()
         self._data_streams.append(data_stream)
 
@@ -180,7 +176,7 @@ class FileEntry(object):
     """Retrieves the directory.
 
     Returns:
-      Directory: a directory or None.
+      Directory: a directory.
     """
 
   def _GetLink(self):
@@ -306,14 +302,13 @@ class FileEntry(object):
   @property
   def number_of_sub_file_entries(self):
     """int: number of sub file entries."""
-    if self._directory is None:
-      self._directory = self._GetDirectory()
+    number_of_sub_file_entries = 0
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      directory = self._GetDirectory()
+      # We cannot use len(directory.entries) since entries is a generator.
+      number_of_sub_file_entries = sum(1 for path_spec in directory.entries)
 
-    if self._directory is None:
-      return 0
-
-    # We cannot use len(self._directory.entries) since entries is a generator.
-    return sum(1 for path_spec in self._directory.entries)
+    return number_of_sub_file_entries
 
   @property
   def sub_file_entries(self):

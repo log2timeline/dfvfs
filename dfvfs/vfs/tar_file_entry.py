@@ -120,12 +120,12 @@ class TARFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      TARDirectory: a directory or None if not available.
+      TARDirectory: a directory.
     """
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return None
+    if self._directory is None:
+      self._directory = TARDirectory(self._file_system, self.path_spec)
 
-    return TARDirectory(self._file_system, self.path_spec)
+    return self._directory
 
   def _GetLink(self):
     """Retrieves the link.
@@ -179,25 +179,23 @@ class TARFileEntry(file_entry.FileEntry):
     Yields:
       TARFileEntry: a sub file entry.
     """
-    tar_file = self._file_system.GetTARFile()
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      tar_file = self._file_system.GetTARFile()
+      if tar_file:
+        directory = self._GetDirectory()
+        for path_spec in directory.entries:
+          location = getattr(path_spec, 'location', None)
+          if location is None:
+            continue
 
-    if self._directory is None:
-      self._directory = self._GetDirectory()
+          kwargs = {}
+          try:
+            kwargs['tar_info'] = tar_file.getmember(location[1:])
+          except KeyError:
+            kwargs['is_virtual'] = True
 
-    if self._directory and tar_file:
-      for path_spec in self._directory.entries:
-        location = getattr(path_spec, 'location', None)
-        if location is None:
-          continue
-
-        kwargs = {}
-        try:
-          kwargs['tar_info'] = tar_file.getmember(location[1:])
-        except KeyError:
-          kwargs['is_virtual'] = True
-
-        yield TARFileEntry(
-            self._resolver_context, self._file_system, path_spec, **kwargs)
+          yield TARFileEntry(
+              self._resolver_context, self._file_system, path_spec, **kwargs)
 
   @property
   def name(self):

@@ -130,12 +130,12 @@ class ZipFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      ZipDirectory: a directory or None if not available.
+      ZipDirectory: a directory.
     """
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return None
+    if self._directory is None:
+      self._directory = ZipDirectory(self._file_system, self.path_spec)
 
-    return ZipDirectory(self._file_system, self.path_spec)
+    return self._directory
 
   def _GetStat(self):
     """Retrieves information about the file entry.
@@ -174,24 +174,23 @@ class ZipFileEntry(file_entry.FileEntry):
     Yields:
       ZipFileEntry: a sub file entry.
     """
-    if self._directory is None:
-      self._directory = self._GetDirectory()
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      zip_file = self._file_system.GetZipFile()
+      if zip_file:
+        directory = self._GetDirectory()
+        for path_spec in directory.entries:
+          location = getattr(path_spec, 'location', None)
+          if location is None:
+            continue
 
-    zip_file = self._file_system.GetZipFile()
-    if self._directory and zip_file:
-      for path_spec in self._directory.entries:
-        location = getattr(path_spec, 'location', None)
-        if location is None:
-          continue
+          kwargs = {}
+          try:
+            kwargs['zip_info'] = zip_file.getinfo(location[1:])
+          except KeyError:
+            kwargs['is_virtual'] = True
 
-        kwargs = {}
-        try:
-          kwargs['zip_info'] = zip_file.getinfo(location[1:])
-        except KeyError:
-          kwargs['is_virtual'] = True
-
-        yield ZipFileEntry(
-            self._resolver_context, self._file_system, path_spec, **kwargs)
+          yield ZipFileEntry(
+              self._resolver_context, self._file_system, path_spec, **kwargs)
 
   @property
   def name(self):

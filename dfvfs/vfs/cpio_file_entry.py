@@ -109,12 +109,12 @@ class CPIOFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      CPIODirectory: a directory or None if not available.
+      CPIODirectory: a directory.
     """
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return None
+    if self._directory is None:
+      self._directory = CPIODirectory(self._file_system, self.path_spec)
 
-    return CPIODirectory(self._file_system, self.path_spec)
+    return self._directory
 
   def _GetLink(self):
     """Retrieves the link.
@@ -161,11 +161,9 @@ class CPIOFileEntry(file_entry.FileEntry):
     Yields:
       CPIOFileEntry: a sub file entry.
     """
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      directory = self._GetDirectory()
+      for path_spec in directory.entries:
         yield CPIOFileEntry(
             self._resolver_context, self._file_system, path_spec)
 

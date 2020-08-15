@@ -92,12 +92,12 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      SQLiteBlobDirectory: a directory or None if not available.
+      SQLiteBlobDirectory: a directory.
     """
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return None
+    if self._directory is None:
+      self._directory = SQLiteBlobDirectory(self._file_system, self.path_spec)
 
-    return SQLiteBlobDirectory(self._file_system, self.path_spec)
+    return self._directory
 
   def _GetStat(self):
     """Retrieves the stat object.
@@ -129,11 +129,9 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     Yields:
       SQLiteBlobFileEntry: a sub file entry.
     """
-    if self._directory is None:
-      self._directory = self._GetDirectory()
-
-    if self._directory:
-      for path_spec in self._directory.entries:
+    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      directory = self._GetDirectory()
+      for path_spec in directory.entries:
         yield SQLiteBlobFileEntry(
             self._resolver_context, self._file_system, path_spec)
 
