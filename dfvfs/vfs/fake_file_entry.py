@@ -121,18 +121,6 @@ class FakeFileEntry(file_entry.FileEntry):
     return self._date_time
 
   @property
-  def link(self):
-    """str: full path of the linked file entry."""
-    if not self.IsLink():
-      return ''
-
-    location = getattr(self.path_spec, 'location', None)
-    if location is None:
-      return ''
-
-    return self._file_system.GetDataByPath(location)
-
-  @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     return self._date_time
@@ -145,6 +133,23 @@ class FakeFileEntry(file_entry.FileEntry):
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
     return self._name
+
+  def _GetLink(self):
+    """Retrieves the link.
+
+    Returns:
+      str: full path of the linked file entry.
+    """
+    if self._link is None:
+      self._link = ''
+
+      location = getattr(self.path_spec, 'location', None)
+      if location is None:
+        return self._link
+
+      self._link = self._file_system.GetDataByPath(location)
+
+    return self._link
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.

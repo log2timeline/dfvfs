@@ -191,6 +191,7 @@ class FileEntry(object):
     """
     if self._link is None:
       self._link = ''
+
     return self._link
 
   def _GetStat(self):
@@ -275,7 +276,10 @@ class FileEntry(object):
 
   @property
   def link(self):
-    """str: full path of the linked file entry."""
+    """str: full path of the linked file entry or None if not available."""
+    if not self.IsLink():
+      return None
+
     return self._GetLink()
 
   @property

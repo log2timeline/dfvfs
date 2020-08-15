@@ -566,13 +566,9 @@ class TSKFileEntry(file_entry.FileEntry):
     if self._link is None:
       self._link = ''
 
-      if self.entry_type != definitions.FILE_ENTRY_TYPE_LINK:
-        return self._link
-
       # Note that the SleuthKit does not expose NTFS
       # IO_REPARSE_TAG_MOUNT_POINT or IO_REPARSE_TAG_SYMLINK as a link.
       link = getattr(self._tsk_file.info.meta, 'link', None)
-
       if link is None:
         return self._link
 

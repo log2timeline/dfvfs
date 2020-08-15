@@ -143,12 +143,13 @@ class OSFileEntry(file_entry.FileEntry):
     return OSDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
-    """Retrieves the link."""
+    """Retrieves the link.
+
+    Returns:
+      str: full path of the linked file entry.
+    """
     if self._link is None:
       self._link = ''
-
-      if not self.IsLink():
-        return self._link
 
       location = getattr(self.path_spec, 'location', None)
       if location is None:
@@ -248,23 +249,6 @@ class OSFileEntry(file_entry.FileEntry):
         return None
 
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
-
-  @property
-  def link(self):
-    """str: full path of the linked file entry."""
-    if self._link is None:
-      self._link = ''
-
-      if not self.IsLink():
-        return self._link
-
-      location = getattr(self.path_spec, 'location', None)
-      if location is None:
-        return self._link
-
-      self._link = os.readlink(location)
-      self._link = os.path.abspath(self._link)
-    return self._link
 
   @property
   def name(self):

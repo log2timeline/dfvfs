@@ -110,14 +110,10 @@ class APFSFileEntry(file_entry.FileEntry):
       str: path of the linked file.
     """
     if self._link is None:
-      self._link = ''
-      if self.entry_type != definitions.FILE_ENTRY_TYPE_LINK:
-        return self._link
-
-      link = self._fsapfs_file_entry.symbolic_link_target
-      if link and link[0] != self._file_system.PATH_SEPARATOR:
+      self._link = self._fsapfs_file_entry.symbolic_link_target
+      if self._link and self._link[0] != self._file_system.PATH_SEPARATOR:
         # TODO: make link absolute.
-        self._link = '/{0:s}'.format(link)
+        self._link = '/{0:s}'.format(self._link)
 
     return self._link
 
