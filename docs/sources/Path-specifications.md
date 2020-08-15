@@ -2,6 +2,11 @@
 
 ## Terminology
 
+In dfVFS a path specification is defines the location of a file system entry
+or data stream. It is comparable with the path on an operating system with the
+diffence that the dfVFS path specification includes information about its
+parents, such a the volume system of the file system.
+
 ### System-level path specification
 
 A "system-level path specification" is a path specification that can be
@@ -17,24 +22,33 @@ dfvfs/lib/definitions.py
 
 In your code use the type indicator as defined by dfVFS and not its value, in
 case it changes. The following is a list of type indicators as available in
-version 20140126.
+version 20200625.
 
 | **Type indicator** | **Description** |
 | --- | --- |
-| TYPE_INDICATOR_BDE | The BDE volume system type |
+| TYPE_INDICATOR_APFS | The Apple File System (APFS) type |
+| TYPE_INDICATOR_APFS_CONTAINER | The Apple File System (APFS) container volume system type |
+| TYPE_INDICATOR_BDE | The BitLocker Drive Entryption (BDE) volume system type |
 | TYPE_INDICATOR_COMPRESSED_STREAM | The compressed stream type |
+| TYPE_INDICATOR_CPIO | The cpio archive file type |
 | TYPE_INDICATOR_DATA_RANGE | The data range type |
 | TYPE_INDICATOR_ENCODED_STREAM | The encoded stream type |
+| TYPE_INDICATOR_ENCRYPTED_STREAM | The encrypted stream type |
 | TYPE_INDICATOR_EWF | The EWF storage media image type |
 | TYPE_INDICATOR_FAKE | The fake file system type |
-| TYPE_INDICATOR_GZIP | The gzip file type |
-| TYPE_INDICATOR_MOUNT | The mount type |
+| TYPE_INDICATOR_FVDE | The FileVault Drive Enryption (FVDE) volume system type |
+| TYPE_INDICATOR_GZIP | The gzip compressed file type |
+| TYPE_INDICATOR_LUKSDE | The LUKS drive encryption volume system type |
+| TYPE_INDICATOR_LVM | The Logical Volume Manager (LVM) volume system type |
+| TYPE_INDICATOR_MOUNT | Type to represent a mount point |
+| TYPE_INDICATOR_NTFS | The Windows NT file system (NTFS) type |
 | TYPE_INDICATOR_OS | The operating system type |
 | TYPE_INDICATOR_QCOW | The QCOW storage media image type |
 | TYPE_INDICATOR_RAW | The RAW storage media image type |
+| TYPE_INDICATOR_SQLITE_BLOB | The SQLite binary large objects (BLOB) type |
 | TYPE_INDICATOR_TAR | The tar archive file type |
 | TYPE_INDICATOR_TSK | The SleuthKit file system type |
-| TYPE_INDICATOR_TSK_PARTITION | The SleuthKit volume system type |
+| TYPE_INDICATOR_TSK_PARTITION | The SleuthKit partition volume system type |
 | TYPE_INDICATOR_VHDI | The VHD storage media image type |
 | TYPE_INDICATOR_VMDK | The VMDK storage media image type |
 | TYPE_INDICATOR_VSHADOW | The VSS volume system type |
@@ -45,16 +59,42 @@ version 20140126.
 All types, with the exception of the operating system type, require a parent
 path specification addressing attribute.
 
-### The BDE volume system type
+### The APFS file system type
 
-The BDE type (TYPE_INDICATOR_BDE) is a type that addresses volumes stored
-within the [BitLocker Drive Encryption](https://forensicswiki.xyz/wiki/index.php?title=BitLocker_Disk_Encryption).
+The APFS type (TYPE_INDICATOR_APFS) is a type that addresses files stored within
+an Apple file system (APFS).
 
 | **Attribute name** | **Description** |
 | --- | --- |
+| identifier | The identifier of the file entry within the file system. Comparable to the catalog node identifier (CNID) on HFS. |
+| location | The location of the file entry |
 | parent | The parent path specification |
 
-**Note that to unlock a BitLocker volume without a clear key you'll need to set the corresponding credential in the dfVFS resolver key chain.**
+### The APFS container volume system type
+
+The APFS container type (TYPE_INDICATOR_APFS_CONTAINER) is a type that addresses
+volumes stored within a Apple file system (APFS) container.
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| location | The location of the volume within the container |
+| parent | The parent path specification |
+| volume_index | The index of the volume within the container |
+
+### The BDE volume system type
+
+The BDE type (TYPE_INDICATOR_BDE) is a type that addresses volumes stored
+within a BitLocker encrypted volume.
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| password | The password to unlock the BitLocker volume |
+| parent | The parent path specification |
+| recovery_password | The recovery password to unlock the BitLocker volume |
+| startup_key | The name of the startup key file to unlock the BitLocker volume |
+
+**Note that it is recommended to use the credential manager instead of providing
+decryption keys (credentials) in a path specification.**
 
 ### The compressed stream type
 
@@ -64,6 +104,16 @@ type that defines the following addressing attributes:
 | **Attribute name** | **Description** |
 | --- | --- |
 | compression_method | The method used to compress the stream |
+| parent | The parent path specification |
+
+### The cpio archive file type
+
+The cpio type (TYPE_INDICATOR_CPIO) is a type that addresses files stored within
+the cpio archive file format.
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| location | The location of the file entry within the cpio archive |
 | parent | The parent path specification |
 
 ### The data range type
@@ -77,7 +127,6 @@ defines the following addressing attributes:
 | range_size | The size, in bytes, of the data range |
 | parent | The parent path specification |
 
-
 ### The encoded stream type
 
 The encoded stream type (TYPE_INDICATOR_ENCODED_STREAM) is an internal type
@@ -87,6 +136,22 @@ that defines the following addressing attributes:
 | --- | --- |
 | encoding_method | The method used to encode the stream |
 | parent | The parent path specification |
+
+### The encrypted stream type
+
+The encrypted stream type (TYPE_INDICATOR_ENCRYPTED_STREAM) is an internal type
+that defines the following addressing attributes:
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| cipher_mode | The cipher mode used by the encryption method, for example XTS  |
+| encryption_method | The method used to encrypt the stream, for example AES |
+| initialization_vector | The initialization vector used to encrypt the stream |
+| key | The key used to encrypt the stream |
+| parent | The parent path specification |
+
+**Note that it is recommended to use the credential manager instead of providing
+decryption keys (credentials) in a path specification.**
 
 ### The EWF storage media image type
 
@@ -111,6 +176,21 @@ testing purposes.
 | location | The location of the file entry |
 | parent | The parent path specification, must be None |
 
+### The FVDE volume system type
+
+The FVDE type (TYPE_INDICATOR_FVDE) is a type that addresses volumes stored
+within a FileVault encrypted CoreStorage volume.
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| encrypted_root_plist | The path of the EncryptedRoot.plist.wipekey file to unlock the FileVault volume |
+| password | The password to unlock the FileVault volume |
+| parent | The parent path specification |
+| recovery_password | The recovery password to unlock the FileVault volume |
+
+**Note that it is recommended to use the credential manager instead of providing
+decryption keys (credentials) in a path specification.**
+
 ### The gzip file type
 
 The GZIP type (TYPE_INDICATOR_GZIP) is a type that addresses data stored within
@@ -119,6 +199,27 @@ the [gzip compressed stream file format](https://forensicswiki.xyz/wiki/index.ph
 | **Attribute name** | **Description** |
 | --- | --- |
 | parent | The parent path specification |
+
+### The LUKSDE volume system type
+
+The LUKSDE type (TYPE_INDICATOR_LUKSDE) is a type that addresses volumes stored
+within a LUKS encrypted volume.
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| password | The password to unlock the FileVault volume |
+| parent | The parent path specification |
+
+### The LVM volume system type
+
+The LVM type (TYPE_INDICATOR_LVM) is a type that addresses volumes stored
+within a Logical Volume Manager (LVM) volume system.
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| location | The location of the volume within the LVM volume system |
+| parent | The parent path specification |
+| volume_index | The index of the volume within the LVM volume system |
 
 ### The mount type
 
@@ -129,6 +230,19 @@ within dfVFS. Also see [the mount point manager](https://github.com/log2timeline
 | --- | --- |
 | identifier | The identifier of the mount point |
 | parent | The parent path specification, must be None |
+
+### The NTFS file system type
+
+The NTFS type (TYPE_INDICATOR_NTFS) is a type that addresses files stored within
+a Windows NT file system (NTFS).
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| data_stream | The name of the data stream in the file entry |
+| location | The location of the file entry |
+| mft_attribute | The index of the $FILE_NAME of the MFT attribute within the MFT entry that contains the name of the file entry |
+| mft_entry | The identifier of the MFT entry within the file system |
+| parent | The parent path specification |
 
 ### The operating system type
 
@@ -162,6 +276,19 @@ storage media images stored within the [RAW image format](https://forensicswiki.
 | parent | The parent path specification |
 
 **Note that at the moment this type is not addressable as a file system.**
+
+### The SQlite blob file type
+
+The SQlite blob type (TYPE_INDICATOR_SQLITE_BLOB) is a type that addresses files
+stored within a blob within a SQLite file.
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| column_name | The name of the column in which the blob is stored |
+| parent | The parent path specification |
+| row_condition | A condition that matches the row in which the blob is stored |
+| row_index | The index of the row in which the blob is stored |
+| table_name | The name of the table in which the blob is stored |
 
 ### The tar archive file type
 
