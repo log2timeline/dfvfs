@@ -1,6 +1,6 @@
 ## Supported Formats
 
-The information below is based of version 20181124
+The information below is based of version 20200625
 
 ### Storage media types
 
@@ -35,7 +35,7 @@ The information below is based of version 20181124
 * ext version 2, 3, 4 (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * FAT (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * HFS, HFS+, HFSX (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
-* NTFS version 3 (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk) or [libfsntfs/pyfsntfs](https://github.com/libyal/libfsntfs))
+* NTFS version 3 (Requires: [libfsntfs/pyfsntfs](https://github.com/libyal/libfsntfs) or [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * UFS version 1, 2 (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 
 **TODO add more detail here regarding FAT and other supported FS**
@@ -56,10 +56,10 @@ The information below is based of version 20181124
 
 ### Encrypted stream file types
 
-* AES-CBC, AES-CFB, AES-ECB, AES-OFB (Requires: [pycrypto](https://www.dlitz.net/software/pycrypto/))
-* Blowfish (Requires: [pycrypto](https://www.dlitz.net/software/pycrypto/))
-* DES3 (Requires: [pycrypto](https://www.dlitz.net/software/pycrypto/))
-* RC4 (Requires: [pycrypto](https://www.dlitz.net/software/pycrypto/))
+* AES-CBC, AES-CFB, AES-ECB, AES-OFB (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
+* Blowfish (Requires: [Cryptography.io](https://cryptography.io/en/latest/)
+* DES3 (Requires: [Cryptography.io](https://cryptography.io/en/latest/)
+* RC4 (Requires: [Cryptography.io](https://cryptography.io/en/latest/)
 
 ### Archive file types
 
