@@ -16,7 +16,7 @@ class FactoryTest(unittest.TestCase):
   """Class to test the path specification factory object."""
 
   def testPathSpecRegistration(self):
-    """Tests the DeregisterPathSpec and DeregisterPathSpec functions."""
+    """Tests the RegisterPathSpec and DeregisterPathSpec functions."""
     # pylint: disable=protected-access
     number_of_path_spec_types = len(factory.Factory._path_spec_types)
 
