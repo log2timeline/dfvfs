@@ -125,22 +125,14 @@ class APFSFileEntry(file_entry.FileEntry):
     """
     stat_object = super(APFSFileEntry, self)._GetStat()
 
-    # File data stat information.
-    stat_object.size = self._fsapfs_file_entry.size
-
     # Ownership and permissions stat information.
     stat_object.mode = self._fsapfs_file_entry.file_mode & 0x0fff
     stat_object.uid = self._fsapfs_file_entry.owner_identifier
     stat_object.gid = self._fsapfs_file_entry.group_identifier
 
-    # File entry type stat information.
-    stat_object.type = self.entry_type
-
     # Other stat information.
     stat_object.ino = self._fsapfs_file_entry.identifier
     stat_object.fs_type = 'APFS'
-
-    stat_object.is_allocated = True
 
     return stat_object
 
@@ -175,6 +167,12 @@ class APFSFileEntry(file_entry.FileEntry):
     return dfdatetime_apfs_time.APFSTime(timestamp=timestamp)
 
   @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    timestamp = self._fsapfs_file_entry.get_modification_time_as_integer()
+    return dfdatetime_apfs_time.APFSTime(timestamp=timestamp)
+
+  @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
     # The root directory file name is typically 'root', dfVFS however uses ''.
@@ -184,10 +182,9 @@ class APFSFileEntry(file_entry.FileEntry):
     return self._fsapfs_file_entry.name
 
   @property
-  def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
-    timestamp = self._fsapfs_file_entry.get_modification_time_as_integer()
-    return dfdatetime_apfs_time.APFSTime(timestamp=timestamp)
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._fsapfs_file_entry.size
 
   def GetAPFSFileEntry(self):
     """Retrieves the APFS file entry.

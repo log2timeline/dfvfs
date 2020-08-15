@@ -54,6 +54,13 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.creation_time)
 
+  def testSize(self):
+    """Test the size property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 67108864)
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)

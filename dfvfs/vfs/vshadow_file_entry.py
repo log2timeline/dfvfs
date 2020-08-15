@@ -88,25 +88,6 @@ class VShadowFileEntry(file_entry.FileEntry):
 
     return self._directory
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(VShadowFileEntry, self)._GetStat()
-
-    if self._vshadow_store is not None:
-      # File data stat information.
-      stat_object.size = self._vshadow_store.volume_size
-
-    # Ownership and permissions stat information.
-
-    # File entry type stat information.
-
-    # The root file entry is virtual and should have type directory.
-    return stat_object
-
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
 
@@ -141,7 +122,16 @@ class VShadowFileEntry(file_entry.FileEntry):
           self._name = 'vss{0:d}'.format(store_index + 1)
         else:
           self._name = ''
+
     return self._name
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    if self._vshadow_store is None:
+      return None
+
+    return self._vshadow_store.volume_size
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.

@@ -16,6 +16,47 @@ from dfvfs.vfs import apfs_container_file_system
 from tests import test_lib as shared_test_lib
 
 
+class APFSContainerDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the APFS container directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['apfs.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+    self._apfs_container_path_spec = (
+        apfs_container_path_spec.APFSContainerPathSpec(
+            location='/', parent=self._raw_path_spec))
+
+    self._file_system = apfs_container_file_system.APFSContainerFileSystem(
+        self._resolver_context)
+    self._file_system.Open(self._apfs_container_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = apfs_container_file_entry.APFSContainerDirectory(
+        self._file_system, self._apfs_container_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = apfs_container_file_entry.APFSContainerDirectory(
+        self._file_system, self._apfs_container_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 1)
+
+
 class APFSContainerFileEntryTest(shared_test_lib.BaseTestCase):
   """APFS container file entry tests."""
 
@@ -46,6 +87,45 @@ class APFSContainerFileEntryTest(shared_test_lib.BaseTestCase):
         self._apfs_container_path_spec, is_virtual=True)
 
     self.assertIsNotNone(file_entry)
+
+  # TODO: test _GetDirectory
+  # TODO: test _GetSubFileEntries
+
+  def testName(self):
+    """Test the name property."""
+    path_spec = apfs_container_path_spec.APFSContainerPathSpec(
+        parent=self._raw_path_spec, volume_index=0)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'apfs1')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = apfs_container_path_spec.APFSContainerPathSpec(
+        parent=self._raw_path_spec, volume_index=0)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 0)
+
+  def testGetAPFSVolume(self):
+    """Test the GetAPFSVolume function."""
+    path_spec = apfs_container_path_spec.APFSContainerPathSpec(
+        parent=self._raw_path_spec, volume_index=0)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    fsapfs_volume = file_entry.GetAPFSVolume()
+    self.assertIsNotNone(fsapfs_volume)
+
+    path_spec = apfs_container_path_spec.APFSContainerPathSpec(
+        location='/', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    fsapfs_volume = file_entry.GetAPFSVolume()
+    self.assertIsNone(fsapfs_volume)
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""

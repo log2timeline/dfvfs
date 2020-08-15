@@ -220,7 +220,43 @@ class NTFSDataStream(shared_test_lib.BaseTestCase):
     self.assertTrue(data_streams[0].IsDefault())
 
 
-# TODO: add tests for NTFSDirectory.
+class NTFSDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the NTFS directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
+        location='\\', parent=self._qcow_path_spec)
+
+    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
+    self._file_system.Open(self._ntfs_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = ntfs_file_entry.NTFSDirectory(
+        self._file_system, self._ntfs_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = ntfs_file_entry.NTFSDirectory(
+        self._file_system, self._ntfs_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 15)
 
 
 class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
@@ -250,6 +286,14 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
         self._resolver_context, self._file_system, self._ntfs_path_spec)
 
     self.assertIsNotNone(file_entry)
+
+  # TODO: add tests for _GetAttributes
+  # TODO: add tests for _GetDataStreams
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetLink
+  # TODO: add tests for _GetStat
+  # TODO: add tests for _GetSubFileEntries
+  # TODO: add tests for _IsLink
 
   def testAccessTime(self):
     """Test the access_time property."""
@@ -287,6 +331,24 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.modification_time)
 
+  def testName(self):
+    """Test the name property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'password.txt')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 116)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
@@ -295,9 +357,13 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  # TODO: add tests for GetFileObject
+
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
     # TODO: need a test image with a link to test.
+
+  # TODO: add tests for GetNTFSFileEntry
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
@@ -314,6 +380,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, 'System Volume Information')
+
+  # TODO: add tests for GetSecurityDescriptor
 
   def testGetStat(self):
     """Tests the GetStat function."""

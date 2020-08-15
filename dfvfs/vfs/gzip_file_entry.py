@@ -52,28 +52,16 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
 
     super(GzipFileEntry, self).__del__()
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(GzipFileEntry, self)._GetStat()
-
-    if self._gzip_file:
-      stat_object.size = self._gzip_file.uncompressed_data_size
-
-    # Other stat information.
-    # gzip_file.comment
-    # gzip_file.operating_system
-    # gzip_file.original_filename
-
-    return stat_object
-
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     timestamps = self._gzip_file.modification_times
     if not timestamps:
       return None
+
     return dfdatetime_posix_time.PosixTime(timestamp=timestamps[0])
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._gzip_file.uncompressed_data_size

@@ -91,27 +91,6 @@ class APFSContainerFileEntry(file_entry.FileEntry):
 
     return self._directory
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(APFSContainerFileEntry, self)._GetStat()
-
-    if self._fsapfs_volume is not None:
-      # File data stat information.
-      # TODO: implement volume size.
-      # stat_object.size = self._fsapfs_volume.size
-      pass
-
-    # Ownership and permissions stat information.
-
-    # File entry type stat information.
-
-    # The root file entry is virtual and should have type directory.
-    return stat_object
-
   def _GetSubFileEntries(self):
     """Retrieves a sub file entries generator.
 
@@ -140,7 +119,17 @@ class APFSContainerFileEntry(file_entry.FileEntry):
           self._name = 'apfs{0:d}'.format(volume_index + 1)
         else:
           self._name = ''
+
     return self._name
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    if self._fsapfs_volume is None:
+      return None
+
+    # TODO: change libfsapfs so self._fsapfs_volume.size works
+    return 0
 
   @property
   def sub_file_entries(self):

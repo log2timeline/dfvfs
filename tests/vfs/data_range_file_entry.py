@@ -45,6 +45,15 @@ class DataRangeFileEntryTest(shared_test_lib.BaseTestCase):
         self._data_range_path_spec)
     self.assertIsNotNone(file_entry)
 
+  def testSize(self):
+    """Test the size property."""
+    file_entry = data_range_file_entry.DataRangeFileEntry(
+        self._resolver_context, self._file_system,
+        self._data_range_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 0x41)
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(

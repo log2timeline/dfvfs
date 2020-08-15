@@ -15,6 +15,60 @@ from dfvfs.vfs import fake_file_system
 from tests import test_lib as shared_test_lib
 
 
+class FakeDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the fake directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
+
+    self._file_system.AddFileEntry(
+        '/test_data/testdir_fake',
+        file_entry_type=definitions.FILE_ENTRY_TYPE_DIRECTORY)
+    self._file_system.AddFileEntry(
+        '/test_data/testdir_fake/file1.txt', file_data=b'FILE1')
+    self._file_system.AddFileEntry(
+        '/test_data/testdir_fake/file2.txt', file_data=b'FILE2')
+    self._file_system.AddFileEntry(
+        '/test_data/testdir_fake/file3.txt', file_data=b'FILE3')
+    self._file_system.AddFileEntry(
+        '/test_data/testdir_fake/file4.txt', file_data=b'FILE4')
+    self._file_system.AddFileEntry(
+        '/test_data/testdir_fake/file5.txt', file_data=b'FILE5')
+
+    self._file_system.AddFileEntry(
+        '/test_data/testdir_fake/link1.txt',
+        file_entry_type=definitions.FILE_ENTRY_TYPE_LINK,
+        link_data='/test_data/testdir_fake/file1.txt')
+
+    self._test_file = '/test_data/testdir_fake'
+
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    self._file_system.Open(self._fake_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = fake_file_entry.FakeDirectory(
+        self._file_system, self._fake_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = fake_file_entry.FakeDirectory(
+        self._file_system, self._fake_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 0)
+
+
 class FakeFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests for the fake file entry."""
 
@@ -58,6 +112,64 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
         self._resolver_context, self._file_system, path_spec)
 
     self.assertIsNotNone(file_entry)
+
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetLink
+  # TODO: add tests for _GetSubFileEntries
+
+  def testAccessTime(self):
+    """Test the access_time property."""
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = fake_file_entry.FakeFileEntry(
+        self._resolver_context, self._file_system, path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.access_time)
+
+  def testChangeTime(self):
+    """Test the change_time property."""
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = fake_file_entry.FakeFileEntry(
+        self._resolver_context, self._file_system, path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.change_time)
+
+  def testCreationTime(self):
+    """Test the creation_time property."""
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = fake_file_entry.FakeFileEntry(
+        self._resolver_context, self._file_system, path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNone(file_entry.creation_time)
+
+  def testModificationTime(self):
+    """Test the modification_time property."""
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = fake_file_entry.FakeFileEntry(
+        self._resolver_context, self._file_system, path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.modification_time)
+
+  def testName(self):
+    """Test the name property."""
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = fake_file_entry.FakeFileEntry(
+        self._resolver_context, self._file_system, path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'testdir_fake')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
+    file_entry = fake_file_entry.FakeFileEntry(
+        self._resolver_context, self._file_system, path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNone(file_entry.size)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""

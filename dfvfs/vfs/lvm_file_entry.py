@@ -91,19 +91,6 @@ class LVMFileEntry(file_entry.FileEntry):
 
     return self._directory
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(LVMFileEntry, self)._GetStat()
-
-    if self._vslvm_logical_volume is not None:
-      stat_object.size = self._vslvm_logical_volume.size
-
-    return stat_object
-
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
 
@@ -132,6 +119,14 @@ class LVMFileEntry(file_entry.FileEntry):
         else:
           self._name = ''
     return self._name
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    if self._vslvm_logical_volume is None:
+      return None
+
+    return self._vslvm_logical_volume.size
 
   def GetLVMLogicalVolume(self):
     """Retrieves the LVM logical volume.

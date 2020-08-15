@@ -11,7 +11,7 @@ from dfvfs.path import zip_path_spec
 from dfvfs.vfs import file_entry
 
 
-class ZipDirectory(file_entry.Directory):
+class ZIPDirectory(file_entry.Directory):
   """File system directory that uses zipfile."""
 
   def _EntriesGenerator(self):
@@ -130,10 +130,10 @@ class ZipFileEntry(file_entry.FileEntry):
     """Retrieves a directory.
 
     Returns:
-      ZipDirectory: a directory.
+      ZIPDirectory: a directory.
     """
     if self._directory is None:
-      self._directory = ZipDirectory(self._file_system, self.path_spec)
+      self._directory = ZIPDirectory(self._file_system, self.path_spec)
 
     return self._directory
 
@@ -146,25 +146,11 @@ class ZipFileEntry(file_entry.FileEntry):
     stat_object = super(ZipFileEntry, self)._GetStat()
 
     if self._zip_info is not None:
-      # File data stat information.
-      stat_object.size = getattr(self._zip_info, 'file_size', None)
-
       # Ownership and permissions stat information.
       if self._external_attributes != 0:
         if self._creator_system == self._CREATOR_SYSTEM_UNIX:
           st_mode = self._external_attributes >> 16
           stat_object.mode = st_mode & 0x0fff
-
-    # Other stat information.
-    # zip_info.compress_type
-    # zip_info.comment
-    # zip_info.extra
-    # zip_info.create_version
-    # zip_info.extract_version
-    # zip_info.flag_bits
-    # zip_info.volume
-    # zip_info.internal_attr
-    # zip_info.compress_size
 
     return stat_object
 
@@ -193,6 +179,15 @@ class ZipFileEntry(file_entry.FileEntry):
               self._resolver_context, self._file_system, path_spec, **kwargs)
 
   @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    if self._zip_info is None:
+      return None
+
+    time_elements = getattr(self._zip_info, 'date_time', None)
+    return dfdatetime_time_elements.TimeElements(time_elements)
+
+  @property
   def name(self):
     """str: name of the file entry, without the full path."""
     path = getattr(self.path_spec, 'location', None)
@@ -204,13 +199,12 @@ class ZipFileEntry(file_entry.FileEntry):
     return self._file_system.BasenamePath(path)
 
   @property
-  def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
     if self._zip_info is None:
       return None
 
-    time_elements = getattr(self._zip_info, 'date_time', None)
-    return dfdatetime_time_elements.TimeElements(time_elements)
+    return getattr(self._zip_info, 'file_size', None)
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.

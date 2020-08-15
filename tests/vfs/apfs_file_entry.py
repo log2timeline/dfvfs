@@ -19,7 +19,46 @@ from dfvfs.vfs import apfs_file_system
 from tests import test_lib as shared_test_lib
 
 
-# TODO: add tests for APFSDirectory.
+class APFSDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the APFS directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['apfs.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
+    self._apfs_container_path_spec = (
+        apfs_container_path_spec.APFSContainerPathSpec(
+            location='/apfs1', parent=test_raw_path_spec))
+    self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
+        location='/', parent=self._apfs_container_path_spec)
+
+    self._file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
+    self._file_system.Open(self._apfs_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = apfs_file_entry.APFSDirectory(
+        self._file_system, self._apfs_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = apfs_file_entry.APFSDirectory(
+        self._file_system, self._apfs_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 4)
 
 
 class APFSFileEntryTest(shared_test_lib.BaseTestCase):
@@ -56,6 +95,11 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
         self._resolver_context, self._file_system, self._apfs_path_spec)
 
     self.assertIsNotNone(file_entry)
+
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetLink
+  # TODO: add tests for _GetStat
+  # TODO: add tests for _GetSubFileEntries
 
   def testAccessTime(self):
     """Test the access_time property."""
@@ -100,6 +144,40 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.modification_time)
+
+  def testName(self):
+    """Test the name property."""
+    test_location = '/a_directory/another_file'
+    path_spec = apfs_path_spec.APFSPathSpec(
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._apfs_container_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'another_file')
+
+  def testSize(self):
+    """Test the size property."""
+    test_location = '/a_directory/another_file'
+    path_spec = apfs_path_spec.APFSPathSpec(
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._apfs_container_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 22)
+
+  def testGetAPFSFileEntry(self):
+    """Tests the GetAPFSFileEntry function."""
+    test_location = '/a_directory/another_file'
+    path_spec = apfs_path_spec.APFSPathSpec(
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._apfs_container_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    fsafps_file_entry = file_entry.GetAPFSFileEntry()
+    self.assertIsNotNone(fsafps_file_entry)
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -336,6 +414,11 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetLink
+  # TODO: add tests for _GetStat
+  # TODO: add tests for _GetSubFileEntries
+
   def testAccessTime(self):
     """Test the access_time property."""
     test_location = '/a_directory/another_file'
@@ -379,6 +462,40 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.modification_time)
+
+  def testName(self):
+    """Test the name property."""
+    test_location = '/a_directory/another_file'
+    path_spec = apfs_path_spec.APFSPathSpec(
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._apfs_container_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'another_file')
+
+  def testSize(self):
+    """Test the size property."""
+    test_location = '/a_directory/another_file'
+    path_spec = apfs_path_spec.APFSPathSpec(
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._apfs_container_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 22)
+
+  def testGetAPFSFileEntry(self):
+    """Tests the GetAPFSFileEntry function."""
+    test_location = '/a_directory/another_file'
+    path_spec = apfs_path_spec.APFSPathSpec(
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._apfs_container_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    fsafps_file_entry = file_entry.GetAPFSFileEntry()
+    self.assertIsNotNone(fsafps_file_entry)
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""

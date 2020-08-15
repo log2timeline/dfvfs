@@ -47,6 +47,15 @@ class EncodedStreamFileEntryTest(shared_test_lib.BaseTestCase):
         self._encoded_stream_path_spec)
     self.assertIsNotNone(file_entry)
 
+  def testSize(self):
+    """Test the size property."""
+    file_entry = encoded_stream_file_entry.EncodedStreamFileEntry(
+        self._resolver_context, self._file_system,
+        self._encoded_stream_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 1247)
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(

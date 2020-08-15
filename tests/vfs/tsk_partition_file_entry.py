@@ -15,6 +15,46 @@ from dfvfs.vfs import tsk_partition_file_system
 from tests import test_lib as shared_test_lib
 
 
+class TSKPartitionDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the TSK partition directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._tsk_partition_path_spec = (
+        tsk_partition_path_spec.TSKPartitionPathSpec(
+            location='/', parent=self._os_path_spec))
+
+    self._file_system = tsk_partition_file_system.TSKPartitionFileSystem(
+        self._resolver_context)
+    self._file_system.Open(self._tsk_partition_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = tsk_partition_file_entry.TSKPartitionDirectory(
+        self._file_system, self._tsk_partition_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = tsk_partition_file_entry.TSKPartitionDirectory(
+        self._file_system, self._tsk_partition_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 7)
+
+
 class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
   """TSK partition file entry tests."""
 
@@ -60,6 +100,27 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetSubFileEntries
+
+  def testName(self):
+    """Test the name property."""
+    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
+        part_index=2, parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'p1')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
+        part_index=2, parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 66048)
+
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
@@ -67,9 +128,7 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-
     parent_file_entry = file_entry.GetParentFileEntry()
-
     self.assertIsNone(parent_file_entry)
 
   def testGetStat(self):
@@ -84,6 +143,8 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
     self.assertEqual(stat_object.size, 512)
+
+  # TODO: add tests for GetTSKVsPart
 
   def testIsFunctions(self):
     """Test the Is? functions."""
