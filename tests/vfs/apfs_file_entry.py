@@ -25,6 +25,10 @@ from tests import test_lib as shared_test_lib
 class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the APFS file entry."""
 
+  _IDENTIFIER_A_DIRECTORY = 18
+  _IDENTIFIER_A_LINK = 22
+  _IDENTIFIER_ANOTHER_FILE = 21
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
@@ -57,7 +61,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Test the access_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -68,7 +72,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Test the change_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -79,7 +83,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Test the creation_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -90,7 +94,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Test the modification_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -109,7 +113,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Tests the GetLinkedFileEntry function."""
     test_location = '/a_link'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=22, location=test_location,
+        identifier=self._IDENTIFIER_A_LINK, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -124,7 +128,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Tests the GetParentFileEntry function."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -139,7 +143,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Tests the GetStat function."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -170,7 +174,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Tests the Is? functions."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -188,7 +192,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     test_location = '/a_directory'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=18, location=test_location,
+        identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -248,7 +252,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Tests the data streams functionality."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -263,7 +267,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     test_location = '/a_directory'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=18, location=test_location,
+        identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -280,7 +284,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Tests the GetDataStream function."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -294,6 +298,10 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   """Tests the APFS file entry on an encrypted file system."""
 
   _APFS_PASSWORD = 'apfs-TEST'
+
+  _IDENTIFIER_A_DIRECTORY = 18
+  _IDENTIFIER_A_LINK = 22
+  _IDENTIFIER_ANOTHER_FILE = 21
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -332,7 +340,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Test the access_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -343,7 +351,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Test the change_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -354,7 +362,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Test the creation_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -365,7 +373,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Test the modification_time property."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -384,7 +392,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Tests the GetLinkedFileEntry function."""
     test_location = '/a_link'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=22, location=test_location,
+        identifier=self._IDENTIFIER_A_LINK, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -399,7 +407,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Tests the GetParentFileEntry function."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -414,7 +422,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Tests the GetStat function."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -445,7 +453,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Tests the Is? functions."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -463,7 +471,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
     test_location = '/a_directory'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=18, location=test_location,
+        identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -523,7 +531,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Tests the data streams functionality."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -538,7 +546,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
     test_location = '/a_directory'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=18, location=test_location,
+        identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -555,7 +563,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     """Tests the GetDataStream function."""
     test_location = '/a_directory/another_file'
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=21, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)

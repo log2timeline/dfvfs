@@ -6,8 +6,9 @@ from __future__ import unicode_literals
 
 import unittest
 
-from tests.path import test_lib
 from dfvfs.path import apfs_path_spec
+
+from tests.path import test_lib
 
 
 class APFSPathSpecTest(test_lib.PathSpecTestCase):
