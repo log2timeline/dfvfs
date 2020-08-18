@@ -380,7 +380,6 @@ dfvfs.vfs.zip\_file\_system module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

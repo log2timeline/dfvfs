@@ -244,7 +244,6 @@ dfvfs.path.zip\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

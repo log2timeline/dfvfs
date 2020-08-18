@@ -9,5 +9,6 @@ dfVFS uses a development process similar to that of Plaso, therefore see
    :maxdepth: 2
 
    Internals <Internals>
-   Windows Path Resolver <Windows-Path-Resolver>
+   Helpers <Helpers>
+   Adding a new VFS type <Adding-new-type>
    Testing <Testing>

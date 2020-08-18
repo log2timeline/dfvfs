@@ -6,13 +6,15 @@ The source scanner tries to determine what input we are dealing with:
 * a device file of a storage media image device;
 * a regular file or directory.
 
-The source scanner scans for:
+The source scanner scans for different types of elements:
 * supported types of storage media images;
 * supported types of volume systems;
 * supported types of file systems.
 
+These elements are represented as source scan nodes.
+
 The source scanner uses the source scanner context to keep track of
-previously scanned or user provided context information, e.g.
+the nodea and user provided context information, such as:
 * which partition to default to;
 * which VSS stores to default to.
 """

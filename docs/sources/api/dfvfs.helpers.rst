@@ -68,7 +68,6 @@ dfvfs.helpers.windows\_path\_resolver module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

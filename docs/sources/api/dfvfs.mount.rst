@@ -12,7 +12,6 @@ dfvfs.mount.manager module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

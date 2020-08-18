@@ -28,7 +28,6 @@ dfvfs.resolver.resolver module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

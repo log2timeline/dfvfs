@@ -188,7 +188,6 @@ dfvfs.analyzer.zip\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

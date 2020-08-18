@@ -52,7 +52,6 @@ dfvfs.encryption.rc4\_decrypter module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 
