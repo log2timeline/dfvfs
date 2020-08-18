@@ -42,14 +42,15 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
   # Offset Sector: 0
   # Units are in 512-byte sectors
   #
-  #      Slot    Start        End          Length       Description
-  # 00:  Meta    0000000000   0000000000   0000000001   Primary Table (#0)
-  # 01:  -----   0000000000   0000000000   0000000001   Unallocated
-  # 02:  00:00   0000000001   0000000350   0000000350   Linux (0x83)
-  # 03:  Meta    0000000351   0000002879   0000002529   DOS Extended (0x05)
-  # 04:  Meta    0000000351   0000000351   0000000001   Extended Table (#1)
-  # 05:  -----   0000000351   0000000351   0000000001   Unallocated
-  # 06:  01:00   0000000352   0000002879   0000002528   Linux (0x83)
+  #       Slot      Start        End          Length       Description
+  # 000:  Meta      0000000000   0000000000   0000000001   Primary Table (#0)
+  # 001:  -------   0000000000   0000000000   0000000001   Unallocated
+  # 002:  000:000   0000000001   0000000129   0000000129   Linux (0x83)
+  # 003:  Meta      0000000130   0000008191   0000008062   DOS Extended (0x05)
+  # 004:  Meta      0000000130   0000000130   0000000001   Extended Table (#1)
+  # 005:  -------   0000000130   0000000130   0000000001   Unallocated
+  # 006:  001:000   0000000131   0000000259   0000000129   Linux (0x83)
+  # 007:  -------   0000000260   0000008191   0000007932   Unallocated
 
   def testIntialize(self):
     """Test the __init__ function."""
@@ -125,9 +126,9 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 7)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 8)
 
-    expected_sub_file_entry_names = ['', '', '', '', '', 'p1', 'p2']
+    expected_sub_file_entry_names = ['', '', '', '', '', '', 'p1', 'p2']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:

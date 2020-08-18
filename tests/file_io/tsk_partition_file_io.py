@@ -11,8 +11,8 @@ from dfvfs.path import os_path_spec
 from tests.file_io import test_lib
 
 
-class TSKPartitionFileTest(test_lib.PartitionedImageFileTestCase):
-  """The unit test for the SleuthKit (TSK) partition file-like object."""
+class TSKPartitionFileTest(test_lib.MBRPartitionedImageFileTestCase):
+  """Tests the SleuthKit (TSK) partition file-like object on MBR partitions."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

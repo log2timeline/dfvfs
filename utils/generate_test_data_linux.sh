@@ -67,6 +67,8 @@ EOT
 assert_availability_binary cryptsetup;
 assert_availability_binary dd;
 assert_availability_binary ewfacquire;
+assert_availability_binary fdisk;
+assert_availability_binary gdisk;
 assert_availability_binary losetup;
 assert_availability_binary lvcreate;
 assert_availability_binary mke2fs;
@@ -141,8 +143,107 @@ qemu-img convert -f raw -O vpc test_data/ext2.raw test_data/ext2.vhd
 
 # TODO: Create test VHDX image with an ext2 file system
 
-# Create test VMKD image with an ext2 file system
+# Create test VMDK image with an ext2 file system
 qemu-img convert -f raw -O vmdk test_data/ext2.raw test_data/ext2.vmdk
+
+# Create test image with a MBR partition table with 2 partitions one with an ext2 file system and the other with ext4
+IMAGE_FILE="test_data/mbr.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+fdisk -b ${SECTOR_SIZE} -u ${IMAGE_FILE} <<EOT
+n
+p
+1
+
++64K
+
+n
+e
+2
+
+
+n
+
++64K
+w
+EOT
+
+sudo losetup -o $(( 1 * ${SECTOR_SIZE} )) --sizelimit $(( 129 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
+
+sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sudo losetup -d /dev/loop99;
+
+sudo losetup -o $(( 131 * ${SECTOR_SIZE} )) --sizelimit $(( 129 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+
+sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99;
+
+sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sudo losetup -d /dev/loop99;
+
+# Create test image with a GPT partition table with 2 partitions one with an ext2 file system and the other with ext4
+IMAGE_FILE="test_data/gpt.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+gdisk ${IMAGE_FILE} <<EOT
+n
+1
+
++64K
+8300
+n
+2
+
++64K
+8300
+w
+y
+EOT
+
+sudo losetup -o $(( 2048 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
+
+sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sudo losetup -d /dev/loop99;
+
+sudo losetup -o $(( 4096 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+
+sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99;
+
+sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sudo losetup -d /dev/loop99;
 
 # Create test image with a LVM and an EXT2 file system
 IMAGE_SIZE=$(( 8192 * 1024 ));
@@ -151,11 +252,11 @@ IMAGE_FILE="test_data/lvm.raw";
 
 dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
 
-sudo losetup /dev/loop0 ${IMAGE_FILE};
+sudo losetup /dev/loop99 ${IMAGE_FILE};
 
-sudo pvcreate -q /dev/loop0 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo pvcreate -q /dev/loop99 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
 
-sudo vgcreate -q test_volume_group /dev/loop0 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo vgcreate -q test_volume_group /dev/loop99 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
 
 sudo lvcreate -q --name test_logical_volume --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
 
@@ -171,7 +272,7 @@ sudo umount ${MOUNT_POINT};
 
 sudo vgchange -q --activate n test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
 
-sudo losetup -d /dev/loop0;
+sudo losetup -d /dev/loop99;
 
 qemu-img convert -f raw -O qcow2 test_data/lvm.raw test_data/lvm.qcow2;
 

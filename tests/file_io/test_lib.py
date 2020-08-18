@@ -361,24 +361,31 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(read_buffer, expected_buffer)
 
 
-class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
-  """The unit test case for partitioned storage media image based test data."""
-
-  _BYTES_PER_SECTOR = 512
+class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
+  """Tests for MBR partitioned storage media image based test data."""
 
   # mmls test_data/mbr.raw
   # DOS Partition Table
   # Offset Sector: 0
   # Units are in 512-byte sectors
   #
-  #      Slot    Start        End          Length       Description
-  # 00:  Meta    0000000000   0000000000   0000000001   Primary Table (#0)
-  # 01:  -----   0000000000   0000000000   0000000001   Unallocated
-  # 02:  00:00   0000000001   0000000350   0000000350   Linux (0x83)
-  # 03:  Meta    0000000351   0000002879   0000002529   DOS Extended (0x05)
-  # 04:  Meta    0000000351   0000000351   0000000001   Extended Table (#1)
-  # 05:  -----   0000000351   0000000351   0000000001   Unallocated
-  # 06:  01:00   0000000352   0000002879   0000002528   Linux (0x83)
+  #       Slot      Start        End          Length       Description
+  # 000:  Meta      0000000000   0000000000   0000000001   Primary Table (#0)
+  # 001:  -------   0000000000   0000000000   0000000001   Unallocated
+  # 002:  000:000   0000000001   0000000129   0000000129   Linux (0x83)
+  # 003:  Meta      0000000130   0000008191   0000008062   DOS Extended (0x05)
+  # 004:  Meta      0000000130   0000000130   0000000001   Extended Table (#1)
+  # 005:  -------   0000000130   0000000130   0000000001   Unallocated
+  # 006:  001:000   0000000131   0000000259   0000000129   Linux (0x83)
+  # 007:  -------   0000000260   0000008191   0000007932   Unallocated
+
+  _BYTES_PER_SECTOR = 512
+
+  _OFFSET_P1 = 1 * _BYTES_PER_SECTOR
+  _SIZE_P1 = 129 * _BYTES_PER_SECTOR
+
+  _OFFSET_P2 = 131 * _BYTES_PER_SECTOR
+  _SIZE_P2 = 129 * _BYTES_PER_SECTOR
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -395,7 +402,7 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 350 * self._BYTES_PER_SECTOR)
+    self.assertEqual(file_object.get_size(), self._SIZE_P1)
     file_object.close()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
@@ -410,7 +417,7 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 2528 * self._BYTES_PER_SECTOR)
+    self.assertEqual(file_object.get_size(), self._SIZE_P2)
     file_object.close()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
@@ -428,15 +435,15 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
       file_object.open(path_spec=path_spec)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        start_offset=(352 * self._BYTES_PER_SECTOR), parent=parent_path_spec)
+        start_offset=self._OFFSET_P2, parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 2528 * self._BYTES_PER_SECTOR)
+    self.assertEqual(file_object.get_size(), self._SIZE_P2)
     file_object.close()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        start_offset=(350 * self._BYTES_PER_SECTOR), parent=parent_path_spec)
+        start_offset=self._SIZE_P1, parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
@@ -451,30 +458,33 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
-    partition_offset = 352 * self._BYTES_PER_SECTOR
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 2528 * self._BYTES_PER_SECTOR)
+    self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
-    file_object.seek(0x7420)
-    self.assertEqual(file_object.get_offset(), 0x33420 - partition_offset)
+    file_object.seek(4128)
+    self.assertEqual(file_object.get_offset(), 0x11620 - self._OFFSET_P2)
     self.assertEqual(
-        file_object.read(16), b'lost+found\x00\x00\x00\x00\x00\x00')
-    self.assertEqual(file_object.get_offset(), 0x33430 - partition_offset)
+        file_object.read(16), b'lost+found\x00\x00\x0c\x00\x00\x00')
+    self.assertEqual(file_object.get_offset(), 0x11630 - self._OFFSET_P2)
 
-    file_object.seek(-1251324, os.SEEK_END)
-    self.assertEqual(file_object.get_offset(), 0x36804 - partition_offset)
-    self.assertEqual(file_object.read(8), b'\x03\x00\x00\x00\x04\x00\x00\x00')
-    self.assertEqual(file_object.get_offset(), 0x3680c - partition_offset)
+    file_object.seek(-28156, os.SEEK_END)
+    self.assertEqual(file_object.get_offset(), 0x19a04 - self._OFFSET_P2)
+
+    data = file_object.read(8)
+    self.assertEqual(data, b' is a te')
+    self.assertEqual(file_object.get_offset(), 0x19a0c - self._OFFSET_P2)
 
     file_object.seek(4, os.SEEK_CUR)
-    self.assertEqual(file_object.get_offset(), 0x36810 - partition_offset)
-    self.assertEqual(file_object.read(7), b'\x06\x00\x00\x00\x00\x00\x00')
-    self.assertEqual(file_object.get_offset(), 0x36817 - partition_offset)
+    self.assertEqual(file_object.get_offset(), 0x19a10 - self._OFFSET_P2)
+
+    data = file_object.read(7)
+    self.assertEqual(data, b'ile.\n\nW')
+    self.assertEqual(file_object.get_offset(), 0x19a17 - self._OFFSET_P2)
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
-    expected_offset = (2528 * self._BYTES_PER_SECTOR) + 100
+    expected_offset = self._SIZE_P2 + 100
     file_object.seek(expected_offset, os.SEEK_SET)
     self.assertEqual(file_object.get_offset(), expected_offset)
     self.assertEqual(file_object.read(20), b'')
@@ -502,20 +512,19 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
-    partition_offset = 352 * self._BYTES_PER_SECTOR
 
     file_object.open(path_spec=path_spec)
-    self.assertEqual(file_object.get_size(), 2528 * self._BYTES_PER_SECTOR)
 
-    file_object.seek(0x2e900 - partition_offset)
+    try:
+      self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
-    expected_data = (
-        b'\xc0\x41\x00\x00\x00\x30\x00\x00\xc8\x8c\xb9\x52\xc8\x8c\xb9\x52'
-        b'\xc8\x8c\xb9\x52\x00\x00\x00\x00\x00\x00\x02\x00\x18\x00\x00\x00')
+      file_object.seek(0x19e00 - self._OFFSET_P2)
 
-    self.assertEqual(file_object.read(32), expected_data)
+      data = file_object.read(32)
+    finally:
+      file_object.close()
 
-    file_object.close()
+    self.assertEqual(data, b'place,user,password\nbank,joesmit')
 
 
 class SylogTestCase(shared_test_lib.BaseTestCase):
