@@ -288,7 +288,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
   def testPrintTSKPartitionIdentifiersOverview(self):
     """Tests the _PrintTSKPartitionIdentifiersOverview function."""
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -466,7 +466,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
   def testGetPartitionIdentifiers(self):
     """Tests the GetPartitionIdentifiers function."""
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(

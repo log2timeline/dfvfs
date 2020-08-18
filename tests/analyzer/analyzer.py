@@ -241,7 +241,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
   def testGetVolumeSystemTypeIndicatorsTSK(self):
     """Tests the GetVolumeSystemTypeIndicators function on partitions."""
-    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_file = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)

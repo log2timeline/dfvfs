@@ -366,7 +366,7 @@ class PartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
 
   _BYTES_PER_SECTOR = 512
 
-  # mmls test_data/tsk_volume_system.raw
+  # mmls test_data/mbr.raw
   # DOS Partition Table
   # Offset Sector: 0
   # Units are in 512-byte sectors

@@ -20,7 +20,7 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_file = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -28,7 +28,7 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
         tsk_partition_path_spec.TSKPartitionPathSpec(
             location='/', parent=self._os_path_spec))
 
-  # mmls test_data/tsk_volume_system.raw
+  # mmls test_data/mbr.raw
   # DOS Partition Table
   # Offset Sector: 0
   # Units are in 512-byte sectors
