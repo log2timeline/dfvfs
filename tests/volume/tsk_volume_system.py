@@ -30,14 +30,15 @@ class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
   # Offset Sector: 0
   # Units are in 512-byte sectors
   #
-  #      Slot    Start        End          Length       Description
-  # 00:  Meta    0000000000   0000000000   0000000001   Primary Table (#0)
-  # 01:  -----   0000000000   0000000000   0000000001   Unallocated
-  # 02:  00:00   0000000001   0000000350   0000000350   Linux (0x83)
-  # 03:  Meta    0000000351   0000002879   0000002529   DOS Extended (0x05)
-  # 04:  Meta    0000000351   0000000351   0000000001   Extended Table (#1)
-  # 05:  -----   0000000351   0000000351   0000000001   Unallocated
-  # 06:  01:00   0000000352   0000002879   0000002528   Linux (0x83)
+  #       Slot      Start        End          Length       Description
+  # 000:  Meta      0000000000   0000000000   0000000001   Primary Table (#0)
+  # 001:  -------   0000000000   0000000000   0000000001   Unallocated
+  # 002:  000:000   0000000001   0000000129   0000000129   Linux (0x83)
+  # 003:  Meta      0000000130   0000008191   0000008062   DOS Extended (0x05)
+  # 004:  Meta      0000000130   0000000130   0000000001   Extended Table (#1)
+  # 005:  -------   0000000130   0000000130   0000000001   Unallocated
+  # 006:  001:000   0000000131   0000000259   0000000129   Linux (0x83)
+  # 007:  -------   0000000260   0000008191   0000007932   Unallocated
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
@@ -46,7 +47,7 @@ class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(volume_system.bytes_per_sector, 512)
 
-    self.assertEqual(volume_system.number_of_sections, 7)
+    self.assertEqual(volume_system.number_of_sections, 8)
     self.assertEqual(volume_system.number_of_volumes, 2)
 
     volume = volume_system.GetVolumeByIndex(1)

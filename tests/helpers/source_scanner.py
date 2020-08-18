@@ -397,8 +397,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS)
 
-  def testScanOnPartitionedImage(self):
-    """Test the Scan function on a partitioned image."""
+  def testScanOnMBRPartitionedImage(self):
+    """Test the Scan function on a MBR partitioned image."""
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -414,7 +414,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
 
-    self.assertEqual(len(scan_node.sub_nodes), 7)
+    self.assertEqual(len(scan_node.sub_nodes), 8)
 
     scan_node = scan_node.sub_nodes[6].GetSubNodeByLocation('/')
     self.assertIsNotNone(scan_node)

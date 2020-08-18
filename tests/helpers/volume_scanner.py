@@ -647,17 +647,26 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1', part_index=2,
+        start_offset=0x00000200, parent=test_raw_path_spec)
+    test_tsk_path_spec1 = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/',
+        parent=test_tsk_partition_path_spec)
+
     test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p2', part_index=6,
-        start_offset=0x0002c000, parent=test_raw_path_spec)
-    test_tsk_path_spec = path_spec_factory.Factory.NewPathSpec(
+        start_offset=0x00010600, parent=test_raw_path_spec)
+    test_tsk_path_spec2 = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, location='/',
         parent=test_tsk_partition_path_spec)
 
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    expected_base_path_specs = [test_tsk_path_spec.comparable]
+    expected_base_path_specs = [
+        test_tsk_path_spec1.comparable, test_tsk_path_spec2.comparable]
 
     base_path_specs = test_scanner.GetBasePathSpecs(test_path)
     base_path_specs = [

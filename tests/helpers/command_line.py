@@ -317,9 +317,8 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         b'The following partitions were found:',
         b'',
         b'Identifier      Offset (in bytes)       Size (in bytes)',
-        (b'p1              512 (0x00000200)        175.0KiB / 179.2kB '
-         b'(179200 B)'),
-        b'p2              180224 (0x0002c000)     1.2MiB / 1.3MB (1294336 B)',
+        b'p1              512 (0x00000200)        64.5KiB / 66.0kB (66048 B)',
+        b'p2              67072 (0x00010600)      64.5KiB / 66.0kB (66048 B)',
         b'']
 
     if not win32console:
