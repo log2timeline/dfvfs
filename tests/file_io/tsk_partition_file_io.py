@@ -17,7 +17,7 @@ class TSKPartitionFileTest(test_lib.PartitionedImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(TSKPartitionFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_file = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)

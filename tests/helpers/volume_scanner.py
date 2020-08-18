@@ -171,7 +171,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -247,7 +247,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -572,7 +572,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -640,7 +640,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
   def testGetBasePathSpecsOnPartitionedImage(self):
     """Tests the GetBasePathSpecs function on a partitioned image."""
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -751,7 +751,7 @@ class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForWindowsVolume(self):
     """Tests the ScanForWindowsVolume function."""
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_mediator = TestVolumeScannerMediator()

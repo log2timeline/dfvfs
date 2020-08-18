@@ -301,7 +301,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testGetVolumeIdentifiers(self):
     """Test the GetVolumeIdentifiers function."""
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -399,7 +399,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanOnPartitionedImage(self):
     """Test the Scan function on a partitioned image."""
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -721,7 +721,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForVolumeSystemOnPartitionedImage(self):
     """Test the ScanForVolumeSystem function on a partitioned image."""
-    test_path = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
