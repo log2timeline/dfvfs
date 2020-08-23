@@ -6,7 +6,7 @@ operating system and those contained in storage media image formats.
 
 In dfVFS terminology:
 
-* a file is a data stream container, which does not necessarily need to be a file within a file system but can also be e.g. a Windows Registry value;
+* a data stream encapsulates the contents of a file, an NTFS ADS or HFS resource fork.
 * a file entry encapsulates the file system metadata related to files, directories, symbolic links or equivalent file system related structures.
 * a file system encapsulates the hierarchy of file entries within a single volume.
 * a volume is part of a volume system and often contains a file system (e.g. NTFS) or a sub volume system (e.g. VSS).
@@ -14,7 +14,7 @@ In dfVFS terminology:
 
 dfVFS separates the concerns relating:
 
-* addressing of files, e.g. path, with type specific path specification;
+* addressing of file entries, such as the file path, with type specific path specification;
 * file-based Input/Output (IO), with type specific basic file-like objects;
 * traversing file entries and metadata, with type specific virtual file system and/or file entry;
 * format detection, with a format analyzer with type specific helpers.
