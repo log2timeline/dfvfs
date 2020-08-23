@@ -7,6 +7,7 @@ import copy
 import decimal
 
 from dfdatetime import definitions as dfdatetime_definitions
+from dfdatetime import factory as dfdatetime_factory
 from dfdatetime import interface as dfdatetime_interface
 
 import pytsk3
@@ -872,3 +873,6 @@ class TSKFileEntry(file_entry.FileEntry):
       PathSpecError: if the path specification is missing inode and location.
     """
     return self._tsk_file
+
+
+dfdatetime_factory.Factory.RegisterDateTimeValues(TSKTime)

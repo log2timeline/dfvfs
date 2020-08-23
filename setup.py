@@ -27,9 +27,9 @@ except ImportError:
   from distutils.command.sdist import sdist
 
 version_tuple = (sys.version_info[0], sys.version_info[1])
-if version_tuple < (3, 5):
+if version_tuple < (3, 6):
   print((
-      'Unsupported Python version: {0:s}, version 3.5 or higher '
+      'Unsupported Python version: {0:s}, version 3.6 or higher '
       'required.').format(sys.version))
   sys.exit(1)
 
@@ -189,7 +189,7 @@ setup(
         'Programming Language :: Python',
     ],
     packages=find_packages('.', exclude=[
-        'examples', 'tests', 'tests.*', 'utils']),
+        'docs', 'examples', 'tests', 'tests.*', 'utils']),
     package_dir={
         'dfvfs': 'dfvfs'
     },
