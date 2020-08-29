@@ -220,7 +220,6 @@ dfvfs.file\_io.zip\_file\_io module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

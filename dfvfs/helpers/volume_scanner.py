@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Scanner for volume systems."""
+"""Scanner for supported volume and file systems."""
 
 from __future__ import unicode_literals
 

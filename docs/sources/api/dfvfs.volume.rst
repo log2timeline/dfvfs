@@ -44,7 +44,6 @@ dfvfs.volume.vshadow\_volume\_system module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

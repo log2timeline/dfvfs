@@ -228,7 +228,6 @@ dfvfs.resolver\_helpers.zip\_resolver\_helper module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

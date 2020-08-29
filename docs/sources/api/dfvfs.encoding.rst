@@ -44,7 +44,6 @@ dfvfs.encoding.manager module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

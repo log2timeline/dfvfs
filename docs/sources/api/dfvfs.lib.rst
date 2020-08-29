@@ -148,7 +148,6 @@ dfvfs.lib.vshadow module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 
