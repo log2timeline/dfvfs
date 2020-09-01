@@ -80,22 +80,22 @@ class FakeFileEntry(file_entry.FileEntry):
 
     return self._directory
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
+  def _GetLink(self):
+    """Retrieves the link.
 
     Returns:
-      VFSStat: a stat object.
+      str: full path of the linked file entry.
     """
-    stat_object = super(FakeFileEntry, self)._GetStat()
+    if self._link is None:
+      self._link = ''
 
-    location = getattr(self.path_spec, 'location', None)
-    if location:
-      file_data = self._file_system.GetDataByPath(location)
+      location = getattr(self.path_spec, 'location', None)
+      if location is None:
+        return self._link
 
-      if file_data is not None:
-        stat_object.size = len(file_data)
+      self._link = self._file_system.GetDataByPath(location)
 
-    return stat_object
+    return self._link
 
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
@@ -132,22 +132,18 @@ class FakeFileEntry(file_entry.FileEntry):
         self._name = self._file_system.BasenamePath(location)
     return self._name
 
-  def _GetLink(self):
-    """Retrieves the link.
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    size = None
 
-    Returns:
-      str: full path of the linked file entry.
-    """
-    if self._link is None:
-      self._link = ''
+    location = getattr(self.path_spec, 'location', None)
+    if location:
+      file_data = self._file_system.GetDataByPath(location)
+      if file_data is not None:
+        size = len(file_data)
 
-      location = getattr(self.path_spec, 'location', None)
-      if location is None:
-        return self._link
-
-      self._link = self._file_system.GetDataByPath(location)
-
-    return self._link
+    return size
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.

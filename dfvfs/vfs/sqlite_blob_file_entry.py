@@ -99,30 +99,6 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
 
     return self._directory
 
-  def _GetStat(self):
-    """Retrieves the stat object.
-
-    Returns:
-      VFSStat: stat object.
-
-    Raises:
-      BackEndError: when the SQLite blob file-like object is missing.
-    """
-    stat_object = super(SQLiteBlobFileEntry, self)._GetStat()
-
-    if not self._is_virtual:
-      file_object = self.GetFileObject()
-      if not file_object:
-        raise errors.BackEndError(
-            'Unable to retrieve SQLite blob file-like object.')
-
-      try:
-        stat_object.size = file_object.get_size()
-      finally:
-        file_object.close()
-
-    return stat_object
-
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
 
@@ -155,6 +131,20 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
       return '{0:s}.{1:s}'.format(table_name, column_name)
 
     return ''
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    size = None
+    if not self._is_virtual:
+      file_object = self.GetFileObject()
+      if file_object:
+        try:
+          size = file_object.get_size()
+        finally:
+          file_object.close()
+
+    return size
 
   def GetNumberOfRows(self):
     """Retrieves the number of rows in the table.

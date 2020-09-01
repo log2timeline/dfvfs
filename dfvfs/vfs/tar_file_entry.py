@@ -148,28 +148,10 @@ class TARFileEntry(file_entry.FileEntry):
     """
     stat_object = super(TARFileEntry, self)._GetStat()
 
-    # File data stat information.
-    stat_object.size = getattr(self._tar_info, 'size', None)
-
     # Ownership and permissions stat information.
     stat_object.mode = getattr(self._tar_info, 'mode', None)
     stat_object.uid = getattr(self._tar_info, 'uid', None)
     stat_object.gid = getattr(self._tar_info, 'gid', None)
-
-    # TODO: implement support for:
-    # stat_object.uname = getattr(self._tar_info, 'uname', None)
-    # stat_object.gname = getattr(self._tar_info, 'gname', None)
-
-    # File entry type stat information.
-
-    # The root file entry is virtual and should have type directory.
-
-    # TODO: determine if this covers all the types:
-    # REGTYPE, AREGTYPE, LNKTYPE, SYMTYPE, DIRTYPE, FIFOTYPE, CONTTYPE,
-    # CHRTYPE, BLKTYPE, GNUTYPE_SPARSE
-
-    # Other stat information.
-    # tar_info.pax_headers
 
     return stat_object
 
@@ -198,6 +180,14 @@ class TARFileEntry(file_entry.FileEntry):
               self._resolver_context, self._file_system, path_spec, **kwargs)
 
   @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    timestamp = getattr(self._tar_info, 'mtime', None)
+    if timestamp is None:
+      return None
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
+  @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
     path = getattr(self.path_spec, 'location', None)
@@ -210,12 +200,9 @@ class TARFileEntry(file_entry.FileEntry):
     return self._file_system.BasenamePath(path)
 
   @property
-  def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
-    timestamp = getattr(self._tar_info, 'mtime', None)
-    if timestamp is None:
-      return None
-    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return getattr(self._tar_info, 'size', None)
 
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.

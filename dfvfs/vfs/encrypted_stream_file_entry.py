@@ -7,7 +7,6 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 from dfvfs.vfs import root_only_file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class EncryptedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
@@ -53,17 +52,7 @@ class EncryptedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
 
     super(EncryptedStreamFileEntry, self).__del__()
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = vfs_stat.VFSStat()
-
-    if self._encrypted_stream:
-      stat_object.size = self._encrypted_stream.get_size()
-
-    stat_object.type = self.entry_type
-
-    return stat_object
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._encrypted_stream.get_size()

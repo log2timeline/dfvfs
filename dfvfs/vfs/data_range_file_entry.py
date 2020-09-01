@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 
 from dfvfs.lib import definitions
 from dfvfs.vfs import root_only_file_entry
-from dfvfs.vfs import vfs_stat
 
 
 class DataRangeFileEntry(root_only_file_entry.RootOnlyFileEntry):
@@ -36,21 +35,7 @@ class DataRangeFileEntry(root_only_file_entry.RootOnlyFileEntry):
         is_virtual=is_virtual)
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def _GetStat(self):
-    """Retrieves a stat object.
-
-    Returns:
-      VFSStat: a stat object.
-
-    Raises:
-      BackEndError: when the encoded stream is missing.
-    """
-    stat_object = vfs_stat.VFSStat()
-
-    # File data stat information.
-    stat_object.size = self.path_spec.range_size
-
-    # File entry type stat information.
-    stat_object.type = stat_object.TYPE_FILE
-
-    return stat_object
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self.path_spec.range_size

@@ -41,20 +41,13 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     self._bde_volume = bde_volume
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(BDEFileEntry, self)._GetStat()
-
-    stat_object.size = self._bde_volume.get_size()
-
-    return stat_object
-
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
     timestamp = self._bde_volume.get_creation_time_as_integer()
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._bde_volume.get_size()

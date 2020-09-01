@@ -349,29 +349,10 @@ class NTFSFileEntry(file_entry.FileEntry):
     """
     stat_object = super(NTFSFileEntry, self)._GetStat()
 
-    # File data stat information.
-    if self._fsntfs_file_entry.has_default_data_stream():
-      stat_object.size = self._fsntfs_file_entry.get_size()
-
-    # Ownership and permissions stat information.
-    # TODO: stat_object.mode
-    # TODO: stat_object.uid
-    # TODO: stat_object.gid
-
-    # File entry type stat information.
-    if self._IsLink(self._fsntfs_file_entry.file_attribute_flags):
-      stat_object.type = stat_object.TYPE_LINK
-    elif self._fsntfs_file_entry.has_directory_entries_index():
-      stat_object.type = stat_object.TYPE_DIRECTORY
-    else:
-      stat_object.type = stat_object.TYPE_FILE
-
     # Other stat information.
     file_reference = self._fsntfs_file_entry.file_reference
     stat_object.ino = file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK
     stat_object.fs_type = 'NTFS'
-
-    stat_object.is_allocated = self._fsntfs_file_entry.is_allocated()
 
     return stat_object
 
@@ -420,6 +401,12 @@ class NTFSFileEntry(file_entry.FileEntry):
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    timestamp = self._fsntfs_file_entry.get_modification_time_as_integer()
+    return dfdatetime_filetime.Filetime(timestamp=timestamp)
+
+  @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
     # The root directory file name is typically '.', dfVFS however uses ''.
@@ -429,13 +416,13 @@ class NTFSFileEntry(file_entry.FileEntry):
     mft_attribute = getattr(self.path_spec, 'mft_attribute', None)
     if mft_attribute is not None:
       return self._fsntfs_file_entry.get_name_by_attribute_index(mft_attribute)
+
     return self._fsntfs_file_entry.get_name()
 
   @property
-  def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
-    timestamp = self._fsntfs_file_entry.get_modification_time_as_integer()
-    return dfdatetime_filetime.Filetime(timestamp=timestamp)
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._fsntfs_file_entry.get_size()
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.
@@ -546,3 +533,11 @@ class NTFSFileEntry(file_entry.FileEntry):
         self._fsntfs_file_entry.security_descriptor_data)
 
     return fwnt_security_descriptor
+
+  def IsAllocated(self):
+    """Determines if the file entry is allocated.
+
+    Returns:
+      bool: True if the file entry is allocated.
+    """
+    return self._fsntfs_file_entry.is_allocated()

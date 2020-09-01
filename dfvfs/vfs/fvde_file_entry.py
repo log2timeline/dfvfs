@@ -40,14 +40,7 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     self._fvde_volume = fvde_volume
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(FVDEFileEntry, self)._GetStat()
-
-    stat_object.size = self._fvde_volume.get_size()
-
-    return stat_object
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._fvde_volume.get_size()

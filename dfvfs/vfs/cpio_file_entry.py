@@ -141,10 +141,6 @@ class CPIOFileEntry(file_entry.FileEntry):
     """
     stat_object = super(CPIOFileEntry, self)._GetStat()
 
-    # File data stat information.
-    stat_object.size = getattr(
-        self._cpio_archive_file_entry, 'data_size', None)
-
     # Ownership and permissions stat information.
     mode = getattr(self._cpio_archive_file_entry, 'mode', 0)
     stat_object.mode = stat.S_IMODE(mode)
@@ -185,6 +181,11 @@ class CPIOFileEntry(file_entry.FileEntry):
     if timestamp is None:
       return None
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return getattr(self._cpio_archive_file_entry, 'data_size', None)
 
   def GetCPIOArchiveFileEntry(self):
     """Retrieves the CPIO archive file entry object.

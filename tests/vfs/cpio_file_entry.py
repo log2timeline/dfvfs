@@ -15,6 +15,44 @@ from dfvfs.vfs import cpio_file_system
 from tests import test_lib as shared_test_lib
 
 
+class CPIODirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the CPIO directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_file)
+
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
+        location='/syslog', parent=self._os_path_spec)
+
+    self._file_system = cpio_file_system.CPIOFileSystem(self._resolver_context)
+    self._file_system.Open(self._cpio_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = cpio_file_entry.CPIODirectory(
+        self._file_system, self._cpio_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = cpio_file_entry.CPIODirectory(
+        self._file_system, self._cpio_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 1)
+
+
 class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the CPIO extracted file entry."""
 
@@ -42,6 +80,48 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  # TODO: test _GetDirectory
+  # TODO: test _GetLink
+  # TODO: test _GetStat
+  # TODO: test _GetSubFileEntries
+
+  def testModificationTime(self):
+    """Test the modification_time property."""
+    path_spec = cpio_path_spec.CPIOPathSpec(
+        location='/syslog', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.modification_time)
+
+  def testName(self):
+    """Test the name property."""
+    path_spec = cpio_path_spec.CPIOPathSpec(
+        location='/syslog', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'syslog')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = cpio_path_spec.CPIOPathSpec(
+        location='/syslog', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 1247)
+
+  def testGetCPIOArchiveFileEntry(self):
+    """Tests the GetCPIOArchiveFileEntry function."""
+    path_spec = cpio_path_spec.CPIOPathSpec(
+        location='/syslog', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    cpio_archive_file_entry = file_entry.GetCPIOArchiveFileEntry()
+    self.assertIsNotNone(cpio_archive_file_entry)
+
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = cpio_path_spec.CPIOPathSpec(
@@ -50,9 +130,7 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
-
     self.assertIsNotNone(parent_file_entry)
-
     self.assertEqual(parent_file_entry.name, '')
 
   def testGetStat(self):

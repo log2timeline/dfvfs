@@ -16,6 +16,46 @@ from dfvfs.vfs import vshadow_file_system
 from tests import test_lib as shared_test_lib
 
 
+class VShadowDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the Volume Shadow Snapshot (VSS) directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
+        location='/', parent=self._qcow_path_spec)
+
+    self._file_system = vshadow_file_system.VShadowFileSystem(
+        self._resolver_context)
+    self._file_system.Open(self._vshadow_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = vshadow_file_entry.VShadowDirectory(
+        self._file_system, self._vshadow_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = vshadow_file_entry.VShadowDirectory(
+        self._file_system, self._vshadow_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 2)
+
+
 class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the Volume Shadow Snapshot (VSS) file entry."""
 
@@ -69,6 +109,36 @@ class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetSubFileEntries
+
+  def testCreationTime(self):
+    """Test the creation_time property."""
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        parent=self._qcow_path_spec, store_index=1)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.creation_time)
+
+  def testName(self):
+    """Test the name property."""
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        parent=self._qcow_path_spec, store_index=1)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'vss2')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = vshadow_path_spec.VShadowPathSpec(
+        parent=self._qcow_path_spec, store_index=1)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 1073741824)
+
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
@@ -102,6 +172,9 @@ class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(stat_object.crtime, 1386052668)
     self.assertEqual(stat_object.crtime_nano, 9190583)
+
+  # TODO: add tests for GetVShadowStore
+  # TODO: add tests for HasExternalData
 
   def testIsFunctions(self):
     """Test the Is? functions."""

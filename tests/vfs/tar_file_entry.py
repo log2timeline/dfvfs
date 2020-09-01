@@ -15,6 +15,44 @@ from dfvfs.vfs import tar_file_system
 from tests import test_lib as shared_test_lib
 
 
+class TARDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the TAR extracted directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['syslog.tar'])
+    self._SkipIfPathNotExists(test_file)
+
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._tar_path_spec = tar_path_spec.TARPathSpec(
+        location='/', parent=self._os_path_spec)
+
+    self._file_system = tar_file_system.TARFileSystem(self._resolver_context)
+    self._file_system.Open(self._tar_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = tar_file_entry.TARDirectory(
+        self._file_system, self._tar_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = tar_file_entry.TARDirectory(
+        self._file_system, self._tar_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 1)
+
+
 class TARFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the TAR extracted file entry."""
 
@@ -42,6 +80,35 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetLink
+  # TODO: add tests for _GetStat
+  # TODO: add tests for _GetSubFileEntries
+
+  def testModificationTime(self):
+    """Test the modification_time property."""
+    file_entry = tar_file_entry.TARFileEntry(
+        self._resolver_context, self._file_system, self._tar_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.modification_time)
+
+  def testName(self):
+    """Test the name property."""
+    file_entry = tar_file_entry.TARFileEntry(
+        self._resolver_context, self._file_system, self._tar_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'syslog')
+
+  def testSize(self):
+    """Test the size property."""
+    file_entry = tar_file_entry.TARFileEntry(
+        self._resolver_context, self._file_system, self._tar_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 1247)
+
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = tar_path_spec.TARPathSpec(
@@ -50,9 +117,7 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
-
     self.assertIsNotNone(parent_file_entry)
-
     self.assertEqual(parent_file_entry.name, '')
 
   def testGetStat(self):
@@ -74,6 +139,8 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(stat_object.mtime, 1343166324)
     self.assertFalse(hasattr(stat_object, 'mtime_nano'))
+
+  # TODO: add tests for GetTARInfo
 
   def testIsFunctions(self):
     """Test the Is? functions."""

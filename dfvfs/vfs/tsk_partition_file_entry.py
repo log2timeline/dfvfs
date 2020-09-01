@@ -112,38 +112,6 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
 
     return self._directory
 
-  def _GetStat(self):
-    """Retrieves the stat object.
-
-    Returns:
-      VFSStat: stat object.
-    """
-    stat_object = super(TSKPartitionFileEntry, self)._GetStat()
-
-    bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(
-        self._tsk_volume)
-
-    # File data stat information.
-    if self._tsk_vs_part is not None:
-      number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(
-          self._tsk_vs_part)
-
-      if number_of_sectors:
-        stat_object.size = number_of_sectors * bytes_per_sector
-
-    # Date and time stat information.
-
-    # Ownership and permissions stat information.
-
-    # File entry type stat information.
-
-    # The root file entry is virtual and should have type directory.
-    if not self._is_virtual:
-      stat_object.is_allocated = tsk_partition.TSKVsPartIsAllocated(
-          self._tsk_vs_part)
-
-    return stat_object
-
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
 
@@ -169,6 +137,22 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
         self._name = ''
     return self._name
 
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    if self._tsk_vs_part is None:
+      return None
+
+    number_of_sectors = tsk_partition.TSKVsPartGetNumberOfSectors(
+        self._tsk_vs_part)
+    if number_of_sectors is None:
+      return None
+
+    bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(
+        self._tsk_volume)
+
+    return number_of_sectors * bytes_per_sector
+
   # pylint: disable=redundant-returns-doc
   def GetParentFileEntry(self):
     """Retrieves the parent file entry.
@@ -187,3 +171,12 @@ class TSKPartitionFileEntry(file_entry.FileEntry):
           available.
     """
     return self._tsk_vs_part
+
+  def IsAllocated(self):
+    """Determines if the file entry is allocated.
+
+    Returns:
+      bool: True if the file entry is allocated.
+    """
+    return self._is_virtual or tsk_partition.TSKVsPartIsAllocated(
+        self._tsk_vs_part)

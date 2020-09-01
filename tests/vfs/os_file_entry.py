@@ -14,6 +14,42 @@ from dfvfs.vfs import os_file_system
 from tests import test_lib as shared_test_lib
 
 
+class OSDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the operating system directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['testdir_os'])
+    self._SkipIfPathNotExists(test_file)
+
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    self._file_system = os_file_system.OSFileSystem(self._resolver_context)
+    self._file_system.Open(self._os_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = os_file_entry.OSDirectory(
+        self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = os_file_entry.OSDirectory(
+        self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 6)
+
+
 class OSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the operating system file entry."""
 
@@ -39,11 +75,69 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  # TODO: add tests for _GetDirectory
+  # TODO: add tests for _GetLink
+  # TODO: add tests for _GetStat
+  # TODO: add tests for _GetSubFileEntries
+
+  def testAccessTime(self):
+    """Test the access_time property."""
+    file_entry = os_file_entry.OSFileEntry(
+        self._resolver_context, self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.access_time)
+
+  def testChangeTime(self):
+    """Test the change_time property."""
+    file_entry = os_file_entry.OSFileEntry(
+        self._resolver_context, self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    # Not all operating systems provide a change time.
+    _ = file_entry.change_time
+
+  def testCreationTime(self):
+    """Test the creation_time property."""
+    file_entry = os_file_entry.OSFileEntry(
+        self._resolver_context, self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    # Not all operating systems provide a creation time.
+    _ = file_entry.creation_time
+
+  def testModificationTime(self):
+    """Test the modification_time property."""
+    file_entry = os_file_entry.OSFileEntry(
+        self._resolver_context, self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.modification_time)
+
+  def testName(self):
+    """Test the name property."""
+    file_entry = os_file_entry.OSFileEntry(
+        self._resolver_context, self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'testdir_os')
+
+  def testSize(self):
+    """Test the size property."""
+    file_entry = os_file_entry.OSFileEntry(
+        self._resolver_context, self._file_system, self._os_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    # The size of a directory differs per operating system.
+    _ = file_entry.size
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._os_path_spec)
 
     self.assertIsNotNone(file_entry)
+
+  # TODO: add tests for GetLinkedFileEntry
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""

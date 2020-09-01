@@ -169,9 +169,6 @@ class OSFileEntry(file_entry.FileEntry):
     stat_object = super(OSFileEntry, self)._GetStat()
 
     if not self._is_windows_device and self._stat_info:
-      # File data stat information.
-      stat_object.size = self._stat_info.st_size
-
       # Ownership and permissions stat information.
       stat_object.mode = stat.S_IMODE(self._stat_info.st_mode)
       stat_object.uid = self._stat_info.st_uid
@@ -179,8 +176,6 @@ class OSFileEntry(file_entry.FileEntry):
 
       # Other stat information.
       stat_object.ino = self._stat_info.st_ino
-      # stat_info.st_dev
-      # stat_info.st_nlink
 
     return stat_object
 
@@ -249,15 +244,6 @@ class OSFileEntry(file_entry.FileEntry):
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   @property
-  def name(self):
-    """str: name of the file entry, without the full path."""
-    if self._name is None:
-      location = getattr(self.path_spec, 'location', None)
-      if location is not None:
-        self._name = self._file_system.BasenamePath(location)
-    return self._name
-
-  @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     if self._stat_info is None:
@@ -269,6 +255,23 @@ class OSFileEntry(file_entry.FileEntry):
 
     timestamp = int(self._stat_info.st_mtime)
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
+  @property
+  def name(self):
+    """str: name of the file entry, without the full path."""
+    if self._name is None:
+      location = getattr(self.path_spec, 'location', None)
+      if location is not None:
+        self._name = self._file_system.BasenamePath(location)
+    return self._name
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    if self._is_windows_device or not self._stat_info:
+      return None
+
+    return self._stat_info.st_size
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, for example for a symbolic link.

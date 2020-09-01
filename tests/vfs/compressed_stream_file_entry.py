@@ -47,6 +47,14 @@ class CompressedStreamFileEntryTest(shared_test_lib.BaseTestCase):
         self._compressed_stream_path_spec)
     self.assertIsNotNone(file_entry)
 
+  def testSize(self):
+    """Test the size property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._compressed_stream_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 1247)
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(

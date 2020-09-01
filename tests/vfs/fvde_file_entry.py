@@ -50,6 +50,14 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
         self._resolver_context, self._file_system, self._fvde_path_spec)
     self.assertIsNotNone(file_entry)
 
+  def testSize(self):
+    """Test the size property."""
+    file_entry = fvde_file_entry.FVDEFileEntry(
+        self._resolver_context, self._file_system, self._fvde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 167772160)
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)

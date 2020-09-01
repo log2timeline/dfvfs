@@ -15,7 +15,42 @@ from dfvfs.vfs import zip_file_system
 from tests import test_lib as shared_test_lib
 
 
-# TODO: add tests for ZipDirectory.
+class ZIPDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the ZIP extracted file directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['syslog.zip'])
+    self._SkipIfPathNotExists(test_file)
+
+    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._zip_path_spec = zip_path_spec.ZipPathSpec(
+        location='/', parent=self._os_path_spec)
+
+    self._file_system = zip_file_system.ZipFileSystem(self._resolver_context)
+    self._file_system.Open(self._zip_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = zip_file_entry.ZIPDirectory(
+        self._file_system, self._zip_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = zip_file_entry.ZIPDirectory(
+        self._file_system, self._zip_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 2)
 
 
 class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
@@ -68,6 +103,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.mtime, 1343141124)
     # TODO: re-enable when dfdatetime updates are committed
     # self.assertEqual(stat_object.mtime_nano, None)
+
+  # TODO: add tests for _GetSubFileEntries
 
   def testAccessTime(self):
     """Test the access_time property."""
@@ -124,8 +161,6 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [])
 
-  # TODO: add tests for name property.
-
   def testModificationTime(self):
     """Test the modification_time property."""
     path_spec = zip_path_spec.ZipPathSpec(
@@ -133,6 +168,24 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry.modification_time)
+
+  def testName(self):
+    """Test the name property."""
+    path_spec = zip_path_spec.ZipPathSpec(
+        location='/syslog', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'syslog')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = zip_path_spec.ZipPathSpec(
+        location='/syslog', parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 1247)
 
   def testSubFileEntries(self):
     """Test the sub_file_entries property."""
@@ -196,6 +249,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, '')
+
+  # TODO: add tests for GetZipInfo function.
 
   def testIsAllocated(self):
     """Test the IsAllocated function."""

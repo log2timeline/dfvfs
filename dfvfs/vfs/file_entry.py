@@ -119,7 +119,6 @@ class FileEntry(object):
     self._is_virtual = is_virtual
     self._link = None
     self._resolver_context = resolver_context
-    self._stat_object = None
     self.entry_type = None
     self.path_spec = path_spec
 
@@ -231,9 +230,22 @@ class FileEntry(object):
       if stat_time_nano is not None:
         stat_object.mtime_nano = stat_time_nano
 
+    # File data stat information.
+    stat_object.size = self.size
+
+    # Ownership and permissions stat information.
+    # TODO: consider adding stat_object.mode
+    # TODO: consider adding stat_object.uid
+    # TODO: consider adding stat_object.gid
+
     # File entry type stat information.
-    if self.entry_type:
-      stat_object.type = self.entry_type
+    stat_object.type = self.entry_type
+
+    # Other stat information.
+    # TODO: consider adding stat_object.ino
+    # TODO: consider adding stat_object.fs_type
+
+    stat_object.is_allocated = self.IsAllocated()
 
     return stat_object
 
@@ -309,6 +321,11 @@ class FileEntry(object):
       number_of_sub_file_entries = sum(1 for path_spec in directory.entries)
 
     return number_of_sub_file_entries
+
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return None
 
   @property
   def sub_file_entries(self):
@@ -419,9 +436,7 @@ class FileEntry(object):
     Returns:
       VFSStat: a stat object or None if not available.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    return self._stat_object
+    return self._GetStat()
 
   def HasDataStream(self, name, case_sensitive=True):
     """Determines if the file entry has specific data stream.
@@ -464,9 +479,7 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is allocated.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    return self._stat_object and self._stat_object.is_allocated
+    return True
 
   def IsDevice(self):
     """Determines if the file entry is a device.
@@ -474,10 +487,6 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is a device.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    if self._stat_object is not None:
-      self.entry_type = self._stat_object.type
     return self.entry_type == definitions.FILE_ENTRY_TYPE_DEVICE
 
   def IsDirectory(self):
@@ -486,10 +495,6 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is a directory.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    if self._stat_object is not None:
-      self.entry_type = self._stat_object.type
     return self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY
 
   def IsFile(self):
@@ -498,10 +503,6 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is a file.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    if self._stat_object is not None:
-      self.entry_type = self._stat_object.type
     return self.entry_type == definitions.FILE_ENTRY_TYPE_FILE
 
   def IsLink(self):
@@ -510,10 +511,6 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is a link.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    if self._stat_object is not None:
-      self.entry_type = self._stat_object.type
     return self.entry_type == definitions.FILE_ENTRY_TYPE_LINK
 
   def IsPipe(self):
@@ -522,10 +519,6 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is a pipe.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    if self._stat_object is not None:
-      self.entry_type = self._stat_object.type
     return self.entry_type == definitions.FILE_ENTRY_TYPE_PIPE
 
   def IsRoot(self):
@@ -542,10 +535,6 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is a socket.
     """
-    if self._stat_object is None:
-      self._stat_object = self._GetStat()
-    if self._stat_object is not None:
-      self.entry_type = self._stat_object.type
     return self.entry_type == definitions.FILE_ENTRY_TYPE_SOCKET
 
   def IsVirtual(self):

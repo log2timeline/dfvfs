@@ -593,9 +593,6 @@ class TSKFileEntry(file_entry.FileEntry):
     """
     stat_object = super(TSKFileEntry, self)._GetStat()
 
-    # File data stat information.
-    stat_object.size = getattr(self._tsk_file.info.meta, 'size', None)
-
     # Date and time stat information.
     stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
         self._tsk_file, 'bkup')
@@ -619,18 +616,8 @@ class TSKFileEntry(file_entry.FileEntry):
     stat_object.uid = getattr(self._tsk_file.info.meta, 'uid', None)
     stat_object.gid = getattr(self._tsk_file.info.meta, 'gid', None)
 
-    # File entry type stat information.
-
     # Other stat information.
     stat_object.ino = getattr(self._tsk_file.info.meta, 'addr', None)
-    # stat_object.dev = stat_info.st_dev
-    # stat_object.nlink = getattr(self._tsk_file.info.meta, 'nlink', None)
-    # stat_object.fs_type = 'Unknown'
-
-    flags = getattr(self._tsk_file.info.meta, 'flags', 0)
-
-    # The flags are an instance of pytsk3.TSK_FS_META_FLAG_ENUM.
-    stat_object.is_allocated = bool(int(flags) & pytsk3.TSK_FS_META_FLAG_ALLOC)
 
     return stat_object
 
@@ -742,6 +729,14 @@ class TSKFileEntry(file_entry.FileEntry):
 
     return self._GetTimeValue('dtime')
 
+  @property
+  def modification_time(self):
+    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    if self._file_system_type not in self._TSK_MTIME_FS_TYPES:
+      return None
+
+    return self._GetTimeValue('mtime')
+
   # pylint: disable=missing-return-doc,missing-return-type-doc
   @property
   def name(self):
@@ -772,12 +767,9 @@ class TSKFileEntry(file_entry.FileEntry):
     return self._name
 
   @property
-  def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
-    if self._file_system_type not in self._TSK_MTIME_FS_TYPES:
-      return None
-
-    return self._GetTimeValue('mtime')
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return getattr(self._tsk_file.info.meta, 'size', None)
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.
@@ -873,6 +865,16 @@ class TSKFileEntry(file_entry.FileEntry):
       PathSpecError: if the path specification is missing inode and location.
     """
     return self._tsk_file
+
+  def IsAllocated(self):
+    """Determines if the file entry is allocated.
+
+    Returns:
+      bool: True if the file entry is allocated.
+    """
+    # The flags are an instance of pytsk3.TSK_FS_META_FLAG_ENUM.
+    flags = getattr(self._tsk_file.info.meta, 'flags', 0)
+    return bool(int(flags) & pytsk3.TSK_FS_META_FLAG_ALLOC)
 
 
 dfdatetime_factory.Factory.RegisterDateTimeValues(TSKTime)

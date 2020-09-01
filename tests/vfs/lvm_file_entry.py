@@ -16,6 +16,45 @@ from dfvfs.vfs import lvm_file_system
 from tests import test_lib as shared_test_lib
 
 
+class LVMDirectoryTest(shared_test_lib.BaseTestCase):
+  """Tests the LVM directory."""
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+    test_file = self._GetTestFilePath(['lvm.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+    self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
+        location='/', parent=self._raw_path_spec)
+
+    self._file_system = lvm_file_system.LVMFileSystem(self._resolver_context)
+    self._file_system.Open(self._lvm_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._file_system.Close()
+
+  def testInitialize(self):
+    """Tests the __init__ function."""
+    directory = lvm_file_entry.LVMDirectory(
+        self._file_system, self._lvm_path_spec)
+
+    self.assertIsNotNone(directory)
+
+  def testEntriesGenerator(self):
+    """Tests the _EntriesGenerator function."""
+    directory = lvm_file_entry.LVMDirectory(
+        self._file_system, self._lvm_path_spec)
+
+    self.assertIsNotNone(directory)
+
+    entries = list(directory.entries)
+    self.assertEqual(len(entries), 1)
+
+
 class LVMFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the LVM file entry."""
 
@@ -73,6 +112,29 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
         is_virtual=True)
 
     self.assertIsNotNone(file_entry)
+
+  # TODO: test _GetDirectory
+  # TODO: test _GetSubFileEntries
+
+  def testName(self):
+    """Test the name property."""
+    path_spec = lvm_path_spec.LVMPathSpec(
+        parent=self._raw_path_spec, volume_index=0)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'lvm1')
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = lvm_path_spec.LVMPathSpec(
+        parent=self._raw_path_spec, volume_index=0)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 4194304)
+
+  # TODO: test GetLVMLogicalVolume
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""

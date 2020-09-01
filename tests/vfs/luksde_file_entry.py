@@ -48,6 +48,14 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
 
     # TODO: test raises.
 
+  def testSize(self):
+    """Test the size property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._luksde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 6291456)
+
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
