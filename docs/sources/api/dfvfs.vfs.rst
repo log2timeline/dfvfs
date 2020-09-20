@@ -132,6 +132,22 @@ dfvfs.vfs.encrypted\_stream\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.ext\_file\_entry module
+---------------------------------
+
+.. automodule:: dfvfs.vfs.ext_file_entry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.ext\_file\_system module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.ext_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.fake\_file\_entry module
 ----------------------------------
 

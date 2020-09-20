@@ -1,6 +1,6 @@
 ## Supported Formats
 
-The information below is based of version 20200625
+The information below is based of version 20200920
 
 ### Storage media types
 
@@ -32,7 +32,7 @@ The information below is based of version 20200625
 
 * Apple File System (APFS) version 2 (Requires: [libfsapfs/pyfsapfs](https://github.com/libyal/libfsapfs))
   * as of dfVFS 20181124
-* ext version 2, 3, 4 (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
+* ext version 2, 3, 4 (Requires: [libfsext/pyfsext](https://github.com/libyal/libfsext) or [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * FAT (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * HFS, HFS+, HFSX (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * NTFS version 3 (Requires: [libfsntfs/pyfsntfs](https://github.com/libyal/libfsntfs) or [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
