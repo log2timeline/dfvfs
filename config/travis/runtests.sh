@@ -50,7 +50,14 @@ then
 
 elif test "${TARGET}" = "dockerfile";
 then
-	cd config/docker && docker build --build-arg PPA_TRACK="dev" -f Dockerfile .
+	SOURCE_PATH=${PWD};
+	CONTAINER_NAME="test";
+
+	cd config/docker
+
+	docker build --build-arg PPA_TRACK="dev" -f Dockerfile -t ${CONTAINER_NAME} .
+
+	# TODO: add tests
 
 elif test "${TRAVIS_OS_NAME}" = "osx";
 then

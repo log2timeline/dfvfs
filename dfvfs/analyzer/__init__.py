@@ -7,6 +7,7 @@ from dfvfs.analyzer import bde_analyzer_helper
 from dfvfs.analyzer import bzip2_analyzer_helper
 from dfvfs.analyzer import cpio_analyzer_helper
 from dfvfs.analyzer import ewf_analyzer_helper
+from dfvfs.analyzer import ext_analyzer_helper
 from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.analyzer import gzip_analyzer_helper
 from dfvfs.analyzer import lvm_analyzer_helper
