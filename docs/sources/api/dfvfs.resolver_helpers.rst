@@ -76,6 +76,14 @@ dfvfs.resolver\_helpers.ewf\_resolver\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.resolver\_helpers.ext\_resolver\_helper module
+----------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.ext_resolver_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.resolver\_helpers.fake\_resolver\_helper module
 -----------------------------------------------------
 

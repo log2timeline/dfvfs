@@ -68,6 +68,14 @@ dfvfs.analyzer.ewf\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.analyzer.ext\_analyzer\_helper module
+-------------------------------------------
+
+.. automodule:: dfvfs.analyzer.ext_analyzer_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.analyzer.fvde\_analyzer\_helper module
 --------------------------------------------
 

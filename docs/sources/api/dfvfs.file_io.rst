@@ -68,6 +68,14 @@ dfvfs.file\_io.ewf\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.ext\_file\_io module
+-----------------------------------
+
+.. automodule:: dfvfs.file_io.ext_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.fake\_file\_io module
 ------------------------------------
 

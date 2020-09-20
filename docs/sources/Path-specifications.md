@@ -35,6 +35,7 @@ version 20200625.
 | TYPE_INDICATOR_ENCODED_STREAM | The encoded stream type |
 | TYPE_INDICATOR_ENCRYPTED_STREAM | The encrypted stream type |
 | TYPE_INDICATOR_EWF | The EWF storage media image type |
+| TYPE_INDICATOR_EXT | The Extended file system (ext) type |
 | TYPE_INDICATOR_FAKE | The fake file system type |
 | TYPE_INDICATOR_FVDE | The FileVault Drive Enryption (FVDE) volume system type |
 | TYPE_INDICATOR_GZIP | The gzip compressed file type |
@@ -165,6 +166,16 @@ stored within the [Expert Witness (Compression) Format](https://forensicswiki.xy
 **Note that at the moment this type is not addressable as a file system.**
 
 **Note that at the moment L01 or Lx01 files are not supported.**
+
+### The EXT file system type
+
+The EXT type (TYPE_INDICATOR_EXT) is a type that addresses files stored within
+a Extended file system (ext).
+
+| **Attribute name** | **Description** |
+| --- | --- |
+| location | The location of the file entry |
+| inode | The inode number of the file entry |
 
 ### The fake file system type
 
@@ -309,8 +320,8 @@ a SleuthKit supported file system.
 
 | **Attribute name** | **Description** |
 | --- | --- |
-| inode | The inode of the file entry within the file system |
-| location | The location of the file entry within the file system |
+| inode | The inode number of the file entry |
+| location | The location of the file entry |
 | parent | The parent path specification |
 
 ### The SleuthKit volume system type
