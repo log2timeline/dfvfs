@@ -20,7 +20,6 @@ The information below is based of version 20200920
 * Apple File System (APFS) container version 2 (Requires: [libfsapfs/pyfsapfs](https://github.com/libyal/libfsapfs))
   * as of dfVFS 20181124
 * BitLocker Disk Encryption (BDE) (Requires: [libbde/pybde](https://github.com/libyal/libbde))
-  * AES-XTS variant not supported yet
 * FileVault Disk Encryption (FVDE) (or FileVault 2) (Requires: [libfvde/pyfvde](https://github.com/libyal/libfvde))
 * GPT (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * LVM (Requires: [libvslvm/pyvslvm](https://github.com/libyal/libvslvm))
@@ -57,9 +56,9 @@ The information below is based of version 20200920
 ### Encrypted stream file types
 
 * AES-CBC, AES-CFB, AES-ECB, AES-OFB (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
-* Blowfish (Requires: [Cryptography.io](https://cryptography.io/en/latest/)
-* DES3 (Requires: [Cryptography.io](https://cryptography.io/en/latest/)
-* RC4 (Requires: [Cryptography.io](https://cryptography.io/en/latest/)
+* Blowfish (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
+* DES3 (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
+* RC4 (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
 
 ### Archive file types
 
