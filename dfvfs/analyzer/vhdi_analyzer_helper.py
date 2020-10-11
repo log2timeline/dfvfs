@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The VHDI format analyzer helper implementation."""
+"""The Virtual Hard Disk image (VHDI) format analyzer helper implementation."""
 
 from __future__ import unicode_literals
 
@@ -10,7 +10,7 @@ from dfvfs.lib import definitions
 
 
 class VHDIAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """VHDI analyzer helper."""
+  """Virtual Hard Disk image (VHDI) analyzer helper."""
 
   FORMAT_CATEGORIES = frozenset([
       definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE])
@@ -27,12 +27,11 @@ class VHDIAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     format_specification = specification.FormatSpecification(
         self.type_indicator)
 
-    # VHDI image signature in footer.
+    # Virtual Hard Disk version 1 (VHD) signature in footer.
     format_specification.AddNewSignature(b'conectix', offset=-512)
 
-    # VHDI image signature in copy of footer in differential
-    # or dynamic disk image.
-    format_specification.AddNewSignature(b'conectix', offset=0)
+    # Virtual Hard Disk version 2 (VHDX) signature in file information.
+    format_specification.AddNewSignature(b'vhdxfile', offset=0)
 
     return format_specification
 

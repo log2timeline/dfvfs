@@ -9,8 +9,7 @@ The information below is based of version 20200920
   * currently no differential image support
 * Storage Media device (Requires: [libsmdev/pysmdev](https://github.com/libyal/libsmdev))
 * (split) Storage Media RAW (Requires: [libsmraw/pysmraw](https://github.com/libyal/libsmraw))
-* VHD (Requires: [libvhdi/pyvhdi](https://github.com/libyal/libvhdi))
-  * differential image support as of dfVFS 20160428
+* VHD and VHDX (Requires: [libvhdi/pyvhdi](https://github.com/libyal/libvhdi))
 * VMDK (Requires: [libvmdk/pyvmdk](https://github.com/libyal/libvmdk))
   * currently no differential image support
 
@@ -18,7 +17,6 @@ The information below is based of version 20200920
 
 * Apple Partition Map (APM) (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * Apple File System (APFS) container version 2 (Requires: [libfsapfs/pyfsapfs](https://github.com/libyal/libfsapfs))
-  * as of dfVFS 20181124
 * BitLocker Disk Encryption (BDE) (Requires: [libbde/pybde](https://github.com/libyal/libbde))
 * FileVault Disk Encryption (FVDE) (or FileVault 2) (Requires: [libfvde/pyfvde](https://github.com/libyal/libfvde))
 * GPT (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
@@ -30,7 +28,6 @@ The information below is based of version 20200920
 ### File systems
 
 * Apple File System (APFS) version 2 (Requires: [libfsapfs/pyfsapfs](https://github.com/libyal/libfsapfs))
-  * as of dfVFS 20181124
 * ext version 2, 3, 4 (Requires: [libfsext/pyfsext](https://github.com/libyal/libfsext) or [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * FAT (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * HFS, HFS+, HFSX (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))

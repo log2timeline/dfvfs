@@ -204,8 +204,18 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetStorageMediaImageTypeIndicatorsVHDI(self):
-    """Tests the GetStorageMediaImageTypeIndicator function on a .vhd file."""
+    """Tests the GetStorageMediaImageTypeIndicator function on .vhd[x] files."""
     test_file = self._GetTestFilePath(['ext2.vhd'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_VHDI]
+    type_indicators = analyzer.Analyzer.GetStorageMediaImageTypeIndicators(
+        path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+    test_file = self._GetTestFilePath(['ext2.vhdx'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
