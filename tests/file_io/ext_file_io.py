@@ -19,14 +19,14 @@ from tests.file_io import test_lib
 class EXTFileTest(test_lib.ImageFileTestCase):
   """Tests the file-like object implementation using pyfsext.file_entry."""
 
-  _IDENTIFIER_ANOTHER_FILE = 21
-  _IDENTIFIER_PASSWORDS_TXT = 20
+  _IDENTIFIER_ANOTHER_FILE = 15
+  _IDENTIFIER_PASSWORDS_TXT = 14
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(EXTFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['ext.raw'])
+    test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
