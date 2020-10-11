@@ -5,9 +5,11 @@ from __future__ import unicode_literals
 
 import os
 
+from dfvfs.file_io import ntfs_file_io
 from dfvfs.file_io import tsk_file_io
 from dfvfs.file_io import tsk_partition_file_io
 from dfvfs.lib import errors
+from dfvfs.path import ntfs_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
@@ -657,3 +659,241 @@ class PaddedSyslogTestCase(SylogTestCase):
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 2000)
+
+
+class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
+  """Shared functionality for storage media image with a FAT file system."""
+
+  _INODE_ANOTHER_FILE = 615
+  _INODE_PASSWORDS_TXT = 10
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+
+  def _TestOpenCloseMFTEntry(self, parent_path_spec):
+    """Test the open and close functionality using a MFT entry.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    self.assertEqual(file_object.get_size(), 126)
+    file_object.close()
+
+    # TODO: add a failing scenario.
+
+  def _TestOpenCloseLocation(self, parent_path_spec):
+    """Test the open and close functionality using a location.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(
+        location='/passwords.txt', parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    self.assertEqual(file_object.get_size(), 126)
+    file_object.close()
+
+    # Try open with a path specification that has no parent.
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec=path_spec)
+
+  def _TestSeek(self, parent_path_spec):
+    """Test the seek functionality.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
+        parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    self.assertEqual(file_object.get_size(), 24)
+
+    file_object.seek(10)
+    self.assertEqual(file_object.read(5), b'other')
+    self.assertEqual(file_object.get_offset(), 15)
+
+    file_object.seek(-12, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'her f')
+
+    file_object.seek(2, os.SEEK_CUR)
+    self.assertEqual(file_object.read(2), b'e.')
+
+    # Conforming to the POSIX seek the offset can exceed the file size
+    # but reading will result in no data being returned.
+    file_object.seek(300, os.SEEK_SET)
+    self.assertEqual(file_object.get_offset(), 300)
+    self.assertEqual(file_object.read(2), b'')
+
+    with self.assertRaises(IOError):
+      file_object.seek(-10, os.SEEK_SET)
+
+    # On error the offset should not change.
+    self.assertEqual(file_object.get_offset(), 300)
+
+    with self.assertRaises(IOError):
+      file_object.seek(10, 5)
+
+    # On error the offset should not change.
+    self.assertEqual(file_object.get_offset(), 300)
+
+    file_object.close()
+
+  def _TestRead(self, parent_path_spec):
+    """Test the read functionality.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = tsk_path_spec.TSKPathSpec(
+        inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
+        parent=parent_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    read_buffer = file_object.read()
+
+    expected_buffer = (
+        b'place,user,password \r\n'
+        b'bank,joesmith,superrich \r\n'
+        b'alarm system,-,1234 \r\n'
+        b'treasure chest,-,1111 \r\n'
+        b'uber secret laire,admin,admin \r\n')
+
+    self.assertEqual(read_buffer, expected_buffer)
+
+    # TODO: add boundary scenarios.
+
+    file_object.close()
+
+
+class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
+  """Shared functionality for storage media image with a NTFS file system."""
+
+  _MFT_ENTRY_ANOTHER_FILE = 36
+  _MFT_ENTRY_PASSWORDS_TXT = 35
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+
+  def _TestOpenCloseMFTEntry(self, parent_path_spec):
+    """Test the open and close functionality using a MFT entry.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=self._MFT_ENTRY_PASSWORDS_TXT,
+        parent=parent_path_spec)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    self.assertEqual(file_object.get_size(), 126)
+    file_object.close()
+
+    # TODO: add a failing scenario.
+
+  def _TestOpenCloseLocation(self, parent_path_spec):
+    """Test the open and close functionality using a location.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location='\\passwords.txt', parent=parent_path_spec)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    self.assertEqual(file_object.get_size(), 126)
+    file_object.close()
+
+    # Try open with a path specification that has no parent.
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec=path_spec)
+
+  def _TestSeek(self, parent_path_spec):
+    """Test the seek functionality.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location='\\a_directory\\another_file',
+        mft_attribute=2, mft_entry=self._MFT_ENTRY_ANOTHER_FILE,
+        parent=parent_path_spec)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    self.assertEqual(file_object.get_size(), 24)
+
+    file_object.seek(10)
+    self.assertEqual(file_object.read(5), b'other')
+    self.assertEqual(file_object.get_offset(), 15)
+
+    file_object.seek(-12, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'her f')
+
+    file_object.seek(2, os.SEEK_CUR)
+    self.assertEqual(file_object.read(2), b'e.')
+
+    # Conforming to the POSIX seek the offset can exceed the file size
+    # but reading will result in no data being returned.
+    file_object.seek(300, os.SEEK_SET)
+    self.assertEqual(file_object.get_offset(), 300)
+    self.assertEqual(file_object.read(2), b'')
+
+    with self.assertRaises(IOError):
+      file_object.seek(-10, os.SEEK_SET)
+
+    # On error the offset should not change.
+    self.assertEqual(file_object.get_offset(), 300)
+
+    with self.assertRaises(IOError):
+      file_object.seek(10, 5)
+
+    # On error the offset should not change.
+    self.assertEqual(file_object.get_offset(), 300)
+
+    file_object.close()
+
+  def _TestRead(self, parent_path_spec):
+    """Test the read functionality.
+
+    Args:
+      parent_path_spec (PathSpec): parent path specification.
+    """
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        location='\\passwords.txt', mft_attribute=2,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=parent_path_spec)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+
+    file_object.open(path_spec=path_spec)
+    read_buffer = file_object.read()
+
+    expected_buffer = (
+        b'place,user,password \r\n'
+        b'bank,joesmith,superrich \r\n'
+        b'alarm system,-,1234 \r\n'
+        b'treasure chest,-,1111 \r\n'
+        b'uber secret laire,admin,admin \r\n')
+
+    self.assertEqual(read_buffer, expected_buffer)
+
+    # TODO: add boundary scenarios.
+
+    file_object.close()
