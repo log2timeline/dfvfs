@@ -141,7 +141,8 @@ qemu-img convert -f raw -O vpc test_data/ext2.raw test_data/ext2.vhd
 
 # TODO: Create test differential VHD image with an ext2 file system
 
-# TODO: Create test VHDX image with an ext2 file system
+# Create test VHDX image with an ext2 file system
+qemu-img convert -f raw -O vhdx test_data/ext2.raw test_data/ext2.vhdx
 
 # Create test VMDK image with an ext2 file system
 qemu-img convert -f raw -O vmdk test_data/ext2.raw test_data/ext2.vmdk

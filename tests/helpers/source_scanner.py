@@ -695,6 +695,17 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
 
+    test_path = self._GetTestFilePath(['ext2.vhdx'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+
+    path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
+    self.assertIsNotNone(path_spec)
+    self.assertEqual(
+        path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
+
   def testScanForStorageMediaImageOnVMDK(self):
     """Test the ScanForStorageMediaImage function on a VMDK image."""
     test_path = self._GetTestFilePath(['ext2.vmdk'])
