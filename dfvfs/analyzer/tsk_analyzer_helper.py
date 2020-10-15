@@ -40,11 +40,12 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     # HFS master directory block signature.
     format_specification.AddNewSignature(b'BD', offset=0)
 
-    # HFS+ file system signature.
-    format_specification.AddNewSignature(b'H+', offset=1024)
+    if definitions.PREFERRED_HFS_BACK_END == self.TYPE_INDICATOR:
+      # HFS+ file system signature.
+      format_specification.AddNewSignature(b'H+', offset=1024)
 
-    # HFSX file system signature.
-    format_specification.AddNewSignature(b'HX', offset=1024)
+      # HFSX file system signature.
+      format_specification.AddNewSignature(b'HX', offset=1024)
 
     if definitions.PREFERRED_EXT_BACK_END == self.TYPE_INDICATOR:
       # Ext file system signature.

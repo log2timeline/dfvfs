@@ -13,6 +13,7 @@ from dfvfs.lib import definitions
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import qcow_path_spec
+from dfvfs.path import raw_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.path import vshadow_path_spec
 
@@ -177,6 +178,42 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     expected_type_indicators = [definitions.PREFERRED_NTFS_BACK_END]
     type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(
         path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+  def testGetFileSystemTypeIndicatorsEXT2(self):
+    """Tests the GetFileSystemTypeIndicators function on an ext2 file system."""
+    test_file = self._GetTestFilePath(['ext2.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+    expected_type_indicators = [definitions.PREFERRED_EXT_BACK_END]
+    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+  def testGetFileSystemTypeIndicatorsHFSPlus(self):
+    """Tests the GetFileSystemTypeIndicators function on a HFS+ file system."""
+    test_file = self._GetTestFilePath(['hfsplus.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+    expected_type_indicators = [definitions.PREFERRED_HFS_BACK_END]
+    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+  def testGetFileSystemTypeIndicatorsNTFS(self):
+    """Tests the GetFileSystemTypeIndicators function on a NTFS file system."""
+    test_file = self._GetTestFilePath(['ntfs.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+    expected_type_indicators = [definitions.PREFERRED_NTFS_BACK_END]
+    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetStorageMediaImageTypeIndicatorsEWF(self):
