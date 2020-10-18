@@ -21,7 +21,7 @@ class TSKPartitionDirectoryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['tsk_volume_system.raw'])
+    test_file = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
@@ -36,6 +36,7 @@ class TSKPartitionDirectoryTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testInitialize(self):
     """Tests the __init__ function."""
@@ -52,7 +53,7 @@ class TSKPartitionDirectoryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(directory)
 
     entries = list(directory.entries)
-    self.assertEqual(len(entries), 7)
+    self.assertEqual(len(entries), 8)
 
 
 class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
@@ -76,6 +77,7 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   # mmls test_data/mbr.raw
   # DOS Partition Table

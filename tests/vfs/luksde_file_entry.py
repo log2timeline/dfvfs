@@ -39,6 +39,7 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testIntialize(self):
     """Test the __init__ function."""
