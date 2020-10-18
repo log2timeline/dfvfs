@@ -48,6 +48,7 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testIntialize(self):
     """Tests the __init__ function."""
@@ -96,6 +97,7 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testIntialize(self):
     """Tests the __init__ function."""
@@ -148,6 +150,7 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testIntialize(self):
     """Tests the __init__ function."""
@@ -196,6 +199,7 @@ class NTFSDataStream(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testName(self):
     """Test the name property."""
@@ -240,6 +244,7 @@ class NTFSDirectoryTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testInitialize(self):
     """Tests the __init__ function."""
@@ -279,6 +284,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testIntialize(self):
     """Tests the __init__ function."""

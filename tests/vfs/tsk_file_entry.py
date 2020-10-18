@@ -127,6 +127,7 @@ class TSKDirectoryTest(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testInitialize(self):
     """Tests the __init__ function."""
@@ -169,6 +170,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testInitialize(self):
     """Tests the __init__ function."""
@@ -498,6 +500,7 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   def testInitialize(self):
     """Tests the __init__ function."""
@@ -827,6 +830,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._file_system.Close()
+    self._resolver_context.Empty()
 
   # TODO: add tests for _GetAttributes
   # TODO: add tests for _GetDataStreams

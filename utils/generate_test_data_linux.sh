@@ -139,8 +139,6 @@ qemu-img convert -f raw -O qcow2 test_data/ext2.raw test_data/ext2.qcow2
 # Create test VHD image with an ext2 file system
 qemu-img convert -f raw -O vpc test_data/ext2.raw test_data/ext2.vhd
 
-# TODO: Create test differential VHD image with an ext2 file system
-
 # Create test VHDX image with an ext2 file system
 qemu-img convert -f raw -O vhdx test_data/ext2.raw test_data/ext2.vhdx
 
