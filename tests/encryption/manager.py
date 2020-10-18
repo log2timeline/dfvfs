@@ -55,6 +55,9 @@ class EncryptionManagerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         len(manager.EncryptionManager._decrypters), number_of_decrypters)
 
+    with self.assertRaises(KeyError):
+      manager.EncryptionManager.DeregisterDecrypter(TestDecrypter)
+
   def testGetDecrypter(self):
     """Function to test the GetDecrypter function."""
     decrypter_object = manager.EncryptionManager.GetDecrypter(

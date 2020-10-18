@@ -51,6 +51,9 @@ class EncodingManagerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         len(manager.EncodingManager._decoders), number_of_decoders)
 
+    with self.assertRaises(KeyError):
+      manager.EncodingManager.DeregisterDecoder(TestDecoder)
+
   def testGetDecoder(self):
     """Function to test the GetDecoder function."""
     decoder_object = manager.EncodingManager.GetDecoder(

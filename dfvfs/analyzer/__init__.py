@@ -10,6 +10,7 @@ from dfvfs.analyzer import ewf_analyzer_helper
 from dfvfs.analyzer import ext_analyzer_helper
 from dfvfs.analyzer import fvde_analyzer_helper
 from dfvfs.analyzer import gzip_analyzer_helper
+from dfvfs.analyzer import luksde_analyzer_helper
 from dfvfs.analyzer import lvm_analyzer_helper
 from dfvfs.analyzer import ntfs_analyzer_helper
 from dfvfs.analyzer import qcow_analyzer_helper

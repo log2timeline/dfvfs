@@ -3,18 +3,9 @@
 
 from __future__ import unicode_literals
 
-try:
-  import lzma
-except ImportError:
-  from backports import lzma
+import lzma
 
-try:
-  from lzma import LZMAError  # pylint: disable=no-name-in-module
-except ImportError:
-  try:
-    from lzma import error as LZMAError
-  except ImportError:
-    from backports.lzma import LZMAError
+from lzma import LZMAError
 
 from dfvfs.compression import decompressor
 from dfvfs.compression import manager
