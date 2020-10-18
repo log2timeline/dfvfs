@@ -257,8 +257,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_TSK_PARTITION]
-    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
-        path_spec)
+    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetVolumeSystemTypeIndicatorsVSS(self):
@@ -270,8 +269,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_VSHADOW]
-    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
-        path_spec)
+    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetVolumeSystemTypeIndicatorsBDE(self):
@@ -282,8 +280,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_BDE]
-    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
-        path_spec)
+    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetVolumeSystemTypeIndicatorsFVDE(self):
@@ -297,8 +294,18 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         location='/p1', parent=path_spec)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_FVDE]
-    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
-        path_spec)
+    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+  def testGetVolumeSystemTypeIndicatorsLUKS(self):
+    """Tests the GetVolumeSystemTypeIndicators function on a LUKS volume."""
+    test_file = self._GetTestFilePath(['luks1.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_LUKSDE]
+    type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
 

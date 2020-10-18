@@ -7,14 +7,6 @@ from __future__ import unicode_literals
 import os
 import unittest
 
-try:
-  import lzma
-except ImportError:
-  try:
-    from backports import lzma
-  except ImportError:
-    lzma = None
-
 from dfvfs.file_io import compressed_stream_io
 from dfvfs.file_io import os_file_io
 from dfvfs.lib import definitions
@@ -94,7 +86,6 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@unittest.skipIf(lzma is None, 'requires LZMA compression support')
 class LZMACompressedStreamTest(test_lib.SylogTestCase):
   """The unit test for a LZMA compressed stream file-like object."""
 
@@ -164,7 +155,6 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
     file_object.close()
 
 
-@unittest.skipIf(lzma is None, 'requires LZMA compression support')
 class XZCompressedStreamTest(test_lib.SylogTestCase):
   """The unit test for a XZ compressed stream file-like object."""
 

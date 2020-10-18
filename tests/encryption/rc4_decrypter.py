@@ -14,6 +14,14 @@ from tests.encryption import test_lib
 class RC4DecrypterTestCase(test_lib.DecrypterTestCase):
   """Tests for the RC4 decrypter object."""
 
+  def testInitialize(self):
+    """Tests the __init__ method."""
+    decrypter = rc4_decrypter.RC4Decrypter(key=b'test1')
+    self.assertIsNotNone(decrypter)
+
+    with self.assertRaises(ValueError):
+      rc4_decrypter.RC4Decrypter()
+
   def testDecrypt(self):
     """Tests the Decrypt method."""
     decrypter = rc4_decrypter.RC4Decrypter(key=b'test1')

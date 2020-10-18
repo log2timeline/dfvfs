@@ -51,6 +51,9 @@ class CompressionManagerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         len(manager.CompressionManager._decompressors), number_of_decompressors)
 
+    with self.assertRaises(KeyError):
+      manager.CompressionManager.DeregisterDecompressor(TestDecompressor)
+
   def testGetDecompressor(self):
     """Function to test the GetDecompressor function."""
     decompressor_object = manager.CompressionManager.GetDecompressor(
