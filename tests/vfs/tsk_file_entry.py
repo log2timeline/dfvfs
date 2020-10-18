@@ -475,8 +475,8 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(data_stream)
 
 
-class TSKFileEntryTestHFS(shared_test_lib.BaseTestCase):
-  """Tests the SleuthKit (TSK) file entry on HFS."""
+class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
+  """Tests the SleuthKit (TSK) file entry on HFS+."""
 
   _INODE_A_DIRECTORY = 18
   _INODE_A_LINK = 22
@@ -557,7 +557,7 @@ class TSKFileEntryTestHFS(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertIsNone(file_entry.creation_time)
+    self.assertIsNotNone(file_entry.creation_time)
 
   def testDeletionTime(self):
     """Test the deletion_time property."""
@@ -668,9 +668,8 @@ class TSKFileEntryTestHFS(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.ctime, 1596950907)
     self.assertEqual(stat_object.ctime_nano, 0)
 
-    # EXT2 has no crtime timestamp.
-    self.assertFalse(hasattr(stat_object, 'crtime'))
-    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
+    self.assertEqual(stat_object.crtime, 1596950907)
+    self.assertEqual(stat_object.crtime_nano, 0)
 
     self.assertEqual(stat_object.mtime, 1596950907)
     self.assertEqual(stat_object.mtime_nano, 0)
