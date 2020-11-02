@@ -339,7 +339,7 @@ class TSKDirectory(file_entry.Directory):
             if directory_entry in ['.', '..']:
               continue
 
-            if location == self._file_system.PATH_SEPARATOR:
+            if not location or location == self._file_system.PATH_SEPARATOR:
               directory_entry = self._file_system.JoinPath([directory_entry])
             else:
               directory_entry = self._file_system.JoinPath([

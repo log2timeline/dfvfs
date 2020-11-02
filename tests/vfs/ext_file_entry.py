@@ -242,6 +242,14 @@ class EXTFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
+    # Test a path specification without a location.
+    path_spec = ext_path_spec.EXTPathSpec(
+        inode=self._INODE_A_DIRECTORY, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
+
   def testDataStreams(self):
     """Tests the data streams functionality."""
     test_location = '/a_directory/another_file'
