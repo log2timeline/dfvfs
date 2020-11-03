@@ -683,6 +683,14 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
+    # Test a path specification without a location.
+    path_spec = ntfs_path_spec.NTFSPathSpec(
+        mft_attribute=1, mft_entry=36, parent=self._qcow_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 3)
+
   def testAttributes(self):
     """Test the attributes properties."""
     test_location = (

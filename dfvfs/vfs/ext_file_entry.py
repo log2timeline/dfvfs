@@ -34,7 +34,7 @@ class EXTDirectory(file_entry.Directory):
     for fsext_sub_file_entry in fsext_file_entry.sub_file_entries:
       directory_entry = fsext_sub_file_entry.name
 
-      if location == self._file_system.PATH_SEPARATOR:
+      if not location or location == self._file_system.PATH_SEPARATOR:
         directory_entry = self._file_system.JoinPath([directory_entry])
       else:
         directory_entry = self._file_system.JoinPath([

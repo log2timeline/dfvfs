@@ -221,7 +221,7 @@ class NTFSDirectory(file_entry.Directory):
         directory_entry_mft_entry = (
             file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
 
-        if location == self._file_system.PATH_SEPARATOR:
+        if not location or location == self._file_system.PATH_SEPARATOR:
           directory_entry = self._file_system.JoinPath([directory_entry])
         else:
           directory_entry = self._file_system.JoinPath([
