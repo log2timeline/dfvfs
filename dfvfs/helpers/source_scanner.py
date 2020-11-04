@@ -699,11 +699,18 @@ class SourceScanner(object):
 
     type_indicator = type_indicators[0]
     if len(type_indicators) > 1:
-      if definitions.PREFERRED_NTFS_BACK_END not in type_indicators:
+      if definitions.PREFERRED_EXT_BACK_END in type_indicators:
+        type_indicator = definitions.PREFERRED_EXT_BACK_END
+
+      elif definitions.PREFERRED_HFS_BACK_END in type_indicators:
+        type_indicator = definitions.PREFERRED_HFS_BACK_END
+
+      elif definitions.PREFERRED_NTFS_BACK_END in type_indicators:
+        type_indicator = definitions.PREFERRED_NTFS_BACK_END
+
+      else:
         raise errors.BackEndError(
             'Unsupported source found more than one file system types.')
-
-      type_indicator = definitions.PREFERRED_NTFS_BACK_END
 
     # TODO: determine root location from file system or path specification.
     if type_indicator == definitions.TYPE_INDICATOR_NTFS:
