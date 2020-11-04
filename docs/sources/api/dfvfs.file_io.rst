@@ -116,6 +116,14 @@ dfvfs.file\_io.gzip\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.hfs\_file\_io module
+-----------------------------------
+
+.. automodule:: dfvfs.file_io.hfs_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.luksde\_file\_io module
 --------------------------------------
 

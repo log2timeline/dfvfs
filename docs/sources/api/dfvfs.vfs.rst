@@ -212,6 +212,22 @@ dfvfs.vfs.gzip\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.hfs\_file\_entry module
+---------------------------------
+
+.. automodule:: dfvfs.vfs.hfs_file_entry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.hfs\_file\_system module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.hfs_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.luksde\_file\_entry module
 ------------------------------------
 
