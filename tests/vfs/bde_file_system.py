@@ -31,6 +31,10 @@ class BDEFileSystemTest(shared_test_lib.BaseTestCase):
     resolver.Resolver.key_chain.SetCredential(
         self._bde_path_spec, 'password', self._BDE_PASSWORD)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = bde_file_system.BDEFileSystem(self._resolver_context)

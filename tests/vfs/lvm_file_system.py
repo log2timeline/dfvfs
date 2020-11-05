@@ -29,6 +29,10 @@ class LVMFileSystemTest(shared_test_lib.BaseTestCase):
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
         location='/', parent=self._raw_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   # vslvminfo fuse/lvm.raw
   #
   # Linux Logical Volume Manager (LVM) information:

@@ -28,6 +28,10 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = cpio_file_io.CPIOFile(self._resolver_context)
@@ -69,6 +73,10 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -112,6 +120,10 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = cpio_file_io.CPIOFile(self._resolver_context)
@@ -153,6 +165,10 @@ class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""

@@ -28,6 +28,10 @@ class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
         table_name='blobs', column_name='blob',
         row_condition=('identifier', '==', 'myblob'), parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = sqlite_blob_file_io.SQLiteBlobFile(self._resolver_context)
@@ -68,6 +72,10 @@ class SQLiteBlobFileWithIndexTest(test_lib.SylogTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
         table_name='blobs', column_name='blob', row_index=0, parent=path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""

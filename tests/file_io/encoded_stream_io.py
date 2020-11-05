@@ -32,6 +32,10 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
             encoding_method=definitions.ENCODING_METHOD_BASE16,
             parent=self._os_path_spec))
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)
@@ -101,6 +105,10 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
             encoding_method=definitions.ENCODING_METHOD_BASE32,
             parent=self._os_path_spec))
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)
@@ -169,6 +177,10 @@ class Base64EncodedStreamTest(test_lib.SylogTestCase):
         encoded_stream_path_spec.EncodedStreamPathSpec(
             encoding_method=definitions.ENCODING_METHOD_BASE64,
             parent=self._os_path_spec))
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""

@@ -28,6 +28,10 @@ class DataRangeTest(test_lib.SylogTestCase):
     self._data_range_path_spec = data_range_path_spec.DataRangePathSpec(
         range_offset=167, range_size=1080, parent=self._os_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)

@@ -29,6 +29,10 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClose(self):
     """Test the open and close functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(

@@ -33,6 +33,10 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_HFS, location='/',
         parent=self._raw_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = hfs_file_system.HFSFileSystem(self._resolver_context)

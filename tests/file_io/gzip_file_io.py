@@ -28,6 +28,10 @@ class GzipFileTest(test_lib.SylogTestCase):
     self._gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_GZIP, parent=test_os_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = gzip_file_io.GzipFile(self._resolver_context)

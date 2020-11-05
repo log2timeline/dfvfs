@@ -26,6 +26,10 @@ class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._gzip_path_spec = gzip_path_spec.GzipPathSpec(parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = gzip_file_system.GzipFileSystem(self._resolver_context)

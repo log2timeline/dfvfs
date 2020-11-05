@@ -25,6 +25,10 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testIntialize(self):
     """Test the __init__ function."""
     file_system = os_file_system.OSFileSystem(self._resolver_context)

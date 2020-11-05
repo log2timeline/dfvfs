@@ -8,11 +8,14 @@ import os
 from dfvfs.file_io import ntfs_file_io
 from dfvfs.file_io import tsk_file_io
 from dfvfs.file_io import tsk_partition_file_io
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
+from dfvfs.resolver import resolver
 
 from tests import test_lib as shared_test_lib
 
@@ -27,15 +30,21 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def _TestOpenCloseInode(self, parent_path_spec):
     """Test the open and close functionality using an inode.
 
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_EXT_BACK_END, inode=self._INODE_PASSWORDS_TXT,
+        parent=parent_path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 116)
@@ -47,9 +56,11 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_EXT_BACK_END, location='/passwords.txt',
+        parent=parent_path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 116)
@@ -61,10 +72,11 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
-        parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_EXT_BACK_END, inode=self._INODE_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=parent_path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 22)
@@ -105,10 +117,11 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
-        parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_EXT_BACK_END, inode=self._INODE_PASSWORDS_TXT,
+        location='/passwords.txt', parent=parent_path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     read_buffer = file_object.read()
@@ -136,6 +149,10 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def _TestOpenCloseInode(self, parent_path_spec):
     """Test the open and close functionality using an inode.
@@ -246,6 +263,10 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def _TestOpenCloseMFTEntry(self, path_spec, file_object):
     """Test the open and close functionality using a MFT entry.
@@ -392,6 +413,10 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def _TestOpenClose(self, parent_path_spec):
     """Test the open and close functionality.
@@ -671,6 +696,10 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def _TestOpenCloseMFTEntry(self, parent_path_spec):
     """Test the open and close functionality using a MFT entry.
 
@@ -788,6 +817,10 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def _TestOpenCloseMFTEntry(self, parent_path_spec):
     """Test the open and close functionality using a MFT entry.

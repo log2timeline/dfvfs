@@ -30,6 +30,10 @@ class EncodedStreamFileSystemTest(shared_test_lib.BaseTestCase):
             encoding_method=definitions.ENCODING_METHOD_BASE64,
             parent=path_spec))
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = encoded_stream_file_system.EncodedStreamFileSystem(

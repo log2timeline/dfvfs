@@ -21,6 +21,10 @@ class FakeFileSystemTest(shared_test_lib.BaseTestCase):
     self._resolver_context = context.Context()
     self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = fake_file_system.FakeFileSystem(self._resolver_context)

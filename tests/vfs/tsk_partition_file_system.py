@@ -28,6 +28,10 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
         tsk_partition_path_spec.TSKPartitionPathSpec(
             location='/', parent=self._os_path_spec))
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   # mmls test_data/mbr.raw
   # DOS Partition Table
   # Offset Sector: 0

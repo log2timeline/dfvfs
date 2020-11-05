@@ -31,6 +31,10 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the Open and Close functions with a path specification."""
     test_file = '/test_data/password.txt'

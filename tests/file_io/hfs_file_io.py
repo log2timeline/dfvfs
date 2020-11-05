@@ -13,10 +13,10 @@ from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
-from tests.file_io import test_lib
+from tests import test_lib as shared_test_lib
 
 
-class HFSFileTest(test_lib.ImageFileTestCase):
+class HFSFileTest(shared_test_lib.BaseTestCase):
   """Tests the file-like object implementation using pyfshfs.file_entry."""
 
   _IDENTIFIER_ANOTHER_FILE = 21
@@ -33,6 +33,10 @@ class HFSFileTest(test_lib.ImageFileTestCase):
         definitions.TYPE_INDICATOR_OS, location=test_path)
     self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenCloseIdentifier(self):
     """Test the open and close functionality using an identifier."""
@@ -63,7 +67,7 @@ class HFSFileTest(test_lib.ImageFileTestCase):
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(path_spec)
+      file_object.open(path_spec=path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""

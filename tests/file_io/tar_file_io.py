@@ -28,6 +28,10 @@ class TARFileTest(test_lib.SylogTestCase):
     self._tar_path_spec = tar_path_spec.TARPathSpec(
         location='/syslog', parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = tar_file_io.TARFile(self._resolver_context)
