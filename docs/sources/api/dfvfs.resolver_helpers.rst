@@ -108,6 +108,14 @@ dfvfs.resolver\_helpers.gzip\_resolver\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.resolver\_helpers.hfs\_resolver\_helper module
+----------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.hfs_resolver_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.resolver\_helpers.luksde\_resolver\_helper module
 -------------------------------------------------------
 

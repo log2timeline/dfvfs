@@ -116,6 +116,14 @@ dfvfs.path.gzip\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.path.hfs\_path\_spec module
+---------------------------------
+
+.. automodule:: dfvfs.path.hfs_path_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.path.location\_path\_spec module
 --------------------------------------
 
