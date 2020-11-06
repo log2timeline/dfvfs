@@ -5,13 +5,11 @@ from __future__ import unicode_literals
 
 import os
 
-from dfvfs.file_io import ntfs_file_io
 from dfvfs.file_io import tsk_file_io
 from dfvfs.file_io import tsk_partition_file_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
-from dfvfs.path import ntfs_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
@@ -828,10 +826,11 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = ntfs_path_spec.NTFSPathSpec(
-        mft_attribute=1, mft_entry=self._MFT_ENTRY_PASSWORDS_TXT,
-        parent=parent_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_NTFS_BACK_END, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=parent_path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 126)
@@ -845,9 +844,16 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = ntfs_path_spec.NTFSPathSpec(
-        location='\\passwords.txt', parent=parent_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    if definitions.PREFERRED_NTFS_BACK_END == definitions.TYPE_INDICATOR_TSK:
+      location = '/passwords.txt'
+    else:
+      location = '\\passwords.txt'
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_NTFS_BACK_END, location=location,
+        parent=parent_path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 126)
@@ -857,7 +863,8 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec=path_spec)
+      resolver.Resolver.OpenFileObject(
+          path_spec, resolver_context=self._resolver_context)
 
   def _TestSeek(self, parent_path_spec):
     """Test the seek functionality.
@@ -865,11 +872,17 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = ntfs_path_spec.NTFSPathSpec(
-        location='\\a_directory\\another_file',
+    if definitions.PREFERRED_NTFS_BACK_END == definitions.TYPE_INDICATOR_TSK:
+      location = '/a_directory/another_file'
+    else:
+      location = '\\a_directory\\another_file'
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_NTFS_BACK_END, location=location,
         mft_attribute=2, mft_entry=self._MFT_ENTRY_ANOTHER_FILE,
         parent=parent_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 24)
@@ -910,10 +923,17 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = ntfs_path_spec.NTFSPathSpec(
-        location='\\passwords.txt', mft_attribute=2,
-        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=parent_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    if definitions.PREFERRED_NTFS_BACK_END == definitions.TYPE_INDICATOR_TSK:
+      location = '/passwords.txt'
+    else:
+      location = '\\passwords.txt'
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_NTFS_BACK_END, location=location,
+        mft_attribute=2, mft_entry=self._MFT_ENTRY_PASSWORDS_TXT,
+        parent=parent_path_spec)
+    file_object = resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
     file_object.open(path_spec=path_spec)
     read_buffer = file_object.read()
