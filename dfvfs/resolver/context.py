@@ -63,6 +63,11 @@ class Context(object):
 
   def Empty(self):
     """Empties the caches."""
+    file_object = self._file_object_cache.GetLastObject()
+    while file_object:
+      file_object.close()
+      file_object = self._file_object_cache.GetLastObject()
+
     self._file_object_cache.Empty()
     self._file_system_cache.Empty()
 

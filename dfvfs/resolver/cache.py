@@ -3,6 +3,9 @@
 
 from __future__ import unicode_literals
 
+import collections
+import itertools
+
 from dfvfs.lib import errors
 
 
@@ -62,7 +65,7 @@ class ObjectsCache(object):
 
     super(ObjectsCache, self).__init__()
     self._maximum_number_of_cached_values = maximum_number_of_cached_values
-    self._values = {}
+    self._values = collections.OrderedDict()
 
   def CacheObject(self, identifier, vfs_object):
     """Caches a VFS object.
@@ -128,6 +131,22 @@ class ObjectsCache(object):
         return identifier, cache_value
 
     return None, None
+
+  def GetLastObject(self):
+    """Retrieves the last cached object.
+
+    This method ignores the cache value reference count.
+
+    Returns:
+      object: the last cached VFS object or None if the cache is empty.
+    """
+    if not self._values:
+      return None
+
+    # Get the last (or most recent added) cache value.
+    cache_value = next(itertools.islice(
+        self._values.values(), len(self._values) - 1, None))
+    return cache_value.vfs_object
 
   def GetObject(self, identifier):
     """Retrieves a cached object based on the identifier.
