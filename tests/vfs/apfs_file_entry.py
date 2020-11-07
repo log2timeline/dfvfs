@@ -114,6 +114,17 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.access_time)
 
+  def testAddedTime(self):
+    """Test the added_time property."""
+    test_location = '/a_directory/another_file'
+    path_spec = apfs_path_spec.APFSPathSpec(
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._apfs_container_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.added_time)
+
   def testChangeTime(self):
     """Test the change_time property."""
     test_location = '/a_directory/another_file'

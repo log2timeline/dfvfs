@@ -157,12 +157,26 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNone(test_file_entry.access_time)
 
+  def testAddedTime(self):
+    """Tests the added_time property."""
+    test_file_entry = TestFileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+
+    self.assertIsNone(test_file_entry.added_time)
+
   def testAttributes(self):
     """Tests the attributes property."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertEqual(test_file_entry.attributes, [])
+
+  def testBackupTime(self):
+    """Tests the backup_time property."""
+    test_file_entry = TestFileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+
+    self.assertIsNone(test_file_entry.backup_time)
 
   def testChangeTime(self):
     """Tests the change_time property."""
@@ -177,6 +191,13 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
         self._resolver_context, self._file_system, self._path_spec)
 
     self.assertIsNone(test_file_entry.creation_time)
+
+  def testDeletionTime(self):
+    """Tests the deletion_time property."""
+    test_file_entry = TestFileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+
+    self.assertIsNone(test_file_entry.deletion_time)
 
   def testDataStreams(self):
     """Tests the data_streams property."""
