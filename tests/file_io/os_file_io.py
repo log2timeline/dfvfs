@@ -34,6 +34,10 @@ class OSFileTest(shared_test_lib.BaseTestCase):
 
     self._path_spec2 = os_path_spec.OSPathSpec(location=test_file)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = os_file_io.OSFile(self._resolver_context)

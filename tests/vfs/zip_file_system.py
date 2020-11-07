@@ -27,6 +27,10 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location='/', parent=self._os_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = zip_file_system.ZipFileSystem(self._resolver_context)

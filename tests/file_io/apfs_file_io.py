@@ -13,10 +13,10 @@ from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
-from tests.file_io import test_lib
+from tests import test_lib as shared_test_lib
 
 
-class APFSFileTest(test_lib.ImageFileTestCase):
+class APFSFileTest(shared_test_lib.BaseTestCase):
   """Tests the file-like object implementation using pyfsapfs.file_entry."""
 
   _IDENTIFIER_ANOTHER_FILE = 21
@@ -36,6 +36,10 @@ class APFSFileTest(test_lib.ImageFileTestCase):
     self._apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
         parent=test_raw_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenCloseIdentifier(self):
     """Test the open and close functionality using an identifier."""
@@ -66,7 +70,7 @@ class APFSFileTest(test_lib.ImageFileTestCase):
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(path_spec)
+      file_object.open(path_spec=path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""

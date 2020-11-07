@@ -29,6 +29,10 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\', parent=self._qcow_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)

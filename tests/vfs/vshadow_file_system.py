@@ -29,6 +29,10 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
     self._vshadow_path_spec = vshadow_path_spec.VShadowPathSpec(
         location='/', parent=self._qcow_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   # qcowmount test_data/vsstest.qcow2 fuse/
   # vshadowinfo fuse/qcow1
   #

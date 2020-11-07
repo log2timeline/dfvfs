@@ -30,6 +30,10 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClose(self):
     """Test the open and close functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(

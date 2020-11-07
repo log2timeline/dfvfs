@@ -27,6 +27,10 @@ class CPIOFileSystemTest(shared_test_lib.BaseTestCase):
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=self._os_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = cpio_file_system.CPIOFileSystem(self._resolver_context)

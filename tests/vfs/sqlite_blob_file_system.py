@@ -31,6 +31,10 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
         table_name='myblobs', column_name='blobs',
         row_index=2, parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(

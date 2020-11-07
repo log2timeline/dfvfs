@@ -32,6 +32,10 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
             compression_method=definitions.COMPRESSION_METHOD_BZIP2,
             parent=self._os_path_spec))
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)
@@ -100,6 +104,10 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
         compressed_stream_path_spec.CompressedStreamPathSpec(
             compression_method=definitions.COMPRESSION_METHOD_LZMA,
             parent=self._os_path_spec))
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
@@ -170,6 +178,10 @@ class XZCompressedStreamTest(test_lib.SylogTestCase):
             compression_method=definitions.COMPRESSION_METHOD_XZ,
             parent=self._os_path_spec))
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)
@@ -238,6 +250,10 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
         compressed_stream_path_spec.CompressedStreamPathSpec(
             compression_method=definitions.COMPRESSION_METHOD_ZLIB,
             parent=self._os_path_spec))
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""

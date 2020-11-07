@@ -34,6 +34,10 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_APFS, location='/',
         parent=self._apfs_container_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = apfs_file_system.APFSFileSystem(self._resolver_context)

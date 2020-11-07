@@ -31,6 +31,10 @@ class EXTFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_EXT, location='/',
         parent=self._raw_path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = ext_file_system.EXTFileSystem(self._resolver_context)

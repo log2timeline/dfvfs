@@ -47,6 +47,10 @@ class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
         self._encrypted_stream_path_spec, 'cipher_mode', self._AES_MODE)
     self.padding_size = 1
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)
@@ -125,6 +129,10 @@ class AESEncryptedStreamTest(test_lib.PaddedSyslogTestCase):
             initialization_vector=self._AES_INITIALIZATION_VECTOR,
             key=self._AES_KEY, parent=self._os_path_spec))
     self.padding_size = 1
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
@@ -209,6 +217,10 @@ class BlowfishEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
         self._encrypted_stream_path_spec, 'cipher_mode', self._BLOWFISH_MODE)
     self.padding_size = 1
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)
@@ -292,6 +304,10 @@ class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
         self._encrypted_stream_path_spec, 'cipher_mode', self._DES3_MODE)
     self.padding_size = 1
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     os_file_object = os_file_io.OSFile(self._resolver_context)
@@ -366,6 +382,10 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
             parent=self._os_path_spec))
     resolver.Resolver.key_chain.SetCredential(
         self._encrypted_stream_path_spec, 'key', self._RC4_KEY)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""

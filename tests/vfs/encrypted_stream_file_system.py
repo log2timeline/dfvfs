@@ -35,6 +35,10 @@ class EncryptedStreamFileSystemTest(shared_test_lib.BaseTestCase):
     resolver.Resolver.key_chain.SetCredential(
         self._encrypted_stream_path_spec, 'key', self._RC4_KEY)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = encrypted_stream_file_system.EncryptedStreamFileSystem(

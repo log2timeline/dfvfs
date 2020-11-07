@@ -110,6 +110,8 @@ class ObjectsCacheTest(unittest.TestCase):
     cache_object.Empty()
     self.assertEqual(len(cache_object._values), 0)
 
+  # TODO: add tests for the GetLastObject method
+
   def testGetObject(self):
     """Tests the GetObject method."""
     cache_object = cache.ObjectsCache(1)

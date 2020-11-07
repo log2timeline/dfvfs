@@ -28,6 +28,10 @@ class ZipFileTest(test_lib.SylogTestCase):
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location='/syslog', parent=path_spec)
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = zip_file_io.ZipFile(self._resolver_context)

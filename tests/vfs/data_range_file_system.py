@@ -28,6 +28,10 @@ class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
         data_range_path_spec.DataRangePathSpec(
             range_offset=0x1c0, range_size=0x41, parent=path_spec))
 
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = data_range_file_system.DataRangeFileSystem(
