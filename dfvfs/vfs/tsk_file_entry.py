@@ -698,6 +698,8 @@ class TSKFileEntry(file_entry.FileEntry):
 
     return self._GetTimeValue('atime')
 
+  # TODO: add added time support, at least provided for APFS.
+
   @property
   def backup_time(self):
     """dfdatetime.DateTimeValues: backup time or None if not available."""

@@ -263,9 +263,19 @@ class FileEntry(object):
     return None
 
   @property
+  def added_time(self):
+    """dfdatetime.DateTimeValues: added time or None if not available."""
+    return None
+
+  @property
   def attributes(self):
     """generator[Attribute]: attributes."""
     return self._GetAttributes()
+
+  @property
+  def backup_time(self):
+    """dfdatetime.DateTimeValues: backup time or None if not available."""
+    return None
 
   @property
   def change_time(self):
@@ -275,6 +285,11 @@ class FileEntry(object):
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
+    return None
+
+  @property
+  def deletion_time(self):
+    """dfdatetime.DateTimeValues: deletion time or None if not available."""
     return None
 
   @property
