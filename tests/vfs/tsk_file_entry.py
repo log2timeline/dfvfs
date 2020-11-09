@@ -241,7 +241,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.deletion_time)
+    self.assertIsNone(file_entry.deletion_time)
 
   def testModificationTime(self):
     """Test the modification_time property."""
@@ -546,7 +546,7 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.backup_time)
+    self.assertIsNone(file_entry.backup_time)
 
   def testChangeTime(self):
     """Test the change_time property."""
