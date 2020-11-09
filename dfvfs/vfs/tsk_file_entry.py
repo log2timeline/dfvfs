@@ -644,6 +644,8 @@ class TSKFileEntry(file_entry.FileEntry):
       dfdatetime.DateTimeValues: date and time value or None if not available.
     """
     timestamp = getattr(self._tsk_file.info.meta, name, None)
+    if timestamp is None:
+      return None
 
     if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
       name_fragment = '{0:s}_nano'.format(name)
