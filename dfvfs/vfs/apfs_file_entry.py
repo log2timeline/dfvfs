@@ -158,6 +158,9 @@ class APFSFileEntry(file_entry.FileEntry):
   def added_time(self):
     """dfdatetime.DateTimeValues: added time or None if not available."""
     timestamp = self._fsapfs_file_entry.get_added_time_as_integer()
+    if timestamp is None:
+      return None
+
     return dfdatetime_apfs_time.APFSTime(timestamp=timestamp)
 
   @property
