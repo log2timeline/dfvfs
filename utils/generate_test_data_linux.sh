@@ -72,6 +72,7 @@ assert_availability_binary gdisk;
 assert_availability_binary losetup;
 assert_availability_binary lvcreate;
 assert_availability_binary mke2fs;
+assert_availability_binary mkfs.xfs;
 assert_availability_binary mkntfs;
 assert_availability_binary pvcreate;
 assert_availability_binary qemu-img;
@@ -84,7 +85,7 @@ mkdir -p test_data;
 
 MOUNT_POINT="/mnt/dfvfs";
 
-IMAGE_SIZE=$(( 4096 * 1024 ));
+IMAGE_SIZE=$(( 4 * 1024 * 1024 ));
 SECTOR_SIZE=512;
 
 sudo mkdir -p ${MOUNT_POINT};
@@ -117,7 +118,24 @@ create_test_file_entries ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
+# Create test image with an XFS file system
+IMAGE_SIZE=$(( 16 * 1024 * 1024 ));
+IMAGE_FILE="test_data/xfs.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+mkfs.xfs -q -L "xfs_test" ${IMAGE_FILE};
+
+sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
 # Create test split RAW image with an ext2 file system
+IMAGE_SIZE=$(( 4 * 1024 * 1024 ));
 SPLIT_SIZE=$(( ${IMAGE_SIZE} / 2 ));
 
 dd if="test_data/ext2.raw" of="test_data/ext2.splitraw.000" bs=${SECTOR_SIZE} count=$(( ${SPLIT_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
