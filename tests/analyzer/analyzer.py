@@ -216,6 +216,18 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
+  def testGetFileSystemTypeIndicatorsXFS(self):
+    """Tests the GetFileSystemTypeIndicators function on an XFS file system."""
+    test_file = self._GetTestFilePath(['xfs.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_XFS]
+    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
   def testGetStorageMediaImageTypeIndicatorsEWF(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .E01 file."""
     test_file = self._GetTestFilePath(['ext2.E01'])

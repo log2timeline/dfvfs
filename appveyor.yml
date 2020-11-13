@@ -20,7 +20,7 @@ install:
 - cmd: IF [%PYTHON_VERSION%]==[3.8] (
     mkdir dependencies &&
     set PYTHONPATH=..\l2tdevtools &&
-    "%PYTHON%\\python.exe" ..\l2tdevtools\tools\update.py --download-directory dependencies --machine-type %MACHINE_TYPE% --msi-targetdir "%PYTHON%" --track "%L2TBINARIES_TRACK%" PyYAML cffi cryptography dfdatetime dtfabric idna libbde libewf libfsapfs libfsext libfshfs libfsntfs libfvde libfwnt libluksde libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvshadow libvslvm mock pbr pytsk3 six )
+    "%PYTHON%\\python.exe" ..\l2tdevtools\tools\update.py --download-directory dependencies --machine-type %MACHINE_TYPE% --msi-targetdir "%PYTHON%" --track "%L2TBINARIES_TRACK%" PyYAML cffi cryptography dfdatetime dtfabric idna libbde libewf libfsapfs libfsext libfshfs libfsntfs libfsxfs libfvde libfwnt libluksde libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvshadow libvslvm mock pbr pytsk3 six )
 
 build: off
 

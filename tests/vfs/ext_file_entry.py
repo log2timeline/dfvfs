@@ -23,6 +23,7 @@ class EXTFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the EXT file entry."""
 
   _INODE_A_DIRECTORY = 12
+  _INODE_A_FILE = 13
   _INODE_A_LINK = 16
   _INODE_ANOTHER_FILE = 15
 
@@ -98,7 +99,8 @@ class EXTFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    path_spec = ext_path_spec.EXTPathSpec(inode=19, parent=self._raw_path_spec)
+    path_spec = ext_path_spec.EXTPathSpec(
+        inode=self._INODE_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
