@@ -252,6 +252,14 @@ dfvfs.path.vshadow\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.path.xfs\_path\_spec module
+---------------------------------
+
+.. automodule:: dfvfs.path.xfs_path_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.path.zip\_path\_spec module
 ---------------------------------
 

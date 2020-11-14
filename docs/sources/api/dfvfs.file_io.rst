@@ -228,6 +228,14 @@ dfvfs.file\_io.vshadow\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.xfs\_file\_io module
+-----------------------------------
+
+.. automodule:: dfvfs.file_io.xfs_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.zip\_file\_io module
 -----------------------------------
 
