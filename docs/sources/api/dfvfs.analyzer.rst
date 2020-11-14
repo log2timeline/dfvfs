@@ -188,6 +188,14 @@ dfvfs.analyzer.vshadow\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.analyzer.xfs\_analyzer\_helper module
+-------------------------------------------
+
+.. automodule:: dfvfs.analyzer.xfs_analyzer_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.analyzer.xz\_analyzer\_helper module
 ------------------------------------------
 

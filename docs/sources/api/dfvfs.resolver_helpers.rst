@@ -236,6 +236,14 @@ dfvfs.resolver\_helpers.vshadow\_resolver\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.resolver\_helpers.xfs\_resolver\_helper module
+----------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.xfs_resolver_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.resolver\_helpers.zip\_resolver\_helper module
 ----------------------------------------------------
 

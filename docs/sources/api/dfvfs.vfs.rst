@@ -396,6 +396,22 @@ dfvfs.vfs.vshadow\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.xfs\_file\_entry module
+---------------------------------
+
+.. automodule:: dfvfs.vfs.xfs_file_entry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.xfs\_file\_system module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.xfs_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.zip\_file\_entry module
 ---------------------------------
 
