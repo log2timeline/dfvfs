@@ -30,9 +30,11 @@ The information below is based of version 20200920
 * Apple File System (APFS) version 2 (Requires: [libfsapfs/pyfsapfs](https://github.com/libyal/libfsapfs))
 * ext version 2, 3, 4 (Requires: [libfsext/pyfsext](https://github.com/libyal/libfsext) or [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * FAT (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
-* HFS, HFS+, HFSX (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
+* traditional HFS (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
+* HFS+, HFSX (Requires: [libfshfs/pyfshfs](https://github.com/libyal/libfshfs) or Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * NTFS version 3 (Requires: [libfsntfs/pyfsntfs](https://github.com/libyal/libfsntfs) or [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * UFS version 1, 2 (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
+* XFS version 4, 5 (Requires: [libfsxfs/pyfsxfs](https://github.com/libyal/libfsxfs))
 
 **TODO add more detail here regarding FAT and other supported FS**
 

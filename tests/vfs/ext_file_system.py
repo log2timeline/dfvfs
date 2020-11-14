@@ -17,6 +17,8 @@ from tests import test_lib as shared_test_lib
 class EXTFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the EXT file entry."""
 
+  _INODE_PASSWORD_TXT = 20
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
@@ -53,7 +55,7 @@ class EXTFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_EXT, location='/passwords.txt',
-        inode=20, parent=self._raw_path_spec)
+        inode=self._INODE_PASSWORD_TXT, parent=self._raw_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -71,7 +73,7 @@ class EXTFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open(self._ext_path_spec)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_EXT, inode=20,
+        definitions.TYPE_INDICATOR_EXT, inode=self._INODE_PASSWORD_TXT,
         parent=self._raw_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
@@ -82,7 +84,7 @@ class EXTFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_EXT, location='/passwords.txt',
-        inode=20, parent=self._raw_path_spec)
+        inode=self._INODE_PASSWORD_TXT, parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)

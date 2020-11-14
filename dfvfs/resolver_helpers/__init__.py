@@ -97,4 +97,9 @@ try:
 except ImportError:
   pass
 
+try:
+  from dfvfs.resolver_helpers import xfs_resolver_helper
+except ImportError:
+  pass
+
 from dfvfs.resolver_helpers import zip_resolver_helper

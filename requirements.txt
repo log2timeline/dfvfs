@@ -11,6 +11,7 @@ libfsapfs-python >= 20201107
 libfsext-python >= 20200819
 libfshfs-python >= 20201103
 libfsntfs-python >= 20200921
+libfsxfs-python >= 20201114
 libfvde-python >= 20160719
 libfwnt-python >= 20160418
 libluksde-python >= 20200101

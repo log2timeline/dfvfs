@@ -30,5 +30,6 @@ except ImportError:
 from dfvfs.analyzer import vhdi_analyzer_helper
 from dfvfs.analyzer import vmdk_analyzer_helper
 from dfvfs.analyzer import vshadow_analyzer_helper
+from dfvfs.analyzer import xfs_analyzer_helper
 from dfvfs.analyzer import xz_analyzer_helper
 from dfvfs.analyzer import zip_analyzer_helper

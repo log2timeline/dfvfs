@@ -66,6 +66,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the APFS file entry."""
 
   _IDENTIFIER_A_DIRECTORY = 18
+  _IDENTIFIER_A_FILE = 19
   _IDENTIFIER_A_LINK = 22
   _IDENTIFIER_ANOTHER_FILE = 21
 
@@ -195,7 +196,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=19, parent=self._apfs_container_path_spec)
+        identifier=self._IDENTIFIER_A_FILE,
+        parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
