@@ -53,6 +53,39 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
     file_object.close()
 
+  def testReadlineWithError(self):
+    """Test the readline() function with an encoding error."""
+    test_file = self._GetTestFilePath(['another_file_with_error'])
+    self._SkipIfPathNotExists(test_file)
+
+    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object.open(test_path_spec)
+    text_file_object = text_file.TextFile(file_object)
+
+    with self.assertRaises(UnicodeDecodeError):
+      text_file_object.readline()
+
+    text_file_object = text_file.TextFile(
+        file_object, encoding_errors='replace')
+
+    line = text_file_object.readline()
+    self.assertEqual(line, 'This is ano\ufffdher file.\n')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 22)
+
+    text_file_object = text_file.TextFile(file_object)
+
+    line = text_file_object.readline(size=11)
+    self.assertEqual(line, 'This is ano')
+
+    offset = text_file_object.get_offset()
+    self.assertEqual(offset, 11)
+
+    file_object.close()
+
   def testReadlineUTF16(self):
     """Test the readline() function on UTF-16 encoded text."""
     test_file = self._GetTestFilePath(['another_file.utf16'])

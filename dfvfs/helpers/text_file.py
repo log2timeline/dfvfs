@@ -16,18 +16,22 @@ class TextFile(object):
   # The maximum allowed size of the read buffer.
   _MAXIMUM_READ_BUFFER_SIZE = 16 * 1024 * 1024
 
-  def __init__(self, file_object, encoding='utf-8', end_of_line='\n'):
+  def __init__(
+      self, file_object, encoding='utf-8', encoding_errors='strict',
+      end_of_line='\n'):
     """Initializes the text file.
 
     Args:
       file_object (FileIO): a file-like object to read from.
       encoding (Optional[str]): text encoding.
+      encoding_errors (Optional[str]): text encoding errors handler.
       end_of_line (Optional[str]): end of line indicator.
     """
     super(TextFile, self).__init__()
     self._file_object = file_object
     self._file_object_size = file_object.get_size()
     self._encoding = encoding
+    self._encoding_errors = encoding_errors
     self._end_of_line = end_of_line.encode(self._encoding)
     self._end_of_line_length = len(self._end_of_line)
     self._lines = []
@@ -77,7 +81,8 @@ class TextFile(object):
       str: line of text.
 
     Raises:
-      UnicodeDecodeError: if a line cannot be decoded.
+      UnicodeDecodeError: if a line cannot be decoded and encoding errors is
+          set to strict.
       ValueError: if the size is smaller than zero or exceeds the maximum
           (as defined by _MAXIMUM_READ_BUFFER_SIZE).
     """
@@ -135,7 +140,7 @@ class TextFile(object):
     last_offset = self._current_offset
     self._current_offset += len(line)
 
-    decoded_line = line.decode(self._encoding)
+    decoded_line = line.decode(self._encoding, self._encoding_errors)
 
     # Remove a byte-order mark at the start of the file.
     if last_offset == 0 and decoded_line[0] == '\ufeff':
