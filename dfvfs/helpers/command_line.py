@@ -485,7 +485,9 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     column_names = ['Identifier', 'Name']
     table_view = CLITabularTableView(column_names=column_names)
 
-    for volume_identifier in volume_identifiers:
+    # Sort the volume identifiers in alphanumeric order.
+    for volume_identifier in sorted(volume_identifiers, key=lambda string: int(
+        ''.join([character for character in string if character.isdigit()]))):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
@@ -515,7 +517,9 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     column_names = ['Identifier', 'Offset (in bytes)', 'Size (in bytes)']
     table_view = CLITabularTableView(column_names=column_names)
 
-    for volume_identifier in sorted(volume_identifiers):
+    # Sort the volume identifiers in alphanumeric order.
+    for volume_identifier in sorted(volume_identifiers, key=lambda string: int(
+        ''.join([character for character in string if character.isdigit()]))):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
@@ -548,7 +552,9 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     column_names = ['Identifier', 'Creation Time']
     table_view = CLITabularTableView(column_names=column_names)
 
-    for volume_identifier in volume_identifiers:
+    # Sort the volume identifiers in alphanumeric order.
+    for volume_identifier in sorted(volume_identifiers, key=lambda string: int(
+        ''.join([character for character in string if character.isdigit()]))):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
