@@ -194,12 +194,6 @@ class XFSFileEntry(file_entry.FileEntry):
     return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
 
   @property
-  def deletion_time(self):
-    """dfdatetime.DateTimeValues: deletion time or None if not available."""
-    timestamp = self._fsxfs_file_entry.get_deletion_time_as_integer()
-    return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
-
-  @property
   def name(self):
     """str: name of the file entry, which does not include the full path."""
     return self._name
