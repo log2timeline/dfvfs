@@ -20,7 +20,7 @@ dfvfs/lib/definitions.py
 Add a new type indicator:
 
 ```
-TYPE_INDICATOR_MY = u'MY'
+TYPE_INDICATOR_MY = 'MY'
 ```
 
 ## Adding a path specification
