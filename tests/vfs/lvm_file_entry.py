@@ -53,7 +53,7 @@ class LVMDirectoryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(directory)
 
     entries = list(directory.entries)
-    self.assertEqual(len(entries), 1)
+    self.assertEqual(len(entries), 2)
 
 
 class LVMFileEntryTest(shared_test_lib.BaseTestCase):
@@ -214,9 +214,9 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 1)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
 
-    expected_sub_file_entry_names = ['lvm1']
+    expected_sub_file_entry_names = ['lvm1', 'lvm2']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:

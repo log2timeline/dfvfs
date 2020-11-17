@@ -214,7 +214,9 @@ sudo umount ${MOUNT_POINT};
 
 sudo losetup -d /dev/loop99;
 
-# Create test image with a GPT partition table with 2 partitions one with an ext2 file system and the other with ext4
+# Create test image with a GPT partition table with 2 partitions with an ext2
+# file system in the first partition and an ext4 file system in the second
+# partition.
 IMAGE_FILE="test_data/gpt.raw";
 
 dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
@@ -262,8 +264,9 @@ sudo umount ${MOUNT_POINT};
 
 sudo losetup -d /dev/loop99;
 
-# Create test image with a LVM and an EXT2 file system
-IMAGE_SIZE=$(( 8192 * 1024 ));
+# Create test image with a LVM with 2 volumes with an EXT2 file system in the
+# first volume.
+IMAGE_SIZE=$(( 10 * 1024 * 1024 ));
 
 IMAGE_FILE="test_data/lvm.raw";
 
@@ -275,11 +278,11 @@ sudo pvcreate -q /dev/loop99 2>&1 | sed '/is using an old PV header, modify the 
 
 sudo vgcreate -q test_volume_group /dev/loop99 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
 
-sudo lvcreate -q --name test_logical_volume --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo lvcreate -q --name test_logical_volume1 --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
 
-sudo mke2fs -q -t ext2 -L "ext2_test" /dev/test_volume_group/test_logical_volume;
+sudo mke2fs -q -t ext2 -L "ext2_test" /dev/test_volume_group/test_logical_volume1;
 
-sudo mount -o loop,rw /dev/test_volume_group/test_logical_volume ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/test_volume_group/test_logical_volume1 ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
@@ -287,13 +290,11 @@ create_test_file_entries ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
+sudo lvcreate -q --name test_logical_volume2 --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+
 sudo vgchange -q --activate n test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
 
 sudo losetup -d /dev/loop99;
-
-qemu-img convert -f raw -O qcow2 test_data/lvm.raw test_data/lvm.qcow2;
-
-rm -f test_data/lvm.raw;
 
 # Create test image with a LUKS 1 and an EXT2 file system
 IMAGE_FILE="test_data/luks1.raw";

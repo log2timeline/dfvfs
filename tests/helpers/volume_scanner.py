@@ -40,6 +40,21 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     """
     return volume_identifiers
 
+  def GetLVMVolumeIdentifiers(self, volume_system, volume_identifiers):
+    """Retrieves LVM volume identifiers.
+
+    This method can be used to prompt the user to provide LVM volume
+    identifiers.
+
+    Args:
+      volume_system (LVMVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers including prefix.
+
+    Returns:
+      list[str]: selected volume identifiers including prefix or None.
+    """
+    return volume_identifiers
+
   def GetPartitionIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves partition identifiers.
 
