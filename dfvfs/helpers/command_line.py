@@ -298,6 +298,14 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       'volume is 1. All volumes can be defined as "all". If no volumes are '
       'specified none will be processed. You can abort with Ctrl^C.')
 
+  _USER_PROMPT_LVM = (
+      'Please specify the identifier(s) of the LVM volume that should be '
+      'processed: Note that a range of volumes can be defined as: 3..5. '
+      'Multiple volumes can be defined as: 1,3,5 (a list of comma separated '
+      'values). Ranges and lists can also be combined as: 1,3..5. The first '
+      'volume is 1. All volumes can be defined as "all". If no volumes are '
+      'specified none will be processed. You can abort with Ctrl^C.')
+
   _USER_PROMPT_TSK = (
       'Please specify the identifier of the partition that should be '
       'processed. All partitions can be defined as: "all". Note that you can '
@@ -500,6 +508,37 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     self._output_writer.Write('\n')
     table_view.Write(self._output_writer)
 
+  def _PrintLVMVolumeIdentifiersOverview(
+      self, volume_system, volume_identifiers):
+    """Prints an overview of LVM volume identifiers.
+
+    Args:
+      volume_system (LVMVolumeSystem): volume system.
+      volume_identifiers (list[str]): allowed volume identifiers.
+
+    Raises:
+      ScannerError: if a volume cannot be resolved from the volume identifier.
+    """
+    header = 'The following Logical Volume Manager (LVM) volumes were found:\n'
+    self._output_writer.Write(header)
+
+    column_names = ['Identifier']
+    table_view = CLITabularTableView(column_names=column_names)
+
+    # Sort the volume identifiers in alphanumeric order.
+    for volume_identifier in sorted(volume_identifiers, key=lambda string: int(
+        ''.join([character for character in string if character.isdigit()]))):
+      volume = volume_system.GetVolumeByIdentifier(volume_identifier)
+      if not volume:
+        raise errors.ScannerError(
+            'Volume missing for identifier: {0:s}.'.format(
+                volume_identifier))
+
+      table_view.AddRow([volume.identifier])
+
+    self._output_writer.Write('\n')
+    table_view.Write(self._output_writer)
+
   def _PrintPartitionIdentifiersOverview(
       self, volume_system, volume_identifiers):
     """Prints an overview of TSK partition identifiers.
@@ -578,7 +617,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     """Reads the selected volumes provided by the user.
 
     Args:
-      volume_system (APFSVolumeSystem): volume system.
+      volume_system (VolumeSystem): volume system.
       prefix (Optional[str]): volume identifier prefix.
 
     Returns:
@@ -634,6 +673,52 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       try:
         selected_volumes = self._ReadSelectedVolumes(
             volume_system, prefix='apfs')
+        if (not selected_volumes or
+            not set(selected_volumes).difference(volume_identifiers)):
+          break
+      except ValueError:
+        pass
+
+      self._output_writer.Write('\n')
+
+      lines = self._textwrapper.wrap(
+          'Unsupported volume identifier(s), please try again or abort with '
+          'Ctrl^C.')
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n\n')
+
+    return selected_volumes
+
+  def GetLVMVolumeIdentifiers(self, volume_system, volume_identifiers):
+    """Retrieves LVM volume identifiers.
+
+    This method can be used to prompt the user to provide LVM volume
+    identifiers.
+
+    Args:
+      volume_system (LVMVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers including prefix.
+
+    Returns:
+      list[str]: selected volume identifiers including prefix or None.
+    """
+    print_header = True
+    while True:
+      if print_header:
+        self._PrintLVMVolumeIdentifiersOverview(
+            volume_system, volume_identifiers)
+
+        print_header = False
+
+      self._output_writer.Write('\n')
+
+      lines = self._textwrapper.wrap(self._USER_PROMPT_LVM)
+      self._output_writer.Write('\n'.join(lines))
+      self._output_writer.Write('\n\nVolume identifier(s): ')
+
+      try:
+        selected_volumes = self._ReadSelectedVolumes(
+            volume_system, prefix='lvm')
         if (not selected_volumes or
             not set(selected_volumes).difference(volume_identifiers)):
           break
@@ -791,6 +876,8 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       header = 'Found a BitLocker encrypted volume.'
     elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_FVDE:
       header = 'Found a CoreStorage (FVDE) encrypted volume.'
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_LUKSDE:
+      header = 'Found a LUKS encrypted volume.'
     else:
       header = 'Found an encrypted volume.'
 

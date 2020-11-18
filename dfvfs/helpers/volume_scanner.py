@@ -14,6 +14,7 @@ from dfvfs.helpers import windows_path_resolver
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import apfs_volume_system
+from dfvfs.volume import lvm_volume_system
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
 
@@ -54,8 +55,8 @@ class VolumeScannerMediator(object):
 
   # pylint: disable=redundant-returns-doc
 
-  # TODO: merge GetAPFSVolumeIdentifiers, GetVSSStoreIdentifiers,
-  # GetVSSStoreIdentifiers into GetVolumeIdentifiers?
+  # TODO: merge GetAPFSVolumeIdentifiers, GetLVMVolumeIdentifiers,
+  # GetVSSStoreIdentifiers, GetVSSStoreIdentifiers into GetVolumeIdentifiers?
 
   @abc.abstractmethod
   def GetAPFSVolumeIdentifiers(self, volume_system, volume_identifiers):
@@ -66,6 +67,21 @@ class VolumeScannerMediator(object):
 
     Args:
       volume_system (APFSVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers including prefix.
+
+    Returns:
+      list[str]: selected volume identifiers including prefix or None.
+    """
+
+  @abc.abstractmethod
+  def GetLVMVolumeIdentifiers(self, volume_system, volume_identifiers):
+    """Retrieves LVM volume identifiers.
+
+    This method can be used to prompt the user to provide LVM volume
+    identifiers.
+
+    Args:
+      volume_system (LVMVolumeSystem): volume system.
       volume_identifiers (list[str]): volume identifiers including prefix.
 
     Returns:
@@ -190,6 +206,63 @@ class VolumeScanner(object):
 
     return self._NormalizedVolumeIdentifiers(
         volume_system, volume_identifiers, prefix='apfs')
+
+  def _GetLVMVolumeIdentifiers(self, scan_node, options):
+    """Determines the LVM volume identifiers.
+
+    Args:
+      scan_node (SourceScanNode): scan node.
+      options (VolumeScannerOptions): volume scanner options.
+
+    Returns:
+      list[str]: LVM volume identifiers.
+
+    Raises:
+      ScannerError: if the format of or within the source is not supported
+          or the the scan node is invalid.
+      UserAbort: if the user requested to abort.
+    """
+    if not scan_node or not scan_node.path_spec:
+      raise errors.ScannerError('Invalid scan node.')
+
+    volume_system = lvm_volume_system.LVMVolumeSystem()
+    volume_system.Open(scan_node.path_spec)
+
+    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
+        volume_system)
+    if not volume_identifiers:
+      return []
+
+    if options.volumes:
+      if options.volumes == ['all']:
+        volumes = range(1, volume_system.number_of_volumes + 1)
+      else:
+        volumes = options.volumes
+
+      try:
+        selected_volumes = self._NormalizedVolumeIdentifiers(
+            volume_system, volumes, prefix='lvm')
+
+        if not set(selected_volumes).difference(volume_identifiers):
+          return selected_volumes
+      except errors.ScannerError as exception:
+        if self._mediator:
+          self._mediator.PrintWarning('{0!s}'.format(exception))
+
+    if len(volume_identifiers) > 1:
+      if not self._mediator:
+        raise errors.ScannerError(
+            'Unable to proceed. LVM volumes found but no mediator to '
+            'determine how they should be used.')
+
+      try:
+        volume_identifiers = self._mediator.GetLVMVolumeIdentifiers(
+            volume_system, volume_identifiers)
+      except KeyboardInterrupt:
+        raise errors.UserAbort('File system scan aborted.')
+
+    return self._NormalizedVolumeIdentifiers(
+        volume_system, volume_identifiers, prefix='lvm')
 
   def _GetPartitionIdentifiers(self, scan_node, options):
     """Determines the partition identifiers.
@@ -466,6 +539,9 @@ class VolumeScanner(object):
 
     if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
       volume_identifiers = self._GetAPFSVolumeIdentifiers(scan_node, options)
+
+    elif scan_node.type_indicator == definitions.TYPE_INDICATOR_LVM:
+      volume_identifiers = self._GetLVMVolumeIdentifiers(scan_node, options)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
       volume_identifiers = self._GetVSSStoreIdentifiers(scan_node, options)

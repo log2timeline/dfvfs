@@ -17,6 +17,7 @@ from dfvfs.lib import definitions
 from dfvfs.helpers import command_line
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.volume import apfs_volume_system
+from dfvfs.volume import lvm_volume_system
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
 
@@ -286,6 +287,47 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(output_data.split(b'\n'), expected_output_data)
 
+  def testPrintLVMVolumeIdentifiersOverview(self):
+    """Tests the _PrintLVMVolumeIdentifiersOverview function."""
+    test_path = self._GetTestFilePath(['lvm.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_lvm_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_LVM, location='/', parent=test_raw_path_spec)
+
+    volume_system = lvm_volume_system.LVMVolumeSystem()
+    volume_system.Open(test_lvm_container_path_spec)
+
+    file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        output_writer=test_output_writer)
+
+    test_mediator._PrintLVMVolumeIdentifiersOverview(
+        volume_system, ['lvm1'])
+
+    file_object.seek(0, os.SEEK_SET)
+    output_data = file_object.read()
+
+    expected_output_data = [
+        b'The following Logical Volume Manager (LVM) volumes were found:',
+        b'',
+        b'Identifier',
+        b'lvm1',
+        b'']
+
+    if not win32console:
+      # Using join here since Python 3 does not support format of bytes.
+      expected_output_data[2] = b''.join([
+          b'\x1b[1m', expected_output_data[2], b'\x1b[0m'])
+
+    self.assertEqual(output_data.split(b'\n'), expected_output_data)
+
   def testPrintTSKPartitionIdentifiersOverview(self):
     """Tests the _PrintTSKPartitionIdentifiersOverview function."""
     test_path = self._GetTestFilePath(['mbr.raw'])
@@ -460,6 +502,96 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     volume_identifiers = test_mediator.GetAPFSVolumeIdentifiers(
         volume_system, ['apfs1'])
+
+    self.assertEqual(volume_identifiers, [])
+
+  def testGetLVMVolumeIdentifiers(self):
+    """Tests the GetLVMVolumeIdentifiers function."""
+    test_path = self._GetTestFilePath(['lvm.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_lvm_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_LVM, location='/', parent=test_raw_path_spec)
+
+    volume_system = lvm_volume_system.LVMVolumeSystem()
+    volume_system.Open(test_lvm_container_path_spec)
+
+    # Test selection of single volume.
+    input_file_object = io.BytesIO(b'1\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    output_file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(output_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader, output_writer=test_output_writer)
+
+    volume_identifiers = test_mediator.GetLVMVolumeIdentifiers(
+        volume_system, ['lvm1'])
+
+    self.assertEqual(volume_identifiers, ['lvm1'])
+
+    # Test selection of single volume.
+    input_file_object = io.BytesIO(b'lvm1\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    output_file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(output_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader, output_writer=test_output_writer)
+
+    volume_identifiers = test_mediator.GetLVMVolumeIdentifiers(
+        volume_system, ['lvm1'])
+
+    self.assertEqual(volume_identifiers, ['lvm1'])
+
+    # Test selection of single volume with invalid input on first attempt.
+    input_file_object = io.BytesIO(b'bogus\nlvm1\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    output_file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(output_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader, output_writer=test_output_writer)
+
+    volume_identifiers = test_mediator.GetLVMVolumeIdentifiers(
+        volume_system, ['lvm1'])
+
+    self.assertEqual(volume_identifiers, ['lvm1'])
+
+    # Test selection of all volumes.
+    input_file_object = io.BytesIO(b'all\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    output_file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(output_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader, output_writer=test_output_writer)
+
+    volume_identifiers = test_mediator.GetLVMVolumeIdentifiers(
+        volume_system, ['lvm1', 'lvm2'])
+
+    self.assertEqual(volume_identifiers, ['lvm1', 'lvm2'])
+
+    # Test selection of no volumes.
+    input_file_object = io.BytesIO(b'\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    output_file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(output_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader, output_writer=test_output_writer)
+
+    volume_identifiers = test_mediator.GetLVMVolumeIdentifiers(
+        volume_system, ['lvm1'])
 
     self.assertEqual(volume_identifiers, [])
 

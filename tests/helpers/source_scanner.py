@@ -397,6 +397,28 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS)
 
+  def testScanOnLVM(self):
+    """Test the Scan function on LVM."""
+    test_path = self._GetTestFilePath(['lvm.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_LVM)
+
+    self.assertEqual(len(scan_node.sub_nodes), 2)
+
+    scan_node = scan_node.sub_nodes[0].GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+
   def testScanOnMBRPartitionedImage(self):
     """Test the Scan function on a MBR partitioned image."""
     test_path = self._GetTestFilePath(['mbr.raw'])
