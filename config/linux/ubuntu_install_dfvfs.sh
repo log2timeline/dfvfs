@@ -42,8 +42,7 @@ PYTHON_DEPENDENCIES="libbde-python3
                      python3-yaml";
 
 # Additional dependencies for running tests, alphabetized, one per line.
-TEST_DEPENDENCIES="python3-coverage
-                   python3-distutils
+TEST_DEPENDENCIES="python3-distutils
                    python3-mock
                    python3-pbr
                    python3-setuptools
