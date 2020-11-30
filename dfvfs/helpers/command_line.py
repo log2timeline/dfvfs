@@ -656,14 +656,9 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Returns:
       list[str]: selected volume identifiers including prefix or None.
     """
-    print_header = True
+    self._PrintAPFSVolumeIdentifiersOverview(volume_system, volume_identifiers)
+
     while True:
-      if print_header:
-        self._PrintAPFSVolumeIdentifiersOverview(
-            volume_system, volume_identifiers)
-
-        print_header = False
-
       self._output_writer.Write('\n')
 
       lines = self._textwrapper.wrap(self._USER_PROMPT_APFS)
@@ -702,14 +697,9 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Returns:
       list[str]: selected volume identifiers including prefix or None.
     """
-    print_header = True
+    self._PrintLVMVolumeIdentifiersOverview(volume_system, volume_identifiers)
+
     while True:
-      if print_header:
-        self._PrintLVMVolumeIdentifiersOverview(
-            volume_system, volume_identifiers)
-
-        print_header = False
-
       self._output_writer.Write('\n')
 
       lines = self._textwrapper.wrap(self._USER_PROMPT_LVM)
@@ -747,14 +737,9 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Returns:
       list[str]: selected volume identifiers including prefix or None.
     """
-    print_header = True
+    self._PrintPartitionIdentifiersOverview(volume_system, volume_identifiers)
+
     while True:
-      if print_header:
-        self._PrintPartitionIdentifiersOverview(
-            volume_system, volume_identifiers)
-
-        print_header = False
-
       self._output_writer.Write('\n')
 
       lines = self._textwrapper.wrap(self._USER_PROMPT_TSK)
@@ -791,14 +776,9 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Returns:
       list[str]: selected volume identifiers including prefix or None.
     """
-    print_header = True
+    self._PrintVSSStoreIdentifiersOverview(volume_system, volume_identifiers)
+
     while True:
-      if print_header:
-        self._PrintVSSStoreIdentifiersOverview(
-            volume_system, volume_identifiers)
-
-        print_header = False
-
       self._output_writer.Write('\n')
 
       lines = self._textwrapper.wrap(self._USER_PROMPT_VSS)

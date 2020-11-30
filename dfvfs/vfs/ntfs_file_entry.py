@@ -333,7 +333,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       str: path of the linked file.
     """
     if self._link is None:
-      self._link = self._fsntfs_file_entry.reparse_point_print_name
+      self._link = self._fsntfs_file_entry.symbolic_link_target
       if self._link:
         # Strip off the drive letter, we assume the link is within
         # the same volume.
