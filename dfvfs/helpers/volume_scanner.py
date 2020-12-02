@@ -22,7 +22,7 @@ from dfvfs.volume import vshadow_volume_system
 class VolumeScannerOptions(object):
   """Volume scanner options.
 
-  Attribute:
+  Attributes:
     partitions (list[str]): partition identifiers.
     scan_mode (str): mode that defines how the VolumeScanner should scan
         for volumes and snapshots.
@@ -161,8 +161,8 @@ class VolumeScanner(object):
       list[str]: APFS volume identifiers.
 
     Raises:
-      ScannerError: if the format of or within the source is not supported
-          or the the scan node is invalid.
+      ScannerError: if the scan node is invalid or the scanner does not know
+          how to proceed.
       UserAbort: if the user requested to abort.
     """
     if not scan_node or not scan_node.path_spec:
@@ -218,8 +218,8 @@ class VolumeScanner(object):
       list[str]: LVM volume identifiers.
 
     Raises:
-      ScannerError: if the format of or within the source is not supported
-          or the the scan node is invalid.
+      ScannerError: if the scan node is invalid or the scanner does not know
+          how to proceed.
       UserAbort: if the user requested to abort.
     """
     if not scan_node or not scan_node.path_spec:
@@ -279,9 +279,8 @@ class VolumeScanner(object):
       list[str]: partition identifiers.
 
     Raises:
-      ScannerError: if the format of or within the source is not supported or
-          the scan node is invalid or if the volume for a specific identifier
-          cannot be retrieved.
+      ScannerError: if the scan node is invalid or the scanner does not know
+          how to proceed.
       UserAbort: if the user requested to abort.
     """
     if not scan_node or not scan_node.path_spec:
@@ -338,8 +337,8 @@ class VolumeScanner(object):
       list[str]: VSS store identifiers.
 
     Raises:
-      ScannerError: if the format the scan node is invalid or no mediator
-          is provided and VSS store identifiers are found.
+      ScannerError: if the scan node is invalid or the scanner does not know
+          how to proceed.
       UserAbort: if the user requested to abort.
     """
     if not scan_node or not scan_node.path_spec:
@@ -716,11 +715,14 @@ class WindowsVolumeScanner(VolumeScanner):
 
     return self._file_system.GetFileObjectByPathSpec(path_spec)
 
-  def ScanForWindowsVolume(self, source_path):
+  def ScanForWindowsVolume(self, source_path, options=None):
     """Scans for a Windows volume.
 
     Args:
       source_path (str): source path.
+      options (Optional[VolumeScannerOptions]): volume scanner options. If None
+          the default volume scanner options are used, which are defined in the
+          VolumeScannerOptions class.
 
     Returns:
       bool: True if a Windows volume was found.
@@ -730,7 +732,7 @@ class WindowsVolumeScanner(VolumeScanner):
           is not a file or directory, or if the format of or within the source
           file is not supported.
     """
-    windows_path_specs = self.GetBasePathSpecs(source_path)
+    windows_path_specs = self.GetBasePathSpecs(source_path, options=options)
     if (not windows_path_specs or
         self._source_type == definitions.SOURCE_TYPE_FILE):
       return False

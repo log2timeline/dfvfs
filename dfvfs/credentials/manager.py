@@ -4,10 +4,10 @@
 The credentials manager uses credential (instances of Credentials) to specify
 which credentials a specific path specification type supports. E.g. in case
 of BitLocker Drive Encryption (BDE):
-  * password;
-  * recovery password;
-  * startup key;
-  * key data.
+* password;
+* recovery password;
+* startup key;
+* key data.
 """
 
 from __future__ import unicode_literals

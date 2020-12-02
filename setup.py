@@ -189,7 +189,7 @@ setup(
         'Programming Language :: Python',
     ],
     packages=find_packages('.', exclude=[
-        'docs', 'tests', 'tests.*', 'utils']),
+        'examples', 'docs', 'tests', 'tests.*', 'utils']),
     package_dir={
         'dfvfs': 'dfvfs'
     },
