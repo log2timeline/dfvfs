@@ -17,10 +17,6 @@ class TestResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = 'TEST'
 
-  def __init__(self, **kwargs):
-    """Initializes the test resolver helper."""
-    super(TestResolverHelper, self).__init__(parent=None, **kwargs)
-
   def NewFileObject(self, resolver_context):
     """Creates a new file-like object.
 
