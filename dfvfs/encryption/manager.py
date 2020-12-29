@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The encryption manager."""
 
-from __future__ import unicode_literals
-
 
 class EncryptionManager(object):
   """Encryption manager."""

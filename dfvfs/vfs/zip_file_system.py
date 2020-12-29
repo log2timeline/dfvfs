@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The ZIP file system implementation."""
 
-from __future__ import unicode_literals
-
 import zipfile
 
 from dfvfs.lib import definitions

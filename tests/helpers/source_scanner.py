@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the source scanner object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.helpers import source_scanner

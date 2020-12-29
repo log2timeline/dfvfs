@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The path specification factory."""
 
-from __future__ import unicode_literals
-
 
 class Factory(object):
   """Path specification factory."""

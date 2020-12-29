@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the helpers for command line tools."""
 
-from __future__ import unicode_literals
-
 import io
 import os
 import unittest

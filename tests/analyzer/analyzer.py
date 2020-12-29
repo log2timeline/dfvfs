@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the format analyzer."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.analyzer import analyzer

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The location-based path specification implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.path import path_spec
 
 

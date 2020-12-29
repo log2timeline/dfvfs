@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using pyluksde."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import luksde_path_spec

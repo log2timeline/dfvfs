@@ -10,8 +10,6 @@ of BitLocker Drive Encryption (BDE):
 * key data.
 """
 
-from __future__ import unicode_literals
-
 
 class CredentialsManager(object):
   """Credentials manager."""

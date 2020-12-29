@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the APFS container file system implementation using pyfsapfs."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import apfs_container_path_spec

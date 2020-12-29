@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The APFS file system implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors

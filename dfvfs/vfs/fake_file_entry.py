@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The fake file entry implementation."""
 
-from __future__ import unicode_literals
-
 from dfdatetime import fake_time as dfdatetime_fake_time
 
 from dfvfs.lib import definitions

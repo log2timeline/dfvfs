@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The compression manager."""
 
-from __future__ import unicode_literals
-
 
 class CompressionManager(object):
   """Compression manager."""

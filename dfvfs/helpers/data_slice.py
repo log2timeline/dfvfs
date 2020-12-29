@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """A data slice interface for file-like objects."""
 
-from __future__ import unicode_literals
-
 import os
 
 

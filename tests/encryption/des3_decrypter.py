@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the triple DES decrypter object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.encryption import des3_decrypter

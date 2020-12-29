@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The JSON serializer object implementation."""
 
-from __future__ import unicode_literals
-
 import json
 
 from dfvfs.path import factory as path_spec_factory

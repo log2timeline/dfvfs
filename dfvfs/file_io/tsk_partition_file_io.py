@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition file-like object implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.file_io import data_range_io
 from dfvfs.lib import errors
 from dfvfs.lib import tsk_partition

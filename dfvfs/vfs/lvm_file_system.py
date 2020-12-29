@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyvslvm
 
 from dfvfs.lib import definitions

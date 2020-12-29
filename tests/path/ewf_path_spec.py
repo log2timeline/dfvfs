@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the EWF image path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import ewf_path_spec

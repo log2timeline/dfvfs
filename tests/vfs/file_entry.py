@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the VFS file entry interface."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.lib import errors

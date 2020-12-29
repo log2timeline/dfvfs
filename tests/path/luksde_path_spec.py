@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the LUKSDE path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import luksde_path_spec

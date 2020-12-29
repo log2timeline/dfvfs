@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The operating system file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import stat
 import os
 

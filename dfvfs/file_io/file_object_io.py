@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The file object file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import abc
 import os
 

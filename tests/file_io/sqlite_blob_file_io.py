@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the SQLite blob file-like object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.file_io import sqlite_blob_file_io

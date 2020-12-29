@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The RC4 decrypter implementation."""
 
-from __future__ import unicode_literals
-
 from cryptography.hazmat.primitives.ciphers import algorithms
 from cryptography.hazmat import backends
 from cryptography.hazmat.primitives import ciphers

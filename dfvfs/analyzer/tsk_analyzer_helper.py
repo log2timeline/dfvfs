@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) format analyzer helper implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
 from dfvfs.analyzer import specification

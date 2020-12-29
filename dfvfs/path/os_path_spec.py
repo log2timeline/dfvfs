@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The operating system path specification implementation."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dfvfs.lib import definitions

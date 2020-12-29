@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using the SleuthKit (TSK)."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 import pytsk3

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The NTFS path specification resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.file_io import ntfs_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver_helpers import manager

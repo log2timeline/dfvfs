@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for SleuthKit (TSK) image support."""
 
-from __future__ import unicode_literals
-
 import os
 import pytsk3
 

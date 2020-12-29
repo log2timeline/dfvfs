@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the path specification resolver helper manager."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import manager

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream path specification implementation."""
 
-from __future__ import unicode_literals
-
 import codecs
 
 from dfvfs.lib import definitions

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """A searcher to find file entries within a file system."""
 
-from __future__ import unicode_literals
-
 import re
 import sre_constants
 

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The compressed stream file entry implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver

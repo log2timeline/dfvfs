@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The CPIO file entry implementation."""
 
-from __future__ import unicode_literals
-
 import stat
 
 from dfdatetime import posix_time as dfdatetime_posix_time

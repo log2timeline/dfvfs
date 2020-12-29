@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The NTFS file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyfsntfs
 
 from dfvfs.lib import definitions

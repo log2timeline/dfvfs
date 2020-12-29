@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the Logical Volume Manager (LVM) volume system."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import os_path_spec

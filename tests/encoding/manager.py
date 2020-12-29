@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the encoding manager."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.encoding import base16_decoder

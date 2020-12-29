@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the LVM resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import lvm_resolver_helper

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using the SleuthKit (TSK)."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.file_io import tsk_file_io

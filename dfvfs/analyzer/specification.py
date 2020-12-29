@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The format specification classes."""
 
-from __future__ import unicode_literals
-
 
 class Signature(object):
   """Signature of a format specification.

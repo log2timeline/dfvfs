@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Shared test cases."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import errors
 from dfvfs.resolver import context
 from dfvfs.resolver_helpers import resolver_helper

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The decrypter interface."""
 
-from __future__ import unicode_literals
-
 import abc
 
 from cryptography.hazmat import backends

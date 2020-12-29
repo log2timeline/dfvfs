@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for Logical Volume Manager (LVM) support."""
 
-from __future__ import unicode_literals
-
 
 def LVMPathSpecGetVolumeIndex(path_spec):
   """Retrieves the volume index from the path specification.

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) resolver helper interface."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import errors
 
 

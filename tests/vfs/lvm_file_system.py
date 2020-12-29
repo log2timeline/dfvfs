@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for a file system implementation using pyvslvm."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import lvm_path_spec

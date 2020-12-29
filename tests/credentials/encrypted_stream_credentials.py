@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the encrypted stream credentials."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.credentials import encrypted_stream_credentials

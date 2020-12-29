@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyvshadow
 
 from dfvfs.lib import definitions

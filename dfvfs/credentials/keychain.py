@@ -6,8 +6,6 @@ E.g. BitLocker Drive Encryption (BDE) encrypted volumes can require a
 credential (e.g. password) to access the unencrypted data (unlock).
 """
 
-from __future__ import unicode_literals
-
 from dfvfs.credentials import manager
 
 

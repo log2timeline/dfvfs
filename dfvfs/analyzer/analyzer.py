@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The format analyzer."""
 
-from __future__ import unicode_literals
-
 import pysigscan
 
 from dfvfs.analyzer import specification

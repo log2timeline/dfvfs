@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The FileVault Drive Encryption (FVDE) file-like object."""
 
-from __future__ import unicode_literals
-
 import pyfvde
 
 from dfvfs.file_io import file_object_io

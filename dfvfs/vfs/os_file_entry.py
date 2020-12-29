@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The operating system file entry implementation."""
 
-from __future__ import unicode_literals
-
 import errno
 import os
 import platform

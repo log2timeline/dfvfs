@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Scanner for supported volume and file systems."""
 
-from __future__ import unicode_literals
-
 import abc
 import os
 

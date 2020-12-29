@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the credentials manager."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.credentials import apfs_credentials

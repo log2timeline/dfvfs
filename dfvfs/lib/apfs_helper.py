@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for Apple File System (APFS) support."""
 
-from __future__ import unicode_literals
-
 
 def APFSContainerPathSpecGetVolumeIndex(path_spec):
   """Retrieves the volume index from the path specification.

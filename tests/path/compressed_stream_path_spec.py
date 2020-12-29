@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the compressed stream path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import compressed_stream_path_spec

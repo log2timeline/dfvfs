@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The HFS file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyfshfs
 
 from dfvfs.lib import definitions

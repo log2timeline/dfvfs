@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The AES decrypter implementation."""
 
-from __future__ import unicode_literals
-
 from cryptography.hazmat.primitives.ciphers import algorithms
 
 from dfvfs.encryption import decrypter

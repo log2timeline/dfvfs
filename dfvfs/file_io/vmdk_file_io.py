@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The VMDK image file-like object."""
 
-from __future__ import unicode_literals
-
 import pyvmdk
 
 from dfvfs.file_io import file_object_io

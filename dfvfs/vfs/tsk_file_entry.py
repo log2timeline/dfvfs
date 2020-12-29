@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) file entry implementation."""
 
-from __future__ import unicode_literals
-
 import copy
 import decimal
 

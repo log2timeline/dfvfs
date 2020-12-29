@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyfsntfs."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.file_io import ntfs_file_io

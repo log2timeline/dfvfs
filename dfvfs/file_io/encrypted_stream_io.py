@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dfvfs.encryption import manager as encryption_manager

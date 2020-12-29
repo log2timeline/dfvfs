@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The LUKSDE file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyluksde
 
 from dfvfs.lib import luksde

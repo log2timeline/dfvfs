@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file-like object interface."""
 
-from __future__ import unicode_literals
-
 import abc
 import os
 

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The zlib and DEFLATE decompressor implementations."""
 
-from __future__ import unicode_literals
-
 import zlib
 
 from dfvfs.compression import decompressor

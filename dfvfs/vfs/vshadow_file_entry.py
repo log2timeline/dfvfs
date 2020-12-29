@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file entry implementation."""
 
-from __future__ import unicode_literals
-
 from dfdatetime import filetime as dfdatetime_filetime
 
 from dfvfs.lib import definitions

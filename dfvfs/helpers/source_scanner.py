@@ -19,8 +19,6 @@ the nodea and user provided context information, such as:
 * which VSS stores to default to.
 """
 
-from __future__ import unicode_literals
-
 from dfvfs.analyzer import analyzer
 from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions

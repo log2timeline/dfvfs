@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper function for LUKS Drive Encryption support."""
 
-from __future__ import unicode_literals
-
 
 def LUKSDEVolumeOpen(luksde_volume, path_spec, file_object, key_chain):
   """Opens the LUKSDE volume using the path specification.

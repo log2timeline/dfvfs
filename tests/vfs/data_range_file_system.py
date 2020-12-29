@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the data range file system implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import data_range_path_spec

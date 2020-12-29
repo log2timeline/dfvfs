@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The APFS file entry implementation."""
 
-from __future__ import unicode_literals
-
 from dfdatetime import apfs_time as dfdatetime_apfs_time
 
 from dfvfs.lib import definitions

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The resolver context object."""
 
-from __future__ import unicode_literals
-
 from dfvfs.resolver import cache
 
 

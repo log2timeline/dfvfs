@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the BDE path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import bde_path_spec

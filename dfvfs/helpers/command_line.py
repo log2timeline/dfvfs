@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helpers for command line tools."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import abc
 import codecs
 import getpass

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The HFS path specification resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.file_io import hfs_file_io
 from dfvfs.lib import definitions
 from dfvfs.resolver_helpers import manager

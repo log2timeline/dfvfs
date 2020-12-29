@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The BZIP2 decompressor implementation."""
 
-from __future__ import unicode_literals
-
 import bz2
 
 from dfvfs.compression import decompressor

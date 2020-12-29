@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) serializer object interfaces."""
 
-from __future__ import unicode_literals
-
 import abc
 
 

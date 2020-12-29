@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the encoded stream path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import encoded_stream_path_spec

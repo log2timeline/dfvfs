@@ -21,8 +21,6 @@ type=QCOW
 type=TSK_PARTITION, location=/p1
 """
 
-from __future__ import unicode_literals
-
 
 class MountPointManager(object):
   """Path specification mount point manager."""
