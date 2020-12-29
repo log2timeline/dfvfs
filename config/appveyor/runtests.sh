@@ -9,4 +9,4 @@ export TOX_TESTENV_PASSENV="CFLAGS LDFLAGS";
 # Set the following environment variables to ensure tox can find Python 3.9.
 export PATH="/usr/local/opt/python@3.9/bin:${PATH}";
 
-tox -e py39
+tox -vv -e py39
