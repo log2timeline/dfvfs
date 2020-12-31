@@ -96,15 +96,25 @@ class CPIOArchiveFile(data_format.DataFormat):
       'special_device_major_number', 'special_device_minor_number',
       'checksum')
 
-  def __init__(self):
-    """Initializes a CPIO archive file."""
+  def __init__(self, encoding='utf-8'):
+    """Initializes a CPIO archive file.
+
+    Args:
+      encoding (str): encoding of paths within the archive file.
+    """
     super(CPIOArchiveFile, self).__init__()
+    self._encoding = encoding
     self._file_entries = None
     self._file_object = None
     self._file_object_opened_in_object = False
     self._file_size = 0
 
     self.file_format = None
+
+  @property
+  def encoding(self):
+    """str: encoding of paths within the archive file."""
+    return self._encoding
 
   def _ReadFileEntry(self, file_object, file_offset):
     """Reads a file entry.
@@ -175,8 +185,7 @@ class CPIOArchiveFile(data_format.DataFormat):
 
     file_offset += file_entry.path_size
 
-    # TODO: should this be ASCII?
-    path = path_data.decode('ascii')
+    path = path_data.decode(self._encoding)
     path, _, _ = path.partition('\x00')
 
     if self.file_format in ('bin-big-endian', 'bin-little-endian'):

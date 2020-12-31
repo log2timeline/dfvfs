@@ -29,24 +29,30 @@ class CPIODirectory(file_entry.Directory):
 
     if location and location.startswith(self._file_system.PATH_SEPARATOR):
       cpio_archive_file = self._file_system.GetCPIOArchiveFile()
+      sub_directories = set()
       for cpio_archive_file_entry in cpio_archive_file.GetFileEntries(
           path_prefix=location[1:]):
 
         path = cpio_archive_file_entry.path
-        if not path:
+        if not path or path == location:
           continue
 
-        _, suffix = self._file_system.GetPathSegmentAndSuffix(
+        prefix, suffix = self._file_system.GetPathSegmentAndSuffix(
             location[1:], path)
 
-        # Ignore anything that is part of a sub directory or the directory
-        # itself.
-        if suffix or path == location:
-          continue
+        if not suffix:
+          path_spec_location = self._file_system.JoinPath([path])
+          yield cpio_path_spec.CPIOPathSpec(
+              location=path_spec_location, parent=self.path_spec.parent)
 
-        path_spec_location = self._file_system.JoinPath([path])
-        yield cpio_path_spec.CPIOPathSpec(
-            location=path_spec_location, parent=self.path_spec.parent)
+        elif prefix not in sub_directories:
+          sub_directories.add(prefix)
+
+          # Include prefixes as virtual sub directories.
+          path_spec_location = self._file_system.JoinPath([prefix])
+          yield cpio_path_spec.CPIOPathSpec(
+              location=path_spec_location, parent=self.path_spec.parent)
+
 
 
 class CPIOFileEntry(file_entry.FileEntry):
@@ -128,8 +134,7 @@ class CPIOFileEntry(file_entry.FileEntry):
           self._cpio_archive_file_entry.data_offset,
           self._cpio_archive_file_entry.data_size)
 
-      # TODO: should this be ASCII?
-      self._link = link_data.decode('ascii')
+      self._link = link_data.decode(cpio_archive_file.encoding)
 
     return self._link
 
@@ -160,8 +165,13 @@ class CPIOFileEntry(file_entry.FileEntry):
     if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       directory = self._GetDirectory()
       for path_spec in directory.entries:
+        cpio_archive_file_entry = (
+            self._file_system.GetCPIOArchiveFileEntryByPathSpec(path_spec))
+        is_virtual = not bool(cpio_archive_file_entry)
+
         yield CPIOFileEntry(
-            self._resolver_context, self._file_system, path_spec)
+            self._resolver_context, self._file_system, path_spec,
+            is_virtual=is_virtual)
 
   @property
   def name(self):
