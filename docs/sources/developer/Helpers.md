@@ -74,7 +74,7 @@ the nodea and user provided context information, such as:
 * which partition to default to;
 * which VSS stores to default to.
 
-An example of how to use the source scanner can be found in the [source analyzer](https://github.com/open-source-dfir/dfvfs-snippets/blob/master/scripts/source_analyzer.py)
+An example of how to use the source scanner can be found in the [source analyzer](https://github.com/open-source-dfir/dfvfs-snippets/blob/main/scripts/source_analyzer.py)
 script.
 
 ## Volume scanner
@@ -86,8 +86,8 @@ so the application that uses it can focus on reading file it is interested in.
 
 **TODO: add more information about VolumeScannerMediator and VolumeScannerOptions**
 
-Examples of how to use the volume scanner can be found in the [list file entries](https://github.com/open-source-dfir/dfvfs-snippets/blob/master/scripts/list_file_entries.py)
-and the [recursive hasher](https://github.com/open-source-dfir/dfvfs-snippets/blob/master/scripts/recursive_hasher.py)
+Examples of how to use the volume scanner can be found in the [list file entries](https://github.com/open-source-dfir/dfvfs-snippets/blob/main/scripts/list_file_entries.py)
+and the [recursive hasher](https://github.com/open-source-dfir/dfvfs-snippets/blob/main/scripts/recursive_hasher.py)
 scripts.
 
 ### Windows volume scanner

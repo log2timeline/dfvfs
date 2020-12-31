@@ -235,7 +235,7 @@ within a Logical Volume Manager (LVM) volume system.
 ### The mount type
 
 The MOUNT type (TYPE_INDICATOR_MOUNT) is a type that defines a mount point
-within dfVFS. Also see [the mount point manager](https://github.com/log2timeline/dfvfs/wiki/Internals).
+within dfVFS. Also see [the mount point manager](developer/Internals.md).
 
 | **Attribute name** | **Description** |
 | --- | --- |
