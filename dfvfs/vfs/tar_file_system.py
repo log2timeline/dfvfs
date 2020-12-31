@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The TAR file system implementation."""
 
-from __future__ import unicode_literals
-
 import os
 import tarfile
 

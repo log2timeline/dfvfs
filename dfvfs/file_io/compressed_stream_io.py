@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The compressed stream file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dfvfs.compression import manager as compression_manager

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The compressed stream path specification resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.file_io import compressed_stream_io
 from dfvfs.lib import definitions
 from dfvfs.resolver_helpers import manager

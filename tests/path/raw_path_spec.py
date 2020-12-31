@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the RAW storage media image path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import raw_path_spec

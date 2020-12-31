@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the EXT resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import ext_resolver_helper

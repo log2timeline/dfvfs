@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using the CPIOArchiveFile."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import cpio_path_spec

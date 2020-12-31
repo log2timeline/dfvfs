@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the QCOW image resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import qcow_resolver_helper

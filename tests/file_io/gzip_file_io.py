@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the gzip file-like object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.file_io import gzip_file_io

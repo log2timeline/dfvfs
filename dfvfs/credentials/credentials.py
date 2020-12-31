@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The credentials interface."""
 
-from __future__ import unicode_literals
-
 
 class Credentials(object):
   """Credentials interface."""

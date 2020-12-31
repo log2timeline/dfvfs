@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The gzip file system implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import definitions
 from dfvfs.path import gzip_path_spec
 from dfvfs.vfs import gzip_file_entry

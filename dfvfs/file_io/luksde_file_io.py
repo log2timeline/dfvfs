@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The LUKS Drive Encryption file-like object."""
 
-from __future__ import unicode_literals
-
 import pyluksde
 
 from dfvfs.file_io import file_object_io

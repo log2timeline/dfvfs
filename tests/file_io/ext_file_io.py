@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the Extended File System (EXT) file-like object."""
 
-from __future__ import unicode_literals
-
 import os
 import unittest
 

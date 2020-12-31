@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the gzip file path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import gzip_path_spec

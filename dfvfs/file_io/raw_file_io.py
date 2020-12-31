@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The RAW storage media image file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import pysmraw
 
 from dfvfs.file_io import file_object_io

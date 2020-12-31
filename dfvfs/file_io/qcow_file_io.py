@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The QCOW image file-like object."""
 
-from __future__ import unicode_literals
-
 import pyqcow
 
 from dfvfs.file_io import file_object_io

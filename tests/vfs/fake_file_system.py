@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the fake file system implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import fake_path_spec

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """A builder for fake file systems."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import definitions
 from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_system

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The root only file system file entry implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.vfs import file_entry
 
 

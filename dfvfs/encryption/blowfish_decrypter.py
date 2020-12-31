@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Blowfish decrypter implementation."""
 
-from __future__ import unicode_literals
-
 from cryptography.hazmat.primitives.ciphers import algorithms
 
 from dfvfs.encryption import decrypter

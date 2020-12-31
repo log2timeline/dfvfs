@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The encoded stream file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dfvfs.encoding import manager as encoding_manager

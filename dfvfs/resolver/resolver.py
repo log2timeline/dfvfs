@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The path specification resolver."""
 
-from __future__ import unicode_literals
-
 from dfvfs.credentials import keychain
 from dfvfs.lib import definitions
 from dfvfs.lib import errors

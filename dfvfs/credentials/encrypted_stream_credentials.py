@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The encrypted stream credentials."""
 
-from __future__ import unicode_literals
-
 from dfvfs.credentials import credentials
 from dfvfs.credentials import manager
 from dfvfs.lib import definitions

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper function for FileVault Drive Encryption (FVDE) support."""
 
-from __future__ import unicode_literals
-
 
 def FVDEVolumeOpen(fvde_volume, path_spec, file_object, key_chain):
   """Opens the FVDE volume using the path specification.

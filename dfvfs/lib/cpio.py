@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Copy in and out (CPIO) archive file."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dtfabric.runtime import fabric as dtfabric_fabric

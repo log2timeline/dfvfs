@@ -4,8 +4,6 @@
 Also see: https://en.wikipedia.org/wiki/Glob_(programming)
 """
 
-from __future__ import unicode_literals
-
 import re
 import sys
 

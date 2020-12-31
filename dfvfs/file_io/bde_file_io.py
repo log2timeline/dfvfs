@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The BitLocker Drive Encryption (BDE) file-like object."""
 
-from __future__ import unicode_literals
-
 import pybde
 
 from dfvfs.file_io import file_object_io

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The root only file system implementation."""
 
-from __future__ import unicode_literals
-
 import abc
 
 from dfvfs.lib import errors

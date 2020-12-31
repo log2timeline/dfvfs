@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the Windows path resolver object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.helpers import windows_path_resolver

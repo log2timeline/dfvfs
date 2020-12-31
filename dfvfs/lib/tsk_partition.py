@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for SleuthKit (TSK) partition support."""
 
-from __future__ import unicode_literals
-
 import pytsk3
 
 

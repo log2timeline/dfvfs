@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper function for BitLocker Drive Encryption (BDE) support."""
 
-from __future__ import unicode_literals
-
 
 def BDEVolumeOpen(bde_volume, path_spec, file_object, key_chain):
   """Opens the BDE volume using the path specification.

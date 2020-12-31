@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Shared test cases."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dfvfs.file_io import tsk_file_io

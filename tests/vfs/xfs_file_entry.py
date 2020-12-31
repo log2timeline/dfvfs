@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for the file entry implementation using pyfsext."""
-
-from __future__ import unicode_literals
+"""Tests for the file entry implementation using pyfsxfs."""
 
 import unittest
 

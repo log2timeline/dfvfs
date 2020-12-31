@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the EWF image resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import ewf_resolver_helper

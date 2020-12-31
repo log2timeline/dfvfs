@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the NTFS path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import ntfs_path_spec

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the resolver objects cache."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.lib import errors

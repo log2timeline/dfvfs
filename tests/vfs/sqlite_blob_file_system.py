@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the file system implementation using sqlite blob."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import sqlite_blob_path_spec

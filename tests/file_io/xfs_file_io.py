@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the X File System (XFS) file-like object."""
 
-from __future__ import unicode_literals
-
 import os
 import unittest
 
@@ -17,7 +15,7 @@ from tests import test_lib as shared_test_lib
 
 
 class XFSFileTest(shared_test_lib.BaseTestCase):
-  """Tests the file-like object implementation using pyfsext.file_entry."""
+  """Tests the file-like object implementation using pyfsxfs.file_entry."""
 
   _INODE_ANOTHER_FILE = 11078
   _INODE_PASSWORDS_TXT = 11077

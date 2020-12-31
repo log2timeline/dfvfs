@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the TSK partition resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import tsk_partition_resolver_helper

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The FVDE file entry implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import root_only_file_entry

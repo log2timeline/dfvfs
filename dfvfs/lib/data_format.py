@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """dtFabric data format helpers."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dtfabric import errors as dtfabric_errors

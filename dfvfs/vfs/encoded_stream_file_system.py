@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The encoded stream file system implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import encoded_stream_path_spec

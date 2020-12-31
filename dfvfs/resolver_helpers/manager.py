@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The path specification resolver helper manager."""
 
-from __future__ import unicode_literals
-
 
 class ResolverHelperManager(object):
   """Path specification resolver helper manager."""

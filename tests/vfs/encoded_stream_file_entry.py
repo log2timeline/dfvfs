@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the encoded stream file entry implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.lib import definitions

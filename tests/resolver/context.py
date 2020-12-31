@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the resolver context object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.file_io import fake_file_io

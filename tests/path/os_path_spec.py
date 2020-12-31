@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the operating system path specification implementation."""
 
-from __future__ import unicode_literals
-
 import platform
 import unittest
 

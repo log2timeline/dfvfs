@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The file system implementation that is provided by the operating system."""
 
-from __future__ import unicode_literals
-
 import os
 import platform
 

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the RC4 decrypter object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.encryption import rc4_decrypter

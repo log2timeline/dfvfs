@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) volume system interface."""
 
-from __future__ import unicode_literals
-
 import abc
 
 

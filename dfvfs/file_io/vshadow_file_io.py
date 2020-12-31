@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import os
 
 from dfvfs.file_io import file_io

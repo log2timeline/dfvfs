@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for Volume Shadow Snapshots (VSS) support."""
 
-from __future__ import unicode_literals
-
 
 def VShadowPathSpecGetStoreIndex(path_spec):
   """Retrieves the store index from the path specification.

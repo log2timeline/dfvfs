@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The analyzer helper interface."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import errors
 
 

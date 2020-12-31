@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) file-like object implementation."""
 
-from __future__ import unicode_literals
-
 import os
 
 import pytsk3

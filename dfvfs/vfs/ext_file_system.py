@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The EXT file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyfsext
 
 from dfvfs.lib import definitions

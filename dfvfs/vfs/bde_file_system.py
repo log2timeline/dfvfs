@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The BDE file system implementation."""
 
-from __future__ import unicode_literals
-
 import pybde
 
 from dfvfs.lib import bde

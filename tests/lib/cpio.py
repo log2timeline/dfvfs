@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for Copy in and out (CPIO) archive file."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.file_io import file_object_io

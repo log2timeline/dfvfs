@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The ZIP extracted file-like object implementation."""
 
-from __future__ import unicode_literals
-
 # Note: that zipfile.ZipExtFile is not seekable, hence it is wrapped in
 # an instance of file_io.FileIO.
 

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the FVDE path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import fvde_path_spec

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """A resolver for Windows paths to file system specific formats."""
 
-from __future__ import unicode_literals
-
 import re
 
 from dfvfs.lib import errors

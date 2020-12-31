@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the TSK partition path specification implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import tsk_partition_path_spec

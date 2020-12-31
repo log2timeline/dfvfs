@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The EWF image path specification implementation."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.path import path_spec

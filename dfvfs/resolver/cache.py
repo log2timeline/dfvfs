@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The resolver objects cache."""
 
-from __future__ import unicode_literals
-
 import collections
 import itertools
 

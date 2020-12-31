@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The LZMA and XZ decompressor implementations."""
 
-from __future__ import unicode_literals
-
 import lzma
 
 from lzma import LZMAError

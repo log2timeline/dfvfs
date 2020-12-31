@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for RAW storage media image support."""
 
-from __future__ import unicode_literals
-
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 

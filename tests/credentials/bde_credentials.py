@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the BitLocker Drive Encryption (BDE) credentials."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.credentials import bde_credentials

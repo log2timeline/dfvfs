@@ -5,8 +5,6 @@ The file entry can be various file system elements like a regular file,
 a directory or file system metadata.
 """
 
-from __future__ import unicode_literals
-
 import abc
 
 from dfvfs.lib import definitions

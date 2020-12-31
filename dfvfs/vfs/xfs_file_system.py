@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The XFS file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyfsxfs
 
 from dfvfs.lib import definitions

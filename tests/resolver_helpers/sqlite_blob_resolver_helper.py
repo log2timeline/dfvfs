@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the sqlite blob file resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import sqlite_blob_resolver_helper

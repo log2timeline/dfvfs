@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the volume scanner objects."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.helpers import source_scanner

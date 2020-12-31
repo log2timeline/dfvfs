@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the gzip file resolver helper implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.resolver_helpers import gzip_resolver_helper

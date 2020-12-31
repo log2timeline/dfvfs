@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The TAR extracted file-like object implementation."""
 
-from __future__ import unicode_literals
-
 # Note: that tarfile.ExFileObject is not POSIX compliant for seeking
 # beyond the file size, hence it is wrapped in an instance of file_io.FileIO.
 

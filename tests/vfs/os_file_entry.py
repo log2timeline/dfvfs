@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the operating system file entry implementation."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.path import os_path_spec

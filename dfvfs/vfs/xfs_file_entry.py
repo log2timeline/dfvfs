@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The XFS file entry implementation."""
 
-from __future__ import unicode_literals
-
 from dfdatetime import posix_time as dfdatetime_posix_time
 
 from dfvfs.lib import definitions

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the zlib decompressor object."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.compression import zlib_decompressor

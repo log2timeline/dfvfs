@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helper functions for SQLite database support."""
 
-from __future__ import unicode_literals
-
 import os
 import sqlite3
 import tempfile

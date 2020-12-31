@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The FVDE file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyfvde
 
 from dfvfs.lib import fvde

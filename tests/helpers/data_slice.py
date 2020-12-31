@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the data slice interface for file-like objects."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from dfvfs.file_io import os_file_io

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """The APFS container file system implementation."""
 
-from __future__ import unicode_literals
-
 import pyfsapfs
 
 from dfvfs.lib import apfs_helper
