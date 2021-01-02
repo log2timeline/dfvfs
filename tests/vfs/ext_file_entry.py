@@ -36,8 +36,9 @@ class EXTFileEntryTest(shared_test_lib.BaseTestCase):
     self._ext_path_spec = ext_path_spec.EXTPathSpec(
         location='/', parent=self._raw_path_spec)
 
-    self._file_system = ext_file_system.EXTFileSystem(self._resolver_context)
-    self._file_system.Open(self._ext_path_spec)
+    self._file_system = ext_file_system.EXTFileSystem(
+        self._resolver_context, self._ext_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

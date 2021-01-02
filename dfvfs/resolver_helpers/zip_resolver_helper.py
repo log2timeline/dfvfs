@@ -24,16 +24,17 @@ class ZipResolverHelper(resolver_helper.ResolverHelper):
     """
     return zip_file_io.ZipFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return zip_file_system.ZipFileSystem(resolver_context)
+    return zip_file_system.ZipFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(ZipResolverHelper())

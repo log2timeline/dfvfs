@@ -19,7 +19,10 @@ class FakeDirectoryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+
+    self._file_system = fake_file_system.FakeFileSystem(
+        self._resolver_context, self._fake_path_spec)
 
     self._file_system.AddFileEntry(
         '/test_data/testdir_fake',
@@ -42,8 +45,7 @@ class FakeDirectoryTest(shared_test_lib.BaseTestCase):
 
     self._test_file = '/test_data/testdir_fake'
 
-    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
-    self._file_system.Open(self._fake_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -74,7 +76,9 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
+    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
+    self._file_system = fake_file_system.FakeFileSystem(
+        self._resolver_context, self._fake_path_spec)
 
     self._file_system.AddFileEntry(
         '/test_data/testdir_fake',
@@ -97,8 +101,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
     self._test_file = '/test_data/testdir_fake'
 
-    self._fake_path_spec = fake_path_spec.FakePathSpec(location='/')
-    self._file_system.Open(self._fake_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

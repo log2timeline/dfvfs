@@ -26,8 +26,9 @@ class CPIODirectoryTest(shared_test_lib.BaseTestCase):
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=self._os_path_spec)
 
-    self._file_system = cpio_file_system.CPIOFileSystem(self._resolver_context)
-    self._file_system.Open(self._cpio_path_spec)
+    self._file_system = cpio_file_system.CPIOFileSystem(
+        self._resolver_context, self._cpio_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -65,8 +66,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
     self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
         location='/syslog', parent=self._os_path_spec)
 
-    self._file_system = cpio_file_system.CPIOFileSystem(self._resolver_context)
-    self._file_system.Open(self._cpio_path_spec)
+    self._file_system = cpio_file_system.CPIOFileSystem(
+        self._resolver_context, self._cpio_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

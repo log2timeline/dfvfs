@@ -456,7 +456,8 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self._SkipIfPathNotExists(test_file)
 
     self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._os_file_system = os_file_system.OSFileSystem(self._resolver_context)
+    self._os_file_system = os_file_system.OSFileSystem(
+        self._resolver_context, self._os_path_spec)
 
     # TODO: add RAW volume only test image.
 
@@ -469,8 +470,8 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         location='/', parent=self._qcow_path_spec)
 
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
-        self._resolver_context)
-    self._tsk_file_system.Open(self._tsk_path_spec)
+        self._resolver_context, self._tsk_path_spec)
+    self._tsk_file_system.Open()
 
   def testFind(self):
     """Test the Find function."""

@@ -33,20 +33,20 @@ class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = data_range_file_system.DataRangeFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._data_range_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._data_range_path_spec)
+    file_system.Open()
 
     file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = data_range_file_system.DataRangeFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._data_range_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._data_range_path_spec)
+    file_system.Open()
 
     self.assertTrue(file_system.FileEntryExistsByPathSpec(
         self._data_range_path_spec))
@@ -56,10 +56,10 @@ class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = data_range_file_system.DataRangeFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._data_range_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._data_range_path_spec)
+    file_system.Open()
 
     file_entry = file_system.GetFileEntryByPathSpec(
         self._data_range_path_spec)
@@ -72,10 +72,10 @@ class DataRangeFileSystemTest(shared_test_lib.BaseTestCase):
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = data_range_file_system.DataRangeFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._data_range_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._data_range_path_spec)
+    file_system.Open()
 
     file_entry = file_system.GetRootFileEntry()
 

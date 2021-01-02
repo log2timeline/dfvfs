@@ -4,6 +4,7 @@
 
 import unittest
 
+from dfvfs.path import fake_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import file_system
 
@@ -27,8 +28,10 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
 
   def testIntialize(self):
     """Test the __init__ function."""
+    path_spec = fake_path_spec.FakePathSpec(location='/')
+
     with self.assertRaises(ValueError):
-      file_system.FileSystem(self._resolver_context)
+      file_system.FileSystem(self._resolver_context, path_spec)
 
   # TODO: add tests for type_indicator property.
   # TODO: add tests for _Close function.
@@ -42,7 +45,9 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
 
   def testJoinPath(self):
     """Test the join path functionality."""
-    test_file_system = TestFileSystem(self._resolver_context)
+    path_spec = fake_path_spec.FakePathSpec(location='/')
+
+    test_file_system = TestFileSystem(self._resolver_context, path_spec)
 
     expected_path = '/test1/test2/test3'
 
@@ -62,7 +67,9 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
 
   def testSplitPath(self):
     """Test the split path functionality."""
-    test_file_system = TestFileSystem(self._resolver_context)
+    path_spec = fake_path_spec.FakePathSpec(location='/')
+
+    test_file_system = TestFileSystem(self._resolver_context, path_spec)
 
     expected_path_segments = ['test1', 'test2', 'test3']
 

@@ -24,17 +24,18 @@ class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
     """
     return encrypted_stream_io.EncryptedStream(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
     return encrypted_stream_file_system.EncryptedStreamFileSystem(
-        resolver_context)
+        resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(EncryptedStreamResolverHelper())

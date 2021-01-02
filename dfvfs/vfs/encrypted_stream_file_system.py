@@ -14,13 +14,14 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCRYPTED_STREAM
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, path_spec):
     """Initializes an encrypted file system.
 
     Args:
       resolver_context (Context): a resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(EncryptedStreamFileSystem, self).__init__(resolver_context)
+    super(EncryptedStreamFileSystem, self).__init__(resolver_context, path_spec)
     self._encryption_method = None
 
   def _Close(self):
@@ -31,11 +32,10 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     self._encryption_method = None
 
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system defined by path specification.
 
     Args:
-      path_spec (PathSpec): a path specification.
       mode (Optional[str]): file access mode. The default is 'rb' which
           represents read-only binary.
 
@@ -45,13 +45,13 @@ class EncryptedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
+    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(self._path_spec)
 
-    encryption_method = getattr(path_spec, 'encryption_method', None)
+    encryption_method = getattr(self._path_spec, 'encryption_method', None)
     if not encryption_method:
       raise errors.PathSpecError(
           'Unsupported path specification without encryption method.')

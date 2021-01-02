@@ -24,16 +24,17 @@ class LVMResolverHelper(resolver_helper.ResolverHelper):
     """
     return lvm_file_io.LVMFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return lvm_file_system.LVMFileSystem(resolver_context)
+    return lvm_file_system.LVMFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(LVMResolverHelper())

@@ -18,13 +18,14 @@ class APFSContainerFileSystem(file_system.FileSystem):
   LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, path_spec):
     """Initializes an APFS container file system.
 
     Args:
       resolver_context (resolver.Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(APFSContainerFileSystem, self).__init__(resolver_context)
+    super(APFSContainerFileSystem, self).__init__(resolver_context, path_spec)
     self._file_object = None
     self._fsapfs_container = None
 
@@ -37,11 +38,10 @@ class APFSContainerFileSystem(file_system.FileSystem):
     self._fsapfs_container = None
     self._file_object = None
 
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system defined by path specification.
 
     Args:
-      path_spec (PathSpec): a path specification.
       mode (Optional[str])): file access mode. The default is 'rb' read-only
           binary.
 
@@ -51,12 +51,12 @@ class APFSContainerFileSystem(file_system.FileSystem):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
     fsapfs_container = pyfsapfs.container()
     fsapfs_container.open_file_object(file_object)

@@ -24,17 +24,18 @@ class CompressedStreamResolverHelper(resolver_helper.ResolverHelper):
     """
     return compressed_stream_io.CompressedStream(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
     return compressed_stream_file_system.CompressedStreamFileSystem(
-        resolver_context)
+        resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(CompressedStreamResolverHelper())

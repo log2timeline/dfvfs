@@ -35,8 +35,9 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
     resolver.Resolver.key_chain.SetCredential(
         self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
 
-    self._file_system = fvde_file_system.FVDEFileSystem(self._resolver_context)
-    self._file_system.Open(self._fvde_path_spec)
+    self._file_system = fvde_file_system.FVDEFileSystem(
+        self._resolver_context, self._fvde_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

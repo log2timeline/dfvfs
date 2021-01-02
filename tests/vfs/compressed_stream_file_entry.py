@@ -31,8 +31,8 @@ class CompressedStreamFileEntryTest(shared_test_lib.BaseTestCase):
 
     self._file_system = (
         compressed_stream_file_system.CompressedStreamFileSystem(
-            self._resolver_context))
-    self._file_system.Open(self._compressed_stream_path_spec)
+            self._resolver_context, self._compressed_stream_path_spec))
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

@@ -4,10 +4,8 @@
 
 import unittest
 
-from dfvfs.path import fvde_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
-from dfvfs.path import tsk_partition_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 from dfvfs.vfs import fvde_file_system
@@ -23,14 +21,18 @@ class FVDEFileSystemTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['fvdetest.qcow2'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['fvdetest.qcow2'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
-    self._fvde_path_spec = fvde_path_spec.FVDEPathSpec(parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=test_qcow_path_spec)
+    self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FVDE, parent=test_tsk_partition_path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
 
@@ -40,19 +42,21 @@ class FVDEFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
-    file_system = fvde_file_system.FVDEFileSystem(self._resolver_context)
+    file_system = fvde_file_system.FVDEFileSystem(
+        self._resolver_context, self._fvde_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._fvde_path_spec)
+    file_system.Open()
 
     file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    file_system = fvde_file_system.FVDEFileSystem(self._resolver_context)
+    file_system = fvde_file_system.FVDEFileSystem(
+        self._resolver_context, self._fvde_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._fvde_path_spec)
+    file_system.Open()
 
     self.assertTrue(file_system.FileEntryExistsByPathSpec(self._fvde_path_spec))
 
@@ -60,10 +64,11 @@ class FVDEFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    file_system = fvde_file_system.FVDEFileSystem(self._resolver_context)
+    file_system = fvde_file_system.FVDEFileSystem(
+        self._resolver_context, self._fvde_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._fvde_path_spec)
+    file_system.Open()
 
     file_entry = file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
 
@@ -74,10 +79,11 @@ class FVDEFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    file_system = fvde_file_system.FVDEFileSystem(self._resolver_context)
+    file_system = fvde_file_system.FVDEFileSystem(
+        self._resolver_context, self._fvde_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._fvde_path_spec)
+    file_system.Open()
 
     file_entry = file_system.GetRootFileEntry()
 

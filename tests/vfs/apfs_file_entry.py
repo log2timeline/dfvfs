@@ -34,8 +34,9 @@ class APFSDirectoryTest(shared_test_lib.BaseTestCase):
     self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
         location='/', parent=self._apfs_container_path_spec)
 
-    self._file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._apfs_path_spec)
+    self._file_system = apfs_file_system.APFSFileSystem(
+        self._resolver_context, self._apfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -82,8 +83,9 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
         location='/', parent=self._apfs_container_path_spec)
 
-    self._file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._apfs_path_spec)
+    self._file_system = apfs_file_system.APFSFileSystem(
+        self._resolver_context, self._apfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -422,8 +424,9 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     resolver.Resolver.key_chain.SetCredential(
         self._apfs_container_path_spec, 'password', self._APFS_PASSWORD)
 
-    self._file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._apfs_path_spec)
+    self._file_system = apfs_file_system.APFSFileSystem(
+        self._resolver_context, self._apfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

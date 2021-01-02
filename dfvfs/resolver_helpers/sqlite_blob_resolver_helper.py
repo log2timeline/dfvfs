@@ -24,16 +24,18 @@ class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
     """
     return sqlite_blob_file_io.SQLiteBlobFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       SQLiteBlobFileSystem: file system.
     """
-    return sqlite_blob_file_system.SQLiteBlobFileSystem(resolver_context)
+    return sqlite_blob_file_system.SQLiteBlobFileSystem(
+        resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(SQLiteBlobResolverHelper())

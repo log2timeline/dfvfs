@@ -28,8 +28,8 @@ class TSKPartitionDirectoryTest(shared_test_lib.BaseTestCase):
             location='/', parent=self._os_path_spec))
 
     self._file_system = tsk_partition_file_system.TSKPartitionFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._tsk_partition_path_spec)
+        self._resolver_context, self._tsk_partition_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -69,8 +69,8 @@ class TSKPartitionFileEntryTest(shared_test_lib.BaseTestCase):
             location='/', parent=self._os_path_spec))
 
     self._file_system = tsk_partition_file_system.TSKPartitionFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._tsk_partition_path_spec)
+        self._resolver_context, self._tsk_partition_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

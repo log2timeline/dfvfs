@@ -24,16 +24,17 @@ class FVDEResolverHelper(resolver_helper.ResolverHelper):
     """
     return fvde_file_io.FVDEFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FVDEFileSystem: file system.
     """
-    return fvde_file_system.FVDEFileSystem(resolver_context)
+    return fvde_file_system.FVDEFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(FVDEResolverHelper())

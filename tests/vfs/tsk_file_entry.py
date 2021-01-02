@@ -119,8 +119,9 @@ class TSKDirectoryTest(shared_test_lib.BaseTestCase):
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location='/', parent=self._os_path_spec)
 
-    self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self._file_system.Open(self._tsk_path_spec)
+    self._file_system = tsk_file_system.TSKFileSystem(
+        self._resolver_context, self._tsk_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -162,8 +163,9 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location='/', parent=self._os_path_spec)
 
-    self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self._file_system.Open(self._tsk_path_spec)
+    self._file_system = tsk_file_system.TSKFileSystem(
+        self._resolver_context, self._tsk_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -500,8 +502,9 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location='/', parent=self._os_path_spec)
 
-    self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self._file_system.Open(self._tsk_path_spec)
+    self._file_system = tsk_file_system.TSKFileSystem(
+        self._resolver_context, self._tsk_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -838,8 +841,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
         location='/', parent=self._qcow_path_spec)
 
-    self._file_system = tsk_file_system.TSKFileSystem(self._resolver_context)
-    self._file_system.Open(self._tsk_path_spec)
+    self._file_system = tsk_file_system.TSKFileSystem(
+        self._resolver_context, self._tsk_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

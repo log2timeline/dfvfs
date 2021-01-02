@@ -40,19 +40,21 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
-    file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
+    file_system = apfs_file_system.APFSFileSystem(
+        self._resolver_context, self._apfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_path_spec)
+    file_system.Open()
 
     file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
+    file_system = apfs_file_system.APFSFileSystem(
+        self._resolver_context, self._apfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_path_spec)
+    file_system.Open()
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS, location='/passwords.txt',
@@ -69,10 +71,11 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
+    file_system = apfs_file_system.APFSFileSystem(
+        self._resolver_context, self._apfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_path_spec)
+    file_system.Open()
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS,
@@ -107,10 +110,11 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    file_system = apfs_file_system.APFSFileSystem(self._resolver_context)
+    file_system = apfs_file_system.APFSFileSystem(
+        self._resolver_context, self._apfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_path_spec)
+    file_system.Open()
 
     file_entry = file_system.GetRootFileEntry()
 

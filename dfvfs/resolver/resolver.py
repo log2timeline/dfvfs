@@ -154,10 +154,11 @@ class Resolver(object):
     file_system = resolver_context.GetFileSystem(path_spec_object)
     if not file_system:
       resolver_helper = cls._GetResolverHelper(path_spec_object.type_indicator)
-      file_system = resolver_helper.NewFileSystem(resolver_context)
+      file_system = resolver_helper.NewFileSystem(
+          resolver_context, path_spec_object)
 
       try:
-        file_system.Open(path_spec_object)
+        file_system.Open()
       except (IOError, ValueError) as exception:
         raise errors.BackEndError(
             'Unable to open file system with error: {0!s}'.format(exception))

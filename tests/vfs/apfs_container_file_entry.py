@@ -30,8 +30,8 @@ class APFSContainerDirectoryTest(shared_test_lib.BaseTestCase):
             location='/', parent=self._raw_path_spec))
 
     self._file_system = apfs_container_file_system.APFSContainerFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._apfs_container_path_spec)
+        self._resolver_context, self._apfs_container_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -72,8 +72,8 @@ class APFSContainerFileEntryTest(shared_test_lib.BaseTestCase):
             location='/', parent=self._raw_path_spec))
 
     self._file_system = apfs_container_file_system.APFSContainerFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._apfs_container_path_spec)
+        self._resolver_context, self._apfs_container_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

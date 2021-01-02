@@ -70,8 +70,9 @@ class DirectoryTest(shared_test_lib.BaseTestCase):
     self._resolver_context = context.Context()
     self._path_spec = fake_path_spec.FakePathSpec(location='/')
 
-    self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
-    self._file_system.Open(self._path_spec)
+    self._file_system = fake_file_system.FakeFileSystem(
+        self._resolver_context, self._path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -102,8 +103,9 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     self._resolver_context = context.Context()
     self._path_spec = fake_path_spec.FakePathSpec(location='/')
 
-    self._file_system = fake_file_system.FakeFileSystem(self._resolver_context)
-    self._file_system.Open(self._path_spec)
+    self._file_system = fake_file_system.FakeFileSystem(
+        self._resolver_context, self._path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

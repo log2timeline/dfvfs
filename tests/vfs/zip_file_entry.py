@@ -26,8 +26,9 @@ class ZIPDirectoryTest(shared_test_lib.BaseTestCase):
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location='/', parent=self._os_path_spec)
 
-    self._file_system = zip_file_system.ZipFileSystem(self._resolver_context)
-    self._file_system.Open(self._zip_path_spec)
+    self._file_system = zip_file_system.ZipFileSystem(
+        self._resolver_context, self._zip_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -67,8 +68,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self._zip_path_spec = zip_path_spec.ZipPathSpec(
         location='/', parent=self._os_path_spec)
 
-    self._file_system = zip_file_system.ZipFileSystem(self._resolver_context)
-    self._file_system.Open(self._zip_path_spec)
+    self._file_system = zip_file_system.ZipFileSystem(
+        self._resolver_context, self._zip_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -205,9 +207,11 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = zip_path_spec.ZipPathSpec(location='/', parent=path_spec)
 
-    file_system = zip_file_system.ZipFileSystem(self._resolver_context)
+    file_system = zip_file_system.ZipFileSystem(
+        self._resolver_context, path_spec)
     self.assertIsNotNone(file_system)
-    file_system.Open(path_spec)
+
+    file_system.Open()
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)

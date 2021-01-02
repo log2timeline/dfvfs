@@ -42,11 +42,12 @@ class ResolverHelper(object):
     raise errors.NotSupported(
         'Missing implementation to create file-like object.')
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.

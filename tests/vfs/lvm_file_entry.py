@@ -28,8 +28,9 @@ class LVMDirectoryTest(shared_test_lib.BaseTestCase):
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
         location='/', parent=self._raw_path_spec)
 
-    self._file_system = lvm_file_system.LVMFileSystem(self._resolver_context)
-    self._file_system.Open(self._lvm_path_spec)
+    self._file_system = lvm_file_system.LVMFileSystem(
+        self._resolver_context, self._lvm_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -68,8 +69,9 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     self._lvm_path_spec = lvm_path_spec.LVMPathSpec(
         location='/', parent=self._raw_path_spec)
 
-    self._file_system = lvm_file_system.LVMFileSystem(self._resolver_context)
-    self._file_system.Open(self._lvm_path_spec)
+    self._file_system = lvm_file_system.LVMFileSystem(
+        self._resolver_context, self._lvm_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

@@ -37,46 +37,51 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
-    file_system = hfs_file_system.HFSFileSystem(self._resolver_context)
+    file_system = hfs_file_system.HFSFileSystem(
+        self._resolver_context, self._hfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._hfs_path_spec)
+    file_system.Open()
 
     file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    file_system = hfs_file_system.HFSFileSystem(self._resolver_context)
+    file_system = hfs_file_system.HFSFileSystem(
+        self._resolver_context, self._hfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._hfs_path_spec)
+    file_system.Open()
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS, location='/passwords.txt',
         identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._raw_path_spec)
-    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+    result = file_system.FileEntryExistsByPathSpec(path_spec)
+    self.assertTrue(result)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS, location='/bogus.txt',
         parent=self._raw_path_spec)
-    self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
+    result = file_system.FileEntryExistsByPathSpec(path_spec)
+    self.assertFalse(result)
 
     file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    file_system = hfs_file_system.HFSFileSystem(self._resolver_context)
+    file_system = hfs_file_system.HFSFileSystem(
+        self._resolver_context, self._hfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._hfs_path_spec)
+    file_system.Open()
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
         identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._raw_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
     self.assertIsNotNone(file_entry)
+
     # There is no way to determine the file_entry.name without a location string
     # in the path_spec or retrieving the file_entry from its parent.
 
@@ -84,7 +89,6 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_HFS, location='/passwords.txt',
         identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'passwords.txt')
 
@@ -92,7 +96,6 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_HFS, location='/bogus.txt',
         parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
     self.assertIsNone(file_entry)
 
     file_system.Close()
@@ -101,13 +104,13 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    file_system = hfs_file_system.HFSFileSystem(self._resolver_context)
+    file_system = hfs_file_system.HFSFileSystem(
+        self._resolver_context, self._hfs_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._hfs_path_spec)
+    file_system.Open()
 
     file_entry = file_system.GetRootFileEntry()
-
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
 

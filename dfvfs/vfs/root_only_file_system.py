@@ -20,11 +20,10 @@ class RootOnlyFileSystem(file_system.FileSystem):
     """
     return
 
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode. The default is 'rb' which
           represents read-only binary.
 
@@ -34,7 +33,7 @@ class RootOnlyFileSystem(file_system.FileSystem):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 

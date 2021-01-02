@@ -24,16 +24,17 @@ class NTFSResolverHelper(resolver_helper.ResolverHelper):
     """
     return ntfs_file_io.NTFSFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return ntfs_file_system.NTFSFileSystem(resolver_context)
+    return ntfs_file_system.NTFSFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(NTFSResolverHelper())
