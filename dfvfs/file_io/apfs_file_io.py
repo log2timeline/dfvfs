@@ -25,7 +25,6 @@ class APFSFile(file_io.FileIO):
     """Closes the file-like object."""
     self._fsapfs_file_entry = None
 
-    self._file_system.Close()
     self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):

@@ -35,8 +35,6 @@ class EXTFileSystem(file_system.FileSystem):
       IOError: if the close failed.
     """
     self._fsext_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -59,12 +57,8 @@ class EXTFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      fsext_volume = pyfsext.volume()
-      fsext_volume.open_file_object(file_object)
-    except:
-      file_object.close()
-      raise
+    fsext_volume = pyfsext.volume()
+    fsext_volume.open_file_object(file_object)
 
     self._file_object = file_object
     self._fsext_volume = fsext_volume

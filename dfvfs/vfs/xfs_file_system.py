@@ -34,8 +34,6 @@ class XFSFileSystem(file_system.FileSystem):
       IOError: if the close failed.
     """
     self._fsxfs_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -58,12 +56,8 @@ class XFSFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      fsxfs_volume = pyfsxfs.volume()
-      fsxfs_volume.open_file_object(file_object)
-    except:
-      file_object.close()
-      raise
+    fsxfs_volume = pyfsxfs.volume()
+    fsxfs_volume.open_file_object(file_object)
 
     fsxfs_root_directory = fsxfs_volume.get_root_directory()
 

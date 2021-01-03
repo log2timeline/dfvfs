@@ -36,8 +36,6 @@ class CPIOFileSystem(file_system.FileSystem):
     """
     self._cpio_archive_file.Close()
     self._cpio_archive_file = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -62,11 +60,7 @@ class CPIOFileSystem(file_system.FileSystem):
         path_spec.parent, resolver_context=self._resolver_context)
 
     cpio_archive_file = cpio.CPIOArchiveFile()
-    try:
-      cpio_archive_file.Open(file_object)
-    except:
-      file_object.close()
-      raise
+    cpio_archive_file.Open(file_object)
 
     self._file_object = file_object
     self._cpio_archive_file = cpio_archive_file

@@ -112,7 +112,7 @@ class FileEntry(object):
     self._attributes = None
     self._data_streams = None
     self._directory = None
-    self._file_system = None
+    self._file_system = file_system
     self._is_root = is_root
     self._is_virtual = is_virtual
     self._link = None
@@ -122,24 +122,6 @@ class FileEntry(object):
 
     if not getattr(self, 'TYPE_INDICATOR', None):
       raise ValueError('Missing type indicator.')
-
-    file_system.Open(path_spec)
-
-    # Set file_system attribute when open was successful otherwise
-    # it will interfere with the __del__ function.
-    self._file_system = file_system
-
-  def __del__(self):
-    """Cleans up the file entry."""
-    # Note that __del__ can be invoked before __init__ has completed.
-
-    # Make a local copy of file_system in case the attribute is set to None
-    # after the check and before the call to Close.
-    file_system = getattr(self, '_file_system', None)
-    if file_system:
-      file_system.Close()
-
-    self._file_system = None
 
   def _GetAttributes(self):
     """Retrieves the attributes.

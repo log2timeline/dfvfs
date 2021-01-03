@@ -41,15 +41,6 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
     self._gzip_file = gzip_file
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def __del__(self):
-    """Cleans up the file entry."""
-    # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, '_gzip_file'):
-      self._gzip_file.close()
-      self._gzip_file = None
-
-    super(GzipFileEntry, self).__del__()
-
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""

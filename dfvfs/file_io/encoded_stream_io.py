@@ -40,12 +40,10 @@ class EncodedStream(file_io.FileIO):
     the encoded stream file-like object does not control
     the file-like object and should not actually close it.
     """
-    self._file_object.close()
-    self._file_object = None
-
     self._decoder = None
     self._decoded_data = b''
     self._encoded_data = b''
+    self._file_object = None
 
   def _GetDecoder(self):
     """Retrieves the decoder.

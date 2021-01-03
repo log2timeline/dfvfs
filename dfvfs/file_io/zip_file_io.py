@@ -45,7 +45,6 @@ class ZipFile(file_io.FileIO):
     self._zip_file = None
     self._zip_info = None
 
-    self._file_system.Close()
     self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):
@@ -70,11 +69,9 @@ class ZipFile(file_io.FileIO):
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     if not file_entry:
-      file_system.Close()
       raise IOError('Unable to retrieve file entry.')
 
     if not file_entry.IsFile():
-      file_system.Close()
       raise IOError('Not a regular file.')
 
     self._file_system = file_system

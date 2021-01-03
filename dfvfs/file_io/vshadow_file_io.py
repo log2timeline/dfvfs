@@ -26,7 +26,6 @@ class VShadowFile(file_io.FileIO):
     """Closes the file-like object."""
     self._vshadow_store = None
 
-    self._file_system.Close()
     self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):

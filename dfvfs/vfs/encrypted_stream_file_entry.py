@@ -41,15 +41,6 @@ class EncryptedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     self._encrypted_stream = encrypted_stream
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def __del__(self):
-    """Cleans up the file entry."""
-    # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, '_encrypted_stream'):
-      self._encrypted_stream.close()
-      self._encrypted_stream = None
-
-    super(EncryptedStreamFileEntry, self).__del__()
-
   @property
   def size(self):
     """int: size of the file entry in bytes or None if not available."""

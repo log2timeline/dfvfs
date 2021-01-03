@@ -36,7 +36,6 @@ class DataRange(file_io.FileIO):
     the data range file-like object does not control the file-like object
     and should not actually close it.
     """
-    self._file_object.close()
     self._file_object = None
     self._range_offset = -1
     self._range_size = -1

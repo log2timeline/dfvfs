@@ -62,6 +62,7 @@ class HFSFileTest(shared_test_lib.BaseTestCase):
     file_object.close()
 
     # Try open with a path specification that has no parent.
+    file_object = hfs_file_io.HFSFile(self._resolver_context)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):

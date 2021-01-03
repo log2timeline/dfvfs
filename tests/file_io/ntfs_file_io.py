@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.file_io import ntfs_file_io
+from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import os_path_spec
 
@@ -38,6 +39,13 @@ class NTFSFileTest(test_lib.NTFSImageFileTestCase):
     file_object = ntfs_file_io.NTFSFile(self._resolver_context)
 
     self._TestOpenCloseLocation(path_spec, file_object)
+
+    # Try open with a path specification that has no parent.
+    path_spec.parent = None
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+
+    with self.assertRaises(errors.PathSpecError):
+      file_object.open(path_spec=path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""

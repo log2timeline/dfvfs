@@ -35,8 +35,6 @@ class APFSContainerFileSystem(file_system.FileSystem):
       IOError: if the close failed.
     """
     self._fsapfs_container = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -60,12 +58,8 @@ class APFSContainerFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      fsapfs_container = pyfsapfs.container()
-      fsapfs_container.open_file_object(file_object)
-    except:
-      file_object.close()
-      raise
+    fsapfs_container = pyfsapfs.container()
+    fsapfs_container.open_file_object(file_object)
 
     self._file_object = file_object
     self._fsapfs_container = fsapfs_container

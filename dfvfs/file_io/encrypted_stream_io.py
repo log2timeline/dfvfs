@@ -41,12 +41,10 @@ class EncryptedStream(file_io.FileIO):
     the encrypted stream file-like object does not control
     the file-like object and should not actually close it.
     """
-    self._file_object.close()
-    self._file_object = None
-
     self._decrypter = None
     self._decrypted_data = b''
     self._encrypted_data = b''
+    self._file_object = None
 
   def _GetDecrypter(self):
     """Retrieves a decrypter.

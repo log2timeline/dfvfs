@@ -17,9 +17,13 @@ class FileIO(object):
       resolver_context (Context): resolver context.
     """
     super(FileIO, self).__init__()
-    self._is_cached = False
     self._is_open = False
     self._resolver_context = resolver_context
+
+  def __del__(self):
+    """Cleans up the file-like object."""
+    if self._is_open:
+      self._Close()
 
   @abc.abstractmethod
   def _Close(self):
@@ -64,22 +68,14 @@ class FileIO(object):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
-    if self._is_open and not self._is_cached:
+    if self._is_open:
       raise IOError('Already open.')
 
     if mode != 'rb':
       raise ValueError('Unsupported mode: {0:s}.'.format(mode))
 
-    if not self._is_open:
-      self._Open(path_spec=path_spec, mode=mode)
-      self._is_open = True
-
-      if path_spec and not self._resolver_context.GetFileObject(path_spec):
-        self._resolver_context.CacheFileObject(path_spec, self)
-        self._is_cached = True
-
-    if self._is_cached:
-      self._resolver_context.GrabFileObject(path_spec)
+    self._Open(path_spec=path_spec, mode=mode)
+    self._is_open = True
 
   def close(self):
     """Closes the file-like object.
@@ -91,17 +87,8 @@ class FileIO(object):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    if not self._is_cached:
-      close_file_object = True
-    elif self._resolver_context.ReleaseFileObject(self):
-      self._is_cached = False
-      close_file_object = True
-    else:
-      close_file_object = False
-
-    if close_file_object:
-      self._Close()
-      self._is_open = False
+    self._Close()
+    self._is_open = False
 
   @abc.abstractmethod
   def read(self, size=None):

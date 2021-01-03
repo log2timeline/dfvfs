@@ -183,7 +183,6 @@ class SQLiteDatabaseFile(object):
     data = file_object.read(len(self._HEADER_SIGNATURE))
 
     if data != self._HEADER_SIGNATURE:
-      file_object.close()
       raise IOError('Unsupported SQLite database signature.')
 
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:

@@ -41,8 +41,6 @@ class ZipFileSystem(file_system.FileSystem):
     """
     self._zip_file.close()
     self._zip_file = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -66,11 +64,7 @@ class ZipFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      zip_file = zipfile.ZipFile(file_object, 'r')
-    except:
-      file_object.close()
-      raise
+    zip_file = zipfile.ZipFile(file_object, 'r')
 
     self._file_object = file_object
     self._zip_file = zip_file

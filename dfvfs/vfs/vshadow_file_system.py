@@ -36,8 +36,6 @@ class VShadowFileSystem(file_system.FileSystem):
     """
     self._vshadow_volume.close()
     self._vshadow_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -61,12 +59,8 @@ class VShadowFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      vshadow_volume = pyvshadow.volume()
-      vshadow_volume.open_file_object(file_object)
-    except:
-      file_object.close()
-      raise
+    vshadow_volume = pyvshadow.volume()
+    vshadow_volume.open_file_object(file_object)
 
     self._file_object = file_object
     self._vshadow_volume = vshadow_volume

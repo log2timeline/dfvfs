@@ -29,9 +29,6 @@ class QCOWFile(file_object_io.FileObjectIO):
     for qcow_file in self._parent_qcow_files:
       qcow_file.close()
 
-    for file_object in self._sub_file_objects:
-      file_object.close()
-
     self._parent_qcow_files = []
     self._sub_file_objects = []
 
@@ -60,10 +57,7 @@ class QCOWFile(file_object_io.FileObjectIO):
       file_system = resolver.Resolver.OpenFileSystem(
           path_spec.parent, resolver_context=self._resolver_context)
 
-      try:
-        self._OpenParentFile(file_system, path_spec.parent, qcow_file)
-      finally:
-        file_system.Close()
+      self._OpenParentFile(file_system, path_spec.parent, qcow_file)
 
     return qcow_file
 

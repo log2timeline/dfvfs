@@ -35,8 +35,6 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     self._fvde_volume.close()
     self._fvde_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -63,12 +61,8 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      fvde.FVDEVolumeOpen(
-          fvde_volume, path_spec, file_object, resolver.Resolver.key_chain)
-    except:
-      file_object.close()
-      raise
+    fvde.FVDEVolumeOpen(
+        fvde_volume, path_spec, file_object, resolver.Resolver.key_chain)
 
     self._fvde_volume = fvde_volume
     self._file_object = file_object

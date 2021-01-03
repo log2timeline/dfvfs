@@ -25,13 +25,17 @@ class FileSystem(object):
           indicator.
     """
     super(FileSystem, self).__init__()
-    self._is_cached = False
     self._is_open = False
     self._path_spec = None
     self._resolver_context = resolver_context
 
     if not getattr(self, 'TYPE_INDICATOR', None):
       raise ValueError('Missing type indicator.')
+
+  def __del__(self):
+    """Cleans up the file system."""
+    if self._is_open:
+      self._Close()
 
   @property
   def type_indicator(self):
@@ -87,18 +91,9 @@ class FileSystem(object):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    if not self._is_cached:
-      close_file_system = True
-    elif self._resolver_context.ReleaseFileSystem(self):
-      self._is_cached = False
-      close_file_system = True
-    else:
-      close_file_system = False
-
-    if close_file_system:
-      self._Close()
-      self._is_open = False
-      self._path_spec = None
+    self._Close()
+    self._is_open = False
+    self._path_spec = None
 
   def DirnamePath(self, path):
     """Determines the directory name of the path.
@@ -247,7 +242,7 @@ class FileSystem(object):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
-    if self._is_open and not self._is_cached:
+    if self._is_open:
       raise IOError('Already open.')
 
     if mode != 'rb':
@@ -260,13 +255,6 @@ class FileSystem(object):
       self._Open(path_spec, mode=mode)
       self._is_open = True
       self._path_spec = path_spec
-
-      if path_spec and not self._resolver_context.GetFileSystem(path_spec):
-        self._resolver_context.CacheFileSystem(path_spec, self)
-        self._is_cached = True
-
-    if self._is_cached:
-      self._resolver_context.GrabFileSystem(path_spec)
 
   def SplitPath(self, path):
     """Splits the path into path segments.

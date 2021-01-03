@@ -35,8 +35,6 @@ class LUKSDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     self._luksde_volume.close()
     self._luksde_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -63,12 +61,8 @@ class LUKSDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      luksde.LUKSDEVolumeOpen(
-          luksde_volume, path_spec, file_object, resolver.Resolver.key_chain)
-    except:
-      file_object.close()
-      raise
+    luksde.LUKSDEVolumeOpen(
+        luksde_volume, path_spec, file_object, resolver.Resolver.key_chain)
 
     self._luksde_volume = luksde_volume
     self._file_object = file_object

@@ -42,9 +42,7 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 116)
-    file_object.close()
 
   def _TestOpenCloseLocation(self, parent_path_spec):
     """Test the open and close functionality using a location.
@@ -58,9 +56,7 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 116)
-    file_object.close()
 
   def _TestSeek(self, parent_path_spec):
     """Test the seek functionality.
@@ -74,7 +70,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -105,8 +100,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    file_object.close()
-
   def _TestRead(self, parent_path_spec):
     """Test the read functionality.
 
@@ -119,7 +112,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     read_buffer = file_object.read()
 
     expected_buffer = (
@@ -132,8 +124,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(read_buffer, expected_buffer)
 
     # TODO: add boundary scenarios.
-
-    file_object.close()
 
 
 class ImageFileTestCase(shared_test_lib.BaseTestCase):
@@ -830,9 +820,7 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 126)
-    file_object.close()
 
     # TODO: add a failing scenario.
 
@@ -853,9 +841,7 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 126)
-    file_object.close()
 
     # Try open with a path specification that has no parent.
     path_spec.parent = None
@@ -882,7 +868,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 24)
 
     file_object.seek(10)
@@ -913,8 +898,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    file_object.close()
-
   def _TestRead(self, parent_path_spec):
     """Test the read functionality.
 
@@ -933,7 +916,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
     read_buffer = file_object.read()
 
     expected_buffer = (
@@ -946,5 +928,3 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(read_buffer, expected_buffer)
 
     # TODO: add boundary scenarios.
-
-    file_object.close()

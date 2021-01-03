@@ -26,7 +26,6 @@ class NTFSFile(file_io.FileIO):
     self._fsntfs_data_stream = None
     self._fsntfs_file_entry = None
 
-    self._file_system.Close()
     self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):

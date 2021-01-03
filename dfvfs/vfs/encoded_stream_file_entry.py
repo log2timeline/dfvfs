@@ -41,15 +41,6 @@ class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     self._encoded_stream = encoded_stream
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def __del__(self):
-    """Cleans up the file entry."""
-    # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, '_encoded_stream'):
-      self._encoded_stream.close()
-      self._encoded_stream = None
-
-    super(EncodedStreamFileEntry, self).__del__()
-
   @property
   def size(self):
     """int: size of the file entry in bytes or None if not available."""

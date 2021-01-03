@@ -21,7 +21,6 @@ class TSKPartitionFile(data_range_io.DataRange):
 
   def _Close(self):
     """Closes the file-like object."""
-    self._file_system.Close()
     self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):

@@ -25,10 +25,6 @@ class EWFFile(file_object_io.FileObjectIO):
     """Closes the file-like object."""
     # pylint: disable=protected-access
     super(EWFFile, self)._Close()
-
-    for file_object in self._file_objects:
-      file_object.close()
-
     self._file_objects = []
 
   def _OpenFileObject(self, path_spec):
