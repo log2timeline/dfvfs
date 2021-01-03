@@ -67,10 +67,6 @@ class TSKPartitionFile(data_range_io.DataRange):
     range_offset *= bytes_per_sector
     range_size *= bytes_per_sector
 
-    self.SetRange(range_offset, range_size)
+    self._SetRange(range_offset, range_size)
     self._file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
-    self._file_object_set_in_init = True
-
-    # pylint: disable=protected-access
-    super(TSKPartitionFile, self)._Open(path_spec=path_spec, mode=mode)

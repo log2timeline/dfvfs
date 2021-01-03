@@ -12,14 +12,13 @@ from dfvfs.resolver import resolver
 class QCOWFile(file_object_io.FileObjectIO):
   """File-like object using pyqcow."""
 
-  def __init__(self, resolver_context, file_object=None):
+  def __init__(self, resolver_context):
     """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
-      file_object (Optional[FileIO]): file-like object.
     """
-    super(QCOWFile, self).__init__(resolver_context, file_object=file_object)
+    super(QCOWFile, self).__init__(resolver_context)
     self._parent_qcow_files = []
     self._sub_file_objects = []
 

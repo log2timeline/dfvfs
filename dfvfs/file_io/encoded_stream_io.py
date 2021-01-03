@@ -15,25 +15,12 @@ class EncodedStream(file_io.FileIO):
   # The size of the encoded data buffer.
   _ENCODED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
-  def __init__(
-      self, resolver_context, encoding_method=None, file_object=None):
+  def __init__(self, resolver_context):
     """Initializes a file-like object.
-
-    If the file-like object is chained do not separately use the parent
-    file-like object.
 
     Args:
       resolver_context (Context): resolver context.
-      encoding_method (Optional[str]): method used to the encode the data.
-      file_object (Optional[file]): parent file-like object.
-
-    Raises:
-      ValueError: if file_object provided but encoding_method is not.
     """
-    if file_object is not None and encoding_method is None:
-      raise ValueError(
-          'File-like object provided without corresponding encoding method.')
-
     super(EncodedStream, self).__init__(resolver_context)
     self._current_offset = 0
     self._decoded_data = b''
@@ -42,9 +29,8 @@ class EncodedStream(file_io.FileIO):
     self._decoded_stream_size = None
     self._decoder = None
     self._encoded_data = b''
-    self._encoding_method = encoding_method
-    self._file_object = file_object
-    self._file_object_set_in_init = bool(file_object)
+    self._encoding_method = None
+    self._file_object = None
     self._realign_offset = True
 
   def _Close(self):
@@ -54,9 +40,8 @@ class EncodedStream(file_io.FileIO):
     the encoded stream file-like object does not control
     the file-like object and should not actually close it.
     """
-    if not self._file_object_set_in_init:
-      self._file_object.close()
-      self._file_object = None
+    self._file_object.close()
+    self._file_object = None
 
     self._decoder = None
     self._decoded_data = b''
@@ -109,22 +94,21 @@ class EncodedStream(file_io.FileIO):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not self._file_object_set_in_init and not path_spec:
+    if not path_spec:
       raise ValueError('Missing path specification.')
 
-    if not self._file_object_set_in_init:
-      if not path_spec.HasParent():
-        raise errors.PathSpecError(
-            'Unsupported path specification without parent.')
+    if not path_spec.HasParent():
+      raise errors.PathSpecError(
+          'Unsupported path specification without parent.')
 
-      self._encoding_method = getattr(path_spec, 'encoding_method', None)
+    self._encoding_method = getattr(path_spec, 'encoding_method', None)
 
-      if self._encoding_method is None:
-        raise errors.PathSpecError(
-            'Path specification missing encoding method.')
+    if self._encoding_method is None:
+      raise errors.PathSpecError(
+          'Path specification missing encoding method.')
 
-      self._file_object = resolver.Resolver.OpenFileObject(
-          path_spec.parent, resolver_context=self._resolver_context)
+    self._file_object = resolver.Resolver.OpenFileObject(
+        path_spec.parent, resolver_context=self._resolver_context)
 
   def _AlignDecodedDataOffset(self, decoded_data_offset):
     """Aligns the encoded file with the decoded data offset.
