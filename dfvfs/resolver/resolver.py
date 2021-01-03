@@ -103,7 +103,7 @@ class Resolver(object):
       resolver_helper = cls._GetResolverHelper(path_spec_object.type_indicator)
       file_object = resolver_helper.NewFileObject(resolver_context)
 
-      file_object.open(path_spec=path_spec_object)
+      file_object.Open(path_spec=path_spec_object)
       resolver_context.CacheFileObject(path_spec_object, file_object)
 
     return file_object

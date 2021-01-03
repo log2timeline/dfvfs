@@ -23,9 +23,8 @@ class APFSFile(file_io.FileIO):
 
   def _Close(self):
     """Closes the file-like object."""
-    self._fsapfs_file_entry = None
-
     self._file_system = None
+    self._fsapfs_file_entry = None
 
   def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.

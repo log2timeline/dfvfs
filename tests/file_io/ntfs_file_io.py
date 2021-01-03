@@ -45,7 +45,7 @@ class NTFSFileTest(test_lib.NTFSImageFileTestCase):
     file_object = ntfs_file_io.NTFSFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec=path_spec)
+      self._TestOpenCloseLocation(path_spec, file_object)
 
   def testSeek(self):
     """Test the seek functionality."""

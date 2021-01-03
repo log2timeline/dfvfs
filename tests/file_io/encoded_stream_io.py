@@ -36,49 +36,39 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
-
-    file_object.close()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
-
-    file_object.close()
 
   def testSeek(self):
     """Test the seek functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestSeekFileObject(file_object)
-
-    file_object.close()
 
     # TODO: Test SEEK_CUR after open.
 
     # Test SEEK_END after open.
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     file_object.seek(-10, os.SEEK_END)
     self.assertEqual(file_object.read(5), b'times')
 
-    file_object.close()
-
   def testRead(self):
     """Test the read functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestReadFileObject(file_object)
-
-    file_object.close()
 
 
 class Base32EncodedStreamTest(test_lib.SylogTestCase):
@@ -104,49 +94,39 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
-
-    file_object.close()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
-
-    file_object.close()
 
   def testSeek(self):
     """Test the seek functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestSeekFileObject(file_object)
-
-    file_object.close()
 
     # TODO: Test SEEK_CUR after open.
 
     # Test SEEK_END after open.
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     file_object.seek(-10, os.SEEK_END)
     self.assertEqual(file_object.read(5), b'times')
 
-    file_object.close()
-
   def testRead(self):
     """Test the read functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestReadFileObject(file_object)
-
-    file_object.close()
 
 
 class Base64EncodedStreamTest(test_lib.SylogTestCase):
@@ -172,49 +152,39 @@ class Base64EncodedStreamTest(test_lib.SylogTestCase):
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
-
-    file_object.close()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
-
-    file_object.close()
 
   def testSeek(self):
     """Test the seek functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestSeekFileObject(file_object)
-
-    file_object.close()
 
     # TODO: Test SEEK_CUR after open.
 
     # Test SEEK_END after open.
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     file_object.seek(-10, os.SEEK_END)
     self.assertEqual(file_object.read(5), b'times')
 
-    file_object.close()
-
   def testRead(self):
     """Test the read functionality."""
     file_object = encoded_stream_io.EncodedStream(self._resolver_context)
-    file_object.open(path_spec=self._encoded_stream_path_spec)
+    file_object.Open(path_spec=self._encoded_stream_path_spec)
 
     self._TestReadFileObject(file_object)
-
-    file_object.close()
 
 
 if __name__ == '__main__':

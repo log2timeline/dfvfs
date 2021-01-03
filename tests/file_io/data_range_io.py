@@ -36,11 +36,9 @@ class DataRangeTest(test_lib.SylogTestCase):
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
     file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.open(path_spec=self._data_range_path_spec)
+    file_object.Open(path_spec=self._data_range_path_spec)
 
     self.assertEqual(file_object.get_size(), 1080)
-
-    file_object.close()
 
   def testSetRange(self):
     """Test the _SetRange function."""
@@ -63,29 +61,23 @@ class DataRangeTest(test_lib.SylogTestCase):
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.open(path_spec=self._data_range_path_spec)
+    file_object.Open(path_spec=self._data_range_path_spec)
 
     self.assertEqual(file_object.get_size(), 1080)
-
-    file_object.close()
 
   def testSeek(self):
     """Test the seek functionality."""
     file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.open(path_spec=self._data_range_path_spec)
+    file_object.Open(path_spec=self._data_range_path_spec)
 
     self._TestSeekFileObject(file_object, base_offset=0)
-
-    file_object.close()
 
   def testRead(self):
     """Test the read functionality."""
     file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.open(path_spec=self._data_range_path_spec)
+    file_object.Open(path_spec=self._data_range_path_spec)
 
     self._TestReadFileObject(file_object, base_offset=0)
-
-    file_object.close()
 
 
 if __name__ == '__main__':

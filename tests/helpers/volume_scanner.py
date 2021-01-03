@@ -758,7 +758,6 @@ class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
     file_object = test_scanner.OpenFile(
         'C:\\Windows\\System32\\config\\syslog')
     self.assertIsNotNone(file_object)
-    file_object.close()
 
     file_object = test_scanner.OpenFile('C:\\bogus')
     self.assertIsNone(file_object)

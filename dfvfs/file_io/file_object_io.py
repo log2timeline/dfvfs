@@ -23,12 +23,8 @@ class FileObjectIO(file_io.FileIO):
     self._size = None
 
   def _Close(self):
-    """Closes the file-like object.
-
-    If the file-like object was passed in the init function the file
-    object-based file-like object does not control the file-like object
-    and should not actually close it.
-    """
+    """Closes the file-like object."""
+    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec=None, mode='rb'):

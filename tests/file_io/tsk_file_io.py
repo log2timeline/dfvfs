@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.file_io import tsk_file_io
+from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.path import tsk_path_spec
 
@@ -65,6 +66,13 @@ class TSKFileTestNTFS(test_lib.NTFSImageFileTestCase):
     file_object = tsk_file_io.TSKFile(self._resolver_context)
 
     self._TestOpenCloseLocation(path_spec, file_object)
+
+    # Try open with a path specification that has no parent.
+    path_spec.parent = None
+    file_object = tsk_file_io.TSKFile(self._resolver_context)
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec, file_object)
 
   def testSeek(self):
     """Test the seek functionality."""

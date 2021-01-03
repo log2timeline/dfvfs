@@ -192,8 +192,6 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     file_data = file_object.read()
     self.assertEqual(file_data, b'FILE1')
 
-    file_object.close()
-
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     test_file = '/test_data/testdir_fake/file1.txt'

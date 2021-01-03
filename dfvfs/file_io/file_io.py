@@ -4,6 +4,8 @@
 import abc
 import os
 
+from dfvfs.lib import decorators
+
 
 class FileIO(object):
   """VFS file-like object interface."""
@@ -50,11 +52,7 @@ class FileIO(object):
       ValueError: if the path specification is invalid.
     """
 
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-  # pylint: disable=invalid-name
-
-  def open(self, path_spec=None, mode='rb'):
+  def Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
@@ -77,18 +75,24 @@ class FileIO(object):
     self._Open(path_spec=path_spec, mode=mode)
     self._is_open = True
 
-  def close(self):
-    """Closes the file-like object.
+  # Note: that the following functions do not follow the style guide
+  # because they are part of the file-like object interface.
+  # pylint: disable=invalid-name
 
-    Raises:
-      IOError: if the file-like object was not opened or the close failed.
-      OSError: if the file-like object was not opened or the close failed.
+  @decorators.deprecated
+  def open(self, path_spec=None, mode='rb'):
+    """Opens the file-like object defined by path specification.
+
+    Args:
+      path_spec (Optional[PathSpec]): path specification.
+      mode (Optional[str]): file access mode.
     """
-    if not self._is_open:
-      raise IOError('Not opened.')
+    self.Open(path_spec=path_spec, mode=mode)
 
-    self._Close()
-    self._is_open = False
+  @decorators.deprecated
+  def close(self):
+    """Closes the file-like object."""
+    return
 
   @abc.abstractmethod
   def read(self, size=None):

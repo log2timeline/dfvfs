@@ -82,9 +82,11 @@ class OSFile(file_io.FileIO):
         is_device = True
 
     if is_device:
-      self._file_object = pysmdev.handle()
-      self._file_object.open(location, mode=mode)
-      self._size = self._file_object.media_size
+      smdev_handle = pysmdev.handle()
+      smdev_handle.open(location, mode=mode)
+
+      self._file_object = smdev_handle
+      self._size = smdev_handle.media_size
 
     else:
       self._file_object = open(location, mode=mode)

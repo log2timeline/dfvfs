@@ -52,7 +52,6 @@ class MountPointManagerTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_object)
     self.assertEqual(file_object.get_size(), 116)
-    file_object.close()
 
     parent_path_spec = mount_path_spec.MountPathSpec(identifier='D')
     path_spec = tsk_path_spec.TSKPathSpec(

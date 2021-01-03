@@ -74,5 +74,3 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
         path_spec, self._resolver_context)
 
     self.assertIsNotNone(file_object)
-
-    file_object.close()

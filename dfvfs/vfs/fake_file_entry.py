@@ -169,7 +169,7 @@ class FakeFileEntry(file_entry.FileEntry):
 
     file_data = self._file_system.GetDataByPath(location)
     file_object = fake_file_io.FakeFile(self._resolver_context, file_data)
-    file_object.open(path_spec=self.path_spec)
+    file_object.Open(path_spec=self.path_spec)
     return file_object
 
   def GetParentFileEntry(self):

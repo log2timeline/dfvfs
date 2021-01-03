@@ -104,7 +104,6 @@ class CPIOArchiveFile(data_format.DataFormat):
     self._encoding = encoding
     self._file_entries = None
     self._file_object = None
-    self._file_object_opened_in_object = False
     self._file_size = 0
 
     self.file_format = None

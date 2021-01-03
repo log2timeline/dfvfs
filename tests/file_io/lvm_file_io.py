@@ -38,38 +38,36 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
         parent=self._raw_path_spec, volume_index=0)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 4194304)
-    file_object.close()
 
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._raw_path_spec, volume_index=9)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec=path_spec)
+      file_object.Open(path_spec=path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
         location='/lvm1', parent=self._raw_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 4194304)
-    file_object.close()
 
     path_spec = lvm_path_spec.LVMPathSpec(
         location='/lvm0', parent=self._raw_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec=path_spec)
+      file_object.Open(path_spec=path_spec)
 
     path_spec = lvm_path_spec.LVMPathSpec(
         location='/lvm9', parent=self._raw_path_spec)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec=path_spec)
+      file_object.Open(path_spec=path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
@@ -77,7 +75,7 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
         parent=self._raw_path_spec, volume_index=0)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 4194304)
 
     file_object.seek(0x488)
@@ -114,15 +112,13 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), expected_offset)
 
-    file_object.close()
-
   def testRead(self):
     """Test the read functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._raw_path_spec, volume_index=0)
     file_object = lvm_file_io.LVMFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 4194304)
 
     file_object.seek(0x80400)
@@ -130,8 +126,6 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     expected_data = (
         b'This is a text file.\n\nWe should be able to parse it.\n')
     self.assertEqual(file_object.read(53), expected_data)
-
-    file_object.close()
 
 
 class LVMImageFileTest(test_lib.Ext2ImageFileTestCase):

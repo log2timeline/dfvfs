@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """The resolver context object."""
 
+from dfvfs.lib import decorators
 from dfvfs.resolver import cache
 
 
@@ -87,7 +88,7 @@ class Context(object):
     """
     return self._file_object_cache.GetObject(path_spec.comparable)
 
-  # This function is kept for backwards compatiblity.
+  @decorators.deprecated
   def GetFileObjectReferenceCount(self, path_spec):
     """Retrieves the reference count of a cached file-like object.
 
