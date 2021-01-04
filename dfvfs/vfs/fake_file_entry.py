@@ -168,8 +168,9 @@ class FakeFileEntry(file_entry.FileEntry):
       return None
 
     file_data = self._file_system.GetDataByPath(location)
-    file_object = fake_file_io.FakeFile(self._resolver_context, file_data)
-    file_object.Open(path_spec=self.path_spec)
+    file_object = fake_file_io.FakeFile(
+        self._resolver_context, self.path_spec, file_data)
+    file_object.Open()
     return file_object
 
   def GetParentFileEntry(self):

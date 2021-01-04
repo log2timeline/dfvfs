@@ -32,22 +32,25 @@ class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = sqlite_blob_file_io.SQLiteBlobFile(self._resolver_context)
-    file_object.Open(path_spec=self._sqlite_blob_path_spec)
+    file_object = sqlite_blob_file_io.SQLiteBlobFile(
+        self._resolver_context, self._sqlite_blob_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = sqlite_blob_file_io.SQLiteBlobFile(self._resolver_context)
-    file_object.Open(path_spec=self._sqlite_blob_path_spec)
+    file_object = sqlite_blob_file_io.SQLiteBlobFile(
+        self._resolver_context, self._sqlite_blob_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = sqlite_blob_file_io.SQLiteBlobFile(self._resolver_context)
-    file_object.Open(path_spec=self._sqlite_blob_path_spec)
+    file_object = sqlite_blob_file_io.SQLiteBlobFile(
+        self._resolver_context, self._sqlite_blob_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 
@@ -71,22 +74,25 @@ class SQLiteBlobFileWithIndexTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = sqlite_blob_file_io.SQLiteBlobFile(self._resolver_context)
-    file_object.Open(path_spec=self._sqlite_blob_path_spec)
+    file_object = sqlite_blob_file_io.SQLiteBlobFile(
+        self._resolver_context, self._sqlite_blob_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = sqlite_blob_file_io.SQLiteBlobFile(self._resolver_context)
-    file_object.Open(path_spec=self._sqlite_blob_path_spec)
+    file_object = sqlite_blob_file_io.SQLiteBlobFile(
+        self._resolver_context, self._sqlite_blob_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = sqlite_blob_file_io.SQLiteBlobFile(self._resolver_context)
-    file_object.Open(path_spec=self._sqlite_blob_path_spec)
+    file_object = sqlite_blob_file_io.SQLiteBlobFile(
+        self._resolver_context, self._sqlite_blob_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 

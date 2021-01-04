@@ -36,46 +36,46 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     """Test the open and close functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._raw_path_spec, volume_index=0)
-    file_object = lvm_file_io.LVMFile(self._resolver_context)
+    file_object = lvm_file_io.LVMFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 4194304)
 
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._raw_path_spec, volume_index=9)
-    file_object = lvm_file_io.LVMFile(self._resolver_context)
+    file_object = lvm_file_io.LVMFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
     path_spec = lvm_path_spec.LVMPathSpec(
         location='/lvm1', parent=self._raw_path_spec)
-    file_object = lvm_file_io.LVMFile(self._resolver_context)
+    file_object = lvm_file_io.LVMFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 4194304)
 
     path_spec = lvm_path_spec.LVMPathSpec(
         location='/lvm0', parent=self._raw_path_spec)
-    file_object = lvm_file_io.LVMFile(self._resolver_context)
+    file_object = lvm_file_io.LVMFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
     path_spec = lvm_path_spec.LVMPathSpec(
         location='/lvm9', parent=self._raw_path_spec)
-    file_object = lvm_file_io.LVMFile(self._resolver_context)
+    file_object = lvm_file_io.LVMFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
   def testSeek(self):
     """Test the seek functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._raw_path_spec, volume_index=0)
-    file_object = lvm_file_io.LVMFile(self._resolver_context)
+    file_object = lvm_file_io.LVMFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 4194304)
 
     file_object.seek(0x488)
@@ -116,9 +116,9 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     """Test the read functionality."""
     path_spec = lvm_path_spec.LVMPathSpec(
         parent=self._raw_path_spec, volume_index=0)
-    file_object = lvm_file_io.LVMFile(self._resolver_context)
+    file_object = lvm_file_io.LVMFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 4194304)
 
     file_object.seek(0x80400)

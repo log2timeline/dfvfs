@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The file object file-like object implementation."""
+"""The file object file input/output (IO) object implementation."""
 
 import abc
 import os
@@ -8,17 +8,18 @@ from dfvfs.file_io import file_io
 
 
 class FileObjectIO(file_io.FileIO):
-  """Base class for file object-based file-like object."""
+  """Base class for file object-based file input/output (IO) object."""
 
   # pylint: disable=redundant-returns-doc
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(FileObjectIO, self).__init__(resolver_context)
+    super(FileObjectIO, self).__init__(resolver_context, path_spec)
     self._file_object = None
     self._size = None
 
@@ -27,11 +28,10 @@ class FileObjectIO(file_io.FileIO):
     self._file_object.close()
     self._file_object = None
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec (Optional[PathSpec]): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -39,12 +39,8 @@ class FileObjectIO(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    self._file_object = self._OpenFileObject(path_spec)
+    self._file_object = self._OpenFileObject(self._path_spec)
     if not self._file_object:
       raise IOError('Unable to open missing file-like object.')
 

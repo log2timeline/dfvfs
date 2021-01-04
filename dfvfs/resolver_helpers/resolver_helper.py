@@ -27,20 +27,22 @@ class ResolverHelper(object):
     # pylint: disable=no-member
     return self.TYPE_INDICATOR
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      FileIO: file-like object.
+      FileIO: file input/output (IO) object.
 
     Raises:
-      NotSupported: if there is no implementation to create a file-like object.
+      NotSupported: if there is no implementation to create a file
+          input/output (IO) object.
     """
     raise errors.NotSupported(
-        'Missing implementation to create file-like object.')
+        'Missing implementation to create file input/output (IO) object.')
 
   def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system.

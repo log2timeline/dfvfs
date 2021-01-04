@@ -8,7 +8,7 @@ from dfvfs.resolver import resolver
 
 
 class GzipFile(file_object_io.FileObjectIO):
-  """File-like object of a gzip file."""
+  """File input/output (IO) object of a gzip file."""
 
   @property
   def comments(self):

@@ -10,18 +10,19 @@ from dfvfs.resolver import resolver
 
 
 class CompressedStream(file_io.FileIO):
-  """File-like object of a compressed stream."""
+  """File input/output (IO) object of a compressed stream."""
 
   # The size of the compressed data buffer.
   _COMPRESSED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(CompressedStream, self).__init__(resolver_context)
+    super(CompressedStream, self).__init__(resolver_context, path_spec)
     self._compression_method = None
     self._file_object = None
     self._compressed_data = b''
@@ -79,11 +80,10 @@ class CompressedStream(file_io.FileIO):
 
     return uncompressed_stream_size
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object.
 
     Args:
-      path_spec (Optional[PathSpec]): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -91,23 +91,20 @@ class CompressedStream(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    self._compression_method = getattr(path_spec, 'compression_method', None)
+    self._compression_method = getattr(
+        self._path_spec, 'compression_method', None)
 
     if self._compression_method is None:
       raise errors.PathSpecError(
           'Path specification missing compression method.')
 
     self._file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
   def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
     """Aligns the compressed file with the uncompressed data offset.

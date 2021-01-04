@@ -34,22 +34,25 @@ class ZipFileTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = zip_file_io.ZipFile(self._resolver_context)
-    file_object.Open(path_spec=self._zip_path_spec)
+    file_object = zip_file_io.ZipFile(
+        self._resolver_context, self._zip_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = zip_file_io.ZipFile(self._resolver_context)
-    file_object.Open(path_spec=self._zip_path_spec)
+    file_object = zip_file_io.ZipFile(
+        self._resolver_context, self._zip_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = zip_file_io.ZipFile(self._resolver_context)
-    file_object.Open(path_spec=self._zip_path_spec)
+    file_object = zip_file_io.ZipFile(
+        self._resolver_context, self._zip_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 

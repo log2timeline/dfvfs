@@ -12,16 +12,17 @@ class RawResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_RAW
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      FileIO: file-like object.
+      FileIO: file input/output (IO) object.
     """
-    return raw_file_io.RawFile(resolver_context)
+    return raw_file_io.RawFile(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(RawResolverHelper())

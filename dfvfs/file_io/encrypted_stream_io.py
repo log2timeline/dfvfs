@@ -10,18 +10,19 @@ from dfvfs.resolver import resolver
 
 
 class EncryptedStream(file_io.FileIO):
-  """File-like object of a encrypted stream."""
+  """File input/output (IO) object of a encrypted stream."""
 
   # The size of the encrypted data buffer.
   _ENCRYPTED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(EncryptedStream, self).__init__(resolver_context)
+    super(EncryptedStream, self).__init__(resolver_context, path_spec)
     self._current_offset = 0
     self._decrypted_data = b''
     self._decrypted_data_offset = 0
@@ -31,7 +32,6 @@ class EncryptedStream(file_io.FileIO):
     self._encrypted_data = b''
     self._encryption_method = None
     self._file_object = None
-    self._path_spec = None
     self._realign_offset = True
 
   def _Close(self):
@@ -91,11 +91,10 @@ class EncryptedStream(file_io.FileIO):
 
     return decrypted_stream_size
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object.
 
     Args:
-      path_spec (Optional[PathSpec]): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -103,24 +102,20 @@ class EncryptedStream(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    self._encryption_method = getattr(path_spec, 'encryption_method', None)
+    self._encryption_method = getattr(
+        self._path_spec, 'encryption_method', None)
 
     if self._encryption_method is None:
       raise errors.PathSpecError(
           'Path specification missing encryption method.')
 
     self._file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
-    self._path_spec = path_spec
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
   def _AlignDecryptedDataOffset(self, decrypted_data_offset):
     """Aligns the encrypted file with the decrypted data offset.

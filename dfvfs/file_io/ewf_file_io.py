@@ -10,15 +10,16 @@ from dfvfs.resolver import resolver
 
 
 class EWFFile(file_object_io.FileObjectIO):
-  """File-like object using pyewf."""
+  """File input/output (IO) object using pyewf."""
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(EWFFile, self).__init__(resolver_context)
+    super(EWFFile, self).__init__(resolver_context, path_spec)
     self._file_objects = []
 
   def _Close(self):

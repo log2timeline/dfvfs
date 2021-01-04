@@ -14,13 +14,10 @@ from tests.resolver_helpers import test_lib
 class FVDEResolverHelperTest(test_lib.ResolverHelperTestCase):
   """Tests for the FVDE resolver helper implementation."""
 
-  def testNewFileObject(self):
-    """Tests the NewFileObject function."""
-    resolver_helper_object = fvde_resolver_helper.FVDEResolverHelper()
-    self._TestNewFileObject(resolver_helper_object)
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    super(FVDEResolverHelperTest, self).setUp()
 
-  def testNewFileSystem(self):
-    """Tests the NewFileSystem function."""
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
@@ -31,11 +28,18 @@ class FVDEResolverHelperTest(test_lib.ResolverHelperTestCase):
     test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
         parent=test_qcow_path_spec)
-    test_fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
+    self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_FVDE, parent=test_tsk_partition_path_spec)
 
+  def testNewFileObject(self):
+    """Tests the NewFileObject function."""
     resolver_helper_object = fvde_resolver_helper.FVDEResolverHelper()
-    self._TestNewFileSystem(resolver_helper_object, test_fvde_path_spec)
+    self._TestNewFileObject(resolver_helper_object, self._fvde_path_spec)
+
+  def testNewFileSystem(self):
+    """Tests the NewFileSystem function."""
+    resolver_helper_object = fvde_resolver_helper.FVDEResolverHelper()
+    self._TestNewFileSystem(resolver_helper_object, self._fvde_path_spec)
 
 
 if __name__ == '__main__':

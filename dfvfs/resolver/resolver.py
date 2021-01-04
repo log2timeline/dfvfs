@@ -71,6 +71,7 @@ class Resolver(object):
           be resolved.
 
     Raises:
+      BackEndError: if the file object cannot be opened.
       MountPointError: if the mount point specified in the path specification
           does not exist.
       PathSpecError: if the path specification is incorrect.
@@ -101,9 +102,15 @@ class Resolver(object):
     file_object = resolver_context.GetFileObject(path_spec_object)
     if not file_object:
       resolver_helper = cls._GetResolverHelper(path_spec_object.type_indicator)
-      file_object = resolver_helper.NewFileObject(resolver_context)
+      file_object = resolver_helper.NewFileObject(
+          resolver_context, path_spec_object)
 
-      file_object.Open(path_spec=path_spec_object)
+      try:
+        file_object.Open()
+      except (IOError, ValueError) as exception:
+        raise errors.BackEndError(
+            'Unable to open file object with error: {0!s}'.format(exception))
+
       resolver_context.CacheFileObject(path_spec_object, file_object)
 
     return file_object

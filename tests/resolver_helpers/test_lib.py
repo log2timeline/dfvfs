@@ -15,14 +15,15 @@ class TestResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = 'TEST'
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      FileIO: file-like object, which is None for testing.
+      FileIO: file input/output (IO) object, which is None for testing.
     """
     return None
 
@@ -34,13 +35,15 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
 
-  def _TestNewFileObject(self, resolver_helper_object):
+  def _TestNewFileObject(self, resolver_helper_object, path_spec):
     """Tests the NewFileObject function.
 
     Args:
       resolver_helper_object (ResolverHelper): resolver helper.
+      path_spec (PathSpec): path specification.
     """
-    file_object = resolver_helper_object.NewFileObject(self._resolver_context)
+    file_object = resolver_helper_object.NewFileObject(
+        self._resolver_context, path_spec)
 
     self.assertIsNotNone(file_object)
 

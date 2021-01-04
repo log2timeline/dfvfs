@@ -35,14 +35,16 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.Open(path_spec=self._data_range_path_spec)
+    file_object = data_range_io.DataRange(
+        self._resolver_context, self._data_range_path_spec)
+    file_object.Open()
 
     self.assertEqual(file_object.get_size(), 1080)
 
   def testSetRange(self):
     """Test the _SetRange function."""
-    file_object = data_range_io.DataRange(self._resolver_context)
+    file_object = data_range_io.DataRange(
+        self._resolver_context, self._data_range_path_spec)
 
     self.assertEqual(file_object._range_offset, -1)
     self.assertEqual(file_object._range_size, -1)
@@ -60,22 +62,25 @@ class DataRangeTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.Open(path_spec=self._data_range_path_spec)
+    file_object = data_range_io.DataRange(
+        self._resolver_context, self._data_range_path_spec)
+    file_object.Open()
 
     self.assertEqual(file_object.get_size(), 1080)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.Open(path_spec=self._data_range_path_spec)
+    file_object = data_range_io.DataRange(
+        self._resolver_context, self._data_range_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object, base_offset=0)
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = data_range_io.DataRange(self._resolver_context)
-    file_object.Open(path_spec=self._data_range_path_spec)
+    file_object = data_range_io.DataRange(
+        self._resolver_context, self._data_range_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object, base_offset=0)
 
