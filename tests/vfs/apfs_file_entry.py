@@ -40,7 +40,6 @@ class APFSDirectoryTest(shared_test_lib.BaseTestCase):
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
-    self._file_system.Close()
     self._resolver_context.Empty()
 
   def testInitialize(self):
@@ -89,7 +88,6 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
-    self._file_system.Close()
     self._resolver_context.Empty()
 
   def testInitialize(self):
@@ -430,7 +428,6 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
-    self._file_system.Close()
     self._resolver_context.Empty()
 
   def testInitialize(self):

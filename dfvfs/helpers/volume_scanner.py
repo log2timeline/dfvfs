@@ -665,18 +665,12 @@ class WindowsVolumeScanner(VolumeScanner):
       raise errors.ScannerError('Invalid or missing file system scan node.')
 
     file_system = resolver.Resolver.OpenFileSystem(scan_node.path_spec)
-    if not file_system:
-      return
-
-    try:
+    if file_system:
       path_resolver = windows_path_resolver.WindowsPathResolver(
           file_system, scan_node.path_spec.parent)
 
       if self._ScanFileSystemForWindowsDirectory(path_resolver):
         base_path_specs.append(scan_node.path_spec)
-
-    finally:
-      file_system.Close()
 
   def _ScanFileSystemForWindowsDirectory(self, path_resolver):
     """Scans a file system for a known Windows directory.

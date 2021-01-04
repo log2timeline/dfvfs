@@ -39,8 +39,6 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = tar_file_system.TARFileSystem(
@@ -58,8 +56,6 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_TAR, location='/bogus',
         parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
-
-    file_system.Close()
 
     # Test on a tar file that has missing directory entries.
     test_path = self._GetTestFilePath(['missing_directory_entries.tar'])
@@ -87,8 +83,6 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
         parent=test_os_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    file_system.Close()
-
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = tar_file_system.TARFileSystem(
@@ -111,8 +105,6 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
-
-    file_system.Close()
 
     # Test on a tar file that has missing directory entries.
     test_path = self._GetTestFilePath(['missing_directory_entries.tar'])
@@ -144,8 +136,6 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'Recordings')
 
-    file_system.Close()
-
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = tar_file_system.TARFileSystem(
@@ -158,8 +148,6 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
 
 if __name__ == '__main__':

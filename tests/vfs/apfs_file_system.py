@@ -46,8 +46,6 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = apfs_file_system.APFSFileSystem(
@@ -66,8 +64,6 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_APFS, location='/bogus.txt',
         parent=self._apfs_container_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
-
-    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -104,8 +100,6 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNone(file_entry)
 
-    file_system.Close()
-
   # TODO: add tests for GetAPFSFileEntryByPathSpec function.
 
   def testGetRootFileEntry(self):
@@ -120,8 +114,6 @@ class APFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
 
 if __name__ == '__main__':

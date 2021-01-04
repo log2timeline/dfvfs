@@ -64,8 +64,6 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = vshadow_file_system.VShadowFileSystem(
@@ -103,8 +101,6 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss9',
         parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
-
-    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -159,8 +155,6 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNone(file_entry)
 
-    file_system.Close()
-
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = vshadow_file_system.VShadowFileSystem(
@@ -173,8 +167,6 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
   # TODO: add tests for GetVShadowStoreByPathSpec function.
 

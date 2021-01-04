@@ -32,7 +32,6 @@ class ZIPDirectoryTest(shared_test_lib.BaseTestCase):
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
-    self._file_system.Close()
     self._resolver_context.Empty()
 
   def testInitialize(self):
@@ -74,7 +73,6 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
-    self._file_system.Close()
     self._resolver_context.Empty()
 
   def testIntialize(self):
@@ -223,8 +221,6 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     sub_file_entry = next(file_entry.sub_file_entries)
     self.assertTrue(sub_file_entry.IsVirtual())
     self._assertSubFileEntries(sub_file_entry, ['syslog', 'wtmp.1'])
-
-    file_system.Close()
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""

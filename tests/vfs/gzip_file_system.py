@@ -38,8 +38,6 @@ class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = gzip_file_system.GzipFileSystem(
@@ -50,8 +48,6 @@ class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     result = file_system.FileEntryExistsByPathSpec(self._gzip_path_spec)
     self.assertTrue(result)
-
-    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -65,8 +61,6 @@ class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
 
-    file_system.Close()
-
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = gzip_file_system.GzipFileSystem(
@@ -78,8 +72,6 @@ class GZIPFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
 
 if __name__ == '__main__':

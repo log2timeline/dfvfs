@@ -44,15 +44,11 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
         self._resolver_context, self._sqlite_blob_path_spec_2)
     self.assertIsNotNone(file_system)
 
     file_system.Open()
-
-    file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
@@ -68,8 +64,6 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
     result = file_system.FileEntryExistsByPathSpec(
         self._sqlite_blob_path_spec_2)
     self.assertTrue(result)
-
-    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -90,8 +84,6 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'OFFSET 2')
 
-    file_system.Close()
-
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
@@ -104,8 +96,6 @@ class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'myblobs.blobs')
-
-    file_system.Close()
 
 
 if __name__ == '__main__':

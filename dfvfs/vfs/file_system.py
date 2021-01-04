@@ -3,6 +3,8 @@
 
 import abc
 
+from dfvfs.lib import decorators
+
 
 class FileSystem(object):
   """Virtual file system interface."""
@@ -81,6 +83,7 @@ class FileSystem(object):
     _, _, basename = path.rpartition(self.PATH_SEPARATOR)
     return basename
 
+  @decorators.deprecated
   def Close(self):
     """Closes the file system.
 
@@ -88,12 +91,7 @@ class FileSystem(object):
       IOError: if the file system object was not opened or the close failed.
       OSError: if the file system object was not opened or the close failed.
     """
-    if not self._is_open:
-      raise IOError('Not opened.')
-
-    self._Close()
-    self._is_open = False
-    self._path_spec = None
+    return
 
   def DirnamePath(self, path):
     """Determines the directory name of the path.

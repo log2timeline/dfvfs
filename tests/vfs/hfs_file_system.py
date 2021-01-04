@@ -43,8 +43,6 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = hfs_file_system.HFSFileSystem(
@@ -64,8 +62,6 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
         parent=self._raw_path_spec)
     result = file_system.FileEntryExistsByPathSpec(path_spec)
     self.assertFalse(result)
-
-    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -98,8 +94,6 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNone(file_entry)
 
-    file_system.Close()
-
   # TODO: add tests for GetHFSFileEntryByPathSpec function.
 
   def testGetRootFileEntry(self):
@@ -113,8 +107,6 @@ class HFSFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetRootFileEntry()
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
 
 if __name__ == '__main__':
