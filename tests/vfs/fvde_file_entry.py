@@ -4,10 +4,8 @@
 
 import unittest
 
-from dfvfs.path import fvde_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
-from dfvfs.path import tsk_partition_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 from dfvfs.vfs import fvde_file_entry
@@ -24,14 +22,18 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['fvdetest.qcow2'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['fvdetest.qcow2'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=path_spec)
-    self._fvde_path_spec = fvde_path_spec.FVDEPathSpec(parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=test_qcow_path_spec)
+    self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FVDE, parent=test_tsk_partition_path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
 

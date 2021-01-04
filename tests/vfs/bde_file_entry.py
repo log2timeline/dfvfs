@@ -4,8 +4,8 @@
 
 import unittest
 
-from dfvfs.path import bde_path_spec
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 from dfvfs.vfs import bde_file_entry
@@ -22,11 +22,13 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['bdetogo.raw'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['bdetogo.raw'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._bde_path_spec = bde_path_spec.BDEPathSpec(parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._bde_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_BDE, parent=test_os_path_spec)
     resolver.Resolver.key_chain.SetCredential(
         self._bde_path_spec, 'password', self._BDE_PASSWORD)
 

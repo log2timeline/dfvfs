@@ -4,11 +4,8 @@
 
 import unittest
 
-from dfvfs.path import apfs_path_spec
-from dfvfs.path import apfs_container_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import raw_path_spec
-from dfvfs.path import tsk_partition_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 from dfvfs.vfs import apfs_file_entry
@@ -23,16 +20,19 @@ class APFSDirectoryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['apfs.raw'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['apfs.raw'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    test_raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
-    self._apfs_container_path_spec = (
-        apfs_container_path_spec.APFSContainerPathSpec(
-            location='/apfs1', parent=test_raw_path_spec))
-    self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    self._apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
+        parent=test_raw_path_spec)
+    self._apfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
 
     self._file_system = apfs_file_system.APFSFileSystem(
         self._resolver_context, self._apfs_path_spec)
@@ -71,16 +71,19 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['apfs.raw'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['apfs.raw'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    test_raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
-    self._apfs_container_path_spec = (
-        apfs_container_path_spec.APFSContainerPathSpec(
-            location='/apfs1', parent=test_raw_path_spec))
-    self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    self._apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
+        parent=test_raw_path_spec)
+    self._apfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
 
     self._file_system = apfs_file_system.APFSFileSystem(
         self._resolver_context, self._apfs_path_spec)
@@ -105,7 +108,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testAccessTime(self):
     """Test the access_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -116,7 +120,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testAddedTime(self):
     """Test the added_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -127,7 +132,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testChangeTime(self):
     """Test the change_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -138,7 +144,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testCreationTime(self):
     """Test the creation_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -149,7 +156,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testModificationTime(self):
     """Test the modification_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -160,7 +168,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testName(self):
     """Test the name property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -171,7 +180,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testSize(self):
     """Test the size property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -182,7 +192,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetAPFSFileEntry(self):
     """Tests the GetAPFSFileEntry function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -193,7 +204,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_A_FILE,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -203,7 +215,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
     test_location = '/a_link'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_A_LINK, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -218,7 +231,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -233,7 +247,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetStat(self):
     """Tests the GetStat function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -264,7 +279,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testIsFunctions(self):
     """Tests the Is? functions."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -282,7 +298,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     test_location = '/a_directory'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -299,8 +316,9 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -317,8 +335,9 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSubFileEntries(self):
     """Tests the number_of_sub_file_entries and sub_file_entries properties."""
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -340,7 +359,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
     # Test a path specification without a location.
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_A_DIRECTORY,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -351,7 +371,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testDataStreams(self):
     """Tests the data streams functionality."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -366,7 +387,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(data_stream_names, [''])
 
     test_location = '/a_directory'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -383,7 +405,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -406,18 +429,22 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['apfs_encrypted.dmg'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    test_raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
-    partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=test_raw_path_spec)
-    self._apfs_container_path_spec = (
-        apfs_container_path_spec.APFSContainerPathSpec(
-            location='/apfs1', parent=partition_path_spec))
-    self._apfs_path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=test_raw_path_spec)
+    self._apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
+        parent=test_tsk_partition_path_spec)
+    self._apfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
 
     resolver.Resolver.key_chain.SetCredential(
         self._apfs_container_path_spec, 'password', self._APFS_PASSWORD)
@@ -445,7 +472,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testAccessTime(self):
     """Test the access_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -456,7 +484,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testChangeTime(self):
     """Test the change_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -467,7 +496,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testCreationTime(self):
     """Test the creation_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -478,7 +508,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testModificationTime(self):
     """Test the modification_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -489,7 +520,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testName(self):
     """Test the name property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -500,7 +532,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testSize(self):
     """Test the size property."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -511,7 +544,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testGetAPFSFileEntry(self):
     """Tests the GetAPFSFileEntry function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -522,8 +556,9 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=20, parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, identifier=20,
+        parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -531,9 +566,9 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
     test_location = '/a_link'
-    path_spec = apfs_path_spec.APFSPathSpec(
-        identifier=self._IDENTIFIER_A_LINK, location=test_location,
-        parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, identifier=self._IDENTIFIER_A_LINK,
+        location=test_location, parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -546,7 +581,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -561,7 +597,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testGetStat(self):
     """Tests the GetStat function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -592,7 +629,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testIsFunctions(self):
     """Tests the Is? functions."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -610,7 +648,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     test_location = '/a_directory'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -627,8 +666,9 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -645,8 +685,9 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
   def testSubFileEntries(self):
     """Tests the number_of_sub_file_entries and sub_file_entries properties."""
-    path_spec = apfs_path_spec.APFSPathSpec(
-        location='/', parent=self._apfs_container_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS, location='/',
+        parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -670,7 +711,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testDataStreams(self):
     """Tests the data streams functionality."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -685,7 +727,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     self.assertEqual(data_stream_names, [''])
 
     test_location = '/a_directory'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_A_DIRECTORY, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
@@ -702,7 +745,8 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     test_location = '/a_directory/another_file'
-    path_spec = apfs_path_spec.APFSPathSpec(
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
         parent=self._apfs_container_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)

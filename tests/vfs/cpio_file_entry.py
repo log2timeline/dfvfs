@@ -4,8 +4,8 @@
 
 import unittest
 
-from dfvfs.path import cpio_path_spec
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import cpio_file_entry
 from dfvfs.vfs import cpio_file_system
@@ -19,12 +19,14 @@ class CPIODirectoryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.bin.cpio'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._cpio_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
 
     self._file_system = cpio_file_system.CPIOFileSystem(
         self._resolver_context, self._cpio_path_spec)
@@ -58,12 +60,14 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.bin.cpio'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._cpio_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
 
     self._file_system = cpio_file_system.CPIOFileSystem(
         self._resolver_context, self._cpio_path_spec)
@@ -87,8 +91,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testModificationTime(self):
     """Test the modification_time property."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -96,8 +101,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testName(self):
     """Test the name property."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -105,8 +111,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSize(self):
     """Test the size property."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -114,8 +121,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetCPIOArchiveFileEntry(self):
     """Tests the GetCPIOArchiveFileEntry function."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -124,8 +132,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -135,8 +144,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetStat(self):
     """Tests the GetStat function."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -155,8 +165,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsFunctions(self):
     """Test the Is? functions."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -171,8 +182,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -189,8 +201,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSubFileEntries(self):
     """Test the sub file entries iteration functionality."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -211,8 +224,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testDataStreams(self):
     """Test the data streams functionality."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -224,8 +238,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [''])
 
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -239,8 +254,9 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
-    path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 

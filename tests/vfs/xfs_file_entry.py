@@ -4,9 +4,8 @@
 
 import unittest
 
-from dfvfs.path import xfs_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import raw_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import xfs_file_entry
 from dfvfs.vfs import xfs_file_system
@@ -28,13 +27,16 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['xfs.raw'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['xfs.raw'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=test_os_path_spec)
-    self._xfs_path_spec = xfs_path_spec.XFSPathSpec(
-        location='/', parent=self._raw_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    self._xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, location='/',
+        parent=self._raw_path_spec)
 
     self._file_system = xfs_file_system.XFSFileSystem(
         self._resolver_context, self._xfs_path_spec)
@@ -54,9 +56,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testAccessTime(self):
     """Test the access_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -65,9 +67,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testChangeTime(self):
     """Test the change_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -76,9 +78,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testCreationTime(self):
     """Test the creation_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -87,9 +89,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testModificationTime(self):
     """Test the modification_time property."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -97,8 +99,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_A_FILE, parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_A_FILE,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -106,9 +109,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
     test_location = '/a_link'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_A_LINK, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_A_LINK,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -121,9 +124,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -136,9 +139,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetStat(self):
     """Tests the GetStat function."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -167,9 +170,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testIsFunctions(self):
     """Tests the Is? functions."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -185,9 +188,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsSocket())
 
     test_location = '/a_directory'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_A_DIRECTORY, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_A_DIRECTORY,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -202,8 +205,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    path_spec = xfs_path_spec.XFSPathSpec(
-        location='/', parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, location='/',
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -220,8 +224,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSubFileEntries(self):
     """Tests the number_of_sub_file_entries and sub_file_entries properties."""
-    path_spec = xfs_path_spec.XFSPathSpec(
-        location='/', parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, location='/',
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -242,8 +247,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
         sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
 
     # Test a path specification without a location.
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_A_DIRECTORY, parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_A_DIRECTORY,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -252,9 +258,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testDataStreams(self):
     """Tests the data streams functionality."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -267,9 +273,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(data_stream_names, [''])
 
     test_location = '/a_directory'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_A_DIRECTORY, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_A_DIRECTORY,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -284,9 +290,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     test_location = '/a_directory/another_file'
-    path_spec = xfs_path_spec.XFSPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
