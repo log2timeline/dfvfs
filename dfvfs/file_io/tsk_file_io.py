@@ -30,7 +30,6 @@ class TSKFile(file_io.FileIO):
     self._tsk_attribute = None
     self._tsk_file = None
 
-    self._file_system.Close()
     self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):
@@ -57,7 +56,6 @@ class TSKFile(file_io.FileIO):
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     if not file_entry:
-      file_system.Close()
       raise IOError('Unable to retrieve file entry.')
 
     tsk_file = file_entry.GetTSKFile()
@@ -67,28 +65,24 @@ class TSKFile(file_io.FileIO):
     # we need to check if the attribute exists and has a value other
     # than None.
     if getattr(tsk_file, 'info', None) is None:
-      file_system.Close()
       raise IOError('Missing attribute info in file (pytsk3.File).')
 
     # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
     # we need to check if the attribute exists and has a value other
     # than None.
     if getattr(tsk_file.info, 'meta', None) is None:
-      file_system.Close()
       raise IOError(
           'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines size
     # we need to check if the attribute exists.
     if not hasattr(tsk_file.info.meta, 'size'):
-      file_system.Close()
       raise IOError(
           'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines type
     # we need to check if the attribute exists.
     if not hasattr(tsk_file.info.meta, 'type'):
-      file_system.Close()
       raise IOError(
           'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
@@ -120,12 +114,10 @@ class TSKFile(file_io.FileIO):
           break
 
       if tsk_attribute is None:
-        file_system.Close()
         raise IOError('Unable to open data stream: {0:s}.'.format(data_stream))
 
     if (not tsk_attribute and
         tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG):
-      file_system.Close()
       raise IOError('Not a regular file.')
 
     self._current_offset = 0

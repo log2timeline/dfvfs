@@ -38,8 +38,6 @@ class NTFSFileSystem(file_system.FileSystem):
       IOError: if the close failed.
     """
     self._fsntfs_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -63,12 +61,8 @@ class NTFSFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      fsntfs_volume = pyfsntfs.volume()
-      fsntfs_volume.open_file_object(file_object)
-    except:
-      file_object.close()
-      raise
+    fsntfs_volume = pyfsntfs.volume()
+    fsntfs_volume.open_file_object(file_object)
 
     self._file_object = file_object
     self._fsntfs_volume = fsntfs_volume

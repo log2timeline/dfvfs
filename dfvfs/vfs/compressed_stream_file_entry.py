@@ -41,15 +41,6 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
     self._compressed_stream = compressed_stream
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def __del__(self):
-    """Cleans up the file entry."""
-    # __del__ can be invoked before __init__ has completed.
-    if hasattr(self, '_compressed_stream'):
-      self._compressed_stream.close()
-      self._compressed_stream = None
-
-    super(CompressedStreamFileEntry, self).__del__()
-
   @property
   def size(self):
     """int: size of the file entry in bytes or None if not available."""

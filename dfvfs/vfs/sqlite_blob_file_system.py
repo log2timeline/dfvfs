@@ -30,7 +30,6 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
     Raises:
       IOError: if the close failed.
     """
-    self._file_object.close()
     self._file_object = None
     self._number_of_rows = None
 
@@ -73,10 +72,9 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
       file_object = resolver.Resolver.OpenFileObject(
           path_spec, resolver_context=self._resolver_context)
     except (IOError, ValueError, errors.AccessError, errors.PathSpecError):
-      return False
+      file_object = None
 
-    file_object.close()
-    return True
+    return bool(file_object)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.

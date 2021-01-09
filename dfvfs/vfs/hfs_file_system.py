@@ -35,8 +35,6 @@ class HFSFileSystem(file_system.FileSystem):
       IOError: if the close failed.
     """
     self._fshfs_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -59,12 +57,8 @@ class HFSFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      fshfs_volume = pyfshfs.volume()
-      fshfs_volume.open_file_object(file_object)
-    except:
-      file_object.close()
-      raise
+    fshfs_volume = pyfshfs.volume()
+    fshfs_volume.open_file_object(file_object)
 
     self._file_object = file_object
     self._fshfs_volume = fshfs_volume

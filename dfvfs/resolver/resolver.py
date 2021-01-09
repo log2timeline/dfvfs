@@ -55,13 +55,7 @@ class Resolver(object):
     if resolver_context is None:
       resolver_context = cls._resolver_context
 
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec_object)
-
-    # Release the file system so it will be removed from the cache
-    # when the file entry is destroyed.
-    resolver_context.ReleaseFileSystem(file_system)
-
-    return file_entry
+    return file_system.GetFileEntryByPathSpec(path_spec_object)
 
   @classmethod
   def OpenFileObject(cls, path_spec_object, resolver_context=None):
@@ -109,7 +103,9 @@ class Resolver(object):
       resolver_helper = cls._GetResolverHelper(path_spec_object.type_indicator)
       file_object = resolver_helper.NewFileObject(resolver_context)
 
-    file_object.open(path_spec=path_spec_object)
+      file_object.open(path_spec=path_spec_object)
+      resolver_context.CacheFileObject(path_spec_object, file_object)
+
     return file_object
 
   @classmethod
@@ -160,10 +156,12 @@ class Resolver(object):
       resolver_helper = cls._GetResolverHelper(path_spec_object.type_indicator)
       file_system = resolver_helper.NewFileSystem(resolver_context)
 
-    try:
-      file_system.Open(path_spec_object)
-    except (IOError, ValueError) as exception:
-      raise errors.BackEndError(
-          'Unable to open file system with error: {0!s}'.format(exception))
+      try:
+        file_system.Open(path_spec_object)
+      except (IOError, ValueError) as exception:
+        raise errors.BackEndError(
+            'Unable to open file system with error: {0!s}'.format(exception))
+
+      resolver_context.CacheFileSystem(path_spec_object, file_system)
 
     return file_system

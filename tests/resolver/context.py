@@ -29,18 +29,6 @@ class ContextTest(unittest.TestCase):
     cached_object = resolver_context.GetFileObject(path_spec)
     self.assertEqual(cached_object, file_object)
 
-    resolver_context.GrabFileObject(path_spec)
-    self.assertEqual(len(resolver_context._file_object_cache._values), 1)
-
-    resolver_context.GrabFileObject(path_spec)
-    self.assertEqual(len(resolver_context._file_object_cache._values), 1)
-
-    resolver_context.ReleaseFileObject(file_object)
-    self.assertEqual(len(resolver_context._file_object_cache._values), 1)
-
-    resolver_context.ReleaseFileObject(file_object)
-    self.assertEqual(len(resolver_context._file_object_cache._values), 0)
-
   def testCacheFileSystem(self):
     """Tests the cache file system object functionality."""
     resolver_context = context.Context()
@@ -56,18 +44,6 @@ class ContextTest(unittest.TestCase):
 
     cached_object = resolver_context.GetFileSystem(path_spec)
     self.assertEqual(cached_object, file_system)
-
-    resolver_context.GrabFileSystem(path_spec)
-    self.assertEqual(len(resolver_context._file_system_cache._values), 1)
-
-    resolver_context.GrabFileSystem(path_spec)
-    self.assertEqual(len(resolver_context._file_system_cache._values), 1)
-
-    resolver_context.ReleaseFileSystem(file_system)
-    self.assertEqual(len(resolver_context._file_system_cache._values), 1)
-
-    resolver_context.ReleaseFileSystem(file_system)
-    self.assertEqual(len(resolver_context._file_system_cache._values), 0)
 
 
 if __name__ == '__main__':

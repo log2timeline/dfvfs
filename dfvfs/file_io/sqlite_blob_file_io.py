@@ -88,11 +88,8 @@ class SQLiteBlobFile(file_io.FileIO):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      database_object = sqlite_database.SQLiteDatabaseFile()
-      database_object.Open(file_object)
-    finally:
-      file_object.close()
+    database_object = sqlite_database.SQLiteDatabaseFile()
+    database_object.Open(file_object)
 
     # Sanity check the table and column names.
     error_string = ''

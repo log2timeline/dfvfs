@@ -63,6 +63,7 @@ class EXTFileTest(shared_test_lib.BaseTestCase):
 
     # Try open with a path specification that has no parent.
     path_spec.parent = None
+    file_object = ext_file_io.EXTFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.open(path_spec=path_spec)

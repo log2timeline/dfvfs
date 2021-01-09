@@ -137,10 +137,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     if not self._is_virtual:
       file_object = self.GetFileObject()
       if file_object:
-        try:
-          size = file_object.get_size()
-        finally:
-          file_object.close()
+        size = file_object.get_size()
 
     return size
 
@@ -158,11 +155,8 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           'Unable to retrieve SQLite blob file-like object.')
 
-    try:
-      # TODO: move this function out of SQLiteBlobFile.
-      self._number_of_entries = file_object.GetNumberOfRows()
-    finally:
-      file_object.close()
+    # TODO: move this function out of SQLiteBlobFile.
+    self._number_of_entries = file_object.GetNumberOfRows()
 
     return self._number_of_entries
 

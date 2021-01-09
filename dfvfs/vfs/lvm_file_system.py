@@ -37,8 +37,6 @@ class LVMFileSystem(file_system.FileSystem):
     self._vslvm_volume_group = None
     self._vslvm_handle.close()
     self._vslvm_handle = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -62,16 +60,11 @@ class LVMFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      vslvm_handle = pyvslvm.handle()
-      vslvm_handle.open_file_object(file_object)
-      # TODO: implement multi physical volume support.
-      vslvm_handle.open_physical_volume_files_as_file_objects([
-          file_object])
-      vslvm_volume_group = vslvm_handle.get_volume_group()
-    except:
-      file_object.close()
-      raise
+    vslvm_handle = pyvslvm.handle()
+    vslvm_handle.open_file_object(file_object)
+    # TODO: implement multi physical volume support.
+    vslvm_handle.open_physical_volume_files_as_file_objects([file_object])
+    vslvm_volume_group = vslvm_handle.get_volume_group()
 
     self._file_object = file_object
     self._vslvm_handle = vslvm_handle

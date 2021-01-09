@@ -37,8 +37,6 @@ class TSKFileSystem(file_system.FileSystem):
       IOError: if the close failed.
     """
     self._tsk_file_system = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -61,12 +59,8 @@ class TSKFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
-      tsk_file_system = pytsk3.FS_Info(tsk_image_object)
-    except:
-      file_object.close()
-      raise
+    tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
+    tsk_file_system = pytsk3.FS_Info(tsk_image_object)
 
     self._file_object = file_object
     self._tsk_file_system = tsk_file_system

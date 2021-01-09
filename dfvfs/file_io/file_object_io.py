@@ -29,12 +29,6 @@ class FileObjectIO(file_io.FileIO):
     object-based file-like object does not control the file-like object
     and should not actually close it.
     """
-    try:
-      # TODO: fix close being called for the same object multiple times.
-      self._file_object.close()
-    except IOError:
-      pass
-
     self._file_object = None
 
   def _Open(self, path_spec=None, mode='rb'):

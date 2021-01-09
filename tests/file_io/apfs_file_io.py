@@ -66,6 +66,7 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
 
     # Try open with a path specification that has no parent.
     path_spec.parent = None
+    file_object = apfs_file_io.APFSFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.open(path_spec=path_spec)

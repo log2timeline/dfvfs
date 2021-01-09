@@ -29,9 +29,6 @@ class VHDIFile(file_object_io.FileObjectIO):
     for vhdi_file in self._parent_vhdi_files:
       vhdi_file.close()
 
-    for file_object in self._sub_file_objects:
-      file_object.close()
-
     self._parent_vhdi_files = []
     self._sub_file_objects = []
 
@@ -61,10 +58,7 @@ class VHDIFile(file_object_io.FileObjectIO):
       file_system = resolver.Resolver.OpenFileSystem(
           path_spec.parent, resolver_context=self._resolver_context)
 
-      try:
-        self._OpenParentFile(file_system, path_spec.parent, vhdi_file)
-      finally:
-        file_system.Close()
+      self._OpenParentFile(file_system, path_spec.parent, vhdi_file)
 
     self._sub_file_objects.append(file_object)
 

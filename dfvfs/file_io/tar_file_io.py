@@ -30,7 +30,6 @@ class TARFile(file_io.FileIO):
     self._tar_ext_file.close()
     self._tar_ext_file = None
 
-    self._file_system.Close()
     self._file_system = None
 
   def _Open(self, path_spec=None, mode='rb'):
@@ -55,11 +54,9 @@ class TARFile(file_io.FileIO):
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     if not file_entry:
-      file_system.Close()
       raise IOError('Unable to retrieve file entry.')
 
     if not file_entry.IsFile():
-      file_system.Close()
       raise IOError('Not a regular file.')
 
     self._file_system = file_system

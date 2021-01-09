@@ -40,12 +40,10 @@ class CompressedStream(file_io.FileIO):
     the compressed stream file-like object does not control
     the file-like object and should not actually close it.
     """
-    self._file_object.close()
-    self._file_object = None
-
     self._compressed_data = b''
-    self._uncompressed_data = b''
+    self._file_object = None
     self._decompressor = None
+    self._uncompressed_data = b''
 
   def _GetDecompressor(self):
     """Retrieves the decompressor.

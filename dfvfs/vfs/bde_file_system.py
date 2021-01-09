@@ -35,8 +35,6 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     self._bde_volume.close()
     self._bde_volume = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -63,12 +61,8 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      bde.BDEVolumeOpen(
-          bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
-    except:
-      file_object.close()
-      raise
+    bde.BDEVolumeOpen(
+        bde_volume, path_spec, file_object, resolver.Resolver.key_chain)
 
     self._bde_volume = bde_volume
     self._file_object = file_object

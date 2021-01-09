@@ -569,7 +569,6 @@ class SourceScanner(object):
       file_object = resolver.Resolver.OpenFileObject(
           scan_node.path_spec, resolver_context=self._resolver_context)
       is_locked = not file_object or file_object.is_locked
-      file_object.close()
 
     if is_locked:
       scan_context.LockScanNode(scan_node.path_spec)
@@ -884,7 +883,6 @@ class SourceScanner(object):
       file_object = resolver.Resolver.OpenFileObject(
           path_spec, resolver_context=self._resolver_context)
       is_locked = not file_object or file_object.is_locked
-      file_object.close()
 
     if not is_locked:
       scan_context.UnlockScanNode(path_spec)

@@ -61,11 +61,6 @@ class Context(object):
 
   def Empty(self):
     """Empties the caches."""
-    file_object = self._file_object_cache.GetLastObject()
-    while file_object:
-      file_object.close()
-      file_object = self._file_object_cache.GetLastObject()
-
     self._file_object_cache.Empty()
     self._file_system_cache.Empty()
 
@@ -78,14 +73,8 @@ class Context(object):
     Returns:
       bool: True if the file-like object was cached.
     """
-    cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
-    if not cache_value:
-      return False
-
-    while not cache_value.IsDereferenced():
-      cache_value.vfs_object.close()
-
-    return True
+    vfs_object = self._file_object_cache.GetObject(path_spec.comparable)
+    return bool(vfs_object)
 
   def GetFileObject(self, path_spec):
     """Retrieves a file-like object defined by path specification.
@@ -98,6 +87,7 @@ class Context(object):
     """
     return self._file_object_cache.GetObject(path_spec.comparable)
 
+  # This function is kept for backwards compatiblity.
   def GetFileObjectReferenceCount(self, path_spec):
     """Retrieves the reference count of a cached file-like object.
 
@@ -108,11 +98,11 @@ class Context(object):
       int: reference count or None if there is no file-like object for
           the corresponding path specification cached.
     """
-    cache_value = self._file_object_cache.GetCacheValue(path_spec.comparable)
-    if not cache_value:
-      return None
+    vfs_object = self._file_object_cache.GetObject(path_spec.comparable)
+    if vfs_object:
+      return 1
 
-    return cache_value.reference_count
+    return None
 
   def GetFileSystem(self, path_spec):
     """Retrieves a file system object defined by path specification.
@@ -125,102 +115,6 @@ class Context(object):
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     return self._file_system_cache.GetObject(identifier)
-
-  def GetFileSystemReferenceCount(self, path_spec):
-    """Retrieves the reference count of a cached file system object.
-
-    Args:
-      path_spec (PathSpec): path specification.
-
-    Returns:
-      int: reference count or None if there is no file system object for
-          the corresponding path specification cached.
-    """
-    identifier = self._GetFileSystemCacheIdentifier(path_spec)
-    cache_value = self._file_system_cache.GetCacheValue(identifier)
-    if not cache_value:
-      return None
-
-    return cache_value.reference_count
-
-  def GrabFileObject(self, path_spec):
-    """Grabs a cached file-like object defined by path specification.
-
-    Args:
-      path_spec (PathSpec): path specification.
-    """
-    self._file_object_cache.GrabObject(path_spec.comparable)
-
-  def GrabFileSystem(self, path_spec):
-    """Grabs a cached file system object defined by path specification.
-
-    Args:
-      path_spec (PathSpec): path specification.
-    """
-    identifier = self._GetFileSystemCacheIdentifier(path_spec)
-    self._file_system_cache.GrabObject(identifier)
-
-  def ReleaseFileObject(self, file_object):
-    """Releases a cached file-like object.
-
-    Args:
-      file_object (FileIO): file-like object.
-
-    Returns:
-      bool: True if the file-like object can be closed.
-
-    Raises:
-      PathSpecError: if the path specification is incorrect.
-      RuntimeError: if the file-like object is not cached or an inconsistency
-          is detected in the cache.
-    """
-    identifier, cache_value = self._file_object_cache.GetCacheValueByObject(
-        file_object)
-
-    if not identifier:
-      raise RuntimeError('Object not cached.')
-
-    if not cache_value:
-      raise RuntimeError('Invalid cache value.')
-
-    self._file_object_cache.ReleaseObject(identifier)
-
-    result = cache_value.IsDereferenced()
-    if result:
-      self._file_object_cache.RemoveObject(identifier)
-
-    return result
-
-  def ReleaseFileSystem(self, file_system):
-    """Releases a cached file system object.
-
-    Args:
-      file_system (FileSystem): file system object.
-
-    Returns:
-      bool: True if the file system object can be closed.
-
-    Raises:
-      PathSpecError: if the path specification is incorrect.
-      RuntimeError: if the file system object is not cached or an inconsistency
-          is detected in the cache.
-    """
-    identifier, cache_value = self._file_system_cache.GetCacheValueByObject(
-        file_system)
-
-    if not identifier:
-      raise RuntimeError('Object not cached.')
-
-    if not cache_value:
-      raise RuntimeError('Invalid cache value.')
-
-    self._file_system_cache.ReleaseObject(identifier)
-
-    result = cache_value.IsDereferenced()
-    if result:
-      self._file_system_cache.RemoveObject(identifier)
-
-    return result
 
   def SetMaximumNumberOfFileObjects(self, maximum_number_of_file_objects):
     """Sets the maximum number of cached file-like objects.

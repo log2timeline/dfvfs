@@ -42,8 +42,6 @@ class TARFileSystem(file_system.FileSystem):
     """
     self._tar_file.close()
     self._tar_file = None
-
-    self._file_object.close()
     self._file_object = None
 
   def _Open(self, path_spec, mode='rb'):
@@ -67,16 +65,12 @@ class TARFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
 
-    try:
-      # Set the file offset to 0 because tarfile.open() does not.
-      file_object.seek(0, os.SEEK_SET)
+    # Set the file offset to 0 because tarfile.open() does not.
+    file_object.seek(0, os.SEEK_SET)
 
-      # Explicitly tell tarfile not to use compression. Compression should be
-      # handled by the file-like object.
-      tar_file = tarfile.open(mode='r:', fileobj=file_object)
-    except:
-      file_object.close()
-      raise
+    # Explicitly tell tarfile not to use compression. Compression should be
+    # handled by the file-like object.
+    tar_file = tarfile.open(mode='r:', fileobj=file_object)
 
     self._file_object = file_object
     self._tar_file = tar_file
