@@ -12,16 +12,14 @@ class FileObjectIO(file_io.FileIO):
 
   # pylint: disable=redundant-returns-doc
 
-  def __init__(self, resolver_context, file_object=None):
+  def __init__(self, resolver_context):
     """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
-      file_object (Optional[FileIO]): file-like object.
     """
     super(FileObjectIO, self).__init__(resolver_context)
-    self._file_object = file_object
-    self._file_object_set_in_init = bool(file_object)
+    self._file_object = None
     self._size = None
 
   def _Close(self):
@@ -31,13 +29,13 @@ class FileObjectIO(file_io.FileIO):
     object-based file-like object does not control the file-like object
     and should not actually close it.
     """
-    if not self._file_object_set_in_init:
-      try:
-        # TODO: fix close being called for the same object multiple times.
-        self._file_object.close()
-      except IOError:
-        pass
-      self._file_object = None
+    try:
+      # TODO: fix close being called for the same object multiple times.
+      self._file_object.close()
+    except IOError:
+      pass
+
+    self._file_object = None
 
   def _Open(self, path_spec=None, mode='rb'):
     """Opens the file-like object defined by path specification.
@@ -53,11 +51,8 @@ class FileObjectIO(file_io.FileIO):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not self._file_object_set_in_init and not path_spec:
+    if not path_spec:
       raise ValueError('Missing path specification.')
-
-    if self._file_object_set_in_init:
-      return
 
     self._file_object = self._OpenFileObject(path_spec)
     if not self._file_object:

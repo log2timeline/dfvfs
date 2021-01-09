@@ -12,19 +12,12 @@ from dfvfs.resolver import resolver
 class EWFFile(file_object_io.FileObjectIO):
   """File-like object using pyewf."""
 
-  def __init__(self, resolver_context, file_object=None):
+  def __init__(self, resolver_context):
     """Initializes a file-like object.
 
     Args:
       resolver_context (Context): resolver context.
-      file_object (Optional[FileIO]): file-like object.
-
-    Raises:
-      ValueError: when file_object is set.
     """
-    if file_object:
-      raise ValueError('File object value set.')
-
     super(EWFFile, self).__init__(resolver_context)
     self._file_objects = []
 

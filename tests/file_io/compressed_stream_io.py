@@ -6,10 +6,8 @@ import os
 import unittest
 
 from dfvfs.file_io import compressed_stream_io
-from dfvfs.file_io import os_file_io
 from dfvfs.lib import definitions
-from dfvfs.path import compressed_stream_path_spec
-from dfvfs.path import os_path_spec
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
 from tests.file_io import test_lib
@@ -21,14 +19,15 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.bz2'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.bz2'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._compressed_stream_path_spec = (
-        compressed_stream_path_spec.CompressedStreamPathSpec(
-            compression_method=definitions.COMPRESSION_METHOD_BZIP2,
-            parent=self._os_path_spec))
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._compressed_stream_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_COMPRESSED_STREAM,
+        compression_method=definitions.COMPRESSION_METHOD_BZIP2,
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -36,18 +35,12 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    os_file_object = os_file_io.OSFile(self._resolver_context)
-    os_file_object.open(path_spec=self._os_path_spec)
-    file_object = compressed_stream_io.CompressedStream(
-        self._resolver_context,
-        compression_method=definitions.COMPRESSION_METHOD_BZIP2,
-        file_object=os_file_object)
-    file_object.open()
+    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
+    file_object.open(path_spec=self._compressed_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
 
     file_object.close()
-    os_file_object.close()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -94,14 +87,15 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.lzma'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.lzma'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._compressed_stream_path_spec = (
-        compressed_stream_path_spec.CompressedStreamPathSpec(
-            compression_method=definitions.COMPRESSION_METHOD_LZMA,
-            parent=self._os_path_spec))
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._compressed_stream_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_COMPRESSED_STREAM,
+        compression_method=definitions.COMPRESSION_METHOD_LZMA,
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -109,18 +103,12 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    os_file_object = os_file_io.OSFile(self._resolver_context)
-    os_file_object.open(path_spec=self._os_path_spec)
-    file_object = compressed_stream_io.CompressedStream(
-        self._resolver_context,
-        compression_method=definitions.COMPRESSION_METHOD_LZMA,
-        file_object=os_file_object)
-    file_object.open()
+    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
+    file_object.open(path_spec=self._compressed_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
 
     file_object.close()
-    os_file_object.close()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -167,14 +155,15 @@ class XZCompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.xz'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.xz'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._compressed_stream_path_spec = (
-        compressed_stream_path_spec.CompressedStreamPathSpec(
-            compression_method=definitions.COMPRESSION_METHOD_XZ,
-            parent=self._os_path_spec))
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._compressed_stream_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_COMPRESSED_STREAM,
+        compression_method=definitions.COMPRESSION_METHOD_XZ,
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -182,18 +171,12 @@ class XZCompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    os_file_object = os_file_io.OSFile(self._resolver_context)
-    os_file_object.open(path_spec=self._os_path_spec)
-    file_object = compressed_stream_io.CompressedStream(
-        self._resolver_context,
-        compression_method=definitions.COMPRESSION_METHOD_XZ,
-        file_object=os_file_object)
-    file_object.open()
+    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
+    file_object.open(path_spec=self._compressed_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
 
     file_object.close()
-    os_file_object.close()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -240,14 +223,15 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.zlib'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.zlib'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._compressed_stream_path_spec = (
-        compressed_stream_path_spec.CompressedStreamPathSpec(
-            compression_method=definitions.COMPRESSION_METHOD_ZLIB,
-            parent=self._os_path_spec))
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._compressed_stream_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_COMPRESSED_STREAM,
+        compression_method=definitions.COMPRESSION_METHOD_ZLIB,
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -255,18 +239,12 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    os_file_object = os_file_io.OSFile(self._resolver_context)
-    os_file_object.open(path_spec=self._os_path_spec)
-    file_object = compressed_stream_io.CompressedStream(
-        self._resolver_context,
-        compression_method=definitions.COMPRESSION_METHOD_ZLIB,
-        file_object=os_file_object)
-    file_object.open()
+    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
+    file_object.open(path_spec=self._compressed_stream_path_spec)
 
     self._TestGetSizeFileObject(file_object)
 
     file_object.close()
-    os_file_object.close()
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
