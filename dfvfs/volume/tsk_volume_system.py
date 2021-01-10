@@ -102,4 +102,5 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
 
     type_indicator = self._file_system.type_indicator
     if type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
-      raise errors.VolumeSystemError('Unsupported type indicator.')
+      raise errors.VolumeSystemError(
+          'Unsupported type indicator: {0:s}.'.format(type_indicator))

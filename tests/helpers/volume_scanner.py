@@ -157,8 +157,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.ScannerError):
       test_scanner._GetPartitionIdentifiers(scan_node, test_options)
 
-  def testGetTSKPartitionIdentifiersOnAPFS(self):
-    """Tests the _GetTSKPartitionIdentifiers function on an APFS image."""
+  def testGetPartitionIdentifiersOnAPFS(self):
+    """Tests the _GetPartitionIdentifiers function on an APFS image."""
     # Test with mediator.
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
@@ -171,14 +171,35 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    scan_node = self._GetTestScanNode(scan_context)
+
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
 
     identifiers = test_scanner._GetPartitionIdentifiers(scan_node, test_options)
     self.assertEqual(len(identifiers), 1)
-    self.assertEqual(identifiers, ['p1'])
 
-  def testGetTSKPartitionIdentifiersOnPartitionedImage(self):
-    """Tests the _GetTSKPartitionIdentifiers function on a partitioned image."""
+    if definitions.PREFERRED_GPT_BACK_END == definitions.TYPE_INDICATOR_GPT:
+      # TODO: consider changing gpt1 to p1
+      expectected_identifiers = ['gpt1']
+    else:
+      expectected_identifiers = ['p1']
+
+    self.assertEqual(identifiers, expectected_identifiers)
+
+  def testGetPartitionIdentifiersOnPartitionedImage(self):
+    """Tests the _GetPartitionIdentifiers function on a partitioned image."""
     # Test with mediator.
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
@@ -370,9 +391,32 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    scan_node = self._GetTestScanNode(scan_context)
 
-    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
+
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
+      self.assertEqual(len(scan_node.sub_nodes), 1)
+      scan_node = scan_node.sub_nodes[0]
+    else:
+      # The pytsk partition back-end yields more than 1 scan node for various
+      # metadata and unallocated parts of the GPT.
+      self.assertEqual(len(scan_node.sub_nodes), 6)
+      scan_node = scan_node.sub_nodes[4]
+
+    apfs_container_scan_node = scan_node.sub_nodes[0]
 
     # Test on volume system sub node.
     test_scanner._ScanEncryptedVolume(
@@ -465,9 +509,32 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    scan_node = self._GetTestScanNode(scan_context)
 
-    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
+
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
+      self.assertEqual(len(scan_node.sub_nodes), 1)
+      scan_node = scan_node.sub_nodes[0]
+    else:
+      # The pytsk partition back-end yields more than 1 scan node for various
+      # metadata and unallocated parts of the GPT.
+      self.assertEqual(len(scan_node.sub_nodes), 6)
+      scan_node = scan_node.sub_nodes[4]
+
+    apfs_container_scan_node = scan_node.sub_nodes[0]
 
     # Test on volume system root node.
     base_path_specs = []
@@ -563,9 +630,32 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context.OpenSourcePath(test_path)
 
     test_scanner._source_scanner.Scan(scan_context)
-    scan_node = self._GetTestScanNode(scan_context)
 
-    apfs_container_scan_node = scan_node.sub_nodes[4].sub_nodes[0]
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
+
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
+      self.assertEqual(len(scan_node.sub_nodes), 1)
+      scan_node = scan_node.sub_nodes[0]
+    else:
+      # The pytsk partition back-end yields more than 1 scan node for various
+      # metadata and unallocated parts of the GPT.
+      self.assertEqual(len(scan_node.sub_nodes), 6)
+      scan_node = scan_node.sub_nodes[4]
+
+    apfs_container_scan_node = scan_node.sub_nodes[0]
 
     base_path_specs = []
     test_scanner._ScanVolumeSystemRoot(

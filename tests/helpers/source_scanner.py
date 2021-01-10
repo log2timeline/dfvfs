@@ -361,18 +361,39 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
-    scan_node = self._GetTestScanNode(scan_context)
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
 
-    self.assertEqual(len(scan_node.sub_nodes), 6)
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
+      self.assertEqual(len(scan_node.sub_nodes), 1)
+      scan_node = scan_node.sub_nodes[0]
+    else:
+      # The pytsk partition back-end yields more than 1 scan node for various
+      # metadata and unallocated parts of the GPT.
+      self.assertEqual(len(scan_node.sub_nodes), 6)
+      scan_node = scan_node.sub_nodes[4]
 
-    scan_node = scan_node.sub_nodes[4].GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(
         scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS_CONTAINER)
-
     self.assertEqual(len(scan_node.sub_nodes), 1)
 
     scan_node = scan_node.sub_nodes[0]
@@ -391,7 +412,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
     self.assertEqual(len(scan_node.sub_nodes), 1)
 
-    scan_node = scan_node.GetSubNodeByLocation('/')
+    scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS)
 
@@ -535,14 +556,36 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
-    scan_node = self._GetTestScanNode(scan_context)
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_QCOW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
 
-    scan_node = scan_node.GetSubNodeByLocation('/p1')
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
+      self.assertEqual(len(scan_node.sub_nodes), 1)
+      scan_node = scan_node.sub_nodes[0]
+    else:
+      # The pytsk partition back-end yields more than 1 scan node for various
+      # metadata and unallocated parts of the GPT.
+      self.assertEqual(len(scan_node.sub_nodes), 6)
+      scan_node = scan_node.sub_nodes[4]
+
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
     scan_node = scan_node.sub_nodes[0]
-
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_FVDE)
     self.assertEqual(len(scan_node.sub_nodes), 0)
@@ -557,10 +600,11 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
     self.assertEqual(len(scan_node.sub_nodes), 1)
 
-    scan_node = scan_node.GetSubNodeByLocation('/')
+    scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertIsNotNone(scan_node.path_spec)
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_HFS_BACK_END)
 
   def testScanOnDirectory(self):
     """Test the Scan function on a directory."""

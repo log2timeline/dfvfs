@@ -354,10 +354,18 @@ class Analyzer(object):
       cls._volume_system_scanner = cls._GetSignatureScanner(
           cls._volume_system_store)
 
-    return cls._GetTypeIndicators(
+    type_indicators = cls._GetTypeIndicators(
         cls._volume_system_scanner, cls._volume_system_store,
         cls._volume_system_remainder_list, path_spec,
         resolver_context=resolver_context)
+
+    if (len(type_indicators) > 1 and
+        definitions.TYPE_INDICATOR_TSK_PARTITION in type_indicators):
+      # The TSK partition analyzer is used as a fallback, remove it if
+      # an alternative analyzer detected a supported volume system.
+      type_indicators.remove(definitions.TYPE_INDICATOR_TSK_PARTITION)
+
+    return type_indicators
 
   @classmethod
   def RegisterHelper(cls, analyzer_helper):

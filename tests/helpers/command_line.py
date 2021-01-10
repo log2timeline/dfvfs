@@ -179,17 +179,6 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
   # pylint: disable=protected-access
 
-  def testEncodeString(self):
-    """Tests the _EncodeString function."""
-    test_mediator = command_line.CLIVolumeScannerMediator()
-
-    encoded_string = test_mediator._EncodeString('ASCII')
-    self.assertEqual(encoded_string, b'ASCII')
-
-    test_mediator._preferred_encoding = 'ascii'
-    encoded_string = test_mediator._EncodeString('\u00b5')
-    self.assertEqual(encoded_string, b'?')
-
   def testFormatHumanReadableSize(self):
     """Tests the _FormatHumanReadableSize function."""
     test_mediator = command_line.CLIVolumeScannerMediator()

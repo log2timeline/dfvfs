@@ -12,6 +12,16 @@ from dfvfs.resolver import resolver
 class FVDEFile(file_object_io.FileObjectIO):
   """File input/output (IO) object using pyfvde."""
 
+  def _Close(self):
+    """Closes the file-like object."""
+    try:
+      # TODO: ensure pyfvde volume object is open.
+      self._file_object.close()
+    except IOError:
+      pass
+
+    self._file_object = None
+
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.
 
