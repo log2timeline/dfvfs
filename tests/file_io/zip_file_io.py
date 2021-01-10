@@ -5,26 +5,28 @@
 import unittest
 
 from dfvfs.file_io import zip_file_io
-from dfvfs.path import os_path_spec
-from dfvfs.path import zip_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
 from tests.file_io import test_lib
 
 
 class ZipFileTest(test_lib.SylogTestCase):
-  """The unit test for a zip extracted file-like object."""
+  """Tests a zip extracted file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(ZipFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.zip'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.zip'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._zip_path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._zip_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -33,29 +35,23 @@ class ZipFileTest(test_lib.SylogTestCase):
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = zip_file_io.ZipFile(self._resolver_context)
-    file_object.open(path_spec=self._zip_path_spec)
+    file_object.Open(path_spec=self._zip_path_spec)
 
     self._TestGetSizeFileObject(file_object)
-
-    file_object.close()
 
   def testSeek(self):
     """Test the seek functionality."""
     file_object = zip_file_io.ZipFile(self._resolver_context)
-    file_object.open(path_spec=self._zip_path_spec)
+    file_object.Open(path_spec=self._zip_path_spec)
 
     self._TestSeekFileObject(file_object)
-
-    file_object.close()
 
   def testRead(self):
     """Test the read functionality."""
     file_object = zip_file_io.ZipFile(self._resolver_context)
-    file_object.open(path_spec=self._zip_path_spec)
+    file_object.Open(path_spec=self._zip_path_spec)
 
     self._TestReadFileObject(file_object)
-
-    file_object.close()
 
     # TODO: add tests for read > UNCOMPRESSED_DATA_BUFFER_SIZE
 

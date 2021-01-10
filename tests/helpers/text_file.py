@@ -4,10 +4,11 @@
 
 import unittest
 
-from dfvfs.file_io import os_file_io
 from dfvfs.helpers import text_file
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
+from dfvfs.resolver import resolver
 
 from tests import test_lib as shared_test_lib
 
@@ -26,13 +27,14 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
   def testReadline(self):
     """Test the readline() function."""
-    test_file = self._GetTestFilePath(['another_file'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['another_file'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     line = text_file_object.readline()
@@ -49,17 +51,16 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     offset = text_file_object.get_offset()
     self.assertEqual(offset, 11)
 
-    file_object.close()
-
   def testReadlineWithError(self):
     """Test the readline() function with an encoding error."""
-    test_file = self._GetTestFilePath(['another_file_with_error'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['another_file_with_error'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     with self.assertRaises(UnicodeDecodeError):
@@ -82,17 +83,16 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     offset = text_file_object.get_offset()
     self.assertEqual(offset, 11)
 
-    file_object.close()
-
   def testReadlineUTF16(self):
     """Test the readline() function on UTF-16 encoded text."""
-    test_file = self._GetTestFilePath(['another_file.utf16'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['another_file.utf16'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object, encoding='utf-16-le')
 
     line = text_file_object.readline()
@@ -109,17 +109,16 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     offset = text_file_object.get_offset()
     self.assertEqual(offset, 24)
 
-    file_object.close()
-
   def testReadlineMultipleLines(self):
     """Test the readline() function on multiple lines."""
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     line = text_file_object.readline()
@@ -146,17 +145,16 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     offset = text_file_object.get_offset()
     self.assertEqual(offset, 64)
 
-    file_object.close()
-
   def testReadlineWithEndOfFileTruncation(self):
     """Test the readline() function with specified size at end of file."""
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     line = text_file_object.readline(size=24)
@@ -170,17 +168,16 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     line = text_file_object.readline(size=30)
     self.assertEqual(line, 'uber secret laire,admin,admin\n')
 
-    file_object.close()
-
   def testReadlines(self):
     """Test the readlines() function."""
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     lines = text_file_object.readlines()
@@ -192,17 +189,16 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(lines[3], 'treasure chest,-,1111\n')
     self.assertEqual(lines[4], 'uber secret laire,admin,admin\n')
 
-    file_object.close()
-
   def testReadlinesWithSizeHint(self):
     """Test the readlines() function."""
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     lines = text_file_object.readlines(sizehint=60)
@@ -212,16 +208,16 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(lines[1], 'bank,joesmith,superrich\n')
     self.assertEqual(lines[2], 'alarm system,-,1234\n')
 
-    file_object.close()
-
   def testReadlinesWithFileWithoutNewLineAtEnd(self):
     """Test reading lines from a file without a new line char at the end."""
-    test_file = self._GetTestFilePath(['fls_bodyfile.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['fls_bodyfile.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_file_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_file_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
+
     text_file_object = text_file.TextFile(file_object)
 
     lines = text_file_object.readlines()
@@ -230,13 +226,14 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
   def testIterator(self):
     """Test the iterator functionality."""
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.open(test_path_spec)
     text_file_object = text_file.TextFile(file_object)
 
     lines = []
@@ -249,8 +246,6 @@ class TextFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(lines[2], 'alarm system,-,1234\n')
     self.assertEqual(lines[3], 'treasure chest,-,1111\n')
     self.assertEqual(lines[4], 'uber secret laire,admin,admin\n')
-
-    file_object.close()
 
 
 if __name__ == '__main__':

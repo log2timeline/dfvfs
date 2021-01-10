@@ -33,7 +33,7 @@ class GzipFileTest(test_lib.SylogTestCase):
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
     file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.open(path_spec=self._gzip_path_spec)
+    file_object.Open(path_spec=self._gzip_path_spec)
 
     self._TestGetSizeFileObject(file_object)
 
@@ -42,25 +42,19 @@ class GzipFileTest(test_lib.SylogTestCase):
     self.assertEqual(file_object.original_filenames, ['syslog.1'])
     self.assertEqual(file_object.comments, [None])
 
-    file_object.close()
-
   def testSeek(self):
     """Test the seek functionality."""
     file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.open(path_spec=self._gzip_path_spec)
+    file_object.Open(path_spec=self._gzip_path_spec)
 
     self._TestSeekFileObject(file_object)
-
-    file_object.close()
 
   def testRead(self):
     """Test the read functionality."""
     file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.open(path_spec=self._gzip_path_spec)
+    file_object.Open(path_spec=self._gzip_path_spec)
 
     self._TestReadFileObject(file_object)
-
-    file_object.close()
 
   def testReadCorrupt(self):
     """Tests reading a file that is corrupt."""
@@ -75,7 +69,7 @@ class GzipFileTest(test_lib.SylogTestCase):
 
     file_object = gzip_file_io.GzipFile(self._resolver_context)
 
-    file_object.open(path_spec=test_gzip_path_spec)
+    file_object.Open(path_spec=test_gzip_path_spec)
     self.assertEqual(file_object.uncompressed_data_size, 2994187)
 
   def testReadMultipleMembers(self):
@@ -89,7 +83,7 @@ class GzipFileTest(test_lib.SylogTestCase):
         definitions.TYPE_INDICATOR_GZIP, parent=test_os_path_spec)
 
     file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.open(path_spec=test_gzip_path_spec)
+    file_object.Open(path_spec=test_gzip_path_spec)
 
     self.assertEqual(file_object.uncompressed_data_size, 506631)
     self.assertEqual(file_object.modification_times, [0, 0])
@@ -114,8 +108,6 @@ class GzipFileTest(test_lib.SylogTestCase):
     data = file_object.read(size=506631 + 4)
     self.assertEqual(len(data), 506631)
     self.assertEqual(data[-4:], b'\x02\x00\x80\x00')
-
-    file_object.close()
 
 
 if __name__ == '__main__':

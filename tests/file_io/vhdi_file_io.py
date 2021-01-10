@@ -148,6 +148,14 @@ class WindowsVersion1DifferentialVHDIFileTestFAT(
     """Test the open and close functionality using a location."""
     self._TestOpenCloseLocation(self._partition_path_spec)
 
+    # Try open with a path specification that has no parent.
+    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
+        location='/p1', parent=self._vhdi_path_spec)
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
+
   def testSeek(self):
     """Test the seek functionality."""
     self._TestSeek(self._partition_path_spec)
@@ -290,6 +298,14 @@ class WindowsVersion2DifferentialVHDIFileTestFAT(
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
     self._TestOpenCloseLocation(self._partition_path_spec)
+
+    # Try open with a path specification that has no parent.
+    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
+        location='/p1', parent=self._vhdi_path_spec)
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""

@@ -47,9 +47,8 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
         parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 116)
-    file_object.close()
 
     # TODO: add a failing scenario.
 
@@ -60,16 +59,15 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
         parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 116)
-    file_object.close()
 
     # Try open with a path specification that has no parent.
     path_spec.parent = None
     file_object = apfs_file_io.APFSFile(self._resolver_context)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.open(path_spec=path_spec)
+      file_object.Open(path_spec=path_spec)
 
   def testSeek(self):
     """Test the seek functionality."""
@@ -79,7 +77,7 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
         parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -110,8 +108,6 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    file_object.close()
-
   def testRead(self):
     """Test the read functionality."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -120,7 +116,7 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
         parent=self._apfs_container_path_spec)
     file_object = apfs_file_io.APFSFile(self._resolver_context)
 
-    file_object.open(path_spec=path_spec)
+    file_object.Open(path_spec=path_spec)
     read_buffer = file_object.read()
 
     expected_buffer = (
@@ -133,8 +129,6 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(read_buffer, expected_buffer)
 
     # TODO: add boundary scenarios.
-
-    file_object.close()
 
 
 if __name__ == '__main__':

@@ -40,15 +40,14 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
 
     file_object = fake_file_io.FakeFile(
         self._resolver_context, self._FILE_DATA1)
-    file_object.open(path_spec=test_path_spec)
+    file_object.Open(path_spec=test_path_spec)
 
     self.assertEqual(file_object.get_size(), 116)
-    file_object.close()
 
     # Test file without file data
     with self.assertRaises(TypeError):
       file_object = fake_file_io.FakeFile(self._resolver_context, None)
-      file_object.open(path_spec=test_path_spec)
+      file_object.Open(path_spec=test_path_spec)
 
     # TODO: add a failing scenario.
 
@@ -59,7 +58,7 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
 
     file_object = fake_file_io.FakeFile(
         self._resolver_context, self._FILE_DATA2)
-    file_object.open(path_spec=test_path_spec)
+    file_object.Open(path_spec=test_path_spec)
 
     self.assertEqual(file_object.get_size(), 22)
 
@@ -91,8 +90,6 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    file_object.close()
-
   def testRead(self):
     """Test the read function."""
     test_file = '/test_data/password.txt'
@@ -100,7 +97,7 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
 
     file_object = fake_file_io.FakeFile(
         self._resolver_context, self._FILE_DATA1)
-    file_object.open(path_spec=test_path_spec)
+    file_object.Open(path_spec=test_path_spec)
 
     read_buffer = file_object.read()
 
@@ -112,8 +109,6 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
         b'uber secret laire,admin,admin\n')
 
     self.assertEqual(read_buffer, expected_buffer)
-
-    file_object.close()
 
     # TODO: add boundary scenarios.
 

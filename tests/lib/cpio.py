@@ -51,8 +51,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     file_entry = test_file._ReadFileEntry(file_object, 0)
     self.assertEqual(file_entry.data_size, 1247)
 
-    file_object.close()
-
   def testReadFileEntryOnNewASCII(self):
     """Tests the _ReadFileEntry function on new ASCII format."""
     test_file = cpio.CPIOArchiveFile()
@@ -68,8 +66,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
     file_entry = test_file._ReadFileEntry(file_object, 0)
     self.assertEqual(file_entry.data_size, 1247)
-
-    file_object.close()
 
   def testReadFileEntryOnNewASCIIWithCRC(self):
     """Tests the _ReadFileEntry function on new ASCII with CRC format."""
@@ -87,8 +83,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     file_entry = test_file._ReadFileEntry(file_object, 0)
     self.assertEqual(file_entry.data_size, 1247)
 
-    file_object.close()
-
   def testReadFileEntryOnPortableASCII(self):
     """Tests the _ReadFileEntry function on portable ASCII format."""
     test_file = cpio.CPIOArchiveFile()
@@ -104,8 +98,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
 
     file_entry = test_file._ReadFileEntry(file_object, 0)
     self.assertEqual(file_entry.data_size, 1247)
-
-    file_object.close()
 
   def testReadFileEntriesOnBinary(self):
     """Tests the _ReadFileEntries function on binary format."""
@@ -123,8 +115,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     test_file._file_size = file_object.get_size()
     test_file._ReadFileEntries(file_object)
     self.assertEqual(len(test_file._file_entries), 1)
-
-    file_object.close()
 
   def testFileEntryExistsByPathOnBinary(self):
     """Tests the FileEntryExistsByPath function on binary format."""
@@ -147,7 +137,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     self.assertFalse(result)
 
     test_file.Close()
-    file_object.close()
 
   def testGetFileEntriesOnBinary(self):
     """Tests the GetFileEntries function on binary format."""
@@ -171,8 +160,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     file_entries = list(test_file.GetFileEntries())
     self.assertEqual(len(file_entries), 0)
 
-    file_object.close()
-
   def testGetFileEntryByPathOnBinary(self):
     """Tests the GetFileEntryByPath function on binary format."""
     test_file = cpio.CPIOArchiveFile()
@@ -194,7 +181,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(file_entry)
 
     test_file.Close()
-    file_object.close()
 
   # TODO: add tests for FileEntryExistsByPath
   # TODO: add tests for GetFileEntries
@@ -217,7 +203,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(test_file.file_format, 'bin-little-endian')
 
     test_file.Close()
-    file_object.close()
 
   def testOpenAndCloseOnNewASCII(self):
     """Tests the Open and Close functions on new ASCII format."""
@@ -236,7 +221,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(test_file.file_format, 'newc')
 
     test_file.Close()
-    file_object.close()
 
   def testOpenAndCloseOnNewASCIIWithCRC(self):
     """Tests the Open and Close functions on new ASCII with CRC format."""
@@ -255,7 +239,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(test_file.file_format, 'crc')
 
     test_file.Close()
-    file_object.close()
 
   def testOpenAndCloseOnPortableASCII(self):
     """Tests the Open and Close functions on portable ASCII format."""
@@ -274,7 +257,6 @@ class CPIOArchiveFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(test_file.file_format, 'odc')
 
     test_file.Close()
-    file_object.close()
 
   # TODO: add tests for ReadDataAtOffset
 
