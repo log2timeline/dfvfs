@@ -148,9 +148,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
   def _TestOpenCloseLocation(self, parent_path_spec):
@@ -161,9 +161,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         location='/passwords.txt', parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
   def _TestSeek(self, parent_path_spec):
@@ -175,9 +175,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
         parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -217,9 +217,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
         parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     read_buffer = file_object.read()
 
     expected_buffer = (
@@ -248,36 +248,33 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     """Cleans up the needed objects used throughout the test."""
     self._resolver_context.Empty()
 
-  def _TestOpenCloseMFTEntry(self, path_spec, file_object):
+  def _TestOpenCloseMFTEntry(self, file_object):
     """Test the open and close functionality using a MFT entry.
 
     Args:
-      path_spec (PathSpec): path specification.
       file_object (FileIO): file-like object.
     """
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
     # TODO: add a failing scenario.
 
-  def _TestOpenCloseLocation(self, path_spec, file_object):
+  def _TestOpenCloseLocation(self, file_object):
     """Test the open and close functionality using a location.
 
     Args:
-      path_spec (PathSpec): path specification.
       file_object (FileIO): file-like object.
     """
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
-  def _TestSeek(self, path_spec, file_object):
+  def _TestSeek(self, file_object):
     """Test the seek functionality.
 
     Args:
-      path_spec (PathSpec): path specification.
       file_object (FileIO): file-like object.
     """
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -308,14 +305,13 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-  def _TestRead(self, path_spec, file_object):
+  def _TestRead(self, file_object):
     """Test the read functionality.
 
     Args:
-      path_spec (PathSpec): path specification.
       file_object (FileIO): file-like object.
     """
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     read_buffer = file_object.read()
 
     expected_buffer = (
@@ -329,14 +325,13 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
 
     # TODO: add boundary scenarios.
 
-  def _TestReadADS(self, path_spec, file_object):
+  def _TestReadADS(self, file_object):
     """Test the read functionality on an alternate data stream (ADS).
 
     Args:
-      path_spec (PathSpec): path specification.
       file_object (FileIO): file-like object.
     """
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
 
     expected_buffer = (
         b'\xf0\x12\x03\xf8\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
@@ -394,52 +389,59 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=2, parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), self._SIZE_P1)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=13, parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location='/p2', parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location='/p0', parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location='/p3', parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         start_offset=self._OFFSET_P2, parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         start_offset=self._SIZE_P1, parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
   def _TestSeek(self, parent_path_spec):
     """Test the seek functionality.
@@ -449,9 +451,10 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
     file_object.seek(4128)
@@ -501,9 +504,10 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     """
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         part_index=6, parent=parent_path_spec)
-    file_object = tsk_partition_file_io.TSKPartitionFile(self._resolver_context)
+    file_object = tsk_partition_file_io.TSKPartitionFile(
+        self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
 
     self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
@@ -668,9 +672,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 126)
 
     # TODO: add a failing scenario.
@@ -683,9 +687,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     """
     path_spec = tsk_path_spec.TSKPathSpec(
         location='/passwords.txt', parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 126)
 
   def _TestSeek(self, parent_path_spec):
@@ -697,9 +701,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
         parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 24)
 
     file_object.seek(10)
@@ -739,9 +743,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     path_spec = tsk_path_spec.TSKPathSpec(
         inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
         parent=parent_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     read_buffer = file_object.read()
 
     expected_buffer = (

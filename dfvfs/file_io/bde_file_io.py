@@ -10,7 +10,7 @@ from dfvfs.resolver import resolver
 
 
 class BDEFile(file_object_io.FileObjectIO):
-  """File-like object using pybde."""
+  """File input/output (IO) object using pybde."""
 
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.

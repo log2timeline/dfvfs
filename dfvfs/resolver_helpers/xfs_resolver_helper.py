@@ -13,16 +13,17 @@ class XFSResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_XFS
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      FileIO: file-like object.
+      FileIO: file input/output (IO) object.
     """
-    return xfs_file_io.XFSFile(resolver_context)
+    return xfs_file_io.XFSFile(resolver_context, path_spec)
 
   def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.

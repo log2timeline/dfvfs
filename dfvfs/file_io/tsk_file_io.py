@@ -10,15 +10,16 @@ from dfvfs.resolver import resolver
 
 
 class TSKFile(file_io.FileIO):
-  """File-like object using pytsk3."""
+  """File input/output (IO) object using pytsk3."""
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(TSKFile, self).__init__(resolver_context)
+    super(TSKFile, self).__init__(resolver_context, path_spec)
     self._current_offset = 0
     self._file_system = None
     self._size = 0
@@ -32,11 +33,10 @@ class TSKFile(file_io.FileIO):
 
     self._file_system = None
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -44,17 +44,13 @@ class TSKFile(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    data_stream = getattr(path_spec, 'data_stream', None)
+    data_stream = getattr(self._path_spec, 'data_stream', None)
 
     file_system = resolver.Resolver.OpenFileSystem(
-        path_spec, resolver_context=self._resolver_context)
+        self._path_spec, resolver_context=self._resolver_context)
 
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(self._path_spec)
     if not file_entry:
       raise IOError('Unable to retrieve file entry.')
 

@@ -10,17 +10,18 @@ from dfvfs.resolver import resolver
 
 
 class SQLiteBlobFile(file_io.FileIO):
-  """Class that implements a file-like object using sqlite."""
+  """File input/output (IO) object using sqlite."""
 
   _OPERATORS = frozenset(['==', '=', 'IS'])
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, path_spec):
     """Initializes the file-like object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(SQLiteBlobFile, self).__init__(resolver_context)
+    super(SQLiteBlobFile, self).__init__(resolver_context, path_spec)
     self._blob = None
     self._current_offset = 0
     self._database_object = None
@@ -38,11 +39,10 @@ class SQLiteBlobFile(file_io.FileIO):
     self._size = 0
     self._table_name = None
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -50,31 +50,27 @@ class SQLiteBlobFile(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    table_name = getattr(path_spec, 'table_name', None)
+    table_name = getattr(self._path_spec, 'table_name', None)
     if table_name is None:
       raise errors.PathSpecError('Path specification missing table name.')
 
-    column_name = getattr(path_spec, 'column_name', None)
+    column_name = getattr(self._path_spec, 'column_name', None)
     if column_name is None:
       raise errors.PathSpecError('Path specification missing column name.')
 
-    row_condition = getattr(path_spec, 'row_condition', None)
+    row_condition = getattr(self._path_spec, 'row_condition', None)
     if row_condition:
       if not isinstance(row_condition, tuple) or len(row_condition) != 3:
         raise errors.PathSpecError((
             'Unsupported row_condition not a tuple in the form: '
             '(column_name, operator, value).'))
 
-    row_index = getattr(path_spec, 'row_index', None)
+    row_index = getattr(self._path_spec, 'row_index', None)
     if row_index is not None and not isinstance(row_index, int):
       raise errors.PathSpecError('Unsupported row_index not of integer type.')
 
@@ -86,7 +82,7 @@ class SQLiteBlobFile(file_io.FileIO):
       raise IOError('Database file already set.')
 
     file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
     database_object = sqlite_database.SQLiteDatabaseFile()
     database_object.Open(file_object)

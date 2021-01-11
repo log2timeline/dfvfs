@@ -14,23 +14,32 @@ from tests.resolver_helpers import test_lib
 class XFSResolverHelperTest(test_lib.ResolverHelperTestCase):
   """Tests for the XFS resolver helper implementation."""
 
-  def testNewFileObject(self):
-    """Tests the NewFileObject function."""
-    resolver_helper_object = xfs_resolver_helper.XFSResolverHelper()
-    self._TestNewFileObject(resolver_helper_object)
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    super(XFSResolverHelperTest, self).setUp()
 
-  def testNewFileSystem(self):
-    """Tests the NewFileSystem function."""
     test_path = self._GetTestFilePath(['xfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+
+  def testNewFileObject(self):
+    """Tests the NewFileObject function."""
     test_xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_XFS, location='/',
-        parent=test_raw_path_spec)
+        parent=self._raw_path_spec)
+
+    resolver_helper_object = xfs_resolver_helper.XFSResolverHelper()
+    self._TestNewFileObject(resolver_helper_object, test_xfs_path_spec)
+
+  def testNewFileSystem(self):
+    """Tests the NewFileSystem function."""
+    test_xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, location='/',
+        parent=self._raw_path_spec)
 
     resolver_helper_object = xfs_resolver_helper.XFSResolverHelper()
     self._TestNewFileSystem(resolver_helper_object, test_xfs_path_spec)

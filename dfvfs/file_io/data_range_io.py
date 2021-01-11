@@ -9,7 +9,7 @@ from dfvfs.resolver import resolver
 
 
 class DataRange(file_io.FileIO):
-  """File-like object that maps an in-file data range.
+  """File input/output (IO) object that maps an in-file data range.
 
   The data range object allows to expose a single partition within
   a full disk image as a separate file-like object by mapping
@@ -17,13 +17,14 @@ class DataRange(file_io.FileIO):
   image.
   """
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(DataRange, self).__init__(resolver_context)
+    super(DataRange, self).__init__(resolver_context, path_spec)
     self._current_offset = 0
     self._file_object = None
     self._range_offset = -1
@@ -40,11 +41,10 @@ class DataRange(file_io.FileIO):
     self._range_offset = -1
     self._range_size = -1
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -52,17 +52,13 @@ class DataRange(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    range_offset = getattr(path_spec, 'range_offset', None)
-    range_size = getattr(path_spec, 'range_size', None)
+    range_offset = getattr(self._path_spec, 'range_offset', None)
+    range_size = getattr(self._path_spec, 'range_size', None)
 
     if range_offset is None or range_size is None:
       raise errors.PathSpecError(
@@ -70,7 +66,7 @@ class DataRange(file_io.FileIO):
 
     self._SetRange(range_offset, range_size)
     self._file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
   def _SetRange(self, range_offset, range_size):
     """Sets the data range (offset and size).

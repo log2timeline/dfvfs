@@ -35,38 +35,43 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
     # TODO: Test SEEK_CUR after open.
 
     # Test SEEK_END after open.
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     file_object.seek(-10, os.SEEK_END)
     self.assertEqual(file_object.read(5), b'times')
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 
@@ -93,38 +98,43 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
     # TODO: Test SEEK_CUR after open.
 
     # Test SEEK_END after open.
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     file_object.seek(-10, os.SEEK_END)
     self.assertEqual(file_object.read(5), b'times')
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 
@@ -151,38 +161,43 @@ class XZCompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
     # TODO: Test SEEK_CUR after open.
 
     # Test SEEK_END after open.
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     file_object.seek(-10, os.SEEK_END)
     self.assertEqual(file_object.read(5), b'times')
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 
@@ -209,38 +224,43 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
   def testOpenCloseFileObject(self):
     """Test the open and close functionality using a file-like object."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
     # TODO: Test SEEK_CUR after open.
 
     # Test SEEK_END after open.
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     file_object.seek(-10, os.SEEK_END)
     self.assertEqual(file_object.read(5), b'times')
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = compressed_stream_io.CompressedStream(self._resolver_context)
-    file_object.Open(path_spec=self._compressed_stream_path_spec)
+    file_object = compressed_stream_io.CompressedStream(
+        self._resolver_context, self._compressed_stream_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 

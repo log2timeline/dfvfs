@@ -13,16 +13,17 @@ class APFSResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      FileIO: file-like object.
+      FileIO: file input/output (IO) object.
     """
-    return apfs_file_io.APFSFile(resolver_context)
+    return apfs_file_io.APFSFile(resolver_context, path_spec)
 
   def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.

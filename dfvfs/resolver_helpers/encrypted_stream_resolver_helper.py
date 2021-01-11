@@ -13,16 +13,17 @@ class EncryptedStreamResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCRYPTED_STREAM
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      FileIO: file-like object.
+      FileIO: file input/output (IO) object.
     """
-    return encrypted_stream_io.EncryptedStream(resolver_context)
+    return encrypted_stream_io.EncryptedStream(resolver_context, path_spec)
 
   def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.

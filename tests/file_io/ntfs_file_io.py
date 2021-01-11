@@ -28,24 +28,24 @@ class NTFSFileTest(test_lib.NTFSImageFileTestCase):
     path_spec = ntfs_path_spec.NTFSPathSpec(
         mft_attribute=1, mft_entry=self._MFT_ENTRY_PASSWORDS_TXT,
         parent=self._os_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseMFTEntry(path_spec, file_object)
+    self._TestOpenCloseMFTEntry(file_object)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\passwords.txt', parent=self._os_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseLocation(path_spec, file_object)
+    self._TestOpenCloseLocation(file_object)
 
     # Try open with a path specification that has no parent.
     path_spec.parent = None
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(path_spec, file_object)
+      self._TestOpenCloseLocation(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
@@ -53,27 +53,27 @@ class NTFSFileTest(test_lib.NTFSImageFileTestCase):
         location='\\a_directory\\another_file',
         mft_attribute=2, mft_entry=self._MFT_ENTRY_ANOTHER_FILE,
         parent=self._os_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context, path_spec)
 
-    self._TestSeek(path_spec, file_object)
+    self._TestSeek(file_object)
 
   def testRead(self):
     """Test the read functionality."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\passwords.txt', mft_attribute=2,
         mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._os_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context, path_spec)
 
-    self._TestRead(path_spec, file_object)
+    self._TestRead(file_object)
 
   def testReadADS(self):
     """Test the read functionality on an alternate data stream (ADS)."""
     path_spec = ntfs_path_spec.NTFSPathSpec(
         data_stream='$SDS', location='\\$Secure', mft_attribute=2,
         mft_entry=9, parent=self._os_path_spec)
-    file_object = ntfs_file_io.NTFSFile(self._resolver_context)
+    file_object = ntfs_file_io.NTFSFile(self._resolver_context, path_spec)
 
-    self._TestReadADS(path_spec, file_object)
+    self._TestReadADS(file_object)
 
 
 if __name__ == '__main__':

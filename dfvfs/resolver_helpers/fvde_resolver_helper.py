@@ -13,16 +13,17 @@ class FVDEResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FVDE
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      FVDEFile: file-like object.
+      FVDEFile: file input/output (IO) object.
     """
-    return fvde_file_io.FVDEFile(resolver_context)
+    return fvde_file_io.FVDEFile(resolver_context, path_spec)
 
   def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system.

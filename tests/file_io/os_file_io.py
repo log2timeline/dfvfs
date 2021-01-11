@@ -38,15 +38,15 @@ class OSFileTest(shared_test_lib.BaseTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.Open(path_spec=self._path_spec1)
+    file_object = os_file_io.OSFile(self._resolver_context, self._path_spec1)
+    file_object.Open()
 
     self.assertEqual(file_object.get_size(), 116)
 
     # Try open without a path specification.
     with self.assertRaises(ValueError):
-      file_object = os_file_io.OSFile(self._resolver_context)
-      file_object.Open(path_spec=None)
+      file_object = os_file_io.OSFile(self._resolver_context, None)
+      file_object.Open()
 
     # Try open with a path specification that has no location.
     test_file = self._GetTestFilePath(['password.txt'])
@@ -56,26 +56,26 @@ class OSFileTest(shared_test_lib.BaseTestCase):
     path_spec.location = None
 
     with self.assertRaises(errors.PathSpecError):
-      file_object = os_file_io.OSFile(self._resolver_context)
-      file_object.Open(path_spec=path_spec)
+      file_object = os_file_io.OSFile(self._resolver_context, path_spec)
+      file_object.Open()
 
     # Try open with a path specification that has a parent.
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec.parent = self._path_spec2
 
     with self.assertRaises(errors.PathSpecError):
-      file_object = os_file_io.OSFile(self._resolver_context)
-      file_object.Open(path_spec=path_spec)
+      file_object = os_file_io.OSFile(self._resolver_context, path_spec)
+      file_object.Open()
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = os_file_io.OSFile(self._resolver_context, self._path_spec2)
 
     # Try seek without the file object being open.
     with self.assertRaises(IOError):
       file_object.seek(0, os.SEEK_SET)
 
-    file_object.Open(path_spec=self._path_spec2)
+    file_object.Open()
 
     self.assertEqual(file_object.get_size(), 22)
 
@@ -109,13 +109,13 @@ class OSFileTest(shared_test_lib.BaseTestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = os_file_io.OSFile(self._resolver_context, self._path_spec1)
 
     # Try read without the file object being open.
     with self.assertRaises(IOError):
       file_object.read()
 
-    file_object.Open(path_spec=self._path_spec1)
+    file_object.Open()
 
     read_buffer = file_object.read()
 
@@ -132,26 +132,26 @@ class OSFileTest(shared_test_lib.BaseTestCase):
 
   def testGetOffset(self):
     """Test the get offset functionality."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = os_file_io.OSFile(self._resolver_context, self._path_spec1)
 
     # Try get_offset without the file object being open.
     with self.assertRaises(IOError):
       file_object.get_offset()
 
-    file_object.Open(path_spec=self._path_spec1)
+    file_object.Open()
 
     offset = file_object.get_offset()
     self.assertEqual(offset, 0)
 
   def testGetSize(self):
     """Test the get size functionality."""
-    file_object = os_file_io.OSFile(self._resolver_context)
+    file_object = os_file_io.OSFile(self._resolver_context, self._path_spec1)
 
     # Try get_size without the file object being open.
     with self.assertRaises(IOError):
       file_object.get_size()
 
-    file_object.Open(path_spec=self._path_spec1)
+    file_object.Open()
 
     size = file_object.get_size()
     self.assertEqual(size, 116)

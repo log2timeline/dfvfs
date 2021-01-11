@@ -4,10 +4,11 @@
 
 import unittest
 
-from dfvfs.file_io import os_file_io
 from dfvfs.helpers import data_slice
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
+from dfvfs.resolver import resolver
 
 from tests import test_lib as shared_test_lib
 
@@ -21,13 +22,13 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
   def testGetItems(self):
     """Test the __getitem__ function."""
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
-
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.Open(path_spec=test_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
     file_data = data_slice.DataSlice(file_object)
 
@@ -57,13 +58,13 @@ class TextFileTest(shared_test_lib.BaseTestCase):
 
   def testLen(self):
     """Test the __len__ function."""
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_path_spec = os_path_spec.OSPathSpec(location=test_file)
-
-    file_object = os_file_io.OSFile(self._resolver_context)
-    file_object.Open(path_spec=test_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_object = resolver.Resolver.OpenFileObject(
+        test_os_path_spec, resolver_context=self._resolver_context)
 
     file_data = data_slice.DataSlice(file_object)
 

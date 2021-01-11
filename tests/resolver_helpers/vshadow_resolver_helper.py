@@ -14,23 +14,32 @@ from tests.resolver_helpers import test_lib
 class VShadowResolverHelperTest(test_lib.ResolverHelperTestCase):
   """Tests for the VSS resolver helper implementation."""
 
-  def testNewFileObject(self):
-    """Tests the NewFileObject function."""
-    resolver_helper_object = vshadow_resolver_helper.VShadowResolverHelper()
-    self._TestNewFileObject(resolver_helper_object)
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    super(VShadowResolverHelperTest, self).setUp()
 
-  def testNewFileSystem(self):
-    """Tests the NewFileSystem function."""
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+
+  def testNewFileObject(self):
+    """Tests the NewFileObject function."""
     test_vshadow_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/',
-        parent=test_qcow_path_spec)
+        parent=self._qcow_path_spec)
+
+    resolver_helper_object = vshadow_resolver_helper.VShadowResolverHelper()
+    self._TestNewFileObject(resolver_helper_object, test_vshadow_path_spec)
+
+  def testNewFileSystem(self):
+    """Tests the NewFileSystem function."""
+    test_vshadow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VSHADOW, location='/',
+        parent=self._qcow_path_spec)
 
     resolver_helper_object = vshadow_resolver_helper.VShadowResolverHelper()
     self._TestNewFileSystem(resolver_helper_object, test_vshadow_path_spec)

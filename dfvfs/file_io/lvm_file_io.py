@@ -10,15 +10,16 @@ from dfvfs.resolver import resolver
 
 
 class LVMFile(file_io.FileIO):
-  """File-like object using pyvslvm."""
+  """File input/output (IO) object using pyvslvm."""
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(LVMFile, self).__init__(resolver_context)
+    super(LVMFile, self).__init__(resolver_context, path_spec)
     self._file_system = None
     self._vslvm_logical_volume = None
 
@@ -28,11 +29,10 @@ class LVMFile(file_io.FileIO):
 
     self._file_system = None
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -40,18 +40,14 @@ class LVMFile(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specfication.')
-
-    volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
+    volume_index = lvm.LVMPathSpecGetVolumeIndex(self._path_spec)
     if volume_index is None:
       raise errors.PathSpecError(
           'Unable to retrieve volume index from path specification.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
-        path_spec, resolver_context=self._resolver_context)
+        self._path_spec, resolver_context=self._resolver_context)
     vslvm_volume_group = self._file_system.GetLVMVolumeGroup()
 
     if (volume_index < 0 or

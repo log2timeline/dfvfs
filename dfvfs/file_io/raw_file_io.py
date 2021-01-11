@@ -10,15 +10,16 @@ from dfvfs.resolver import resolver
 
 
 class RawFile(file_object_io.FileObjectIO):
-  """File-like object using pysmraw."""
+  """File input/output (IO) object using pysmraw."""
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(RawFile, self).__init__(resolver_context)
+    super(RawFile, self).__init__(resolver_context, path_spec)
     self._file_objects = []
 
   def _Close(self):

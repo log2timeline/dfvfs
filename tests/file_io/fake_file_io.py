@@ -39,15 +39,16 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
     test_path_spec = fake_path_spec.FakePathSpec(location=test_file)
 
     file_object = fake_file_io.FakeFile(
-        self._resolver_context, self._FILE_DATA1)
-    file_object.Open(path_spec=test_path_spec)
+        self._resolver_context, test_path_spec, self._FILE_DATA1)
+    file_object.Open()
 
     self.assertEqual(file_object.get_size(), 116)
 
     # Test file without file data
     with self.assertRaises(TypeError):
-      file_object = fake_file_io.FakeFile(self._resolver_context, None)
-      file_object.Open(path_spec=test_path_spec)
+      file_object = fake_file_io.FakeFile(
+          self._resolver_context, test_path_spec, None)
+      file_object.Open()
 
     # TODO: add a failing scenario.
 
@@ -57,8 +58,8 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
     test_path_spec = fake_path_spec.FakePathSpec(location=test_file)
 
     file_object = fake_file_io.FakeFile(
-        self._resolver_context, self._FILE_DATA2)
-    file_object.Open(path_spec=test_path_spec)
+        self._resolver_context, test_path_spec, self._FILE_DATA2)
+    file_object.Open()
 
     self.assertEqual(file_object.get_size(), 22)
 
@@ -96,8 +97,8 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
     test_path_spec = fake_path_spec.FakePathSpec(location=test_file)
 
     file_object = fake_file_io.FakeFile(
-        self._resolver_context, self._FILE_DATA1)
-    file_object.Open(path_spec=test_path_spec)
+        self._resolver_context, test_path_spec, self._FILE_DATA1)
+    file_object.Open()
 
     read_buffer = file_object.read()
 

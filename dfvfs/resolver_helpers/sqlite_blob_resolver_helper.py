@@ -13,16 +13,17 @@ class SQLiteBlobResolverHelper(resolver_helper.ResolverHelper):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_SQLITE_BLOB
 
-  def NewFileObject(self, resolver_context):
-    """Creates a new file-like object.
+  def NewFileObject(self, resolver_context, path_spec):
+    """Creates a new file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
-      SQLiteBlobFile: file-like object.
+      SQLiteBlobFile: file input/output (IO) object.
     """
-    return sqlite_blob_file_io.SQLiteBlobFile(resolver_context)
+    return sqlite_blob_file_io.SQLiteBlobFile(resolver_context, path_spec)
 
   def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.

@@ -35,46 +35,46 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
     """Test the open and close functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
         parent=self._qcow_path_spec, store_index=1)
-    file_object = vshadow_file_io.VShadowFile(self._resolver_context)
+    file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 0x40000000)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         parent=self._qcow_path_spec, store_index=13)
-    file_object = vshadow_file_io.VShadowFile(self._resolver_context)
+    file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location='/vss1', parent=self._qcow_path_spec)
-    file_object = vshadow_file_io.VShadowFile(self._resolver_context)
+    file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 0x40000000)
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location='/vss0', parent=self._qcow_path_spec)
-    file_object = vshadow_file_io.VShadowFile(self._resolver_context)
+    file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
     path_spec = vshadow_path_spec.VShadowPathSpec(
         location='/vss13', parent=self._qcow_path_spec)
-    file_object = vshadow_file_io.VShadowFile(self._resolver_context)
+    file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
   def testSeek(self):
     """Test the seek functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
         parent=self._qcow_path_spec, store_index=1)
-    file_object = vshadow_file_io.VShadowFile(self._resolver_context)
+    file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 0x40000000)
 
     file_object.seek(0x1e0)
@@ -115,9 +115,9 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
     """Test the read functionality."""
     path_spec = vshadow_path_spec.VShadowPathSpec(
         parent=self._qcow_path_spec, store_index=1)
-    file_object = vshadow_file_io.VShadowFile(self._resolver_context)
+    file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 0x40000000)
 
     file_object.seek(0x18e)

@@ -10,7 +10,7 @@ from dfvfs.resolver import resolver
 
 
 class LUKSDEFile(file_object_io.FileObjectIO):
-  """File-like object using pyluksde."""
+  """File input/output (IO) object using pyluksde."""
 
   def _OpenFileObject(self, path_spec):
     """Opens the file-like object defined by path specification.

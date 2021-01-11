@@ -10,15 +10,16 @@ from dfvfs.resolver import resolver
 
 
 class VHDIFile(file_object_io.FileObjectIO):
-  """File-like object using pyvhdi."""
+  """File input/output (IO) object using pyvhdi."""
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(VHDIFile, self).__init__(resolver_context)
+    super(VHDIFile, self).__init__(resolver_context, path_spec)
     self._parent_vhdi_files = []
     self._sub_file_objects = []
 

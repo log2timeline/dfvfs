@@ -42,9 +42,9 @@ class HFSFileTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_HFS,
         identifier=self._IDENTIFIER_PASSWORDS_TXT,
         parent=self._raw_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
     # TODO: add a failing scenario.
@@ -54,17 +54,17 @@ class HFSFileTest(shared_test_lib.BaseTestCase):
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS, location='/passwords.txt',
         parent=self._raw_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
     # Try open with a path specification that has no parent.
-    file_object = hfs_file_io.HFSFile(self._resolver_context)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
-      file_object.Open(path_spec=path_spec)
+      file_object.Open()
 
   def testSeek(self):
     """Test the seek functionality."""
@@ -72,9 +72,9 @@ class HFSFileTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_HFS, location='/a_directory/another_file',
         identifier=self._IDENTIFIER_ANOTHER_FILE,
         parent=self._raw_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -111,9 +111,9 @@ class HFSFileTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_HFS, location='/passwords.txt',
         identifier=self._IDENTIFIER_PASSWORDS_TXT,
         parent=self._raw_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    file_object.Open(path_spec=path_spec)
+    file_object.Open()
     read_buffer = file_object.read()
 
     expected_buffer = (

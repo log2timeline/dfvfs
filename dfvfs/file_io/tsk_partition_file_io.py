@@ -8,26 +8,26 @@ from dfvfs.resolver import resolver
 
 
 class TSKPartitionFile(data_range_io.DataRange):
-  """File-like object using pytsk3."""
+  """File input/output (IO) object using pytsk3."""
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(TSKPartitionFile, self).__init__(resolver_context)
+    super(TSKPartitionFile, self).__init__(resolver_context, path_spec)
     self._file_system = None
 
   def _Close(self):
     """Closes the file-like object."""
     self._file_system = None
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -35,19 +35,16 @@ class TSKPartitionFile(data_range_io.DataRange):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
-        path_spec, resolver_context=self._resolver_context)
+        self._path_spec, resolver_context=self._resolver_context)
     tsk_volume = self._file_system.GetTSKVolume()
-    tsk_vs, _ = tsk_partition.GetTSKVsPartByPathSpec(tsk_volume, path_spec)
+    tsk_vs, _ = tsk_partition.GetTSKVsPartByPathSpec(
+        tsk_volume, self._path_spec)
 
     if tsk_vs is None:
       raise errors.PathSpecError(
@@ -68,4 +65,4 @@ class TSKPartitionFile(data_range_io.DataRange):
 
     self._SetRange(range_offset, range_size)
     self._file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)

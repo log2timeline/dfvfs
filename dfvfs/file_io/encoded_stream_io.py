@@ -10,18 +10,19 @@ from dfvfs.resolver import resolver
 
 
 class EncodedStream(file_io.FileIO):
-  """File-like object of a encoded stream."""
+  """File input/output (IO) object of a encoded stream."""
 
   # The size of the encoded data buffer.
   _ENCODED_DATA_BUFFER_SIZE = 8 * 1024 * 1024
 
-  def __init__(self, resolver_context):
-    """Initializes a file-like object.
+  def __init__(self, resolver_context, path_spec):
+    """Initializes a file input/output (IO) object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(EncodedStream, self).__init__(resolver_context)
+    super(EncodedStream, self).__init__(resolver_context, path_spec)
     self._current_offset = 0
     self._decoded_data = b''
     self._decoded_data_offset = 0
@@ -78,11 +79,10 @@ class EncodedStream(file_io.FileIO):
 
     return decoded_stream_size
 
-  def _Open(self, path_spec=None, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file-like object.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -90,23 +90,19 @@ class EncodedStream(file_io.FileIO):
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
     """
-    if not path_spec:
-      raise ValueError('Missing path specification.')
-
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    self._encoding_method = getattr(path_spec, 'encoding_method', None)
+    self._encoding_method = getattr(self._path_spec, 'encoding_method', None)
 
     if self._encoding_method is None:
       raise errors.PathSpecError(
           'Path specification missing encoding method.')
 
     self._file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
   def _AlignDecodedDataOffset(self, decoded_data_offset):
     """Aligns the encoded file with the decoded data offset.

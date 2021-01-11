@@ -32,8 +32,9 @@ class GzipFileTest(test_lib.SylogTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
-    file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.Open(path_spec=self._gzip_path_spec)
+    file_object = gzip_file_io.GzipFile(
+        self._resolver_context, self._gzip_path_spec)
+    file_object.Open()
 
     self._TestGetSizeFileObject(file_object)
 
@@ -44,15 +45,17 @@ class GzipFileTest(test_lib.SylogTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.Open(path_spec=self._gzip_path_spec)
+    file_object = gzip_file_io.GzipFile(
+        self._resolver_context, self._gzip_path_spec)
+    file_object.Open()
 
     self._TestSeekFileObject(file_object)
 
   def testRead(self):
     """Test the read functionality."""
-    file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.Open(path_spec=self._gzip_path_spec)
+    file_object = gzip_file_io.GzipFile(
+        self._resolver_context, self._gzip_path_spec)
+    file_object.Open()
 
     self._TestReadFileObject(file_object)
 
@@ -67,9 +70,10 @@ class GzipFileTest(test_lib.SylogTestCase):
     test_gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_GZIP, parent=test_os_path_spec)
 
-    file_object = gzip_file_io.GzipFile(self._resolver_context)
+    file_object = gzip_file_io.GzipFile(
+        self._resolver_context, test_gzip_path_spec)
+    file_object.Open()
 
-    file_object.Open(path_spec=test_gzip_path_spec)
     self.assertEqual(file_object.uncompressed_data_size, 2994187)
 
   def testReadMultipleMembers(self):
@@ -82,8 +86,9 @@ class GzipFileTest(test_lib.SylogTestCase):
     test_gzip_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_GZIP, parent=test_os_path_spec)
 
-    file_object = gzip_file_io.GzipFile(self._resolver_context)
-    file_object.Open(path_spec=test_gzip_path_spec)
+    file_object = gzip_file_io.GzipFile(
+        self._resolver_context, test_gzip_path_spec)
+    file_object.Open()
 
     self.assertEqual(file_object.uncompressed_data_size, 506631)
     self.assertEqual(file_object.modification_times, [0, 0])
