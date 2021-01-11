@@ -6,10 +6,7 @@ exclude *.pyc
 recursive-include config *
 recursive-include dfvfs *.yaml
 recursive-exclude dfvfs *.pyc
-# The example scripts are not required in a binary distribution package they
-# are considered source distribution files and excluded in find_package()
-# in setup.py.
-recursive-include examples *.py
+# Do not include the test data otherwise the sdist will be too large for PyPi.
 recursive-include test_data *
 # The test scripts are not required in a binary distribution package they 
 # are considered source distribution files and excluded in find_package()
