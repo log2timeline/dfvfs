@@ -32,7 +32,6 @@ class TARDirectoryTest(shared_test_lib.BaseTestCase):
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
-    self._file_system.Close()
     self._resolver_context.Empty()
 
   def testInitialize(self):
@@ -72,7 +71,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
-    self._file_system.Close()
     self._resolver_context.Empty()
 
   def testIntialize(self):
@@ -226,8 +224,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
         self.assertTrue(sub_file_entry.IsVirtual())
 
         self._assertSubFileEntries(sub_file_entry, ['AssetManifest.plist'])
-
-    file_system.Close()
 
   def testDataStreams(self):
     """Test the data streams functionality."""

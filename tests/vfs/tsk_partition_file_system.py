@@ -53,8 +53,6 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = tsk_partition_file_system.TSKPartitionFileSystem(
@@ -97,8 +95,6 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p9',
         parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
-
-    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -161,8 +157,6 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNone(file_entry)
 
-    file_system.Close()
-
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = tsk_partition_file_system.TSKPartitionFileSystem(
@@ -175,8 +169,6 @@ class TSKPartitionFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
 
 if __name__ == '__main__':

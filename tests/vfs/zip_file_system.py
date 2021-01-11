@@ -39,8 +39,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = zip_file_system.ZipFileSystem(
@@ -58,8 +56,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_ZIP, location='/bogus',
         parent=self._os_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
-
-    file_system.Close()
 
     # Test on a zip file that has missing directory entries.
     test_path = self._GetTestFilePath(['missing_directory_entries.zip'])
@@ -89,8 +85,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
     result = file_system.FileEntryExistsByPathSpec(path_spec)
     self.assertTrue(result)
 
-    file_system.Close()
-
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = zip_file_system.ZipFileSystem(
@@ -113,8 +107,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
-
-    file_system.Close()
 
     # Test on a tar file that has missing directory entries.
     test_path = self._GetTestFilePath(['missing_directory_entries.zip'])
@@ -147,8 +139,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'syslog')
 
-    file_system.Close()
-
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = zip_file_system.ZipFileSystem(
@@ -161,8 +151,6 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
   # TODO: add tests for GetZipInfoByPathSpec function.
 

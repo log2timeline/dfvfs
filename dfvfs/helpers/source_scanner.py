@@ -722,9 +722,8 @@ class SourceScanner(object):
       # Check if the file system can be opened since the file system by
       # signature detection results in false positives.
       try:
-        file_system = resolver.Resolver.OpenFileSystem(
+        resolver.Resolver.OpenFileSystem(
             file_system_path_spec, resolver_context=self._resolver_context)
-        file_system.Close()
       except errors.BackEndError:
         file_system_path_spec = None
 
@@ -766,8 +765,6 @@ class SourceScanner(object):
         glob_results = raw.RawGlobPathSpec(file_system, raw_path_spec)
       except errors.PathSpecError:
         glob_results = None
-
-      file_system.Close()
 
       if not glob_results:
         return None

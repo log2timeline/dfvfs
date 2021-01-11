@@ -41,8 +41,6 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    file_system.Close()
-
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = ntfs_file_system.NTFSFileSystem(
@@ -60,8 +58,6 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_NTFS, location='\\bogus.txt', mft_entry=19,
         parent=self._qcow_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
-
-    file_system.Close()
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -96,8 +92,6 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNone(file_entry)
 
-    file_system.Close()
-
   # TODO: add tests for GetNTFSFileEntryByPathSpec function.
 
   def testGetRootFileEntry(self):
@@ -112,8 +106,6 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
-
-    file_system.Close()
 
 
 if __name__ == '__main__':
