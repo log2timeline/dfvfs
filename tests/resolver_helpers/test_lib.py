@@ -44,24 +44,28 @@ class ResolverHelperTestCase(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_object)
 
-  def _TestNewFileSystem(self, resolver_helper_object):
+  def _TestNewFileSystem(self, resolver_helper_object, path_spec):
     """Tests the NewFileSystem function.
 
     Args:
       resolver_helper_object (ResolverHelper): resolver helper.
+      path_spec (PathSpec): path specification.
     """
-    file_system = resolver_helper_object.NewFileSystem(self._resolver_context)
+    file_system = resolver_helper_object.NewFileSystem(
+        self._resolver_context, path_spec)
 
     self.assertIsNotNone(file_system)
 
-  def _TestNewFileSystemRaisesNotSupported(self, resolver_helper_object):
+  def _TestNewFileSystemRaisesNotSupported(
+      self, resolver_helper_object, path_spec):
     """Tests the NewFileSystem function raises NotSupported.
 
     Args:
       resolver_helper_object (ResolverHelper): resolver helper.
+      path_spec (PathSpec): path specification.
     """
     with self.assertRaises(errors.NotSupported):
-      resolver_helper_object.NewFileSystem(self._resolver_context)
+      resolver_helper_object.NewFileSystem(self._resolver_context, path_spec)
 
   def _TestOpenFileObject(self, resolver_helper_object, path_spec):
     """Tests the OpenFileObject function.

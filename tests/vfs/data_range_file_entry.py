@@ -23,14 +23,12 @@ class DataRangeFileEntryTest(shared_test_lib.BaseTestCase):
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._data_range_path_spec = (
-        data_range_path_spec.DataRangePathSpec(
-            range_offset=0x1c0, range_size=0x41, parent=path_spec))
+    self._data_range_path_spec = data_range_path_spec.DataRangePathSpec(
+        range_offset=0x1c0, range_size=0x41, parent=path_spec)
 
-    self._file_system = (
-        data_range_file_system.DataRangeFileSystem(
-            self._resolver_context))
-    self._file_system.Open(self._data_range_path_spec)
+    self._file_system = data_range_file_system.DataRangeFileSystem(
+        self._resolver_context, self._data_range_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

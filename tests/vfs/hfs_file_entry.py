@@ -36,8 +36,9 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self._hfs_path_spec = hfs_path_spec.HFSPathSpec(
         location='/', parent=self._raw_path_spec)
 
-    self._file_system = hfs_file_system.HFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._hfs_path_spec)
+    self._file_system = hfs_file_system.HFSFileSystem(
+        self._resolver_context, self._hfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

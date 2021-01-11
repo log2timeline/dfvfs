@@ -17,13 +17,14 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FVDE
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, path_spec):
     """Initializes a file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(FVDEFileSystem, self).__init__(resolver_context)
+    super(FVDEFileSystem, self).__init__(resolver_context, path_spec)
     self._fvde_volume = None
     self._file_object = None
 
@@ -37,11 +38,10 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     self._fvde_volume = None
     self._file_object = None
 
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode. The default is 'rb'
           read-only binary.
 
@@ -51,18 +51,18 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
+    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(self._path_spec)
 
     fvde_volume = pyfvde.volume()
     file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
     fvde.FVDEVolumeOpen(
-        fvde_volume, path_spec, file_object, resolver.Resolver.key_chain)
+        fvde_volume, self._path_spec, file_object, resolver.Resolver.key_chain)
 
     self._fvde_volume = fvde_volume
     self._file_object = file_object

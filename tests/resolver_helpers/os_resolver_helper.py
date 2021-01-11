@@ -20,7 +20,7 @@ class OSResolverHelperTest(test_lib.ResolverHelperTestCase):
   def testNewFileSystem(self):
     """Tests the NewFileSystem function."""
     resolver_helper_object = os_resolver_helper.OSResolverHelper()
-    self._TestNewFileSystem(resolver_helper_object)
+    self._TestNewFileSystem(resolver_helper_object, None)
 
 
 if __name__ == '__main__':

@@ -24,16 +24,17 @@ class GzipResolverHelper(resolver_helper.ResolverHelper):
     """
     return gzip_file_io.GzipFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return gzip_file_system.GzipFileSystem(resolver_context)
+    return gzip_file_system.GzipFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(GzipResolverHelper())

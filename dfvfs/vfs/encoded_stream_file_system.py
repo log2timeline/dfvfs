@@ -13,13 +13,14 @@ class EncodedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, path_spec):
     """Initializes an encoded file system.
 
     Args:
       resolver_context (Context): a resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(EncodedStreamFileSystem, self).__init__(resolver_context)
+    super(EncodedStreamFileSystem, self).__init__(resolver_context, path_spec)
     self._encoding_method = None
 
   def _Close(self):
@@ -30,11 +31,10 @@ class EncodedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     self._encoding_method = None
 
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system defined by path specification.
 
     Args:
-      path_spec (PathSpec): a path specification.
       mode (Optional[str]): file access mode. The default is 'rb' which
           represents read-only binary.
 
@@ -44,11 +44,11 @@ class EncodedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    encoding_method = getattr(path_spec, 'encoding_method', None)
+    encoding_method = getattr(self._path_spec, 'encoding_method', None)
     if not encoding_method:
       raise errors.PathSpecError(
           'Unsupported path specification without encoding method.')

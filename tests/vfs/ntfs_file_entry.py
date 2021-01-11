@@ -40,8 +40,9 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\', parent=self._qcow_path_spec)
 
-    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._ntfs_path_spec)
+    self._file_system = ntfs_file_system.NTFSFileSystem(
+        self._resolver_context, self._ntfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -89,8 +90,9 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\', parent=self._qcow_path_spec)
 
-    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._ntfs_path_spec)
+    self._file_system = ntfs_file_system.NTFSFileSystem(
+        self._resolver_context, self._ntfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -142,8 +144,9 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\', parent=self._qcow_path_spec)
 
-    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._ntfs_path_spec)
+    self._file_system = ntfs_file_system.NTFSFileSystem(
+        self._resolver_context, self._ntfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -191,8 +194,9 @@ class NTFSDataStream(shared_test_lib.BaseTestCase):
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\', parent=self._qcow_path_spec)
 
-    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._ntfs_path_spec)
+    self._file_system = ntfs_file_system.NTFSFileSystem(
+        self._resolver_context, self._ntfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -236,8 +240,9 @@ class NTFSDirectoryTest(shared_test_lib.BaseTestCase):
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\', parent=self._qcow_path_spec)
 
-    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._ntfs_path_spec)
+    self._file_system = ntfs_file_system.NTFSFileSystem(
+        self._resolver_context, self._ntfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -276,8 +281,9 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self._ntfs_path_spec = ntfs_path_spec.NTFSPathSpec(
         location='\\', parent=self._qcow_path_spec)
 
-    self._file_system = ntfs_file_system.NTFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._ntfs_path_spec)
+    self._file_system = ntfs_file_system.NTFSFileSystem(
+        self._resolver_context, self._ntfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

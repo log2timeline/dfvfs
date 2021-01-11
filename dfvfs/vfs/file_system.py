@@ -14,11 +14,12 @@ class FileSystem(object):
   LOCATION_ROOT = '/'
   PATH_SEPARATOR = '/'
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, path_spec):
     """Initializes a file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Raises:
       ValueError: if a derived file system class does not define a type
@@ -26,7 +27,7 @@ class FileSystem(object):
     """
     super(FileSystem, self).__init__()
     self._is_open = False
-    self._path_spec = None
+    self._path_spec = path_spec
     self._resolver_context = resolver_context
 
     if not getattr(self, 'TYPE_INDICATOR', None):
@@ -52,11 +53,10 @@ class FileSystem(object):
     """
 
   @abc.abstractmethod
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec (PathSpec): a path specification.
       mode (Optional[str]): file access mode. The default is 'rb' which
           represents read-only binary.
 
@@ -227,11 +227,13 @@ class FileSystem(object):
     return '{0:s}{1:s}'.format(
         self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
 
-  def Open(self, path_spec, mode='rb'):
+  # Note that path_spec is kept as the second argument for backwards
+  # compatibility.
+  def Open(self, path_spec=None, mode='rb'):
     """Opens the file system object defined by path specification.
 
     Args:
-      path_spec (PathSpec): a path specification.
+      path_spec (Optional[PathSpec]): a path specification.
       mode (Optional[str]): file access mode. The default is 'rb' which
           represents read-only binary.
 
@@ -248,13 +250,14 @@ class FileSystem(object):
     if mode != 'rb':
       raise ValueError('Unsupported mode: {0:s}.'.format(mode))
 
-    if not path_spec:
+    if not self._path_spec:
+      self._path_spec = path_spec
+
+    if not self._path_spec:
       raise ValueError('Missing path specification.')
 
-    if not self._is_open:
-      self._Open(path_spec, mode=mode)
-      self._is_open = True
-      self._path_spec = path_spec
+    self._Open(mode=mode)
+    self._is_open = True
 
   def SplitPath(self, path):
     """Splits the path into path segments.

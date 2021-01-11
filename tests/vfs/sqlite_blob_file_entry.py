@@ -37,8 +37,8 @@ class SQLiteBlobDirectoryTest(shared_test_lib.BaseTestCase):
             table_name='myblobs', column_name='blobs', parent=path_spec))
 
     self._file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._sqlite_blob_path_spec)
+        self._resolver_context, self._sqlite_blob_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -87,8 +87,8 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
             table_name='myblobs', column_name='blobs', parent=path_spec))
 
     self._file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._sqlite_blob_path_spec)
+        self._resolver_context, self._sqlite_blob_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

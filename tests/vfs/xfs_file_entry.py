@@ -36,8 +36,9 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
     self._xfs_path_spec = xfs_path_spec.XFSPathSpec(
         location='/', parent=self._raw_path_spec)
 
-    self._file_system = xfs_file_system.XFSFileSystem(self._resolver_context)
-    self._file_system.Open(self._xfs_path_spec)
+    self._file_system = xfs_file_system.XFSFileSystem(
+        self._resolver_context, self._xfs_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

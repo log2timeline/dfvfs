@@ -24,16 +24,17 @@ class VShadowResolverHelper(resolver_helper.ResolverHelper):
     """
     return vshadow_file_io.VShadowFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return vshadow_file_system.VShadowFileSystem(resolver_context)
+    return vshadow_file_system.VShadowFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(VShadowResolverHelper())

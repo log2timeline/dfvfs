@@ -24,16 +24,17 @@ class LUKSDEResolverHelper(resolver_helper.ResolverHelper):
     """
     return luksde_file_io.LUKSDEFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       LUKSDEFileSystem: file system.
     """
-    return luksde_file_system.LUKSDEFileSystem(resolver_context)
+    return luksde_file_system.LUKSDEFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(LUKSDEResolverHelper())

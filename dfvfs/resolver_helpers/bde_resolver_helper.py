@@ -24,16 +24,17 @@ class BDEResolverHelper(resolver_helper.ResolverHelper):
     """
     return bde_file_io.BDEFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       BDEFileSystem: file system.
     """
-    return bde_file_system.BDEFileSystem(resolver_context)
+    return bde_file_system.BDEFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(BDEResolverHelper())

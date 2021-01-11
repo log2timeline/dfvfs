@@ -29,8 +29,8 @@ class VShadowDirectoryTest(shared_test_lib.BaseTestCase):
         location='/', parent=self._qcow_path_spec)
 
     self._file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._vshadow_path_spec)
+        self._resolver_context, self._vshadow_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -70,8 +70,8 @@ class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
         location='/', parent=self._qcow_path_spec)
 
     self._file_system = vshadow_file_system.VShadowFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._vshadow_path_spec)
+        self._resolver_context, self._vshadow_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

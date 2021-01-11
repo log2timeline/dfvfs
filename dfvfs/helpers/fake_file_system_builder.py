@@ -2,6 +2,7 @@
 """A builder for fake file systems."""
 
 from dfvfs.lib import definitions
+from dfvfs.path import fake_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_system
 
@@ -17,7 +18,9 @@ class FakeFileSystemBuilder(object):
     """Initializes a fake file system builder."""
     super(FakeFileSystemBuilder, self).__init__()
     resolver_context = context.Context()
-    self.file_system = fake_file_system.FakeFileSystem(resolver_context)
+    path_spec = fake_path_spec.FakePathSpec(location='/')
+    self.file_system = fake_file_system.FakeFileSystem(
+        resolver_context, path_spec)
 
   def _AddParentDirectories(self, path):
     """Adds the parent directories of a path to the fake file system.

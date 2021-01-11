@@ -24,16 +24,17 @@ class OSResolverHelper(resolver_helper.ResolverHelper):
     """
     return os_file_io.OSFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return os_file_system.OSFileSystem(resolver_context)
+    return os_file_system.OSFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(OSResolverHelper())

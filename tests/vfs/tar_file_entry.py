@@ -26,8 +26,9 @@ class TARDirectoryTest(shared_test_lib.BaseTestCase):
     self._tar_path_spec = tar_path_spec.TARPathSpec(
         location='/', parent=self._os_path_spec)
 
-    self._file_system = tar_file_system.TARFileSystem(self._resolver_context)
-    self._file_system.Open(self._tar_path_spec)
+    self._file_system = tar_file_system.TARFileSystem(
+        self._resolver_context, self._tar_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -65,8 +66,9 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     self._tar_path_spec = tar_path_spec.TARPathSpec(
         location='/syslog', parent=self._os_path_spec)
 
-    self._file_system = tar_file_system.TARFileSystem(self._resolver_context)
-    self._file_system.Open(self._tar_path_spec)
+    self._file_system = tar_file_system.TARFileSystem(
+        self._resolver_context, self._tar_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -192,9 +194,11 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     path_spec = os_path_spec.OSPathSpec(location=test_file)
     path_spec = tar_path_spec.TARPathSpec(location='/', parent=path_spec)
 
-    file_system = tar_file_system.TARFileSystem(self._resolver_context)
+    file_system = tar_file_system.TARFileSystem(
+        self._resolver_context, path_spec)
     self.assertIsNotNone(file_system)
-    file_system.Open(path_spec)
+
+    file_system.Open()
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)

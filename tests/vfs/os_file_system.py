@@ -6,7 +6,8 @@ import os
 import platform
 import unittest
 
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
 
@@ -31,46 +32,78 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
 
   def testIntialize(self):
     """Test the __init__ function."""
-    file_system = os_file_system.OSFileSystem(self._resolver_context)
+    test_path = self._GetTestFilePath(['testdir_os'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+
+    file_system = os_file_system.OSFileSystem(
+        self._resolver_context, test_os_path_spec)
 
     self.assertIsNotNone(file_system)
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
-    file_system = os_file_system.OSFileSystem(self._resolver_context)
+    test_path = self._GetTestFilePath(['testdir_os'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_file = self._GetTestFilePath(['testdir_os', 'file1.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    file_system = os_file_system.OSFileSystem(
+        self._resolver_context, test_os_path_spec)
+
+    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    self._SkipIfPathNotExists(test_path)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    test_file = self._GetTestFilePath(['testdir_os', 'file6.txt'])
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['testdir_os', 'file6.txt'])
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
-    file_system = os_file_system.OSFileSystem(self._resolver_context)
+    test_path = self._GetTestFilePath(['testdir_os'])
+    self._SkipIfPathNotExists(test_path)
 
-    test_file = self._GetTestFilePath(['testdir_os', 'file1.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    file_system = os_file_system.OSFileSystem(
+        self._resolver_context, test_os_path_spec)
+
+    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    self._SkipIfPathNotExists(test_path)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'file1.txt')
 
-    test_file = self._GetTestFilePath(['testdir_os', 'file6.txt'])
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    test_path = self._GetTestFilePath(['testdir_os', 'file6.txt'])
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
-    file_system = os_file_system.OSFileSystem(self._resolver_context)
+    test_path = self._GetTestFilePath(['testdir_os'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+
+    file_system = os_file_system.OSFileSystem(
+        self._resolver_context, test_os_path_spec)
 
     if platform.system() == 'Windows':
       # Return the root with the drive letter of the volume the current
@@ -91,7 +124,14 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
     original_platform_system = platform.system
     platform.system = TestPlatformSystem
 
-    file_system = os_file_system.OSFileSystem(self._resolver_context)
+    test_path = self._GetTestFilePath(['testdir_os'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+
+    file_system = os_file_system.OSFileSystem(
+        self._resolver_context, test_os_path_spec)
     file_system.PATH_SEPARATOR = '\\'
 
     expected_path = '\\\\.\\PhysicalDrive0'

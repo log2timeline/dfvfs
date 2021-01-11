@@ -24,16 +24,17 @@ class EXTResolverHelper(resolver_helper.ResolverHelper):
     """
     return ext_file_io.EXTFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return ext_file_system.EXTFileSystem(resolver_context)
+    return ext_file_system.EXTFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(EXTResolverHelper())

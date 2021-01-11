@@ -16,14 +16,15 @@ class CPIOFileSystem(file_system.FileSystem):
   LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_CPIO
 
-  def __init__(self, resolver_context, encoding='utf-8'):
+  def __init__(self, resolver_context, path_spec, encoding='utf-8'):
     """Initializes a CPIO archive file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
       encoding (Optional[str]): file entry name encoding.
     """
-    super(CPIOFileSystem, self).__init__(resolver_context)
+    super(CPIOFileSystem, self).__init__(resolver_context, path_spec)
     self._cpio_archive_file = None
     self._file_object = None
     self.encoding = encoding
@@ -38,11 +39,10 @@ class CPIOFileSystem(file_system.FileSystem):
     self._cpio_archive_file = None
     self._file_object = None
 
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode. The default is 'rb' which
           represents read-only binary.
 
@@ -52,12 +52,12 @@ class CPIOFileSystem(file_system.FileSystem):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
     file_object = resolver.Resolver.OpenFileObject(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
     cpio_archive_file = cpio.CPIOArchiveFile()
     cpio_archive_file.Open(file_object)

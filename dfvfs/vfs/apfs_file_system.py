@@ -17,13 +17,14 @@ class APFSFileSystem(file_system.FileSystem):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS
 
-  def __init__(self, resolver_context):
+  def __init__(self, resolver_context, path_spec):
     """Initializes an APFS file system.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
     """
-    super(APFSFileSystem, self).__init__(resolver_context)
+    super(APFSFileSystem, self).__init__(resolver_context, path_spec)
     self._fsapfs_volume = None
 
   def _Close(self):
@@ -34,11 +35,10 @@ class APFSFileSystem(file_system.FileSystem):
     """
     self._fsapfs_volume = None
 
-  def _Open(self, path_spec, mode='rb'):
+  def _Open(self, mode='rb'):
     """Opens the file system defined by path specification.
 
     Args:
-      path_spec (PathSpec): path specification.
       mode (Optional[str]): file access mode.
 
     Raises:
@@ -48,26 +48,26 @@ class APFSFileSystem(file_system.FileSystem):
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
-    if not path_spec.HasParent():
+    if not self._path_spec.HasParent():
       raise errors.PathSpecError(
           'Unsupported path specification without parent.')
 
-    if path_spec.parent.type_indicator != (
+    if self._path_spec.parent.type_indicator != (
         definitions.TYPE_INDICATOR_APFS_CONTAINER):
       raise errors.PathSpecError(
           'Unsupported path specification not type APFS container.')
 
     apfs_container_file_system = resolver.Resolver.OpenFileSystem(
-        path_spec.parent, resolver_context=self._resolver_context)
+        self._path_spec.parent, resolver_context=self._resolver_context)
 
     fsapfs_volume = apfs_container_file_system.GetAPFSVolumeByPathSpec(
-        path_spec.parent)
+        self._path_spec.parent)
     if not fsapfs_volume:
       raise IOError('Unable to retrieve APFS volume')
 
     try:
       is_locked = not apfs_helper.APFSUnlockVolume(
-          fsapfs_volume, path_spec.parent, resolver.Resolver.key_chain)
+          fsapfs_volume, self._path_spec.parent, resolver.Resolver.key_chain)
     except IOError as exception:
       raise IOError('Unable to unlock APFS volume with error: {0!s}'.format(
           exception))

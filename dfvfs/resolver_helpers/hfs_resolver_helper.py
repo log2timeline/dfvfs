@@ -24,16 +24,17 @@ class HFSResolverHelper(resolver_helper.ResolverHelper):
     """
     return hfs_file_io.HFSFile(resolver_context)
 
-  def NewFileSystem(self, resolver_context):
+  def NewFileSystem(self, resolver_context, path_spec):
     """Creates a new file system object.
 
     Args:
       resolver_context (Context): resolver context.
+      path_spec (PathSpec): a path specification.
 
     Returns:
       FileSystem: file system.
     """
-    return hfs_file_system.HFSFileSystem(resolver_context)
+    return hfs_file_system.HFSFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(HFSResolverHelper())

@@ -35,20 +35,20 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = apfs_container_file_system.APFSContainerFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._apfs_container_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_container_path_spec)
+    file_system.Open()
 
     file_system.Close()
 
   def testFileEntryExistsByPathSpec(self):
     """Test the file entry exists by path specification functionality."""
     file_system = apfs_container_file_system.APFSContainerFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._apfs_container_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_container_path_spec)
+    file_system.Open()
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
         location='/', parent=self._raw_path_spec)
@@ -79,10 +79,10 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     file_system = apfs_container_file_system.APFSContainerFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._apfs_container_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_container_path_spec)
+    file_system.Open()
 
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
         location='/', parent=self._raw_path_spec)
@@ -128,10 +128,10 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
     file_system = apfs_container_file_system.APFSContainerFileSystem(
-        self._resolver_context)
+        self._resolver_context, self._apfs_container_path_spec)
     self.assertIsNotNone(file_system)
 
-    file_system.Open(self._apfs_container_path_spec)
+    file_system.Open()
 
     file_entry = file_system.GetRootFileEntry()
 

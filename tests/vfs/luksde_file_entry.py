@@ -31,8 +31,8 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
         self._luksde_path_spec, 'password', self._LUKSDE_PASSWORD)
 
     self._file_system = luksde_file_system.LUKSDEFileSystem(
-        self._resolver_context)
-    self._file_system.Open(self._luksde_path_spec)
+        self._resolver_context, self._luksde_path_spec)
+    self._file_system.Open()
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
