@@ -24,8 +24,8 @@ class GPTImageFileTest(test_lib.Ext2ImageFileTestCase):
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=test_raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=test_raw_path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""

@@ -189,14 +189,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     identifiers = test_scanner._GetPartitionIdentifiers(scan_node, test_options)
     self.assertEqual(len(identifiers), 1)
-
-    if definitions.PREFERRED_GPT_BACK_END == definitions.TYPE_INDICATOR_GPT:
-      # TODO: consider changing gpt1 to p1
-      expectected_identifiers = ['gpt1']
-    else:
-      expectected_identifiers = ['p1']
-
-    self.assertEqual(identifiers, expectected_identifiers)
+    self.assertEqual(identifiers, ['p1'])
 
   def testGetPartitionIdentifiersOnPartitionedImage(self):
     """Tests the _GetPartitionIdentifiers function on a partitioned image."""

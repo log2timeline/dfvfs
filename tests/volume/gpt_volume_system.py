@@ -59,7 +59,7 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 1)
-    self.assertEqual(volume.identifier, 'gpt1')
+    self.assertEqual(volume.identifier, 'p1')
 
     expected_value = 'b6d37ab4-051f-4556-97d2-ad1f8a609644'
     volume_attribute = volume.GetAttribute('identifier')

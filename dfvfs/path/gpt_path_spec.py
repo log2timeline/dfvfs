@@ -10,21 +10,21 @@ class GPTPathSpec(path_spec.PathSpec):
   """GPT path specification.
 
   Attributes:
+    entry_index (int): partition entry index.
     location (str): location.
-    volume_index (int): volume index.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_GPT
 
-  def __init__(self, location=None, parent=None, volume_index=None, **kwargs):
+  def __init__(self, location=None, entry_index=None, parent=None, **kwargs):
     """Initializes a path specification.
 
     Note that the GPT path specification must have a parent.
 
     Args:
+      entry_index (Optional[int]): partition entry index.
       location (Optional[str]): location.
       parent (Optional[PathSpec]): parent path specification.
-      volume_index (Optional[int]): volume index.
 
     Raises:
       ValueError: when parent is not set.
@@ -33,8 +33,8 @@ class GPTPathSpec(path_spec.PathSpec):
       raise ValueError('Missing parent value.')
 
     super(GPTPathSpec, self).__init__(parent=parent, **kwargs)
+    self.entry_index = entry_index
     self.location = location
-    self.volume_index = volume_index
 
   @property
   def comparable(self):
@@ -43,8 +43,8 @@ class GPTPathSpec(path_spec.PathSpec):
 
     if self.location is not None:
       string_parts.append('location: {0:s}'.format(self.location))
-    if self.volume_index is not None:
-      string_parts.append('volume index: {0:d}'.format(self.volume_index))
+    if self.entry_index is not None:
+      string_parts.append('entry index: {0:d}'.format(self.entry_index))
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

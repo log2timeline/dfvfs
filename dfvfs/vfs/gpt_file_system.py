@@ -73,16 +73,15 @@ class GPTFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    volume_index = gpt.GPTPathSpecGetVolumeIndex(path_spec)
+    entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
 
-    # The virtual root file has not corresponding volume index but
+    # The virtual root file has not corresponding entry index but
     # should have a location.
-    if volume_index is None:
+    if entry_index is None:
       location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
-    return (
-        0 <= volume_index < self._vsgpt_volume.number_of_partitions)
+    return 0 <= entry_index < self._vsgpt_volume.number_of_partitions
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -93,11 +92,11 @@ class GPTFileSystem(file_system.FileSystem):
     Returns:
       GPTFileEntry: a file entry or None if not available.
     """
-    volume_index = gpt.GPTPathSpecGetVolumeIndex(path_spec)
+    entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
 
-    # The virtual root file has not corresponding volume index but
+    # The virtual root file has not corresponding entry index but
     # should have a location.
-    if volume_index is None:
+    if entry_index is None:
       location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
         return None
@@ -106,8 +105,8 @@ class GPTFileSystem(file_system.FileSystem):
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
-    if (volume_index < 0 or
-        volume_index >= self._vsgpt_volume.number_of_partitions):
+    if (entry_index < 0 or
+        entry_index >= self._vsgpt_volume.number_of_partitions):
       return None
 
     return gpt_file_entry.GPTFileEntry(self._resolver_context, self, path_spec)
@@ -121,10 +120,10 @@ class GPTFileSystem(file_system.FileSystem):
     Returns:
       pyvsgpt.partition: a GPT partition or None if not available.
     """
-    volume_index = gpt.GPTPathSpecGetVolumeIndex(path_spec)
-    if volume_index is None:
+    entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
+    if entry_index is None:
       return None
-    return self._vsgpt_volume.get_partition(volume_index)
+    return self._vsgpt_volume.get_partition_by_identifier(entry_index)
 
   def GetGPTVolumeGroup(self):
     """Retrieves the GPT volume.

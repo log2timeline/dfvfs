@@ -24,12 +24,12 @@ class GPTPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec = gpt_path_spec.GPTPathSpec(
-        parent=self._path_spec, volume_index=1)
+        entry_index=1, parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     path_spec = gpt_path_spec.GPTPathSpec(
-        location='/gpt2', parent=self._path_spec, volume_index=1)
+        entry_index=1, location='/gpt2', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
@@ -66,25 +66,25 @@ class GPTPathSpecTest(test_lib.PathSpecTestCase):
     self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = gpt_path_spec.GPTPathSpec(
-        parent=self._path_spec, volume_index=1)
+        entry_index=1, parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     expected_comparable = '\n'.join([
         'type: TEST',
-        'type: GPT, volume index: 1',
+        'type: GPT, entry index: 1',
         ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
     path_spec = gpt_path_spec.GPTPathSpec(
-        location='/gpt2', parent=self._path_spec, volume_index=1)
+        entry_index=1, location='/gpt2', parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
 
     expected_comparable = '\n'.join([
         'type: TEST',
-        'type: GPT, location: /gpt2, volume index: 1',
+        'type: GPT, location: /gpt2, entry index: 1',
         ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)

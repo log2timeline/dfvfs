@@ -116,18 +116,18 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
   def testName(self):
     """Test the name property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'gpt1')
+    self.assertEqual(file_entry.name, 'p1')
 
   def testSize(self):
     """Test the size property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -138,8 +138,8 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -158,8 +158,8 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetStat(self):
     """Tests the GetStat function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -176,8 +176,8 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
   def testIsFunctions(self):
     """Test the Is? functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -219,7 +219,7 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 2)
 
-    expected_sub_file_entry_names = ['gpt1', 'gpt2']
+    expected_sub_file_entry_names = ['p1', 'p2']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -233,8 +233,8 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
   def testDataStreams(self):
     """Test the data streams functionality."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -263,8 +263,8 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 

@@ -63,7 +63,7 @@ class GPTFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open()
 
   def testFileEntryExistsByPathSpec(self):
-    """Test the file entry exists by path specification functionality."""
+    """Tests the FileEntryExistsByPathSpec function."""
     file_system = gpt_file_system.GPTFileSystem(
         self._resolver_context, self._gpt_path_spec)
     self.assertIsNotNone(file_system)
@@ -76,27 +76,27 @@ class GPTFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
-    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/gpt1',
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
         parent=self._raw_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=9)
-    self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
+        definitions.TYPE_INDICATOR_GPT, location='/p1',
+        parent=self._raw_path_spec)
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/gpt0',
+        definitions.TYPE_INDICATOR_GPT, entry_index=9,
         parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/gpt9',
+        definitions.TYPE_INDICATOR_GPT, location='/p0',
+        parent=self._raw_path_spec)
+    self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/p9',
         parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
@@ -117,37 +117,37 @@ class GPTFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertEqual(file_entry.name, '')
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=0)
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'gpt1')
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/gpt1',
+        definitions.TYPE_INDICATOR_GPT, entry_index=0,
         parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'gpt1')
+    self.assertEqual(file_entry.name, 'p1')
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, parent=self._raw_path_spec,
-        volume_index=9)
+        definitions.TYPE_INDICATOR_GPT, location='/p1',
+        parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertIsNone(file_entry)
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'p1')
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/gpt0',
+        definitions.TYPE_INDICATOR_GPT, entry_index=9,
         parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/gpt9',
+        definitions.TYPE_INDICATOR_GPT, location='/p0',
+        parent=self._raw_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNone(file_entry)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/p9',
         parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 

@@ -41,23 +41,22 @@ class GPTFile(file_io.FileIO):
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    volume_index = gpt.GPTPathSpecGetVolumeIndex(self._path_spec)
-    if volume_index is None:
+    entry_index = gpt.GPTPathSpecGetEntryIndex(self._path_spec)
+    if entry_index is None:
       raise errors.PathSpecError(
-          'Unable to retrieve volume index from path specification.')
+          'Unable to retrieve entry index from path specification.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)
     vsgpt_volume_group = self._file_system.GetGPTVolumeGroup()
 
-    if (volume_index < 0 or
-        volume_index >= vsgpt_volume_group.number_of_partitions):
+    if (entry_index < 0 or
+        entry_index >= vsgpt_volume_group.number_of_partitions):
       raise errors.PathSpecError((
-          'Unable to retrieve GPT logical volume index: {0:d} from path '
-          'specification.').format(volume_index))
+          'Unable to retrieve GPT logical entry index: {0:d} from path '
+          'specification.').format(entry_index))
 
-    self._vsgpt_partition = vsgpt_volume_group.get_partition(
-        volume_index)
+    self._vsgpt_partition = vsgpt_volume_group.get_partition(entry_index)
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.

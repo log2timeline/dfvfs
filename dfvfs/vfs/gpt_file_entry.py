@@ -20,20 +20,20 @@ class GPTDirectory(file_entry.Directory):
     Yields:
       GPTPathSpec: a path specification.
     """
-    volume_index = getattr(self.path_spec, 'volume_index', None)
+    entry_index = getattr(self.path_spec, 'entry_index', None)
     location = getattr(self.path_spec, 'location', None)
 
     # Only the virtual root file has directory entries.
-    if (volume_index is None and location is not None and
+    if (entry_index is None and location is not None and
         location == self._file_system.LOCATION_ROOT):
       vsgpt_volume_group = self._file_system.GetGPTVolumeGroup()
 
-      for volume_index in range(
+      for entry_index in range(
           0, vsgpt_volume_group.number_of_partitions):
-        location = '/gpt{0:d}'.format(volume_index + 1)
+        location = '/p{0:d}'.format(entry_index + 1)
         yield gpt_path_spec.GPTPathSpec(
-            location=location, parent=self.path_spec.parent,
-            volume_index=volume_index)
+            entry_index=entry_index, location=location,
+            parent=self.path_spec.parent)
 
 
 class GPTFileEntry(file_entry.FileEntry):
@@ -105,9 +105,9 @@ class GPTFileEntry(file_entry.FileEntry):
       if location is not None:
         self._name = self._file_system.BasenamePath(location)
       else:
-        volume_index = getattr(self.path_spec, 'volume_index', None)
-        if volume_index is not None:
-          self._name = 'gpt{0:d}'.format(volume_index + 1)
+        entry_index = getattr(self.path_spec, 'entry_index', None)
+        if entry_index is not None:
+          self._name = 'p{0:d}'.format(entry_index + 1)
         else:
           self._name = ''
     return self._name
@@ -134,8 +134,8 @@ class GPTFileEntry(file_entry.FileEntry):
     Returns:
       GPTFileEntry: parent file entry or None if not available.
     """
-    volume_index = gpt.GPTPathSpecGetVolumeIndex(self.path_spec)
-    if volume_index is None:
+    entry_index = gpt.GPTPathSpecGetEntryIndex(self.path_spec)
+    if entry_index is None:
       return None
 
     return self._file_system.GetRootFileEntry()
