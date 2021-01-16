@@ -75,13 +75,13 @@ class GPTFileSystem(file_system.FileSystem):
     """
     entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
 
-    # The virtual root file has not corresponding entry index but
+    # The virtual root file has no corresponding partition entry index but
     # should have a location.
     if entry_index is None:
       location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
-    return 0 <= entry_index < self._vsgpt_volume.number_of_partitions
+    return self._vsgpt_volume.has_partition_with_identifier(entry_index)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -94,7 +94,7 @@ class GPTFileSystem(file_system.FileSystem):
     """
     entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
 
-    # The virtual root file has not corresponding entry index but
+    # The virtual root file has no corresponding partition entry index but
     # should have a location.
     if entry_index is None:
       location = getattr(path_spec, 'location', None)
@@ -105,8 +105,7 @@ class GPTFileSystem(file_system.FileSystem):
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
-    if (entry_index < 0 or
-        entry_index >= self._vsgpt_volume.number_of_partitions):
+    if not self._vsgpt_volume.has_partition_with_identifier(entry_index):
       return None
 
     return gpt_file_entry.GPTFileEntry(self._resolver_context, self, path_spec)

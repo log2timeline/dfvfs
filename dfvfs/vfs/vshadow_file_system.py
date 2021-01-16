@@ -76,7 +76,7 @@ class VShadowFileSystem(file_system.FileSystem):
     """
     store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
 
-    # The virtual root file has not corresponding store index but
+    # The virtual root file has no corresponding store index but
     # should have a location.
     if store_index is None:
       location = getattr(path_spec, 'location', None)
@@ -95,7 +95,7 @@ class VShadowFileSystem(file_system.FileSystem):
     """
     store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
 
-    # The virtual root file has not corresponding store index but
+    # The virtual root file has no corresponding store index but
     # should have a location.
     if store_index is None:
       location = getattr(path_spec, 'location', None)

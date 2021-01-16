@@ -81,7 +81,7 @@ class LVMFileSystem(file_system.FileSystem):
     """
     volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
 
-    # The virtual root file has not corresponding volume index but
+    # The virtual root file has no corresponding volume index but
     # should have a location.
     if volume_index is None:
       location = getattr(path_spec, 'location', None)
@@ -101,7 +101,7 @@ class LVMFileSystem(file_system.FileSystem):
     """
     volume_index = lvm.LVMPathSpecGetVolumeIndex(path_spec)
 
-    # The virtual root file has not corresponding volume index but
+    # The virtual root file has no corresponding volume index but
     # should have a location.
     if volume_index is None:
       location = getattr(path_spec, 'location', None)

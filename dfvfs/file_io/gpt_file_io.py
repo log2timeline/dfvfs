@@ -48,15 +48,14 @@ class GPTFile(file_io.FileIO):
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)
-    vsgpt_volume_group = self._file_system.GetGPTVolumeGroup()
+    vsgpt_volume = self._file_system.GetGPTVolume()
 
-    if (entry_index < 0 or
-        entry_index >= vsgpt_volume_group.number_of_partitions):
-      raise errors.PathSpecError((
-          'Unable to retrieve GPT logical entry index: {0:d} from path '
-          'specification.').format(entry_index))
+    if not vsgpt_volume.has_partition_with_identifier(entry_index):
+      raise errors.PathSpecError(
+          'Missing GPT partition with entry index: {0:d}'.format(entry_index))
 
-    self._vsgpt_partition = vsgpt_volume_group.get_partition(entry_index)
+    self._vsgpt_partition = vsgpt_volume.get_partition_by_identifier(
+        entry_index)
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.

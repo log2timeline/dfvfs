@@ -77,7 +77,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
     tsk_vs_part, _ = tsk_partition.GetTSKVsPartByPathSpec(
         self._tsk_volume, path_spec)
 
-    # The virtual root file has not corresponding TSK volume system part object
+    # The virtual root file has no corresponding TSK volume system part object
     # but should have a location.
     if tsk_vs_part is None:
       location = getattr(path_spec, 'location', None)
@@ -99,7 +99,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
 
     location = getattr(path_spec, 'location', None)
 
-    # The virtual root file has not corresponding TSK volume system part object
+    # The virtual root file has no corresponding TSK volume system part object
     # but should have a location.
     if tsk_vs_part is None:
       if location is None or location != self.LOCATION_ROOT:
