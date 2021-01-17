@@ -125,7 +125,7 @@ class GPTFileSystem(file_system.FileSystem):
       return None
     return self._vsgpt_volume.get_partition_by_identifier(entry_index)
 
-  def GetGPTVolumeGroup(self):
+  def GetGPTVolume(self):
     """Retrieves the GPT volume.
 
     Returns:

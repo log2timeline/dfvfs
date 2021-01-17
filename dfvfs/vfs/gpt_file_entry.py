@@ -26,11 +26,10 @@ class GPTDirectory(file_entry.Directory):
     # Only the virtual root file has directory entries.
     if (entry_index is None and location is not None and
         location == self._file_system.LOCATION_ROOT):
-      vsgpt_volume_group = self._file_system.GetGPTVolumeGroup()
+      vsgpt_volume = self._file_system.GetGPTVolume()
 
-      for entry_index in range(
-          0, vsgpt_volume_group.number_of_partitions):
-        location = '/p{0:d}'.format(entry_index + 1)
+      for partition in vsgpt_volume.partitions:
+        location = '/p{0:d}'.format(partition.entry_index + 1)
         yield gpt_path_spec.GPTPathSpec(
             entry_index=entry_index, location=location,
             parent=self.path_spec.parent)
