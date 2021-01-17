@@ -500,7 +500,6 @@ class GzipCompressedStream(object):
     """Closes the file-like object."""
     self._members_by_end_offset = []
     if self._file_object:
-      self._file_object.close()
       self._file_object = None
 
   def read(self, size=None):
