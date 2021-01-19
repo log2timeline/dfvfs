@@ -26,7 +26,10 @@ class FileIO(object):
 
   def __del__(self):
     """Cleans up the file input/output (IO) object."""
-    if self._is_open:
+    # In case __init__ fails the "_is_open" instance attribute might not exist
+    # hence that getattr is used here.
+    is_open = getattr(self, '_is_open', None)
+    if is_open:
       self._Close()
 
   @abc.abstractmethod
