@@ -108,6 +108,14 @@ dfvfs.path.fvde\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.path.gpt\_path\_spec module
+---------------------------------
+
+.. automodule:: dfvfs.path.gpt_path_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.path.gzip\_path\_spec module
 ----------------------------------
 

@@ -196,6 +196,22 @@ dfvfs.vfs.fvde\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.gpt\_file\_entry module
+---------------------------------
+
+.. automodule:: dfvfs.vfs.gpt_file_entry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.gpt\_file\_system module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.gpt_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.gzip\_file\_entry module
 ----------------------------------
 
