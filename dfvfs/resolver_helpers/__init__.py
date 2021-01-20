@@ -35,6 +35,11 @@ try:
 except ImportError:
   pass
 
+try:
+  from dfvfs.resolver_helpers import gpt_resolver_helper
+except ImportError:
+  pass
+
 from dfvfs.resolver_helpers import gzip_resolver_helper
 
 try:

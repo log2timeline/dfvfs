@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
-"""The Volume Shadow Snapshots (VSS) file system implementation."""
+"""The GUID Partition Table (GPT) file system implementation."""
 
-import pyvshadow
+import pyvsgpt
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import vshadow
-from dfvfs.path import vshadow_path_spec
+from dfvfs.lib import gpt
+from dfvfs.path import gpt_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
-from dfvfs.vfs import vshadow_file_entry
+from dfvfs.vfs import gpt_file_entry
 
 
-class VShadowFileSystem(file_system.FileSystem):
-  """File system that uses pyvshadow."""
+class GPTFileSystem(file_system.FileSystem):
+  """File system that uses pyvsgpt."""
 
-  LOCATION_ROOT = '/'
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_GPT
 
   def __init__(self, resolver_context, path_spec):
     """Initializes a file system.
@@ -25,18 +24,18 @@ class VShadowFileSystem(file_system.FileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(VShadowFileSystem, self).__init__(resolver_context, path_spec)
+    super(GPTFileSystem, self).__init__(resolver_context, path_spec)
     self._file_object = None
-    self._vshadow_volume = None
+    self._vsgpt_volume = None
 
   def _Close(self):
-    """Closes the file system.
+    """Closes the file system object.
 
     Raises:
       IOError: if the close failed.
     """
-    self._vshadow_volume.close()
-    self._vshadow_volume = None
+    self._vsgpt_volume.close()
+    self._vsgpt_volume = None
     self._file_object = None
 
   def _Open(self, mode='rb'):
@@ -59,11 +58,11 @@ class VShadowFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         self._path_spec.parent, resolver_context=self._resolver_context)
 
-    vshadow_volume = pyvshadow.volume()
-    vshadow_volume.open_file_object(file_object)
+    vsgpt_volume = pyvsgpt.volume()
+    vsgpt_volume.open_file_object(file_object)
 
     self._file_object = file_object
-    self._vshadow_volume = vshadow_volume
+    self._vsgpt_volume = vsgpt_volume
 
   def FileEntryExistsByPathSpec(self, path_spec):
     """Determines if a file entry for a path specification exists.
@@ -74,15 +73,15 @@ class VShadowFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
+    entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
 
-    # The virtual root file has no corresponding store index but
+    # The virtual root file has no corresponding partition entry index but
     # should have a location.
-    if store_index is None:
+    if entry_index is None:
       location = getattr(path_spec, 'location', None)
       return location is not None and location == self.LOCATION_ROOT
 
-    return 0 <= store_index < self._vshadow_volume.number_of_stores
+    return self._vsgpt_volume.has_partition_with_identifier(entry_index)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -91,56 +90,54 @@ class VShadowFileSystem(file_system.FileSystem):
       path_spec (PathSpec): path specification.
 
     Returns:
-      VShadowFileEntry: file entry or None if not available.
+      GPTFileEntry: a file entry or None if not available.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
+    entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
 
-    # The virtual root file has no corresponding store index but
+    # The virtual root file has no corresponding partition entry index but
     # should have a location.
-    if store_index is None:
+    if entry_index is None:
       location = getattr(path_spec, 'location', None)
       if location is None or location != self.LOCATION_ROOT:
         return None
 
-      return vshadow_file_entry.VShadowFileEntry(
+      return gpt_file_entry.GPTFileEntry(
           self._resolver_context, self, path_spec, is_root=True,
           is_virtual=True)
 
-    if store_index < 0 or store_index >= self._vshadow_volume.number_of_stores:
+    if not self._vsgpt_volume.has_partition_with_identifier(entry_index):
       return None
 
-    return vshadow_file_entry.VShadowFileEntry(
-        self._resolver_context, self, path_spec)
+    return gpt_file_entry.GPTFileEntry(self._resolver_context, self, path_spec)
 
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
-
-    Returns:
-      VShadowFileEntry: file entry or None if not available.
-    """
-    path_spec = vshadow_path_spec.VShadowPathSpec(
-        location=self.LOCATION_ROOT, parent=self._path_spec.parent)
-    return self.GetFileEntryByPathSpec(path_spec)
-
-  def GetVShadowStoreByPathSpec(self, path_spec):
-    """Retrieves a VSS store for a path specification.
+  def GetGPTPartitionByPathSpec(self, path_spec):
+    """Retrieves a GPT partition for a path specification.
 
     Args:
       path_spec (PathSpec): path specification.
 
     Returns:
-      pyvshadow.store: a VSS store or None if not available.
+      pyvsgpt.partition: a GPT partition or None if not available.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
-    if store_index is None:
+    entry_index = gpt.GPTPathSpecGetEntryIndex(path_spec)
+    if entry_index is None:
       return None
+    return self._vsgpt_volume.get_partition_by_identifier(entry_index)
 
-    return self._vshadow_volume.get_store(store_index)
-
-  def GetVShadowVolume(self):
-    """Retrieves a VSS volume.
+  def GetGPTVolume(self):
+    """Retrieves the GPT volume.
 
     Returns:
-      pyvshadow.volume: a VSS volume.
+      pyvsgpt.volume: a GPT volume.
     """
-    return self._vshadow_volume
+    return self._vsgpt_volume
+
+  def GetRootFileEntry(self):
+    """Retrieves the root file entry.
+
+    Returns:
+      GPTFileEntry: root file entry or None if not available.
+    """
+    path_spec = gpt_path_spec.GPTPathSpec(
+        location=self.LOCATION_ROOT, parent=self._path_spec.parent)
+    return self.GetFileEntryByPathSpec(path_spec)

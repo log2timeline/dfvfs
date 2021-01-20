@@ -12,6 +12,7 @@ from dfvfs.helpers import windows_path_resolver
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 from dfvfs.volume import apfs_volume_system
+from dfvfs.volume import gpt_volume_system
 from dfvfs.volume import lvm_volume_system
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
@@ -140,7 +141,7 @@ class VolumeScanner(object):
     """Initializes a volume scanner.
 
     Args:
-      mediator (VolumeScannerMediator): a volume scanner mediator.
+      mediator (Optional[VolumeScannerMediator]): a volume scanner mediator.
     """
     super(VolumeScanner, self).__init__()
     self._mediator = mediator
@@ -284,8 +285,14 @@ class VolumeScanner(object):
     if not scan_node or not scan_node.path_spec:
       raise errors.ScannerError('Invalid scan node.')
 
-    volume_system = tsk_volume_system.TSKVolumeSystem()
-    volume_system.Open(scan_node.path_spec)
+    if scan_node.path_spec.type_indicator == definitions.TYPE_INDICATOR_GPT:
+      volume_system = gpt_volume_system.GPTVolumeSystem()
+      volume_system.Open(scan_node.path_spec)
+      prefix = 'gpt'
+    else:
+      volume_system = tsk_volume_system.TSKVolumeSystem()
+      volume_system.Open(scan_node.path_spec)
+      prefix = 'p'
 
     volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
         volume_system)
@@ -300,7 +307,7 @@ class VolumeScanner(object):
 
       try:
         selected_volumes = self._NormalizedVolumeIdentifiers(
-            volume_system, partitions, prefix='p')
+            volume_system, partitions, prefix=prefix)
 
         if not set(selected_volumes).difference(volume_identifiers):
           return selected_volumes
@@ -322,7 +329,7 @@ class VolumeScanner(object):
         raise errors.UserAbort('File system scan aborted.')
 
     return self._NormalizedVolumeIdentifiers(
-        volume_system, volume_identifiers, prefix='p')
+        volume_system, volume_identifiers, prefix=prefix)
 
   def _GetVSSStoreIdentifiers(self, scan_node, options):
     """Determines the VSS store identifiers.
@@ -521,6 +528,7 @@ class VolumeScanner(object):
   def _ScanVolumeSystemRoot(
       self, scan_context, scan_node, options, base_path_specs):
     """Scans a volume system root scan node for volume and file systems.
+
     Args:
       scan_context (SourceScannerContext): source scanner context.
       scan_node (SourceScanNode): volume system root scan node.
@@ -536,6 +544,9 @@ class VolumeScanner(object):
 
     if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
       volume_identifiers = self._GetAPFSVolumeIdentifiers(scan_node, options)
+
+    elif scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
+      volume_identifiers = self._GetPartitionIdentifiers(scan_node, options)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_LVM:
       volume_identifiers = self._GetLVMVolumeIdentifiers(scan_node, options)
@@ -613,13 +624,14 @@ class VolumeScanner(object):
       scan_node = scan_node.sub_nodes[0]
 
     base_path_specs = []
-    if scan_node.type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
+    if scan_node.type_indicator not in (
+          definitions.TYPE_INDICATOR_GPT,
+          definitions.TYPE_INDICATOR_TSK_PARTITION):
       self._ScanVolume(scan_context, scan_node, options, base_path_specs)
 
     else:
       # Determine which partition needs to be processed.
-      partition_identifiers = self._GetPartitionIdentifiers(
-          scan_node, options)
+      partition_identifiers = self._GetPartitionIdentifiers(scan_node, options)
       for partition_identifier in partition_identifiers:
         location = '/{0:s}'.format(partition_identifier)
         sub_scan_node = scan_node.GetSubNodeByLocation(location)

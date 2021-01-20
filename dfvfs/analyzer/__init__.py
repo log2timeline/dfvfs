@@ -9,6 +9,7 @@ from dfvfs.analyzer import cpio_analyzer_helper
 from dfvfs.analyzer import ewf_analyzer_helper
 from dfvfs.analyzer import ext_analyzer_helper
 from dfvfs.analyzer import fvde_analyzer_helper
+from dfvfs.analyzer import gpt_analyzer_helper
 from dfvfs.analyzer import gzip_analyzer_helper
 from dfvfs.analyzer import hfs_analyzer_helper
 from dfvfs.analyzer import luksde_analyzer_helper

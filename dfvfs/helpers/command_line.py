@@ -109,6 +109,10 @@ class CLIOutputWriter(object):
     super(CLIOutputWriter, self).__init__()
     self._encoding = encoding
 
+  def Flush(self):
+    """Flushes buffered data to the output."""
+    return
+
   @abc.abstractmethod
   def Write(self, string):
     """Writes a string to the output.
@@ -159,7 +163,7 @@ class FileObjectOutputWriter(CLIOutputWriter):
     self._file_object.write(encoded_string)
 
 
-class StdoutOutputWriter(FileObjectOutputWriter):
+class StdoutOutputWriter(CLIOutputWriter):
   """Stdout command line interface output writer."""
 
   def __init__(self, encoding='utf-8'):
@@ -168,7 +172,11 @@ class StdoutOutputWriter(FileObjectOutputWriter):
     Args:
       encoding (Optional[str]): output encoding.
     """
-    super(StdoutOutputWriter, self).__init__(sys.stdout, encoding=encoding)
+    super(StdoutOutputWriter, self).__init__(encoding=encoding)
+
+  def Flush(self):
+    """Flushes buffered data to the output."""
+    sys.stdout.flush()
 
   def Write(self, string):
     """Writes a string to the output.
@@ -176,12 +184,7 @@ class StdoutOutputWriter(FileObjectOutputWriter):
     Args:
       string (str): output.
     """
-    if sys.version_info[0] < 3:
-      super(StdoutOutputWriter, self).Write(string)
-    else:
-      # sys.stdout.write() on Python 3 by default will error if string is
-      # of type bytes.
-      sys.stdout.write(string)
+    sys.stdout.write(string)
 
 
 class CLITabularTableView(object):
@@ -338,31 +341,6 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     self._output_writer = output_writer
     self._preferred_encoding = locale.getpreferredencoding()
     self._textwrapper = textwrap.TextWrapper()
-
-  def _EncodeString(self, string):
-    """Encodes a string in the preferred encoding.
-
-    Returns:
-      bytes: encoded string.
-    """
-    try:
-      # Note that encode() will first convert string into a Unicode string
-      # if necessary.
-      encoded_string = string.encode(
-          self._preferred_encoding, errors=self._encode_errors)
-    except UnicodeEncodeError:
-      if self._encode_errors == 'strict':
-        logging.error(
-            'Unable to properly write output due to encoding error. '
-            'Switching to error tolerant encoding which can result in '
-            'non Basic Latin (C0) characters being replaced with "?" or '
-            '"\\ufffd".')
-        self._encode_errors = 'replace'
-
-      encoded_string = string.encode(
-          self._preferred_encoding, errors=self._encode_errors)
-
-    return encoded_string
 
   def _FormatHumanReadableSize(self, size):
     """Represents a number of bytes as a human readable string.
@@ -848,15 +826,15 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     # TODO: print volume description.
     if locked_scan_node.type_indicator == (
         definitions.TYPE_INDICATOR_APFS_CONTAINER):
-      header = 'Found an APFS encrypted volume.'
+      header = 'Found an APFS encrypted volume.\n\n'
     elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
-      header = 'Found a BitLocker encrypted volume.'
+      header = 'Found a BitLocker encrypted volume.\n\n'
     elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_FVDE:
-      header = 'Found a CoreStorage (FVDE) encrypted volume.'
+      header = 'Found a CoreStorage (FVDE) encrypted volume.\n\n'
     elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_LUKSDE:
-      header = 'Found a LUKS encrypted volume.'
+      header = 'Found a LUKS encrypted volume.\n\n'
     else:
-      header = 'Found an encrypted volume.'
+      header = 'Found an encrypted volume.\n\n'
 
     self._output_writer.Write(header)
 
@@ -874,6 +852,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     result = False
     while not result:
       self._output_writer.Write('Select a credential to unlock the volume: ')
+      self._output_writer.Flush()
 
       input_line = self._input_reader.Read()
       input_line = input_line.strip()
@@ -892,13 +871,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       if credential_type == 'skip':
         break
 
-      getpass_string = 'Enter credential data: '
-      if sys.platform.startswith('win') and sys.version_info[0] < 3:
-        # For Python 2 on Windows getpass (win_getpass) requires an encoded
-        # byte string. For Python 3 we need it to be a Unicode string.
-        getpass_string = self._EncodeString(getpass_string)
-
-      credential_data = getpass.getpass(getpass_string)
+      credential_data = getpass.getpass('Enter credential data: ')
       self._output_writer.Write('\n')
 
       if credential_type == 'key':

@@ -822,9 +822,11 @@ class SourceScanner(object):
       raise errors.BackEndError(
           'Unsupported source found more than one volume system types.')
 
+    # Ignore the TSK partition table type when detected within other partition
+    # table types.
     if (type_indicators[0] == definitions.TYPE_INDICATOR_TSK_PARTITION and
-        source_path_spec.type_indicator in [
-            definitions.TYPE_INDICATOR_TSK_PARTITION]):
+        source_path_spec.type_indicator in (
+            definitions.PARTITION_TABLE_TYPE_INDICATORS)):
       return None
 
     if type_indicators[0] in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
