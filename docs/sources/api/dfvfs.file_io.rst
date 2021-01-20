@@ -108,6 +108,14 @@ dfvfs.file\_io.fvde\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.gpt\_file\_io module
+-----------------------------------
+
+.. automodule:: dfvfs.file_io.gpt_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.gzip\_file\_io module
 ------------------------------------
 

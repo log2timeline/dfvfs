@@ -84,6 +84,14 @@ dfvfs.lib.glob2regex module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.lib.gpt module
+--------------------
+
+.. automodule:: dfvfs.lib.gpt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.lib.gzipfile module
 -------------------------
 

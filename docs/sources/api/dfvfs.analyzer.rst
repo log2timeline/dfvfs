@@ -84,6 +84,14 @@ dfvfs.analyzer.fvde\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.analyzer.gpt\_analyzer\_helper module
+-------------------------------------------
+
+.. automodule:: dfvfs.analyzer.gpt_analyzer_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.analyzer.gzip\_analyzer\_helper module
 --------------------------------------------
 

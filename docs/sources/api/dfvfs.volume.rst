@@ -12,6 +12,14 @@ dfvfs.volume.apfs\_volume\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.volume.gpt\_volume\_system module
+---------------------------------------
+
+.. automodule:: dfvfs.volume.gpt_volume_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.volume.lvm\_volume\_system module
 ---------------------------------------
 
