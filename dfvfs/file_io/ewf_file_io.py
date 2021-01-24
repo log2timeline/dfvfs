@@ -46,27 +46,32 @@ class EWFFile(file_object_io.FileObjectIO):
 
     parent_path_spec = path_spec.parent
 
-    file_system = resolver.Resolver.OpenFileSystem(
-        parent_path_spec, resolver_context=self._resolver_context)
+    parent_location = getattr(parent_path_spec, 'location', None)
+    if parent_location and parent_path_spec.IsSystemLevel():
+      segment_file_paths = pyewf.glob(parent_location)
 
-    # Note that we cannot use pyewf's glob function since it does not
-    # handle the file system abstraction dfvfs provides.
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
-    if not segment_file_path_specs:
-      return None
+      ewf_handle = pyewf.handle()
+      ewf_handle.open(segment_file_paths)
 
-    if parent_path_spec.IsSystemLevel():
-      # Typically the file-like object cache should have room for 127 items.
-      self._resolver_context.SetMaximumNumberOfFileObjects(
-          len(segment_file_path_specs) + 127)
+    else:
+      # Note that we cannot use pyewf's glob function since it does not
+      # handle the file system abstraction dfvfs provides.
 
-    for segment_file_path_spec in segment_file_path_specs:
-      file_object = resolver.Resolver.OpenFileObject(
-          segment_file_path_spec, resolver_context=self._resolver_context)
-      self._file_objects.append(file_object)
+      file_system = resolver.Resolver.OpenFileSystem(
+          parent_path_spec, resolver_context=self._resolver_context)
 
-    ewf_handle = pyewf.handle()
-    ewf_handle.open_file_objects(self._file_objects)
+      segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+      if not segment_file_path_specs:
+        return None
+
+      for segment_file_path_spec in segment_file_path_specs:
+        file_object = resolver.Resolver.OpenFileObject(
+            segment_file_path_spec, resolver_context=self._resolver_context)
+        self._file_objects.append(file_object)
+
+      ewf_handle = pyewf.handle()
+      ewf_handle.open_file_objects(self._file_objects)
+
     return ewf_handle
 
   def get_size(self):

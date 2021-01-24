@@ -9,8 +9,8 @@ class Context(object):
   """Resolver context."""
 
   def __init__(
-      self, maximum_number_of_file_objects=128,
-      maximum_number_of_file_systems=16):
+      self, maximum_number_of_file_objects=256,
+      maximum_number_of_file_systems=32):
     """Initializes the resolver context object.
 
     Args:
