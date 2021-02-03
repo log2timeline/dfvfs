@@ -3,6 +3,9 @@
 
 import abc
 
+from dfvfs.lib import errors
+from dfvfs.resolver import resolver
+
 
 class VolumeAttribute(object):
   """The VFS volume attribute."""
@@ -141,9 +144,14 @@ class Volume(object):
 class VolumeSystem(object):
   """The VFS volume system interface."""
 
+  TYPE_INDICATOR = None
+
+  VOLUME_IDENTIFIER_PREFIX = 'v'
+
   def __init__(self):
     """Initializes a volume system."""
     super(VolumeSystem, self).__init__()
+    self._file_system = None
     self._is_parsed = False
     self._sections = []
     self._volumes = {}
@@ -197,6 +205,15 @@ class VolumeSystem(object):
       self._is_parsed = True
 
     return self._sections
+
+  @property
+  def volume_identifiers(self):
+    """list[str]: volume identifiers."""
+    if not self._is_parsed:
+      self._Parse()
+      self._is_parsed = True
+
+    return list(self._volume_identifiers)
 
   @property
   def volumes(self):
@@ -260,10 +277,19 @@ class VolumeSystem(object):
     volume_identifier = self._volume_identifiers[volume_index]
     return self._volumes[volume_identifier]
 
-  @abc.abstractmethod
   def Open(self, path_spec):
     """Opens a volume defined by path specification.
 
     Args:
       path_spec (PathSpec): a path specification.
+
+    Raises:
+      VolumeSystemError: if the virtual file system representing the volume
+          system could not be resolved.
     """
+    self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
+    if self._file_system is None:
+      raise errors.VolumeSystemError('Unable to resolve path specification.')
+
+    if self._file_system.type_indicator != self.TYPE_INDICATOR:
+      raise errors.VolumeSystemError('Unsupported type indicator.')
