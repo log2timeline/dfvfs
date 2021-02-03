@@ -10,6 +10,7 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
+from dfvfs.volume import lvm_volume_system
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
 
@@ -192,7 +193,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(identifiers, ['p1'])
 
   def testGetPartitionIdentifiersOnPartitionedImage(self):
-    """Tests the _GetPartitionIdentifiers function on a partitioned image."""
+    """Tests the _GetPartitionIdentifiers function on partitions."""
     # Test with mediator.
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
@@ -224,24 +225,72 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.ScannerError):
       test_scanner._GetPartitionIdentifiers(scan_node, test_options)
 
-  def testGetVSSStoreIdentifiers(self):
-    """Tests the _GetVSSStoreIdentifiers function."""
+  def testGetVolumeIdentifiers(self):
+    """Tests the _GetVolumeIdentifiers function."""
     # Test with mediator.
+    test_path = self._GetTestFilePath(['lvm.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_lvm_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_LVM, parent=test_raw_path_spec)
+
+    volume_system = lvm_volume_system.LVMVolumeSystem()
+    volume_system.Open(test_lvm_path_spec)
+
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
+    identifiers = test_scanner._GetVolumeIdentifiers(
+        volume_system, test_options)
+    self.assertEqual(len(identifiers), 2)
+    self.assertEqual(identifiers, ['lvm1', 'lvm2'])
+
+    # Test without mediator.
+    test_scanner = volume_scanner.VolumeScanner()
+    test_options = volume_scanner.VolumeScannerOptions()
+
+    test_path = self._GetTestFilePath(['lvm.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    with self.assertRaises(errors.ScannerError):
+      test_scanner._GetVolumeSnapshotIdentifiers(volume_system, test_options)
+
+  def testGetVolumeSnapshotIdentifiers(self):
+    """Tests the _GetVolumeSnapshotIdentifiers function."""
+    # Test with mediator.
     test_path = self._GetTestFilePath(['vsstest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_path)
 
-    test_scanner._source_scanner.Scan(scan_context)
-    scan_node = self._GetTestScanNode(scan_context)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VSHADOW, parent=test_qcow_path_spec)
 
-    identifiers = test_scanner._GetVSSStoreIdentifiers(
-        scan_node.sub_nodes[0], test_options)
+    volume_system = vshadow_volume_system.VShadowVolumeSystem()
+    volume_system.Open(test_vss_path_spec)
+
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
+
+    identifiers = test_scanner._GetVolumeSnapshotIdentifiers(
+        volume_system, test_options)
     self.assertEqual(len(identifiers), 2)
     self.assertEqual(identifiers, ['vss1', 'vss2'])
 
@@ -255,22 +304,11 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     scan_context = source_scanner.SourceScannerContext()
     scan_context.OpenSourcePath(test_path)
 
-    test_scanner._source_scanner.Scan(scan_context)
-    scan_node = self._GetTestScanNode(scan_context)
-
     with self.assertRaises(errors.ScannerError):
-      test_scanner._GetVSSStoreIdentifiers(scan_node.sub_nodes[0], test_options)
-
-    # Test error conditions.
-    with self.assertRaises(errors.ScannerError):
-      test_scanner._GetVSSStoreIdentifiers(None, test_options)
-
-    scan_node = source_scanner.SourceScanNode(None)
-    with self.assertRaises(errors.ScannerError):
-      test_scanner._GetVSSStoreIdentifiers(scan_node, test_options)
+      test_scanner._GetVolumeSnapshotIdentifiers(volume_system, test_options)
 
   def testNormalizedVolumeIdentifiersPartitionedImage(self):
-    """Tests the _NormalizedVolumeIdentifiers function."""
+    """Tests the _NormalizedVolumeIdentifiers function on partitions."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
@@ -663,7 +701,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
           base_path_specs)
 
   def testScanVolumeSystemRootOnPartitionedImage(self):
-    """Tests the _ScanVolumeSystemRoot function on a partitioned image."""
+    """Tests the _ScanVolumeSystemRoot function on partitions."""
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
@@ -735,7 +773,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
       test_scanner.GetBasePathSpecs('/bogus')
 
   def testGetBasePathSpecsOnPartitionedImage(self):
-    """Tests the GetBasePathSpecs function on a partitioned image."""
+    """Tests the GetBasePathSpecs function on partitions."""
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
