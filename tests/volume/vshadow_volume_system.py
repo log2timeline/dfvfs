@@ -54,7 +54,10 @@ class VShadowVolumeSystemTest(shared_test_lib.BaseTestCase):
 
     volume_system.Open(self._vshadow_path_spec)
 
+    self.assertEqual(volume_system.number_of_sections, 0)
     self.assertEqual(volume_system.number_of_volumes, 2)
+
+    self.assertEqual(volume_system.volume_identifiers, ['vss1', 'vss2'])
 
     volume = volume_system.GetVolumeByIndex(1)
     self.assertIsNotNone(volume)

@@ -2,9 +2,7 @@
 """The SleuthKit (TSK) volume system."""
 
 from dfvfs.lib import definitions
-from dfvfs.lib import errors
 from dfvfs.lib import tsk_partition
-from dfvfs.resolver import resolver
 from dfvfs.volume import volume_system
 
 
@@ -52,6 +50,10 @@ class TSKVolume(volume_system.Volume):
 class TSKVolumeSystem(volume_system.VolumeSystem):
   """Volume system that uses pytsk3."""
 
+  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
+
+  VOLUME_IDENTIFIER_PREFIX = 'p'
+
   def __init__(self):
     """Initializes a volume system.
 
@@ -59,7 +61,6 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
       VolumeSystemError: if the volume system could not be accessed.
     """
     super(TSKVolumeSystem, self).__init__()
-    self._file_system = None
     self.bytes_per_sector = 512
 
   def _Parse(self):
@@ -85,22 +86,3 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
           number_of_sectors * self.bytes_per_sector)
 
       self._sections.append(volume_extent)
-
-  def Open(self, path_spec):
-    """Opens a volume defined by path specification.
-
-    Args:
-      path_spec (PathSpec): a path specification.
-
-    Raises:
-      VolumeSystemError: if the TSK partition virtual file system could not
-          be resolved.
-    """
-    self._file_system = resolver.Resolver.OpenFileSystem(path_spec)
-    if self._file_system is None:
-      raise errors.VolumeSystemError('Unable to resolve path specification.')
-
-    type_indicator = self._file_system.type_indicator
-    if type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION:
-      raise errors.VolumeSystemError(
-          'Unsupported type indicator: {0:s}.'.format(type_indicator))

@@ -52,7 +52,10 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
 
     volume_system.Open(self._gpt_path_spec)
 
+    self.assertEqual(volume_system.number_of_sections, 0)
     self.assertEqual(volume_system.number_of_volumes, 2)
+
+    self.assertEqual(volume_system.volume_identifiers, ['p1', 'p2'])
 
     volume = volume_system.GetVolumeByIndex(0)
     self.assertIsNotNone(volume)

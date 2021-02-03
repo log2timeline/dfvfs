@@ -48,6 +48,8 @@ class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
     self.assertEqual(volume_system.number_of_sections, 8)
     self.assertEqual(volume_system.number_of_volumes, 2)
 
+    self.assertEqual(volume_system.volume_identifiers, ['p1', 'p2'])
+
     volume = volume_system.GetVolumeByIndex(1)
     self.assertIsNotNone(volume)
 
