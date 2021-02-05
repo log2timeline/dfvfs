@@ -54,9 +54,6 @@ class VolumeScannerMediator(object):
 
   # pylint: disable=redundant-returns-doc
 
-  # TODO: merge GetAPFSVolumeIdentifiers, GetLVMVolumeIdentifiers,
-  # GetVSSStoreIdentifiers, GetVSSStoreIdentifiers into GetVolumeIdentifiers?
-
   @abc.abstractmethod
   def GetAPFSVolumeIdentifiers(self, volume_system, volume_identifiers):
     """Retrieves APFS volume identifiers.
@@ -100,6 +97,45 @@ class VolumeScannerMediator(object):
     Returns:
       list[str]: selected volume identifiers including prefix or None.
     """
+
+  def GetVolumeIdentifiers(self, volume_system, volume_identifiers):
+    """Retrieves volume identifiers.
+
+    This method can be used to prompt the user to provide volume identifiers.
+
+    Args:
+      volume_system (APFSVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers including prefix.
+
+    Returns:
+      list[str]: selected volume identifiers including prefix or None.
+    """
+    if volume_system.TYPE_INDICATOR == (
+        definitions.TYPE_INDICATOR_APFS_CONTAINER):
+      return self.GetAPFSVolumeIdentifiers(volume_system, volume_identifiers)
+
+    if volume_system.TYPE_INDICATOR == definitions.TYPE_INDICATOR_LVM:
+      return self.GetLVMVolumeIdentifiers(volume_system, volume_identifiers)
+
+    return None
+
+  def GetVolumeSnapshotIdentifiers(self, volume_system, volume_identifiers):
+    """Retrieves volume snapshot identifiers.
+
+    This method can be used to prompt the user to provide volume snapshot
+    identifiers.
+
+    Args:
+      volume_system (APFSVolumeSystem): volume system.
+      volume_identifiers (list[str]): volume identifiers including prefix.
+
+    Returns:
+      list[str]: selected volume identifiers including prefix or None.
+    """
+    if volume_system.TYPE_INDICATOR == definitions.TYPE_INDICATOR_VSHADOW:
+      return self.GetVSSStoreIdentifiers(volume_system, volume_identifiers)
+
+    return None
 
   @abc.abstractmethod
   def GetVSSStoreIdentifiers(self, volume_system, volume_identifiers):
@@ -149,120 +185,6 @@ class VolumeScanner(object):
     self._source_scanner = source_scanner.SourceScanner()
     self._source_type = None
 
-  def _GetAPFSVolumeIdentifiers(self, scan_node, options):
-    """Determines the APFS volume identifiers.
-
-    Args:
-      scan_node (SourceScanNode): scan node.
-      options (VolumeScannerOptions): volume scanner options.
-
-    Returns:
-      list[str]: APFS volume identifiers.
-
-    Raises:
-      ScannerError: if the scan node is invalid or the scanner does not know
-          how to proceed.
-      UserAbort: if the user requested to abort.
-    """
-    if not scan_node or not scan_node.path_spec:
-      raise errors.ScannerError('Invalid scan node.')
-
-    volume_system = apfs_volume_system.APFSVolumeSystem()
-    volume_system.Open(scan_node.path_spec)
-
-    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
-        volume_system)
-    if not volume_identifiers:
-      return []
-
-    if options.volumes:
-      if options.volumes == ['all']:
-        volumes = range(1, volume_system.number_of_volumes + 1)
-      else:
-        volumes = options.volumes
-
-      try:
-        selected_volumes = self._NormalizedVolumeIdentifiers(
-            volume_system, volumes, prefix='apfs')
-
-        if not set(selected_volumes).difference(volume_identifiers):
-          return selected_volumes
-      except errors.ScannerError as exception:
-        if self._mediator:
-          self._mediator.PrintWarning('{0!s}'.format(exception))
-
-    if len(volume_identifiers) > 1:
-      if not self._mediator:
-        raise errors.ScannerError(
-            'Unable to proceed. APFS volumes found but no mediator to '
-            'determine how they should be used.')
-
-      try:
-        volume_identifiers = self._mediator.GetAPFSVolumeIdentifiers(
-            volume_system, volume_identifiers)
-      except KeyboardInterrupt:
-        raise errors.UserAbort('File system scan aborted.')
-
-    return self._NormalizedVolumeIdentifiers(
-        volume_system, volume_identifiers, prefix='apfs')
-
-  def _GetLVMVolumeIdentifiers(self, scan_node, options):
-    """Determines the LVM volume identifiers.
-
-    Args:
-      scan_node (SourceScanNode): scan node.
-      options (VolumeScannerOptions): volume scanner options.
-
-    Returns:
-      list[str]: LVM volume identifiers.
-
-    Raises:
-      ScannerError: if the scan node is invalid or the scanner does not know
-          how to proceed.
-      UserAbort: if the user requested to abort.
-    """
-    if not scan_node or not scan_node.path_spec:
-      raise errors.ScannerError('Invalid scan node.')
-
-    volume_system = lvm_volume_system.LVMVolumeSystem()
-    volume_system.Open(scan_node.path_spec)
-
-    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
-        volume_system)
-    if not volume_identifiers:
-      return []
-
-    if options.volumes:
-      if options.volumes == ['all']:
-        volumes = range(1, volume_system.number_of_volumes + 1)
-      else:
-        volumes = options.volumes
-
-      try:
-        selected_volumes = self._NormalizedVolumeIdentifiers(
-            volume_system, volumes, prefix='lvm')
-
-        if not set(selected_volumes).difference(volume_identifiers):
-          return selected_volumes
-      except errors.ScannerError as exception:
-        if self._mediator:
-          self._mediator.PrintWarning('{0!s}'.format(exception))
-
-    if len(volume_identifiers) > 1:
-      if not self._mediator:
-        raise errors.ScannerError(
-            'Unable to proceed. LVM volumes found but no mediator to '
-            'determine how they should be used.')
-
-      try:
-        volume_identifiers = self._mediator.GetLVMVolumeIdentifiers(
-            volume_system, volume_identifiers)
-      except KeyboardInterrupt:
-        raise errors.UserAbort('File system scan aborted.')
-
-    return self._NormalizedVolumeIdentifiers(
-        volume_system, volume_identifiers, prefix='lvm')
-
   def _GetPartitionIdentifiers(self, scan_node, options):
     """Determines the partition identifiers.
 
@@ -287,12 +209,10 @@ class VolumeScanner(object):
 
     if scan_node.path_spec.type_indicator == definitions.TYPE_INDICATOR_GPT:
       volume_system = gpt_volume_system.GPTVolumeSystem()
-      volume_system.Open(scan_node.path_spec)
-      prefix = 'gpt'
     else:
       volume_system = tsk_volume_system.TSKVolumeSystem()
-      volume_system.Open(scan_node.path_spec)
-      prefix = 'p'
+
+    volume_system.Open(scan_node.path_spec)
 
     volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
         volume_system)
@@ -301,13 +221,14 @@ class VolumeScanner(object):
 
     if options.partitions:
       if options.partitions == ['all']:
-        partitions = range(1, volume_system.number_of_volumes + 1)
+        partitions = volume_system.volume_identifiers
       else:
         partitions = options.partitions
 
       try:
         selected_volumes = self._NormalizedVolumeIdentifiers(
-            volume_system, partitions, prefix=prefix)
+            volume_system, partitions,
+            prefix=volume_system.VOLUME_IDENTIFIER_PREFIX)
 
         if not set(selected_volumes).difference(volume_identifiers):
           return selected_volumes
@@ -326,32 +247,79 @@ class VolumeScanner(object):
             volume_system, volume_identifiers)
 
       except KeyboardInterrupt:
-        raise errors.UserAbort('File system scan aborted.')
+        raise errors.UserAbort('Volume scan aborted.')
 
     return self._NormalizedVolumeIdentifiers(
-        volume_system, volume_identifiers, prefix=prefix)
+        volume_system, volume_identifiers,
+        prefix=volume_system.VOLUME_IDENTIFIER_PREFIX)
 
-  def _GetVSSStoreIdentifiers(self, scan_node, options):
-    """Determines the VSS store identifiers.
+  def _GetVolumeIdentifiers(self, volume_system, options):
+    """Determines the volume identifiers.
 
     Args:
-      scan_node (SourceScanNode): scan node.
+      volume_system (VolumeSystem): volume system.
       options (VolumeScannerOptions): volume scanner options.
 
     Returns:
-      list[str]: VSS store identifiers.
+      list[str]: volume identifiers.
 
     Raises:
-      ScannerError: if the scan node is invalid or the scanner does not know
-          how to proceed.
+      ScannerError: if the scanner does not know how to proceed.
       UserAbort: if the user requested to abort.
     """
-    if not scan_node or not scan_node.path_spec:
-      raise errors.ScannerError('Invalid scan node.')
+    volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
+        volume_system)
+    if not volume_identifiers:
+      return []
 
-    volume_system = vshadow_volume_system.VShadowVolumeSystem()
-    volume_system.Open(scan_node.path_spec)
+    if options.volumes:
+      if options.volumes == ['all']:
+        volumes = volume_system.volume_identifiers
+      else:
+        volumes = options.volumes
 
+      try:
+        selected_volumes = self._NormalizedVolumeIdentifiers(
+            volume_system, volumes,
+            prefix=volume_system.VOLUME_IDENTIFIER_PREFIX)
+
+        if not set(selected_volumes).difference(volume_identifiers):
+          return selected_volumes
+      except errors.ScannerError as exception:
+        if self._mediator:
+          self._mediator.PrintWarning('{0!s}'.format(exception))
+
+    if len(volume_identifiers) > 1:
+      if not self._mediator:
+        raise errors.ScannerError((
+            'Unable to proceed. More than one {0:s} volume found but no '
+            'mediator to determine how they should be used.').format(
+                volume_system.TYPE_INDICATOR))
+
+      try:
+        volume_identifiers = self._mediator.GetVolumeIdentifiers(
+            volume_system, volume_identifiers)
+      except KeyboardInterrupt:
+        raise errors.UserAbort('Volume scan aborted.')
+
+    return self._NormalizedVolumeIdentifiers(
+        volume_system, volume_identifiers,
+        prefix=volume_system.VOLUME_IDENTIFIER_PREFIX)
+
+  def _GetVolumeSnapshotIdentifiers(self, volume_system, options):
+    """Determines volume snapshot identifiers.
+
+    Args:
+      volume_system (VolumeSystem): volume system.
+      options (VolumeScannerOptions): volume scanner options.
+
+    Returns:
+      list[str]: volume snapshot identifiers.
+
+    Raises:
+      ScannerError: if the scanner does not know how to proceed.
+      UserAbort: if the user requested to abort.
+    """
     volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
         volume_system)
     if not volume_identifiers:
@@ -359,7 +327,7 @@ class VolumeScanner(object):
 
     if options.snapshots:
       if options.snapshots == ['all']:
-        snapshots = range(1, volume_system.number_of_volumes + 1)
+        snapshots = volume_system.volume_identifiers
       elif options.snapshots == ['none']:
         snapshots = []
       else:
@@ -367,7 +335,8 @@ class VolumeScanner(object):
 
       try:
         selected_volumes = self._NormalizedVolumeIdentifiers(
-            volume_system, snapshots, prefix='vss')
+            volume_system, snapshots,
+            prefix=volume_system.VOLUME_IDENTIFIER_PREFIX)
 
         if not set(selected_volumes).difference(volume_identifiers):
           return selected_volumes
@@ -376,19 +345,21 @@ class VolumeScanner(object):
           self._mediator.PrintWarning('{0!s}'.format(exception))
 
     if not self._mediator:
-      raise errors.ScannerError(
-          'Unable to proceed. VSS stores found but no mediator to determine '
-          'how they should be used.')
+      raise errors.ScannerError((
+          'Unable to proceed. {0:s} volume snapshots found but no mediator to '
+          'determine how they should be used.').format(
+              volume_system.TYPE_INDICATOR))
 
     try:
-      volume_identifiers = self._mediator.GetVSSStoreIdentifiers(
+      volume_identifiers = self._mediator.GetVolumeSnapshotIdentifiers(
           volume_system, volume_identifiers)
 
     except KeyboardInterrupt:
-      raise errors.UserAbort('File system scan aborted.')
+      raise errors.UserAbort('Volume scan aborted.')
 
     return self._NormalizedVolumeIdentifiers(
-        volume_system, volume_identifiers, prefix='vss')
+        volume_system, volume_identifiers,
+        prefix=volume_system.VOLUME_IDENTIFIER_PREFIX)
 
   def _NormalizedVolumeIdentifiers(
       self, volume_system, volume_identifiers, prefix='v'):
@@ -543,16 +514,26 @@ class VolumeScanner(object):
       raise errors.ScannerError('Invalid scan node.')
 
     if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
-      volume_identifiers = self._GetAPFSVolumeIdentifiers(scan_node, options)
+      volume_system = apfs_volume_system.APFSVolumeSystem()
+      volume_system.Open(scan_node.path_spec)
+
+      volume_identifiers = self._GetVolumeIdentifiers(volume_system, options)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
       volume_identifiers = self._GetPartitionIdentifiers(scan_node, options)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_LVM:
-      volume_identifiers = self._GetLVMVolumeIdentifiers(scan_node, options)
+      volume_system = lvm_volume_system.LVMVolumeSystem()
+      volume_system.Open(scan_node.path_spec)
+
+      volume_identifiers = self._GetVolumeIdentifiers(volume_system, options)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-      volume_identifiers = self._GetVSSStoreIdentifiers(scan_node, options)
+      volume_system = vshadow_volume_system.VShadowVolumeSystem()
+      volume_system.Open(scan_node.path_spec)
+
+      volume_identifiers = self._GetVolumeSnapshotIdentifiers(
+          volume_system, options)
       # Process VSS stores (snapshots) starting with the most recent one.
       volume_identifiers.reverse()
 

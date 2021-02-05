@@ -329,17 +329,14 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
           indicates that the stdout output writer should be used.
     """
     preferred_encoding = locale.getpreferredencoding()
-
     if not input_reader:
       input_reader = StdinInputReader(encoding=preferred_encoding)
     if not output_writer:
       output_writer = StdoutOutputWriter(encoding=preferred_encoding)
 
     super(CLIVolumeScannerMediator, self).__init__()
-    self._encode_errors = 'strict'
     self._input_reader = input_reader
     self._output_writer = output_writer
-    self._preferred_encoding = locale.getpreferredencoding()
     self._textwrapper = textwrap.TextWrapper()
 
   def _FormatHumanReadableSize(self, size):
