@@ -57,15 +57,19 @@ class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
     self.assertEqual(volume.number_of_attributes, 2)
     self.assertEqual(volume.identifier, 'p2')
 
-    expected_value = 6
     volume_attribute = volume.GetAttribute('address')
     self.assertIsNotNone(volume_attribute)
-    self.assertEqual(volume_attribute.value, expected_value)
+    self.assertEqual(volume_attribute.value, 6)
 
-    expected_value = 'Linux (0x83)'
     volume_attribute = volume.GetAttribute('description')
     self.assertIsNotNone(volume_attribute)
-    self.assertEqual(volume_attribute.value, expected_value)
+    self.assertEqual(volume_attribute.value, 'Linux (0x83)')
+
+    volume_extent = volume.extents[0]
+    self.assertIsNotNone(volume_extent)
+    self.assertEqual(volume_extent.offset, 131 * 512)
+    self.assertEqual(volume_extent.size, 129 * 512)
+    self.assertEqual(volume_extent.extent_type, volume_extent.EXTENT_TYPE_DATA)
 
     volume = volume_system.GetVolumeByIndex(7)
     self.assertIsNone(volume)

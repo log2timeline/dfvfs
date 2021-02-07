@@ -64,10 +64,16 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
     self.assertEqual(volume.number_of_attributes, 1)
     self.assertEqual(volume.identifier, 'p1')
 
-    expected_value = 'b6d37ab4-051f-4556-97d2-ad1f8a609644'
     volume_attribute = volume.GetAttribute('identifier')
     self.assertIsNotNone(volume_attribute)
-    self.assertEqual(volume_attribute.value, expected_value)
+    self.assertEqual(
+        volume_attribute.value, 'b6d37ab4-051f-4556-97d2-ad1f8a609644')
+
+    volume_extent = volume.extents[0]
+    self.assertIsNotNone(volume_extent)
+    self.assertEqual(volume_extent.offset, 1048576)
+    self.assertEqual(volume_extent.size, 65024)
+    self.assertEqual(volume_extent.extent_type, volume_extent.EXTENT_TYPE_DATA)
 
     volume = volume_system.GetVolumeByIndex(99)
     self.assertIsNone(volume)
