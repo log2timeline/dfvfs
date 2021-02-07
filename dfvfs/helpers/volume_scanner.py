@@ -482,12 +482,18 @@ class VolumeScanner(object):
       self._ScanFileSystem(scan_node, base_path_specs)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-      # TODO: look into building VSS store on demand.
-
       # We "optimize" here for user experience, alternatively we could scan for
       # a file system instead of hard coding a TSK child path specification.
+
+      # TODO: look into building VSS store on demand.
+
+      if definitions.PREFERRED_NTFS_BACK_END == definitions.TYPE_INDICATOR_TSK:
+        location = '/'
+      else:
+        location = '\\'
+
       path_spec = path_spec_factory.Factory.NewPathSpec(
-          definitions.TYPE_INDICATOR_TSK, location='/',
+          definitions.PREFERRED_NTFS_BACK_END, location=location,
           parent=scan_node.path_spec)
 
       base_path_specs.append(path_spec)
