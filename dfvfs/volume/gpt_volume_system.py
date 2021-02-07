@@ -25,9 +25,8 @@ class GPTVolume(volume_system.Volume):
         'identifier', vsgpt_partition.identifier)
     self._AddAttribute(volume_attribute)
 
-    # TODO: implement in pyvsgpt
-    # TODO: add support for partition extents
-    volume_extent = volume_system.VolumeExtent(0, vsgpt_partition.size)
+    volume_extent = volume_system.VolumeExtent(
+        vsgpt_partition.volume_offset, vsgpt_partition.size)
     self._extents.append(volume_extent)
 
 
