@@ -48,7 +48,7 @@ The [l2tbinaries](https://github.com/log2timeline/l2tbinaries) contains the
 necessary packages for running dfVFS. l2tbinaries provides the following
 branches:
 
-* master; branch intended for the "packaged release" of dfVFS and dependencies;
+* main; branch intended for the "packaged release" of dfVFS and dependencies;
 * dev; branch intended for the "development release" of dfVFS;
 * testing; branch intended for testing newly created packages.
 
