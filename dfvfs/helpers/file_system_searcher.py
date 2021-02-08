@@ -370,21 +370,17 @@ class FindSpec(object):
           location defined.
 
     Raises:
-      ValueError: if mount point is set and it does not match the type
-          indicator of the path specification of the file entry or file entry
-          location falls outside the mount point.
+      ValueError: if mount point is set and is of type OS and the location of
+          the path specification of the file entry falls outside the mount
+          point.
     """
     location = getattr(file_entry.path_spec, 'location', None)
     if self._location_segments is None or location is None:
       return False
 
     if (mount_point and
-        mount_point.type_indicator == definitions.TYPE_INDICATOR_OS):
-      if file_entry.path_spec.type_indicator != definitions.TYPE_INDICATOR_OS:
-        raise ValueError(
-            'File entry path specification and mount point type indicators '
-            'do not match.')
-
+        mount_point.type_indicator == definitions.TYPE_INDICATOR_OS and
+        file_entry.path_spec.type_indicator == definitions.TYPE_INDICATOR_OS):
       if not location.startswith(mount_point.location):
         raise ValueError(
             'File entry path specification location not inside mount point.')
