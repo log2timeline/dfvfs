@@ -724,7 +724,7 @@ class SourceScanner(object):
       try:
         resolver.Resolver.OpenFileSystem(
             file_system_path_spec, resolver_context=self._resolver_context)
-      except errors.BackEndError:
+      except (KeyError, errors.BackEndError):
         file_system_path_spec = None
 
     return file_system_path_spec
