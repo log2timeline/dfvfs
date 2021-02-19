@@ -5,9 +5,9 @@
 import unittest
 
 from dfvfs.file_io import tsk_file_io
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import os_path_spec
-from dfvfs.path import tsk_path_spec
+from dfvfs.path import factory as path_spec_factory
 
 from tests.file_io import test_lib
 
@@ -18,10 +18,11 @@ class TSKFileTestExt2(test_lib.Ext2ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(TSKFileTestExt2, self).setUp()
-    test_file = self._GetTestFilePath(['ext2.raw'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ext2.raw'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -46,23 +47,26 @@ class TSKFileTestNTFS(test_lib.NTFSImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(TSKFileTestNTFS, self).setUp()
-    test_file = self._GetTestFilePath(['ntfs.raw'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ntfs.raw'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_PASSWORDS_TXT,
+        parent=self._os_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     self._TestOpenCloseMFTEntry(file_object)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
+        parent=self._os_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     self._TestOpenCloseLocation(file_object)
@@ -76,8 +80,8 @@ class TSKFileTestNTFS(test_lib.NTFSImageFileTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(
-        location='/a_directory/another_file',
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/a_directory/another_file',
         inode=self._MFT_ENTRY_ANOTHER_FILE, parent=self._os_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
@@ -85,18 +89,18 @@ class TSKFileTestNTFS(test_lib.NTFSImageFileTestCase):
 
   def testRead(self):
     """Test the read functionality."""
-    path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', inode=self._MFT_ENTRY_PASSWORDS_TXT,
-        parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
+        inode=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._os_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     self._TestRead(file_object)
 
   def testReadADS(self):
     """Test the read functionality on an alternate data stream (ADS)."""
-    path_spec = tsk_path_spec.TSKPathSpec(
-        data_stream='$SDS', location='/$Secure', inode=9,
-        parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, data_stream='$SDS', location='/$Secure',
+        inode=9, parent=self._os_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     self._TestReadADS(file_object)

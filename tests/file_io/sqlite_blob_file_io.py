@@ -5,8 +5,8 @@
 import unittest
 
 from dfvfs.file_io import sqlite_blob_file_io
-from dfvfs.path import sqlite_blob_path_spec
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
 from tests.file_io import test_lib
@@ -18,13 +18,15 @@ class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.db'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.db'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name='blobs', column_name='blob',
-        row_condition=('identifier', '==', 'myblob'), parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._sqlite_blob_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_SQLITE_BLOB, column_name='blob',
+        parent=test_os_path_spec, row_condition=('identifier', '==', 'myblob'),
+        table_name='blobs')
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -61,12 +63,14 @@ class SQLiteBlobFileWithIndexTest(test_lib.SylogTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.db'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.db'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._sqlite_blob_path_spec = sqlite_blob_path_spec.SQLiteBlobPathSpec(
-        table_name='blobs', column_name='blob', row_index=0, parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._sqlite_blob_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_SQLITE_BLOB, column_name='blob',
+        parent=test_os_path_spec, row_index=0, table_name='blobs')
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

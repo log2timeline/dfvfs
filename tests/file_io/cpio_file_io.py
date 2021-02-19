@@ -5,8 +5,8 @@
 import unittest
 
 from dfvfs.file_io import cpio_file_io
-from dfvfs.path import cpio_path_spec
-from dfvfs.path import os_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
 from tests.file_io import test_lib
@@ -19,12 +19,14 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIOBinaryFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.bin.cpio'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.bin.cpio'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._cpio_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -62,12 +64,14 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIOPortableASCIIFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.odc.cpio'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.odc.cpio'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._cpio_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -105,12 +109,14 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIONewASCIIFileTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.newc.cpio'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.newc.cpio'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._cpio_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -148,12 +154,14 @@ class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
     """Sets up the needed objects used throughout the test."""
     super(CPIONewASCIIFileWithChecksumTest, self).setUp()
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.crc.cpio'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.crc.cpio'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._cpio_path_spec = cpio_path_spec.CPIOPathSpec(
-        location='/syslog', parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._cpio_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=test_os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
