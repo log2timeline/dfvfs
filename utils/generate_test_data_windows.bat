@@ -36,6 +36,10 @@ set unitsize=4096
 set imagename=ntfs-fixed.vhd
 set imagesize=4
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
 echo attach vdisk >> CreateVHD.diskpart
@@ -59,6 +63,10 @@ rem Create a dynamic-size VHD image with a NTFS file system
 set unitsize=4096
 set imagename=ntfs-dynamic.vhd
 set imagesize=4
+
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
 
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=expandable > CreateVHD.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
@@ -84,6 +92,10 @@ set unitsize=4096
 set imagename=ntfs-parent.vhd
 set imagesize=4
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
 echo attach vdisk >> CreateVHD.diskpart
@@ -107,6 +119,10 @@ call :run_diskpart UnmountVHD.diskpart
 
 set imagename=ntfs-differential.vhd
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% parent=%cd%\test_data\ntfs-parent.vhd > CreateVHD.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
 echo attach vdisk >> CreateVHD.diskpart
@@ -126,6 +142,10 @@ call :run_diskpart UnmountVHD.diskpart
 rem Create a differential-size VHD image with a FAT file system
 set imagename=fat-parent.vhd
 set imagesize=4
+
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
 
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
@@ -150,6 +170,10 @@ call :run_diskpart UnmountVHD.diskpart
 
 set imagename=fat-differential.vhd
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% parent=%cd%\test_data\fat-parent.vhd > CreateVHD.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
 echo attach vdisk >> CreateVHD.diskpart
@@ -170,6 +194,10 @@ rem Create a fixed-size VHDX image with a NTFS file system
 set unitsize=4096
 set imagename=ntfs-fixed.vhdx
 set imagesize=4
+
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
 
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHDX.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHDX.diskpart
@@ -195,6 +223,10 @@ set unitsize=4096
 set imagename=ntfs-dynamic.vhdx
 set imagesize=4
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=expandable > CreateVHDX.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHDX.diskpart
 echo attach vdisk >> CreateVHDX.diskpart
@@ -219,6 +251,10 @@ set unitsize=4096
 set imagename=ntfs-parent.vhdx
 set imagesize=4
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHDX.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHDX.diskpart
 echo attach vdisk >> CreateVHDX.diskpart
@@ -242,6 +278,10 @@ call :run_diskpart UnmountVHDX.diskpart
 
 set imagename=ntfs-differential.vhdx
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% parent=%cd%\test_data\ntfs-parent.vhdx > CreateVHDX.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHDX.diskpart
 echo attach vdisk >> CreateVHDX.diskpart
@@ -261,6 +301,10 @@ call :run_diskpart UnmountVHDX.diskpart
 rem Create a differential-size VHDX image with a FAT file system
 set imagename=fat-parent.vhdx
 set imagesize=4
+
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
 
 echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHDX.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHDX.diskpart
@@ -285,6 +329,10 @@ call :run_diskpart UnmountVHDX.diskpart
 
 set imagename=fat-differential.vhdx
 
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
 echo create vdisk file=%cd%\test_data\%imagename% parent=%cd%\test_data\fat-parent.vhdx > CreateVHDX.diskpart
 echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHDX.diskpart
 echo attach vdisk >> CreateVHDX.diskpart
@@ -300,6 +348,71 @@ echo select vdisk file=%cd%\test_data\%imagename% > UnmountVHDX.diskpart
 echo detach vdisk >> UnmountVHDX.diskpart
 
 call :run_diskpart UnmountVHDX.diskpart
+
+rem Create a fixed-size VHD image with an AES 128-bit BDE encrypted volume with a password
+set unitsize=4096
+set imagename=bde_aes_128bit.vhd
+set imagesize=64
+
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
+echo create vdisk file=%cd%\%specimenspath%\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
+echo select vdisk file=%cd%\%specimenspath%\%imagename% >> CreateVHD.diskpart
+echo attach vdisk >> CreateVHD.diskpart
+echo convert mbr >> CreateVHD.diskpart
+echo create partition primary >> CreateVHD.diskpart
+
+echo format fs=ntfs label="TestVolume" unit=%unitsize% quick >> CreateVHD.diskpart
+
+echo assign letter=x >> CreateVHD.diskpart
+
+call :run_diskpart CreateVHD.diskpart
+
+call :create_test_file_entries x
+
+rem This will ask for a password
+manage-bde -On x: -DiscoveryVolumeType "[none]" -EncryptionMethod aes128 -Password -Synchronous
+
+echo select vdisk file=%cd%\%specimenspath%\%imagename% > UnmountVHD.diskpart
+echo detach vdisk >> UnmountVHD.diskpart
+
+call :run_diskpart UnmountVHD.diskpart
+
+rem Create a fixed-size VHD image with a NTFS file system and unit size 512 and 2 volume snapshots
+set unitsize=512
+set imagename=ntfs_%unitsize%_with_2_vss.vhd
+set imagesize=128
+
+del /f %cd%\test_data\%imagename%
+
+echo Creating: %imagename%
+
+echo create vdisk file=%cd%\%specimenspath%\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
+echo select vdisk file=%cd%\%specimenspath%\%imagename% >> CreateVHD.diskpart
+echo attach vdisk >> CreateVHD.diskpart
+echo convert mbr >> CreateVHD.diskpart
+echo create partition primary >> CreateVHD.diskpart
+
+echo format fs=ntfs label="TestVolume" unit=%unitsize% quick >> CreateVHD.diskpart
+
+echo assign letter=x >> CreateVHD.diskpart
+
+call :run_diskpart CreateVHD.diskpart
+
+call :create_test_file_entries x
+
+for /l %%i in (1, 1, 2) do (
+        "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\vshadow.exe" -p x:
+
+        echo VSS%%i > x:\vss%%i
+)
+
+echo select vdisk file=%cd%\%specimenspath%\%imagename% > UnmountVHD.diskpart
+echo detach vdisk >> UnmountVHD.diskpart
+
+call :run_diskpart UnmountVHD.diskpart
 
 exit /b 0
 
