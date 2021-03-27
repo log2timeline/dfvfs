@@ -72,26 +72,26 @@ mkdir -p test_data;
 
 IMAGE_SIZE=$(( 4096 * 1024 ));
 
-# Create test image with an APFS container and file system (volume)
+# Create an image with an APFS container and file system (volume)
 CONTAINER_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
 VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 2 ));
 
 IMAGE_FILE="test_data/apfs";
 
-hdiutil create -size ${IMAGE_SIZE} -type UDIF ${IMAGE_FILE};
-hdiutil attach -nomount ${IMAGE_FILE}.dmg;
+hdiutil create -fs 'APFS' -size ${IMAGE_SIZE} -type UDIF -volname apfs_test ${IMAGE_FILE};
 
-diskutil apfs createContainer disk${CONTAINER_DEVICE_NUMBER}s1;
-diskutil apfs addVolume disk${VOLUME_DEVICE_NUMBER} "APFS" apfs_test;
+# For older versions of hdiutil:
+# hdiutil attach -nomount ${IMAGE_FILE}.dmg;
+# diskutil apfs createContainer disk${CONTAINER_DEVICE_NUMBER}s1;
+# diskutil apfs addVolume disk${VOLUME_DEVICE_NUMBER} "APFS" apfs_test;
+
+hdiutil attach ${IMAGE_FILE}.dmg;
 
 create_test_file_entries "/Volumes/apfs_test";
 
 hdiutil detach disk${CONTAINER_DEVICE_NUMBER};
 
-# dd if=${IMAGE_FILE}.dmg of=${IMAGE_FILE}.raw bs=512 skip=40 count=8112
-# rm -f ${IMAGE_FILE}.dmg
-
-# Create test image with a HFS+ file system
+# Create an image with a HFS+ file system
 VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
 
 IMAGE_FILE="test_data/hfsplus";
@@ -102,8 +102,23 @@ hdiutil attach ${IMAGE_FILE}.dmg;
 
 create_test_file_entries "/Volumes/hfsplus_test";
 
+# Create a zlib compressed image from image with a HFS+ file system
+IMAGE_FILE="test_data/hfsplus_zlib";
+
+hdiutil create -format UDZO -srcfolder "/Volumes/hfsplus_test" ${IMAGE_FILE};
+
 hdiutil detach disk${VOLUME_DEVICE_NUMBER};
 
-# dd if=${IMAGE_FILE}.dmg of=${IMAGE_FILE}.raw bs=512 skip=40 count=8112
-# rm -f ${IMAGE_FILE}.dmg
+# Create a sparse image with a HFS+ file system
+VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
+
+IMAGE_FILE="test_data/hfsplus";
+
+hdiutil create -fs 'HFS+' -size ${IMAGE_SIZE} -type SPARSE -volname hfsplus_test ${IMAGE_FILE};
+
+hdiutil attach ${IMAGE_FILE}.sparseimage;
+
+create_test_file_entries "/Volumes/hfsplus_test";
+
+hdiutil detach disk${VOLUME_DEVICE_NUMBER};
 
