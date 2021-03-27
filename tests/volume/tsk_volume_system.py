@@ -4,8 +4,8 @@
 
 import unittest
 
-from dfvfs.path import os_path_spec
-from dfvfs.path import tsk_partition_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.volume import tsk_volume_system
 
 from tests import test_lib as shared_test_lib
@@ -16,12 +16,14 @@ class TSKVolumeSystemTest(shared_test_lib.BaseTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    test_file = self._GetTestFilePath(['mbr.raw'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['mbr.raw'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._tsk_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/', parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._tsk_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/',
+        parent=test_os_path_spec)
 
   # mmls test_data/mbr.raw
   # DOS Partition Table

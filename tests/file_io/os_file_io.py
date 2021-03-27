@@ -6,8 +6,9 @@ import os
 import unittest
 
 from dfvfs.file_io import os_file_io
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import os_path_spec
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 
 from tests import test_lib as shared_test_lib
@@ -22,15 +23,17 @@ class OSFileTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._path_spec1 = os_path_spec.OSPathSpec(location=test_file)
+    self._path_spec1 = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
-    test_file = self._GetTestFilePath(['another_file'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['another_file'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._path_spec2 = os_path_spec.OSPathSpec(location=test_file)
+    self._path_spec2 = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -49,10 +52,11 @@ class OSFileTest(shared_test_lib.BaseTestCase):
       file_object.Open()
 
     # Try open with a path specification that has no location.
-    test_file = self._GetTestFilePath(['password.txt'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['password.txt'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
     path_spec.location = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -60,7 +64,8 @@ class OSFileTest(shared_test_lib.BaseTestCase):
       file_object.Open()
 
     # Try open with a path specification that has a parent.
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
     path_spec.parent = self._path_spec2
 
     with self.assertRaises(errors.PathSpecError):

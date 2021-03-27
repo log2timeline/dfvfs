@@ -4,11 +4,9 @@
 
 import unittest
 
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import fvde_path_spec
-from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
-from dfvfs.path import tsk_partition_path_spec
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 
 from tests.file_io import test_lib
@@ -28,16 +26,19 @@ class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(FVDEFileTestWithKeyChainTest, self).setUp()
-    test_file = self._GetTestFilePath(['fvdetest.qcow2'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['fvdetest.qcow2'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
-    self._tsk_partition_path_spec = (
-        tsk_partition_path_spec.TSKPartitionPathSpec(
-            location='/p1', parent=path_spec))
-    self._fvde_path_spec = fvde_path_spec.FVDEPathSpec(
-        parent=self._tsk_partition_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=test_qcow_path_spec)
+    self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec)
+
     resolver.Resolver.key_chain.SetCredential(
         self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
 
@@ -50,8 +51,8 @@ class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
     self._TestOpenCloseLocation(self._fvde_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = fvde_path_spec.FVDEPathSpec(
-        parent=self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -79,16 +80,20 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(FVDEFileWithPathSpecCredentialsTest, self).setUp()
-    test_file = self._GetTestFilePath(['fvdetest.qcow2'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['fvdetest.qcow2'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
-    self._tsk_partition_path_spec = (
-        tsk_partition_path_spec.TSKPartitionPathSpec(
-            location='/p1', parent=path_spec))
-    self._fvde_path_spec = fvde_path_spec.FVDEPathSpec(
-        password=self._FVDE_PASSWORD, parent=self._tsk_partition_path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=test_qcow_path_spec)
+    self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec,
+        password=self._FVDE_PASSWORD)
+
     resolver.Resolver.key_chain.SetCredential(
         self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
 
@@ -101,8 +106,8 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
     self._TestOpenCloseLocation(self._fvde_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = fvde_path_spec.FVDEPathSpec(
-        parent=self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):

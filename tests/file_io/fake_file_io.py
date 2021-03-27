@@ -35,8 +35,8 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
 
   def testOpenClosePathSpec(self):
     """Test the Open and Close functions with a path specification."""
-    test_file = '/test_data/password.txt'
-    test_path_spec = fake_path_spec.FakePathSpec(location=test_file)
+    test_path = '/test_data/password.txt'
+    test_path_spec = fake_path_spec.FakePathSpec(location=test_path)
 
     file_object = fake_file_io.FakeFile(
         self._resolver_context, test_path_spec, self._FILE_DATA1)
@@ -54,8 +54,8 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
 
   def testSeek(self):
     """Test the seek function."""
-    test_file = '/test_data/another_file'
-    test_path_spec = fake_path_spec.FakePathSpec(location=test_file)
+    test_path = '/test_data/another_file'
+    test_path_spec = fake_path_spec.FakePathSpec(location=test_path)
 
     file_object = fake_file_io.FakeFile(
         self._resolver_context, test_path_spec, self._FILE_DATA2)
@@ -93,8 +93,8 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
 
   def testRead(self):
     """Test the read function."""
-    test_file = '/test_data/password.txt'
-    test_path_spec = fake_path_spec.FakePathSpec(location=test_file)
+    test_path = '/test_data/password.txt'
+    test_path_spec = fake_path_spec.FakePathSpec(location=test_path)
 
     file_object = fake_file_io.FakeFile(
         self._resolver_context, test_path_spec, self._FILE_DATA1)

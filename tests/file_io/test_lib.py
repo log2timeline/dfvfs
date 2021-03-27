@@ -8,8 +8,6 @@ from dfvfs.file_io import tsk_partition_file_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
-from dfvfs.path import tsk_path_spec
-from dfvfs.path import tsk_partition_path_spec
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 
@@ -146,8 +144,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_PASSWORDS_TXT,
+        parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()
@@ -159,8 +158,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
+        parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()
@@ -172,9 +172,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
-        parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()
@@ -214,9 +214,9 @@ class ImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
-        parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_PASSWORDS_TXT,
+        location='/passwords.txt', parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()
@@ -387,56 +387,63 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        part_index=2, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=parent_path_spec,
+        part_index=2)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
     file_object.Open()
     self.assertEqual(file_object.get_size(), self._SIZE_P1)
 
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        part_index=13, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=parent_path_spec,
+        part_index=13)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.Open()
 
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p2', parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p2',
+        parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
     file_object.Open()
     self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p0', parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p0',
+        parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.Open()
 
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p3', parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p3',
+        parent=parent_path_spec)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
       file_object.Open()
 
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        start_offset=self._OFFSET_P2, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=parent_path_spec,
+        start_offset=self._OFFSET_P2)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
     file_object.Open()
     self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        start_offset=self._SIZE_P1, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=parent_path_spec,
+        start_offset=self._SIZE_P1)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
@@ -449,8 +456,9 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        part_index=6, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=parent_path_spec,
+        part_index=6)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
@@ -502,8 +510,9 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        part_index=6, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=parent_path_spec,
+        part_index=6)
     file_object = tsk_partition_file_io.TSKPartitionFile(
         self._resolver_context, path_spec)
 
@@ -670,8 +679,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_PASSWORDS_TXT,
+        parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()
@@ -685,8 +695,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        location='/passwords.txt', parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
+        parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()
@@ -698,9 +709,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_ANOTHER_FILE, location='/a_directory/another_file',
-        parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()
@@ -740,9 +751,9 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     Args:
       parent_path_spec (PathSpec): parent path specification.
     """
-    path_spec = tsk_path_spec.TSKPathSpec(
-        inode=self._INODE_PASSWORDS_TXT, location='/passwords.txt',
-        parent=parent_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_PASSWORDS_TXT,
+        location='/passwords.txt', parent=parent_path_spec)
     file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
     file_object.Open()

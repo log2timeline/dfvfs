@@ -4,10 +4,9 @@
 
 import unittest
 
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import os_path_spec
-from dfvfs.path import tsk_partition_path_spec
-from dfvfs.path import vhdi_path_spec
+from dfvfs.path import factory as path_spec_factory
 
 from tests.file_io import test_lib
 
@@ -18,12 +17,13 @@ class Version1DynamicVHDIFileTest(test_lib.Ext2ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(Version1DynamicVHDIFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['ext2.vhd'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ext2.vhd'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -34,7 +34,8 @@ class Version1DynamicVHDIFileTest(test_lib.Ext2ImageFileTestCase):
     self._TestOpenCloseLocation(self._vhdi_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = vhdi_path_spec.VHDIPathSpec(parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -55,12 +56,13 @@ class Version1DifferentialVHDIFileTest(test_lib.ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(Version1DifferentialVHDIFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['image-differential.vhd'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['image-differential.vhd'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -71,7 +73,8 @@ class Version1DifferentialVHDIFileTest(test_lib.ImageFileTestCase):
     self._TestOpenCloseLocation(self._vhdi_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = vhdi_path_spec.VHDIPathSpec(parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -92,12 +95,13 @@ class Version2VHDIFileTest(test_lib.Ext2ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(Version2VHDIFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['ext2.vhdx'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ext2.vhdx'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -108,7 +112,8 @@ class Version2VHDIFileTest(test_lib.Ext2ImageFileTestCase):
     self._TestOpenCloseLocation(self._vhdi_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = vhdi_path_spec.VHDIPathSpec(parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -131,14 +136,16 @@ class WindowsVersion1DifferentialVHDIFileTestFAT(
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion1DifferentialVHDIFileTestFAT, self).setUp()
 
-    test_file = self._GetTestFilePath(['fat-differential.vhd'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['fat-differential.vhd'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -149,8 +156,9 @@ class WindowsVersion1DifferentialVHDIFileTestFAT(
     self._TestOpenCloseLocation(self._partition_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -176,14 +184,16 @@ class WindowsVersion1DifferentialVHDIFileTestNTFS(
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion1DifferentialVHDIFileTestNTFS, self).setUp()
 
-    test_file = self._GetTestFilePath(['ntfs-differential.vhd'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ntfs-differential.vhd'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -212,14 +222,16 @@ class WindowsVersion1DynamicVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion1DynamicVHDIFileTest, self).setUp()
 
-    test_file = self._GetTestFilePath(['ntfs-dynamic.vhd'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ntfs-dynamic.vhd'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -248,14 +260,16 @@ class WindowsVersion1FixedVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion1FixedVHDIFileTest, self).setUp()
 
-    test_file = self._GetTestFilePath(['ntfs-fixed.vhd'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ntfs-fixed.vhd'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -282,14 +296,16 @@ class WindowsVersion2DifferentialVHDIFileTestFAT(
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion2DifferentialVHDIFileTestFAT, self).setUp()
 
-    test_file = self._GetTestFilePath(['fat-differential.vhdx'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['fat-differential.vhdx'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -300,8 +316,9 @@ class WindowsVersion2DifferentialVHDIFileTestFAT(
     self._TestOpenCloseLocation(self._partition_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -327,14 +344,16 @@ class WindowsVersion2DifferentialVHDIFileTestNTFS(
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion2DifferentialVHDIFileTestNTFS, self).setUp()
 
-    test_file = self._GetTestFilePath(['ntfs-differential.vhdx'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ntfs-differential.vhdx'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -363,14 +382,16 @@ class WindowsVersion2DynamicVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion2DynamicVHDIFileTest, self).setUp()
 
-    test_file = self._GetTestFilePath(['ntfs-dynamic.vhdx'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ntfs-dynamic.vhdx'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""
@@ -399,14 +420,16 @@ class WindowsVersion2FixedVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
     """Sets up the needed objects used throughout the test."""
     super(WindowsVersion2FixedVHDIFileTest, self).setUp()
 
-    test_file = self._GetTestFilePath(['ntfs-fixed.vhdx'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ntfs-fixed.vhdx'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._vhdi_path_spec = vhdi_path_spec.VHDIPathSpec(
-        parent=self._os_path_spec)
-    self._partition_path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
-        location='/p1', parent=self._vhdi_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._vhdi_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VHDI, parent=self._os_path_spec)
+    self._partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        parent=self._vhdi_path_spec)
 
   def testOpenCloseMFTEntry(self):
     """Test the open and close functionality using a MFT entry."""

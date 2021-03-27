@@ -4,9 +4,9 @@
 
 import unittest
 
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.path import ewf_path_spec
-from dfvfs.path import os_path_spec
+from dfvfs.path import factory as path_spec_factory
 
 from tests.file_io import test_lib
 
@@ -17,11 +17,13 @@ class EWFFileTest(test_lib.Ext2ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(EWFFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['ext2.E01'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ext2.E01'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._ewf_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_EWF, parent=self._os_path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -32,7 +34,8 @@ class EWFFileTest(test_lib.Ext2ImageFileTestCase):
     self._TestOpenCloseLocation(self._ewf_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = ewf_path_spec.EWFPathSpec(parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_EWF, parent=self._os_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -53,11 +56,13 @@ class SplitEWFFileTest(test_lib.Ext2ImageFileTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     super(SplitEWFFileTest, self).setUp()
-    test_file = self._GetTestFilePath(['ext2.split.E01'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['ext2.split.E01'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._ewf_path_spec = ewf_path_spec.EWFPathSpec(parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._ewf_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_EWF, parent=self._os_path_spec)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
@@ -68,7 +73,8 @@ class SplitEWFFileTest(test_lib.Ext2ImageFileTestCase):
     self._TestOpenCloseLocation(self._ewf_path_spec)
 
     # Try open with a path specification that has no parent.
-    path_spec = ewf_path_spec.EWFPathSpec(parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_EWF, parent=self._os_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
