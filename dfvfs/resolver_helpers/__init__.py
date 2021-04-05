@@ -58,6 +58,11 @@ except ImportError:
   pass
 
 try:
+  from dfvfs.resolver_helpers import modi_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver_helpers import ntfs_resolver_helper
 except ImportError:
   pass

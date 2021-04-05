@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The VHD image file-like object."""
+"""The Virtual Hard Disk image file-like object."""
 
 import pyvhdi
 

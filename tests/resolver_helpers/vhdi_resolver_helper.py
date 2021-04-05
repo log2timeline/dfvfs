@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for the VHD image resolver helper implementation."""
+"""Tests for the Virtual Hard Disk image resolver helper implementation."""
 
 import unittest
 
@@ -12,7 +12,7 @@ from tests.resolver_helpers import test_lib
 
 
 class VHDIResolverHelperTest(test_lib.ResolverHelperTestCase):
-  """Tests for the VHD image resolver helper implementation."""
+  """Tests for the Virtual Hard Disk image resolver helper implementation."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

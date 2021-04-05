@@ -238,6 +238,28 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
+  def testGetStorageMediaImageTypeIndicatorsMODI(self):
+    """Tests the GetStorageMediaImageTypeIndicator function on MODI files."""
+    test_file = self._GetTestFilePath(['hfsplus_zlib.dmg'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_MODI]
+    type_indicators = analyzer.Analyzer.GetStorageMediaImageTypeIndicators(
+        path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
+    test_file = self._GetTestFilePath(['hfsplus.sparseimage'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_MODI]
+    type_indicators = analyzer.Analyzer.GetStorageMediaImageTypeIndicators(
+        path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
   def testGetStorageMediaImageTypeIndicatorsQCOW(self):
     """Tests the GetStorageMediaImageTypeIndicator function on a .qcow2 file."""
     test_file = self._GetTestFilePath(['ext2.qcow2'])
