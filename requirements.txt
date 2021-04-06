@@ -15,6 +15,7 @@ libfsxfs-python >= 20201114
 libfvde-python >= 20160719
 libfwnt-python >= 20160418
 libluksde-python >= 20200101
+libmodi-python >= 20210405
 libqcow-python >= 20201213
 libsigscan-python >= 20191221
 libsmdev-python >= 20140529

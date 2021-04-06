@@ -1,10 +1,14 @@
 ## Supported Formats
 
-The information below is based of version 20200920
+The information below is based of version 20210405
 
 ### Storage media types
 
 * EWF (EWF-E01, EWF-Ex01, EWF-S01) (Requires: [libewf/pyewf](https://github.com/libyal/libewf))
+* Mac OS disk image (Requires: [libmodi/pymodi](https://github.com/libyal/libmodi))
+  * Sparse bundle disk image
+  * Sparse disk image
+  * Universal Disk Image Format (UDIF) image
 * QCOW version 1, 2, 3 (Requires: [libqcow/pyqcow](https://github.com/libyal/libqcow))
   * currently no differential image support
 * Storage Media device (Requires: [libsmdev/pysmdev](https://github.com/libyal/libsmdev))
@@ -44,7 +48,7 @@ The information below is based of version 20200920
 * gzip
 * lzma
 * xz
-* zlib (both zlib-DEFLATE and raw-DEFLATE)
+* zlib (both zlib+DEFLATE and stand-alone DEFLATE)
 
 ### Encoded stream file types
 

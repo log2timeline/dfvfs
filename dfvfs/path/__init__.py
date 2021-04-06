@@ -17,6 +17,7 @@ from dfvfs.path import gpt_path_spec
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import hfs_path_spec
 from dfvfs.path import lvm_path_spec
+from dfvfs.path import modi_path_spec
 from dfvfs.path import mount_path_spec
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import os_path_spec
