@@ -3,6 +3,7 @@
 
 import json
 
+from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.path import path_spec
 from dfvfs.serializer import serializer
@@ -62,7 +63,15 @@ class _PathSpecJsonDecoder(json.JSONDecoder):
     if 'row_condition' in json_dict:
       json_dict['row_condition'] = tuple(json_dict['row_condition'])
 
-    return path_spec_factory.Factory.NewPathSpec(type_indicator, **json_dict)
+    path_spec_object = path_spec_factory.Factory.NewPathSpec(
+        type_indicator, **json_dict)
+
+    if type_indicator == definitions.TYPE_INDICATOR_OS:
+      # OSPathSpec() will change the location to an absolute path
+      # here we want to preserve the original location.
+      path_spec_object.location = json_dict.get('location', None)
+
+    return path_spec_object
 
 
 class _PathSpecJsonEncoder(json.JSONEncoder):
