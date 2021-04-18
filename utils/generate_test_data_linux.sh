@@ -64,6 +64,37 @@ EOT
 	(cd ${MOUNT_POINT} && ln -s a_directory/another_file a_link);
 }
 
+# Creates test file entries without a symbolic link.
+#
+# Arguments:
+#   a string containing the mount point
+#
+create_test_file_entries_without_link()
+{
+	MOUNT_POINT=$1;
+
+	# Create a directory
+	mkdir ${MOUNT_POINT}/a_directory;
+
+	cat >${MOUNT_POINT}/a_directory/a_file <<EOT
+This is a text file.
+
+We should be able to parse it.
+EOT
+
+	cat >${MOUNT_POINT}/passwords.txt <<EOT
+place,user,password
+bank,joesmith,superrich
+alarm system,-,1234
+treasure chest,-,1111
+uber secret laire,admin,admin
+EOT
+
+	cat >${MOUNT_POINT}/a_directory/another_file <<EOT
+This is another file.
+EOT
+}
+
 assert_availability_binary cryptsetup;
 assert_availability_binary dd;
 assert_availability_binary ewfacquire;
@@ -72,6 +103,7 @@ assert_availability_binary gdisk;
 assert_availability_binary losetup;
 assert_availability_binary lvcreate;
 assert_availability_binary mke2fs;
+assert_availability_binary mkfs.fat;
 assert_availability_binary mkfs.xfs;
 assert_availability_binary mkntfs;
 assert_availability_binary pvcreate;
@@ -102,6 +134,21 @@ sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
 create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+# Create test image with a FAT-12 file system
+IMAGE_FILE="test_data/fat12.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+mkfs.fat -F 12 -n "FAT12_TEST" -S ${SECTOR_SIZE} ${IMAGE_FILE};
+
+CURRENT_GID=$( id -g );
+CURRENT_UID=$( id -u );
+sudo mount -o loop,rw,gid=${CURRENT_GID},uid=${CURRENT_UID} ${IMAGE_FILE} ${MOUNT_POINT};
+
+create_test_file_entries_without_link ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 

@@ -148,6 +148,14 @@ dfvfs.file\_io.lvm\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.modi\_file\_io module
+------------------------------------
+
+.. automodule:: dfvfs.file_io.modi_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.ntfs\_file\_io module
 ------------------------------------
 

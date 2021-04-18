@@ -148,6 +148,14 @@ dfvfs.resolver\_helpers.manager module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.resolver\_helpers.modi\_resolver\_helper module
+-----------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.modi_resolver_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.resolver\_helpers.ntfs\_resolver\_helper module
 -----------------------------------------------------
 

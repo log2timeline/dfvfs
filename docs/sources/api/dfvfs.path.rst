@@ -156,6 +156,14 @@ dfvfs.path.lvm\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.path.modi\_path\_spec module
+----------------------------------
+
+.. automodule:: dfvfs.path.modi_path_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.path.mount\_path\_spec module
 -----------------------------------
 

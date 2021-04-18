@@ -25,4 +25,4 @@ libvmdk-python >= 20140421
 libvsgpt-python >= 20210207
 libvshadow-python >= 20160109
 libvslvm-python >= 20160109
-pytsk3 >= 20160721
+pytsk3 >= 20210419
