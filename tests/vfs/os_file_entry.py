@@ -172,7 +172,6 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
     # The date and time values are in a seconds precision and
     # cannot be predetermined.
     self.assertNotEqual(stat_object.atime, 0)
-    self.assertNotEqual(stat_object.ctime, 0)
     self.assertNotEqual(stat_object.mtime, 0)
 
   def testIsFunctions(self):

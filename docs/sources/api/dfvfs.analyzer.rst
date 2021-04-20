@@ -124,6 +124,14 @@ dfvfs.analyzer.lvm\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.analyzer.modi\_analyzer\_helper module
+--------------------------------------------
+
+.. automodule:: dfvfs.analyzer.modi_analyzer_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.analyzer.ntfs\_analyzer\_helper module
 --------------------------------------------
 

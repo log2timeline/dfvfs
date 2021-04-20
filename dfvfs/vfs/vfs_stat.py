@@ -30,7 +30,6 @@ class VFSStat(object):
 
     # Date and time stat information.
     self.atime = None
-    self.ctime = None
     self.mtime = None
 
     # Ownership and permissions stat information.
