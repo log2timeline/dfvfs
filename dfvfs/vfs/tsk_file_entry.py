@@ -7,6 +7,7 @@ import decimal
 from dfdatetime import definitions as dfdatetime_definitions
 from dfdatetime import factory as dfdatetime_factory
 from dfdatetime import interface as dfdatetime_interface
+from dfdatetime import semantic_time as dfdatetime_semantic_time
 
 import pytsk3
 
@@ -644,6 +645,12 @@ class TSKFileEntry(file_entry.FileEntry):
     timestamp = getattr(self._tsk_file.info.meta, name, None)
     if timestamp is None:
       return None
+
+    # Note that pytsk3 can return 0 for an ext4 creation time even if the inode
+    # does not contain it.
+    if timestamp == 0 and name == 'crtime' and self._file_system_type in (
+        pytsk3.TSK_FS_TYPE_EXT4, ):
+      return dfdatetime_semantic_time.NotSet()
 
     if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
       name_fragment = '{0:s}_nano'.format(name)

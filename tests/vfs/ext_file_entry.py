@@ -161,8 +161,7 @@ class EXTFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.ctime, 1567246979)
     self.assertEqual(stat_object.ctime_nano, 0)
 
-    self.assertEqual(stat_object.crtime, 0)
-    self.assertEqual(stat_object.crtime_nano, 0)
+    self.assertFalse(hasattr(stat_object, 'crtime'))
 
     self.assertEqual(stat_object.mtime, 1567246979)
     self.assertEqual(stat_object.mtime_nano, 0)
