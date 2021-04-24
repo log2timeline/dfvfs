@@ -2,6 +2,7 @@
 """The EXT file entry implementation."""
 
 from dfdatetime import posix_time as dfdatetime_posix_time
+from dfdatetime import semantic_time as dfdatetime_semantic_time
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -58,6 +59,8 @@ class EXTFileEntry(file_entry.FileEntry):
       0xa000: definitions.FILE_ENTRY_TYPE_LINK,
       0xc000: definitions.FILE_ENTRY_TYPE_SOCKET}
 
+  _NANOSECONDS_PER_SECOND = 1000000000
+
   def __init__(
       self, resolver_context, file_system, path_spec, fsext_file_entry=None,
       is_root=False, is_virtual=False):
@@ -98,6 +101,7 @@ class EXTFileEntry(file_entry.FileEntry):
     super(EXTFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
+    self._creation_time = fsext_file_entry.get_creation_time_as_integer()
     self._fsext_file_entry = fsext_file_entry
     self._name = file_entry_name
 
@@ -174,25 +178,51 @@ class EXTFileEntry(file_entry.FileEntry):
   def access_time(self):
     """dfdatetime.DateTimeValues: access time or None if not available."""
     timestamp = self._fsext_file_entry.get_access_time_as_integer()
+
+    # If creation time is not present (None) the timestamp precision is in
+    # seconds.
+    if self._creation_time is None:
+      timestamp, _ = divmod(timestamp, self._NANOSECONDS_PER_SECOND)
+      return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
     return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
 
   @property
   def change_time(self):
     """dfdatetime.DateTimeValues: change time or None if not available."""
     timestamp = self._fsext_file_entry.get_inode_change_time_as_integer()
+
+    # If creation time is not present (None) the timestamp precision is in
+    # seconds.
+    if self._creation_time is None:
+      timestamp, _ = divmod(timestamp, self._NANOSECONDS_PER_SECOND)
+      return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
     return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
 
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
-    timestamp = self._fsext_file_entry.get_creation_time_as_integer()
-    return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
+    # Creation time can be None if not present.
+    if self._creation_time is None:
+      return None
+
+    # Creation time can be 0 if not set.
+    if self._creation_time == 0:
+      return dfdatetime_semantic_time.NotSet()
+
+    return dfdatetime_posix_time.PosixTimeInNanoseconds(
+        timestamp=self._creation_time)
 
   @property
   def deletion_time(self):
     """dfdatetime.DateTimeValues: deletion time or None if not available."""
     timestamp = self._fsext_file_entry.get_deletion_time_as_integer()
-    return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
+    # Deletion time can be 0 if not set.
+    if timestamp == 0:
+      return dfdatetime_semantic_time.NotSet()
+
+    return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
   @property
   def name(self):
@@ -203,6 +233,13 @@ class EXTFileEntry(file_entry.FileEntry):
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     timestamp = self._fsext_file_entry.get_modification_time_as_integer()
+
+    # If creation time is not present (None) the timestamp precision is in
+    # seconds.
+    if self._creation_time is None:
+      timestamp, _ = divmod(timestamp, self._NANOSECONDS_PER_SECOND)
+      return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
+
     return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
 
   def GetEXTFileEntry(self):
