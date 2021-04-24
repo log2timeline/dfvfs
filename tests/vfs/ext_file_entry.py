@@ -84,7 +84,7 @@ class EXTFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.creation_time)
+    self.assertIsNone(file_entry.creation_time)
 
   def testModificationTime(self):
     """Test the modification_time property."""
@@ -156,15 +156,15 @@ class EXTFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.gid, 1000)
 
     self.assertEqual(stat_object.atime, 1567246979)
-    self.assertEqual(stat_object.atime_nano, 0)
+    self.assertFalse(hasattr(stat_object, 'atime_nano'))
 
     self.assertEqual(stat_object.ctime, 1567246979)
-    self.assertEqual(stat_object.ctime_nano, 0)
+    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
 
     self.assertFalse(hasattr(stat_object, 'crtime'))
 
     self.assertEqual(stat_object.mtime, 1567246979)
-    self.assertEqual(stat_object.mtime_nano, 0)
+    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testIsFunctions(self):
     """Tests the Is? functions."""
