@@ -30,7 +30,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
   _100_NANOSECONDS_PER_SECOND = 10000000
   _NANOSECONDS_PER_SECOND = 1000000000
 
-  def __init__(self, fraction_of_second=None, timestamp=None):
+  def __init__(self, fraction_of_second=None, precision=None, timestamp=None):
     """Initializes a SleuthKit timestamp.
 
     Args:
@@ -38,17 +38,20 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
           an integer that contains the number 100 nano seconds before
           Sleuthkit 4.2.0 or number of nano seconds in Sleuthkit 4.2.0
           and later.
+      precision (Optional[int]): precision of the date and time value, which
+          should be one of the PRECISION_VALUES in dfDateTime definitions.
       timestamp (Optional[int]): POSIX timestamp.
     """
-    # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
-    # 1 nano second precision.
+    # Sleuthkit 4.2.0 switched from 100 nano seconds granularity to
+    # 1 nano second granularity.
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
-      precision = dfdatetime_definitions.PRECISION_1_NANOSECOND
+      granularity = dfdatetime_definitions.PRECISION_1_NANOSECOND
     else:
-      precision = dfdatetime_definitions.PRECISION_100_NANOSECONDS
+      granularity = dfdatetime_definitions.PRECISION_100_NANOSECONDS
 
     super(TSKTime, self).__init__()
-    self._precision = precision
+    self._granularity = granularity
+    self._precision = precision or granularity
     self._timestamp = timestamp
     self.fraction_of_second = fraction_of_second
 
@@ -73,7 +76,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
         if self.fraction_of_second is not None:
           fraction_of_second = decimal.Decimal(self.fraction_of_second)
 
-          if self._precision == dfdatetime_definitions.PRECISION_1_NANOSECOND:
+          if self._granularity == dfdatetime_definitions.PRECISION_1_NANOSECOND:
             fraction_of_second /= self._NANOSECONDS_PER_SECOND
           else:
             fraction_of_second /= self._100_NANOSECONDS_PER_SECOND
@@ -646,12 +649,6 @@ class TSKFileEntry(file_entry.FileEntry):
     if timestamp is None:
       return None
 
-    # Note that pytsk3 can return 0 for an ext4 creation time even if the inode
-    # does not contain it.
-    if timestamp == 0 and name == 'crtime' and self._file_system_type in (
-        pytsk3.TSK_FS_TYPE_EXT4, ):
-      return dfdatetime_semantic_time.NotSet()
-
     if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
       name_fragment = '{0:s}_nano'.format(name)
       fraction_of_second = getattr(
@@ -659,7 +656,39 @@ class TSKFileEntry(file_entry.FileEntry):
     else:
       fraction_of_second = None
 
-    return TSKTime(timestamp=timestamp, fraction_of_second=fraction_of_second)
+    is_local_time = False
+    precision = None
+
+    if self._file_system_type in (
+        pytsk3.TSK_FS_TYPE_EXT2, pytsk3.TSK_FS_TYPE_EXT3):
+      precision = dfdatetime_definitions.PRECISION_1_SECOND
+
+    elif self._file_system_type == pytsk3.TSK_FS_TYPE_EXT4:
+      # Note that pytsk3 can return 0 for an ext4 creation time even if the
+      # inode does not contain it.
+      if name == 'crtime' and timestamp == 0:
+        return dfdatetime_semantic_time.NotSet()
+
+    elif self._file_system_type in (
+        pytsk3.TSK_FS_TYPE_FAT12, pytsk3.TSK_FS_TYPE_FAT16,
+        pytsk3.TSK_FS_TYPE_FAT32):
+      is_local_time = True
+      if name == 'atime':
+        precision = dfdatetime_definitions.PRECISION_1_DAY
+      else:
+        precision = dfdatetime_definitions.PRECISION_2_SECONDS
+
+    elif self._file_system_type == pytsk3.TSK_FS_TYPE_NTFS:
+      precision = dfdatetime_definitions.PRECISION_100_NANOSECONDS
+
+    # TODO: determine if file system type is traditional HFS and set
+    # is_local_time accordingly.
+
+    date_time = TSKTime(
+        fraction_of_second=fraction_of_second, precision=precision,
+        timestamp=timestamp)
+    date_time.is_local_time = is_local_time
+    return date_time
 
   def _TSKFileTimeCopyToStatTimeTuple(self, tsk_file, time_value):
     """Copies a SleuthKit file object time value to a stat timestamp tuple.
