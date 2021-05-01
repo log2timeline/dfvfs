@@ -165,11 +165,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
   def testGetFileSystemTypeIndicators(self):
     """Tests the GetFileSystemTypeIndicators function on a .qcow2 file."""
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     path_spec = vshadow_path_spec.VShadowPathSpec(
         store_index=1, parent=path_spec)
 
@@ -331,11 +331,11 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
   def testGetVolumeSystemTypeIndicatorsVSS(self):
     """Tests the GetVolumeSystemTypeIndicators function on a VSS volume."""
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
     expected_type_indicators = [definitions.TYPE_INDICATOR_VSHADOW]
     type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)

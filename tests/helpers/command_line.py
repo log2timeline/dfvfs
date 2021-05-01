@@ -359,15 +359,15 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
   def testPrintVSSStoreIdentifiersOverview(self):
     """Tests the _PrintVSSStoreIdentifiersOverview function."""
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=test_qcow_path_spec)
+        definitions.TYPE_INDICATOR_VSHADOW, parent=test_raw_path_spec)
 
     volume_system = vshadow_volume_system.VShadowVolumeSystem()
     volume_system.Open(test_vss_path_spec)
@@ -388,8 +388,8 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         b'The following Volume Shadow Snapshots (VSS) were found:',
         b'',
         b'Identifier      Creation Time',
-        b'vss1            2013-12-03 06:35:09.7363787',
-        b'vss2            2013-12-03 06:37:48.9190583',
+        b'vss1            2021-05-01 17:40:03.2230304',
+        b'vss2            2021-05-01 17:41:28.2249863',
         b'']
 
     if not win32console:
@@ -680,15 +680,15 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
   def testGetVSSStoreIdentifiers(self):
     """Tests the GetVSSStoreIdentifiers function."""
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=test_qcow_path_spec)
+        definitions.TYPE_INDICATOR_VSHADOW, parent=test_raw_path_spec)
 
     volume_system = vshadow_volume_system.VShadowVolumeSystem()
     volume_system.Open(test_vss_path_spec)

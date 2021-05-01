@@ -269,7 +269,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
   def testGetVolumeSnapshotIdentifiers(self):
     """Tests the _GetVolumeSnapshotIdentifiers function."""
     # Test with mediator.
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -277,10 +277,10 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=test_qcow_path_spec)
+        definitions.TYPE_INDICATOR_VSHADOW, parent=test_raw_path_spec)
 
     volume_system = vshadow_volume_system.VShadowVolumeSystem()
     volume_system.Open(test_vss_path_spec)
@@ -298,7 +298,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner()
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -347,15 +347,15 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_mediator = TestVolumeScannerMediator()
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=test_qcow_path_spec)
+        definitions.TYPE_INDICATOR_VSHADOW, parent=test_raw_path_spec)
 
     volume_system = vshadow_volume_system.VShadowVolumeSystem()
     volume_system.Open(test_vss_path_spec)
@@ -606,7 +606,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -726,7 +726,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
     test_options = volume_scanner.VolumeScannerOptions()
 
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()

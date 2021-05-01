@@ -10,7 +10,7 @@ from dfvfs.helpers import fake_file_system_builder
 from dfvfs.helpers import file_system_searcher
 from dfvfs.path import fake_path_spec
 from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
+from dfvfs.path import raw_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
@@ -461,13 +461,13 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # TODO: add RAW volume only test image.
 
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        location='/', parent=self._qcow_path_spec)
+        location='/', parent=self._raw_path_spec)
 
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context, self._tsk_path_spec)
@@ -476,7 +476,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
   def testFind(self):
     """Test the Find function."""
     searcher = file_system_searcher.FileSystemSearcher(
-        self._tsk_file_system, self._qcow_path_spec)
+        self._tsk_file_system, self._raw_path_spec)
 
     # Find all the file entries of type: FILE_ENTRY_TYPE_FILE.
     find_spec = file_system_searcher.FindSpec(
@@ -503,14 +503,18 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         '/$Secure',
         '/$UpCase',
         '/$Volume',
-        '/another_file',
-        '/password.txt',
-        '/syslog.gz',
+        '/a_directory/another_file',
+        '/a_directory/a_file',
+        '/a_link',
+        '/passwords.txt',
+        '/System Volume Information/WPSettings.dat',
         '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}',
-        ('/System Volume Information/{600f0b69-5bdf-11e3-9d6c-005056c00008}'
+        ('/System Volume Information/{de81cc22-aa8b-11eb-9339-8cdcd4557abc}'
          '{3808876b-c176-4e48-b7ae-04046e6cc752}'),
-        ('/System Volume Information/{600f0b6d-5bdf-11e3-9d6c-005056c00008}'
-         '{3808876b-c176-4e48-b7ae-04046e6cc752}')]
+        ('/System Volume Information/{de81cc2b-aa8b-11eb-9339-8cdcd4557abc}'
+         '{3808876b-c176-4e48-b7ae-04046e6cc752}'),
+        '/vss1',
+        '/vss2']
 
     locations = []
     for path_spec in path_spec_generator:
@@ -527,9 +531,11 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     expected_locations = [
         '/',
         '/$Extend',
+        '/$Extend/$Deleted',
         '/$Extend/$RmMetadata',
         '/$Extend/$RmMetadata/$Txf',
         '/$Extend/$RmMetadata/$TxfLog',
+        '/a_directory',
         '/System Volume Information']
 
     locations = []
@@ -562,7 +568,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     find_spec2 = file_system_searcher.FindSpec(
         location=['$Extend', '$RmMetadata', '$TxfLog', '$TxfLog.blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location='/PASSWORD.TXT',
+        location='/PASSWORDS.TXT',
         location_separator='/')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
@@ -580,12 +586,12 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # Find all the file entries with a case insensitive location.
     find_spec = file_system_searcher.FindSpec(
-        case_sensitive=False, location='/PASSWORD.TXT', location_separator='/')
+        case_sensitive=False, location='/PASSWORDS.TXT', location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        '/password.txt']
+        '/passwords.txt']
 
     locations = []
     first_path_spec = None
@@ -597,7 +603,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self.assertEqual(locations, expected_locations)
 
     test_relative_path = searcher.GetRelativePath(first_path_spec)
-    self.assertEqual(test_relative_path, '/password.txt')
+    self.assertEqual(test_relative_path, '/passwords.txt')
 
     # Find all the file entries with a location glob.
     find_spec1 = file_system_searcher.FindSpec(
@@ -605,7 +611,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     find_spec2 = file_system_searcher.FindSpec(
         location_glob=['$Extend', '$RmMetadata', '*', '*.blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location_glob='/PASSWORD.TXT', location_separator='/')
+        location_glob='/PASSWORDS.TXT', location_separator='/')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
@@ -626,7 +632,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     find_spec2 = file_system_searcher.FindSpec(
         location_regex=[r'\$Extend', r'\$RmMetadata', '.*', '.*[.]blf'])
     find_spec3 = file_system_searcher.FindSpec(
-        location_regex='/PASSWORD.TXT', location_separator='/')
+        location_regex='/PASSWORDS.TXT', location_separator='/')
     path_spec_generator = searcher.Find(
         find_specs=[find_spec1, find_spec2, find_spec3])
     self.assertIsNotNone(path_spec_generator)
@@ -643,13 +649,13 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
 
     # Find all the file entries with a case insensitive location glob.
     find_spec = file_system_searcher.FindSpec(
-        case_sensitive=False, location_glob='/PASSWORD.TXT',
+        case_sensitive=False, location_glob='/PASSWORDS.TXT',
         location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        '/password.txt']
+        '/passwords.txt']
 
     locations = []
     for path_spec in path_spec_generator:
@@ -660,13 +666,13 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     # Find all the file entries with a case insensitive location regular
     # expression.
     find_spec = file_system_searcher.FindSpec(
-        case_sensitive=False, location_regex='/PASSWORD.TXT',
+        case_sensitive=False, location_regex='/PASSWORDS.TXT',
         location_separator='/')
     path_spec_generator = searcher.Find(find_specs=[find_spec])
     self.assertIsNotNone(path_spec_generator)
 
     expected_locations = [
-        '/password.txt']
+        '/passwords.txt']
 
     locations = []
     for path_spec in path_spec_generator:

@@ -27,19 +27,21 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
 
   # pylint: disable=protected-access
 
+  _MFT_ENTRY_PASSWORDS_TXT = 66
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     self._file_system = ntfs_file_system.NTFSFileSystem(
         self._resolver_context, self._ntfs_path_spec)
@@ -52,8 +54,8 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
   def testIntialize(self):
     """Tests the __init__ function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
@@ -66,8 +68,8 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
   def testAttributeType(self):
     """Test the attribute_type property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
@@ -81,19 +83,21 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
 
   # pylint: disable=protected-access
 
+  _MFT_ENTRY_PASSWORDS_TXT = 66
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     self._file_system = ntfs_file_system.NTFSFileSystem(
         self._resolver_context, self._ntfs_path_spec)
@@ -106,8 +110,8 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
   def testIntialize(self):
     """Tests the __init__ function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(1)
@@ -120,8 +124,8 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
   def testAttributeType(self):
     """Test the attribute_type property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(1)
@@ -139,19 +143,21 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
 
   # pylint: disable=protected-access
 
+  _MFT_ENTRY_PASSWORDS_TXT = 66
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     self._file_system = ntfs_file_system.NTFSFileSystem(
         self._resolver_context, self._ntfs_path_spec)
@@ -164,8 +170,8 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
   def testIntialize(self):
     """Tests the __init__ function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
@@ -179,8 +185,8 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
   def testAttributeType(self):
     """Test the attribute_type property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(0)
@@ -193,19 +199,21 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
 class NTFSDataStream(shared_test_lib.BaseTestCase):
   """Tests the NTFS data stream."""
 
+  _MFT_ENTRY_PASSWORDS_TXT = 66
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     self._file_system = ntfs_file_system.NTFSFileSystem(
         self._resolver_context, self._ntfs_path_spec)
@@ -218,8 +226,8 @@ class NTFSDataStream(shared_test_lib.BaseTestCase):
   def testName(self):
     """Test the name property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     data_streams = list(file_entry.data_streams)
@@ -230,8 +238,8 @@ class NTFSDataStream(shared_test_lib.BaseTestCase):
   def testIsDefault(self):
     """Test the IsDefault function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     data_streams = list(file_entry.data_streams)
@@ -246,16 +254,16 @@ class NTFSDirectoryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     self._file_system = ntfs_file_system.NTFSFileSystem(
         self._resolver_context, self._ntfs_path_spec)
@@ -280,25 +288,29 @@ class NTFSDirectoryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(directory)
 
     entries = list(directory.entries)
-    self.assertEqual(len(entries), 15)
+    self.assertEqual(len(entries), 14)
 
 
 class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS file entry."""
 
+  _MFT_ENTRY_A_DIRECTORY = 64
+  _MFT_ENTRY_A_FILE = 65
+  _MFT_ENTRY_PASSWORDS_TXT = 66
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     self._file_system = ntfs_file_system.NTFSFileSystem(
         self._resolver_context, self._ntfs_path_spec)
@@ -326,8 +338,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testAccessTime(self):
     """Test the access_time property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -336,8 +348,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testChangeTime(self):
     """Test the change_time property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -346,8 +358,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testCreationTime(self):
     """Test the creation_time property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -356,8 +368,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testModificationTime(self):
     """Test the modification_time property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -366,18 +378,18 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testName(self):
     """Test the name property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'password.txt')
+    self.assertEqual(file_entry.name, 'passwords.txt')
 
   def testSize(self):
     """Test the size property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -386,8 +398,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -402,11 +414,9 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location,
-        mft_attribute=2, mft_entry=38, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -414,17 +424,15 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(parent_file_entry)
 
-    self.assertEqual(parent_file_entry.name, 'System Volume Information')
+    self.assertEqual(parent_file_entry.name, 'a_directory')
 
   # TODO: add tests for GetSecurityDescriptor
 
   def testGetStat(self):
     """Tests the GetStat function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -433,32 +441,30 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.fs_type, 'NTFS')
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 65536)
+    self.assertEqual(stat_object.size, 53)
 
-    self.assertEqual(stat_object.atime, 1386052509)
-    self.assertEqual(stat_object.atime_nano, 5023783)
-    self.assertEqual(stat_object.ctime, 1386052509)
-    self.assertEqual(stat_object.ctime_nano, 5179783)
-    self.assertEqual(stat_object.crtime, 1386052509)
-    self.assertEqual(stat_object.crtime_nano, 5023783)
-    self.assertEqual(stat_object.mtime, 1386052509)
-    self.assertEqual(stat_object.mtime_nano, 5179783)
+    self.assertEqual(stat_object.atime, 1567246979)
+    self.assertEqual(stat_object.atime_nano, 9567496)
+    self.assertEqual(stat_object.ctime, 1567246979)
+    self.assertEqual(stat_object.ctime_nano, 9581788)
+    self.assertEqual(stat_object.crtime, 1567246979)
+    self.assertEqual(stat_object.crtime_nano, 9567496)
+    self.assertEqual(stat_object.mtime, 1567246979)
+    self.assertEqual(stat_object.mtime_nano, 9581788)
 
   def testIsAllocated(self):
     """Test the IsAllocated function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsAllocated())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -466,7 +472,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -474,19 +480,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsDevice(self):
     """Test the IsDevice function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDevice())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -494,7 +498,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -502,19 +506,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsDirectory(self):
     """Test the IsDirectory function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDirectory())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -522,7 +524,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -530,19 +532,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsFile(self):
     """Test the IsFile function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsFile())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -550,7 +550,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -558,19 +558,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsLink(self):
     """Test the IsLink function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsLink())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -578,7 +576,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -586,19 +584,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsPipe(self):
     """Test the IsPipe function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsPipe())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -606,7 +602,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -614,19 +610,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsRoot(self):
     """Test the IsRoot function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsRoot())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -634,7 +628,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -642,19 +636,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsSocket(self):
     """Test the IsSocket functions."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsSocket())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -662,7 +654,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -670,19 +662,17 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsVirtual(self):
     """Test the IsVirtual functions."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsVirtual())
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -690,7 +680,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -700,11 +690,11 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     """Test the sub file entries properties."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 15)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 14)
 
     expected_sub_file_entry_names = [
         '$AttrDef',
@@ -718,10 +708,9 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
         '$Secure',
         '$UpCase',
         '$Volume',
-        'another_file',
-        'password.txt',
-        'syslog.gz',
-        'System Volume Information']
+        'a_directory',
+        'a_link',
+        'passwords.txt']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
@@ -734,20 +723,18 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     # Test a path specification without a location.
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=36,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 3)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
 
   def testAttributes(self):
     """Test the attributes properties."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -767,8 +754,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     stat_time, stat_time_nano = (
         attribute.modification_time.CopyToStatTimeTuple())
-    self.assertEqual(stat_time, 1386052509)
-    self.assertEqual(stat_time_nano, 5179783)
+    self.assertEqual(stat_time, 1567246979)
+    self.assertEqual(stat_time_nano, 9581788)
 
     attribute = attributes[1]
 
@@ -781,25 +768,8 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(attribute.entry_modification_time)
 
     stat_time, stat_time_nano = attribute.access_time.CopyToStatTimeTuple()
-    self.assertEqual(stat_time, 1386052509)
-    self.assertEqual(stat_time_nano, 5023783)
-
-    attribute = attributes[2]
-
-    self.assertEqual(
-        attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
-
-    # Tests a file entry with the $SECURITY_DESCRIPTOR attribute.
-    test_location = '\\$AttrDef'
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=4,
-        parent=self._qcow_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_attributes, 4)
-
-    attributes = list(file_entry.attributes)
+    self.assertEqual(stat_time, 1567246979)
+    self.assertEqual(stat_time_nano, 9567496)
 
     attribute = attributes[2]
 
@@ -812,130 +782,11 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     security_identifier = security_descriptor.owner
     self.assertIsNotNone(security_identifier)
-    expected_string = 'S-1-5-21-4060289323-199701022-3924801681-1000'
-    self.assertEqual(security_identifier.string, expected_string)
-
-    security_identifier = security_descriptor.group
-    self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
-
-    access_control_list = security_descriptor.discretionary_acl
-    self.assertIsNone(access_control_list)
-
-    access_control_list = security_descriptor.system_acl
-    self.assertIsNotNone(access_control_list)
-    self.assertEqual(access_control_list.number_of_entries, 2)
-
-    access_control_entry = access_control_list.get_entry(0)
-    self.assertIsNotNone(access_control_entry)
-
-    self.assertEqual(access_control_entry.type, 0)
-    self.assertEqual(access_control_entry.flags, 0)
-    self.assertEqual(access_control_entry.access_mask, 0x120089)
-
-    security_identifier = access_control_entry.security_identifier
-    self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-5-18')
-
-  def testDataStream(self):
-    """Tests the data streams properties."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 1)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [''])
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\System Volume Information',
-        mft_entry=36, parent=self._qcow_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 0)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [])
-
-    test_location = '\\$Extend\\$RmMetadata\\$Repair'
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=28,
-        parent=self._qcow_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 2)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(sorted(data_stream_names), sorted(['', '$Config']))
-
-  def testGetDataStream(self):
-    """Tests the GetDataStream function."""
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
-
-    data_stream = file_entry.GetDataStream('bogus')
-    self.assertIsNone(data_stream)
-
-    test_location = '\\$Extend\\$RmMetadata\\$Repair'
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=28,
-        parent=self._qcow_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    data_stream_name = '$Config'
-    data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
-
-  def testGetSecurityDescriptor(self):
-    """Tests the GetSecurityDescriptor function."""
-    # pylint: disable=no-member
-
-    test_location = (
-        '\\System Volume Information\\{3808876b-c176-4e48-b7ae-04046e6cc752}')
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=38,
-        parent=self._qcow_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    security_descriptor = file_entry.GetSecurityDescriptor()
-    self.assertIsNotNone(security_descriptor)
-
-    security_identifier = security_descriptor.owner
-    self.assertIsNotNone(security_identifier)
     self.assertEqual(security_identifier.string, 'S-1-5-32-544')
 
     security_identifier = security_descriptor.group
     self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-5-18')
+    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
 
     access_control_list = security_descriptor.discretionary_acl
     self.assertIsNone(access_control_list)
@@ -948,18 +799,92 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(access_control_entry)
 
     self.assertEqual(access_control_entry.type, 0)
-    self.assertEqual(access_control_entry.flags, 0)
-    self.assertEqual(access_control_entry.access_mask, 0x10000)
+    self.assertEqual(access_control_entry.flags, 3)
+    self.assertEqual(access_control_entry.access_mask, 0x1f01ff)
 
     security_identifier = access_control_entry.security_identifier
     self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
+    self.assertEqual(security_identifier.string, 'S-1-1-0')
 
-    # Tests a file entry with the $SECURITY_DESCRIPTOR attribute.
-    test_location = '\\$AttrDef'
+  def testDataStream(self):
+    """Tests the data streams properties."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location=test_location, mft_entry=4,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [''])
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 0)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [])
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\$UpCase', mft_entry=10,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 2)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    expected_data_stream_names = sorted(['', '$Info'])
+    self.assertEqual(sorted(data_stream_names), expected_data_stream_names)
+
+  def testGetDataStream(self):
+    """Tests the GetDataStream function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream_name = ''
+    data_stream = file_entry.GetDataStream(data_stream_name)
+    self.assertIsNotNone(data_stream)
+    self.assertEqual(data_stream.name, data_stream_name)
+
+    data_stream = file_entry.GetDataStream('bogus')
+    self.assertIsNone(data_stream)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\$UpCase', mft_entry=10,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream_name = '$Info'
+    data_stream = file_entry.GetDataStream(data_stream_name)
+    self.assertIsNotNone(data_stream)
+    self.assertEqual(data_stream.name, data_stream_name)
+
+  def testGetSecurityDescriptor(self):
+    """Tests the GetSecurityDescriptor function."""
+    # pylint: disable=no-member
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -968,8 +893,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     security_identifier = security_descriptor.owner
     self.assertIsNotNone(security_identifier)
-    expected_string = 'S-1-5-21-4060289323-199701022-3924801681-1000'
-    self.assertEqual(security_identifier.string, expected_string)
+    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
 
     security_identifier = security_descriptor.group
     self.assertIsNotNone(security_identifier)
@@ -980,18 +904,18 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     access_control_list = security_descriptor.system_acl
     self.assertIsNotNone(access_control_list)
-    self.assertEqual(access_control_list.number_of_entries, 2)
+    self.assertEqual(access_control_list.number_of_entries, 1)
 
     access_control_entry = access_control_list.get_entry(0)
     self.assertIsNotNone(access_control_entry)
 
     self.assertEqual(access_control_entry.type, 0)
-    self.assertEqual(access_control_entry.flags, 0)
-    self.assertEqual(access_control_entry.access_mask, 0x120089)
+    self.assertEqual(access_control_entry.flags, 3)
+    self.assertEqual(access_control_entry.access_mask, 0x1f01ff)
 
     security_identifier = access_control_entry.security_identifier
     self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-5-18')
+    self.assertEqual(security_identifier.string, 'S-1-1-0')
 
 
 if __name__ == '__main__':

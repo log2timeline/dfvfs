@@ -15,19 +15,21 @@ from tests import test_lib as shared_test_lib
 class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS file system."""
 
+  _MFT_ENTRY_PASSWORDS_TXT = 66
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -50,13 +52,14 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open()
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\password.txt',
-        mft_attribute=1, mft_entry=41, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\passwords.txt',
+        mft_attribute=1, mft_entry=self._MFT_ENTRY_PASSWORDS_TXT,
+        parent=self._raw_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\bogus.txt', mft_entry=19,
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
@@ -68,8 +71,8 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
     file_system.Open()
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1, mft_entry=41,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -78,16 +81,16 @@ class NTFSFileSystemTest(shared_test_lib.BaseTestCase):
     # in the path_spec or retrieving the file_entry from its parent.
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\password.txt',
-        mft_entry=41, parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\passwords.txt',
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'password.txt')
+    self.assertEqual(file_entry.name, 'passwords.txt')
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\bogus.txt', mft_entry=19,
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
