@@ -20,13 +20,13 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=self._os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=self._os_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
@@ -35,15 +35,15 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
   def testOpenClose(self):
     """Test the open and close functionality."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=1)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     file_object.Open()
-    self.assertEqual(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 82771968)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=13)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
@@ -52,15 +52,15 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss1',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     file_object.Open()
-    self.assertEqual(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 82771968)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss0',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
@@ -68,7 +68,7 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss13',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
@@ -77,31 +77,31 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
   def testSeek(self):
     """Test the seek functionality."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=1)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     file_object.Open()
-    self.assertEqual(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 82771968)
 
-    file_object.seek(0x1e0)
-    self.assertEqual(file_object.get_offset(), 0x1e0)
+    file_object.seek(0x1c9)
+    self.assertEqual(file_object.get_offset(), 0x1c9)
     self.assertEqual(file_object.read(16), b'rl+Alt+Del to re')
-    self.assertEqual(file_object.get_offset(), 0x1f0)
+    self.assertEqual(file_object.get_offset(), 473)
 
     file_object.seek(-40, os.SEEK_END)
-    self.assertEqual(file_object.get_offset(), 0x3fffffd8)
-    self.assertEqual(file_object.read(8), b'Press Ct')
-    self.assertEqual(file_object.get_offset(), 0x3fffffe0)
+    self.assertEqual(file_object.get_offset(), 82771928)
+    self.assertEqual(file_object.read(8), b'estart\r\n')
+    self.assertEqual(file_object.get_offset(), 82771936)
 
     file_object.seek(3, os.SEEK_CUR)
-    self.assertEqual(file_object.get_offset(), 0x3fffffe3)
-    self.assertEqual(file_object.read(7), b'Alt+Del')
-    self.assertEqual(file_object.get_offset(), 0x3fffffea)
+    self.assertEqual(file_object.get_offset(), 82771939)
+    self.assertEqual(file_object.read(7), b'\x00\x00\x00\x00\x00\x00\x00')
+    self.assertEqual(file_object.get_offset(), 82771946)
 
     # Conforming to the POSIX seek the offset can exceed the file size
     # but reading will result in no data being returned.
-    expected_offset = 0x40000000 + 100
+    expected_offset = 82771968 + 100
     file_object.seek(expected_offset, os.SEEK_SET)
     self.assertEqual(file_object.get_offset(), expected_offset)
     self.assertEqual(file_object.read(20), b'')
@@ -121,16 +121,16 @@ class VShadowFileTest(shared_test_lib.BaseTestCase):
   def testRead(self):
     """Test the read functionality."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=1)
     file_object = vshadow_file_io.VShadowFile(self._resolver_context, path_spec)
 
     file_object.Open()
-    self.assertEqual(file_object.get_size(), 0x40000000)
+    self.assertEqual(file_object.get_size(), 82771968)
 
     file_object.seek(0x18e)
 
-    expected_data = b'A disk read error occurred\x00\r\nBOOTMGR is missing'
+    expected_data = b'disk read error occurred\x00\r\nBOOTMGR is compresse'
     self.assertEqual(file_object.read(47), expected_data)
 
 

@@ -6,7 +6,7 @@ import unittest
 
 from dfvfs.helpers import windows_path_resolver
 from dfvfs.path import os_path_spec
-from dfvfs.path import qcow_path_spec
+from dfvfs.path import raw_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import context
 from dfvfs.vfs import os_file_system
@@ -31,13 +31,13 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
 
     # TODO: add RAW volume only test image.
 
-    test_file = self._GetTestFilePath(['vsstest.qcow2'])
+    test_file = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_file)
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._qcow_path_spec = qcow_path_spec.QCOWPathSpec(parent=path_spec)
+    self._raw_path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
     self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
-        location='/', parent=self._qcow_path_spec)
+        location='/', parent=self._raw_path_spec)
 
     self._tsk_file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context, self._tsk_path_spec)
@@ -65,7 +65,7 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
   def testResolvePathImage(self):
     """Test the resolve path function on a storage media image."""
     path_resolver = windows_path_resolver.WindowsPathResolver(
-        self._tsk_file_system, self._qcow_path_spec)
+        self._tsk_file_system, self._raw_path_spec)
 
     expected_path = (
         '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
@@ -94,14 +94,14 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
-    expected_path = '/syslog.gz'
+    expected_path = '/passwords.txt'
 
-    windows_path = '\\SYSLOG.GZ'
+    windows_path = '\\PASSWORDS.TXT'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
 
-    windows_path = 'C:\\..\\SYSLOG.GZ'
+    windows_path = 'C:\\..\\PASSWORDS.TXT'
     path_spec = path_resolver.ResolvePath(windows_path)
     self.assertIsNotNone(path_spec)
     self.assertEqual(path_spec.location, expected_path)
@@ -148,7 +148,7 @@ class WindowsPathResolverTest(shared_test_lib.BaseTestCase):
   def testResolvePathWithEnvironmentVariable(self):
     """Test the resolve path function with environment variable expansion."""
     path_resolver = windows_path_resolver.WindowsPathResolver(
-        self._tsk_file_system, self._qcow_path_spec)
+        self._tsk_file_system, self._raw_path_spec)
 
     path_resolver.SetEnvironmentVariable(
         'SystemRoot', 'C:\\System Volume Information')

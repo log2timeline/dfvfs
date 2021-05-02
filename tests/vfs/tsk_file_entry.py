@@ -1179,19 +1179,23 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
 class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file entry on NTFS."""
 
+  _MFT_ENTRY_A_DIRECTORY = 64
+  _MFT_ENTRY_A_FILE = 65
+  _MFT_ENTRY_PASSWORDS_TXT = 66
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._tsk_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, location='/',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     self._file_system = tsk_file_system.TSKFileSystem(
         self._resolver_context, self._tsk_path_spec)
@@ -1212,11 +1216,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testAccessTime(self):
     """Test the access_time property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -1224,11 +1226,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testBackupTime(self):
     """Test the backup_time property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -1236,11 +1236,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testChangeTime(self):
     """Test the change_time property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -1248,11 +1246,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testCreationTime(self):
     """Test the creation_time property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -1260,11 +1256,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testDeletionTime(self):
     """Test the deletion_time property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -1272,11 +1266,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testModificationTime(self):
     """Test the modification_time property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -1284,35 +1276,29 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testName(self):
     """Test the name property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, '{3808876b-c176-4e48-b7ae-04046e6cc752}')
+    self.assertEqual(file_entry.name, 'a_file')
 
   def testSize(self):
     """Test the size property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.size, 65536)
+    self.assertEqual(file_entry.size, 53)
 
   def testGetStat(self):
     """Tests the GetStat function."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -1320,28 +1306,26 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 65536)
+    self.assertEqual(stat_object.size, 53)
 
-    self.assertEqual(stat_object.mode, 365)
-    self.assertEqual(stat_object.uid, 0)
+    self.assertEqual(stat_object.mode, 511)
+    self.assertEqual(stat_object.uid, 48)
     self.assertEqual(stat_object.gid, 0)
 
-    self.assertEqual(stat_object.atime, 1386052509)
-    self.assertEqual(stat_object.atime_nano, 5023783)
-    self.assertEqual(stat_object.ctime, 1386052509)
-    self.assertEqual(stat_object.ctime_nano, 5179783)
-    self.assertEqual(stat_object.crtime, 1386052509)
-    self.assertEqual(stat_object.crtime_nano, 5023783)
-    self.assertEqual(stat_object.mtime, 1386052509)
-    self.assertEqual(stat_object.mtime_nano, 5179783)
+    self.assertEqual(stat_object.atime, 1567246979)
+    self.assertEqual(stat_object.atime_nano, 9567496)
+    self.assertEqual(stat_object.ctime, 1567246979)
+    self.assertEqual(stat_object.ctime_nano, 9581788)
+    self.assertEqual(stat_object.crtime, 1567246979)
+    self.assertEqual(stat_object.crtime_nano, 9567496)
+    self.assertEqual(stat_object.mtime, 1567246979)
+    self.assertEqual(stat_object.mtime_nano, 9581788)
 
   def testAttributes(self):
     """Tests the number_of_attributes property."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -1349,11 +1333,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   def testDataStream(self):
     """Tests the number_of_data_streams and data_streams properties."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -1366,8 +1348,8 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     self.assertEqual(data_stream_names, [''])
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=36,
-        location='/System Volume Information', parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_DIRECTORY,
+        location='/a_directory', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -1379,10 +1361,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [])
 
-    test_location = '/$Extend/$RmMetadata/$Repair'
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=28, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=10, location='/$UpCase',
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -1392,15 +1373,14 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     for data_stream in file_entry.data_streams:
       data_stream_names.append(data_stream.name)
 
-    self.assertEqual(sorted(data_stream_names), sorted(['', '$Config']))
+    expected_data_stream_names = sorted(['', '$Info'])
+    self.assertEqual(sorted(data_stream_names), expected_data_stream_names)
 
   def testGetDataStream(self):
     """Tests the retrieve data stream functionality."""
-    test_location = (
-        '/System Volume Information/{3808876b-c176-4e48-b7ae-04046e6cc752}')
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=38, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -1412,14 +1392,13 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
 
-    test_location = '/$Extend/$RmMetadata/$Repair'
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=28, location=test_location,
-        parent=self._qcow_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=10, location='/$UpCase',
+        parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = '$Config'
+    data_stream_name = '$Info'
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
     self.assertEqual(data_stream.name, data_stream_name)

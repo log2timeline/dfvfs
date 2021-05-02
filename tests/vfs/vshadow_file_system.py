@@ -18,43 +18,42 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._vshadow_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""
     self._resolver_context.Empty()
 
-  # qcowmount test_data/vsstest.qcow2 fuse/
-  # vshadowinfo fuse/qcow1
+  # vshadowinfo test_data/vss.raw
+  # vshadowinfo 20210425
   #
   # Volume Shadow Snapshot information:
-  #   Number of stores:	2
+  #     Number of stores:	2
   #
   # Store: 1
-  #   ...
-  #   Identifier         : 600f0b69-5bdf-11e3-9d6c-005056c00008
-  #   Shadow copy set ID : 0a4e3901-6abb-48fc-95c2-6ab9e38e9e71
-  #   Creation time	     : Dec 03, 2013 06:35:09.736378700 UTC
-  #   Shadow copy ID     : 4e3c03c2-7bc6-4288-ad96-c1eac1a55f71
-  #   Volume size        : 1073741824 bytes
-  #   Attribute flags    : 0x00420009
+  #     Identifier          : de81cc22-aa8b-11eb-9339-8cdcd4557abc
+  #     Shadow copy set ID  : 6c5c9cd2-ea46-4c70-a4a8-568fdabd27c1
+  #     Creation time       : May 01, 2021 17:40:03.223030400 UTC
+  #     Shadow copy ID      : 2c6c6cc8-2b97-41da-a030-4add838ae8f6
+  #     Volume size         : 78 MiB (82771968 bytes)
+  #     Attribute flags     : 0x00420009
   #
   # Store: 2
-  #   Identifier         : 600f0b6d-5bdf-11e3-9d6c-005056c00008
-  #   Shadow copy set ID : 8438a0ee-0f06-443b-ac0c-2905647ca5d6
-  #   Creation time      : Dec 03, 2013 06:37:48.919058300 UTC
-  #   Shadow copy ID     : 18f1ac6e-959d-436f-bdcc-e797a729e290
-  #   Volume size        : 1073741824 bytes
-  #   Attribute flags    : 0x00420009
+  #     Identifier          : de81cc2b-aa8b-11eb-9339-8cdcd4557abc
+  #     Shadow copy set ID  : b4f4b9d6-1cf2-4bfc-b1a3-c2f6e9628ef9
+  #     Creation time       : May 01, 2021 17:41:28.224986300 UTC
+  #     Shadow copy ID      : 19e1881a-c184-4ec4-908e-766ba3373e8a
+  #     Volume size         : 78 MiB (82771968 bytes)
+  #     Attribute flags     : 0x00420009
 
   def testOpenAndClose(self):
     """Test the open and close functionality."""
@@ -74,32 +73,32 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=1)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss2',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=9)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss0',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss9',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
@@ -112,14 +111,14 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=1)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -128,14 +127,14 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss2',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'vss2')
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._qcow_path_spec,
+        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=9)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -143,14 +142,14 @@ class VShadowFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss0',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, location='/vss9',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNone(file_entry)

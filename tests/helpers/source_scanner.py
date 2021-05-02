@@ -463,7 +463,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanOnVSS(self):
     """Test the Scan function on VSS."""
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     scan_context = source_scanner.SourceScannerContext()
@@ -475,7 +475,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     scan_node = self._GetTestScanNode(scan_context)
     self.assertIsNotNone(scan_node)
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_QCOW)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
     self.assertEqual(len(scan_node.sub_nodes), 2)
 
     scan_node = scan_node.sub_nodes[0]
@@ -669,16 +669,16 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForFileSystemOnVSS(self):
     """Test the ScanForFileSystem function on VSS."""
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, store_index=1,
-        parent=test_qcow_path_spec)
+        parent=test_raw_path_spec)
 
     path_spec = self._source_scanner.ScanForFileSystem(test_vss_path_spec)
     self.assertIsNotNone(path_spec)
@@ -809,15 +809,15 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
   def testScanForVolumeSystemOnVSS(self):
     """Test the ScanForVolumeSystem function on VSS."""
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    test_qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
 
-    path_spec = self._source_scanner.ScanForVolumeSystem(test_qcow_path_spec)
+    path_spec = self._source_scanner.ScanForVolumeSystem(test_raw_path_spec)
     self.assertIsNotNone(path_spec)
     self.assertEqual(
         path_spec.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)

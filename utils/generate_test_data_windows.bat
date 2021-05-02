@@ -358,8 +358,8 @@ del /f %cd%\test_data\%imagename%
 
 echo Creating: %imagename%
 
-echo create vdisk file=%cd%\%specimenspath%\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
-echo select vdisk file=%cd%\%specimenspath%\%imagename% >> CreateVHD.diskpart
+echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
+echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
 echo attach vdisk >> CreateVHD.diskpart
 echo convert mbr >> CreateVHD.diskpart
 echo create partition primary >> CreateVHD.diskpart
@@ -375,7 +375,7 @@ call :create_test_file_entries x
 rem This will ask for a password
 manage-bde -On x: -DiscoveryVolumeType "[none]" -EncryptionMethod aes128 -Password -Synchronous
 
-echo select vdisk file=%cd%\%specimenspath%\%imagename% > UnmountVHD.diskpart
+echo select vdisk file=%cd%\test_data\%imagename% > UnmountVHD.diskpart
 echo detach vdisk >> UnmountVHD.diskpart
 
 call :run_diskpart UnmountVHD.diskpart
@@ -383,14 +383,14 @@ call :run_diskpart UnmountVHD.diskpart
 rem Create a fixed-size VHD image with a NTFS file system and unit size 512 and 2 volume snapshots
 set unitsize=512
 set imagename=ntfs_%unitsize%_with_2_vss.vhd
-set imagesize=128
+set imagesize=80
 
 del /f %cd%\test_data\%imagename%
 
 echo Creating: %imagename%
 
-echo create vdisk file=%cd%\%specimenspath%\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
-echo select vdisk file=%cd%\%specimenspath%\%imagename% >> CreateVHD.diskpart
+echo create vdisk file=%cd%\test_data\%imagename% maximum=%imagesize% type=fixed > CreateVHD.diskpart
+echo select vdisk file=%cd%\test_data\%imagename% >> CreateVHD.diskpart
 echo attach vdisk >> CreateVHD.diskpart
 echo convert mbr >> CreateVHD.diskpart
 echo create partition primary >> CreateVHD.diskpart
@@ -409,7 +409,7 @@ for /l %%i in (1, 1, 2) do (
         echo VSS%%i > x:\vss%%i
 )
 
-echo select vdisk file=%cd%\%specimenspath%\%imagename% > UnmountVHD.diskpart
+echo select vdisk file=%cd%\test_data\%imagename% > UnmountVHD.diskpart
 echo detach vdisk >> UnmountVHD.diskpart
 
 call :run_diskpart UnmountVHD.diskpart

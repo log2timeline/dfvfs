@@ -18,19 +18,19 @@ class NTFSResolverHelperTest(test_lib.ResolverHelperTestCase):
     """Sets up the needed objects used throughout the test."""
     super(NTFSResolverHelperTest, self).setUp()
 
-    test_path = self._GetTestFilePath(['vsstest.qcow2'])
+    test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._qcow_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_QCOW, parent=test_os_path_spec)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
 
   def testNewFileObject(self):
     """Tests the NewFileObject function."""
     test_ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     resolver_helper_object = ntfs_resolver_helper.NTFSResolverHelper()
     self._TestNewFileObject(resolver_helper_object, test_ntfs_path_spec)
@@ -39,7 +39,7 @@ class NTFSResolverHelperTest(test_lib.ResolverHelperTestCase):
     """Tests the NewFileSystem function."""
     test_ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._qcow_path_spec)
+        parent=self._raw_path_spec)
 
     resolver_helper_object = ntfs_resolver_helper.NTFSResolverHelper()
     self._TestNewFileSystem(resolver_helper_object, test_ntfs_path_spec)
