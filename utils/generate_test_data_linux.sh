@@ -137,6 +137,21 @@ create_test_file_entries ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
+# Create test image with an EXT4 file system with creation time and high-precision date and time values
+IMAGE_FILE="test_data/ext4.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+mke2fs -q -t ext4 -I 256 -L "ext4_test" ${IMAGE_FILE};
+
+sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
 # Create test image with a FAT-12 file system
 IMAGE_FILE="test_data/fat12.raw";
 
