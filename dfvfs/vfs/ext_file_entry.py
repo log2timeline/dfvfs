@@ -2,7 +2,6 @@
 """The EXT file entry implementation."""
 
 from dfdatetime import posix_time as dfdatetime_posix_time
-from dfdatetime import semantic_time as dfdatetime_semantic_time
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -203,13 +202,9 @@ class EXTFileEntry(file_entry.FileEntry):
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
-    # Creation time can be None if not present.
-    if self._creation_time is None:
+    # Creation time can be None if not present and 0 if not set.
+    if not self._creation_time:
       return None
-
-    # Creation time can be 0 if not set.
-    if self._creation_time == 0:
-      return dfdatetime_semantic_time.NotSet()
 
     return dfdatetime_posix_time.PosixTimeInNanoseconds(
         timestamp=self._creation_time)
@@ -219,8 +214,8 @@ class EXTFileEntry(file_entry.FileEntry):
     """dfdatetime.DateTimeValues: deletion time or None if not available."""
     timestamp = self._fsext_file_entry.get_deletion_time_as_integer()
     # Deletion time can be 0 if not set.
-    if timestamp == 0:
-      return dfdatetime_semantic_time.NotSet()
+    if not timestamp:
+      return None
 
     return dfdatetime_posix_time.PosixTime(timestamp=timestamp)
 
