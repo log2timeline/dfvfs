@@ -7,7 +7,6 @@ import decimal
 from dfdatetime import definitions as dfdatetime_definitions
 from dfdatetime import factory as dfdatetime_factory
 from dfdatetime import interface as dfdatetime_interface
-from dfdatetime import semantic_time as dfdatetime_semantic_time
 
 import pytsk3
 
@@ -108,7 +107,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     microseconds = date_time_values.get('microseconds', 0)
 
     self._timestamp = self._GetNumberOfSecondsFromElements(
-        year, month, day_of_month, hours, minutes, seconds, None)
+        year, month, day_of_month, hours, minutes, seconds)
     self.fraction_of_second = microseconds
 
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
@@ -667,7 +666,7 @@ class TSKFileEntry(file_entry.FileEntry):
       # Note that pytsk3 can return 0 for an ext4 creation time even if the
       # inode does not contain it.
       if name == 'crtime' and timestamp == 0:
-        return dfdatetime_semantic_time.NotSet()
+        return None
 
     elif self._file_system_type in (
         pytsk3.TSK_FS_TYPE_FAT12, pytsk3.TSK_FS_TYPE_FAT16,

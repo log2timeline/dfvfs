@@ -436,7 +436,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     scan_node = scan_node.sub_nodes[0].GetSubNodeByLocation('/')
     self.assertIsNotNone(scan_node)
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
 
   def testScanOnMBRPartitionedImage(self):
     """Test the Scan function on a MBR partitioned image."""
@@ -459,7 +460,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     scan_node = scan_node.sub_nodes[6].GetSubNodeByLocation('/')
     self.assertIsNotNone(scan_node)
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
 
   def testScanOnVSS(self):
     """Test the Scan function on VSS."""
@@ -654,7 +656,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     scan_node = self._GetTestScanNode(scan_context)
     self.assertIsNotNone(scan_node)
     self.assertIsNotNone(scan_node.path_spec)
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
 
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
