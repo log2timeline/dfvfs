@@ -4,8 +4,8 @@
 
 import unittest
 
-from dfvfs.path import os_path_spec
-from dfvfs.path import zip_path_spec
+from dfvfs.lib import definitions
+from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import zip_file_entry
 from dfvfs.vfs import zip_file_system
@@ -19,12 +19,13 @@ class ZIPDirectoryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.zip'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.zip'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._zip_path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._zip_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
 
     self._file_system = zip_file_system.ZipFileSystem(
         self._resolver_context, self._zip_path_spec)
@@ -60,12 +61,13 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_file = self._GetTestFilePath(['syslog.zip'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['syslog.zip'])
+    self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = os_path_spec.OSPathSpec(location=test_file)
-    self._zip_path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._zip_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
 
     self._file_system = zip_file_system.ZipFileSystem(
         self._resolver_context, self._zip_path_spec)
@@ -87,8 +89,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetStat(self):
     """Tests the _GetStat function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -108,8 +111,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testAccessTime(self):
     """Test the access_time property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -117,8 +121,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testChangeTime(self):
     """Test the change_time property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -126,8 +131,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testCreationTime(self):
     """Test the creation_time property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -135,8 +141,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testDataStreams(self):
     """Test the data_streams property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -148,8 +155,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [''])
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -163,16 +170,18 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testModificationTime(self):
     """Test the modification_time property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry.modification_time)
 
   def testName(self):
     """Test the name property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -180,8 +189,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSize(self):
     """Test the size property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -189,8 +199,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSubFileEntries(self):
     """Test the sub_file_entries property."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -199,11 +209,13 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     self._assertSubFileEntries(file_entry, ['syslog', 'wtmp.1'])
 
     # Test on a zip file that has missing directory entries.
-    test_file = self._GetTestFilePath(['missing_directory_entries.zip'])
-    self._SkipIfPathNotExists(test_file)
+    test_path = self._GetTestFilePath(['missing_directory_entries.zip'])
+    self._SkipIfPathNotExists(test_path)
 
-    path_spec = os_path_spec.OSPathSpec(location=test_file)
-    path_spec = zip_path_spec.ZipPathSpec(location='/', parent=path_spec)
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=test_os_path_spec)
 
     file_system = zip_file_system.ZipFileSystem(
         self._resolver_context, path_spec)
@@ -224,8 +236,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -239,8 +252,9 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -254,15 +268,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsAllocated(self):
     """Test the IsAllocated function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsAllocated())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -270,15 +285,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsDevice(self):
     """Test the IsDevice function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDevice())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -286,15 +302,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsDirectory(self):
     """Test the IsDirectory function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDirectory())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -302,15 +319,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsFile(self):
     """Test the IsFile function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsFile())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -318,15 +336,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsLink(self):
     """Test the IsLink function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsLink())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -334,15 +353,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsPipe(self):
     """Test the IsPipe function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsPipe())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -350,15 +370,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsRoot(self):
     """Test the IsRoot function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsRoot())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -366,15 +387,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsSocket(self):
     """Test the IsSocket function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsSocket())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -382,15 +404,16 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsVirtual(self):
     """Test the IsVirtual function."""
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/syslog', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsVirtual())
 
-    path_spec = zip_path_spec.ZipPathSpec(
-        location='/', parent=self._os_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/', parent=self._os_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
