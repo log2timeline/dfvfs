@@ -59,13 +59,15 @@ class ObjectsCacheTest(unittest.TestCase):
 
     cache_object.CacheObject(self._path_spec.comparable, self._vfs_object)
 
+    # Keep a reference to vfs_object2 and vfs_object3 otherwise the can be
+    # automatically removed from the cache.
     path_spec = fake_path_spec.FakePathSpec(location='2')
-    vfs_object = TestVFSObject()
-    cache_object.CacheObject(path_spec.comparable, vfs_object)
+    vfs_object2 = TestVFSObject()
+    cache_object.CacheObject(path_spec.comparable, vfs_object2)
 
     path_spec = fake_path_spec.FakePathSpec(location='3')
-    vfs_object = TestVFSObject()
-    cache_object.CacheObject(path_spec.comparable, vfs_object)
+    vfs_object3 = TestVFSObject()
+    cache_object.CacheObject(path_spec.comparable, vfs_object3)
 
     # pylint: disable=protected-access
     self.assertEqual(len(cache_object._values), 3)
