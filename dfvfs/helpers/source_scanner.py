@@ -29,7 +29,14 @@ from dfvfs.resolver import resolver
 
 
 class SourceScanNode(object):
-  """Source scan node."""
+  """Source scan node.
+
+  Attributes:
+    path_spec (PathSpec): path specification.
+    parent_node (SourceScanNode): source scan parent node.
+    scanned (bool): True if the source scan node has been fully scanned.
+    sub_nodes (list[SourceScanNode]): source scan sub nodes.
+  """
 
   def __init__(self, path_spec):
     """Initializes a source scan node.
@@ -127,7 +134,12 @@ class SourceScanNode(object):
 
 
 class SourceScannerContext(object):
-  """Contextual information for the source scanner."""
+  """Contextual information for the source scanner.
+
+  Attributes:
+    source_type (str): type of source.
+    updated (bool): True if the source scanner context has been updated.
+  """
 
   # Keep for backwards compatibility reasons.
   SOURCE_TYPE_DIRECTORY = definitions.SOURCE_TYPE_DIRECTORY
