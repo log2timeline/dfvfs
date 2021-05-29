@@ -185,6 +185,46 @@ class VolumeScanner(object):
     self._source_scanner = source_scanner.SourceScanner()
     self._source_type = None
 
+  def _GetBasePathSpecs(self, scan_context, options):
+    """Determines the base path specifications.
+
+    Args:
+      scan_context (SourceScannerContext): source scanner context.
+      options (VolumeScannerOptions): volume scanner options.
+
+    Returns:
+      list[PathSpec]: path specifications.
+
+    Raises:
+      ScannerError: if the format of or within the source is not supported.
+    """
+    scan_node = scan_context.GetRootScanNode()
+
+    if scan_context.source_type not in (
+        definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
+        definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE):
+      return [scan_node.path_spec]
+
+    # Get the first node where where we need to decide what to process.
+    while len(scan_node.sub_nodes) == 1:
+      scan_node = scan_node.sub_nodes[0]
+
+    base_path_specs = []
+    if scan_node.type_indicator not in (
+          definitions.TYPE_INDICATOR_GPT,
+          definitions.TYPE_INDICATOR_TSK_PARTITION):
+      self._ScanVolume(scan_context, scan_node, options, base_path_specs)
+
+    else:
+      # Determine which partition needs to be processed.
+      partition_identifiers = self._GetPartitionIdentifiers(scan_node, options)
+      for partition_identifier in partition_identifiers:
+        location = '/{0:s}'.format(partition_identifier)
+        sub_scan_node = scan_node.GetSubNodeByLocation(location)
+        self._ScanVolume(scan_context, sub_scan_node, options, base_path_specs)
+
+    return base_path_specs
+
   def _GetPartitionIdentifiers(self, scan_node, options):
     """Determines the partition identifiers.
 
@@ -449,8 +489,43 @@ class VolumeScanner(object):
 
     base_path_specs.append(scan_node.path_spec)
 
+  def _ScanSource(self, source_path):
+    """Scans the source for supported formats.
+
+    Args:
+      source_path (str): path to the source.
+
+    Returns:
+      SourceScannerContext: source scanner context.
+
+    Raises:
+      ScannerError: if the source path does not exists, or if the source path
+          is not a file or directory, or if the format of or within the source
+          file is not supported.
+    """
+    if not source_path:
+      raise errors.ScannerError('Invalid source path.')
+
+    # Note that os.path.exists() does not support Windows device paths.
+    if (not source_path.startswith('\\\\.\\') and
+        not os.path.exists(source_path)):
+      raise errors.ScannerError(
+          'No such device, file or directory: {0:s}.'.format(source_path))
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(source_path)
+
+    try:
+      self._source_scanner.Scan(scan_context)
+    except (ValueError, errors.BackEndError) as exception:
+      raise errors.ScannerError(
+          'Unable to scan source with error: {0!s}'.format(exception))
+
+    return scan_context
+
   def _ScanVolume(self, scan_context, scan_node, options, base_path_specs):
     """Scans a volume scan node for volume and file systems.
+
     Args:
       scan_context (SourceScannerContext): source scanner context.
       scan_node (SourceScanNode): volume scan node.
@@ -544,9 +619,8 @@ class VolumeScanner(object):
       volume_identifiers.reverse()
 
     else:
-      raise errors.ScannerError(
-          'Unsupported volume system type: {0:s}.'.format(
-              scan_node.type_indicator))
+      raise errors.ScannerError('Unsupported volume system type: {0:s}.'.format(
+          scan_node.type_indicator))
 
     for volume_identifier in volume_identifiers:
       location = '/{0:s}'.format(volume_identifier)
@@ -578,53 +652,12 @@ class VolumeScanner(object):
     if not options:
       options = VolumeScannerOptions()
 
-    if not source_path:
-      raise errors.ScannerError('Invalid source path.')
-
-    # Note that os.path.exists() does not support Windows device paths.
-    if (not source_path.startswith('\\\\.\\') and
-        not os.path.exists(source_path)):
-      raise errors.ScannerError(
-          'No such device, file or directory: {0:s}.'.format(source_path))
-
-    scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(source_path)
-
-    try:
-      self._source_scanner.Scan(scan_context)
-    except (ValueError, errors.BackEndError) as exception:
-      raise errors.ScannerError(
-          'Unable to scan source with error: {0!s}'.format(exception))
+    scan_context = self._ScanSource(source_path)
 
     self._source_path = source_path
     self._source_type = scan_context.source_type
 
-    if self._source_type not in [
-        definitions.SOURCE_TYPE_STORAGE_MEDIA_DEVICE,
-        definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE]:
-      scan_node = scan_context.GetRootScanNode()
-      return [scan_node.path_spec]
-
-    # Get the first node where where we need to decide what to process.
-    scan_node = scan_context.GetRootScanNode()
-    while len(scan_node.sub_nodes) == 1:
-      scan_node = scan_node.sub_nodes[0]
-
-    base_path_specs = []
-    if scan_node.type_indicator not in (
-          definitions.TYPE_INDICATOR_GPT,
-          definitions.TYPE_INDICATOR_TSK_PARTITION):
-      self._ScanVolume(scan_context, scan_node, options, base_path_specs)
-
-    else:
-      # Determine which partition needs to be processed.
-      partition_identifiers = self._GetPartitionIdentifiers(scan_node, options)
-      for partition_identifier in partition_identifiers:
-        location = '/{0:s}'.format(partition_identifier)
-        sub_scan_node = scan_node.GetSubNodeByLocation(location)
-        self._ScanVolume(scan_context, sub_scan_node, options, base_path_specs)
-
-    return base_path_specs
+    return self._GetBasePathSpecs(scan_context, options)
 
 
 class WindowsVolumeScanner(VolumeScanner):
@@ -723,12 +756,21 @@ class WindowsVolumeScanner(VolumeScanner):
           is not a file or directory, or if the format of or within the source
           file is not supported.
     """
-    windows_path_specs = self.GetBasePathSpecs(source_path, options=options)
-    if (not windows_path_specs or
-        self._source_type == definitions.SOURCE_TYPE_FILE):
+    if not options:
+      options = VolumeScannerOptions()
+
+    scan_context = self._ScanSource(source_path)
+
+    self._source_path = source_path
+    self._source_type = scan_context.source_type
+
+    base_path_specs = self._GetBasePathSpecs(scan_context, options)
+
+    if (not base_path_specs or
+        scan_context.source_type == definitions.SOURCE_TYPE_FILE):
       return False
 
-    file_system_path_spec = windows_path_specs[0]
+    file_system_path_spec = base_path_specs[0]
     self._file_system = resolver.Resolver.OpenFileSystem(file_system_path_spec)
 
     if file_system_path_spec.type_indicator == definitions.TYPE_INDICATOR_OS:
