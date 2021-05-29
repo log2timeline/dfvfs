@@ -252,16 +252,16 @@ class SourceScannerContextTest(shared_test_lib.BaseTestCase):
     test_context = source_scanner.SourceScannerContext()
 
     with self.assertRaises(KeyError):
-      test_context.UnlockScanNode(test_fake_path_spec)
+      test_context.UnlockScanNode(test_fake_path_spec, 'password', 'test')
 
     test_context.AddScanNode(test_fake_path_spec, None)
 
     with self.assertRaises(KeyError):
-      test_context.UnlockScanNode(test_fake_path_spec)
+      test_context.UnlockScanNode(test_fake_path_spec, 'password', 'test')
 
     test_context.LockScanNode(test_fake_path_spec)
 
-    test_context.UnlockScanNode(test_fake_path_spec)
+    test_context.UnlockScanNode(test_fake_path_spec, 'password', 'test')
 
 
 class SourceScannerTest(shared_test_lib.BaseTestCase):

@@ -306,7 +306,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       'volume is 1. All volumes can be defined as "all". If no volumes are '
       'specified none will be processed. You can abort with Ctrl^C.')
 
-  _USER_PROMPT_TSK = (
+  _USER_PROMPT_PARTITIONS = (
       'Please specify the identifier of the partition that should be '
       'processed. All partitions can be defined as: "all". Note that you can '
       'abort with Ctrl^C.')
@@ -513,10 +513,10 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
   def _PrintPartitionIdentifiersOverview(
       self, volume_system, volume_identifiers):
-    """Prints an overview of TSK partition identifiers.
+    """Prints an overview of partition identifiers.
 
     Args:
-      volume_system (TSKVolumeSystem): volume system.
+      volume_system (VolumeSystem): volume system.
       volume_identifiers (list[str]): allowed volume identifiers.
 
     Raises:
@@ -703,7 +703,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     This method can be used to prompt the user to provide partition identifiers.
 
     Args:
-      volume_system (TSKVolumeSystem): volume system.
+      volume_system (VolumeSystem): volume system.
       volume_identifiers (list[str]): volume identifiers including prefix.
 
     Returns:
@@ -714,7 +714,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     while True:
       self._output_writer.Write('\n')
 
-      lines = self._textwrapper.wrap(self._USER_PROMPT_TSK)
+      lines = self._textwrapper.wrap(self._USER_PROMPT_PARTITIONS)
       self._output_writer.Write('\n'.join(lines))
       self._output_writer.Write('\n\nPartition identifier(s): ')
 
@@ -835,7 +835,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
     self._output_writer.Write(header)
 
-    credentials_list = list(credentials.CREDENTIALS)
+    credentials_list = sorted(credentials.CREDENTIALS)
     credentials_list.append('skip')
 
     self._output_writer.Write('Supported credentials:\n\n')
@@ -878,9 +878,12 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
           self._output_writer.Write('Unsupported credential data.\n')
           continue
 
-      result = source_scanner_object.Unlock(
-          scan_context, locked_scan_node.path_spec, credential_type,
-          credential_data)
+      try:
+        result = source_scanner_object.Unlock(
+            scan_context, locked_scan_node.path_spec, credential_type,
+            credential_data)
+      except errors.BackEndError:
+        result = False
 
       if not result:
         self._output_writer.Write('Unable to unlock volume.\n\n')
