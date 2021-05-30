@@ -22,6 +22,8 @@ class VolumeScannerOptions(object):
   """Volume scanner options.
 
   Attributes:
+    credentials (list[tuple[str, str]]): credentials, per type, to unlock
+        volumes.
     partitions (list[str]): partition identifiers.
     scan_mode (str): mode that defines how the VolumeScanner should scan
         for volumes and snapshots.
@@ -43,6 +45,7 @@ class VolumeScannerOptions(object):
   def __init__(self):
     """Initializes volume scanner options."""
     super(VolumeScannerOptions, self).__init__()
+    self.credentials = []
     self.partitions = []
     self.scan_mode = self.SCAN_MODE_ALL
     self.snapshots = []
@@ -443,12 +446,13 @@ class VolumeScanner(object):
 
     return normalized_volume_identifiers
 
-  def _ScanEncryptedVolume(self, scan_context, scan_node):
+  def _ScanEncryptedVolume(self, scan_context, scan_node, options):
     """Scans an encrypted volume scan node for volume and file systems.
 
     Args:
       scan_context (SourceScannerContext): source scanner context.
       scan_node (SourceScanNode): volume scan node.
+      options (VolumeScannerOptions): volume scanner options.
 
     Raises:
       ScannerError: if the format of or within the source is not supported,
@@ -464,13 +468,38 @@ class VolumeScanner(object):
     if not credentials:
       raise errors.ScannerError('Missing credentials for scan node.')
 
-    if not self._mediator:
-      raise errors.ScannerError(
-          'Unable to proceed. Encrypted volume found but no mediator to '
-          'determine how it should be unlocked.')
+    credentials_dict = {}
+    for credential_identifier, credential_data in options.credentials:
+      if credential_identifier not in credentials_dict:
+        credentials_dict[credential_identifier] = []
+      credentials_dict[credential_identifier].append(credential_data)
 
-    if self._mediator.UnlockEncryptedVolume(
-        self._source_scanner, scan_context, scan_node, credentials):
+    is_unlocked = False
+    for credential_type in sorted(credentials.CREDENTIALS):
+      for credential_data in credentials_dict.get(credential_type, []):
+        try:
+          is_unlocked = self._source_scanner.Unlock(
+              scan_context, scan_node.path_spec, credential_type,
+              credential_data)
+        except errors.BackEndError:
+          is_unlocked = False
+
+        if is_unlocked:
+          break
+
+      if is_unlocked:
+        break
+
+    if not is_unlocked:
+      if not self._mediator:
+        raise errors.ScannerError(
+            'Unable to proceed. Encrypted volume found but no mediator to '
+            'determine how it should be unlocked.')
+
+      is_unlocked = self._mediator.UnlockEncryptedVolume(
+          self._source_scanner, scan_context, scan_node, credentials)
+
+    if is_unlocked:
       self._source_scanner.Scan(
           scan_context, scan_path_spec=scan_node.path_spec)
 
@@ -542,7 +571,7 @@ class VolumeScanner(object):
     if scan_context.IsLockedScanNode(scan_node.path_spec):
       # The source scanner found a locked volume and we need a credential to
       # unlock it.
-      self._ScanEncryptedVolume(scan_context, scan_node)
+      self._ScanEncryptedVolume(scan_context, scan_node, options)
 
       if scan_context.IsLockedScanNode(scan_node.path_spec):
         return

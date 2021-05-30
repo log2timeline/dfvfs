@@ -32,6 +32,8 @@ class SourceScanNode(object):
   """Source scan node.
 
   Attributes:
+    credential (tuple[str, str]): credential used to unlock the source scan
+        node.
     path_spec (PathSpec): path specification.
     parent_node (SourceScanNode): source scan parent node.
     scanned (bool): True if the source scan node has been fully scanned.
@@ -45,6 +47,7 @@ class SourceScanNode(object):
       path_spec (PathSpec): path specification.
     """
     super(SourceScanNode, self).__init__()
+    self.credential = None
     self.path_spec = path_spec
     self.parent_node = None
     self.scanned = False
@@ -366,11 +369,14 @@ class SourceScannerContext(object):
     if self.source_type is None:
       self.source_type = source_type
 
-  def UnlockScanNode(self, path_spec):
+  def UnlockScanNode(self, path_spec, credential_identifier, credential_data):
     """Marks a scan node as unlocked.
 
     Args:
       path_spec (PathSpec): path specification.
+      credential_identifier (str): credential identifier used to unlock
+          the scan node.
+      credential_data (bytes): credential data used to unlock the scan node.
 
     Raises:
       KeyError: if the scan node does not exists or is not locked.
@@ -383,8 +389,10 @@ class SourceScannerContext(object):
 
     del self._locked_scan_nodes[path_spec]
 
+    scan_node = self._scan_nodes[path_spec]
+    scan_node.credential = (credential_identifier, credential_data)
     # Scan a node again after it has been unlocked.
-    self._scan_nodes[path_spec].scanned = False
+    scan_node.scanned = False
 
 
 class SourceScanner(object):
@@ -896,6 +904,7 @@ class SourceScanner(object):
       is_locked = not file_object or file_object.is_locked
 
     if not is_locked:
-      scan_context.UnlockScanNode(path_spec)
+      scan_context.UnlockScanNode(
+          path_spec, credential_identifier, credential_data)
 
     return not is_locked
