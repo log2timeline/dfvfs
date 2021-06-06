@@ -620,8 +620,14 @@ class SourceScanner(object):
         scan_context.AddScanNode(path_spec, scan_node.parent_node)
 
     # Determine the path specifications of the sub file entries.
-    file_entry = resolver.Resolver.OpenFileEntry(
-        scan_node.path_spec, resolver_context=self._resolver_context)
+    try:
+      file_entry = resolver.Resolver.OpenFileEntry(
+          scan_node.path_spec, resolver_context=self._resolver_context)
+    except errors.BackEndError:
+      # Note that because pytsk returns slots LVM can be prematurely detected
+      # and we have to catch the resulting BackEndError exception. Also see:
+      # https://github.com/log2timeline/dfvfs/issues/578
+      return
 
     for sub_file_entry in file_entry.sub_file_entries:
       sub_scan_node = scan_context.AddScanNode(
