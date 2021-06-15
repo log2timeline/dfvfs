@@ -55,6 +55,7 @@ class TARFileSystem(file_system.FileSystem):
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file system could not be opened.
+      OSError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -70,7 +71,10 @@ class TARFileSystem(file_system.FileSystem):
 
     # Explicitly tell tarfile not to use compression. Compression should be
     # handled by the file-like object.
-    tar_file = tarfile.open(mode='r:', fileobj=file_object)
+    try:
+      tar_file = tarfile.open(mode='r:', fileobj=file_object)
+    except tarfile.ReadError as exception:
+      raise IOError(exception)
 
     self._file_object = file_object
     self._tar_file = tar_file
