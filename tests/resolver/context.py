@@ -21,7 +21,7 @@ class ContextTest(unittest.TestCase):
     self.assertEqual(len(resolver_context._file_object_cache._values), 0)
 
     path_spec = fake_path_spec.FakePathSpec(location='/empty.txt')
-    file_object = fake_file_io.FakeFile(resolver_context, b'')
+    file_object = fake_file_io.FakeFile(resolver_context, path_spec, b'')
 
     resolver_context.CacheFileObject(path_spec, file_object)
     self.assertEqual(len(resolver_context._file_object_cache._values), 1)
@@ -37,7 +37,7 @@ class ContextTest(unittest.TestCase):
     self.assertEqual(len(resolver_context._file_system_cache._values), 0)
 
     path_spec = fake_path_spec.FakePathSpec(location='/')
-    file_system = fake_file_system.FakeFileSystem(resolver_context)
+    file_system = fake_file_system.FakeFileSystem(resolver_context, path_spec)
 
     resolver_context.CacheFileSystem(path_spec, file_system)
     self.assertEqual(len(resolver_context._file_system_cache._values), 1)
