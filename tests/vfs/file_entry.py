@@ -37,15 +37,6 @@ class TestFileEntry(file_entry.FileEntry):
     return iter([])
 
 
-class AttributeTest(shared_test_lib.BaseTestCase):
-  """Tests the VFS attribute interface."""
-
-  def testTypeIndicator(self):
-    """Tests the type_indicator property."""
-    attribute = file_entry.Attribute()
-    self.assertIsNone(attribute.type_indicator)
-
-
 class DataStreamTest(shared_test_lib.BaseTestCase):
   """Tests the VFS data stream interface."""
 

@@ -8,7 +8,7 @@ from dfvfs.vfs import root_only_file_entry
 
 
 class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
-  """Class that implements an encoded stream file entry object."""
+  """Class that implements an encoded stream file entry."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ENCODED_STREAM
 

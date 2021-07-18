@@ -36,6 +36,14 @@ dfvfs.vfs.apfs\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.attribute module
+--------------------------
+
+.. automodule:: dfvfs.vfs.attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.bde\_file\_entry module
 ---------------------------------
 
@@ -276,6 +284,14 @@ dfvfs.vfs.lvm\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.ntfs\_attribute module
+--------------------------------
+
+.. automodule:: dfvfs.vfs.ntfs_attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.ntfs\_file\_entry module
 ----------------------------------
 
@@ -352,6 +368,14 @@ dfvfs.vfs.tar\_file\_system module
 ----------------------------------
 
 .. automodule:: dfvfs.vfs.tar_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.tsk\_attribute module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.tsk_attribute
    :members:
    :undoc-members:
    :show-inheritance:

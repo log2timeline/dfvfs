@@ -15,6 +15,7 @@ from dfvfs.lib import errors
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_entry
+from dfvfs.vfs import tsk_attribute
 
 
 class TSKTime(dfdatetime_interface.DateTimeValues):
@@ -177,37 +178,19 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
       return None, None, None
 
 
-class TSKAttribute(file_entry.Attribute):
-  """File system attribute that uses pytsk3."""
-
-  def __init__(self, tsk_attribute):
-    """Initializes an attribute.
-
-    Args:
-      tsk_attribute (pytsk3.Attribute): TSK attribute.
-    """
-    super(TSKAttribute, self).__init__()
-    self._tsk_attribute = tsk_attribute
-
-  @property
-  def attribute_type(self):
-    """object: attribute type."""
-    return getattr(self._tsk_attribute.info, 'type', None)
-
-
 class TSKDataStream(file_entry.DataStream):
   """File system data stream that uses pytsk3."""
 
-  def __init__(self, file_system, tsk_attribute):
+  def __init__(self, file_system, pytsk_attribute):
     """Initializes a data stream.
 
     Args:
       file_system (TSKFileSystem): file system.
-      tsk_attribute (pytsk3.Attribute): TSK attribute.
+      pytsk_attribute (pytsk3.Attribute): TSK attribute.
     """
     super(TSKDataStream, self).__init__()
     self._file_system = file_system
-    self._tsk_attribute = tsk_attribute
+    self._tsk_attribute = pytsk_attribute
 
   @property
   def name(self):
@@ -490,13 +473,13 @@ class TSKFileEntry(file_entry.FileEntry):
     if self._attributes is None:
       self._attributes = []
 
-      for tsk_attribute in self._tsk_file:
-        if getattr(tsk_attribute, 'info', None) is None:
+      for pytsk_attribute in self._tsk_file:
+        if getattr(pytsk_attribute, 'info', None) is None:
           continue
 
         # At the moment there is no way to expose the attribute data
         # from pytsk3.
-        attribute_object = TSKAttribute(tsk_attribute)
+        attribute_object = tsk_attribute.TSKAttribute(pytsk_attribute)
         self._attributes.append(attribute_object)
 
     return self._attributes
@@ -530,18 +513,18 @@ class TSKFileEntry(file_entry.FileEntry):
           self._data_streams.append(data_stream)
 
       else:
-        for tsk_attribute in self._tsk_file:
+        for pytsk_attribute in self._tsk_file:
           # NTFS allows directories to have data streams.
           if (not self._file_system.IsNTFS() and
               tsk_fs_meta_type != pytsk3.TSK_FS_META_TYPE_REG):
             continue
 
-          if getattr(tsk_attribute, 'info', None) is None:
+          if getattr(pytsk_attribute, 'info', None) is None:
             continue
 
-          attribute_type = getattr(tsk_attribute.info, 'type', None)
+          attribute_type = getattr(pytsk_attribute.info, 'type', None)
           if attribute_type in known_data_attribute_types:
-            data_stream = TSKDataStream(self._file_system, tsk_attribute)
+            data_stream = TSKDataStream(self._file_system, pytsk_attribute)
             self._data_streams.append(data_stream)
 
     return self._data_streams
