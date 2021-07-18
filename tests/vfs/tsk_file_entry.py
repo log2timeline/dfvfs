@@ -101,7 +101,6 @@ class TSKTimeTest(unittest.TestCase):
     self.assertIsNone(micro_posix_timestamp)
 
 
-# TODO: add tests for TSKAttribute
 # TODO: add tests for TSKDataStream
 
 

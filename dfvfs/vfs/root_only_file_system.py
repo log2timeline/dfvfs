@@ -8,12 +8,12 @@ from dfvfs.vfs import file_system
 
 
 class RootOnlyFileSystem(file_system.FileSystem):
-  """Root only file system object."""
+  """Root only file system."""
 
   # pylint: disable=redundant-returns-doc
 
   def _Close(self):
-    """Closes the file system object.
+    """Closes the file system.
 
     Raises:
       IOError: if the close failed.
@@ -21,7 +21,7 @@ class RootOnlyFileSystem(file_system.FileSystem):
     return
 
   def _Open(self, mode='rb'):
-    """Opens the file system object defined by path specification.
+    """Opens the file system defined by path specification.
 
     Args:
       mode (Optional[str]): file access mode. The default is 'rb' which
@@ -29,7 +29,7 @@ class RootOnlyFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      IOError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """

@@ -7,7 +7,7 @@ from dfvfs.lib import decorators
 
 
 class FileSystem(object):
-  """Virtual file system interface."""
+  """File system interface."""
 
   # Note that redundant-returns-doc is broken for pylint 1.7.x for abstract
   # methods

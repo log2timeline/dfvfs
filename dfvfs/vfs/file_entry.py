@@ -12,17 +12,8 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import vfs_stat
 
 
-class Attribute(object):
-  """VFS attribute interface."""
-
-  @property
-  def type_indicator(self):
-    """str: type indicator or None if not known."""
-    return getattr(self, 'TYPE_INDICATOR', None)
-
-
 class DataStream(object):
-  """VFS data stream interface."""
+  """Data stream interface."""
 
   # The data stream object should not have a reference to its
   # file entry since that will create a cyclic reference.
@@ -42,7 +33,7 @@ class DataStream(object):
 
 
 class Directory(object):
-  """VFS directory interface.
+  """Directory interface.
 
   Attributes:
     path_spec (PathSpec): path specification of the directory.
@@ -78,7 +69,7 @@ class Directory(object):
 
 
 class FileEntry(object):
-  """Virtual file entry interface.
+  """File entry interface.
 
   Attributes:
     entry_type (str): file entry type, such as device, directory, file, link,
