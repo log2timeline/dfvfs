@@ -605,10 +605,10 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(security_identifier)
     self.assertEqual(security_identifier.string, 'S-1-5-32-544')
 
-    access_control_list = security_descriptor.discretionary_acl
+    access_control_list = security_descriptor.system_acl
     self.assertIsNone(access_control_list)
 
-    access_control_list = security_descriptor.system_acl
+    access_control_list = security_descriptor.discretionary_acl
     self.assertIsNotNone(access_control_list)
     self.assertEqual(access_control_list.number_of_entries, 1)
 
@@ -716,10 +716,10 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(security_identifier)
     self.assertEqual(security_identifier.string, 'S-1-5-32-544')
 
-    access_control_list = security_descriptor.discretionary_acl
+    access_control_list = security_descriptor.system_acl
     self.assertIsNone(access_control_list)
 
-    access_control_list = security_descriptor.system_acl
+    access_control_list = security_descriptor.discretionary_acl
     self.assertIsNotNone(access_control_list)
     self.assertEqual(access_control_list.number_of_entries, 1)
 
