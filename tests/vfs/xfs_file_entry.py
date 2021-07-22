@@ -155,17 +155,17 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 1000)
     self.assertEqual(stat_object.gid, 1000)
 
-    self.assertEqual(stat_object.atime, 1605204173)
-    self.assertEqual(stat_object.atime_nano, 7637974)
+    self.assertEqual(stat_object.atime, 1626962854)
+    self.assertEqual(stat_object.atime_nano, 8136161)
 
-    self.assertEqual(stat_object.ctime, 1605204173)
-    self.assertEqual(stat_object.ctime_nano, 7637974)
+    self.assertEqual(stat_object.ctime, 1626962854)
+    self.assertEqual(stat_object.ctime_nano, 8146161)
 
-    self.assertEqual(stat_object.crtime, 1605204173)
-    self.assertEqual(stat_object.crtime_nano, 7637974)
+    self.assertEqual(stat_object.crtime, 1626962854)
+    self.assertEqual(stat_object.crtime_nano, 8136161)
 
-    self.assertEqual(stat_object.mtime, 1605204173)
-    self.assertEqual(stat_object.mtime_nano, 7637974)
+    self.assertEqual(stat_object.mtime, 1626962854)
+    self.assertEqual(stat_object.mtime_nano, 8146161)
 
   def testIsFunctions(self):
     """Tests the Is? functions."""

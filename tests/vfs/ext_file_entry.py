@@ -146,15 +146,15 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 1000)
     self.assertEqual(stat_object.gid, 1000)
 
-    self.assertEqual(stat_object.atime, 1567246979)
+    self.assertEqual(stat_object.atime, 1626962852)
     self.assertFalse(hasattr(stat_object, 'atime_nano'))
 
-    self.assertEqual(stat_object.ctime, 1567246979)
+    self.assertEqual(stat_object.ctime, 1626962852)
     self.assertFalse(hasattr(stat_object, 'ctime_nano'))
 
     self.assertFalse(hasattr(stat_object, 'crtime'))
 
-    self.assertEqual(stat_object.mtime, 1567246979)
+    self.assertEqual(stat_object.mtime, 1626962852)
     self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testGetStatAttribute(self):
@@ -490,17 +490,17 @@ class EXTFileEntryTestWithEXT4(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 1000)
     self.assertEqual(stat_object.gid, 1000)
 
-    self.assertEqual(stat_object.atime, 1620201706)
-    self.assertEqual(stat_object.atime_nano, 4539288)
+    self.assertEqual(stat_object.atime, 1626962852)
+    self.assertEqual(stat_object.atime_nano, 8436108)
 
-    self.assertEqual(stat_object.ctime, 1620201706)
-    self.assertEqual(stat_object.ctime_nano, 4549288)
+    self.assertEqual(stat_object.ctime, 1626962852)
+    self.assertEqual(stat_object.ctime_nano, 8436108)
 
-    self.assertEqual(stat_object.crtime, 1620201706)
-    self.assertEqual(stat_object.crtime_nano, 4539288)
+    self.assertEqual(stat_object.crtime, 1626962852)
+    self.assertEqual(stat_object.crtime_nano, 8436108)
 
-    self.assertEqual(stat_object.mtime, 1620201706)
-    self.assertEqual(stat_object.mtime_nano, 4549288)
+    self.assertEqual(stat_object.mtime, 1626962852)
+    self.assertEqual(stat_object.mtime_nano, 8436108)
 
   def testIsFunctions(self):
     """Tests the Is? functions."""

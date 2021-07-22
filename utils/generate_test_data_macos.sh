@@ -28,23 +28,26 @@ assert_availability_binary()
 	fi
 }
 
-# Creates test file entries.
+# Creates test file entries with an extended attributes.
 #
 # Arguments:
 #   a string containing the mount point
 #
-create_test_file_entries()
+create_test_file_entries_with_extended_attributes()
 {
 	MOUNT_POINT=$1;
 
 	# Create a directory
 	mkdir ${MOUNT_POINT}/a_directory;
 
+	# Create a file with an extended attribute
 	cat >${MOUNT_POINT}/a_directory/a_file <<EOT
 This is a text file.
 
 We should be able to parse it.
 EOT
+
+	xattr -w myxattr "My extended attribute" ${MOUNT_POINT}/a_directory/a_file
 
 	cat >${MOUNT_POINT}/passwords.txt <<EOT
 place,user,password
@@ -87,7 +90,7 @@ hdiutil create -fs 'APFS' -size ${IMAGE_SIZE} -type UDIF -volname apfs_test ${IM
 
 hdiutil attach ${IMAGE_FILE}.dmg;
 
-create_test_file_entries "/Volumes/apfs_test";
+create_test_file_entries_with_extended_attributes "/Volumes/apfs_test";
 
 hdiutil detach disk${CONTAINER_DEVICE_NUMBER};
 
@@ -100,7 +103,7 @@ hdiutil create -fs 'HFS+' -size ${IMAGE_SIZE} -type UDIF -volname hfsplus_test $
 
 hdiutil attach ${IMAGE_FILE}.dmg;
 
-create_test_file_entries "/Volumes/hfsplus_test";
+create_test_file_entries_with_extended_attributes "/Volumes/hfsplus_test";
 
 # Create a zlib compressed image from image with a HFS+ file system
 IMAGE_FILE="test_data/hfsplus_zlib";
@@ -118,7 +121,7 @@ hdiutil create -fs 'HFS+' -size ${IMAGE_SIZE} -type SPARSE -volname hfsplus_test
 
 hdiutil attach ${IMAGE_FILE}.sparseimage;
 
-create_test_file_entries "/Volumes/hfsplus_test";
+create_test_file_entries_with_extended_attributes "/Volumes/hfsplus_test";
 
 hdiutil detach disk${VOLUME_DEVICE_NUMBER};
 

@@ -30,23 +30,23 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
   # vsgptinfo gpt.raw
   #
   # GUID Partition Table (GPT) information:
-  #   Disk identifier      : 25271092-82a1-4e85-9be8-2eb59926af3f
-  #   Bytes per sector     : 512
-  #   Number of partitions : 2
+  #     Disk identifier         : e86e657a-d840-4c09-afe3-a1a5f665cf44
+  #     Bytes per sector        : 512
+  #     Number of partitions    : 2
   #
   # Partition: 1
-  #   Identifier           : b6d37ab4-051f-4556-97d2-ad1f8a609644
-  #   Type identifier      : 0fc63daf-8483-4772-8e79-3d69d8477de4
-  #   Type                 : 0x00 (Empty)
-  #   Offset               : 1048576 (0x00100000)
-  #   Size                 : 65024
+  #     Identifier              : 1e25588c-27a9-4094-868c-2f257021f87b
+  #     Type identifier         : 0fc63daf-8483-4772-8e79-3d69d8477de4
+  #     Type                    : 0x00 (Empty)
+  #     Offset                  : 1048576 (0x00100000)
+  #     Size                    : 65024
   #
   # Partition: 2
-  #   Identifier           : a03faa35-d9a1-4315-a644-681506850073
-  #   Type identifier      : 0fc63daf-8483-4772-8e79-3d69d8477de4
-  #   Type                 : 0x00 (Empty)
-  #   Offset               : 2097152 (0x00200000)
-  #   Size                 : 65024
+  #     Identifier              : 53d86ccf-3188-4b54-90d8-81866426b70a
+  #     Type identifier         : 0fc63daf-8483-4772-8e79-3d69d8477de4
+  #     Type                    : 0x00 (Empty)
+  #     Offset                  : 2097152 (0x00200000)
+  #     Size                    : 65024
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
@@ -69,7 +69,7 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
     volume_attribute = volume.GetAttribute('identifier')
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(
-        volume_attribute.value, 'b6d37ab4-051f-4556-97d2-ad1f8a609644')
+        volume_attribute.value, '1e25588c-27a9-4094-868c-2f257021f87b')
 
     volume_extent = volume.extents[0]
     self.assertIsNotNone(volume_extent)

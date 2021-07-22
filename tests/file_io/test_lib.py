@@ -580,8 +580,9 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
 
     file_object.seek(4128)
     self.assertEqual(file_object.get_offset(), 0x11620 - self._OFFSET_P2)
-    self.assertEqual(
-        file_object.read(16), b'lost+found\x00\x00\x0c\x00\x00\x00')
+
+    data = file_object.read(16)
+    self.assertEqual(data, b'lost+found\x00\x00\x0c\x00\x00\x00')
     self.assertEqual(file_object.get_offset(), 0x11630 - self._OFFSET_P2)
 
     file_object.seek(-28156, os.SEEK_END)
@@ -633,7 +634,7 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
 
     self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
-    file_object.seek(0x19e00 - self._OFFSET_P2)
+    file_object.seek(0x15a00 - self._OFFSET_P2)
 
     data = file_object.read(32)
 
