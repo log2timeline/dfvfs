@@ -31,39 +31,6 @@ assert_availability_binary()
 	fi
 }
 
-# Creates test file entries.
-#
-# Arguments:
-#   a string containing the mount point
-#
-create_test_file_entries()
-{
-	MOUNT_POINT=$1;
-
-	# Create a directory
-	mkdir ${MOUNT_POINT}/a_directory;
-
-	cat >${MOUNT_POINT}/a_directory/a_file <<EOT
-This is a text file.
-
-We should be able to parse it.
-EOT
-
-	cat >${MOUNT_POINT}/passwords.txt <<EOT
-place,user,password
-bank,joesmith,superrich
-alarm system,-,1234
-treasure chest,-,1111
-uber secret laire,admin,admin
-EOT
-
-	cat >${MOUNT_POINT}/a_directory/another_file <<EOT
-This is another file.
-EOT
-
-	(cd ${MOUNT_POINT} && ln -s a_directory/another_file a_link);
-}
-
 # Creates test file entries without a symbolic link.
 #
 # Arguments:
@@ -93,6 +60,34 @@ EOT
 	cat >${MOUNT_POINT}/a_directory/another_file <<EOT
 This is another file.
 EOT
+}
+
+# Creates test file entries.
+#
+# Arguments:
+#   a string containing the mount point
+#
+create_test_file_entries()
+{
+	MOUNT_POINT=$1;
+
+	create_test_file_entries_without_link ${MOUNT_POINT}
+
+	(cd ${MOUNT_POINT} && ln -s a_directory/another_file a_link);
+}
+
+# Creates test file entries with an extended attributes.
+#
+# Arguments:
+#   a string containing the mount point
+#
+create_test_file_entries_with_extended_attributes()
+{
+	MOUNT_POINT=$1;
+
+	create_test_file_entries ${MOUNT_POINT}
+
+	setfattr -n "user.myxattr" -v "My extended attribute" ${MOUNT_POINT}/a_directory/a_file
 }
 
 assert_availability_binary cryptsetup;
@@ -133,7 +128,7 @@ sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -148,7 +143,7 @@ sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -192,7 +187,7 @@ sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -256,7 +251,7 @@ sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -270,7 +265,7 @@ sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -306,7 +301,7 @@ sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -320,7 +315,7 @@ sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -348,7 +343,7 @@ sudo mount -o loop,rw /dev/test_volume_group/test_logical_volume1 ${MOUNT_POINT}
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -377,7 +372,7 @@ sudo mount -o loop,rw /dev/mapper/dfvfs_luks ${MOUNT_POINT};
 
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 
@@ -407,7 +402,7 @@ EOT
 
 # sudo chown ${USERNAME} ${MOUNT_POINT};
 
-# create_test_file_entries ${MOUNT_POINT};
+# create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
 
 # sudo umount ${MOUNT_POINT};
 

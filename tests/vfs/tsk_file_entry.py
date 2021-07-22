@@ -340,17 +340,17 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 1000)
     self.assertEqual(stat_object.gid, 1000)
 
-    self.assertEqual(stat_object.atime, 1567246979)
+    self.assertEqual(stat_object.atime, 1626962852)
     self.assertFalse(hasattr(stat_object, 'atime_nano'))
 
-    self.assertEqual(stat_object.ctime, 1567246979)
+    self.assertEqual(stat_object.ctime, 1626962852)
     self.assertFalse(hasattr(stat_object, 'ctime_nano'))
 
     # EXT2 has no crtime timestamp.
     self.assertFalse(hasattr(stat_object, 'crtime'))
     self.assertFalse(hasattr(stat_object, 'crtime_nano'))
 
-    self.assertEqual(stat_object.mtime, 1567246979)
+    self.assertEqual(stat_object.mtime, 1626962852)
     self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   # TODO: add tests for GetTSKFile

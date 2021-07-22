@@ -56,7 +56,7 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
         self._luksde_path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.size, 6291456)
+    self.assertEqual(file_entry.size, 8388608)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
@@ -82,7 +82,7 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
     stat_object = file_entry.GetStat()
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 6291456)
+    self.assertEqual(stat_object.size, 8388608)
 
   def testIsAllocated(self):
     """Test the IsAllocated function."""

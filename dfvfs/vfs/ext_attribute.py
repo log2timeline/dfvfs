@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The EXT attribute implementations."""
+"""The EXT attribute implementation."""
 
 import os
 

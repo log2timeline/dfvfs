@@ -28,45 +28,46 @@ class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
         parent=test_raw_path_spec)
 
   # vslvminfo lvm.raw
+  # vslvminfo 20210524
   #
   # Linux Logical Volume Manager (LVM) information:
   # Volume Group (VG):
-  #   Name:                         test_volume_group
-  #   Identifier:                   OdFqZi-WJfC-35Ok-2Jxv-mcC3-e2OS-QROmeJ
-  #   Sequence number:              3
-  #   Extent size:                  4.0 MiB (4194304 bytes)
-  #   Number of physical volumes:   1
-  #   Number of logical volumes:    2
+  #     Name:                          test_volume_group
+  #     Identifier:                    Lu8jtE-dBED-jxdl-bAXG-vmAA-Oh9y-KCiNMy
+  #     Sequence number:               3
+  #     Extent size:                   4.0 MiB (4194304 bytes)
+  #     Number of physical volumes:    1
+  #     Number of logical volumes:     2
   #
   # Physical Volume (PV): 1
-  #   Name:                         pv0
-  #   Identifier:                   l051NA-ZitO-CRvE-QizU-JsB2-CqmX-LNDICw
-  #   Device path:                  /dev/loop99
-  #   Volume size:                  10 MiB (10485760 bytes)
+  #     Name:                          pv0
+  #     Identifier:                    V9N6H5-MXlo-JmEE-TLHs-KyAo-kLv5-JL0RY7
+  #     Device path:                   /dev/loop99
+  #     Volume size:                   10 MiB (10485760 bytes)
   #
   # Logical Volume (LV): 1
-  #   Name:                         test_logical_volume1
-  #   Identifier:                   RI0pgm-rdy4-XxcL-5eoK-Easc-fgPq-CWaEJb
-  #   Number of segments:           1
-  #   Segment: 1
-  #     Offset:                     0x00000000 (0)
-  #     Size:                       4.0 MiB (4194304 bytes)
-  #     Number of stripes:          1
-  #     Stripe: 1
-  #       Physical volume:          pv0
-  #       Data area offset:         0x00000000 (0)
+  #     Name:                          test_logical_volume1
+  #     Identifier:                    EMfcGR-KAOf-VrvI-yqth-fmz0-Ylmx-xepAJq
+  #     Number of segments:            1
+  #     Segment: 1
+  #         Offset:                    0x00000000 (0)
+  #         Size:                      4.0 MiB (4194304 bytes)
+  #         Number of stripes:         1
+  #         Stripe: 1
+  #             Physical volume:       pv0
+  #             Data area offset:      0x00000000 (0)
   #
   # Logical Volume (LV): 2
-  #   Name:                         test_logical_volume2
-  #   Identifier:                   2ySlpP-g1fn-qwMH-h7y9-3u4n-GInp-Pfvvxo
-  #   Number of segments:           1
-  #   Segment: 1
-  #     Offset:                     0x00000000 (0)
-  #     Size:                       4.0 MiB (4194304 bytes)
-  #     Number of stripes:          1
-  #     Stripe: 1
-  #       Physical volume:          pv0
-  #       Data area offset:         0x00400000 (4194304)
+  #     Name:                          test_logical_volume2
+  #     Identifier:                    UbmaM4-4OCn-m0mb-uw5D-kCjp-2hi1-M6kWCX
+  #     Number of segments:            1
+  #     Segment: 1
+  #         Offset:                    0x00000000 (0)
+  #         Size:                      4.0 MiB (4194304 bytes)
+  #         Number of stripes:         1
+  #         Stripe: 1
+  #             Physical volume:       pv0
+  #             Data area offset:      0x00400000 (4194304)
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
@@ -86,7 +87,7 @@ class LVMVolumeSystemTest(shared_test_lib.BaseTestCase):
     self.assertEqual(volume.number_of_attributes, 1)
     self.assertEqual(volume.identifier, 'lvm1')
 
-    expected_value = 'RI0pgm-rdy4-XxcL-5eoK-Easc-fgPq-CWaEJb'
+    expected_value = 'EMfcGR-KAOf-VrvI-yqth-fmz0-Ylmx-xepAJq'
     volume_attribute = volume.GetAttribute('identifier')
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(volume_attribute.value, expected_value)
