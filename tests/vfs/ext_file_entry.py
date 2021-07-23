@@ -103,9 +103,9 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
 
   def testGetAttributes(self):
     """Tests the _GetAttributes function."""
-    test_location = '/a_directory/another_file'
+    test_location = '/a_directory/a_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_EXT, inode=self._INODE_ANOTHER_FILE,
+        definitions.TYPE_INDICATOR_EXT, inode=self._INODE_A_FILE,
         location=test_location, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -114,18 +114,17 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 2)
+    self.assertEqual(len(file_entry._attributes), 3)
 
     test_attribute = file_entry._attributes[0]
     self.assertIsInstance(test_attribute, attribute.StatAttribute)
 
     test_attribute = file_entry._attributes[1]
     self.assertIsInstance(test_attribute, ext_attribute.EXTExtendedAttribute)
-    self.assertEqual(test_attribute.name, 'security.selinux')
+    self.assertEqual(test_attribute.name, 'user.myxattr')
 
     test_attribute_value_data = test_attribute.read()
-    self.assertEqual(
-        test_attribute_value_data, b'unconfined_u:object_r:unlabeled_t:s0\x00')
+    self.assertEqual(test_attribute_value_data, b'My extended attribute')
 
   def testGetStat(self):
     """Tests the _GetStat function."""

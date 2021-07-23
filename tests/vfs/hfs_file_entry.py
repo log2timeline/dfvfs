@@ -7,6 +7,8 @@ import unittest
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
+from dfvfs.vfs import attribute
+from dfvfs.vfs import hfs_attribute
 from dfvfs.vfs import hfs_file_entry
 from dfvfs.vfs import hfs_file_system
 
@@ -18,6 +20,8 @@ from tests import test_lib as shared_test_lib
 
 class HFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the HFS file entry."""
+
+  # pylint: disable=protected-access
 
   _IDENTIFIER_A_DIRECTORY = 18
   _IDENTIFIER_A_FILE = 19
@@ -113,6 +117,85 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.modification_time)
 
+  def testGetAttributes(self):
+    """Tests the _GetAttributes function."""
+    test_location = '/a_directory/a_file'
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_FILE,
+        location=test_location, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertIsNone(file_entry._attributes)
+
+    file_entry._GetAttributes()
+    self.assertIsNotNone(file_entry._attributes)
+    self.assertEqual(len(file_entry._attributes), 2)
+
+    test_attribute = file_entry._attributes[0]
+    self.assertIsInstance(test_attribute, attribute.StatAttribute)
+
+    test_attribute = file_entry._attributes[1]
+    self.assertIsInstance(test_attribute, hfs_attribute.HFSExtendedAttribute)
+    self.assertEqual(test_attribute.name, 'myxattr')
+
+    test_attribute_value_data = test_attribute.read()
+    self.assertEqual(test_attribute_value_data, b'My extended attribute')
+
+  def testGetStat(self):
+    """Tests the _GetStat function."""
+    test_location = '/a_directory/another_file'
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_object = file_entry._GetStat()
+
+    self.assertIsNotNone(stat_object)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 22)
+
+    self.assertEqual(stat_object.mode, 0o644)
+    self.assertEqual(stat_object.uid, 501)
+    self.assertEqual(stat_object.gid, 20)
+
+    self.assertEqual(stat_object.atime, 1627013326)
+    self.assertFalse(hasattr(stat_object, 'atime_nano'))
+
+    self.assertEqual(stat_object.ctime, 1627013326)
+    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
+
+    self.assertEqual(stat_object.crtime, 1627013326)
+    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
+
+    self.assertEqual(stat_object.mtime, 1627013326)
+    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
+
+  def testGetStatAttribute(self):
+    """Tests the _GetStatAttribute function."""
+    test_location = '/a_directory/another_file'
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_attribute = file_entry._GetStatAttribute()
+
+    self.assertIsNotNone(stat_attribute)
+    self.assertEqual(stat_attribute.group_identifier, 20)
+    self.assertEqual(stat_attribute.inode_number, 23)
+    self.assertEqual(stat_attribute.mode, 0o644)
+    # TODO: implement number of hard links support in pyfshfs
+    # self.assertEqual(stat_attribute.number_of_links, 1)
+    self.assertEqual(stat_attribute.owner_identifier, 501)
+    self.assertEqual(stat_attribute.size, 22)
+    self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -152,38 +235,6 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, 'a_directory')
-
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    test_location = '/a_directory/another_file'
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 420)
-    self.assertEqual(stat_object.uid, 501)
-    self.assertEqual(stat_object.gid, 20)
-
-    self.assertEqual(stat_object.atime, 1596950907)
-    self.assertFalse(hasattr(stat_object, 'atime_nano'))
-
-    self.assertEqual(stat_object.ctime, 1596950907)
-    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
-
-    self.assertEqual(stat_object.crtime, 1596950907)
-    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
-
-    self.assertEqual(stat_object.mtime, 1596950907)
-    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testIsFunctions(self):
     """Tests the Is? functions."""

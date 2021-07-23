@@ -127,8 +127,8 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
 class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
   """Shared functionality for storage media image with a HFS file system."""
 
-  _IDENTIFIER_ANOTHER_FILE = 21
-  _IDENTIFIER_PASSWORDS_TXT = 20
+  _IDENTIFIER_ANOTHER_FILE = 23
+  _IDENTIFIER_PASSWORDS_TXT = 22
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

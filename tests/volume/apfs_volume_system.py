@@ -32,12 +32,19 @@ class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
   # Apple File System (APFS) information:
   #
   # Container information:
-  #  Identifier	                : d6a76f34-de93-426f-b7d2-f3121ebf8fae
-  #  Number of volumes          : 1
+  #     Identifier                       : 697a8dd4-a13a-4437-9397-6202d54ac575
+  #     Number of volumes                : 1
   #
   # Volume: 1 information:
-  #   Identifier                : 5a4d7f50-726e-4fe9-8c57-8898f0cbaf72
-  #   Name                      : apfs_test
+  #     Identifier                       : 5bda1a3c-4d06-4894-9c74-d1f58d5f848a
+  #     Name                             : apfs_test
+  #     Compatible features              : 0x00000002
+  #         (NX_FEATURE_LCFD)
+  #
+  #     Incompatible features            : 0x00000001
+  #         (NX_INCOMPAT_VERSION1)
+  #
+  #     Read-only compatible features    : 0x00000000
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
@@ -56,10 +63,10 @@ class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
     self.assertEqual(volume.number_of_attributes, 2)
     self.assertEqual(volume.identifier, 'apfs1')
 
-    expected_value = '5a4d7f50-726e-4fe9-8c57-8898f0cbaf72'
     volume_attribute = volume.GetAttribute('identifier')
     self.assertIsNotNone(volume_attribute)
-    self.assertEqual(volume_attribute.value, expected_value)
+    self.assertEqual(
+        volume_attribute.value, '5bda1a3c-4d06-4894-9c74-d1f58d5f848a')
 
     volume_attribute = volume.GetAttribute('name')
     self.assertIsNotNone(volume_attribute)

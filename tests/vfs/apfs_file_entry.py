@@ -63,8 +63,8 @@ class APFSDirectoryTest(shared_test_lib.BaseTestCase):
 class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the APFS file entry."""
 
-  _IDENTIFIER_A_DIRECTORY = 18
-  _IDENTIFIER_A_FILE = 19
+  _IDENTIFIER_A_DIRECTORY = 16
+  _IDENTIFIER_A_FILE = 17
   _IDENTIFIER_A_LINK = 22
   _IDENTIFIER_ANOTHER_FILE = 21
 
@@ -264,17 +264,17 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 99)
     self.assertEqual(stat_object.gid, 99)
 
-    self.assertEqual(stat_object.atime, 1596950905)
-    self.assertEqual(stat_object.atime_nano, 6246998)
+    self.assertEqual(stat_object.atime, 1627013324)
+    self.assertEqual(stat_object.atime_nano, 9960526)
 
-    self.assertEqual(stat_object.ctime, 1596950905)
-    self.assertEqual(stat_object.ctime_nano, 6267234)
+    self.assertEqual(stat_object.ctime, 1627013324)
+    self.assertEqual(stat_object.ctime_nano, 9982411)
 
-    self.assertEqual(stat_object.crtime, 1596950905)
-    self.assertEqual(stat_object.crtime_nano, 6267234)
+    self.assertEqual(stat_object.crtime, 1627013324)
+    self.assertEqual(stat_object.crtime_nano, 9982411)
 
-    self.assertEqual(stat_object.mtime, 1596950905)
-    self.assertEqual(stat_object.mtime_nano, 6246998)
+    self.assertEqual(stat_object.mtime, 1627013324)
+    self.assertEqual(stat_object.mtime_nano, 9960526)
 
   def testIsFunctions(self):
     """Tests the Is? functions."""
