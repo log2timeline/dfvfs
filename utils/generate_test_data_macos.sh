@@ -81,6 +81,8 @@ VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 2 ));
 
 IMAGE_FILE="test_data/apfs";
 
+rm -t ${IMAGE_FILE}.dmg;
+
 hdiutil create -fs 'APFS' -size ${IMAGE_SIZE} -type UDIF -volname apfs_test ${IMAGE_FILE};
 
 # For older versions of hdiutil:
@@ -99,6 +101,8 @@ VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
 
 IMAGE_FILE="test_data/hfsplus";
 
+rm -t ${IMAGE_FILE}.dmg;
+
 hdiutil create -fs 'HFS+' -size ${IMAGE_SIZE} -type UDIF -volname hfsplus_test ${IMAGE_FILE};
 
 hdiutil attach ${IMAGE_FILE}.dmg;
@@ -108,6 +112,8 @@ create_test_file_entries_with_extended_attributes "/Volumes/hfsplus_test";
 # Create a zlib compressed image from image with a HFS+ file system
 IMAGE_FILE="test_data/hfsplus_zlib";
 
+rm -t ${IMAGE_FILE}.dmg;
+
 hdiutil create -format UDZO -srcfolder "/Volumes/hfsplus_test" ${IMAGE_FILE};
 
 hdiutil detach disk${VOLUME_DEVICE_NUMBER};
@@ -116,6 +122,8 @@ hdiutil detach disk${VOLUME_DEVICE_NUMBER};
 VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
 
 IMAGE_FILE="test_data/hfsplus";
+
+rm -t ${IMAGE_FILE}.sparseimage;
 
 hdiutil create -fs 'HFS+' -size ${IMAGE_SIZE} -type SPARSE -volname hfsplus_test ${IMAGE_FILE};
 

@@ -830,8 +830,8 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file entry on HFS+."""
 
   _INODE_A_DIRECTORY = 18
-  _INODE_A_LINK = 22
-  _INODE_ANOTHER_FILE = 21
+  _INODE_A_LINK = 24
+  _INODE_ANOTHER_FILE = 23
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -1019,16 +1019,16 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 501)
     self.assertEqual(stat_object.gid, 20)
 
-    self.assertEqual(stat_object.atime, 1596950907)
+    self.assertEqual(stat_object.atime, 1627013326)
     self.assertEqual(stat_object.atime_nano, 0)
 
-    self.assertEqual(stat_object.ctime, 1596950907)
+    self.assertEqual(stat_object.ctime, 1627013326)
     self.assertEqual(stat_object.ctime_nano, 0)
 
-    self.assertEqual(stat_object.crtime, 1596950907)
+    self.assertEqual(stat_object.crtime, 1627013326)
     self.assertEqual(stat_object.crtime_nano, 0)
 
-    self.assertEqual(stat_object.mtime, 1596950907)
+    self.assertEqual(stat_object.mtime, 1627013326)
     self.assertEqual(stat_object.mtime_nano, 0)
 
   # TODO: add tests for GetTSKFile
