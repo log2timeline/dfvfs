@@ -6,7 +6,9 @@ from dfdatetime import posix_time as dfdatetime_posix_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import xfs_path_spec
+from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
+from dfvfs.vfs import xfs_attribute
 
 
 class XFSDirectory(file_entry.Directory):
@@ -104,6 +106,24 @@ class XFSFileEntry(file_entry.FileEntry):
     self.entry_type = self._ENTRY_TYPES.get(
         fsxfs_file_entry.file_mode & 0xf000, None)
 
+  def _GetAttributes(self):
+    """Retrieves the attributes.
+
+    Returns:
+      list[Attribute]: attributes.
+    """
+    if self._attributes is None:
+      stat_attribute = self._GetStatAttribute()
+      self._attributes = [stat_attribute]
+
+      for fsxfs_extended_attribute in (
+          self._fsxfs_file_entry.extended_attributes):
+        extended_attribute = xfs_attribute.XFSExtendedAttribute(
+            fsxfs_extended_attribute)
+        self._attributes.append(extended_attribute)
+
+    return self._attributes
+
   def _GetDirectory(self):
     """Retrieves a directory.
 
@@ -155,6 +175,23 @@ class XFSFileEntry(file_entry.FileEntry):
     stat_object.is_allocated = True
 
     return stat_object
+
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute.
+    """
+    stat_attribute = attribute.StatAttribute()
+    stat_attribute.group_identifier = self._fsxfs_file_entry.group_identifier
+    stat_attribute.inode_number = self._fsxfs_file_entry.inode_number
+    stat_attribute.mode = self._fsxfs_file_entry.file_mode & 0x0fff
+    stat_attribute.number_of_links = self._fsxfs_file_entry.number_of_links
+    stat_attribute.owner_identifier = self._fsxfs_file_entry.owner_identifier
+    stat_attribute.size = self._fsxfs_file_entry.size
+    stat_attribute.type = self.entry_type
+
+    return stat_attribute
 
   def _GetSubFileEntries(self):
     """Retrieves a sub file entries generator.
