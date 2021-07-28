@@ -14,8 +14,8 @@ from dfvfs.vfs import apfs_file_system
 from tests import test_lib as shared_test_lib
 
 
-class APFSAttributeTest(shared_test_lib.BaseTestCase):
-  """Tests the APFS attribute."""
+class APFSExtendedAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the APFS extended attribute."""
 
   # pylint: disable=protected-access
 

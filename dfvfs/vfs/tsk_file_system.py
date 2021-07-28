@@ -215,6 +215,17 @@ class TSKFileSystem(file_system.FileSystem):
 
     return tsk_file
 
+  def IsExt(self):
+    """Determines if the file system is ext2, ext3 or ext4.
+
+    Returns:
+      bool: True if the file system is ext.
+    """
+    tsk_fs_type = self.GetFsType()
+    return tsk_fs_type in [
+        pytsk3.TSK_FS_TYPE_EXT2, pytsk3.TSK_FS_TYPE_EXT3,
+        pytsk3.TSK_FS_TYPE_EXT4, pytsk3.TSK_FS_TYPE_EXT_DETECT]
+
   def IsHFS(self):
     """Determines if the file system is HFS, HFS+ or HFSX.
 

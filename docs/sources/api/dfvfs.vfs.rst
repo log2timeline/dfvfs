@@ -4,6 +4,14 @@ dfvfs.vfs package
 Submodules
 ----------
 
+dfvfs.vfs.apfs\_attribute module
+--------------------------------
+
+.. automodule:: dfvfs.vfs.apfs_attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.apfs\_container\_file\_entry module
 ---------------------------------------------
 
@@ -140,6 +148,14 @@ dfvfs.vfs.encrypted\_stream\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.ext\_attribute module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.ext_attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.ext\_file\_entry module
 ---------------------------------
 
@@ -232,6 +248,14 @@ dfvfs.vfs.gzip\_file\_system module
 -----------------------------------
 
 .. automodule:: dfvfs.vfs.gzip_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.hfs\_attribute module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.hfs_attribute
    :members:
    :undoc-members:
    :show-inheritance:
@@ -432,6 +456,14 @@ dfvfs.vfs.vshadow\_file\_system module
 --------------------------------------
 
 .. automodule:: dfvfs.vfs.vshadow_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.xfs\_attribute module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.xfs_attribute
    :members:
    :undoc-members:
    :show-inheritance:

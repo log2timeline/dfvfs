@@ -14,8 +14,8 @@ from dfvfs.vfs import ext_file_system
 from tests import test_lib as shared_test_lib
 
 
-class EXTAttributeTest(shared_test_lib.BaseTestCase):
-  """Tests the EXT attribute."""
+class EXTExtendedAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the EXT extended attribute."""
 
   # pylint: disable=protected-access
 

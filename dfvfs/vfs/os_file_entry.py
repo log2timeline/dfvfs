@@ -12,6 +12,7 @@ from dfdatetime import posix_time as dfdatetime_posix_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
+from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 
 
@@ -129,6 +130,18 @@ class OSFileEntry(file_entry.FileEntry):
       elif stat.S_ISSOCK(stat_info.st_mode):
         self.entry_type = definitions.FILE_ENTRY_TYPE_SOCKET
 
+  def _GetAttributes(self):
+    """Retrieves the attributes.
+
+    Returns:
+      list[Attribute]: attributes.
+    """
+    if self._attributes is None:
+      stat_attribute = self._GetStatAttribute()
+      self._attributes = [stat_attribute]
+
+    return self._attributes
+
   def _GetDirectory(self):
     """Retrieves a directory.
 
@@ -176,6 +189,26 @@ class OSFileEntry(file_entry.FileEntry):
       stat_object.ino = self._stat_info.st_ino
 
     return stat_object
+
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute.
+    """
+    stat_attribute = attribute.StatAttribute()
+
+    if not self._is_windows_device and self._stat_info:
+      stat_attribute.group_identifier = self._stat_info.st_gid
+      stat_attribute.inode_number = self._stat_info.st_ino
+      stat_attribute.mode = stat.S_IMODE(self._stat_info.st_mode)
+      stat_attribute.number_of_links = self._stat_info.st_nlink
+      stat_attribute.owner_identifier = self._stat_info.st_uid
+      stat_attribute.size = self._stat_info.st_size
+
+    stat_attribute.type = self.entry_type
+
+    return stat_attribute
 
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.

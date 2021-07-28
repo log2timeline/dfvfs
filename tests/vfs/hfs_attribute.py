@@ -14,8 +14,8 @@ from dfvfs.vfs import hfs_file_system
 from tests import test_lib as shared_test_lib
 
 
-class HFSAttributeTest(shared_test_lib.BaseTestCase):
-  """Tests the HFS attribute."""
+class HFSExtendedAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the HFS extended attribute."""
 
   # pylint: disable=protected-access
 

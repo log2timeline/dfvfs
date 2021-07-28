@@ -7,6 +7,7 @@ import unittest
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
+from dfvfs.vfs import attribute
 from dfvfs.vfs import os_file_entry
 from dfvfs.vfs import os_file_system
 
@@ -54,6 +55,8 @@ class OSDirectoryTest(shared_test_lib.BaseTestCase):
 class OSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the operating system file entry."""
 
+  # pylint: disable=protected-access
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
@@ -78,9 +81,70 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
+  def testGetAttributes(self):
+    """Tests the _GetAttributes function."""
+    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    self._SkipIfPathNotExists(test_path)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertIsNone(file_entry._attributes)
+
+    file_entry._GetAttributes()
+    self.assertIsNotNone(file_entry._attributes)
+    self.assertEqual(len(file_entry._attributes), 1)
+
+    test_attribute = file_entry._attributes[0]
+    self.assertIsInstance(test_attribute, attribute.StatAttribute)
+
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
-  # TODO: add tests for _GetStat
+
+  def testGetStat(self):
+    """Tests the _GetStat function."""
+    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    self._SkipIfPathNotExists(test_path)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_object = file_entry._GetStat()
+
+    self.assertIsNotNone(stat_object)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 6)
+
+    # The date and time values are in a seconds precision and
+    # cannot be predetermined.
+    self.assertNotEqual(stat_object.atime, 0)
+    self.assertNotEqual(stat_object.mtime, 0)
+
+  def testGetStatAttribute(self):
+    """Tests the _GetStatAttribute function."""
+    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
+    self._SkipIfPathNotExists(test_path)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_attribute = file_entry._GetStatAttribute()
+
+    self.assertIsNotNone(stat_attribute)
+    self.assertIsNotNone(stat_attribute.group_identifier)
+    self.assertIsNotNone(stat_attribute.inode_number)
+    self.assertIsNotNone(stat_attribute.mode)
+    self.assertEqual(stat_attribute.number_of_links, 1)
+    self.assertIsNotNone(stat_attribute.owner_identifier)
+    self.assertEqual(stat_attribute.size, 6)
+    self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
+
   # TODO: add tests for _GetSubFileEntries
 
   def testAccessTime(self):
@@ -157,27 +221,6 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, 'testdir_os')
-
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
-    self._SkipIfPathNotExists(test_path)
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 6)
-
-    # The date and time values are in a seconds precision and
-    # cannot be predetermined.
-    self.assertNotEqual(stat_object.atime, 0)
-    self.assertNotEqual(stat_object.mtime, 0)
 
   def testIsFunctions(self):
     """Test the Is? functions."""
