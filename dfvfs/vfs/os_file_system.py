@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The file system implementation that is provided by the operating system."""
+"""The operating system file system implementation."""
 
 import os
 import platform
@@ -14,7 +14,7 @@ from dfvfs.vfs import os_file_entry
 
 
 class OSFileSystem(file_system.FileSystem):
-  """File system provided by the operating system."""
+  """File system that uses the operating system."""
 
   if platform.system() == 'Windows':
     PATH_SEPARATOR = '\\'

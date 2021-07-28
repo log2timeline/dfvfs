@@ -11,7 +11,7 @@ from dfvfs.lib import errors
 
 
 class OSFile(file_io.FileIO):
-  """File input/output (IO) object using os."""
+  """File input/output (IO) object that uses the operating system."""
 
   def __init__(self, resolver_context, path_spec):
     """Initializes a file input/output (IO) object.

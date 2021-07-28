@@ -7,6 +7,11 @@ import stat
 
 import pysmdev
 
+try:
+  import xattr
+except ImportError:
+  xattr = None
+
 from dfdatetime import posix_time as dfdatetime_posix_time
 
 from dfvfs.lib import definitions
@@ -14,10 +19,11 @@ from dfvfs.lib import errors
 from dfvfs.path import os_path_spec
 from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
+from dfvfs.vfs import os_attribute
 
 
 class OSDirectory(file_entry.Directory):
-  """File system directory that uses os."""
+  """File system directory that uses the operating system."""
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -99,6 +105,7 @@ class OSFileEntry(file_entry.FileEntry):
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=False)
     self._is_windows_device = is_windows_device
+    self._location = location
     self._name = None
     self._stat_info = stat_info
 
@@ -140,6 +147,12 @@ class OSFileEntry(file_entry.FileEntry):
       stat_attribute = self._GetStatAttribute()
       self._attributes = [stat_attribute]
 
+      if xattr:
+        for name in xattr.listxattr(self._location):
+          extended_attribute = os_attribute.OSExtendedAttribute(
+              self._location, name)
+          self._attributes.append(extended_attribute)
+
     return self._attributes
 
   def _GetDirectory(self):
@@ -162,11 +175,10 @@ class OSFileEntry(file_entry.FileEntry):
     if self._link is None:
       self._link = ''
 
-      location = getattr(self.path_spec, 'location', None)
-      if location is None:
+      if self._location is None:
         return self._link
 
-      self._link = os.readlink(location)
+      self._link = os.readlink(self._location)
       self._link = os.path.abspath(self._link)
 
     return self._link
@@ -291,9 +303,8 @@ class OSFileEntry(file_entry.FileEntry):
   def name(self):
     """str: name of the file entry, without the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, 'location', None)
-      if location is not None:
-        self._name = self._file_system.BasenamePath(location)
+      if self._location is not None:
+        self._name = self._file_system.BasenamePath(self._location)
     return self._name
 
   @property
@@ -323,11 +334,10 @@ class OSFileEntry(file_entry.FileEntry):
     Returns:
       OSFileEntry: parent file entry or None if not available.
     """
-    location = getattr(self.path_spec, 'location', None)
-    if location is None:
+    if self._location is None:
       return None
 
-    parent_location = self._file_system.DirnamePath(location)
+    parent_location = self._file_system.DirnamePath(self._location)
     if parent_location is None:
       return None
 

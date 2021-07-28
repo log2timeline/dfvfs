@@ -95,7 +95,8 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 1)
+    # Note that on some platforms this file can have extended attributes.
+    self.assertGreaterEqual(len(file_entry._attributes), 1)
 
     test_attribute = file_entry._attributes[0]
     self.assertIsInstance(test_attribute, attribute.StatAttribute)
