@@ -14,8 +14,8 @@ from dfvfs.vfs import xfs_file_system
 from tests import test_lib as shared_test_lib
 
 
-class XFSAttributeTest(shared_test_lib.BaseTestCase):
-  """Tests the XFS attribute."""
+class XFSExtendedAttributeTest(shared_test_lib.BaseTestCase):
+  """Tests the XFS extended attribute."""
 
   # pylint: disable=protected-access
 

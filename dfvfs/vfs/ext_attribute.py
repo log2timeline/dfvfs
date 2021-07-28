@@ -74,10 +74,6 @@ class EXTExtendedAttribute(attribute.Attribute):
 
     Returns:
       int: current offset into the file input/output (IO) object.
-
-    Raises:
-      IOError: if the file input/output (IO)-like object has not been opened.
-      OSError: if the file input/output (IO)-like object has not been opened.
     """
     return self._fsext_extended_attribute.get_offset()
 
@@ -91,10 +87,6 @@ class EXTExtendedAttribute(attribute.Attribute):
 
     Returns:
       int: size of the file input/output (IO) object.
-
-    Raises:
-      IOError: if the file input/output (IO) object has not been opened.
-      OSError: if the file input/output (IO) object has not been opened.
     """
     return self._fsext_extended_attribute.get_size()
 

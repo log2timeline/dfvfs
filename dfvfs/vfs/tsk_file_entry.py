@@ -14,6 +14,7 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import resolver
+from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import tsk_attribute
 
@@ -398,12 +399,25 @@ class TSKFileEntry(file_entry.FileEntry):
   _TSK_MTIME_FS_TYPES.extend(_TSK_NTFS_FS_TYPES)
   _TSK_MTIME_FS_TYPES.extend(_TSK_UFS_FS_TYPES)
 
-  _TSK_HAS_NANO_FS_TYPES = [
+  _TSK_HAS_NANO_FS_TYPES = frozenset([
       pytsk3.TSK_FS_TYPE_EXFAT,
       pytsk3.TSK_FS_TYPE_EXT4,
       pytsk3.TSK_FS_TYPE_FFS2,
       pytsk3.TSK_FS_TYPE_HFS,
-      pytsk3.TSK_FS_TYPE_NTFS]
+      pytsk3.TSK_FS_TYPE_NTFS])
+
+  _TSK_INTERNAL_ATTRIBUTE_TYPES = frozenset([
+      pytsk3.TSK_FS_ATTR_TYPE_APFS_COMP_REC,
+      pytsk3.TSK_FS_ATTR_TYPE_APFS_DATA,
+      pytsk3.TSK_FS_ATTR_TYPE_APFS_RSRC,
+      pytsk3.TSK_FS_ATTR_TYPE_HFS_COMP_REC,
+      pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA,
+      pytsk3.TSK_FS_ATTR_TYPE_HFS_RSRC,
+      pytsk3.TSK_FS_ATTR_TYPE_UNIX_EXTENT,
+      pytsk3.TSK_FS_ATTR_TYPE_UNIX_INDIR])
+
+  _ATTRIBUTE_TYPE_CLASS_MAPPINGS = {
+      pytsk3.TSK_FS_ATTR_TYPE_HFS_EXT_ATTR: tsk_attribute.TSKExtendedAttribute}
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
@@ -471,16 +485,29 @@ class TSKFileEntry(file_entry.FileEntry):
       list[TSKAttribute]: attributes.
     """
     if self._attributes is None:
-      self._attributes = []
+      stat_attribute = self._GetStatAttribute()
+      self._attributes = [stat_attribute]
 
       for pytsk_attribute in self._tsk_file:
-        if getattr(pytsk_attribute, 'info', None) is None:
-          continue
+        if getattr(pytsk_attribute, 'info', None):
+          attribute_type = getattr(pytsk_attribute.info, 'type', None)
+          if attribute_type in self._TSK_INTERNAL_ATTRIBUTE_TYPES:
+            continue
 
-        # At the moment there is no way to expose the attribute data
-        # from pytsk3.
-        attribute_object = tsk_attribute.TSKAttribute(pytsk_attribute)
-        self._attributes.append(attribute_object)
+          # The data stream is returned as a name-less attribute of type
+          # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
+          if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and not getattr(
+              pytsk_attribute.info, 'name', None):
+            continue
+
+          if self._file_system.IsExt():
+            attribute_class = tsk_attribute.TSKExtendedAttribute
+          else:
+            attribute_class = self._ATTRIBUTE_TYPE_CLASS_MAPPINGS.get(
+                attribute_type, tsk_attribute.TSKAttribute)
+
+          attribute_object = attribute_class(self._tsk_file, pytsk_attribute)
+          self._attributes.append(attribute_object)
 
     return self._attributes
 
@@ -605,6 +632,33 @@ class TSKFileEntry(file_entry.FileEntry):
     stat_object.ino = getattr(self._tsk_file.info.meta, 'addr', None)
 
     return stat_object
+
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute.
+    """
+    mode = getattr(self._tsk_file.info.meta, 'mode', None)
+    if mode is not None:
+      # We need to cast mode to an int since it is of type
+      # pytsk3.TSK_FS_META_MODE_ENUM.
+      mode = int(mode)
+
+    stat_attribute = attribute.StatAttribute()
+    stat_attribute.group_identifier = getattr(
+        self._tsk_file.info.meta, 'gid', None)
+    stat_attribute.inode_number = getattr(
+        self._tsk_file.info.meta, 'addr', None)
+    stat_attribute.mode = mode
+    stat_attribute.number_of_links = getattr(
+        self._tsk_file.info.meta, 'nlink', None)
+    stat_attribute.owner_identifier = getattr(
+        self._tsk_file.info.meta, 'uid', None)
+    stat_attribute.size = getattr(self._tsk_file.info.meta, 'size', None)
+    stat_attribute.type = self.entry_type
+
+    return stat_attribute
 
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
