@@ -25,6 +25,9 @@ class HFSAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     format_specification = specification.FormatSpecification(
         self.type_indicator)
 
+    # Traditional HFS signature.
+    # format_specification.AddNewSignature(b'BD', offset=1024)
+
     # HFS+ file system signature.
     format_specification.AddNewSignature(b'H+', offset=1024)
 
