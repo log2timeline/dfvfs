@@ -35,9 +35,6 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     # HFS boot block signature.
     format_specification.AddNewSignature(b'LK', offset=0)
 
-    # HFS master directory block signature.
-    format_specification.AddNewSignature(b'BD', offset=0)
-
     if definitions.PREFERRED_HFS_BACK_END == self.TYPE_INDICATOR:
       # HFS+ file system signature.
       format_specification.AddNewSignature(b'H+', offset=1024)

@@ -95,6 +95,7 @@ assert_availability_binary dd;
 assert_availability_binary ewfacquire;
 assert_availability_binary fdisk;
 assert_availability_binary gdisk;
+assert_availability_binary hformat;
 assert_availability_binary losetup;
 assert_availability_binary lvcreate;
 assert_availability_binary mke2fs;
@@ -105,6 +106,9 @@ assert_availability_binary pvcreate;
 assert_availability_binary qemu-img;
 assert_availability_binary vgchange;
 assert_availability_binary vgcreate;
+
+CURRENT_GID=$( id -g );
+CURRENT_UID=$( id -u );
 
 set -e;
 
@@ -154,8 +158,6 @@ dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${S
 
 mkfs.fat -F 12 -n "FAT12_TEST" -S ${SECTOR_SIZE} ${IMAGE_FILE};
 
-CURRENT_GID=$( id -g );
-CURRENT_UID=$( id -u );
 sudo mount -o loop,rw,gid=${CURRENT_GID},uid=${CURRENT_UID} ${IMAGE_FILE} ${MOUNT_POINT};
 
 create_test_file_entries_without_link ${MOUNT_POINT};
@@ -409,4 +411,19 @@ EOT
 # sleep 1;
 
 # sudo cryptsetup luksClose dfvfs_luks;
+
+# Create test image with a (traditional) HFS file system
+IMAGE_FILE="test_data/hfs.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+hformat -f -l "hfs_test" ${IMAGE_FILE} 0;
+
+sudo mount -o loop,rw,gid=${CURRENT_GID},uid=${CURRENT_UID} ${IMAGE_FILE} ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries_without_link ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
 
