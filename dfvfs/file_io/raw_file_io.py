@@ -64,14 +64,13 @@ class RawFile(file_object_io.FileObjectIO):
       if not segment_file_path_specs:
         return None
 
-      file_objects = []
       for segment_file_path_spec in segment_file_path_specs:
         file_object = resolver.Resolver.OpenFileObject(
             segment_file_path_spec, resolver_context=self._resolver_context)
-        file_objects.append(file_object)
+        self._file_objects.append(file_object)
 
       raw_handle = pysmraw.handle()
-      raw_handle.open_file_objects(file_objects)
+      raw_handle.open_file_objects(self._file_objects)
 
     return raw_handle
 
