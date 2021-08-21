@@ -192,8 +192,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(len(identifiers), 1)
     self.assertEqual(identifiers, ['p1'])
 
-  def testGetPartitionIdentifiersOnPartitionedImage(self):
-    """Tests the _GetPartitionIdentifiers function on partitions."""
+  def testGetPartitionIdentifiersOnMBR(self):
+    """Tests the _GetPartitionIdentifiers function on MBR."""
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -321,8 +321,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(len(identifiers), 2)
     self.assertEqual(identifiers, ['vss1', 'vss2'])
 
-  def testNormalizedVolumeIdentifiersPartitionedImage(self):
-    """Tests the _NormalizedVolumeIdentifiers function on partitions."""
+  def testNormalizedVolumeIdentifiersMBR(self):
+    """Tests the _NormalizedVolumeIdentifiers function on MBR."""
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -799,8 +799,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
           scan_context, apfs_container_scan_node.sub_nodes[0], test_options,
           base_path_specs)
 
-  def testScanVolumeSystemRootOnPartitionedImage(self):
-    """Tests the _ScanVolumeSystemRoot function on partitions."""
+  def testScanVolumeSystemRootOnMBR(self):
+    """Tests the _ScanVolumeSystemRoot function on MBR."""
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -872,8 +872,8 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.ScannerError):
       test_scanner.GetBasePathSpecs('/bogus')
 
-  def testGetBasePathSpecsOnPartitionedImage(self):
-    """Tests the GetBasePathSpecs function on partitions."""
+  def testGetBasePathSpecsOnMBR(self):
+    """Tests the GetBasePathSpecs function on MBR."""
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 

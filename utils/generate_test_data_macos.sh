@@ -47,6 +47,7 @@ This is a text file.
 We should be able to parse it.
 EOT
 
+	# On older versions of Mac OS use `xattr -s' instead.
 	xattr -w myxattr "My extended attribute" ${MOUNT_POINT}/a_directory/a_file
 
 	cat >${MOUNT_POINT}/passwords.txt <<EOT
@@ -81,7 +82,7 @@ VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 2 ));
 
 IMAGE_FILE="test_data/apfs";
 
-rm -t ${IMAGE_FILE}.dmg;
+rm -f ${IMAGE_FILE}.dmg;
 
 hdiutil create -fs 'APFS' -size ${IMAGE_SIZE} -type UDIF -volname apfs_test ${IMAGE_FILE};
 
@@ -101,7 +102,7 @@ VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
 
 IMAGE_FILE="test_data/hfsplus";
 
-rm -t ${IMAGE_FILE}.dmg;
+rm -f ${IMAGE_FILE}.dmg;
 
 hdiutil create -fs 'HFS+' -size ${IMAGE_SIZE} -type UDIF -volname hfsplus_test ${IMAGE_FILE};
 
@@ -112,7 +113,7 @@ create_test_file_entries_with_extended_attributes "/Volumes/hfsplus_test";
 # Create a zlib compressed image from image with a HFS+ file system
 IMAGE_FILE="test_data/hfsplus_zlib";
 
-rm -t ${IMAGE_FILE}.dmg;
+rm -f ${IMAGE_FILE}.dmg;
 
 hdiutil create -format UDZO -srcfolder "/Volumes/hfsplus_test" ${IMAGE_FILE};
 
@@ -123,11 +124,26 @@ VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
 
 IMAGE_FILE="test_data/hfsplus";
 
-rm -t ${IMAGE_FILE}.sparseimage;
+rm -f ${IMAGE_FILE}.sparseimage;
 
 hdiutil create -fs 'HFS+' -size ${IMAGE_SIZE} -type SPARSE -volname hfsplus_test ${IMAGE_FILE};
 
 hdiutil attach ${IMAGE_FILE}.sparseimage;
+
+create_test_file_entries_with_extended_attributes "/Volumes/hfsplus_test";
+
+hdiutil detach disk${VOLUME_DEVICE_NUMBER};
+
+# Create an image with an APM partition table and a HFS+ file system
+VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
+
+IMAGE_FILE="test_data/apm";
+
+rm -f ${IMAGE_FILE}.dmg;
+
+hdiutil create -fs 'HFS+' -layout 'SPUD' -size ${IMAGE_SIZE} -type UDIF -volname hfsplus_test ${IMAGE_FILE};
+
+hdiutil attach ${IMAGE_FILE}.dmg;
 
 create_test_file_entries_with_extended_attributes "/Volumes/hfsplus_test";
 
