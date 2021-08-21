@@ -72,7 +72,7 @@ class TARFileSystem(file_system.FileSystem):
     # Explicitly tell tarfile not to use compression. Compression should be
     # handled by the file-like object.
     try:
-      tar_file = tarfile.open(mode='r:', fileobj=file_object)
+      tar_file = tarfile.open(mode='r:', fileobj=file_object)  # pylint: disable=consider-using-with
     except tarfile.ReadError as exception:
       raise IOError(exception)
 
@@ -177,10 +177,11 @@ class TARFileSystem(file_system.FileSystem):
     if not location.startswith(self.LOCATION_ROOT):
       raise errors.PathSpecError('Invalid location in path specification.')
 
-    if len(location) == 1:
-      return None
+    tar_file = None
+    if len(location) > 1:
+      try:
+        tar_file = self._tar_file.getmember(location[1:])
+      except KeyError:
+        pass
 
-    try:
-      return self._tar_file.getmember(location[1:])
-    except KeyError:
-      pass
+    return tar_file

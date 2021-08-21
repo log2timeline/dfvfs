@@ -39,13 +39,13 @@ class AnalyzerHelper(object):
     # pylint: disable=no-member
     return self.TYPE_INDICATOR
 
-  def AnalyzeFileObject(self, unused_file_object):
+  def AnalyzeFileObject(self, file_object):  # pylint: disable=useless-type-doc
     """Retrieves the format specification.
 
     This is the fall through implementation that raises a RuntimeError.
 
     Args:
-      unused_file_object (FileIO): file-like object.
+      file_object (FileIO): file-like object.
 
     Returns:
       str: type indicator if the file-like object contains a supported format

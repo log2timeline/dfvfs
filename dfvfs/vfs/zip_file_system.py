@@ -64,7 +64,7 @@ class ZipFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         self._path_spec.parent, resolver_context=self._resolver_context)
 
-    zip_file = zipfile.ZipFile(file_object, 'r')
+    zip_file = zipfile.ZipFile(file_object, 'r')  # pylint: disable=consider-using-with
 
     self._file_object = file_object
     self._zip_file = zip_file

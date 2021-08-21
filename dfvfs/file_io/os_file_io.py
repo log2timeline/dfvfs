@@ -85,7 +85,7 @@ class OSFile(file_io.FileIO):
       self._size = smdev_handle.media_size
 
     else:
-      self._file_object = open(location, mode=mode)
+      self._file_object = open(location, mode=mode)  # pylint: disable=consider-using-with
       self._size = stat_info.st_size
 
   # Note: that the following functions do not follow the style guide

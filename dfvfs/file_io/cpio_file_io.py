@@ -87,8 +87,7 @@ class CPIOFile(file_io.FileIO):
         self._cpio_archive_file_entry.data_offset + self._current_offset)
 
     read_size = self._cpio_archive_file_entry.data_size - self._current_offset
-    if read_size > size:
-      read_size = size
+    read_size = min(read_size, size)
 
     data = self._cpio_archive_file.ReadDataAtOffset(file_offset, read_size)
 

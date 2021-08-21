@@ -281,7 +281,8 @@ class FileEntry(object):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     return None
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def name(self):
     """str: name of the file entry, without the full path."""
 
