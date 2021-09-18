@@ -79,9 +79,9 @@ class _PathSpecJsonEncoder(json.JSONEncoder):
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the json.JSONEncoder object interface.
-  # pylint: disable=arguments-differ,invalid-name,method-hidden
+  # pylint: disable=invalid-name,method-hidden
 
-  def default(self, path_spec_object):
+  def default(self, path_spec_object):  # pylint: disable=arguments-renamed
     """Converts a path specification object into a JSON dictionary.
 
     The resulting dictionary of the JSON serialized objects consists of:
@@ -136,10 +136,8 @@ class _PathSpecJsonEncoder(json.JSONEncoder):
 class JsonPathSpecSerializer(serializer.PathSpecSerializer):
   """JSON path specification serializer object."""
 
-  # pylint: disable=arguments-differ
-
   @classmethod
-  def ReadSerialized(cls, json_string):
+  def ReadSerialized(cls, json_string):  # pylint: disable=arguments-renamed
     """Reads a path specification from serialized form.
 
     Args:
@@ -152,7 +150,7 @@ class JsonPathSpecSerializer(serializer.PathSpecSerializer):
     return json_decoder.decode(json_string)
 
   @classmethod
-  def WriteSerialized(cls, path_spec_object):
+  def WriteSerialized(cls, path_spec_object):  # pylint: disable=arguments-renamed
     """Writes a path specification to serialized form.
 
     Args:

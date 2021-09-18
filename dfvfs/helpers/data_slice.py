@@ -57,10 +57,7 @@ class DataSlice(object):
     if key.step is not None:
       raise ValueError('Unsupported slice step: {0!s}'.format(key.step))
 
-    start_offset = key.start or 0
-    if start_offset < 0:
-      start_offset = 0
-
+    start_offset = max(key.start or 0, 0)
     end_offset = key.stop or self._file_object_size
 
     if end_offset < 0:
