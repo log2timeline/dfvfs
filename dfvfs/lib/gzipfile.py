@@ -225,6 +225,88 @@ class GzipMember(data_format.DataFormat):
     # the whole gzip file's uncompressed data.
     self.uncompressed_data_offset = uncompressed_data_offset
 
+  def _GetCacheSize(self):
+    """Determines the size of the uncompressed cached data.
+
+    Returns:
+      int: number of cached bytes.
+    """
+    if None in (self._cache_start_offset, self._cache_end_offset):
+      return 0
+
+    return self._cache_end_offset - self._cache_start_offset
+
+  def _IsCacheFull(self):
+    """Checks whether the uncompressed data cache is full.
+
+    Returns:
+      bool: True if the cache is full.
+    """
+    return self._GetCacheSize() >= self._UNCOMPRESSED_DATA_CACHE_SIZE
+
+  def _LoadDataIntoCache(self, file_object, minimum_offset):
+    """Reads and decompresses the data in the member.
+
+    This function already loads as much data as possible in the cache, up to
+    UNCOMPRESSED_DATA_CACHE_SIZE bytes.
+
+    Args:
+      file_object (FileIO): file-like object.
+      minimum_offset (int): offset into this member's uncompressed data at
+          which the cache should start.
+    """
+    # Decompression can only be performed from beginning to end of the stream.
+    # So, if data before the current position of the decompressor in the stream
+    # is required, it's necessary to throw away the current decompression
+    # state and start again.
+    if minimum_offset < self._decompressor_state.uncompressed_offset:
+      self._ResetDecompressorState()
+
+    cache_is_full = self._IsCacheFull()
+    while not cache_is_full:
+      decompressed_data = self._decompressor_state.Read(file_object)
+      # Note that decompressed_data will be empty if there is no data left
+      # to read and decompress.
+      if not decompressed_data:
+        break
+
+      decompressed_data_length = len(decompressed_data)
+      decompressed_end_offset = self._decompressor_state.uncompressed_offset
+      decompressed_start_offset = (
+          decompressed_end_offset - decompressed_data_length)
+
+      data_to_add = decompressed_data
+      added_data_start_offset = decompressed_start_offset
+
+      if decompressed_start_offset < minimum_offset:
+        data_to_add = None
+
+      if decompressed_start_offset < minimum_offset < decompressed_end_offset:
+        data_add_offset = decompressed_end_offset - minimum_offset
+        data_to_add = decompressed_data[-data_add_offset:]
+        added_data_start_offset = decompressed_end_offset - data_add_offset
+
+      if data_to_add and not cache_is_full:
+        self._cache = b''.join([self._cache, data_to_add])
+        if self._cache_start_offset is None:
+          self._cache_start_offset = added_data_start_offset
+        if self._cache_end_offset is None:
+          self._cache_end_offset = self._cache_start_offset + len(data_to_add)
+        else:
+          self._cache_end_offset += len(data_to_add)
+
+        cache_is_full = self._IsCacheFull()
+
+      # If there's no more data in the member, the unused_data value is
+      # populated in the decompressor. When this situation arises, we rewind
+      # to the end of the compressed_data section.
+      unused_data = self._decompressor_state.GetUnusedData()
+      if unused_data:
+        seek_offset = -len(unused_data)
+        file_object.seek(seek_offset, os.SEEK_CUR)
+        self._ResetDecompressorState()
+        break
+
   def _ReadMemberHeader(self, file_object):
     """Reads a member header.
 
@@ -288,24 +370,6 @@ class GzipMember(data_format.DataFormat):
     self._cache_end_offset = None
     self._ResetDecompressorState()
 
-  def GetCacheSize(self):
-    """Determines the size of the uncompressed cached data.
-
-    Returns:
-      int: number of cached bytes.
-    """
-    if not self._cache_start_offset or not self._cache_end_offset:
-      return 0
-    return self._cache_end_offset - self._cache_start_offset
-
-  def IsCacheFull(self):
-    """Checks whether the uncompressed data cache is full.
-
-    Returns:
-      bool: True if the cache is full.
-    """
-    return self.GetCacheSize() >= self._UNCOMPRESSED_DATA_CACHE_SIZE
-
   def ReadAtOffset(self, offset, size=None):
     """Reads a byte string from the gzip member at the specified offset.
 
@@ -352,66 +416,6 @@ class GzipMember(data_format.DataFormat):
       return self._cache[cache_offset:]
 
     return self._cache[cache_offset:data_end_offset]
-
-  def _LoadDataIntoCache(self, file_object, minimum_offset):
-    """Reads and decompresses the data in the member.
-
-    This function already loads as much data as possible in the cache, up to
-    UNCOMPRESSED_DATA_CACHE_SIZE bytes.
-
-    Args:
-      file_object (FileIO): file-like object.
-      minimum_offset (int): offset into this member's uncompressed data at
-          which the cache should start.
-    """
-    # Decompression can only be performed from beginning to end of the stream.
-    # So, if data before the current position of the decompressor in the stream
-    # is required, it's necessary to throw away the current decompression
-    # state and start again.
-    if minimum_offset < self._decompressor_state.uncompressed_offset:
-      self._ResetDecompressorState()
-
-    while not self.IsCacheFull():
-      decompressed_data = self._decompressor_state.Read(file_object)
-      # Note that decompressed_data will be empty if there is no data left
-      # to read and decompress.
-      if not decompressed_data:
-        break
-
-      decompressed_data_length = len(decompressed_data)
-      decompressed_end_offset = self._decompressor_state.uncompressed_offset
-      decompressed_start_offset = (
-          decompressed_end_offset - decompressed_data_length)
-
-      data_to_add = decompressed_data
-      added_data_start_offset = decompressed_start_offset
-
-      if decompressed_start_offset < minimum_offset:
-        data_to_add = None
-
-      if decompressed_start_offset < minimum_offset < decompressed_end_offset:
-        data_add_offset = decompressed_end_offset - minimum_offset
-        data_to_add = decompressed_data[-data_add_offset:]
-        added_data_start_offset = decompressed_end_offset - data_add_offset
-
-      if not self.IsCacheFull() and data_to_add:
-        self._cache = b''.join([self._cache, data_to_add])
-        if self._cache_start_offset is None:
-          self._cache_start_offset = added_data_start_offset
-        if self._cache_end_offset is None:
-          self._cache_end_offset = self._cache_start_offset + len(data_to_add)
-        else:
-          self._cache_end_offset += len(data_to_add)
-
-      # If there's no more data in the member, the unused_data value is
-      # populated in the decompressor. When this situation arises, we rewind
-      # to the end of the compressed_data section.
-      unused_data = self._decompressor_state.GetUnusedData()
-      if unused_data:
-        seek_offset = -len(unused_data)
-        file_object.seek(seek_offset, os.SEEK_CUR)
-        self._ResetDecompressorState()
-        break
 
 
 class GzipCompressedStream(object):
