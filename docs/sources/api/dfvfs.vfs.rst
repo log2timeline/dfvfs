@@ -332,6 +332,14 @@ dfvfs.vfs.ntfs\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.os\_attribute module
+------------------------------
+
+.. automodule:: dfvfs.vfs.os_attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.os\_file\_entry module
 --------------------------------
 
