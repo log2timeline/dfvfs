@@ -431,6 +431,17 @@ class EXTFileEntryTestWithEXT4(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.modification_time)
 
+  def testSize(self):
+    """Test the size property."""
+    test_location = '/a_directory/another_file'
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_EXT, inode=self._INODE_ANOTHER_FILE,
+        location=test_location, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 22)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(

@@ -274,6 +274,11 @@ class EXTFileEntry(file_entry.FileEntry):
 
     return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
 
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._fsext_file_entry.size
+
   def GetEXTFileEntry(self):
     """Retrieves the EXT file entry.
 

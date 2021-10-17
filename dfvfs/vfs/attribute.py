@@ -21,8 +21,8 @@ class StatAttribute(object):
     inode_number (int): number of the corresponding inode, equivalent to st_ino.
     mode (int): access mode, equivalent to st_mode & 0x0fff.
     number_of_links (int): number of hard links, equivalent to st_nlink.
-    owner_user_identifier (int): user identifier (UID) of the owner, equivalent
-        to st_uid.
+    owner_identifier (int): user identifier (UID) of the owner, equivalent to
+        st_uid.
     size (int): size, in number of bytes, equivalent to st_size.
     type (str): file type, value derived from st_mode >> 12.
   """
