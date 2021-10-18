@@ -239,6 +239,11 @@ class XFSFileEntry(file_entry.FileEntry):
     timestamp = self._fsxfs_file_entry.get_modification_time_as_integer()
     return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
 
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._fsxfs_file_entry.size
+
   def GetXFSFileEntry(self):
     """Retrieves the XFS file entry.
 

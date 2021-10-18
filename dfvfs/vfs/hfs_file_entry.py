@@ -251,6 +251,11 @@ class HFSFileEntry(file_entry.FileEntry):
     timestamp = self._fshfs_file_entry.get_modification_time_as_integer()
     return dfdatetime_hfs_time.HFSTime(timestamp=timestamp)
 
+  @property
+  def size(self):
+    """int: size of the file entry in bytes or None if not available."""
+    return self._fshfs_file_entry.size
+
   def GetHFSFileEntry(self):
     """Retrieves the HFS file entry.
 
