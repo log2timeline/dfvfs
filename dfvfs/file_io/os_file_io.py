@@ -7,7 +7,9 @@ import os
 import pysmdev
 
 from dfvfs.file_io import file_io
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.mount import manager as mount_manager
 
 
 class OSFile(file_io.FileIO):
@@ -38,13 +40,37 @@ class OSFile(file_io.FileIO):
     Raises:
       AccessError: if the access to open the file was denied.
       IOError: if the file-like object could not be opened.
+      MountPointError: if the mount point specified in the path specification
+          does not exist.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    if self._path_spec.HasParent():
-      raise errors.PathSpecError('Unsupported path specification with parent.')
-
     location = getattr(self._path_spec, 'location', None)
+
+    if self._path_spec.HasParent():
+      parent_path_spec = self._path_spec.parent
+      if parent_path_spec.type_indicator != definitions.TYPE_INDICATOR_MOUNT:
+        raise errors.PathSpecError(
+            'Unsupported path specification with parent.')
+
+      mount_path_spec = mount_manager.MountPointManager.GetMountPoint(
+          parent_path_spec.identifier)
+      if not mount_path_spec:
+        raise errors.MountPointError('No such mount point: {0:s}'.format(
+            parent_path_spec.identifier))
+
+      if (mount_path_spec.type_indicator != definitions.TYPE_INDICATOR_OS or
+          mount_path_spec.parent):
+        raise errors.MountPointError(
+            'Unsupported mount point path specification.')
+
+      mount_path = mount_path_spec.location
+      if mount_path[-1] == os.path.sep:
+        mount_path = mount_path[:-1]
+
+      # Cannot use os.path.join() here since location is prefixed with a path
+      # segment separator.
+      location = ''.join([mount_path, location])
 
     if location is None:
       raise errors.PathSpecError('Path specification missing location.')

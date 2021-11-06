@@ -24,7 +24,8 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
           /opt/dfvfs or C:\\Opt\\dfvfs.
 
     Raises:
-      ValueError: when location is not set or parent is set.
+      ValueError: when location is not set or parent is set with an unsupported
+          path specification type.
     """
     if not location:
       raise ValueError('Missing location value.')
@@ -34,11 +35,13 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
       parent = kwargs['parent']
       del kwargs['parent']
 
-    if parent:
-      raise ValueError('Parent value set.')
+    if not parent:
+      # Within the path specification the path should be absolute.
+      location = os.path.abspath(location)
 
-    # Within the path specification the path should be absolute.
-    location = os.path.abspath(location)
+    elif parent.type_indicator != definitions.TYPE_INDICATOR_MOUNT:
+      raise ValueError('Unsupported parent type indicator: {0:s}.'.format(
+          parent.type_indicator))
 
     super(OSPathSpec, self).__init__(location=location, parent=parent, **kwargs)
 

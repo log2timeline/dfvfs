@@ -5,6 +5,7 @@
 import platform
 import unittest
 
+from dfvfs.path import mount_path_spec
 from dfvfs.path import os_path_spec
 
 from tests.path import test_lib
@@ -30,6 +31,12 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
 
     with self.assertRaises(ValueError):
       os_path_spec.OSPathSpec(location=test_location, bogus='BOGUS')
+
+    test_mount_path_spec = mount_path_spec.MountPathSpec(identifier='C')
+    path_spec = os_path_spec.OSPathSpec(
+        location=test_location, parent=test_mount_path_spec)
+
+    self.assertIsNotNone(path_spec)
 
   def testComparable(self):
     """Tests the path specification comparable property."""
