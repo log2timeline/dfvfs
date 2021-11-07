@@ -9,7 +9,6 @@ import pysmdev
 from dfvfs.file_io import file_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.mount import manager as mount_manager
 
 
 class OSFile(file_io.FileIO):
@@ -53,7 +52,7 @@ class OSFile(file_io.FileIO):
         raise errors.PathSpecError(
             'Unsupported path specification with parent.')
 
-      mount_path_spec = mount_manager.MountPointManager.GetMountPoint(
+      mount_path_spec = self._resolver_context.GetMountPoint(
           parent_path_spec.identifier)
       if not mount_path_spec:
         raise errors.MountPointError('No such mount point: {0:s}'.format(

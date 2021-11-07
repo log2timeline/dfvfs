@@ -2,6 +2,7 @@
 """The resolver context object."""
 
 from dfvfs.lib import decorators
+from dfvfs.mount import manager as mount_manager
 from dfvfs.resolver import cache
 
 
@@ -24,6 +25,7 @@ class Context(object):
         maximum_number_of_file_objects)
     self._file_system_cache = cache.ObjectsCache(
         maximum_number_of_file_systems)
+    self._mount_points = {}
 
   def _GetFileSystemCacheIdentifier(self, path_spec):
     """Determines the file system cache identifier for the path specification.
@@ -40,6 +42,20 @@ class Context(object):
     string_parts.append('type: {0:s}'.format(path_spec.type_indicator))
 
     return ''.join(string_parts)
+
+  def DeregisterMountPoint(self, mount_point):
+    """Deregisters a path specification mount point.
+
+    Args:
+      mount_point (str): mount point identifier.
+
+    Raises:
+      KeyError: if the corresponding mount point is not set.
+    """
+    if mount_point not in self._mount_points:
+      raise KeyError('Mount point: {0:s} not set.'.format(mount_point))
+
+    del self._mount_points[mount_point]
 
   def CacheFileObject(self, path_spec, file_object):
     """Caches a file-like object based on a path specification.
@@ -116,6 +132,36 @@ class Context(object):
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
     return self._file_system_cache.GetObject(identifier)
+
+  def GetMountPoint(self, mount_point):
+    """Retrieves the path specification of a mount point.
+
+    Args:
+      mount_point (str): mount point identifier.
+
+    Returns:
+      PathSpec: path specification of the mount point or None if the mount
+          point does not exists.
+    """
+    path_spec = self._mount_points.get(mount_point, None)
+    if not path_spec:
+      path_spec = mount_manager.MountPointManager.GetMountPoint(mount_point)
+    return path_spec
+
+  def RegisterMountPoint(self, mount_point, path_spec):
+    """Registers a path specification mount point.
+
+    Args:
+      mount_point (str): mount point identifier.
+      path_spec (PathSpec): path specification of the mount point.
+
+    Raises:
+      KeyError: if the corresponding mount point is already set.
+    """
+    if mount_point in self._mount_points:
+      raise KeyError('Mount point: {0:s} already set.'.format(mount_point))
+
+    self._mount_points[mount_point] = path_spec
 
   def SetMaximumNumberOfFileObjects(self, maximum_number_of_file_objects):
     """Sets the maximum number of cached file-like objects.
