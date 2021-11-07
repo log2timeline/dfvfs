@@ -68,11 +68,17 @@ faster access to the file within the TSK virtual file system implementation.
 The path specification resolver is used to resolve a path specification to a
 file-like object or virtual file system object.
 
-**TODO**
+The path specification resolver uses a resolver context to cache previously
+resolved file-like object or virtual file system object. This cache uses a
+weak reference so code interacting with the resolver should maintain a reference
+if such an object is still used.
 
 ## The mount point manager
 
-**TODO**
+The mount point manager can be used to globally (within the same process space)
+define mount points used by path specifications of type MOUNT. The same can be
+accomplished with a resolver context, but note that specified mount points are
+local to the specific context.
 
 ## The credentials manager
 
