@@ -15,13 +15,13 @@ class MountPathSpec(path_spec.PathSpec):
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_MOUNT
 
-  def __init__(self, identifier, **kwargs):
+  def __init__(self, identifier=None, **kwargs):
     """Initializes a path specification.
 
     Note that the mount path specification cannot have a parent.
 
     Args:
-      identifier (str): identifier of the mount point.
+      identifier (Optional[str]): identifier of the mount point.
 
     Raises:
       ValueError: when identifier is not set.
