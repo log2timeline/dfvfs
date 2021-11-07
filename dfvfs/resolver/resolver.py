@@ -4,7 +4,6 @@
 from dfvfs.credentials import keychain
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.mount import manager as mount_manager
 from dfvfs.path import path_spec
 from dfvfs.resolver import context
 
@@ -93,8 +92,7 @@ class Resolver(object):
         raise errors.PathSpecError(
             'Unsupported path specification without mount point identifier.')
 
-      path_spec_object = mount_manager.MountPointManager.GetMountPoint(
-          mount_point)
+      path_spec_object = resolver_context.GetMountPoint(mount_point)
       if not path_spec_object:
         raise errors.MountPointError(
             'No such mount point: {0:s}'.format(mount_point))
@@ -152,8 +150,7 @@ class Resolver(object):
         raise errors.PathSpecError(
             'Unsupported path specification without mount point identifier.')
 
-      path_spec_object = mount_manager.MountPointManager.GetMountPoint(
-          mount_point)
+      path_spec_object = resolver_context.GetMountPoint(mount_point)
       if not path_spec_object:
         raise errors.MountPointError(
             'No such mount point: {0:s}'.format(mount_point))
