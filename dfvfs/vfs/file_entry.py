@@ -7,6 +7,7 @@ a directory or file system metadata.
 
 import abc
 
+from dfvfs.lib import decorators
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.vfs import vfs_stat
@@ -417,8 +418,11 @@ class FileEntry(object):
 
     return matching_sub_file_entry
 
+  @decorators.deprecated
   def GetStat(self):
     """Retrieves information about the file entry.
+
+    This method is deprecated use StatAttribute instead.
 
     Returns:
       VFSStat: a stat object or None if not available.

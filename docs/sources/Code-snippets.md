@@ -71,12 +71,13 @@ for sub_file_entry in file_entry.sub_file_entries:
   print(sub_file_entry.name)
 ```
 
-### Retrieving an inode value
+### Retrieving an inode number
 
 ```python
 from dfvfs.lib import definitions
 from dfvfs.path import factory
 from dfvfs.resolver import resolver
+from dfvfs.vfs import attribute
 
 image_location = 'image.E01'
 file_location = '/Users/MyUser/AppData/Local/Microsoft/Office/15.0/OfficeFileCache/MyFile.txt'
@@ -87,7 +88,7 @@ tsk_path_spec = factory.Factory.NewPathSpec(definitions.TYPE_INDICATOR_TSK, loca
 
 file_entry = resolver.Resolver.OpenFileEntry(tsk_path_spec)
 
-stat_object = file_entry.GetStat()
-
-print('Inode: {0:d}'.format(stat_object.ino))
+for file_entry_attribute in file_entry.attributes:
+  if isinstance(file_entry_attribute, attribute.StatAttribute):
+    print('Inode number: {0:d}'.format(file_entry_attribute.inode_number))
 ```
