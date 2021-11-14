@@ -34,23 +34,6 @@ class TSKTimeTest(unittest.TestCase):
     self.assertEqual(
         tsk_time_object.fraction_of_second, expected_fraction_of_second)
 
-  def testCopyToStatTimeTuple(self):
-    """Tests the CopyToStatTimeTuple function."""
-    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
-      fraction_of_second = 546875000
-    else:
-      fraction_of_second = 5468750
-    tsk_time_object = tsk_file_entry.TSKTime(
-        fraction_of_second=fraction_of_second, timestamp=1281643591)
-
-    stat_time_tuple = tsk_time_object.CopyToStatTimeTuple()
-    self.assertEqual(stat_time_tuple, (1281643591, 5468750))
-
-    tsk_time_object = tsk_file_entry.TSKTime()
-
-    stat_time_tuple = tsk_time_object.CopyToStatTimeTuple()
-    self.assertEqual(stat_time_tuple, (None, None))
-
   def testCopyToDateTimeString(self):
     """Tests the CopyToDateTimeString function."""
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
@@ -173,37 +156,6 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
-        location='/a_directory/another_file', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 436)
-    self.assertEqual(stat_object.uid, 1000)
-    self.assertEqual(stat_object.gid, 1000)
-
-    self.assertEqual(stat_object.atime, 1626962852)
-    self.assertFalse(hasattr(stat_object, 'atime_nano'))
-
-    self.assertEqual(stat_object.ctime, 1626962852)
-    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
-
-    # EXT2 has no crtime timestamp.
-    self.assertFalse(hasattr(stat_object, 'crtime'))
-    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
-
-    self.assertEqual(stat_object.mtime, 1626962852)
-    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -225,7 +177,6 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
   # TODO: add tests for _GetSubFileEntries
   # TODO: add tests for _GetTimeValue
-  # TODO: add tests for _TSKFileTimeCopyToStatTimeTuple
 
   def testAccessTime(self):
     """Test the access_time property."""
@@ -593,37 +544,6 @@ class TSKFileEntryTestFAT12(shared_test_lib.BaseTestCase):
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
-        location='/a_directory/another_file', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 511)
-    self.assertEqual(stat_object.uid, 0)
-    self.assertEqual(stat_object.gid, 0)
-
-    self.assertEqual(stat_object.atime, 1618704000)
-    self.assertFalse(hasattr(stat_object, 'atime_nano'))
-
-    # FAT has no ctime timestamp.
-    self.assertFalse(hasattr(stat_object, 'ctime'))
-    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
-
-    self.assertEqual(stat_object.crtime, 1618758550)
-    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
-
-    self.assertEqual(stat_object.mtime, 1618758550)
-    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -645,7 +565,6 @@ class TSKFileEntryTestFAT12(shared_test_lib.BaseTestCase):
 
   # TODO: add tests for _GetSubFileEntries
   # TODO: add tests for _GetTimeValue
-  # TODO: add tests for _TSKFileTimeCopyToStatTimeTuple
 
   def testAccessTime(self):
     """Test the access_time property."""
@@ -998,36 +917,6 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
-        location='/a_directory/another_file', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 420)
-    self.assertEqual(stat_object.uid, 501)
-    self.assertEqual(stat_object.gid, 20)
-
-    self.assertEqual(stat_object.atime, 1642144782)
-    self.assertEqual(stat_object.atime_nano, 0)
-
-    self.assertEqual(stat_object.ctime, 1642144782)
-    self.assertEqual(stat_object.ctime_nano, 0)
-
-    self.assertEqual(stat_object.crtime, 1642144782)
-    self.assertEqual(stat_object.crtime_nano, 0)
-
-    self.assertEqual(stat_object.mtime, 1642144782)
-    self.assertEqual(stat_object.mtime_nano, 0)
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -1049,7 +938,6 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
 
   # TODO: add tests for _GetSubFileEntries
   # TODO: add tests for _GetTimeValue
-  # TODO: add tests for _TSKFileTimeCopyToStatTimeTuple
 
   def testAccessTime(self):
     """Test the access_time property."""
@@ -1462,33 +1350,6 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_ANOTHER_FILE,
-        location='/a_directory/another_file', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 511)
-    self.assertEqual(stat_object.uid, 48)
-    self.assertEqual(stat_object.gid, 0)
-
-    self.assertEqual(stat_object.atime, 1567246979)
-    self.assertEqual(stat_object.atime_nano, 9602053)
-    self.assertEqual(stat_object.ctime, 1567246979)
-    self.assertEqual(stat_object.ctime_nano, 9611209)
-    self.assertEqual(stat_object.crtime, 1567246979)
-    self.assertEqual(stat_object.crtime_nano, 9602053)
-    self.assertEqual(stat_object.mtime, 1567246979)
-    self.assertEqual(stat_object.mtime_nano, 9611209)
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -1510,7 +1371,6 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
   # TODO: add tests for _GetSubFileEntries
   # TODO: add tests for _GetTimeValue
-  # TODO: add tests for _TSKFileTimeCopyToStatTimeTuple
 
   def testAccessTime(self):
     """Test the access_time property."""

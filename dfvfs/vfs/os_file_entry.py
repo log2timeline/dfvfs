@@ -142,25 +142,6 @@ class OSFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object or None if not available.
-    """
-    stat_object = super(OSFileEntry, self)._GetStat()
-
-    if not self._is_windows_device and self._stat_info:
-      # Ownership and permissions stat information.
-      stat_object.mode = stat.S_IMODE(self._stat_info.st_mode)
-      stat_object.uid = self._stat_info.st_uid
-      stat_object.gid = self._stat_info.st_gid
-
-      # Other stat information.
-      stat_object.ino = self._stat_info.st_ino
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 

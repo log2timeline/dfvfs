@@ -7,11 +7,9 @@ a directory or file system metadata.
 
 import abc
 
-from dfvfs.lib import decorators
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
 from dfvfs.vfs import data_stream
-from dfvfs.vfs import vfs_stat
 
 
 class FileEntry(object):
@@ -105,66 +103,6 @@ class FileEntry(object):
       self._link = ''
 
     return self._link
-
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = vfs_stat.VFSStat()
-
-    # Date and time stat information.
-    access_time = self.access_time
-    if access_time:
-      stat_time, stat_time_nano = access_time.CopyToStatTimeTuple()
-      if stat_time is not None:
-        stat_object.atime = stat_time
-      if stat_time_nano is not None:
-        stat_object.atime_nano = stat_time_nano
-
-    change_time = self.change_time
-    if change_time:
-      stat_time, stat_time_nano = change_time.CopyToStatTimeTuple()
-      if stat_time is not None:
-        stat_object.ctime = stat_time
-      if stat_time_nano is not None:
-        stat_object.ctime_nano = stat_time_nano
-
-    creation_time = self.creation_time
-    if creation_time:
-      stat_time, stat_time_nano = creation_time.CopyToStatTimeTuple()
-      if stat_time is not None:
-        stat_object.crtime = stat_time
-      if stat_time_nano is not None:
-        stat_object.crtime_nano = stat_time_nano
-
-    modification_time = self.modification_time
-    if modification_time:
-      stat_time, stat_time_nano = modification_time.CopyToStatTimeTuple()
-      if stat_time is not None:
-        stat_object.mtime = stat_time
-      if stat_time_nano is not None:
-        stat_object.mtime_nano = stat_time_nano
-
-    # File data stat information.
-    stat_object.size = self.size
-
-    # Ownership and permissions stat information.
-    # TODO: consider adding stat_object.mode
-    # TODO: consider adding stat_object.uid
-    # TODO: consider adding stat_object.gid
-
-    # File entry type stat information.
-    stat_object.type = self.entry_type
-
-    # Other stat information.
-    # TODO: consider adding stat_object.ino
-    # TODO: consider adding stat_object.fs_type
-
-    stat_object.is_allocated = self.IsAllocated()
-
-    return stat_object
 
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
@@ -378,17 +316,6 @@ class FileEntry(object):
           matching_sub_file_entry = sub_file_entry
 
     return matching_sub_file_entry
-
-  @decorators.deprecated
-  def GetStat(self):
-    """Retrieves information about the file entry.
-
-    This method is deprecated use GetStatAttribute instead.
-
-    Returns:
-      VFSStat: a stat object or None if not available.
-    """
-    return self._GetStat()
 
   def GetStatAttribute(self):
     """Retrieves a stat attribute.

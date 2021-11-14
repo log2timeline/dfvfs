@@ -153,18 +153,6 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
         year, month, day_of_month, hours, minutes, seconds,
         self.fraction_of_second)
 
-  def CopyToStatTimeTuple(self):
-    """Copies the SleuthKit timestamp to a stat timestamp tuple.
-
-    Returns:
-      tuple[int, int]: a POSIX timestamp in seconds and the remainder in
-          100 nano seconds or (None, None) on error.
-    """
-    if self.fraction_of_second is None:
-      return self._timestamp, None
-
-    return super(TSKTime, self).CopyToStatTimeTuple()
-
   def GetDate(self):
     """Retrieves the date represented by the date and time values.
 
@@ -444,42 +432,6 @@ class TSKFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves the stat object.
-
-    Returns:
-      VFSStat: stat object.
-    """
-    stat_object = super(TSKFileEntry, self)._GetStat()
-
-    # Date and time stat information.
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        self._tsk_file, 'bkup')
-    if stat_time is not None:
-      stat_object.bkup = stat_time
-      stat_object.bkup_nano = stat_time_nano
-
-    stat_time, stat_time_nano = self._TSKFileTimeCopyToStatTimeTuple(
-        self._tsk_file, 'dtime')
-    if stat_time is not None:
-      stat_object.dtime = stat_time
-      stat_object.dtime_nano = stat_time_nano
-
-    # Ownership and permissions stat information.
-    mode = getattr(self._tsk_file.info.meta, 'mode', None)
-    if mode is not None:
-      # We need to cast mode to an int since it is of type
-      # pytsk3.TSK_FS_META_MODE_ENUM.
-      stat_object.mode = int(mode)
-
-    stat_object.uid = getattr(self._tsk_file.info.meta, 'uid', None)
-    stat_object.gid = getattr(self._tsk_file.info.meta, 'gid', None)
-
-    # Other stat information.
-    stat_object.ino = getattr(self._tsk_file.info.meta, 'addr', None)
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 
@@ -574,42 +526,6 @@ class TSKFileEntry(file_entry.FileEntry):
         timestamp=timestamp)
     date_time.is_local_time = is_local_time
     return date_time
-
-  def _TSKFileTimeCopyToStatTimeTuple(self, tsk_file, time_value):
-    """Copies a SleuthKit file object time value to a stat timestamp tuple.
-
-    Args:
-      tsk_file (pytsk3.File): TSK file.
-      time_value (str): name of the time value.
-
-    Returns:
-      tuple[int, int]: number of seconds since 1970-01-01 00:00:00 and fraction
-          of second in 100 nano seconds intervals. The number of seconds is None
-          on error, or if the file system does not include the requested
-          timestamp. The fraction of second is None on error, or if the file
-          system does not support sub-second precision.
-
-    Raises:
-      BackEndError: if the TSK File .info, .info.meta or info.fs_info
-        attribute is missing.
-    """
-    if (not tsk_file or not tsk_file.info or not tsk_file.info.meta or
-        not tsk_file.info.fs_info):
-      raise errors.BackEndError(
-          'Missing TSK File .info, .info.meta. or .info.fs_info')
-
-    stat_time = getattr(tsk_file.info.meta, time_value, None)
-    stat_time_nano = None
-    if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
-      time_value_nano = '{0:s}_nano'.format(time_value)
-      stat_time_nano = getattr(tsk_file.info.meta, time_value_nano, None)
-
-    # Sleuthkit 4.2.0 switched from 100 nano seconds precision to
-    # 1 nano seconds precision.
-    if stat_time_nano is not None and pytsk3.TSK_VERSION_NUM >= 0x040200ff:
-      stat_time_nano /= 100
-
-    return stat_time, stat_time_nano
 
   @property
   def access_time(self):
