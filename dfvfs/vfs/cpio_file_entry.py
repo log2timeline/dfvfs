@@ -8,6 +8,7 @@ from dfdatetime import posix_time as dfdatetime_posix_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import cpio_path_spec
+from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 
 
@@ -153,6 +154,30 @@ class CPIOFileEntry(file_entry.FileEntry):
         self._cpio_archive_file_entry, 'group_identifier', None)
 
     return stat_object
+
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute.
+    """
+    mode = getattr(self._cpio_archive_file_entry, 'mode', 0)
+
+    stat_attribute = attribute.StatAttribute()
+    stat_attribute.group_identifier = getattr(
+        self._cpio_archive_file_entry, 'group_identifier', None)
+    stat_attribute.inode_number = getattr(
+        self._cpio_archive_file_entry, 'inode_number', None)
+    stat_attribute.mode = stat.S_IMODE(mode)
+    stat_attribute.number_of_links = getattr(
+        self._cpio_archive_file_entry, 'number_of_links', None)
+    stat_attribute.owner_identifier = getattr(
+        self._cpio_archive_file_entry, 'user_identifier', None)
+    stat_attribute.size = getattr(
+        self._cpio_archive_file_entry, 'data_size', None)
+    stat_attribute.type = self.entry_type
+
+    return stat_attribute
 
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.

@@ -57,6 +57,8 @@ class CPIODirectoryTest(shared_test_lib.BaseTestCase):
 class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the CPIO extracted file entry."""
 
+  # pylint: disable=protected-access
+
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
@@ -86,7 +88,47 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
 
   # TODO: test _GetDirectory
   # TODO: test _GetLink
-  # TODO: test _GetStat
+
+  def testGetStat(self):
+    """Tests the _GetStat function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_object = file_entry._GetStat()
+
+    self.assertIsNotNone(stat_object)
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 1247)
+
+    self.assertEqual(stat_object.mode, 436)
+    self.assertEqual(stat_object.uid, 1000)
+    self.assertEqual(stat_object.gid, 1000)
+
+    self.assertEqual(stat_object.mtime, 1432702913)
+    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
+
+  def testGetStatAttribute(self):
+    """Tests the _GetStatAttribute function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_attribute = file_entry._GetStatAttribute()
+
+    self.assertIsNotNone(stat_attribute)
+    self.assertEqual(stat_attribute.group_identifier, 1000)
+    self.assertEqual(stat_attribute.inode_number, 45521)
+    self.assertEqual(stat_attribute.mode, 0o664)
+    self.assertEqual(stat_attribute.number_of_links, 1)
+    self.assertEqual(stat_attribute.owner_identifier, 1000)
+    self.assertEqual(stat_attribute.size, 1247)
+    self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
+
   # TODO: test _GetSubFileEntries
 
   def testModificationTime(self):
@@ -141,27 +183,6 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNotNone(parent_file_entry)
     self.assertEqual(parent_file_entry.name, '')
-
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_CPIO, location='/syslog',
-        parent=self._os_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 1247)
-
-    self.assertEqual(stat_object.mode, 436)
-    self.assertEqual(stat_object.uid, 1000)
-    self.assertEqual(stat_object.gid, 1000)
-
-    self.assertEqual(stat_object.mtime, 1432702913)
-    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testIsFunctions(self):
     """Test the Is? functions."""

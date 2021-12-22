@@ -6,6 +6,7 @@ from dfdatetime import posix_time as dfdatetime_posix_time
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import tar_path_spec
+from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 
 
@@ -152,6 +153,21 @@ class TARFileEntry(file_entry.FileEntry):
     stat_object.gid = getattr(self._tar_info, 'gid', None)
 
     return stat_object
+
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute.
+    """
+    stat_attribute = attribute.StatAttribute()
+    stat_attribute.group_identifier = getattr(self._tar_info, 'gid', None)
+    stat_attribute.mode = getattr(self._tar_info, 'mode', None)
+    stat_attribute.owner_identifier = getattr(self._tar_info, 'uid', None)
+    stat_attribute.size = getattr(self._tar_info, 'size', None)
+    stat_attribute.type = self.entry_type
+
+    return stat_attribute
 
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
