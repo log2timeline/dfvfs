@@ -12,6 +12,7 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.resolver import resolver
+from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import ntfs_attribute
 
@@ -140,10 +141,11 @@ class NTFSFileEntry(file_entry.FileEntry):
     """Retrieves the attributes.
 
     Returns:
-      list[NTFSAttribute]: attributes.
+      list[Attribute]: attributes.
     """
     if self._attributes is None:
       self._attributes = []
+
       for fsntfs_attribute in self._fsntfs_file_entry.attributes:
         attribute_class = self._ATTRIBUTE_TYPE_CLASS_MAPPINGS.get(
             fsntfs_attribute.attribute_type, ntfs_attribute.NTFSAttribute)
@@ -212,6 +214,22 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute or None if not available.
+    """
+    stat_attribute = attribute.StatAttribute()
+    stat_attribute.inode_number = getattr(
+        self._fsntfs_file_entry, 'file_reference', None)
+    stat_attribute.number_of_links = getattr(
+        self._fsntfs_file_entry, 'number_of_links', None)
+    stat_attribute.size = getattr(self._fsntfs_file_entry, 'size', None)
+    stat_attribute.type = self.entry_type
+
+    return stat_attribute
+
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
 
@@ -278,7 +296,7 @@ class NTFSFileEntry(file_entry.FileEntry):
   @property
   def size(self):
     """int: size of the file entry in bytes or None if not available."""
-    return self._fsntfs_file_entry.get_size()
+    return getattr(self._fsntfs_file_entry, 'size', None)
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves the file-like object.

@@ -6,6 +6,7 @@ from dfdatetime import time_elements as dfdatetime_time_elements
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import zip_path_spec
+from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 
 
@@ -152,6 +153,25 @@ class ZipFileEntry(file_entry.FileEntry):
 
     return stat_object
 
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute or None if not available.
+    """
+    stat_attribute = attribute.StatAttribute()
+    stat_attribute.size = getattr(self._zip_info, 'file_size', None)
+    stat_attribute.type = self.entry_type
+
+    if self._zip_info is not None:
+      # Ownership and permissions stat information.
+      if self._external_attributes != 0:
+        if self._creator_system == self._CREATOR_SYSTEM_UNIX:
+          st_mode = self._external_attributes >> 16
+          stat_attribute.mode = st_mode & 0x0fff
+
+    return stat_attribute
+
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
 
@@ -199,9 +219,6 @@ class ZipFileEntry(file_entry.FileEntry):
   @property
   def size(self):
     """int: size of the file entry in bytes or None if not available."""
-    if self._zip_info is None:
-      return None
-
     return getattr(self._zip_info, 'file_size', None)
 
   def GetParentFileEntry(self):

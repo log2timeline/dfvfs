@@ -8,7 +8,6 @@ from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
-from dfvfs.vfs import attribute
 from dfvfs.vfs import apfs_attribute
 from dfvfs.vfs import apfs_file_entry
 from dfvfs.vfs import apfs_file_system
@@ -206,12 +205,9 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 2)
+    self.assertEqual(len(file_entry._attributes), 1)
 
     test_attribute = file_entry._attributes[0]
-    self.assertIsInstance(test_attribute, attribute.StatAttribute)
-
-    test_attribute = file_entry._attributes[1]
     self.assertIsInstance(test_attribute, apfs_attribute.APFSExtendedAttribute)
     self.assertEqual(test_attribute.name, 'myxattr')
 

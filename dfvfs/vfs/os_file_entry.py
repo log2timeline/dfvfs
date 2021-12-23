@@ -144,8 +144,7 @@ class OSFileEntry(file_entry.FileEntry):
       list[Attribute]: attributes.
     """
     if self._attributes is None:
-      stat_attribute = self._GetStatAttribute()
-      self._attributes = [stat_attribute]
+      self._attributes = []
 
       if xattr:
         for name in xattr.listxattr(self._location):
@@ -206,7 +205,7 @@ class OSFileEntry(file_entry.FileEntry):
     """Retrieves a stat attribute.
 
     Returns:
-      StatAttribute: a stat attribute.
+      StatAttribute: a stat attribute or None if not available.
     """
     stat_attribute = attribute.StatAttribute()
 

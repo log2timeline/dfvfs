@@ -111,6 +111,8 @@ class NTFSDirectoryTest(shared_test_lib.BaseTestCase):
 class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the NTFS file entry."""
 
+  # pylint: disable=protected-access
+
   _MFT_ENTRY_A_DIRECTORY = 64
   _MFT_ENTRY_A_FILE = 65
   _MFT_ENTRY_PASSWORDS_TXT = 66
@@ -148,7 +150,48 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for _GetDataStreams
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
-  # TODO: add tests for _GetStat
+
+  def testGetStat(self):
+    """Tests the _GetStat function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_object = file_entry._GetStat()
+
+    self.assertIsNotNone(stat_object)
+    self.assertEqual(stat_object.fs_type, 'NTFS')
+    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
+    self.assertEqual(stat_object.size, 53)
+
+    self.assertEqual(stat_object.atime, 1567246979)
+    self.assertEqual(stat_object.atime_nano, 9567496)
+    self.assertEqual(stat_object.ctime, 1567246979)
+    self.assertEqual(stat_object.ctime_nano, 9581788)
+    self.assertEqual(stat_object.crtime, 1567246979)
+    self.assertEqual(stat_object.crtime_nano, 9567496)
+    self.assertEqual(stat_object.mtime, 1567246979)
+    self.assertEqual(stat_object.mtime_nano, 9581788)
+
+  def testGetStatAttribute(self):
+    """Tests the _GetStatAttribute function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_attribute = file_entry._GetStatAttribute()
+
+    self.assertIsNotNone(stat_attribute)
+    self.assertEqual(stat_attribute.inode_number, 0x1000000000041)
+    # TODO: requires changes to pyfsntfs
+    self.assertIsNone(stat_attribute.number_of_links)
+    self.assertEqual(stat_attribute.size, 53)
+    self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
+
   # TODO: add tests for _GetSubFileEntries
   # TODO: add tests for _IsLink
 
@@ -244,30 +287,6 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(parent_file_entry.name, 'a_directory')
 
   # TODO: add tests for GetSecurityDescriptor
-
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
-        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.fs_type, 'NTFS')
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 53)
-
-    self.assertEqual(stat_object.atime, 1567246979)
-    self.assertEqual(stat_object.atime_nano, 9567496)
-    self.assertEqual(stat_object.ctime, 1567246979)
-    self.assertEqual(stat_object.ctime_nano, 9581788)
-    self.assertEqual(stat_object.crtime, 1567246979)
-    self.assertEqual(stat_object.crtime_nano, 9567496)
-    self.assertEqual(stat_object.mtime, 1567246979)
-    self.assertEqual(stat_object.mtime_nano, 9581788)
 
   def testIsAllocated(self):
     """Test the IsAllocated function."""
