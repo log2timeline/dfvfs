@@ -39,14 +39,14 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
   #     Type identifier         : 0fc63daf-8483-4772-8e79-3d69d8477de4
   #     Type                    : 0x00 (Empty)
   #     Offset                  : 1048576 (0x00100000)
-  #     Size                    : 65024
+  #     Size                    : 65536
   #
   # Partition: 2
   #     Identifier              : 53d86ccf-3188-4b54-90d8-81866426b70a
   #     Type identifier         : 0fc63daf-8483-4772-8e79-3d69d8477de4
   #     Type                    : 0x00 (Empty)
   #     Offset                  : 2097152 (0x00200000)
-  #     Size                    : 65024
+  #     Size                    : 65536
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
@@ -74,7 +74,7 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
     volume_extent = volume.extents[0]
     self.assertIsNotNone(volume_extent)
     self.assertEqual(volume_extent.offset, 1048576)
-    self.assertEqual(volume_extent.size, 65024)
+    self.assertEqual(volume_extent.size, 65536)
     self.assertEqual(volume_extent.extent_type, volume_extent.EXTENT_TYPE_DATA)
 
     volume = volume_system.GetVolumeByIndex(99)

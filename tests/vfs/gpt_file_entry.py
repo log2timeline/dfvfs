@@ -93,14 +93,14 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
   #   Type identifier      : 0fc63daf-8483-4772-8e79-3d69d8477de4
   #   Type                 : 0x00 (Empty)
   #   Offset               : 1048576 (0x00100000)
-  #   Size                 : 65024
+  #   Size                 : 65536
   #
   # Partition: 2
   #   Identifier           : a03faa35-d9a1-4315-a644-681506850073
   #   Type identifier      : 0fc63daf-8483-4772-8e79-3d69d8477de4
   #   Type                 : 0x00 (Empty)
   #   Offset               : 2097152 (0x00200000)
-  #   Size                 : 65024
+  #   Size                 : 65536
 
   def testIntialize(self):
     """Test the __init__ function."""
@@ -131,7 +131,7 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.size, 65024)
+    self.assertEqual(file_entry.size, 65536)
 
   # TODO: test GetGPTPartition
 
@@ -167,7 +167,7 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 65024)
+    self.assertEqual(stat_object.size, 65536)
 
     # TODO: implement in pyvsgpt
     # self.assertEqual(stat_object.crtime, 0)

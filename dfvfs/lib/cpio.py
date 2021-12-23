@@ -19,6 +19,7 @@ class CPIOArchiveFileEntry(object):
     inode_number (int): inode number.
     mode (int): mode.
     modification_time (int): modification POSIX timestamp.
+    number_of_links (int): number of hard links.
     path (str): path.
     size (int): archive file entry record size.
     user_identifier (int): user identifier (uid).
@@ -33,6 +34,7 @@ class CPIOArchiveFileEntry(object):
     self.inode_number = None
     self.mode = None
     self.modification_time = None
+    self.number_of_links = None
     self.path = None
     self.size = None
     self.user_identifier = None
@@ -207,6 +209,7 @@ class CPIOArchiveFile(data_format.DataFormat):
     archive_file_entry.group_identifier = file_entry.group_identifier
     archive_file_entry.inode_number = file_entry.inode_number
     archive_file_entry.modification_time = file_entry.modification_time
+    archive_file_entry.number_of_links = file_entry.number_of_links
     archive_file_entry.path = path
     archive_file_entry.mode = file_entry.mode
     archive_file_entry.size = (
