@@ -9,7 +9,6 @@ import pytsk3
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
-from dfvfs.vfs import attribute
 from dfvfs.vfs import tsk_attribute
 from dfvfs.vfs import tsk_file_entry
 from dfvfs.vfs import tsk_file_system
@@ -200,10 +199,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 1)
-
-    test_attribute = file_entry._attributes[0]
-    self.assertIsInstance(test_attribute, attribute.StatAttribute)
+    self.assertEqual(len(file_entry._attributes), 0)
 
     # No extended attributes are returned.
     # Also see: https://github.com/py4n6/pytsk/issues/79.
@@ -587,10 +583,7 @@ class TSKFileEntryTestFAT12(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 1)
-
-    test_attribute = file_entry._attributes[0]
-    self.assertIsInstance(test_attribute, attribute.StatAttribute)
+    self.assertEqual(len(file_entry._attributes), 0)
 
   # TODO: add tests for _GetDataStreams
   # TODO: add tests for _GetDirectory
@@ -960,12 +953,9 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 2)
+    self.assertEqual(len(file_entry._attributes), 1)
 
     test_attribute = file_entry._attributes[0]
-    self.assertIsInstance(test_attribute, attribute.StatAttribute)
-
-    test_attribute = file_entry._attributes[1]
     self.assertIsInstance(test_attribute, tsk_attribute.TSKExtendedAttribute)
     self.assertEqual(test_attribute.name, 'myxattr')
 
@@ -1347,12 +1337,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 5)
+    self.assertEqual(len(file_entry._attributes), 4)
 
     test_attribute = file_entry._attributes[0]
-    self.assertIsInstance(test_attribute, attribute.StatAttribute)
-
-    test_attribute = file_entry._attributes[1]
     self.assertIsInstance(test_attribute, tsk_attribute.TSKAttribute)
     self.assertEqual(
         test_attribute.attribute_type, pytsk3.TSK_FS_ATTR_TYPE_NTFS_SI)
@@ -1501,7 +1488,7 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_attributes, 5)
+    self.assertEqual(file_entry.number_of_attributes, 4)
 
   def testDataStream(self):
     """Tests the number_of_data_streams and data_streams properties."""

@@ -7,7 +7,6 @@ import unittest
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
-from dfvfs.vfs import attribute
 from dfvfs.vfs import hfs_attribute
 from dfvfs.vfs import hfs_file_entry
 from dfvfs.vfs import hfs_file_system
@@ -142,12 +141,9 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     file_entry._GetAttributes()
     self.assertIsNotNone(file_entry._attributes)
-    self.assertEqual(len(file_entry._attributes), 2)
+    self.assertEqual(len(file_entry._attributes), 1)
 
     test_attribute = file_entry._attributes[0]
-    self.assertIsInstance(test_attribute, attribute.StatAttribute)
-
-    test_attribute = file_entry._attributes[1]
     self.assertIsInstance(test_attribute, hfs_attribute.HFSExtendedAttribute)
     self.assertEqual(test_attribute.name, 'myxattr')
 

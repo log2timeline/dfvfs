@@ -221,6 +221,14 @@ class FileEntry(object):
 
     return stat_object
 
+  def _GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute or None if not available.
+    """
+    return None
+
   @abc.abstractmethod
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
@@ -422,12 +430,20 @@ class FileEntry(object):
   def GetStat(self):
     """Retrieves information about the file entry.
 
-    This method is deprecated use StatAttribute instead.
+    This method is deprecated use GetStatAttribute instead.
 
     Returns:
       VFSStat: a stat object or None if not available.
     """
     return self._GetStat()
+
+  def GetStatAttribute(self):
+    """Retrieves a stat attribute.
+
+    Returns:
+      StatAttribute: a stat attribute or None if not available.
+    """
+    return self._GetStatAttribute()
 
   def HasDataStream(self, name, case_sensitive=True):
     """Determines if the file entry has specific data stream.

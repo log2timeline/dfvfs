@@ -113,8 +113,7 @@ class XFSFileEntry(file_entry.FileEntry):
       list[Attribute]: attributes.
     """
     if self._attributes is None:
-      stat_attribute = self._GetStatAttribute()
-      self._attributes = [stat_attribute]
+      self._attributes = []
 
       for fsxfs_extended_attribute in (
           self._fsxfs_file_entry.extended_attributes):
@@ -180,7 +179,7 @@ class XFSFileEntry(file_entry.FileEntry):
     """Retrieves a stat attribute.
 
     Returns:
-      StatAttribute: a stat attribute.
+      StatAttribute: a stat attribute or None if not available.
     """
     stat_attribute = attribute.StatAttribute()
     stat_attribute.group_identifier = self._fsxfs_file_entry.group_identifier

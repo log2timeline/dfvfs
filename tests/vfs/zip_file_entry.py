@@ -107,6 +107,21 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     # TODO: re-enable when dfdatetime updates are committed
     # self.assertEqual(stat_object.mtime_nano, None)
 
+  def testGetStatAttribute(self):
+    """Tests the _GetStatAttribute function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_ZIP, location='/syslog',
+        parent=self._os_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    stat_attribute = file_entry._GetStatAttribute()
+
+    self.assertIsNotNone(stat_attribute)
+    self.assertEqual(stat_attribute.mode, 0o400)
+    self.assertEqual(stat_attribute.size, 1247)
+    self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
+
   # TODO: add tests for _GetSubFileEntries
 
   def testAccessTime(self):

@@ -159,7 +159,7 @@ class CPIOFileEntry(file_entry.FileEntry):
     """Retrieves a stat attribute.
 
     Returns:
-      StatAttribute: a stat attribute.
+      StatAttribute: a stat attribute or None if not available.
     """
     mode = getattr(self._cpio_archive_file_entry, 'mode', 0)
 

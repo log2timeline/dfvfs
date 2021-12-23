@@ -158,7 +158,7 @@ class TARFileEntry(file_entry.FileEntry):
     """Retrieves a stat attribute.
 
     Returns:
-      StatAttribute: a stat attribute.
+      StatAttribute: a stat attribute or None if not available.
     """
     stat_attribute = attribute.StatAttribute()
     stat_attribute.group_identifier = getattr(self._tar_info, 'gid', None)
