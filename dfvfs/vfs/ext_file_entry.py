@@ -187,7 +187,7 @@ class EXTFileEntry(file_entry.FileEntry):
     stat_attribute = attribute.StatAttribute()
     stat_attribute.group_identifier = self._fsext_file_entry.group_identifier
     stat_attribute.inode_number = self._fsext_file_entry.inode_number
-    stat_attribute.mode = self._fsext_file_entry.file_mode & 0x0fff
+    stat_attribute.mode = self._fsext_file_entry.file_mode
     stat_attribute.number_of_links = self._fsext_file_entry.number_of_links
     stat_attribute.owner_identifier = self._fsext_file_entry.owner_identifier
     stat_attribute.size = self._fsext_file_entry.size

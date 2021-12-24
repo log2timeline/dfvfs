@@ -177,7 +177,7 @@ class HFSFileEntry(file_entry.FileEntry):
     stat_attribute = attribute.StatAttribute()
     stat_attribute.group_identifier = self._fshfs_file_entry.group_identifier
     stat_attribute.inode_number = self._fshfs_file_entry.identifier
-    stat_attribute.mode = self._fshfs_file_entry.file_mode & 0x0fff
+    stat_attribute.mode = self._fshfs_file_entry.file_mode
     # TODO: implement number of hard links support in pyfshfs
     # stat_attribute.number_of_links = self._fshfs_file_entry.number_of_links
     stat_attribute.owner_identifier = self._fshfs_file_entry.owner_identifier

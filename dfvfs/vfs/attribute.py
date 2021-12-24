@@ -19,7 +19,7 @@ class StatAttribute(object):
   Attributes:
     group_identifier (int): group identifier (GID), equivalent to st_gid.
     inode_number (int): number of the corresponding inode, equivalent to st_ino.
-    mode (int): access mode, equivalent to st_mode & 0x0fff.
+    mode (int): access mode, equivalent to st_mode.
     number_of_links (int): number of hard links, equivalent to st_nlink.
     owner_identifier (int): user identifier (UID) of the owner, equivalent to
         st_uid.
