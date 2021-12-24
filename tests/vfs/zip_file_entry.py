@@ -118,7 +118,7 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     stat_attribute = file_entry._GetStatAttribute()
 
     self.assertIsNotNone(stat_attribute)
-    self.assertEqual(stat_attribute.mode, 0o400)
+    self.assertEqual(stat_attribute.mode, 0o100400)
     self.assertEqual(stat_attribute.size, 1247)
     self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
 

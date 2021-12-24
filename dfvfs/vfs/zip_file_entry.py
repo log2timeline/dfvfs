@@ -167,8 +167,7 @@ class ZipFileEntry(file_entry.FileEntry):
       # Ownership and permissions stat information.
       if self._external_attributes != 0:
         if self._creator_system == self._CREATOR_SYSTEM_UNIX:
-          st_mode = self._external_attributes >> 16
-          stat_attribute.mode = st_mode & 0x0fff
+          stat_attribute.mode = self._external_attributes >> 16
 
     return stat_attribute
 

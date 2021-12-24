@@ -166,7 +166,7 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(stat_attribute)
     self.assertEqual(stat_attribute.group_identifier, 1000)
     self.assertEqual(stat_attribute.inode_number, 15)
-    self.assertEqual(stat_attribute.mode, 0o664)
+    self.assertEqual(stat_attribute.mode, 0o100664)
     self.assertEqual(stat_attribute.number_of_links, 1)
     self.assertEqual(stat_attribute.owner_identifier, 1000)
     self.assertEqual(stat_attribute.size, 22)
