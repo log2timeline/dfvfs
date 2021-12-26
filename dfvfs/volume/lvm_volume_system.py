@@ -2,6 +2,7 @@
 """The Logical Volume Manager (LVM) volume system."""
 
 from dfvfs.lib import definitions
+from dfvfs.volume import factory
 from dfvfs.volume import volume_system
 
 
@@ -46,3 +47,6 @@ class LVMVolumeSystem(volume_system.VolumeSystem):
     for sub_file_entry in root_file_entry.sub_file_entries:
       volume = LVMVolume(sub_file_entry)
       self._AddVolume(volume)
+
+
+factory.Factory.RegisterVolumeSystem(LVMVolumeSystem)

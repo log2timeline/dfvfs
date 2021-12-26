@@ -3,6 +3,7 @@
 
 from dfvfs.lib import definitions
 from dfvfs.lib import tsk_partition
+from dfvfs.volume import factory
 from dfvfs.volume import volume_system
 
 
@@ -86,3 +87,6 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
           number_of_sectors * self.bytes_per_sector)
 
       self._sections.append(volume_extent)
+
+
+factory.Factory.RegisterVolumeSystem(TSKVolumeSystem)
