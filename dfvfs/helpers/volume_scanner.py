@@ -11,11 +11,7 @@ from dfvfs.helpers import source_scanner
 from dfvfs.helpers import windows_path_resolver
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
-from dfvfs.volume import apfs_volume_system
-from dfvfs.volume import gpt_volume_system
-from dfvfs.volume import lvm_volume_system
-from dfvfs.volume import tsk_volume_system
-from dfvfs.volume import vshadow_volume_system
+from dfvfs.volume import factory as volume_system_factory
 
 
 class VolumeScannerOptions(object):
@@ -250,11 +246,8 @@ class VolumeScanner(object):
     if not scan_node or not scan_node.path_spec:
       raise errors.ScannerError('Invalid scan node.')
 
-    if scan_node.path_spec.type_indicator == definitions.TYPE_INDICATOR_GPT:
-      volume_system = gpt_volume_system.GPTVolumeSystem()
-    else:
-      volume_system = tsk_volume_system.TSKVolumeSystem()
-
+    volume_system = volume_system_factory.Factory.NewVolumeSystem(
+        scan_node.type_indicator)
     volume_system.Open(scan_node.path_spec)
 
     volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
@@ -623,8 +616,11 @@ class VolumeScanner(object):
     if not scan_node or not scan_node.path_spec:
       raise errors.ScannerError('Invalid scan node.')
 
-    if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
-      volume_system = apfs_volume_system.APFSVolumeSystem()
+    if scan_node.type_indicator in (
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        definitions.TYPE_INDICATOR_LVM):
+      volume_system = volume_system_factory.Factory.NewVolumeSystem(
+          scan_node.type_indicator)
       volume_system.Open(scan_node.path_spec)
 
       volume_identifiers = self._GetVolumeIdentifiers(volume_system, options)
@@ -632,14 +628,9 @@ class VolumeScanner(object):
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
       volume_identifiers = self._GetPartitionIdentifiers(scan_node, options)
 
-    elif scan_node.type_indicator == definitions.TYPE_INDICATOR_LVM:
-      volume_system = lvm_volume_system.LVMVolumeSystem()
-      volume_system.Open(scan_node.path_spec)
-
-      volume_identifiers = self._GetVolumeIdentifiers(volume_system, options)
-
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-      volume_system = vshadow_volume_system.VShadowVolumeSystem()
+      volume_system = volume_system_factory.Factory.NewVolumeSystem(
+          scan_node.type_indicator)
       volume_system.Open(scan_node.path_spec)
 
       volume_identifiers = self._GetVolumeSnapshotIdentifiers(

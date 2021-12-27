@@ -2,6 +2,7 @@
 """The Volume Shadow Snapshots (VSS) volume system."""
 
 from dfvfs.lib import definitions
+from dfvfs.volume import factory
 from dfvfs.volume import volume_system
 
 
@@ -58,3 +59,6 @@ class VShadowVolumeSystem(volume_system.VolumeSystem):
     for sub_file_entry in root_file_entry.sub_file_entries:
       volume = VShadowVolume(sub_file_entry)
       self._AddVolume(volume)
+
+
+factory.Factory.RegisterVolumeSystem(VShadowVolumeSystem)
