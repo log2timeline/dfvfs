@@ -1,6 +1,5 @@
 pip >= 7.0.0
 PyYAML >= 3.10
-setuptools-rust >= 0.11.4
 cffi >= 1.9.1
 cryptography >= 2.0.2
 dfdatetime >= 20211113
