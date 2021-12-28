@@ -225,6 +225,6 @@ setup(
         ('share/doc/dfvfs', [
             'ACKNOWLEDGEMENTS', 'AUTHORS', 'LICENSE', 'README']),
     ],
-    install_requires=parse_requirements_from_file('requirements.txt'),
-    tests_require=parse_requirements_from_file('test_requirements.txt'),
+    install_requires=list(parse_requirements_from_file('requirements.txt')),
+    tests_require=list(parse_requirements_from_file('test_requirements.txt')),
 )
