@@ -63,5 +63,5 @@ To install the release versions of the dependencies run:
 ```
 set PYTHONPATH=.
 
-C:\Python38\python.exe tools\update.py --preset dfvfs
+C:\Python3\python.exe tools\update.py --preset dfvfs
 ```

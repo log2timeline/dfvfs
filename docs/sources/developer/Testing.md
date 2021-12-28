@@ -15,7 +15,7 @@ Or on Windows:
 
 ```bash
 set PYTHONPATH=.
-C:\Python38\python.exe run_tests.py
+C:\Python3\python.exe run_tests.py
 ```
 
 If you're running git on Windows make sure you have autocrlf turned off
