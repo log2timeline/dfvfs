@@ -65,8 +65,8 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.BackEndError):
       TestNTFSAttribute(None)
 
-  def testAttributeType(self):
-    """Test the attribute_type property."""
+  def testProperties(self):
+    """Test the properties."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
         mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
@@ -121,8 +121,8 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.BackEndError):
       ntfs_attribute.FileNameNTFSAttribute(None)
 
-  def testAttributeType(self):
-    """Test the attribute_type property."""
+  def testProperties(self):
+    """Test the properties."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
         mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
@@ -130,8 +130,33 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
 
     fsntfs_attribute = file_entry._fsntfs_file_entry.get_attribute(1)
     test_attribute = ntfs_attribute.FileNameNTFSAttribute(fsntfs_attribute)
+    self.assertIsNotNone(test_attribute)
+
+    self.assertIsNotNone(test_attribute.access_time)
+    date_time_string = (
+        test_attribute.access_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9587577+00:00')
+
+    self.assertIsNotNone(test_attribute.creation_time)
+    date_time_string = (
+        test_attribute.creation_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9587577+00:00')
+
+    self.assertIsNotNone(test_attribute.entry_modification_time)
+    date_time_string = (
+        test_attribute.entry_modification_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9587577+00:00')
+
+    self.assertIsNotNone(test_attribute.modification_time)
+    date_time_string = (
+        test_attribute.modification_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9587577+00:00')
 
     self.assertEqual(test_attribute.attribute_type, 0x00000030)
+    self.assertEqual(test_attribute.file_attribute_flags, 32)
+    self.assertEqual(test_attribute.name, 'passwords.txt')
+    self.assertEqual(test_attribute.name_space, 0)
+    self.assertEqual(test_attribute.parent_file_reference, 0x5000000000005)
 
 
 # TODO: add tests for ObjectIdentifierNTFSAttribute.
@@ -182,8 +207,8 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.BackEndError):
       ntfs_attribute.StandardInformationNTFSAttribute(None)
 
-  def testAttributeType(self):
-    """Test the attribute_type property."""
+  def testProperties(self):
+    """Test the properties."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
         mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
@@ -193,7 +218,31 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
     test_attribute = ntfs_attribute.StandardInformationNTFSAttribute(
         fsntfs_attribute)
 
+    self.assertIsNotNone(test_attribute.access_time)
+    date_time_string = (
+        test_attribute.access_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9587577+00:00')
+
+    self.assertIsNotNone(test_attribute.creation_time)
+    date_time_string = (
+        test_attribute.creation_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9587577+00:00')
+
+    self.assertIsNotNone(test_attribute.entry_modification_time)
+    date_time_string = (
+        test_attribute.entry_modification_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9595800+00:00')
+
+    self.assertIsNotNone(test_attribute.modification_time)
+    date_time_string = (
+        test_attribute.modification_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9595800+00:00')
+
     self.assertEqual(test_attribute.attribute_type, 0x00000010)
+    self.assertEqual(test_attribute.file_attribute_flags, 32)
+    self.assertIsNone(test_attribute.owner_identifier)
+    self.assertIsNone(test_attribute.security_descriptor_identifier)
+    self.assertIsNone(test_attribute.update_sequence_number)
 
 
 if __name__ == '__main__':
