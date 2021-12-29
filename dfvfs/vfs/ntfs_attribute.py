@@ -74,6 +74,11 @@ class FileNameNTFSAttribute(NTFSAttribute):
     return self._fsntfs_attribute.name
 
   @property
+  def name_space(self):
+    """int: name_space."""
+    return self._fsntfs_attribute.name_space
+
+  @property
   def parent_file_reference(self):
     """int: parent file reference."""
     return self._fsntfs_attribute.parent_file_reference
