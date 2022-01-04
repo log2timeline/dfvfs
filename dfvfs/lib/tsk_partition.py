@@ -12,7 +12,7 @@ def GetTSKVsPartByPathSpec(tsk_volume, path_spec):
     path_spec (PathSpec): path specification.
 
   Returns:
-    tuple: contains:
+    tuple: containing:
 
       pytsk3.TSK_VS_PART_INFO: TSK volume system part information or
           None on error.
