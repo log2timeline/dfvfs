@@ -471,7 +471,7 @@ class FindSpec(object):
           specification.
 
     Returns:
-      tuple: contains:
+      tuple: containing:
 
         bool: True if the traits of the file entry, such as type, matches the
             find specification, False otherwise.
