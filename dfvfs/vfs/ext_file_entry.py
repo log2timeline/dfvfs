@@ -31,7 +31,11 @@ class EXTDirectory(file_entry.Directory):
 
     location = getattr(self.path_spec, 'location', None)
 
-    for fsext_sub_file_entry in fsext_file_entry.sub_file_entries:
+    try:
+      fsext_sub_file_entries = fsext_file_entry.sub_file_entries
+    except OSError as e:
+      return
+    for fsext_sub_file_entry in fsext_sub_file_entries:
       directory_entry = fsext_sub_file_entry.name
 
       if not location or location == self._file_system.PATH_SEPARATOR:
