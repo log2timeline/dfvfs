@@ -37,8 +37,9 @@ class VMDKFile(file_object_io.FileObjectIO):
       raise errors.PathSpecError(
           'Unsupported parent path specification without location.')
 
-    # Note that we cannot use pyvmdk's open_extent_data_files function
-    # since it does not handle the file system abstraction dfvfs provides.
+    # Note that we cannot use pyvmdk's open_extent_data_files_as_file_objects
+    # function since it does not handle the file system abstraction dfVFS
+    # provides.
 
     file_system = resolver.Resolver.OpenFileSystem(
         parent_path_spec, resolver_context=self._resolver_context)
@@ -99,7 +100,7 @@ class VMDKFile(file_object_io.FileObjectIO):
       file_objects.append(file_object)
 
     # TODO: add parent image support.
-    vmdk_handle.open_extent_data_files_file_objects(file_objects)
+    vmdk_handle.open_extent_data_files_as_file_objects(file_objects)
 
     return vmdk_handle
 
