@@ -22,6 +22,7 @@ from dfvfs.path import mount_path_spec
 from dfvfs.path import ntfs_path_spec
 from dfvfs.path import os_path_spec
 from dfvfs.path import path_spec
+from dfvfs.path import phdi_path_spec
 from dfvfs.path import qcow_path_spec
 from dfvfs.path import raw_path_spec
 from dfvfs.path import sqlite_blob_path_spec

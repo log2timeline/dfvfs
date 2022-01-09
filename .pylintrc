@@ -7,7 +7,7 @@
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code.
-extension-pkg-allow-list=pybde,pyewf,pyfsapfs,pyfsext,pyfshfs,pyfsntfs,pyfsxfs,pyfvde,pyfwnt,pyluksde,pymodi,pyqcow,pysigscan,pysmdev,pysmraw,pytsk3,pyvhdi,pyvmdk,pyvsgpt,pyvshadow,pyvslvm,xattr
+extension-pkg-allow-list=pybde,pyewf,pyfsapfs,pyfsext,pyfshfs,pyfsntfs,pyfsxfs,pyfvde,pyfwnt,pyluksde,pymodi,pyphdi,pyqcow,pysigscan,pysmdev,pysmraw,pytsk3,pyvhdi,pyvmdk,pyvsgpt,pyvshadow,pyvslvm,xattr
 
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may

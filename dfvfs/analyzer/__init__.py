@@ -16,6 +16,7 @@ from dfvfs.analyzer import luksde_analyzer_helper
 from dfvfs.analyzer import lvm_analyzer_helper
 from dfvfs.analyzer import modi_analyzer_helper
 from dfvfs.analyzer import ntfs_analyzer_helper
+from dfvfs.analyzer import phdi_analyzer_helper
 from dfvfs.analyzer import qcow_analyzer_helper
 from dfvfs.analyzer import tar_analyzer_helper
 

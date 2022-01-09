@@ -70,6 +70,11 @@ except ImportError:
 from dfvfs.resolver_helpers import os_resolver_helper
 
 try:
+  from dfvfs.resolver_helpers import phdi_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver_helpers import qcow_resolver_helper
 except ImportError:
   pass
