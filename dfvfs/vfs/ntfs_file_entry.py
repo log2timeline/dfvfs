@@ -16,53 +16,7 @@ from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import ntfs_attribute
 from dfvfs.vfs import ntfs_data_stream
-
-
-_FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
-
-
-class NTFSDirectory(file_entry.Directory):
-  """File system directory that uses pyfsntfs."""
-
-  def _EntriesGenerator(self):
-    """Retrieves directory entries.
-
-    Since a directory can contain a vast number of entries using
-    a generator is more memory efficient.
-
-    Yields:
-      NTFSPathSpec: NTFS path specification.
-    """
-    try:
-      fsntfs_file_entry = self._file_system.GetNTFSFileEntryByPathSpec(
-          self.path_spec)
-    except errors.PathSpecError:
-      fsntfs_file_entry = None
-
-    if fsntfs_file_entry:
-      location = getattr(self.path_spec, 'location', None)
-
-      for fsntfs_sub_file_entry in fsntfs_file_entry.sub_file_entries:
-        directory_entry = fsntfs_sub_file_entry.name
-
-        # Ignore references to self or parent.
-        if directory_entry in ('.', '..'):
-          continue
-
-        file_reference = fsntfs_sub_file_entry.file_reference
-        directory_entry_mft_entry = (
-            file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
-
-        if not location or location == self._file_system.PATH_SEPARATOR:
-          directory_entry = self._file_system.JoinPath([directory_entry])
-        else:
-          directory_entry = self._file_system.JoinPath([
-              location, directory_entry])
-
-        yield ntfs_path_spec.NTFSPathSpec(
-            location=directory_entry,
-            mft_attribute=fsntfs_sub_file_entry.name_attribute_index,
-            mft_entry=directory_entry_mft_entry, parent=self.path_spec.parent)
+from dfvfs.vfs import ntfs_directory
 
 
 class NTFSFileEntry(file_entry.FileEntry):
@@ -76,6 +30,8 @@ class NTFSFileEntry(file_entry.FileEntry):
       0x00000040: ntfs_attribute.ObjectIdentifierNTFSAttribute,
       0x00000050: ntfs_attribute.SecurityDescriptorNTFSAttribute,
   }
+
+  _FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
 
   def __init__(
       self, resolver_context, file_system, path_spec, fsntfs_file_entry=None,
@@ -155,7 +111,8 @@ class NTFSFileEntry(file_entry.FileEntry):
       NTFSDirectory: a directory.
     """
     if self._directory is None:
-      self._directory = NTFSDirectory(self._file_system, self.path_spec)
+      self._directory = ntfs_directory.NTFSDirectory(
+          self._file_system, self.path_spec)
 
     return self._directory
 
@@ -184,7 +141,7 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     # Other stat information.
     file_reference = self._fsntfs_file_entry.file_reference
-    stat_object.ino = file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK
+    stat_object.ino = file_reference & self._FILE_REFERENCE_MFT_ENTRY_BITMASK
     stat_object.fs_type = 'NTFS'
 
     return stat_object
@@ -354,7 +311,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       return None
 
     parent_mft_entry = (
-        parent_file_reference & _FILE_REFERENCE_MFT_ENTRY_BITMASK)
+        parent_file_reference & self._FILE_REFERENCE_MFT_ENTRY_BITMASK)
 
     parent_path_spec = getattr(self.path_spec, 'parent', None)
     # TODO: determine and pass the mft_attribute of the parent

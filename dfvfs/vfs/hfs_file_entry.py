@@ -10,40 +10,7 @@ from dfvfs.path import hfs_path_spec
 from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import hfs_attribute
-
-
-class HFSDirectory(file_entry.Directory):
-  """File system directory that uses pyfshfs."""
-
-  def _EntriesGenerator(self):
-    """Retrieves directory entries.
-
-    Since a directory can contain a vast number of entries using
-    a generator is more memory efficient.
-
-    Yields:
-      HFSPathSpec: HFS path specification.
-    """
-    try:
-      fshfs_file_entry = self._file_system.GetHFSFileEntryByPathSpec(
-          self.path_spec)
-    except errors.PathSpecError:
-      return
-
-    location = getattr(self.path_spec, 'location', None)
-
-    for fshfs_sub_file_entry in fshfs_file_entry.sub_file_entries:
-      directory_entry = fshfs_sub_file_entry.name
-
-      if not location or location == self._file_system.PATH_SEPARATOR:
-        directory_entry = self._file_system.JoinPath([directory_entry])
-      else:
-        directory_entry = self._file_system.JoinPath([
-            location, directory_entry])
-
-      yield hfs_path_spec.HFSPathSpec(
-          identifier=fshfs_sub_file_entry.identifier, location=directory_entry,
-          parent=self.path_spec.parent)
+from dfvfs.vfs import hfs_directory
 
 
 class HFSFileEntry(file_entry.FileEntry):
@@ -125,7 +92,7 @@ class HFSFileEntry(file_entry.FileEntry):
     if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return None
 
-    return HFSDirectory(self._file_system, self.path_spec)
+    return hfs_directory.HFSDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.

@@ -6,34 +6,8 @@ from dfdatetime import filetime as dfdatetime_filetime
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import vshadow
-from dfvfs.path import vshadow_path_spec
 from dfvfs.vfs import file_entry
-
-
-class VShadowDirectory(file_entry.Directory):
-  """File system directory that uses pyvshadow."""
-
-  def _EntriesGenerator(self):
-    """Retrieves directory entries.
-
-    Since a directory can contain a vast number of entries using
-    a generator is more memory efficient.
-
-    Yields:
-      VShadowPathSpec: a path specification.
-    """
-    location = getattr(self.path_spec, 'location', None)
-    store_index = getattr(self.path_spec, 'store_index', None)
-
-    # Only the virtual root file has directory entries.
-    if (store_index is None and location is not None and
-        location == self._file_system.LOCATION_ROOT):
-      vshadow_volume = self._file_system.GetVShadowVolume()
-
-      for store_index in range(0, vshadow_volume.number_of_stores):
-        yield vshadow_path_spec.VShadowPathSpec(
-            location='/vss{0:d}'.format(store_index + 1),
-            store_index=store_index, parent=self.path_spec.parent)
+from dfvfs.vfs import vshadow_directory
 
 
 class VShadowFileEntry(file_entry.FileEntry):
@@ -82,7 +56,8 @@ class VShadowFileEntry(file_entry.FileEntry):
       VShadowDirectory: a directory.
     """
     if self._directory is None:
-      self._directory = VShadowDirectory(self._file_system, self.path_spec)
+      self._directory = vshadow_directory.VShadowDirectory(
+          self._file_system, self.path_spec)
 
     return self._directory
 

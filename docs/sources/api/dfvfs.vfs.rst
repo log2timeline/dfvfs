@@ -12,6 +12,14 @@ dfvfs.vfs.apfs\_attribute module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.apfs\_container\_directory module
+-------------------------------------------
+
+.. automodule:: dfvfs.vfs.apfs_container_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.apfs\_container\_file\_entry module
 ---------------------------------------------
 
@@ -24,6 +32,14 @@ dfvfs.vfs.apfs\_container\_file\_system module
 ----------------------------------------------
 
 .. automodule:: dfvfs.vfs.apfs_container_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.apfs\_directory module
+--------------------------------
+
+.. automodule:: dfvfs.vfs.apfs_directory
    :members:
    :undoc-members:
    :show-inheritance:
@@ -84,6 +100,14 @@ dfvfs.vfs.compressed\_stream\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.cpio\_directory module
+--------------------------------
+
+.. automodule:: dfvfs.vfs.cpio_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.cpio\_file\_entry module
 ----------------------------------
 
@@ -120,6 +144,14 @@ dfvfs.vfs.data\_stream module
 -----------------------------
 
 .. automodule:: dfvfs.vfs.data_stream
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.directory module
+--------------------------
+
+.. automodule:: dfvfs.vfs.directory
    :members:
    :undoc-members:
    :show-inheritance:
@@ -164,6 +196,14 @@ dfvfs.vfs.ext\_attribute module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.ext\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.ext_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.ext\_file\_entry module
 ---------------------------------
 
@@ -176,6 +216,14 @@ dfvfs.vfs.ext\_file\_system module
 ----------------------------------
 
 .. automodule:: dfvfs.vfs.ext_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.fake\_directory module
+--------------------------------
+
+.. automodule:: dfvfs.vfs.fake_directory
    :members:
    :undoc-members:
    :show-inheritance:
@@ -228,6 +276,14 @@ dfvfs.vfs.fvde\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.gpt\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.gpt_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.gpt\_file\_entry module
 ---------------------------------
 
@@ -268,6 +324,14 @@ dfvfs.vfs.hfs\_attribute module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.hfs\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.hfs_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.hfs\_file\_entry module
 ---------------------------------
 
@@ -296,6 +360,14 @@ dfvfs.vfs.luksde\_file\_system module
 -------------------------------------
 
 .. automodule:: dfvfs.vfs.luksde_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.lvm\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.lvm_directory
    :members:
    :undoc-members:
    :show-inheritance:
@@ -332,6 +404,14 @@ dfvfs.vfs.ntfs\_data\_stream module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.ntfs\_directory module
+--------------------------------
+
+.. automodule:: dfvfs.vfs.ntfs_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.ntfs\_file\_entry module
 ----------------------------------
 
@@ -352,6 +432,14 @@ dfvfs.vfs.os\_attribute module
 ------------------------------
 
 .. automodule:: dfvfs.vfs.os_attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.os\_directory module
+------------------------------
+
+.. automodule:: dfvfs.vfs.os_directory
    :members:
    :undoc-members:
    :show-inheritance:
@@ -388,6 +476,14 @@ dfvfs.vfs.root\_only\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.sqlite\_blob\_directory module
+----------------------------------------
+
+.. automodule:: dfvfs.vfs.sqlite_blob_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.sqlite\_blob\_file\_entry module
 ------------------------------------------
 
@@ -400,6 +496,14 @@ dfvfs.vfs.sqlite\_blob\_file\_system module
 -------------------------------------------
 
 .. automodule:: dfvfs.vfs.sqlite_blob_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.tar\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.tar_directory
    :members:
    :undoc-members:
    :show-inheritance:
@@ -436,6 +540,14 @@ dfvfs.vfs.tsk\_data\_stream module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.tsk\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.tsk_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.tsk\_file\_entry module
 ---------------------------------
 
@@ -448,6 +560,14 @@ dfvfs.vfs.tsk\_file\_system module
 ----------------------------------
 
 .. automodule:: dfvfs.vfs.tsk_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.tsk\_partition\_directory module
+------------------------------------------
+
+.. automodule:: dfvfs.vfs.tsk_partition_directory
    :members:
    :undoc-members:
    :show-inheritance:
@@ -476,6 +596,14 @@ dfvfs.vfs.vfs\_stat module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.vshadow\_directory module
+-----------------------------------
+
+.. automodule:: dfvfs.vfs.vshadow_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.vshadow\_file\_entry module
 -------------------------------------
 
@@ -500,6 +628,14 @@ dfvfs.vfs.xfs\_attribute module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.xfs\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.xfs_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.xfs\_file\_entry module
 ---------------------------------
 
@@ -512,6 +648,14 @@ dfvfs.vfs.xfs\_file\_system module
 ----------------------------------
 
 .. automodule:: dfvfs.vfs.xfs_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.zip\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.zip_directory
    :members:
    :undoc-members:
    :show-inheritance:

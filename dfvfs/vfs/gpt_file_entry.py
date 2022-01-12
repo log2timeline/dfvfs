@@ -4,35 +4,8 @@
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import gpt
-from dfvfs.path import gpt_path_spec
 from dfvfs.vfs import file_entry
-
-
-class GPTDirectory(file_entry.Directory):
-  """File system directory that uses pyvsgpt."""
-
-  def _EntriesGenerator(self):
-    """Retrieves directory entries.
-
-    Since a directory can contain a vast number of entries using
-    a generator is more memory efficient.
-
-    Yields:
-      GPTPathSpec: a path specification.
-    """
-    entry_index = getattr(self.path_spec, 'entry_index', None)
-    location = getattr(self.path_spec, 'location', None)
-
-    # Only the virtual root file has directory entries.
-    if (entry_index is None and location is not None and
-        location == self._file_system.LOCATION_ROOT):
-      vsgpt_volume = self._file_system.GetGPTVolume()
-
-      for partition in vsgpt_volume.partitions:
-        location = '/p{0:d}'.format(partition.entry_index + 1)
-        yield gpt_path_spec.GPTPathSpec(
-            entry_index=entry_index, location=location,
-            parent=self.path_spec.parent)
+from dfvfs.vfs import gpt_directory
 
 
 class GPTFileEntry(file_entry.FileEntry):
@@ -81,7 +54,8 @@ class GPTFileEntry(file_entry.FileEntry):
       GPTDirectory: a directory.
     """
     if self._directory is None:
-      self._directory = GPTDirectory(self._file_system, self.path_spec)
+      self._directory = gpt_directory.GPTDirectory(
+          self._file_system, self.path_spec)
 
     return self._directory
 
