@@ -9,6 +9,7 @@ from dfvfs.path import apfs_path_spec
 from dfvfs.vfs import attribute
 from dfvfs.vfs import apfs_attribute
 from dfvfs.vfs import apfs_directory
+from dfvfs.vfs import extent
 from dfvfs.vfs import file_entry
 
 
@@ -206,6 +207,30 @@ class APFSFileEntry(file_entry.FileEntry):
       pyfsapfs.file_entry: APFS file entry.
     """
     return self._fsapfs_file_entry
+
+  def GetExtents(self, data_stream_name=''):
+    """Retrieves extents of a specific data stream.
+
+    Returns:
+      list[Extent]: extents of the data stream.
+    """
+    extents = []
+    if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
+        not data_stream_name):
+      for extent_index in range(self._fsapfs_file_entry.number_of_extents):
+        extent_offset, extent_size, extent_flags = (
+            self._fsapfs_file_entry.get_extent(extent_index))
+
+        if extent_flags & 0x1:
+          extent_type = definitions.EXTENT_TYPE_SPARSE
+        else:
+          extent_type = definitions.EXTENT_TYPE_DATA
+
+        data_stream_extent = extent.Extent(
+            extent_type=extent_type, offset=extent_offset, size=extent_size)
+        extents.append(data_stream_extent)
+
+    return extents
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link.
