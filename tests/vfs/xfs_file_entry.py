@@ -14,9 +14,6 @@ from dfvfs.vfs import xfs_file_system
 from tests import test_lib as shared_test_lib
 
 
-# TODO: add tests for XFSDirectory.
-
-
 class XFSFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the XFS file entry."""
 

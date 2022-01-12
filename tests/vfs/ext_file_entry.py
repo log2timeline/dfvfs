@@ -14,9 +14,6 @@ from dfvfs.vfs import ext_file_system
 from tests import test_lib as shared_test_lib
 
 
-# TODO: add tests for EXTDirectory.
-
-
 class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
   """Tests the EXT file entry on an ext2 image."""
 

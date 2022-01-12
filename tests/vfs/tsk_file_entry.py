@@ -102,49 +102,6 @@ class TSKTimeTest(unittest.TestCase):
     self.assertIsNone(micro_posix_timestamp)
 
 
-class TSKDirectoryTest(shared_test_lib.BaseTestCase):
-  """Tests the TSK directory."""
-
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['ext2.raw'])
-    self._SkipIfPathNotExists(test_path)
-
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
-    self._tsk_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, location='/',
-        parent=self._raw_path_spec)
-
-    self._file_system = tsk_file_system.TSKFileSystem(
-        self._resolver_context, self._tsk_path_spec)
-    self._file_system.Open()
-
-  def tearDown(self):
-    """Cleans up the needed objects used throughout the test."""
-    self._resolver_context.Empty()
-
-  def testInitialize(self):
-    """Tests the __init__ function."""
-    directory = tsk_file_entry.TSKDirectory(
-        self._file_system, self._tsk_path_spec)
-
-    self.assertIsNotNone(directory)
-
-  def testEntriesGenerator(self):
-    """Tests the _EntriesGenerator function."""
-    directory = tsk_file_entry.TSKDirectory(
-        self._file_system, self._tsk_path_spec)
-
-    self.assertIsNotNone(directory)
-
-    entries = list(directory.entries)
-    self.assertEqual(len(entries), 5)
-
-
 class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   """Tests the SleuthKit (TSK) file entry on ext2."""
 
