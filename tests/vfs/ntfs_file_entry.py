@@ -169,7 +169,60 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
-  # TODO: add tests for GetFileObject
+  def testGetExtents(self):
+    """Tests the GetExtents function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\$UpCase', mft_entry=10,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents()
+    self.assertEqual(len(extents), 1)
+
+    self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
+    self.assertEqual(extents[0].offset, 823296)
+    self.assertEqual(extents[0].size, 131072)
+
+    extents = file_entry.GetExtents(data_stream_name='$Info')
+    # No extents are returned for data store in the $DATA attribute.
+    self.assertEqual(len(extents), 0)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents()
+    self.assertEqual(len(extents), 0)
+
+  def testGetFileObject(self):
+    """Tests the GetFileObject function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\$UpCase', mft_entry=10,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    file_object = file_entry.GetFileObject()
+    self.assertIsNotNone(file_object)
+
+    self.assertEqual(file_object.get_size(), 131072)
+
+    file_object = file_entry.GetFileObject(data_stream_name='$Info')
+    self.assertIsNotNone(file_object)
+
+    self.assertEqual(file_object.get_size(), 32)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    file_object = file_entry.GetFileObject()
+    self.assertIsNone(file_object)
 
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
@@ -186,7 +239,6 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
 
     parent_file_entry = file_entry.GetParentFileEntry()
-
     self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, 'a_directory')

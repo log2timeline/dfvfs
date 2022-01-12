@@ -131,11 +131,13 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
 
     file_object = file_entry.GetFileObject()
-
     self.assertIsNotNone(file_object)
 
     file_data = file_object.read()
     self.assertEqual(file_data, b'FILE1')
+
+    file_object = file_entry.GetFileObject(data_stream_name='bogus')
+    self.assertIsNone(file_object)
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
