@@ -116,6 +116,14 @@ dfvfs.vfs.data\_range\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.data\_stream module
+-----------------------------
+
+.. automodule:: dfvfs.vfs.data_stream
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.encoded\_stream\_file\_entry module
 ---------------------------------------------
 
@@ -316,6 +324,14 @@ dfvfs.vfs.ntfs\_attribute module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.ntfs\_data\_stream module
+-----------------------------------
+
+.. automodule:: dfvfs.vfs.ntfs_data_stream
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.ntfs\_file\_entry module
 ----------------------------------
 
@@ -408,6 +424,14 @@ dfvfs.vfs.tsk\_attribute module
 -------------------------------
 
 .. automodule:: dfvfs.vfs.tsk_attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.tsk\_data\_stream module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.tsk_data_stream
    :members:
    :undoc-members:
    :show-inheritance:

@@ -172,6 +172,14 @@ dfvfs.resolver\_helpers.os\_resolver\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.resolver\_helpers.phdi\_resolver\_helper module
+-----------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.phdi_resolver_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.resolver\_helpers.qcow\_resolver\_helper module
 -----------------------------------------------------
 

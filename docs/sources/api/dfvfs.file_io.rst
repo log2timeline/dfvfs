@@ -172,6 +172,14 @@ dfvfs.file\_io.os\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.phdi\_file\_io module
+------------------------------------
+
+.. automodule:: dfvfs.file_io.phdi_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.qcow\_file\_io module
 ------------------------------------
 

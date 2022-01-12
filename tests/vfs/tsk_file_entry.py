@@ -102,9 +102,6 @@ class TSKTimeTest(unittest.TestCase):
     self.assertIsNone(micro_posix_timestamp)
 
 
-# TODO: add tests for TSKDataStream
-
-
 class TSKDirectoryTest(shared_test_lib.BaseTestCase):
   """Tests the TSK directory."""
 

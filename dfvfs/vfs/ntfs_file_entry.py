@@ -15,35 +15,10 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import ntfs_attribute
+from dfvfs.vfs import ntfs_data_stream
 
 
 _FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
-
-
-class NTFSDataStream(file_entry.DataStream):
-  """File system data stream that uses pyfsntfs."""
-
-  def __init__(self, fsntfs_data_stream):
-    """Initializes the data stream object.
-
-    Args:
-      fsntfs_data_stream (pyfsntfs.data_stream): NTFS data stream.
-    """
-    super(NTFSDataStream, self).__init__()
-    self._fsntfs_data_stream = fsntfs_data_stream
-
-  @property
-  def name(self):
-    """str: name."""
-    return getattr(self._fsntfs_data_stream, 'name', '')
-
-  def IsDefault(self):
-    """Determines if the data stream is the default data stream.
-
-    Returns:
-      bool: True if the data stream is the default data stream.
-    """
-    return not self._fsntfs_data_stream
 
 
 class NTFSDirectory(file_entry.Directory):
@@ -164,11 +139,11 @@ class NTFSFileEntry(file_entry.FileEntry):
     if self._data_streams is None:
       self._data_streams = []
       if self._fsntfs_file_entry.has_default_data_stream():
-        data_stream = NTFSDataStream(None)
+        data_stream = ntfs_data_stream.NTFSDataStream(None)
         self._data_streams.append(data_stream)
 
       for fsntfs_data_stream in self._fsntfs_file_entry.alternate_data_streams:
-        data_stream = NTFSDataStream(fsntfs_data_stream)
+        data_stream = ntfs_data_stream.NTFSDataStream(fsntfs_data_stream)
         self._data_streams.append(data_stream)
 
     return self._data_streams
