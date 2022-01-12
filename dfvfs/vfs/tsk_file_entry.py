@@ -17,6 +17,7 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import attribute
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import tsk_attribute
+from dfvfs.vfs import tsk_data_stream
 
 
 class TSKTime(dfdatetime_interface.DateTimeValues):
@@ -177,56 +178,6 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
       return self._GetDateValues(number_of_days, 1970, 1, 1)
     except ValueError:
       return None, None, None
-
-
-class TSKDataStream(file_entry.DataStream):
-  """File system data stream that uses pytsk3."""
-
-  def __init__(self, file_system, pytsk_attribute):
-    """Initializes a data stream.
-
-    Args:
-      file_system (TSKFileSystem): file system.
-      pytsk_attribute (pytsk3.Attribute): TSK attribute.
-    """
-    super(TSKDataStream, self).__init__()
-    self._file_system = file_system
-    self._tsk_attribute = pytsk_attribute
-
-  @property
-  def name(self):
-    """str: name."""
-    if self._tsk_attribute:
-      # The value of the attribute name will be None for the default
-      # data stream.
-      attribute_name = getattr(self._tsk_attribute.info, 'name', None)
-      if attribute_name:
-        try:
-          # pytsk3 returns an UTF-8 encoded byte string.
-          return attribute_name.decode('utf8')
-        except UnicodeError:
-          pass
-
-    return ''
-
-  def IsDefault(self):
-    """Determines if the data stream is the default data stream.
-
-    Returns:
-      bool: True if the data stream is the default data stream, false if not.
-    """
-    if not self._tsk_attribute or not self._file_system:
-      return True
-
-    if self._file_system.IsHFS():
-      attribute_type = getattr(self._tsk_attribute.info, 'type', None)
-      return attribute_type in (
-          pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA)
-
-    if self._file_system.IsNTFS():
-      return not bool(self.name)
-
-    return True
 
 
 class TSKDirectory(file_entry.Directory):
@@ -535,7 +486,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
       if not known_data_attribute_types:
         if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
-          data_stream = TSKDataStream(self._file_system, None)
+          data_stream = tsk_data_stream.TSKDataStream(self._file_system, None)
           self._data_streams.append(data_stream)
 
       else:
@@ -550,7 +501,8 @@ class TSKFileEntry(file_entry.FileEntry):
 
           attribute_type = getattr(pytsk_attribute.info, 'type', None)
           if attribute_type in known_data_attribute_types:
-            data_stream = TSKDataStream(self._file_system, pytsk_attribute)
+            data_stream = tsk_data_stream.TSKDataStream(
+                self._file_system, pytsk_attribute)
             self._data_streams.append(data_stream)
 
     return self._data_streams
@@ -857,6 +809,7 @@ class TSKFileEntry(file_entry.FileEntry):
     """
     data_stream_names = [
         data_stream.name for data_stream in self._GetDataStreams()]
+
     if data_stream_name and data_stream_name not in data_stream_names:
       return None
 

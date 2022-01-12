@@ -10,27 +10,8 @@ import abc
 from dfvfs.lib import decorators
 from dfvfs.lib import definitions
 from dfvfs.resolver import resolver
+from dfvfs.vfs import data_stream
 from dfvfs.vfs import vfs_stat
-
-
-class DataStream(object):
-  """Data stream interface."""
-
-  # The data stream object should not have a reference to its
-  # file entry since that will create a cyclic reference.
-
-  @property
-  def name(self):
-    """str: name."""
-    return ''
-
-  def IsDefault(self):
-    """Determines if the data stream is the default data stream.
-
-    Returns:
-      bool: True if the data stream is the default data stream.
-    """
-    return True
 
 
 class Directory(object):
@@ -137,8 +118,8 @@ class FileEntry(object):
 
       # It is assumed that non-file file entries do not have data streams.
       if self.entry_type == definitions.FILE_ENTRY_TYPE_FILE:
-        data_stream = DataStream()
-        self._data_streams.append(data_stream)
+        data_stream_object = data_stream.DataStream()
+        self._data_streams.append(data_stream_object)
 
     return self._data_streams
 
@@ -353,13 +334,13 @@ class FileEntry(object):
     name_lower = name.lower()
     matching_data_stream = None
 
-    for data_stream in self._GetDataStreams():
-      if data_stream.name == name:
-        return data_stream
+    for data_stream_object in self._GetDataStreams():
+      if data_stream_object.name == name:
+        return data_stream_object
 
-      if not case_sensitive and data_stream.name.lower() == name_lower:
+      if not case_sensitive and data_stream_object.name.lower() == name_lower:
         if not matching_data_stream:
-          matching_data_stream = data_stream
+          matching_data_stream = data_stream_object
 
     return matching_data_stream
 
@@ -463,11 +444,11 @@ class FileEntry(object):
 
     name_lower = name.lower()
 
-    for data_stream in self._GetDataStreams():
-      if data_stream.name == name:
+    for data_stream_object in self._GetDataStreams():
+      if data_stream_object.name == name:
         return True
 
-      if not case_sensitive and data_stream.name.lower() == name_lower:
+      if not case_sensitive and data_stream_object.name.lower() == name_lower:
         return True
 
     return False

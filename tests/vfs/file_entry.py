@@ -37,20 +37,6 @@ class TestFileEntry(file_entry.FileEntry):
     return iter([])
 
 
-class DataStreamTest(shared_test_lib.BaseTestCase):
-  """Tests the VFS data stream interface."""
-
-  def testName(self):
-    """Test the name property."""
-    test_data_stream = file_entry.DataStream()
-    self.assertEqual(test_data_stream.name, '')
-
-  def testIsDefault(self):
-    """Test the IsDefault function."""
-    test_data_stream = file_entry.DataStream()
-    self.assertTrue(test_data_stream.IsDefault())
-
-
 class DirectoryTest(shared_test_lib.BaseTestCase):
   """Tests the VFS directory interface."""
 

@@ -196,6 +196,14 @@ dfvfs.path.path\_spec module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.path.phdi\_path\_spec module
+----------------------------------
+
+.. automodule:: dfvfs.path.phdi_path_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.path.qcow\_path\_spec module
 ----------------------------------
 

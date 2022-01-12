@@ -140,6 +140,14 @@ dfvfs.analyzer.ntfs\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.analyzer.phdi\_analyzer\_helper module
+--------------------------------------------
+
+.. automodule:: dfvfs.analyzer.phdi_analyzer_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.analyzer.qcow\_analyzer\_helper module
 --------------------------------------------
 
