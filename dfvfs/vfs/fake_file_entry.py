@@ -41,11 +41,10 @@ class FakeFileEntry(file_entry.FileEntry):
     Returns:
       FakeDirectory: a directory.
     """
-    if self._directory is None:
-      self._directory = fake_directory.FakeDirectory(
-          self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
 
-    return self._directory
+    return fake_directory.FakeDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.
@@ -70,9 +69,11 @@ class FakeFileEntry(file_entry.FileEntry):
     Yields:
       FakeFileEntry: a sub file entry.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      directory = self._GetDirectory()
-      for path_spec in directory.entries:
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
         yield self._file_system.GetFileEntryByPathSpec(path_spec)
 
   @property

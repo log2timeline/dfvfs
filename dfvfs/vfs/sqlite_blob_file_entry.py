@@ -43,11 +43,11 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     Returns:
       SQLiteBlobDirectory: a directory.
     """
-    if self._directory is None:
-      self._directory = sqlite_blob_directory.SQLiteBlobDirectory(
-          self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
 
-    return self._directory
+    return sqlite_blob_directory.SQLiteBlobDirectory(
+        self._file_system, self.path_spec)
 
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
@@ -55,9 +55,11 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     Yields:
       SQLiteBlobFileEntry: a sub file entry.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      directory = self._GetDirectory()
-      for path_spec in directory.entries:
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
         yield SQLiteBlobFileEntry(
             self._resolver_context, self._file_system, path_spec)
 

@@ -68,11 +68,10 @@ class ZipFileEntry(file_entry.FileEntry):
     Returns:
       ZIPDirectory: a directory.
     """
-    if self._directory is None:
-      self._directory = zip_directory.ZIPDirectory(
-          self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
 
-    return self._directory
+    return zip_directory.ZIPDirectory(self._file_system, self.path_spec)
 
   def _GetStat(self):
     """Retrieves information about the file entry.
@@ -115,11 +114,13 @@ class ZipFileEntry(file_entry.FileEntry):
     Yields:
       ZipFileEntry: a sub file entry.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
       zip_file = self._file_system.GetZipFile()
       if zip_file:
-        directory = self._GetDirectory()
-        for path_spec in directory.entries:
+        for path_spec in self._directory.entries:
           location = getattr(path_spec, 'location', None)
           if location is None:
             continue

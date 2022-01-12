@@ -120,11 +120,10 @@ class OSFileEntry(file_entry.FileEntry):
     Returns:
       OSDirectory: a directory.
     """
-    if self._directory is None:
-      self._directory = os_directory.OSDirectory(
-          self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
 
-    return self._directory
+    return os_directory.OSDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.
@@ -188,9 +187,11 @@ class OSFileEntry(file_entry.FileEntry):
     Yields:
       OSFileEntry: a sub file entry.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      directory = self._GetDirectory()
-      for path_spec in directory.entries:
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
         yield OSFileEntry(self._resolver_context, self._file_system, path_spec)
 
   @property

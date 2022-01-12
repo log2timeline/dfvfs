@@ -61,11 +61,10 @@ class TARFileEntry(file_entry.FileEntry):
     Returns:
       TARDirectory: a directory.
     """
-    if self._directory is None:
-      self._directory = tar_directory.TARDirectory(
-          self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
 
-    return self._directory
+    return tar_directory.TARDirectory(self._file_system, self.path_spec)
 
   def _GetLink(self):
     """Retrieves the link.
@@ -116,11 +115,13 @@ class TARFileEntry(file_entry.FileEntry):
     Yields:
       TARFileEntry: a sub file entry.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
       tar_file = self._file_system.GetTARFile()
       if tar_file:
-        directory = self._GetDirectory()
-        for path_spec in directory.entries:
+        for path_spec in self._directory.entries:
           location = getattr(path_spec, 'location', None)
           if location is None:
             continue
