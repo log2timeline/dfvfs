@@ -164,8 +164,7 @@ class HFSFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield HFSFileEntry(
-            self._resolver_context, self._file_system, path_spec)
+        yield HFSFileEntry(self._resolver_context, self._file_system, path_spec)
 
   @property
   def access_time(self):

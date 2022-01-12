@@ -173,8 +173,7 @@ class EXTFileEntry(file_entry.FileEntry):
 
     if self._directory:
       for path_spec in self._directory.entries:
-        yield EXTFileEntry(
-            self._resolver_context, self._file_system, path_spec)
+        yield EXTFileEntry(self._resolver_context, self._file_system, path_spec)
 
   @property
   def access_time(self):

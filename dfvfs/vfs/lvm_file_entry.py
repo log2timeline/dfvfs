@@ -56,11 +56,10 @@ class LVMFileEntry(file_entry.FileEntry):
     Returns:
       LVMDirectory: a directory.
     """
-    if self._directory is None:
-      self._directory = lvm_directory.LVMDirectory(
-          self._file_system, self.path_spec)
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+      return None
 
-    return self._directory
+    return lvm_directory.LVMDirectory(self._file_system, self.path_spec)
 
   def _GetSubFileEntries(self):
     """Retrieves sub file entries.
@@ -68,9 +67,11 @@ class LVMFileEntry(file_entry.FileEntry):
     Yields:
       LVMFileEntry: a sub file entry.
     """
-    if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      directory = self._GetDirectory()
-      for path_spec in directory.entries:
+    if self._directory is None:
+      self._directory = self._GetDirectory()
+
+    if self._directory:
+      for path_spec in self._directory.entries:
         yield LVMFileEntry(self._resolver_context, self._file_system, path_spec)
 
   # TODO: implement creation_time property after implementing
