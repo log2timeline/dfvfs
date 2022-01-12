@@ -15,6 +15,7 @@ from dfvfs.lib import errors
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import attribute
+from dfvfs.vfs import extent
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import tsk_attribute
 from dfvfs.vfs import tsk_data_stream
@@ -694,8 +695,68 @@ class TSKFileEntry(file_entry.FileEntry):
     """int: size of the file entry in bytes or None if not available."""
     return getattr(self._tsk_file.info.meta, 'size', None)
 
+  def GetExtents(self, data_stream_name=''):
+    """Retrieves extents of a specific data stream.
+
+    Returns:
+      list[Extent]: extents of the data stream.
+
+    Raises:
+      BackEndError: if pytsk3 returns a non UTF-8 formatted name or no file
+          system block size.
+    """
+    data_pytsk_attribute = None
+    for pytsk_attribute in self._tsk_file:
+      if getattr(pytsk_attribute, 'info', None):
+        attribute_type = getattr(pytsk_attribute.info, 'type', None)
+        if attribute_type in self._TSK_INTERNAL_ATTRIBUTE_TYPES:
+          continue
+
+        name = getattr(pytsk_attribute.info, 'name', None)
+        if name:
+          try:
+            # pytsk3 returns an UTF-8 encoded byte string.
+            name = name.decode('utf8')
+          except UnicodeError:
+            raise errors.BackEndError(
+                'pytsk3 returned a non UTF-8 formatted name.')
+
+        # The data stream is returned as a name-less attribute of type
+        # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
+        if (attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and not name and
+            not data_stream_name):
+          data_pytsk_attribute = pytsk_attribute
+          break
+
+        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA and (
+            (not name and not data_stream_name) or (name == data_stream_name)):
+          data_pytsk_attribute = pytsk_attribute
+          break
+
+    extents = []
+    if data_pytsk_attribute:
+      tsk_file_system = self._file_system.GetFsInfo()
+      block_size = getattr(tsk_file_system.info, 'block_size', None)
+      if not block_size:
+        raise errors.BackEndError('pytsk3 returned no file system block size.')
+
+      for pytsk_attr_run in data_pytsk_attribute:
+        if pytsk_attr_run.flags & pytsk3.TSK_FS_ATTR_RUN_FLAG_SPARSE:
+          extent_type = definitions.EXTENT_TYPE_SPARSE
+        else:
+          extent_type = definitions.EXTENT_TYPE_DATA
+
+        extent_offset = pytsk_attr_run.addr * block_size
+        extent_size = pytsk_attr_run.len * block_size
+
+        data_stream_extent = extent.Extent(
+            extent_type=extent_type, offset=extent_offset, size=extent_size)
+        extents.append(data_stream_extent)
+
+    return extents
+
   def GetFileObject(self, data_stream_name=''):
-    """Retrieves the file-like object.
+    """Retrieves a file-like object of a specific data stream.
 
     Args:
       data_stream_name (Optional[str]): data stream name, where an empty
@@ -720,6 +781,9 @@ class TSKFileEntry(file_entry.FileEntry):
         data_stream_name = ''
 
       setattr(path_spec, 'data_stream', data_stream_name)
+
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_FILE:
+      return None
 
     return resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)

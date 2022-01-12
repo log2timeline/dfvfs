@@ -13,6 +13,7 @@ from dfvfs.lib import errors
 from dfvfs.path import ntfs_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import attribute
+from dfvfs.vfs import extent
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import ntfs_attribute
 from dfvfs.vfs import ntfs_data_stream
@@ -231,8 +232,50 @@ class NTFSFileEntry(file_entry.FileEntry):
     """int: size of the file entry in bytes or None if not available."""
     return getattr(self._fsntfs_file_entry, 'size', None)
 
+  def GetExtents(self, data_stream_name=''):
+    """Retrieves extents of a specific data stream.
+
+    Returns:
+      list[Extent]: extents of the data stream.
+    """
+    extents = []
+    if data_stream_name:
+      fsntfs_data_stream = (
+          self._fsntfs_file_entry.get_alternate_data_stream_by_name(
+              data_stream_name))
+
+      if fsntfs_data_stream:
+        for extent_index in range(fsntfs_data_stream.number_of_extents):
+          extent_offset, extent_size, extent_flags = (
+              fsntfs_data_stream.get_extent(extent_index))
+
+          if extent_flags & 0x1:
+            extent_type = definitions.EXTENT_TYPE_SPARSE
+          else:
+            extent_type = definitions.EXTENT_TYPE_DATA
+
+          data_stream_extent = extent.Extent(
+              extent_type=extent_type, offset=extent_offset, size=extent_size)
+          extents.append(data_stream_extent)
+
+    else:
+      for extent_index in range(self._fsntfs_file_entry.number_of_extents):
+        extent_offset, extent_size, extent_flags = (
+            self._fsntfs_file_entry.get_extent(extent_index))
+
+        if extent_flags & 0x1:
+          extent_type = definitions.EXTENT_TYPE_SPARSE
+        else:
+          extent_type = definitions.EXTENT_TYPE_DATA
+
+        data_stream_extent = extent.Extent(
+            extent_type=extent_type, offset=extent_offset, size=extent_size)
+        extents.append(data_stream_extent)
+
+    return extents
+
   def GetFileObject(self, data_stream_name=''):
-    """Retrieves the file-like object.
+    """Retrieves a file-like object of a specific data stream.
 
     Args:
       data_stream_name (Optional[str]): data stream name, where an empty

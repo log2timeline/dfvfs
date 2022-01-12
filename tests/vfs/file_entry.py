@@ -217,16 +217,24 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(ValueError):
       test_file_entry.GetDataStream(0)
 
+  def testGetExtents(self):
+    """Tests the GetExtents function."""
+    test_file_entry = TestFileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+
+    extents = test_file_entry.GetExtents()
+    self.assertEqual(len(extents), 0)
+
   def testGetFileObject(self):
     """Tests the GetFileObject function."""
     test_file_entry = TestFileEntry(
         self._resolver_context, self._file_system, self._path_spec)
 
-    file_object = test_file_entry.GetFileObject('bogus')
+    file_object = test_file_entry.GetFileObject(data_stream_name='bogus')
     self.assertIsNone(file_object)
 
     with self.assertRaises(errors.NotSupported):
-      test_file_entry.GetFileObject('')
+      test_file_entry.GetFileObject()
 
   def testGetFileSystem(self):
     """Tests the GetFileSystem function."""

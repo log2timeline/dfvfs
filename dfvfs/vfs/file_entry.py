@@ -308,8 +308,16 @@ class FileEntry(object):
 
     return matching_data_stream
 
+  def GetExtents(self, data_stream_name=''):  # pylint: disable=unused-argument
+    """Retrieves extents of a specific data stream.
+
+    Returns:
+      list[Extent]: extents of the data stream.
+    """
+    return []
+
   def GetFileObject(self, data_stream_name=''):
-    """Retrieves the file-like object.
+    """Retrieves a file-like object of a specific data stream.
 
     Args:
       data_stream_name (Optional[str]): name of the data stream, where an empty

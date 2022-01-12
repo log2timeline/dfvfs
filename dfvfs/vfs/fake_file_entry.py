@@ -114,7 +114,7 @@ class FakeFileEntry(file_entry.FileEntry):
     return size
 
   def GetFileObject(self, data_stream_name=''):
-    """Retrieves the file-like object.
+    """Retrieves a file-like object of a specific data stream.
 
     Args:
       data_stream_name (Optional[str]): name of the data stream, where an empty

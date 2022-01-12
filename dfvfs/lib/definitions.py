@@ -26,6 +26,11 @@ ENCRYPTION_MODE_CFB = 'cfb'
 ENCRYPTION_MODE_ECB = 'ecb'
 ENCRYPTION_MODE_OFB = 'ofb'
 
+# The extent types.
+EXTENT_TYPE_COMPRESSED = 'compressed'
+EXTENT_TYPE_DATA = 'data'
+EXTENT_TYPE_SPARSE = 'sparse'
+
 # The type indicator definitions.
 TYPE_INDICATOR_APFS = 'APFS'
 TYPE_INDICATOR_APFS_CONTAINER = 'APFS_CONTAINER'
