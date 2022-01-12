@@ -160,15 +160,6 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.size, 116)
 
-  def testGetFileEntryByPathSpec(self):
-    """Tests the GetFileEntryByPathSpec function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
-        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-
   def testGetExtents(self):
     """Tests the GetExtents function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -196,6 +187,15 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     extents = file_entry.GetExtents()
     self.assertEqual(len(extents), 0)
+
+  def testGetFileEntryByPathSpec(self):
+    """Tests the GetFileEntryByPathSpec function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_PASSWORDS_TXT, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
 
   def testGetFileObject(self):
     """Tests the GetFileObject function."""

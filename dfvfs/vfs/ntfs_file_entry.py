@@ -239,7 +239,21 @@ class NTFSFileEntry(file_entry.FileEntry):
       list[Extent]: extents of the data stream.
     """
     extents = []
-    if data_stream_name:
+    if not data_stream_name:
+      for extent_index in range(self._fsntfs_file_entry.number_of_extents):
+        extent_offset, extent_size, extent_flags = (
+            self._fsntfs_file_entry.get_extent(extent_index))
+
+        if extent_flags & 0x1:
+          extent_type = definitions.EXTENT_TYPE_SPARSE
+        else:
+          extent_type = definitions.EXTENT_TYPE_DATA
+
+        data_stream_extent = extent.Extent(
+            extent_type=extent_type, offset=extent_offset, size=extent_size)
+        extents.append(data_stream_extent)
+
+    else:
       fsntfs_data_stream = (
           self._fsntfs_file_entry.get_alternate_data_stream_by_name(
               data_stream_name))
@@ -257,20 +271,6 @@ class NTFSFileEntry(file_entry.FileEntry):
           data_stream_extent = extent.Extent(
               extent_type=extent_type, offset=extent_offset, size=extent_size)
           extents.append(data_stream_extent)
-
-    else:
-      for extent_index in range(self._fsntfs_file_entry.number_of_extents):
-        extent_offset, extent_size, extent_flags = (
-            self._fsntfs_file_entry.get_extent(extent_index))
-
-        if extent_flags & 0x1:
-          extent_type = definitions.EXTENT_TYPE_SPARSE
-        else:
-          extent_type = definitions.EXTENT_TYPE_DATA
-
-        data_stream_extent = extent.Extent(
-            extent_type=extent_type, offset=extent_offset, size=extent_size)
-        extents.append(data_stream_extent)
 
     return extents
 
