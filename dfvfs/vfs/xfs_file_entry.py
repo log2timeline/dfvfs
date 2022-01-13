@@ -7,6 +7,7 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import xfs_path_spec
 from dfvfs.vfs import attribute
+from dfvfs.vfs import extent
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import xfs_attribute
 from dfvfs.vfs import xfs_directory
@@ -209,13 +210,29 @@ class XFSFileEntry(file_entry.FileEntry):
     """int: size of the file entry in bytes or None if not available."""
     return self._fsxfs_file_entry.size
 
-  def GetXFSFileEntry(self):
-    """Retrieves the XFS file entry.
+  def GetExtents(self, data_stream_name=''):
+    """Retrieves extents of a specific data stream.
 
     Returns:
-      pyfsxfs.file_entry: XFS file entry.
+      list[Extent]: extents of the data stream.
     """
-    return self._fsxfs_file_entry
+    extents = []
+    if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
+        not data_stream_name):
+      for extent_index in range(self._fsxfs_file_entry.number_of_extents):
+        extent_offset, extent_size, extent_flags = (
+            self._fsxfs_file_entry.get_extent(extent_index))
+
+        if extent_flags & 0x1:
+          extent_type = definitions.EXTENT_TYPE_SPARSE
+        else:
+          extent_type = definitions.EXTENT_TYPE_DATA
+
+        data_stream_extent = extent.Extent(
+            extent_type=extent_type, offset=extent_offset, size=extent_size)
+        extents.append(data_stream_extent)
+
+    return extents
 
   def GetLinkedFileEntry(self):
     """Retrieves the linked file entry, e.g. for a symbolic link.
@@ -258,3 +275,11 @@ class XFSFileEntry(file_entry.FileEntry):
 
     return XFSFileEntry(
         self._resolver_context, self._file_system, path_spec, is_root=is_root)
+
+  def GetXFSFileEntry(self):
+    """Retrieves the XFS file entry.
+
+    Returns:
+      pyfsxfs.file_entry: XFS file entry.
+    """
+    return self._fsxfs_file_entry
