@@ -709,8 +709,6 @@ class TSKFileEntry(file_entry.FileEntry):
     for pytsk_attribute in self._tsk_file:
       if getattr(pytsk_attribute, 'info', None):
         attribute_type = getattr(pytsk_attribute.info, 'type', None)
-        if attribute_type in self._TSK_INTERNAL_ATTRIBUTE_TYPES:
-          continue
 
         name = getattr(pytsk_attribute.info, 'name', None)
         if name:
@@ -721,16 +719,21 @@ class TSKFileEntry(file_entry.FileEntry):
             raise errors.BackEndError(
                 'pytsk3 returned a non UTF-8 formatted name.')
 
-        # The data stream is returned as a name-less attribute of type
-        # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
-        if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
-            attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and
+        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA and (
             not name and not data_stream_name):
           data_pytsk_attribute = pytsk_attribute
           break
 
         if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA and (
             (not name and not data_stream_name) or (name == data_stream_name)):
+          data_pytsk_attribute = pytsk_attribute
+          break
+
+        # The data stream is returned as a name-less attribute of type
+        # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
+        if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
+            attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and
+            not name and not data_stream_name):
           data_pytsk_attribute = pytsk_attribute
           break
 

@@ -55,10 +55,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testAccessTime(self):
     """Test the access_time property."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -67,10 +67,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testAddedTime(self):
     """Test the added_time property."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -79,10 +79,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testChangeTime(self):
     """Test the change_time property."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -91,10 +91,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testCreationTime(self):
     """Test the creation_time property."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -103,10 +103,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testModificationTime(self):
     """Test the modification_time property."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -115,10 +115,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSize(self):
     """Test the size property."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -127,10 +127,9 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetAttributes(self):
     """Tests the _GetAttributes function."""
-    test_location = '/a_directory/a_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_FILE,
-        location=test_location, parent=self._raw_path_spec)
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -149,10 +148,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetStat(self):
     """Tests the _GetStat function."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -181,10 +180,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -201,6 +200,32 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_attribute.size, 22)
     self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
 
+  def testGetExtents(self):
+    """Tests the GetExtents function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents()
+    self.assertEqual(len(extents), 1)
+
+    self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
+    self.assertEqual(extents[0].offset, 1134592)
+    self.assertEqual(extents[0].size, 4096)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
+        location='/a_directory', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents()
+    self.assertEqual(len(extents), 0)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -212,10 +237,9 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
-    test_location = '/a_link'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_LINK,
-        location=test_location, parent=self._raw_path_spec)
+        location='/a_link', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -227,10 +251,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetParentFileEntry(self):
     """Tests the GetParentFileEntry function."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -243,10 +267,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testIsFunctions(self):
     """Tests the Is? functions."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -262,10 +286,9 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-    test_location = '/a_directory'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
-        location=test_location, parent=self._raw_path_spec)
+        location='/a_directory', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -335,10 +358,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testDataStreams(self):
     """Tests the data streams functionality."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
@@ -351,10 +374,9 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [''])
 
-    test_location = '/a_directory'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
-        location=test_location, parent=self._raw_path_spec)
+        location='/a_directory', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -368,10 +390,10 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
-    test_location = '/a_directory/another_file'
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE, location=test_location,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
         parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
