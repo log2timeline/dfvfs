@@ -9,6 +9,7 @@ from dfvfs.path import ext_path_spec
 from dfvfs.vfs import attribute
 from dfvfs.vfs import ext_attribute
 from dfvfs.vfs import ext_directory
+from dfvfs.vfs import extent
 from dfvfs.vfs import file_entry
 
 
@@ -243,6 +244,30 @@ class EXTFileEntry(file_entry.FileEntry):
   def size(self):
     """int: size of the file entry in bytes or None if not available."""
     return self._fsext_file_entry.size
+
+  def GetExtents(self, data_stream_name=''):
+    """Retrieves extents of a specific data stream.
+
+    Returns:
+      list[Extent]: extents of the data stream.
+    """
+    extents = []
+    if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
+        not data_stream_name):
+      for extent_index in range(self._fsext_file_entry.number_of_extents):
+        extent_offset, extent_size, extent_flags = (
+            self._fsext_file_entry.get_extent(extent_index))
+
+        if extent_flags & 0x1:
+          extent_type = definitions.EXTENT_TYPE_SPARSE
+        else:
+          extent_type = definitions.EXTENT_TYPE_DATA
+
+        data_stream_extent = extent.Extent(
+            extent_type=extent_type, offset=extent_offset, size=extent_size)
+        extents.append(data_stream_extent)
+
+    return extents
 
   def GetEXTFileEntry(self):
     """Retrieves the EXT file entry.

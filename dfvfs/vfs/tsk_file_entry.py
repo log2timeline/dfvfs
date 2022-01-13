@@ -703,7 +703,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
     Raises:
       BackEndError: if pytsk3 returns a non UTF-8 formatted name or no file
-          system block size.
+          system block size or data stream size.
     """
     data_pytsk_attribute = None
     for pytsk_attribute in self._tsk_file:
@@ -723,8 +723,9 @@ class TSKFileEntry(file_entry.FileEntry):
 
         # The data stream is returned as a name-less attribute of type
         # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
-        if (attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and not name and
-            not data_stream_name):
+        if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
+            attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and
+            not name and not data_stream_name):
           data_pytsk_attribute = pytsk_attribute
           break
 
@@ -740,6 +741,16 @@ class TSKFileEntry(file_entry.FileEntry):
       if not block_size:
         raise errors.BackEndError('pytsk3 returned no file system block size.')
 
+      data_stream_size = getattr(data_pytsk_attribute.info, 'size', None)
+      if data_stream_size is None:
+        raise errors.BackEndError('pytsk3 returned no data stream size.')
+
+      data_stream_number_of_blocks, remainder = divmod(
+          data_stream_size, block_size)
+      if remainder:
+        data_stream_number_of_blocks += 1
+
+      total_number_of_blocks = 0
       for pytsk_attr_run in data_pytsk_attribute:
         if pytsk_attr_run.flags & pytsk3.TSK_FS_ATTR_RUN_FLAG_SPARSE:
           extent_type = definitions.EXTENT_TYPE_SPARSE
@@ -747,11 +758,22 @@ class TSKFileEntry(file_entry.FileEntry):
           extent_type = definitions.EXTENT_TYPE_DATA
 
         extent_offset = pytsk_attr_run.addr * block_size
-        extent_size = pytsk_attr_run.len * block_size
+        extent_size = pytsk_attr_run.len
+
+        # Note that the attribute data runs can be larger than the actual
+        # allocated size.
+        if total_number_of_blocks + extent_size > data_stream_number_of_blocks:
+          extent_size = data_stream_number_of_blocks - total_number_of_blocks
+
+        total_number_of_blocks += extent_size
+        extent_size *= block_size
 
         data_stream_extent = extent.Extent(
             extent_type=extent_type, offset=extent_offset, size=extent_size)
         extents.append(data_stream_extent)
+
+        if total_number_of_blocks >= data_stream_number_of_blocks:
+          break
 
     return extents
 
