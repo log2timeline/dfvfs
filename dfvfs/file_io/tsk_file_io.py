@@ -5,6 +5,7 @@ import os
 
 import pytsk3
 
+from dfvfs.lib import errors
 from dfvfs.file_io import file_io
 from dfvfs.resolver import resolver
 
@@ -41,11 +42,12 @@ class TSKFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
+      BackEndError: if pytsk3 returns a non UTF-8 formatted name.
       IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    data_stream = getattr(self._path_spec, 'data_stream', None)
+    data_stream_name = getattr(self._path_spec, 'data_stream', None)
 
     file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)
@@ -82,35 +84,47 @@ class TSKFile(file_io.FileIO):
       raise IOError(
           'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
-    if data_stream:
-      for attribute in tsk_file:
-        if getattr(attribute, 'info', None) is None:
+    if data_stream_name:
+      for pytsk_attribute in tsk_file:
+        if getattr(pytsk_attribute, 'info', None) is None:
           continue
 
-        # The value of the attribute name will be None for the default
-        # data stream.
-        attribute_name = getattr(attribute.info, 'name', None)
-        if attribute_name is None:
-          attribute_name = ''
-
-        else:
+        attribute_name = getattr(pytsk_attribute.info, 'name', None)
+        if attribute_name:
           try:
             # pytsk3 returns an UTF-8 encoded byte string.
             attribute_name = attribute_name.decode('utf8')
           except UnicodeError:
-            # Continue here since we cannot represent the attribute name.
-            continue
+            raise errors.BackEndError(
+                'pytsk3 returned a non UTF-8 formatted name.')
 
-        attribute_type = getattr(attribute.info, 'type', None)
-        if attribute_name == data_stream and attribute_type in (
-            pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,
-            pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA,
-            pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA):
-          tsk_attribute = attribute
+        attribute_type = getattr(pytsk_attribute.info, 'type', None)
+        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA and (
+            not data_stream_name and not attribute_name):
+          tsk_attribute = pytsk_attribute
+          break
+
+        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_RSRC and (
+            data_stream_name == 'rsrc'):
+          tsk_attribute = pytsk_attribute
+          break
+
+        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA and (
+            (not data_stream_name and not attribute_name) or
+            (data_stream_name == attribute_name)):
+          tsk_attribute = pytsk_attribute
+          break
+
+        # The data stream is returned as a name-less attribute of type
+        # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
+        if (attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and
+            not data_stream_name and not attribute_name):
+          tsk_attribute = pytsk_attribute
           break
 
       if tsk_attribute is None:
-        raise IOError('Unable to open data stream: {0:s}.'.format(data_stream))
+        raise IOError('Unable to open data stream: {0:s}.'.format(
+            data_stream_name))
 
     if (not tsk_attribute and
         tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG):

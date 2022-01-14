@@ -4,7 +4,6 @@
 import os
 
 from dfvfs.file_io import file_io
-from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
@@ -20,10 +19,12 @@ class HFSFile(file_io.FileIO):
     """
     super(HFSFile, self).__init__(resolver_context, path_spec)
     self._file_system = None
+    self._fshfs_data_stream = None
     self._fshfs_file_entry = None
 
   def _Close(self):
     """Closes the file-like object."""
+    self._fshfs_data_stream = None
     self._fshfs_file_entry = None
 
     self._file_system = None
@@ -42,10 +43,7 @@ class HFSFile(file_io.FileIO):
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    data_stream = getattr(self._path_spec, 'data_stream', None)
-    if data_stream:
-      raise errors.NotSupported(
-          'Open data stream: {0:s} not supported.'.format(data_stream))
+    data_stream_name = getattr(self._path_spec, 'data_stream', None)
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)
@@ -54,10 +52,18 @@ class HFSFile(file_io.FileIO):
     if not file_entry:
       raise IOError('Unable to open file entry.')
 
+    fshfs_data_stream = None
     fshfs_file_entry = file_entry.GetHFSFileEntry()
     if not fshfs_file_entry:
       raise IOError('Unable to open HFS file entry.')
 
+    if data_stream_name == 'rsrc':
+      fshfs_data_stream = fshfs_file_entry.get_resource_fork()
+    elif data_stream_name:
+      raise IOError('Unable to open data stream: {0:s}.'.format(
+          data_stream_name))
+
+    self._fshfs_data_stream = fshfs_data_stream
     self._fshfs_file_entry = fshfs_file_entry
 
   # Note: that the following functions do not follow the style guide
@@ -84,6 +90,8 @@ class HFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
+    if self._fshfs_data_stream:
+      return self._fshfs_data_stream.read(size=size)
     return self._fshfs_file_entry.read(size=size)
 
   def seek(self, offset, whence=os.SEEK_SET):
@@ -101,7 +109,10 @@ class HFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    self._fshfs_file_entry.seek(offset, whence)
+    if self._fshfs_data_stream:
+      self._fshfs_data_stream.seek(offset, whence)
+    else:
+      self._fshfs_file_entry.seek(offset, whence)
 
   def get_offset(self):
     """Retrieves the current offset into the file-like object.
@@ -116,6 +127,8 @@ class HFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
+    if self._fshfs_data_stream:
+      return self._fshfs_data_stream.get_offset()
     return self._fshfs_file_entry.get_offset()
 
   def get_size(self):
@@ -131,4 +144,6 @@ class HFSFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
+    if self._fshfs_data_stream:
+      return self._fshfs_data_stream.get_size()
     return self._fshfs_file_entry.get_size()

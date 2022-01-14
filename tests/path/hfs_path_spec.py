@@ -20,6 +20,11 @@ class HFSPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     path_spec = hfs_path_spec.HFSPathSpec(
+        data_stream='test', location='/test', parent=self._path_spec)
+
+    self.assertIsNotNone(path_spec)
+
+    path_spec = hfs_path_spec.HFSPathSpec(
         identifier=1, parent=self._path_spec)
 
     self.assertIsNotNone(path_spec)
@@ -55,6 +60,19 @@ class HFSPathSpecTest(test_lib.PathSpecTestCase):
         ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)
+
+    path_spec = hfs_path_spec.HFSPathSpec(
+        data_stream='test', location='/test', parent=self._path_spec)
+
+    self.assertIsNotNone(path_spec)
+
+    expected_comparable = '\n'.join([
+        'type: TEST',
+        'type: HFS, data stream: test, location: /test',
+        ''])
+
+    self.assertEqual(path_spec.comparable, expected_comparable)
+
 
     path_spec = hfs_path_spec.HFSPathSpec(
         identifier=1, parent=self._path_spec)

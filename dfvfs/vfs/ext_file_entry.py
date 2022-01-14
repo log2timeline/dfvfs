@@ -248,6 +248,10 @@ class EXTFileEntry(file_entry.FileEntry):
   def GetExtents(self, data_stream_name=''):
     """Retrieves extents of a specific data stream.
 
+    Args:
+      data_stream_name (Optional[str]): data stream name, where an empty
+          string represents the default data stream.
+
     Returns:
       list[Extent]: extents of the data stream.
     """

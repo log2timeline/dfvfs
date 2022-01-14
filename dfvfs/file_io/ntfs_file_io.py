@@ -41,7 +41,7 @@ class NTFSFile(file_io.FileIO):
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    data_stream = getattr(self._path_spec, 'data_stream', None)
+    data_stream_name = getattr(self._path_spec, 'data_stream', None)
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)
@@ -55,12 +55,12 @@ class NTFSFile(file_io.FileIO):
     if not fsntfs_file_entry:
       raise IOError('Unable to open NTFS file entry.')
 
-    if data_stream:
+    if data_stream_name:
       fsntfs_data_stream = fsntfs_file_entry.get_alternate_data_stream_by_name(
-          data_stream)
+          data_stream_name)
       if not fsntfs_data_stream:
         raise IOError('Unable to open data stream: {0:s}.'.format(
-            data_stream))
+            data_stream_name))
 
     elif not fsntfs_file_entry.has_default_data_stream():
       raise IOError('Missing default data stream.')

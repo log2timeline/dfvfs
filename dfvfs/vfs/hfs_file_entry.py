@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 """The HFS file entry implementation."""
 
+import copy
+
 from dfdatetime import hfs_time as dfdatetime_hfs_time
 from dfdatetime import posix_time as dfdatetime_posix_time
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import hfs_path_spec
+from dfvfs.resolver import resolver
 from dfvfs.vfs import attribute
 from dfvfs.vfs import extent
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import hfs_attribute
+from dfvfs.vfs import hfs_data_stream
 from dfvfs.vfs import hfs_directory
 
 
@@ -83,6 +87,26 @@ class HFSFileEntry(file_entry.FileEntry):
         self._attributes.append(extended_attribute)
 
     return self._attributes
+
+  def _GetDataStreams(self):
+    """Retrieves the data streams.
+
+    Returns:
+      list[HFSDataStream]: data streams.
+    """
+    if self._data_streams is None:
+      self._data_streams = []
+
+      if self.entry_type == definitions.FILE_ENTRY_TYPE_FILE:
+        data_stream = hfs_data_stream.HFSDataStream(None)
+        self._data_streams.append(data_stream)
+
+      fshfs_data_stream = self._fshfs_file_entry.get_resource_fork()
+      if fshfs_data_stream:
+        data_stream = hfs_data_stream.HFSDataStream(fshfs_data_stream)
+        self._data_streams.append(data_stream)
+
+    return self._data_streams
 
   def _GetDirectory(self):
     """Retrieves a directory.
@@ -225,6 +249,10 @@ class HFSFileEntry(file_entry.FileEntry):
   def GetExtents(self, data_stream_name=''):
     """Retrieves extents of a specific data stream.
 
+    Args:
+      data_stream_name (Optional[str]): data stream name, where an empty
+          string represents the default data stream.
+
     Returns:
       list[Extent]: extents of the data stream.
     """
@@ -244,7 +272,46 @@ class HFSFileEntry(file_entry.FileEntry):
             extent_type=extent_type, offset=extent_offset, size=extent_size)
         extents.append(data_stream_extent)
 
+    elif data_stream_name == 'rsrc':
+      fshfs_data_stream = self._fshfs_file_entry.get_resource_fork()
+      if fshfs_data_stream:
+        for extent_index in range(fshfs_data_stream.number_of_extents):
+          extent_offset, extent_size, extent_flags = (
+              fshfs_data_stream.get_extent(extent_index))
+
+          if extent_flags & 0x1:
+            extent_type = definitions.EXTENT_TYPE_SPARSE
+          else:
+            extent_type = definitions.EXTENT_TYPE_DATA
+
+          data_stream_extent = extent.Extent(
+              extent_type=extent_type, offset=extent_offset, size=extent_size)
+          extents.append(data_stream_extent)
+
     return extents
+
+  def GetFileObject(self, data_stream_name=''):
+    """Retrieves a file-like object of a specific data stream.
+
+    Args:
+      data_stream_name (Optional[str]): name of the data stream, where an empty
+          string represents the default data stream.
+
+    Returns:
+      FileIO: a file-like object or None if not available.
+    """
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_FILE or (
+        data_stream_name and data_stream_name != 'rsrc'):
+      return None
+
+    # Make sure to make the changes on a copy of the path specification, so we
+    # do not alter self.path_spec.
+    path_spec = copy.deepcopy(self.path_spec)
+    if data_stream_name:
+      setattr(path_spec, 'data_stream', data_stream_name)
+
+    return resolver.Resolver.OpenFileObject(
+        path_spec, resolver_context=self._resolver_context)
 
   def GetHFSFileEntry(self):
     """Retrieves the HFS file entry.
