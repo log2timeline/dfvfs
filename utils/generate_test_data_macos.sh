@@ -63,6 +63,10 @@ This is another file.
 EOT
 
 	(cd ${MOUNT_POINT} && ln -s a_directory/another_file a_link);
+
+	# Create a file with a resource fork with content
+	touch ${MOUNT_POINT}/a_directory/a_resourcefork
+	echo "My resource fork" > ${MOUNT_POINT}/a_directory/a_resourcefork/..namedfork/rsrc
 }
 
 assert_availability_binary diskutil;

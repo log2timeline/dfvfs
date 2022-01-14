@@ -166,16 +166,16 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 501)
     self.assertEqual(stat_object.gid, 20)
 
-    self.assertEqual(stat_object.atime, 1627013326)
+    self.assertEqual(stat_object.atime, 1642144782)
     self.assertFalse(hasattr(stat_object, 'atime_nano'))
 
-    self.assertEqual(stat_object.ctime, 1627013326)
+    self.assertEqual(stat_object.ctime, 1642144782)
     self.assertFalse(hasattr(stat_object, 'ctime_nano'))
 
-    self.assertEqual(stat_object.crtime, 1627013326)
+    self.assertEqual(stat_object.crtime, 1642144782)
     self.assertFalse(hasattr(stat_object, 'crtime_nano'))
 
-    self.assertEqual(stat_object.mtime, 1627013326)
+    self.assertEqual(stat_object.mtime, 1642144782)
     self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testGetStatAttribute(self):
@@ -192,7 +192,7 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(stat_attribute)
     self.assertEqual(stat_attribute.group_identifier, 20)
-    self.assertEqual(stat_attribute.inode_number, 23)
+    self.assertEqual(stat_attribute.inode_number, 21)
     self.assertEqual(stat_attribute.mode, 0o100644)
     # TODO: implement number of hard links support in pyfshfs
     # self.assertEqual(stat_attribute.number_of_links, 1)
@@ -214,7 +214,7 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(len(extents), 1)
 
     self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
-    self.assertEqual(extents[0].offset, 1134592)
+    self.assertEqual(extents[0].offset, 1130496)
     self.assertEqual(extents[0].size, 4096)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -354,7 +354,7 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 3)
 
   def testDataStreams(self):
     """Tests the data streams functionality."""

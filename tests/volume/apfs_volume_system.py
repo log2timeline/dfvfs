@@ -36,7 +36,7 @@ class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
   #     Number of volumes                : 1
   #
   # Volume: 1 information:
-  #     Identifier                       : 5bda1a3c-4d06-4894-9c74-d1f58d5f848a
+  #     Identifier                       : 458ed10d-8ac3-4af1-8dfd-3954d151a3f3
   #     Name                             : apfs_test
   #     Compatible features              : 0x00000002
   #         (NX_FEATURE_LCFD)
@@ -66,7 +66,7 @@ class APFSVolumeSystemTest(shared_test_lib.BaseTestCase):
     volume_attribute = volume.GetAttribute('identifier')
     self.assertIsNotNone(volume_attribute)
     self.assertEqual(
-        volume_attribute.value, '5bda1a3c-4d06-4894-9c74-d1f58d5f848a')
+        volume_attribute.value, '458ed10d-8ac3-4af1-8dfd-3954d151a3f3')
 
     volume_attribute = volume.GetAttribute('name')
     self.assertIsNotNone(volume_attribute)
