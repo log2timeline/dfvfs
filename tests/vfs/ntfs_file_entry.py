@@ -20,6 +20,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   _MFT_ENTRY_A_DIRECTORY = 64
   _MFT_ENTRY_A_FILE = 65
+  _MFT_ENTRY_ANOTHER_FILE = 67
   _MFT_ENTRY_PASSWORDS_TXT = 66
 
   def setUp(self):
@@ -52,7 +53,27 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
 
   # TODO: add tests for _GetAttributes
-  # TODO: add tests for _GetDataStreams
+
+  def testGetDataStreams(self):
+    """Tests the _GetDataStreams function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\another_file',
+        mft_entry=self._MFT_ENTRY_ANOTHER_FILE, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 1)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\$UpCase', mft_entry=10,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 2)
+
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
@@ -646,15 +667,14 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
-        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\another_file',
+        mft_entry=self._MFT_ENTRY_ANOTHER_FILE, parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
+    data_stream = file_entry.GetDataStream('')
     self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
+    self.assertEqual(data_stream.name, '')
 
     data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
@@ -665,10 +685,9 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = '$Info'
-    data_stream = file_entry.GetDataStream(data_stream_name)
+    data_stream = file_entry.GetDataStream('$Info')
     self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
+    self.assertEqual(data_stream.name, '$Info')
 
   def testGetSecurityDescriptor(self):
     """Tests the GetSecurityDescriptor function."""

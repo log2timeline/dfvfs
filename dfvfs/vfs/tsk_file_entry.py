@@ -365,12 +365,13 @@ class TSKFileEntry(file_entry.FileEntry):
     """
     if self._data_streams is None:
       if self._file_system.IsHFS():
-        known_data_attribute_types = [
+        known_data_attribute_types = (
             pytsk3.TSK_FS_ATTR_TYPE_HFS_DEFAULT,
-            pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA]
+            pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA,
+            pytsk3.TSK_FS_ATTR_TYPE_HFS_RSRC)
 
       elif self._file_system.IsNTFS():
-        known_data_attribute_types = [pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA]
+        known_data_attribute_types = (pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA, )
 
       else:
         known_data_attribute_types = None
@@ -382,7 +383,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
       if not known_data_attribute_types:
         if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
-          data_stream = tsk_data_stream.TSKDataStream(self._file_system, None)
+          data_stream = tsk_data_stream.TSKDataStream(None)
           self._data_streams.append(data_stream)
 
       else:
@@ -397,8 +398,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
           attribute_type = getattr(pytsk_attribute.info, 'type', None)
           if attribute_type in known_data_attribute_types:
-            data_stream = tsk_data_stream.TSKDataStream(
-                self._file_system, pytsk_attribute)
+            data_stream = tsk_data_stream.TSKDataStream(pytsk_attribute)
             self._data_streams.append(data_stream)
 
     return self._data_streams
@@ -698,6 +698,10 @@ class TSKFileEntry(file_entry.FileEntry):
   def GetExtents(self, data_stream_name=''):
     """Retrieves extents of a specific data stream.
 
+    Args:
+      data_stream_name (Optional[str]): data stream name, where an empty
+          string represents the default data stream.
+
     Returns:
       list[Extent]: extents of the data stream.
 
@@ -705,46 +709,53 @@ class TSKFileEntry(file_entry.FileEntry):
       BackEndError: if pytsk3 returns a non UTF-8 formatted name or no file
           system block size or data stream size.
     """
-    data_pytsk_attribute = None
+    data_attribute = None
     for pytsk_attribute in self._tsk_file:
-      if getattr(pytsk_attribute, 'info', None):
-        attribute_type = getattr(pytsk_attribute.info, 'type', None)
+      if not getattr(pytsk_attribute, 'info', None):
+        continue
 
-        name = getattr(pytsk_attribute.info, 'name', None)
-        if name:
-          try:
-            # pytsk3 returns an UTF-8 encoded byte string.
-            name = name.decode('utf8')
-          except UnicodeError:
-            raise errors.BackEndError(
-                'pytsk3 returned a non UTF-8 formatted name.')
+      attribute_name = getattr(pytsk_attribute.info, 'name', None)
+      if attribute_name:
+        try:
+          # pytsk3 returns an UTF-8 encoded byte string.
+          attribute_name = attribute_name.decode('utf8')
+        except UnicodeError:
+          raise errors.BackEndError(
+              'pytsk3 returned a non UTF-8 formatted name.')
 
-        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA and (
-            not name and not data_stream_name):
-          data_pytsk_attribute = pytsk_attribute
-          break
+      attribute_type = getattr(pytsk_attribute.info, 'type', None)
+      if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA and (
+          not data_stream_name and not attribute_name):
+        data_attribute = pytsk_attribute
+        break
 
-        if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA and (
-            (not name and not data_stream_name) or (name == data_stream_name)):
-          data_pytsk_attribute = pytsk_attribute
-          break
+      if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_RSRC and (
+          data_stream_name == 'rsrc'):
+        data_attribute = pytsk_attribute
+        break
 
-        # The data stream is returned as a name-less attribute of type
-        # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
-        if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
-            attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and
-            not name and not data_stream_name):
-          data_pytsk_attribute = pytsk_attribute
-          break
+      if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA and (
+          (not data_stream_name and not attribute_name) or
+          (data_stream_name == attribute_name)):
+        data_attribute = pytsk_attribute
+        break
+
+      # The data stream is returned as a name-less attribute of type
+      # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
+      if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
+          attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and
+          not data_stream_name and not attribute_name):
+        data_attribute = pytsk_attribute
+        break
 
     extents = []
-    if data_pytsk_attribute:
+    if data_attribute:
       tsk_file_system = self._file_system.GetFsInfo()
       block_size = getattr(tsk_file_system.info, 'block_size', None)
       if not block_size:
         raise errors.BackEndError('pytsk3 returned no file system block size.')
 
-      data_stream_size = getattr(data_pytsk_attribute.info, 'size', None)
+      data_stream_size = getattr(data_attribute.info, 'size', None)
       if data_stream_size is None:
         raise errors.BackEndError('pytsk3 returned no data stream size.')
 
@@ -754,14 +765,14 @@ class TSKFileEntry(file_entry.FileEntry):
         data_stream_number_of_blocks += 1
 
       total_number_of_blocks = 0
-      for pytsk_attr_run in data_pytsk_attribute:
-        if pytsk_attr_run.flags & pytsk3.TSK_FS_ATTR_RUN_FLAG_SPARSE:
+      for tsk_attr_run in data_attribute:
+        if tsk_attr_run.flags & pytsk3.TSK_FS_ATTR_RUN_FLAG_SPARSE:
           extent_type = definitions.EXTENT_TYPE_SPARSE
         else:
           extent_type = definitions.EXTENT_TYPE_DATA
 
-        extent_offset = pytsk_attr_run.addr * block_size
-        extent_size = pytsk_attr_run.len
+        extent_offset = tsk_attr_run.addr * block_size
+        extent_size = tsk_attr_run.len
 
         # Note that the attribute data runs can be larger than the actual
         # allocated size.
@@ -802,13 +813,8 @@ class TSKFileEntry(file_entry.FileEntry):
       # these differently when opened and the correct behavior seems to be
       # treating this as the default (nameless) fork instead. For context libtsk
       # 4.5.0 is unable to read the data steam and yields an error.
-      if self._file_system.IsHFS() and data_stream_name == 'DECOMP':
-        data_stream_name = ''
-
-      setattr(path_spec, 'data_stream', data_stream_name)
-
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_FILE:
-      return None
+      if not self._file_system.IsHFS() or data_stream_name != 'DECOMP':
+        setattr(path_spec, 'data_stream', data_stream_name)
 
     return resolver.Resolver.OpenFileObject(
         path_spec, resolver_context=self._resolver_context)

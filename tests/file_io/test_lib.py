@@ -215,6 +215,26 @@ class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
 
     # TODO: add boundary scenarios.
 
+  def _TestReadResourceFork(self, file_object):
+    """Test the read functionality on a resource fork.
+
+    Args:
+      file_object (FileIO): file-like object.
+    """
+    file_object.Open()
+
+    expected_buffer = b'My resource fork'
+
+    read_buffer = file_object.read(size=16)
+    self.assertEqual(read_buffer, expected_buffer)
+
+    file_object.seek(-8, os.SEEK_END)
+
+    expected_buffer = b'ce fork\n'
+
+    read_buffer = file_object.read(size=16)
+    self.assertEqual(read_buffer, expected_buffer)
+
 
 class ImageFileTestCase(shared_test_lib.BaseTestCase):
   """The unit test case for storage media image based test data."""

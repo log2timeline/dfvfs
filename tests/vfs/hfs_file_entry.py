@@ -53,78 +53,6 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
 
-  def testAccessTime(self):
-    """Test the access_time property."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.access_time)
-
-  def testAddedTime(self):
-    """Test the added_time property."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.added_time)
-
-  def testChangeTime(self):
-    """Test the change_time property."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.change_time)
-
-  def testCreationTime(self):
-    """Test the creation_time property."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.creation_time)
-
-  def testModificationTime(self):
-    """Test the modification_time property."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertIsNotNone(file_entry.modification_time)
-
-  def testSize(self):
-    """Test the size property."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.size, 22)
-
   def testGetAttributes(self):
     """Tests the _GetAttributes function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -145,6 +73,28 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     test_attribute_value_data = test_attribute.read()
     self.assertEqual(test_attribute_value_data, b'My extended attribute')
+
+  def testGetDataStreams(self):
+    """Tests the _GetDataStreams function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 1)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 2)
 
   def testGetStat(self):
     """Tests the _GetStat function."""
@@ -200,6 +150,182 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_attribute.size, 22)
     self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
 
+  def testAccessTime(self):
+    """Test the access_time property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.access_time)
+
+  def testAddedTime(self):
+    """Test the added_time property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.added_time)
+
+  def testChangeTime(self):
+    """Test the change_time property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.change_time)
+
+  def testCreationTime(self):
+    """Test the creation_time property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.creation_time)
+
+  def testDataStreams(self):
+    """Tests the data_streams property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [''])
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
+        location='/a_directory', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 0)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [])
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 2)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, ['', 'rsrc'])
+
+  def testModificationTime(self):
+    """Test the modification_time property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertIsNotNone(file_entry.modification_time)
+
+  def testSize(self):
+    """Test the size property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.size, 22)
+
+  def testSubFileEntries(self):
+    """Tests the number_of_sub_file_entries and sub_file_entries properties."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, location='/',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 6)
+
+    expected_sub_file_entry_names = [
+        '.fseventsd',
+        '.HFS+ Private Directory Data\r',
+        'a_directory',
+        'a_link',
+        'passwords.txt',
+        '\u2400\u2400\u2400\u2400HFS+ Private Data']
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEqual(
+        len(sub_file_entry_names), len(expected_sub_file_entry_names))
+    self.assertEqual(
+        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+
+    # Test a path specification without a location.
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 3)
+
+  def testGetDataStream(self):
+    """Tests the GetDataStream function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream = file_entry.GetDataStream('')
+    self.assertIsNotNone(data_stream)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream = file_entry.GetDataStream('rsrc')
+    self.assertIsNotNone(data_stream)
+
   def testGetExtents(self):
     """Tests the GetExtents function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -226,6 +352,19 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     extents = file_entry.GetExtents()
     self.assertEqual(len(extents), 0)
 
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents(data_stream_name='rsrc')
+    self.assertEqual(len(extents), 1)
+
+    self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
+    self.assertEqual(extents[0].offset, 1142784)
+    self.assertEqual(extents[0].size, 4096)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -234,6 +373,44 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
+
+  def testGetFileObject(self):
+    """Tests the GetFileObject function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    file_object = file_entry.GetFileObject()
+    self.assertIsNotNone(file_object)
+
+    self.assertEqual(file_object.get_size(), 22)
+
+    file_object = file_entry.GetFileObject(data_stream_name='bogus')
+    self.assertIsNone(file_object)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
+        location='/a_directory', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    file_object = file_entry.GetFileObject()
+    self.assertIsNone(file_object)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, identifier=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    file_object = file_entry.GetFileObject(data_stream_name='rsrc')
+    self.assertIsNotNone(file_object)
+
+    self.assertEqual(file_object.get_size(), 17)
 
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
@@ -319,88 +496,6 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsLink())
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
-
-  def testSubFileEntries(self):
-    """Tests the number_of_sub_file_entries and sub_file_entries properties."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS, location='/',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_sub_file_entries, 6)
-
-    expected_sub_file_entry_names = [
-        '.fseventsd',
-        '.HFS+ Private Directory Data\r',
-        'a_directory',
-        'a_link',
-        'passwords.txt',
-        '\u2400\u2400\u2400\u2400HFS+ Private Data']
-
-    sub_file_entry_names = []
-    for sub_file_entry in file_entry.sub_file_entries:
-      sub_file_entry_names.append(sub_file_entry.name)
-
-    self.assertEqual(
-        len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEqual(
-        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
-
-    # Test a path specification without a location.
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_sub_file_entries, 3)
-
-  def testDataStreams(self):
-    """Tests the data streams functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 1)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [''])
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS, identifier=self._IDENTIFIER_A_DIRECTORY,
-        location='/a_directory', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 0)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [])
-
-  def testGetDataStream(self):
-    """Tests the GetDataStream function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertIsNotNone(data_stream)
 
 
 if __name__ == '__main__':

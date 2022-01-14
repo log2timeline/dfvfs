@@ -193,6 +193,15 @@ class TSKFileTestHFS(test_lib.HFSImageFileTestCase):
 
     self._TestRead(file_object)
 
+  def testReadResourceFork(self):
+    """Test the read functionality on a resource fork."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, data_stream='rsrc', inode=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+
+    self._TestReadResourceFork(file_object)
+
 
 class TSKFileTestNTFS(test_lib.NTFSImageFileTestCase):
   """Tests the SleuthKit (TSK) file-like object on NTFS."""

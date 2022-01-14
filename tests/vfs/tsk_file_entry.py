@@ -7,6 +7,7 @@ import unittest
 import pytsk3
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import tsk_attribute
@@ -158,7 +159,17 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     # No extended attributes are returned.
     # Also see: https://github.com/py4n6/pytsk/issues/79.
 
-  # TODO: add tests for _GetDataStreams
+  def testGetDataStreams(self):
+    """Tests the _GetDataStreams function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 1)
+
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
@@ -351,8 +362,8 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    file_object = file_entry.GetFileObject()
-    self.assertIsNone(file_object)
+    with self.assertRaises(errors.BackEndError):
+      file_entry.GetFileObject()
 
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
@@ -512,8 +523,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
+    data_stream = file_entry.GetDataStream('')
     self.assertIsNotNone(data_stream)
 
 
@@ -569,7 +579,17 @@ class TSKFileEntryTestFAT12(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry._attributes)
     self.assertEqual(len(file_entry._attributes), 0)
 
-  # TODO: add tests for _GetDataStreams
+  def testGetDataStreams(self):
+    """Tests the _GetDataStreams function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 1)
+
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
@@ -740,8 +760,8 @@ class TSKFileEntryTestFAT12(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    file_object = file_entry.GetFileObject()
-    self.assertIsNone(file_object)
+    with self.assertRaises(errors.BackEndError):
+      file_entry.GetFileObject()
 
   # TODO: add tests for GetLinkedFileEntry
 
@@ -891,8 +911,7 @@ class TSKFileEntryTestFAT12(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
+    data_stream = file_entry.GetDataStream('')
     self.assertIsNotNone(data_stream)
 
 
@@ -956,7 +975,26 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     test_attribute_value_data = test_attribute.read()
     self.assertEqual(test_attribute_value_data, b'My extended attribute')
 
-  # TODO: add tests for _GetDataStreams
+  def testGetDataStreams(self):
+    """Tests the _GetDataStreams function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 1)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 2)
+
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
@@ -1117,6 +1155,28 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     extents = file_entry.GetExtents()
     self.assertEqual(len(extents), 0)
 
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents(data_stream_name='rsrc')
+    self.assertEqual(len(extents), 1)
+
+    self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
+    self.assertEqual(extents[0].offset, 1142784)
+    self.assertEqual(extents[0].size, 4096)
+
+  def testGetFileEntryByPathSpec(self):
+    """Tests the GetFileEntryByPathSpec function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+
   def testGetFileObject(self):
     """Tests the GetFileObject function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -1139,17 +1199,19 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    file_object = file_entry.GetFileObject()
-    self.assertIsNone(file_object)
+    with self.assertRaises(errors.BackEndError):
+      file_entry.GetFileObject()
 
-  def testGetFileEntryByPathSpec(self):
-    """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
-        parent=self._raw_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-
     self.assertIsNotNone(file_entry)
+
+    file_object = file_entry.GetFileObject(data_stream_name='rsrc')
+    self.assertIsNotNone(file_object)
+
+    self.assertEqual(file_object.get_size(), 17)
 
   def testGetLinkedFileEntry(self):
     """Tests the GetLinkedFileEntry function."""
@@ -1305,6 +1367,20 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
 
     self.assertEqual(data_stream_names, [])
 
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 2)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, ['', 'rsrc'])
+
   def testGetDataStream(self):
     """Tests the GetDataStream function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -1313,8 +1389,16 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
+    data_stream = file_entry.GetDataStream('')
+    self.assertIsNotNone(data_stream)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream = file_entry.GetDataStream('rsrc')
     self.assertIsNotNone(data_stream)
 
 
@@ -1368,7 +1452,26 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     self.assertEqual(
         test_attribute.attribute_type, pytsk3.TSK_FS_ATTR_TYPE_NTFS_SI)
 
-  # TODO: add tests for _GetDataStreams
+  def testGetDataStreams(self):
+    """Tests the _GetDataStreams function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 1)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=10, location='/$UpCase',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_streams = file_entry._GetDataStreams()
+    self.assertEqual(len(data_streams), 2)
+
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
@@ -1560,15 +1663,14 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
   def testGetDataStream(self):
     """Tests the retrieve data stream functionality."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_FILE,
-        location='/a_directory/a_file', parent=self._raw_path_spec)
+        definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
+    data_stream = file_entry.GetDataStream('')
     self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
+    self.assertEqual(data_stream.name, '')
 
     data_stream = file_entry.GetDataStream('bogus')
     self.assertIsNone(data_stream)
@@ -1579,10 +1681,9 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    data_stream_name = '$Info'
-    data_stream = file_entry.GetDataStream(data_stream_name)
+    data_stream = file_entry.GetDataStream('$Info')
     self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
+    self.assertEqual(data_stream.name, '$Info')
 
   def testGetExtents(self):
     """Tests the GetExtents function."""
@@ -1636,8 +1737,8 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    file_object = file_entry.GetFileObject()
-    self.assertIsNone(file_object)
+    with self.assertRaises(errors.BackEndError):
+      file_entry.GetFileObject()
 
 
 if __name__ == '__main__':

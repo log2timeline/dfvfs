@@ -81,6 +81,15 @@ class HFSFileTest(test_lib.HFSImageFileTestCase):
 
     self._TestRead(file_object)
 
+  def testReadResourceFork(self):
+    """Test the read functionality on a resource fork."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS, data_stream='rsrc', identifier=25,
+        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestReadResourceFork(file_object)
+
 
 if __name__ == '__main__':
   unittest.main()
