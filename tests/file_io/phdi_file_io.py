@@ -4,6 +4,7 @@
 
 import unittest
 
+from dfvfs.file_io import hfs_file_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
@@ -31,29 +32,51 @@ class PHDIFileTest(test_lib.HFSImageFileTestCase):
         definitions.TYPE_INDICATOR_GPT, location='/p1',
         parent=self._phdi_path_spec)
 
-  def testOpenCloseInode(self):
-    """Test the open and close functionality using an inode."""
-    self._TestOpenCloseInode(self._gpt_path_spec)
+  def testOpenCloseIdentifier(self):
+    """Test the open and close functionality using an identifier."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseIdentifier(file_object)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    self._TestOpenCloseLocation(self._gpt_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
+        parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseLocation(file_object)
 
     # Try open with a path specification that has no parent.
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_PHDI, parent=self._phdi_path_spec)
     path_spec.parent = None
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(path_spec)
+      self._TestOpenCloseLocation(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    self._TestSeek(self._gpt_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestSeek(file_object)
 
   def testRead(self):
     """Test the read functionality."""
-    self._TestRead(self._gpt_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
+        parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestRead(file_object)
 
 
 if __name__ == '__main__':

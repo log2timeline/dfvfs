@@ -22,8 +22,8 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
   _IDENTIFIER_A_DIRECTORY = 16
   _IDENTIFIER_A_FILE = 17
-  _IDENTIFIER_A_LINK = 22
-  _IDENTIFIER_ANOTHER_FILE = 21
+  _IDENTIFIER_A_LINK = 20
+  _IDENTIFIER_ANOTHER_FILE = 19
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -187,17 +187,17 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 99)
     self.assertEqual(stat_object.gid, 99)
 
-    self.assertEqual(stat_object.atime, 1627013324)
-    self.assertEqual(stat_object.atime_nano, 9960526)
+    self.assertEqual(stat_object.atime, 1642144781)
+    self.assertEqual(stat_object.atime_nano, 2174301)
 
-    self.assertEqual(stat_object.ctime, 1627013324)
-    self.assertEqual(stat_object.ctime_nano, 9982411)
+    self.assertEqual(stat_object.ctime, 1642144781)
+    self.assertEqual(stat_object.ctime_nano, 2206372)
 
-    self.assertEqual(stat_object.crtime, 1627013324)
-    self.assertEqual(stat_object.crtime_nano, 9982411)
+    self.assertEqual(stat_object.crtime, 1642144781)
+    self.assertEqual(stat_object.crtime_nano, 2206372)
 
-    self.assertEqual(stat_object.mtime, 1627013324)
-    self.assertEqual(stat_object.mtime_nano, 9960526)
+    self.assertEqual(stat_object.mtime, 1642144781)
+    self.assertEqual(stat_object.mtime_nano, 2174301)
 
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
@@ -213,7 +213,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(stat_attribute)
     self.assertEqual(stat_attribute.group_identifier, 99)
-    self.assertEqual(stat_attribute.inode_number, 21)
+    self.assertEqual(stat_attribute.inode_number, 19)
     self.assertEqual(stat_attribute.mode, 0o100644)
     # TODO: implement number of hard links support in pyfshfs
     # self.assertEqual(stat_attribute.number_of_links, 1)
@@ -248,7 +248,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(len(extents), 1)
 
     self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
-    self.assertEqual(extents[0].offset, 397312)
+    self.assertEqual(extents[0].offset, 393216)
     self.assertEqual(extents[0].size, 4096)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -391,7 +391,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 3)
 
   def testDataStreams(self):
     """Tests the data streams functionality."""

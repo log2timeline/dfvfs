@@ -17,8 +17,8 @@ from tests import test_lib as shared_test_lib
 class APFSFileTest(shared_test_lib.BaseTestCase):
   """Tests the file-like object implementation using pyfsapfs.file_entry."""
 
-  _IDENTIFIER_ANOTHER_FILE = 21
-  _IDENTIFIER_PASSWORDS_TXT = 20
+  _IDENTIFIER_ANOTHER_FILE = 19
+  _IDENTIFIER_PASSWORDS_TXT = 18
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""

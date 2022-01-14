@@ -127,8 +127,8 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
 class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
   """Shared functionality for storage media image with a HFS file system."""
 
-  _IDENTIFIER_ANOTHER_FILE = 23
-  _IDENTIFIER_PASSWORDS_TXT = 22
+  _IDENTIFIER_ANOTHER_FILE = 21
+  _IDENTIFIER_PASSWORDS_TXT = 20
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -138,48 +138,33 @@ class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
     """Cleans up the needed objects used throughout the test."""
     self._resolver_context.Empty()
 
-  def _TestOpenCloseInode(self, parent_path_spec):
-    """Test the open and close functionality using an inode.
+  def _TestOpenCloseIdentifier(self, file_object):
+    """Test the open and close functionality using an identifier.
 
     Args:
-      parent_path_spec (PathSpec): parent path specification.
+      file_object (FileIO): file-like object.
     """
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_PASSWORDS_TXT,
-        parent=parent_path_spec)
-    file_object = resolver.Resolver.OpenFileObject(
-        path_spec, resolver_context=self._resolver_context)
-
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
-  def _TestOpenCloseLocation(self, parent_path_spec):
+    # TODO: add a failing scenario.
+
+  def _TestOpenCloseLocation(self, file_object):
     """Test the open and close functionality using a location.
 
     Args:
-      parent_path_spec (PathSpec): parent path specification.
+      file_object (FileIO): file-like object.
     """
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS, location='/passwords.txt',
-        parent=parent_path_spec)
-    file_object = resolver.Resolver.OpenFileObject(
-        path_spec, resolver_context=self._resolver_context)
-
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 116)
 
-  def _TestSeek(self, parent_path_spec):
+  def _TestSeek(self, file_object):
     """Test the seek functionality.
 
     Args:
-      parent_path_spec (PathSpec): parent path specification.
+      file_object (FileIO): file-like object.
     """
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS, location='/a_directory/another_file',
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        parent=parent_path_spec)
-    file_object = resolver.Resolver.OpenFileObject(
-        path_spec, resolver_context=self._resolver_context)
-
+    file_object.Open()
     self.assertEqual(file_object.get_size(), 22)
 
     file_object.seek(10)
@@ -210,19 +195,13 @@ class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-  def _TestRead(self, parent_path_spec):
+  def _TestRead(self, file_object):
     """Test the read functionality.
 
     Args:
-      parent_path_spec (PathSpec): parent path specification.
+      file_object (FileIO): file-like object.
     """
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS, location='/passwords.txt',
-        identifier=self._IDENTIFIER_PASSWORDS_TXT,
-        parent=parent_path_spec)
-    file_object = resolver.Resolver.OpenFileObject(
-        path_spec, resolver_context=self._resolver_context)
-
+    file_object.Open()
     read_buffer = file_object.read()
 
     expected_buffer = (

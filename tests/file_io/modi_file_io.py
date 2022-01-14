@@ -4,6 +4,7 @@
 
 import unittest
 
+from dfvfs.file_io import hfs_file_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
@@ -24,41 +25,62 @@ class SparseImageMODIFileTest(test_lib.HFSImageFileTestCase):
         definitions.TYPE_INDICATOR_OS, location=test_path)
     self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec)
-    self._tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+    self._gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/p1',
         parent=self._modi_path_spec)
 
-  def testOpenCloseInode(self):
-    """Test the open and close functionality using an inode."""
-    self._TestOpenCloseInode(self._tsk_partition_path_spec)
+  def testOpenCloseIdentifier(self):
+    """Test the open and close functionality using an identifier."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseIdentifier(file_object)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    self._TestOpenCloseLocation(self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
+        parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseLocation(file_object)
 
     # Try open with a path specification that has no parent.
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
-        parent=self._modi_path_spec)
     path_spec.parent = None
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(path_spec)
+      self._TestOpenCloseLocation(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    self._TestSeek(self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestSeek(file_object)
 
   def testRead(self):
     """Test the read functionality."""
-    self._TestRead(self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
+        parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestRead(file_object)
 
 
 class ZlibCompressedUDIFMODIFileTest(test_lib.HFSImageFileTestCase):
   """Tests the MODI file-like object on a zlib compressed UDIF image file."""
 
-  _IDENTIFIER_ANOTHER_FILE = 20
-  _IDENTIFIER_PASSWORDS_TXT = 22
+  _IDENTIFIER_ANOTHER_FILE = 21
+  _IDENTIFIER_PASSWORDS_TXT = 23
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -70,34 +92,55 @@ class ZlibCompressedUDIFMODIFileTest(test_lib.HFSImageFileTestCase):
         definitions.TYPE_INDICATOR_OS, location=test_path)
     self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec)
-    self._tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+    self._gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/p1',
         parent=self._modi_path_spec)
 
-  def testOpenCloseInode(self):
-    """Test the open and close functionality using an inode."""
-    self._TestOpenCloseInode(self._tsk_partition_path_spec)
+  def testOpenCloseIdentifier(self):
+    """Test the open and close functionality using an identifier."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseIdentifier(file_object)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    self._TestOpenCloseLocation(self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
+        parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseLocation(file_object)
 
     # Try open with a path specification that has no parent.
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
-        parent=self._modi_path_spec)
     path_spec.parent = None
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
     with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(path_spec)
+      self._TestOpenCloseLocation(file_object)
 
   def testSeek(self):
     """Test the seek functionality."""
-    self._TestSeek(self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='/a_directory/another_file', parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestSeek(file_object)
 
   def testRead(self):
     """Test the read functionality."""
-    self._TestRead(self._tsk_partition_path_spec)
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_HFS,
+        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
+        parent=self._gpt_path_spec)
+    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+
+    self._TestRead(file_object)
 
 
 if __name__ == '__main__':
