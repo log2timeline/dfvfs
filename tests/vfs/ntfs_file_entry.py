@@ -131,6 +131,81 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.access_time)
 
+  def testAttributes(self):
+    """Test the attributes properties."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_attributes, 4)
+
+    attributes = list(file_entry.attributes)
+    attribute = attributes[0]
+
+    self.assertEqual(
+        attribute.type_indicator,
+        definitions.ATTRIBUTE_TYPE_NTFS_STANDARD_INFORMATION)
+
+    self.assertIsNotNone(attribute.access_time)
+    self.assertIsNotNone(attribute.creation_time)
+    self.assertIsNotNone(attribute.modification_time)
+    self.assertIsNotNone(attribute.entry_modification_time)
+
+    date_time_string = (
+        attribute.modification_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9581788+00:00')
+
+    attribute = attributes[1]
+
+    self.assertEqual(
+        attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
+
+    self.assertIsNotNone(attribute.access_time)
+    self.assertIsNotNone(attribute.creation_time)
+    self.assertIsNotNone(attribute.modification_time)
+    self.assertIsNotNone(attribute.entry_modification_time)
+
+    date_time_string = (
+        attribute.access_time.CopyToDateTimeStringISO8601())
+    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9567496+00:00')
+
+    attribute = attributes[2]
+
+    self.assertEqual(
+        attribute.type_indicator,
+        definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR)
+
+    security_descriptor = attribute.security_descriptor
+    self.assertIsNotNone(security_descriptor)
+
+    security_identifier = security_descriptor.owner
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
+
+    security_identifier = security_descriptor.group
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
+
+    access_control_list = security_descriptor.system_acl
+    self.assertIsNone(access_control_list)
+
+    access_control_list = security_descriptor.discretionary_acl
+    self.assertIsNotNone(access_control_list)
+    self.assertEqual(access_control_list.number_of_entries, 1)
+
+    access_control_entry = access_control_list.get_entry(0)
+    self.assertIsNotNone(access_control_entry)
+
+    self.assertEqual(access_control_entry.type, 0)
+    self.assertEqual(access_control_entry.flags, 3)
+    self.assertEqual(access_control_entry.access_mask, 0x1f01ff)
+
+    security_identifier = access_control_entry.security_identifier
+    self.assertIsNotNone(security_identifier)
+    self.assertEqual(security_identifier.string, 'S-1-1-0')
+
   def testChangeTime(self):
     """Test the change_time property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -150,6 +225,51 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertIsNotNone(file_entry.creation_time)
+
+  def testDataStream(self):
+    """Tests the data streams properties."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
+        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [''])
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 0)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [])
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\$UpCase', mft_entry=10,
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 2)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    expected_data_stream_names = sorted(['', '$Info'])
+    self.assertEqual(sorted(data_stream_names), expected_data_stream_names)
 
   def testModificationTime(self):
     """Test the modification_time property."""
@@ -181,6 +301,50 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.size, 116)
 
+  def testSubFileEntries(self):
+    """Test the sub file entries properties."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, location='\\',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 14)
+
+    expected_sub_file_entry_names = [
+        '$AttrDef',
+        '$BadClus',
+        '$Bitmap',
+        '$Boot',
+        '$Extend',
+        '$LogFile',
+        '$MFT',
+        '$MFTMirr',
+        '$Secure',
+        '$UpCase',
+        '$Volume',
+        'a_directory',
+        'a_link',
+        'passwords.txt']
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEqual(
+        len(sub_file_entry_names), len(expected_sub_file_entry_names))
+    self.assertEqual(
+        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+
+    # Test a path specification without a location.
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
+        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
+
   def testGetExtents(self):
     """Tests the GetExtents function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -195,10 +359,6 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
     self.assertEqual(extents[0].offset, 823296)
     self.assertEqual(extents[0].size, 131072)
-
-    extents = file_entry.GetExtents(data_stream_name='$Info')
-    # No extents are returned for data store in the $DATA attribute.
-    self.assertEqual(len(extents), 0)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
@@ -499,170 +659,6 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsVirtual())
-
-  def testSubFileEntries(self):
-    """Test the sub file entries properties."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_sub_file_entries, 14)
-
-    expected_sub_file_entry_names = [
-        '$AttrDef',
-        '$BadClus',
-        '$Bitmap',
-        '$Boot',
-        '$Extend',
-        '$LogFile',
-        '$MFT',
-        '$MFTMirr',
-        '$Secure',
-        '$UpCase',
-        '$Volume',
-        'a_directory',
-        'a_link',
-        'passwords.txt']
-
-    sub_file_entry_names = []
-    for sub_file_entry in file_entry.sub_file_entries:
-      sub_file_entry_names.append(sub_file_entry.name)
-
-    self.assertEqual(
-        len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEqual(
-        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
-
-    # Test a path specification without a location.
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, mft_attribute=1,
-        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
-
-  def testAttributes(self):
-    """Test the attributes properties."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
-        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_attributes, 4)
-
-    attributes = list(file_entry.attributes)
-    attribute = attributes[0]
-
-    self.assertEqual(
-        attribute.type_indicator,
-        definitions.ATTRIBUTE_TYPE_NTFS_STANDARD_INFORMATION)
-
-    self.assertIsNotNone(attribute.access_time)
-    self.assertIsNotNone(attribute.creation_time)
-    self.assertIsNotNone(attribute.modification_time)
-    self.assertIsNotNone(attribute.entry_modification_time)
-
-    date_time_string = (
-        attribute.modification_time.CopyToDateTimeStringISO8601())
-    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9581788+00:00')
-
-    attribute = attributes[1]
-
-    self.assertEqual(
-        attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME)
-
-    self.assertIsNotNone(attribute.access_time)
-    self.assertIsNotNone(attribute.creation_time)
-    self.assertIsNotNone(attribute.modification_time)
-    self.assertIsNotNone(attribute.entry_modification_time)
-
-    date_time_string = (
-        attribute.access_time.CopyToDateTimeStringISO8601())
-    self.assertEqual(date_time_string, '2019-08-31T10:22:59.9567496+00:00')
-
-    attribute = attributes[2]
-
-    self.assertEqual(
-        attribute.type_indicator,
-        definitions.ATTRIBUTE_TYPE_NTFS_SECURITY_DESCRIPTOR)
-
-    security_descriptor = attribute.security_descriptor
-    self.assertIsNotNone(security_descriptor)
-
-    security_identifier = security_descriptor.owner
-    self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
-
-    security_identifier = security_descriptor.group
-    self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-5-32-544')
-
-    access_control_list = security_descriptor.system_acl
-    self.assertIsNone(access_control_list)
-
-    access_control_list = security_descriptor.discretionary_acl
-    self.assertIsNotNone(access_control_list)
-    self.assertEqual(access_control_list.number_of_entries, 1)
-
-    access_control_entry = access_control_list.get_entry(0)
-    self.assertIsNotNone(access_control_entry)
-
-    self.assertEqual(access_control_entry.type, 0)
-    self.assertEqual(access_control_entry.flags, 3)
-    self.assertEqual(access_control_entry.access_mask, 0x1f01ff)
-
-    security_identifier = access_control_entry.security_identifier
-    self.assertIsNotNone(security_identifier)
-    self.assertEqual(security_identifier.string, 'S-1-1-0')
-
-  def testDataStream(self):
-    """Tests the data streams properties."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory\\a_file',
-        mft_entry=self._MFT_ENTRY_A_FILE, parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 1)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [''])
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\a_directory',
-        mft_entry=self._MFT_ENTRY_A_DIRECTORY, parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 0)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [])
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_NTFS, location='\\$UpCase', mft_entry=10,
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 2)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    expected_data_stream_names = sorted(['', '$Info'])
-    self.assertEqual(sorted(data_stream_names), expected_data_stream_names)
 
   def testGetDataStream(self):
     """Tests the GetDataStream function."""

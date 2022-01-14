@@ -82,7 +82,7 @@ class FileEntry(object):
 
       # It is assumed that non-file file entries do not have data streams.
       if self.entry_type == definitions.FILE_ENTRY_TYPE_FILE:
-        data_stream_object = data_stream.DataStream()
+        data_stream_object = data_stream.DataStream(self)
         self._data_streams.append(data_stream_object)
 
     return self._data_streams
@@ -308,15 +308,11 @@ class FileEntry(object):
 
     return matching_data_stream
 
-  def GetExtents(self, data_stream_name=''):  # pylint: disable=unused-argument
-    """Retrieves extents of a specific data stream.
-
-    Args:
-      data_stream_name (Optional[str]): data stream name, where an empty
-          string represents the default data stream.
+  def GetExtents(self):
+    """Retrieves the extents.
 
     Returns:
-      list[Extent]: extents of the data stream.
+      list[Extent]: the extents.
     """
     return []
 

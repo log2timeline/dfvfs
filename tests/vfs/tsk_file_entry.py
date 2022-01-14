@@ -1155,19 +1155,6 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
     extents = file_entry.GetExtents()
     self.assertEqual(len(extents), 0)
 
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=25,
-        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    extents = file_entry.GetExtents(data_stream_name='rsrc')
-    self.assertEqual(len(extents), 1)
-
-    self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
-    self.assertEqual(extents[0].offset, 1142784)
-    self.assertEqual(extents[0].size, 4096)
-
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -1699,10 +1686,6 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
     self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
     self.assertEqual(extents[0].offset, 823296)
     self.assertEqual(extents[0].size, 131072)
-
-    extents = file_entry.GetExtents(data_stream_name='$Info')
-    # No extents are returned for data store in the $DATA attribute.
-    self.assertEqual(len(extents), 0)
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, inode=self._MFT_ENTRY_A_DIRECTORY,
