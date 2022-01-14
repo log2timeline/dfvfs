@@ -245,31 +245,28 @@ class EXTFileEntry(file_entry.FileEntry):
     """int: size of the file entry in bytes or None if not available."""
     return self._fsext_file_entry.size
 
-  def GetExtents(self, data_stream_name=''):
-    """Retrieves extents of a specific data stream.
-
-    Args:
-      data_stream_name (Optional[str]): data stream name, where an empty
-          string represents the default data stream.
+  def GetExtents(self):
+    """Retrieves the extents.
 
     Returns:
-      list[Extent]: extents of the data stream.
+      list[Extent]: the extents.
     """
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_FILE:
+      return []
+
     extents = []
-    if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
-        not data_stream_name):
-      for extent_index in range(self._fsext_file_entry.number_of_extents):
-        extent_offset, extent_size, extent_flags = (
-            self._fsext_file_entry.get_extent(extent_index))
+    for extent_index in range(self._fsext_file_entry.number_of_extents):
+      extent_offset, extent_size, extent_flags = (
+          self._fsext_file_entry.get_extent(extent_index))
 
-        if extent_flags & 0x1:
-          extent_type = definitions.EXTENT_TYPE_SPARSE
-        else:
-          extent_type = definitions.EXTENT_TYPE_DATA
+      if extent_flags & 0x1:
+        extent_type = definitions.EXTENT_TYPE_SPARSE
+      else:
+        extent_type = definitions.EXTENT_TYPE_DATA
 
-        data_stream_extent = extent.Extent(
-            extent_type=extent_type, offset=extent_offset, size=extent_size)
-        extents.append(data_stream_extent)
+      data_stream_extent = extent.Extent(
+          extent_type=extent_type, offset=extent_offset, size=extent_size)
+      extents.append(data_stream_extent)
 
     return extents
 

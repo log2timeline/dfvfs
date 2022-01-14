@@ -98,12 +98,12 @@ class HFSFileEntry(file_entry.FileEntry):
       self._data_streams = []
 
       if self.entry_type == definitions.FILE_ENTRY_TYPE_FILE:
-        data_stream = hfs_data_stream.HFSDataStream(None)
+        data_stream = hfs_data_stream.HFSDataStream(self, None)
         self._data_streams.append(data_stream)
 
       fshfs_data_stream = self._fshfs_file_entry.get_resource_fork()
       if fshfs_data_stream:
-        data_stream = hfs_data_stream.HFSDataStream(fshfs_data_stream)
+        data_stream = hfs_data_stream.HFSDataStream(self, fshfs_data_stream)
         self._data_streams.append(data_stream)
 
     return self._data_streams
@@ -246,47 +246,28 @@ class HFSFileEntry(file_entry.FileEntry):
     """int: size of the file entry in bytes or None if not available."""
     return self._fshfs_file_entry.size
 
-  def GetExtents(self, data_stream_name=''):
-    """Retrieves extents of a specific data stream.
-
-    Args:
-      data_stream_name (Optional[str]): data stream name, where an empty
-          string represents the default data stream.
+  def GetExtents(self):
+    """Retrieves the extents.
 
     Returns:
-      list[Extent]: extents of the data stream.
+      list[Extent]: the extents.
     """
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_FILE:
+      return []
+
     extents = []
-    if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
-        not data_stream_name):
-      for extent_index in range(self._fshfs_file_entry.number_of_extents):
-        extent_offset, extent_size, extent_flags = (
-            self._fshfs_file_entry.get_extent(extent_index))
+    for extent_index in range(self._fshfs_file_entry.number_of_extents):
+      extent_offset, extent_size, extent_flags = (
+          self._fshfs_file_entry.get_extent(extent_index))
 
-        if extent_flags & 0x1:
-          extent_type = definitions.EXTENT_TYPE_SPARSE
-        else:
-          extent_type = definitions.EXTENT_TYPE_DATA
+      if extent_flags & 0x1:
+        extent_type = definitions.EXTENT_TYPE_SPARSE
+      else:
+        extent_type = definitions.EXTENT_TYPE_DATA
 
-        data_stream_extent = extent.Extent(
-            extent_type=extent_type, offset=extent_offset, size=extent_size)
-        extents.append(data_stream_extent)
-
-    elif data_stream_name == 'rsrc':
-      fshfs_data_stream = self._fshfs_file_entry.get_resource_fork()
-      if fshfs_data_stream:
-        for extent_index in range(fshfs_data_stream.number_of_extents):
-          extent_offset, extent_size, extent_flags = (
-              fshfs_data_stream.get_extent(extent_index))
-
-          if extent_flags & 0x1:
-            extent_type = definitions.EXTENT_TYPE_SPARSE
-          else:
-            extent_type = definitions.EXTENT_TYPE_DATA
-
-          data_stream_extent = extent.Extent(
-              extent_type=extent_type, offset=extent_offset, size=extent_size)
-          extents.append(data_stream_extent)
+      data_stream_extent = extent.Extent(
+          extent_type=extent_type, offset=extent_offset, size=extent_size)
+      extents.append(data_stream_extent)
 
     return extents
 

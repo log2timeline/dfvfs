@@ -383,7 +383,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
       if not known_data_attribute_types:
         if tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_REG:
-          data_stream = tsk_data_stream.TSKDataStream(None)
+          data_stream = tsk_data_stream.TSKDataStream(self, None)
           self._data_streams.append(data_stream)
 
       else:
@@ -398,7 +398,7 @@ class TSKFileEntry(file_entry.FileEntry):
 
           attribute_type = getattr(pytsk_attribute.info, 'type', None)
           if attribute_type in known_data_attribute_types:
-            data_stream = tsk_data_stream.TSKDataStream(pytsk_attribute)
+            data_stream = tsk_data_stream.TSKDataStream(self, pytsk_attribute)
             self._data_streams.append(data_stream)
 
     return self._data_streams
@@ -695,56 +695,33 @@ class TSKFileEntry(file_entry.FileEntry):
     """int: size of the file entry in bytes or None if not available."""
     return getattr(self._tsk_file.info.meta, 'size', None)
 
-  def GetExtents(self, data_stream_name=''):
-    """Retrieves extents of a specific data stream.
-
-    Args:
-      data_stream_name (Optional[str]): data stream name, where an empty
-          string represents the default data stream.
+  def GetExtents(self):
+    """Retrieves the extents.
 
     Returns:
-      list[Extent]: extents of the data stream.
+      list[Extent]: the extents.
 
     Raises:
-      BackEndError: if pytsk3 returns a non UTF-8 formatted name or no file
-          system block size or data stream size.
+      BackEndError: if pytsk3 returns no file system block size or data stream
+          size.
     """
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_FILE:
+      return []
+
     data_attribute = None
     for pytsk_attribute in self._tsk_file:
       if not getattr(pytsk_attribute, 'info', None):
         continue
 
       attribute_name = getattr(pytsk_attribute.info, 'name', None)
-      if attribute_name:
-        try:
-          # pytsk3 returns an UTF-8 encoded byte string.
-          attribute_name = attribute_name.decode('utf8')
-        except UnicodeError:
-          raise errors.BackEndError(
-              'pytsk3 returned a non UTF-8 formatted name.')
-
       attribute_type = getattr(pytsk_attribute.info, 'type', None)
-      if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA and (
-          not data_stream_name and not attribute_name):
-        data_attribute = pytsk_attribute
-        break
-
-      if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_HFS_RSRC and (
-          data_stream_name == 'rsrc'):
-        data_attribute = pytsk_attribute
-        break
-
-      if attribute_type == pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA and (
-          (not data_stream_name and not attribute_name) or
-          (data_stream_name == attribute_name)):
-        data_attribute = pytsk_attribute
-        break
 
       # The data stream is returned as a name-less attribute of type
-      # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT.
-      if (self.entry_type == definitions.FILE_ENTRY_TYPE_FILE and
-          attribute_type == pytsk3.TSK_FS_ATTR_TYPE_DEFAULT and
-          not data_stream_name and not attribute_name):
+      # pytsk3.TSK_FS_ATTR_TYPE_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA or
+      # pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA
+      if not attribute_name and attribute_type in (
+          pytsk3.TSK_FS_ATTR_TYPE_DEFAULT, pytsk3.TSK_FS_ATTR_TYPE_HFS_DATA,
+          pytsk3.TSK_FS_ATTR_TYPE_NTFS_DATA):
         data_attribute = pytsk_attribute
         break
 

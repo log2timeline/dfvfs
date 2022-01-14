@@ -352,19 +352,6 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     extents = file_entry.GetExtents()
     self.assertEqual(len(extents), 0)
 
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS, identifier=25,
-        location='/a_directory/a_resourcefork', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    extents = file_entry.GetExtents(data_stream_name='rsrc')
-    self.assertEqual(len(extents), 1)
-
-    self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
-    self.assertEqual(extents[0].offset, 1142784)
-    self.assertEqual(extents[0].size, 4096)
-
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(

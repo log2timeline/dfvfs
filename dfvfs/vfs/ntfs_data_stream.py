@@ -1,30 +1,48 @@
 # -*- coding: utf-8 -*-
 """The NTFS data stream implementation."""
 
+from dfvfs.lib import definitions
 from dfvfs.vfs import data_stream
+from dfvfs.vfs import extent
 
 
 class NTFSDataStream(data_stream.DataStream):
   """File system data stream that uses pyfsntfs."""
 
-  def __init__(self, fsntfs_data_stream):
-    """Initializes the data stream.
+  def __init__(self, file_entry, fsntfs_data_stream):
+    """Initializes a NTFS data stream.
 
     Args:
+      file_entry (FileEntry): file entry.
       fsntfs_data_stream (pyfsntfs.data_stream): NTFS data stream.
     """
-    super(NTFSDataStream, self).__init__()
-    self._name = getattr(fsntfs_data_stream, 'name', None) or ''
+    super(NTFSDataStream, self).__init__(file_entry)
+    self._fsntfs_data_stream = fsntfs_data_stream
 
-  @property
-  def name(self):
-    """str: name."""
-    return self._name
+    if fsntfs_data_stream:
+      self._name = fsntfs_data_stream.name
 
-  def IsDefault(self):
-    """Determines if the data stream is the default data stream.
+  def GetExtents(self):
+    """Retrieves the extents.
 
     Returns:
-      bool: True if the data stream is the default data stream.
+      list[Extent]: the extents of the data stream.
     """
-    return not bool(self._name)
+    if not self._fsntfs_data_stream:
+      return super(NTFSDataStream, self).GetExtents()
+
+    extents = []
+    for extent_index in range(self._fsntfs_data_stream.number_of_extents):
+      extent_offset, extent_size, extent_flags = (
+          self._fsntfs_data_stream.get_extent(extent_index))
+
+      if extent_flags & 0x1:
+        extent_type = definitions.EXTENT_TYPE_SPARSE
+      else:
+        extent_type = definitions.EXTENT_TYPE_DATA
+
+      data_stream_extent = extent.Extent(
+          extent_type=extent_type, offset=extent_offset, size=extent_size)
+      extents.append(data_stream_extent)
+
+    return extents
