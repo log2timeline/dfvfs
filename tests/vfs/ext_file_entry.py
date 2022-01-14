@@ -97,7 +97,7 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
     """Tests the _GetAttributes function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_EXT, inode=self._INODE_A_FILE,
-        location='/a_directory/another_file', parent=self._raw_path_spec)
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -190,7 +190,7 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_EXT, inode=self._INODE_A_FILE,
-        parent=self._raw_path_spec)
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
@@ -468,7 +468,7 @@ class EXTFileEntryTestWithEXT4(shared_test_lib.BaseTestCase):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_EXT, inode=self._INODE_A_FILE,
-        parent=self._raw_path_spec)
+        location='/a_directory/a_file', parent=self._raw_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
