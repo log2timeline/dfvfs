@@ -220,6 +220,14 @@ dfvfs.vfs.ext\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.extent module
+-----------------------
+
+.. automodule:: dfvfs.vfs.extent
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.fake\_directory module
 --------------------------------
 
@@ -320,6 +328,14 @@ dfvfs.vfs.hfs\_attribute module
 -------------------------------
 
 .. automodule:: dfvfs.vfs.hfs_attribute
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.hfs\_data\_stream module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.hfs_data_stream
    :members:
    :undoc-members:
    :show-inheritance:
