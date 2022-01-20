@@ -7,7 +7,6 @@ import unittest
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
-from dfvfs.resolver import resolver
 from dfvfs.vfs import bde_file_system
 
 from tests import test_lib as shared_test_lib
@@ -15,8 +14,6 @@ from tests import test_lib as shared_test_lib
 
 class BDEFileSystemTest(shared_test_lib.BaseTestCase):
   """Tests the BDE file system."""
-
-  _BDE_PASSWORD = 'bde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -28,8 +25,6 @@ class BDEFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_OS, location=test_path)
     self._bde_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_BDE, parent=test_os_path_spec)
-    resolver.Resolver.key_chain.SetCredential(
-        self._bde_path_spec, 'password', self._BDE_PASSWORD)
 
   def tearDown(self):
     """Cleans up the needed objects used throughout the test."""

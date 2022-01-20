@@ -328,6 +328,13 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertFalse(test_file_entry.IsLink())
 
+  def testIsLocked(self):
+    """Tests the IsLocked function."""
+    test_file_entry = TestFileEntry(
+        self._resolver_context, self._file_system, self._path_spec)
+
+    self.assertFalse(test_file_entry.IsLocked())
+
   def testIsPipe(self):
     """Tests the IsPipe function."""
     test_file_entry = TestFileEntry(

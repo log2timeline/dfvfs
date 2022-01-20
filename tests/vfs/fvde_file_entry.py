@@ -22,6 +22,7 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
@@ -34,8 +35,6 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
         parent=test_qcow_path_spec)
     self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_FVDE, parent=test_tsk_partition_path_spec)
-    resolver.Resolver.key_chain.SetCredential(
-        self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
 
     self._file_system = fvde_file_system.FVDEFileSystem(
         self._resolver_context, self._fvde_path_spec)
@@ -51,6 +50,19 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
         self._resolver_context, self._file_system, self._fvde_path_spec)
     self.assertIsNotNone(file_entry)
 
+  def testDataStreams(self):
+    """Test the data streams property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [''])
+
   def testSize(self):
     """Test the size property."""
     file_entry = fvde_file_entry.FVDEFileEntry(
@@ -58,6 +70,37 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.size, 167772160)
+
+  def testSubFileEntries(self):
+    """Test the sub file entries property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 0)
+
+    expected_sub_file_entry_names = []
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEqual(
+        len(sub_file_entry_names), len(expected_sub_file_entry_names))
+    self.assertEqual(
+        sorted(sub_file_entry_names), expected_sub_file_entry_names)
+
+  def testGetDataStream(self):
+    """Tests the GetDataStream function."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream_name = ''
+    data_stream = file_entry.GetDataStream(data_stream_name)
+    self.assertIsNotNone(data_stream)
+    self.assertEqual(data_stream.name, data_stream_name)
+
+    data_stream = file_entry.GetDataStream('bogus')
+    self.assertIsNone(data_stream)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
@@ -98,49 +141,28 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-  def testSubFileEntries(self):
-    """Test the sub file entries iteration functionality."""
+  def testIsLocked(self):
+    """Tests the IsLocked function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
+
     self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsLocked())
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 0)
+    resolver.Resolver.key_chain.SetCredential(
+        self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
+    unlocked_file_system = fvde_file_system.FVDEFileSystem(
+        self._resolver_context, self._fvde_path_spec)
 
-    expected_sub_file_entry_names = []
+    unlocked_file_system.Open()
 
-    sub_file_entry_names = []
-    for sub_file_entry in file_entry.sub_file_entries:
-      sub_file_entry_names.append(sub_file_entry.name)
+    file_entry = unlocked_file_system.GetFileEntryByPathSpec(
+        self._fvde_path_spec)
 
-    self.assertEqual(
-        len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEqual(
-        sorted(sub_file_entry_names), expected_sub_file_entry_names)
-
-  def testDataStreams(self):
-    """Test the data streams functionality."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
     self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsLocked())
 
-    self.assertEqual(file_entry.number_of_data_streams, 1)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [''])
-
-  def testGetDataStream(self):
-    """Tests the GetDataStream function."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
-    self.assertIsNotNone(file_entry)
-
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
-
-    data_stream = file_entry.GetDataStream('bogus')
-    self.assertIsNone(data_stream)
+    resolver.Resolver.key_chain.SetCredential(
+        self._fvde_path_spec, 'password', None)
 
 
 if __name__ == '__main__':

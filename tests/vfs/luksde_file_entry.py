@@ -22,6 +22,7 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
     test_path = self._GetTestFilePath(['luks1.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -31,8 +32,6 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
     self._luksde_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_LUKSDE, parent=test_raw_path_spec)
-    resolver.Resolver.key_chain.SetCredential(
-        self._luksde_path_spec, 'password', self._LUKSDE_PASSWORD)
 
     self._file_system = luksde_file_system.LUKSDEFileSystem(
         self._resolver_context, self._luksde_path_spec)
@@ -50,6 +49,20 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
 
     # TODO: test raises.
 
+  def testDataStreams(self):
+    """Test the data streams property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._luksde_path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [''])
+
   def testSize(self):
     """Test the size property."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
@@ -57,6 +70,39 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.size, 8388608)
+
+  def testSubFileEntries(self):
+    """Test the sub file entries property."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._luksde_path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 0)
+
+    expected_sub_file_entry_names = []
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEqual(
+        len(sub_file_entry_names), len(expected_sub_file_entry_names))
+    self.assertEqual(
+        sorted(sub_file_entry_names), expected_sub_file_entry_names)
+
+  def testGetDataStream(self):
+    """Tests the GetDataStream function."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(
+        self._luksde_path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream_name = ''
+    data_stream = file_entry.GetDataStream(data_stream_name)
+    self.assertIsNotNone(data_stream)
+    self.assertEqual(data_stream.name, data_stream_name)
+
+    data_stream = file_entry.GetDataStream('bogus')
+    self.assertIsNone(data_stream)
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
@@ -84,124 +130,46 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
     self.assertEqual(stat_object.size, 8388608)
 
-  def testIsAllocated(self):
-    """Test the IsAllocated function."""
+  def testIsFunctions(self):
+    """Test the Is? functions."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._luksde_path_spec)
-
     self.assertIsNotNone(file_entry)
+
+    self.assertTrue(file_entry.IsRoot())
+    self.assertTrue(file_entry.IsVirtual())
     self.assertTrue(file_entry.IsAllocated())
 
-  def testIsDevice(self):
-    """Test the IsDevice functions."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDevice())
-
-  def testIsDirectory(self):
-    """Test the IsDirectory functions."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDirectory())
-
-  def testIsFile(self):
-    """Test the IsFile functions."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsFile())
-
-  def testIsLink(self):
-    """Test the IsLink functions."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsLink())
-
-  def testIsPipe(self):
-    """Test the IsPipe functions."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsPipe())
-
-  def testIsRoot(self):
-    """Test the IsRoot functions."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertTrue(file_entry.IsRoot())
-
-  def testIsSocket(self):
-    """Test the IsSocket functions."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsSocket())
 
-  def testIsVirtual(self):
-    """Test the IsVirtual functions."""
+  def testIsLocked(self):
+    """Tests the IsLocked function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._luksde_path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertTrue(file_entry.IsVirtual())
+    self.assertTrue(file_entry.IsLocked())
 
-  def testSubFileEntries(self):
-    """Test the sub file entries iteration functionality."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
+    resolver.Resolver.key_chain.SetCredential(
+        self._luksde_path_spec, 'password', self._LUKSDE_PASSWORD)
+    unlocked_file_system = luksde_file_system.LUKSDEFileSystem(
+        self._resolver_context, self._luksde_path_spec)
+
+    unlocked_file_system.Open()
+
+    file_entry = unlocked_file_system.GetFileEntryByPathSpec(
         self._luksde_path_spec)
+
     self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsLocked())
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 0)
-
-    expected_sub_file_entry_names = []
-
-    sub_file_entry_names = []
-    for sub_file_entry in file_entry.sub_file_entries:
-      sub_file_entry_names.append(sub_file_entry.name)
-
-    self.assertEqual(
-        len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEqual(
-        sorted(sub_file_entry_names), expected_sub_file_entry_names)
-
-  def testDataStreams(self):
-    """Test the data streams functionality."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 1)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [''])
-
-  def testGetDataStream(self):
-    """Tests the GetDataStream function."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-    self.assertIsNotNone(file_entry)
-
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
-
-    data_stream = file_entry.GetDataStream('bogus')
-    self.assertIsNone(data_stream)
+    resolver.Resolver.key_chain.SetCredential(
+        self._luksde_path_spec, 'password', None)
 
 
 if __name__ == '__main__':
