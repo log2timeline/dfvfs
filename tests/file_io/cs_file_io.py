@@ -12,8 +12,8 @@ from dfvfs.resolver import resolver
 from tests.file_io import test_lib
 
 
-class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
-  """Tests for the FileVault Drive Encryption (FVDE) file-like object.
+class CSFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
+  """Tests the Core Storage (CS) file-like object.
 
   The credentials are passed via the key chain.
   """
@@ -25,7 +25,7 @@ class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(FVDEFileTestWithKeyChainTest, self).setUp()
+    super(CSFileTestWithKeyChainTest, self).setUp()
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
@@ -36,23 +36,25 @@ class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
     self._tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
         parent=test_qcow_path_spec)
-    self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec)
+    self._cs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, parent=self._tsk_partition_path_spec,
+        volume_index=0)
 
     resolver.Resolver.key_chain.SetCredential(
-        self._fvde_path_spec, 'password', self._FVDE_PASSWORD)
+        self._cs_path_spec, 'password', self._FVDE_PASSWORD)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
-    self._TestOpenCloseInode(self._fvde_path_spec)
+    self._TestOpenCloseInode(self._cs_path_spec)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    self._TestOpenCloseLocation(self._fvde_path_spec)
+    self._TestOpenCloseLocation(self._cs_path_spec)
 
     # Try open with a path specification that has no parent.
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec)
+        definitions.TYPE_INDICATOR_CS, location='/cs1',
+        parent=self._tsk_partition_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -60,15 +62,15 @@ class FVDEFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    self._TestSeek(self._fvde_path_spec)
+    self._TestSeek(self._cs_path_spec)
 
   def testRead(self):
     """Test the read functionality."""
-    self._TestRead(self._fvde_path_spec)
+    self._TestRead(self._cs_path_spec)
 
 
-class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
-  """Tests the BitLocker Drive Encryption (FVDE) file-like object.
+class CSFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
+  """Tests the Core Storage (CS) file-like object.
 
   The credentials are passed via the path specification.
   """
@@ -79,7 +81,7 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(FVDEFileWithPathSpecCredentialsTest, self).setUp()
+    super(CSFileWithPathSpecCredentialsTest, self).setUp()
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
@@ -90,21 +92,22 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
     self._tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
         parent=test_qcow_path_spec)
-    self._fvde_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec,
-        password=self._FVDE_PASSWORD)
+    self._cs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, parent=self._tsk_partition_path_spec,
+        password=self._FVDE_PASSWORD, volume_index=0)
 
   def testOpenCloseInode(self):
     """Test the open and close functionality using an inode."""
-    self._TestOpenCloseInode(self._fvde_path_spec)
+    self._TestOpenCloseInode(self._cs_path_spec)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
-    self._TestOpenCloseLocation(self._fvde_path_spec)
+    self._TestOpenCloseLocation(self._cs_path_spec)
 
     # Try open with a path specification that has no parent.
     path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_FVDE, parent=self._tsk_partition_path_spec)
+        definitions.TYPE_INDICATOR_CS, location='/cs1',
+        parent=self._tsk_partition_path_spec)
     path_spec.parent = None
 
     with self.assertRaises(errors.PathSpecError):
@@ -112,11 +115,11 @@ class FVDEFileWithPathSpecCredentialsTest(test_lib.ImageFileTestCase):
 
   def testSeek(self):
     """Test the seek functionality."""
-    self._TestSeek(self._fvde_path_spec)
+    self._TestSeek(self._cs_path_spec)
 
   def testRead(self):
     """Test the read functionality."""
-    self._TestRead(self._fvde_path_spec)
+    self._TestRead(self._cs_path_spec)
 
 
 if __name__ == '__main__':

@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Helper functions for Logical Volume Manager (LVM) support."""
+"""Helper function for Core Storage (CS) support."""
 
 
-def LVMPathSpecGetVolumeIndex(path_spec):
+_CS_LOCATION_PREFIX = '/cs'
+_CS_LOCATION_PREFIX_LENGTH = len(_CS_LOCATION_PREFIX)
+
+
+def CSPathSpecGetVolumeIndex(path_spec):
   """Retrieves the volume index from the path specification.
 
   Args:
@@ -16,12 +20,12 @@ def LVMPathSpecGetVolumeIndex(path_spec):
   if volume_index is None:
     location = getattr(path_spec, 'location', None)
 
-    if location is None or not location.startswith('/lvm'):
+    if location is None or not location.startswith(_CS_LOCATION_PREFIX):
       return None
 
     volume_index = None
     try:
-      volume_index = int(location[4:], 10) - 1
+      volume_index = int(location[_CS_LOCATION_PREFIX_LENGTH:], 10) - 1
     except ValueError:
       pass
 

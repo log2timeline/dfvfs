@@ -22,6 +22,7 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 

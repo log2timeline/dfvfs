@@ -2,6 +2,10 @@
 """Helper functions for Apple File System (APFS) support."""
 
 
+_APFS_LOCATION_PREFIX = '/apfs'
+_APFS_LOCATION_PREFIX_LENGTH = len(_APFS_LOCATION_PREFIX)
+
+
 def APFSContainerPathSpecGetVolumeIndex(path_spec):
   """Retrieves the volume index from the path specification.
 
@@ -16,11 +20,11 @@ def APFSContainerPathSpecGetVolumeIndex(path_spec):
     return volume_index
 
   location = getattr(path_spec, 'location', None)
-  if location is None or not location.startswith('/apfs'):
+  if location is None or not location.startswith(_APFS_LOCATION_PREFIX):
     return None
 
   try:
-    volume_index = int(location[5:], 10) - 1
+    volume_index = int(location[_APFS_LOCATION_PREFIX_LENGTH:], 10) - 1
   except (TypeError, ValueError):
     volume_index = None
 

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-"""The Logical Volume Manager (LVM) file-like object implementation."""
+"""The Core Storage (CS) file-like object."""
 
 import os
 
 from dfvfs.file_io import file_io
+from dfvfs.lib import cs_helper
 from dfvfs.lib import errors
-from dfvfs.lib import lvm_helper
 from dfvfs.resolver import resolver
 
 
-class LVMFile(file_io.FileIO):
-  """File input/output (IO) object using pyvslvm."""
+class CSFile(file_io.FileIO):
+  """File input/output (IO) object using pyfvde."""
 
   def __init__(self, resolver_context, path_spec):
     """Initializes a file input/output (IO) object.
@@ -19,13 +19,13 @@ class LVMFile(file_io.FileIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(LVMFile, self).__init__(resolver_context, path_spec)
+    super(CSFile, self).__init__(resolver_context, path_spec)
     self._file_system = None
-    self._vslvm_logical_volume = None
+    self._fvde_logical_volume = None
 
   def _Close(self):
     """Closes the file-like object."""
-    self._vslvm_logical_volume = None
+    self._fvde_logical_volume = None
 
     self._file_system = None
 
@@ -41,23 +41,53 @@ class LVMFile(file_io.FileIO):
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    volume_index = lvm_helper.LVMPathSpecGetVolumeIndex(self._path_spec)
+    volume_index = cs_helper.CSPathSpecGetVolumeIndex(self._path_spec)
     if volume_index is None:
       raise errors.PathSpecError(
           'Unable to retrieve volume index from path specification.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)
-    vslvm_volume_group = self._file_system.GetLVMVolumeGroup()
+    fvde_volume_group = self._file_system.GetFVDEVolumeGroup()
 
     if (volume_index < 0 or
-        volume_index >= vslvm_volume_group.number_of_logical_volumes):
+        volume_index >= fvde_volume_group.number_of_logical_volumes):
       raise errors.PathSpecError((
           'Unable to retrieve logical volume index: {0:d} from path '
           'specification.').format(volume_index))
 
-    self._vslvm_logical_volume = vslvm_volume_group.get_logical_volume(
+    self._fvde_logical_volume = fvde_volume_group.get_logical_volume(
         volume_index)
+
+    self._UnlockFVDELogicalVolume(self._fvde_logical_volume, self._path_spec)
+
+  def _UnlockFVDELogicalVolume(self, fvde_logical_volume, path_spec):
+    """Unlocks the Core Storage (CS) logical volume if necessary.
+
+    Args:
+      fvde_logical_volume (pyfvde.logical_volume): Core Storage (CS) logical
+          volume.
+      path_spec (PathSpec): path specification.
+    """
+    if fvde_logical_volume.is_locked():
+      resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
+
+      password = resolver.Resolver.key_chain.GetCredential(
+          path_spec, 'password')
+      if password:
+        fvde_logical_volume.set_password(password)
+
+      recovery_password = resolver.Resolver.key_chain.GetCredential(
+          path_spec, 'recovery_password')
+      if recovery_password:
+        fvde_logical_volume.set_recovery_password(recovery_password)
+
+      fvde_logical_volume.unlock()
+
+  @property
+  def is_locked(self):
+    """bool: True if the volume is locked."""
+    return self._fvde_logical_volume.is_locked()
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
@@ -83,7 +113,7 @@ class LVMFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    return self._vslvm_logical_volume.read(size)
+    return self._fvde_logical_volume.read(size)
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Seeks to an offset within the file-like object.
@@ -100,7 +130,7 @@ class LVMFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    self._vslvm_logical_volume.seek(offset, whence)
+    self._fvde_logical_volume.seek(offset, whence)
 
   def get_offset(self):
     """Retrieves the current offset into the file-like object.
@@ -115,7 +145,7 @@ class LVMFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    return self._vslvm_logical_volume.get_offset()
+    return self._fvde_logical_volume.get_offset()
 
   def get_size(self):
     """Retrieves the size of the file-like object.
@@ -130,4 +160,4 @@ class LVMFile(file_io.FileIO):
     if not self._is_open:
       raise IOError('Not opened.')
 
-    return self._vslvm_logical_volume.size
+    return self._fvde_logical_volume.size
