@@ -28,6 +28,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
     test_path = self._GetTestFilePath(['apfs.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -453,6 +454,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
+
     test_path = self._GetTestFilePath(['apfs_encrypted.dmg'])
     self._SkipIfPathNotExists(test_path)
 
@@ -460,12 +462,12 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_OS, location=test_path)
     test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
-    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+    test_gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/p1',
         parent=test_raw_path_spec)
     self._apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
-        parent=test_tsk_partition_path_spec)
+        parent=test_gpt_path_spec)
     self._apfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS, location='/',
         parent=self._apfs_container_path_spec)

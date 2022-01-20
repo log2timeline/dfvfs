@@ -473,6 +473,14 @@ class FileEntry(object):
     """
     return self.entry_type == definitions.FILE_ENTRY_TYPE_LINK
 
+  def IsLocked(self):
+    """Determines if the file entry is locked.
+
+    Returns:
+      bool: True if the file entry is locked.
+    """
+    return False
+
   def IsPipe(self):
     """Determines if the file entry is a pipe.
 

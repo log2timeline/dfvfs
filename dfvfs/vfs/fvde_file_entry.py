@@ -42,3 +42,11 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
   def size(self):
     """int: size of the file entry in bytes or None if not available."""
     return self._fvde_volume.get_size()
+
+  def IsLocked(self):
+    """Determines if the file entry is locked.
+
+    Returns:
+      bool: True if the file entry is locked.
+    """
+    return self._fvde_volume.is_locked()
