@@ -11,7 +11,7 @@ class LVMPathSpec(path_spec.PathSpec):
 
   Attributes:
     location (str): location.
-    volume_index (int): volume index.
+    volume_index (int): logical volume index.
   """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_LVM
@@ -24,7 +24,7 @@ class LVMPathSpec(path_spec.PathSpec):
     Args:
       location (Optional[str]): location.
       parent (Optional[PathSpec]): parent path specification.
-      volume_index (Optional[int]): volume index.
+      volume_index (Optional[int]): logical volume index.
 
     Raises:
       ValueError: when parent is not set.

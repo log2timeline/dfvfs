@@ -16,7 +16,7 @@ from tests.file_io import test_lib
 
 
 class LVMFileTest(shared_test_lib.BaseTestCase):
-  """The unit test for the Logical Volume Manager (LVM) file-like object."""
+  """Tests the Logical Volume Manager (LVM) file-like object."""
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
