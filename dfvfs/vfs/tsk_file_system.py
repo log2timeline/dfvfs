@@ -15,8 +15,6 @@ from dfvfs.vfs import tsk_file_entry
 class TSKFileSystem(file_system.FileSystem):
   """File system that uses pytsk3."""
 
-  LOCATION_ROOT = '/'
-
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK
 
   def __init__(self, resolver_context, path_spec):

@@ -11,8 +11,6 @@ from dfvfs.vfs import fake_file_entry
 class FakeFileSystem(file_system.FileSystem):
   """Fake file system."""
 
-  LOCATION_ROOT = '/'
-
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
   def __init__(self, resolver_context, path_spec):

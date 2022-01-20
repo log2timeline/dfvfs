@@ -117,3 +117,14 @@ class CSFileEntry(file_entry.FileEntry):
       return None
 
     return self._file_system.GetRootFileEntry()
+
+  def IsLocked(self):
+    """Determines if the file entry is locked.
+
+    Returns:
+      bool: True if the file entry is locked.
+    """
+    if not self._fvde_logical_volume:
+      return False
+
+    return self._fvde_logical_volume.is_locked()

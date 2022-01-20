@@ -14,6 +14,7 @@ class FileSystem(object):
   # pylint: disable=redundant-returns-doc
 
   LOCATION_ROOT = '/'
+
   PATH_SEPARATOR = '/'
 
   def __init__(self, resolver_context, path_spec):

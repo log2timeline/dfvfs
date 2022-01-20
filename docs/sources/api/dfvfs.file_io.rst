@@ -36,6 +36,14 @@ dfvfs.file\_io.cpio\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.cs\_file\_io module
+----------------------------------
+
+.. automodule:: dfvfs.file_io.cs_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.data\_range\_io module
 -------------------------------------
 

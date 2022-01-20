@@ -15,7 +15,6 @@ from dfvfs.vfs import file_system
 class APFSContainerFileSystem(file_system.FileSystem):
   """APFS container file system using pyfsapfs."""
 
-  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
 
   def __init__(self, resolver_context, path_spec):

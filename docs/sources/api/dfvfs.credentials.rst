@@ -28,6 +28,14 @@ dfvfs.credentials.credentials module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.credentials.cs\_credentials module
+----------------------------------------
+
+.. automodule:: dfvfs.credentials.cs_credentials
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.credentials.encrypted\_stream\_credentials module
 -------------------------------------------------------
 

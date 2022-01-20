@@ -4,8 +4,8 @@
 import pyfvde
 
 from dfvfs.file_io import file_object_io
-from dfvfs.lib import fvde
 from dfvfs.lib import errors
+from dfvfs.lib import fvde
 from dfvfs.resolver import resolver
 
 

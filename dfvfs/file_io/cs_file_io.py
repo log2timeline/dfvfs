@@ -37,14 +37,18 @@ class CSFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
-      OSError: if the file-like object could not be opened.
+      IOError: if the file-like object could not be opened or the Core Storage
+          logical volume could not be retrieved or unlocked.
+      OSError: if the file-like object could not be opened or the Core Storage
+          logical volume could not be retrieved or unlocked.
       PathSpecError: if the path specification is incorrect.
     """
     volume_index = cs_helper.CSPathSpecGetVolumeIndex(self._path_spec)
     if volume_index is None:
       raise errors.PathSpecError(
           'Unable to retrieve volume index from path specification.')
+
+    resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(self._path_spec)
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)
@@ -56,33 +60,19 @@ class CSFile(file_io.FileIO):
           'Unable to retrieve logical volume index: {0:d} from path '
           'specification.').format(volume_index))
 
-    self._fvde_logical_volume = fvde_volume_group.get_logical_volume(
-        volume_index)
+    fvde_logical_volume = fvde_volume_group.get_logical_volume(volume_index)
 
-    self._UnlockFVDELogicalVolume(self._fvde_logical_volume, self._path_spec)
+    try:
+      is_locked = not cs_helper.CSUnlockLogicalVolume(
+          fvde_logical_volume, self._path_spec, resolver.Resolver.key_chain)
+    except IOError as exception:
+      raise IOError('Unable to unlock volume with error: {0!s}'.format(
+          exception))
 
-  def _UnlockFVDELogicalVolume(self, fvde_logical_volume, path_spec):
-    """Unlocks the Core Storage (CS) logical volume if necessary.
+    if is_locked:
+      raise IOError('Unable to unlock volume.')
 
-    Args:
-      fvde_logical_volume (pyfvde.logical_volume): Core Storage (CS) logical
-          volume.
-      path_spec (PathSpec): path specification.
-    """
-    if fvde_logical_volume.is_locked():
-      resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(path_spec)
-
-      password = resolver.Resolver.key_chain.GetCredential(
-          path_spec, 'password')
-      if password:
-        fvde_logical_volume.set_password(password)
-
-      recovery_password = resolver.Resolver.key_chain.GetCredential(
-          path_spec, 'recovery_password')
-      if recovery_password:
-        fvde_logical_volume.set_recovery_password(recovery_password)
-
-      fvde_logical_volume.unlock()
+    self._fvde_logical_volume = fvde_logical_volume
 
   @property
   def is_locked(self):
