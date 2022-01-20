@@ -124,6 +124,30 @@ dfvfs.vfs.cpio\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.cs\_directory module
+------------------------------
+
+.. automodule:: dfvfs.vfs.cs_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.cs\_file\_entry module
+--------------------------------
+
+.. automodule:: dfvfs.vfs.cs_file_entry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.cs\_file\_system module
+---------------------------------
+
+.. automodule:: dfvfs.vfs.cs_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.data\_range\_file\_entry module
 -----------------------------------------
 

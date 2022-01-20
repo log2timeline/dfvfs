@@ -44,6 +44,14 @@ dfvfs.resolver\_helpers.cpio\_resolver\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.resolver\_helpers.cs\_resolver\_helper module
+---------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.cs_resolver_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.resolver\_helpers.data\_range\_resolver\_helper module
 ------------------------------------------------------------
 

@@ -33,3 +33,29 @@ def CSPathSpecGetVolumeIndex(path_spec):
       return None
 
   return volume_index
+
+
+def CSUnlockLogicalVolume(fvde_logical_volume, path_spec, key_chain):
+  """Unlocks a Core Storage logical volume using the path specification.
+
+  Args:
+    fvde_logical_volume (pyfvde.logical_volume): Core Storage logical volume.
+    path_spec (PathSpec): path specification.
+    key_chain (KeyChain): key chain.
+
+  Returns:
+    bool: True if the volume is unlocked, False otherwise.
+  """
+  is_locked = fvde_logical_volume.is_locked()
+  if is_locked:
+    password = key_chain.GetCredential(path_spec, 'password')
+    if password:
+      fvde_logical_volume.set_password(password)
+
+    recovery_password = key_chain.GetCredential(path_spec, 'recovery_password')
+    if recovery_password:
+      fvde_logical_volume.set_recovery_password(recovery_password)
+
+    is_locked = not fvde_logical_volume.unlock()
+
+  return not is_locked

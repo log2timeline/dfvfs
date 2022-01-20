@@ -18,7 +18,6 @@ class ZipFileSystem(file_system.FileSystem):
     encoding (str): encoding of the file entry name.
   """
 
-  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
   def __init__(self, resolver_context, path_spec, encoding='utf-8'):

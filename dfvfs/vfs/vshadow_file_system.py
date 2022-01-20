@@ -15,7 +15,6 @@ from dfvfs.vfs import vshadow_file_entry
 class VShadowFileSystem(file_system.FileSystem):
   """File system that uses pyvshadow."""
 
-  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_VSHADOW
 
   def __init__(self, resolver_context, path_spec):

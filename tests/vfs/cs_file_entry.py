@@ -77,6 +77,36 @@ class CSFileEntryTest(shared_test_lib.BaseTestCase):
   # TODO: test _GetDirectory
   # TODO: test _GetSubFileEntries
 
+  def testDataStreams(self):
+    """Test the data streams property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, parent=self._gpt_path_spec,
+        volume_index=0)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 1)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [''])
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, location='/',
+        parent=self._gpt_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_data_streams, 0)
+
+    data_stream_names = []
+    for data_stream in file_entry.data_streams:
+      data_stream_names.append(data_stream.name)
+
+    self.assertEqual(data_stream_names, [])
+
   def testName(self):
     """Test the name property."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -96,6 +126,43 @@ class CSFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.size, 167772160)
+
+  def testSubFileEntries(self):
+    """Test the sub file entries property."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, location='/',
+        parent=self._gpt_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    self.assertEqual(file_entry.number_of_sub_file_entries, 1)
+
+    expected_sub_file_entry_names = ['cs1']
+
+    sub_file_entry_names = []
+    for sub_file_entry in file_entry.sub_file_entries:
+      sub_file_entry_names.append(sub_file_entry.name)
+
+    self.assertEqual(
+        len(sub_file_entry_names), len(expected_sub_file_entry_names))
+    self.assertEqual(
+        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
+
+  def testGetDataStream(self):
+    """Tests the GetDataStream function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, parent=self._gpt_path_spec,
+        volume_index=0)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    data_stream_name = ''
+    data_stream = file_entry.GetDataStream(data_stream_name)
+    self.assertIsNotNone(data_stream)
+    self.assertEqual(data_stream.name, data_stream_name)
+
+    data_stream = file_entry.GetDataStream('bogus')
+    self.assertIsNone(data_stream)
 
   # TODO: test GetFVDELogicalVolume
 
@@ -169,72 +236,15 @@ class CSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertFalse(file_entry.IsPipe())
     self.assertFalse(file_entry.IsSocket())
 
-  def testSubFileEntries(self):
-    """Test the sub file entries iteration functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_CS, location='/',
-        parent=self._gpt_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_sub_file_entries, 1)
-
-    expected_sub_file_entry_names = ['cs1']
-
-    sub_file_entry_names = []
-    for sub_file_entry in file_entry.sub_file_entries:
-      sub_file_entry_names.append(sub_file_entry.name)
-
-    self.assertEqual(
-        len(sub_file_entry_names), len(expected_sub_file_entry_names))
-    self.assertEqual(
-        sorted(sub_file_entry_names), sorted(expected_sub_file_entry_names))
-
-  def testDataStreams(self):
-    """Test the data streams functionality."""
+  def testIsLocked(self):
+    """Tests the IsLocked function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_CS, parent=self._gpt_path_spec,
         volume_index=0)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
     self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 1)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [''])
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_CS, location='/',
-        parent=self._gpt_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    self.assertEqual(file_entry.number_of_data_streams, 0)
-
-    data_stream_names = []
-    for data_stream in file_entry.data_streams:
-      data_stream_names.append(data_stream.name)
-
-    self.assertEqual(data_stream_names, [])
-
-  def testGetDataStream(self):
-    """Tests the GetDataStream function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_CS, parent=self._gpt_path_spec,
-        volume_index=0)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    data_stream_name = ''
-    data_stream = file_entry.GetDataStream(data_stream_name)
-    self.assertIsNotNone(data_stream)
-    self.assertEqual(data_stream.name, data_stream_name)
-
-    data_stream = file_entry.GetDataStream('bogus')
-    self.assertIsNone(data_stream)
+    self.assertTrue(file_entry.IsLocked())
 
 
 if __name__ == '__main__':

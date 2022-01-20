@@ -16,7 +16,6 @@ from dfvfs.vfs import tsk_partition_file_entry
 class TSKPartitionFileSystem(file_system.FileSystem):
   """Class that implements a file system object using pytsk3."""
 
-  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
   def __init__(self, resolver_context, path_spec):

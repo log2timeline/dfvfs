@@ -19,7 +19,6 @@ class TARFileSystem(file_system.FileSystem):
     encoding (str): file entry name encoding.
   """
 
-  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_TAR
 
   def __init__(self, resolver_context, path_spec, encoding='utf-8'):

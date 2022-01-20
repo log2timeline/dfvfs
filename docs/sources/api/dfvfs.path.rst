@@ -44,6 +44,14 @@ dfvfs.path.cpio\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.path.cs\_path\_spec module
+--------------------------------
+
+.. automodule:: dfvfs.path.cs_path_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.path.data\_range\_path\_spec module
 -----------------------------------------
 

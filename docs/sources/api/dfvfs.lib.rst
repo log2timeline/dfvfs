@@ -28,6 +28,14 @@ dfvfs.lib.cpio module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.lib.cs\_helper module
+---------------------------
+
+.. automodule:: dfvfs.lib.cs_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.lib.data\_format module
 -----------------------------
 
@@ -108,10 +116,10 @@ dfvfs.lib.luksde module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.lvm module
---------------------
+dfvfs.lib.lvm\_helper module
+----------------------------
 
-.. automodule:: dfvfs.lib.lvm
+.. automodule:: dfvfs.lib.lvm_helper
    :members:
    :undoc-members:
    :show-inheritance:

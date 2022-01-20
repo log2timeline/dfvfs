@@ -13,7 +13,6 @@ from dfvfs.vfs import file_system
 class CPIOFileSystem(file_system.FileSystem):
   """CPIO archive file system."""
 
-  LOCATION_ROOT = '/'
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_CPIO
 
   def __init__(self, resolver_context, path_spec, encoding='utf-8'):

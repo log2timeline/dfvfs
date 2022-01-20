@@ -7,7 +7,6 @@ import unittest
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
-from dfvfs.resolver import resolver
 from dfvfs.vfs import luksde_file_entry
 from dfvfs.vfs import luksde_file_system
 
@@ -16,8 +15,6 @@ from tests import test_lib as shared_test_lib
 
 class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the LUKSDE file entry."""
-
-  _LUKSDE_PASSWORD = 'luksde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -154,22 +151,6 @@ class LUKSDEFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsLocked())
-
-    resolver.Resolver.key_chain.SetCredential(
-        self._luksde_path_spec, 'password', self._LUKSDE_PASSWORD)
-    unlocked_file_system = luksde_file_system.LUKSDEFileSystem(
-        self._resolver_context, self._luksde_path_spec)
-
-    unlocked_file_system.Open()
-
-    file_entry = unlocked_file_system.GetFileEntryByPathSpec(
-        self._luksde_path_spec)
-
-    self.assertIsNotNone(file_entry)
-    self.assertFalse(file_entry.IsLocked())
-
-    resolver.Resolver.key_chain.SetCredential(
-        self._luksde_path_spec, 'password', None)
 
 
 if __name__ == '__main__':
