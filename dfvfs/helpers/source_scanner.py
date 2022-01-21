@@ -568,29 +568,12 @@ class SourceScanner(object):
       BackEndError: if the scan node cannot be unlocked.
       ValueError: if the scan context or scan node is invalid.
     """
-    if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
-      # TODO: consider changes this when upstream changes have been made.
-      # Currently pyfsapfs does not support reading from a volume as a device.
-      # Also see: https://github.com/log2timeline/dfvfs/issues/332
-      container_file_entry = resolver.Resolver.OpenFileEntry(
-          scan_node.path_spec, resolver_context=self._resolver_context)
-      fsapfs_volume = container_file_entry.GetAPFSVolume()
+    file_entry = resolver.Resolver.OpenFileEntry(
+        scan_node.path_spec, resolver_context=self._resolver_context)
+    if not file_entry:
+      raise errors.BackEndError('Unable resolve file entry of scan node.')
 
-      # TODO: unlocking the volume multiple times is inefficient cache volume
-      # object in scan node and use is_locked = fsapfs_volume.is_locked()
-      try:
-        is_locked = not apfs_helper.APFSUnlockVolume(
-            fsapfs_volume, scan_node.path_spec, resolver.Resolver.key_chain)
-      except IOError as exception:
-        raise errors.BackEndError(
-            'Unable to unlock APFS volume with error: {0!s}'.format(exception))
-
-    else:
-      file_object = resolver.Resolver.OpenFileObject(
-          scan_node.path_spec, resolver_context=self._resolver_context)
-      is_locked = not file_object or file_object.is_locked
-
-    if is_locked:
+    if not file_entry.Unlock():
       scan_context.LockScanNode(scan_node.path_spec)
 
       # For BitLocker To Go add a scan node for the unencrypted part of
@@ -702,7 +685,6 @@ class SourceScanner(object):
     """
     if source_path_spec.type_indicator == (
         definitions.TYPE_INDICATOR_APFS_CONTAINER):
-      # TODO: consider changes this when upstream changes have been made.
       # Currently pyfsapfs does not support reading from a volume as a device.
       # Also see: https://github.com/log2timeline/dfvfs/issues/332
       return path_spec_factory.Factory.NewPathSpec(
@@ -828,7 +810,6 @@ class SourceScanner(object):
 
     if source_path_spec.type_indicator == (
         definitions.TYPE_INDICATOR_APFS_CONTAINER):
-      # TODO: consider changes this when upstream changes have been made.
       # Currently pyfsapfs does not support reading from a volume as a device.
       # Also see: https://github.com/log2timeline/dfvfs/issues/332
       return None
@@ -890,7 +871,6 @@ class SourceScanner(object):
         path_spec, credential_identifier, credential_data)
 
     if path_spec.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
-      # TODO: consider changes this when upstream changes have been made.
       # Currently pyfsapfs does not support reading from a volume as a device.
       # Also see: https://github.com/log2timeline/dfvfs/issues/332
       container_file_entry = resolver.Resolver.OpenFileEntry(

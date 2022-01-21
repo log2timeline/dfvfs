@@ -826,8 +826,8 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       header = 'Found an APFS encrypted volume.\n\n'
     elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
       header = 'Found a BitLocker encrypted volume.\n\n'
-    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_FVDE:
-      header = 'Found a CoreStorage (FVDE) encrypted volume.\n\n'
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_CS:
+      header = 'Found a CoreStorage (FileVault) encrypted volume.\n\n'
     elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_LUKSDE:
       header = 'Found a LUKS encrypted volume.\n\n'
     else:

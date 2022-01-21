@@ -613,7 +613,12 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_FVDE)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_CS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_CS)
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
     self.assertTrue(scan_context.IsLockedScanNode(scan_node.path_spec))
