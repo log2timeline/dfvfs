@@ -17,6 +17,7 @@ class LUKSDEFileWithKeyChainTest(test_lib.Ext2ImageFileTestCase):
 
   The credentials are passed via the key chain.
   """
+
   _LUKSDE_PASSWORD = 'luksde-TEST'
 
   def setUp(self):

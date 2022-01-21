@@ -270,6 +270,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
   _APFS_PASSWORD = 'apfs-TEST'
   _BDE_PASSWORD = 'bde-TEST'
   _FVDE_PASSWORD = 'fvde-TEST'
+  _LUKSDE_PASSWORD = 'luksde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -460,6 +461,39 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     scan_node = scan_node.sub_nodes[0].GetSubNodeByLocation('/')
     self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
+
+  def testScanOnLUKSDE(self):
+    """Test the Scan function on LUKSDE."""
+    test_path = self._GetTestFilePath(['luks1.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_LUKSDE)
+
+    self.assertEqual(len(scan_node.sub_nodes), 0)
+
+    self._source_scanner.Unlock(
+        scan_context, scan_node.path_spec, 'password', self._LUKSDE_PASSWORD)
+
+    self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
+
+    self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(
         scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
 
