@@ -4,7 +4,7 @@
 
 import unittest
 
-from dfvfs.lib import raw
+from dfvfs.lib import raw_helper
 from dfvfs.path import fake_path_spec
 from dfvfs.path import raw_path_spec
 from dfvfs.resolver import context
@@ -51,7 +51,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/ímynd.dd')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -66,7 +66,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.dmg')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -81,7 +81,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.img')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -96,7 +96,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.raw')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -113,7 +113,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.aaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -125,7 +125,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus.aaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -143,7 +143,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.aaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -161,7 +161,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.AAA')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -178,7 +178,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/imageaaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -190,7 +190,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogusaaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -208,7 +208,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/imageaaa')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -226,7 +226,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/imageAAA')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -243,7 +243,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.000')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -255,7 +255,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus.000')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -273,7 +273,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.000')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -290,7 +290,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.001')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -307,7 +307,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -324,7 +324,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -336,7 +336,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -353,7 +353,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image0')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -370,7 +370,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image1')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -387,7 +387,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image001')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -404,7 +404,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image001.asb')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -416,7 +416,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus000.asb')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -434,7 +434,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image001.asb')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -451,7 +451,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image-f001.vmdk')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -463,7 +463,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus-f000.vmdk')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -482,7 +482,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image-f001.vmdk')
     path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
 
-    segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(

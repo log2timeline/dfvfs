@@ -512,3 +512,11 @@ class FileEntry(object):
       bool: True if the file entry is virtual.
     """
     return self._is_virtual
+
+  def Unlock(self):
+    """Unlocks the file entry.
+
+    Returns:
+      bool: True if the file entry was unlocked.
+    """
+    return True

@@ -7,6 +7,7 @@ import unittest
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
+from dfvfs.resolver import resolver
 from dfvfs.vfs import bde_file_entry
 from dfvfs.vfs import bde_file_system
 
@@ -15,6 +16,8 @@ from tests import test_lib as shared_test_lib
 
 class BDEFileEntryTest(shared_test_lib.BaseTestCase):
   """Tests the BDE file entry."""
+
+  _BDE_PASSWORD = 'bde-TEST'
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
@@ -66,10 +69,24 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testSize(self):
     """Test the size property."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+    # Currently the BDE volume needs to be unlocked before its size can
+    # be determined.
+    resolver.Resolver.key_chain.SetCredential(
+        self._bde_path_spec, 'password', self._BDE_PASSWORD)
+
+    unlocked_file_system = bde_file_system.BDEFileSystem(
+        self._resolver_context, self._bde_path_spec)
+
+    unlocked_file_system.Open()
+
+    file_entry = unlocked_file_system.GetFileEntryByPathSpec(
+        self._bde_path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.size, 67108864)
+
+    resolver.Resolver.key_chain.SetCredential(
+        self._bde_path_spec, 'password', None)
 
   def testSubFileEntries(self):
     """Test the sub file entries property."""
@@ -117,7 +134,19 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
 
   def testGetStat(self):
     """Tests the GetStat function."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+    # Currently the BDE volume needs to be unlocked before its size can
+    # be determined.
+    resolver.Resolver.key_chain.SetCredential(
+        self._bde_path_spec, 'password', self._BDE_PASSWORD)
+
+    unlocked_file_system = bde_file_system.BDEFileSystem(
+        self._resolver_context, self._bde_path_spec)
+
+    unlocked_file_system.Open()
+
+    file_entry = unlocked_file_system.GetFileEntryByPathSpec(
+        self._bde_path_spec)
+
     self.assertIsNotNone(file_entry)
 
     stat_object = file_entry.GetStat()
@@ -127,6 +156,9 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(stat_object.crtime, 1401712849)
     self.assertEqual(stat_object.crtime_nano, 7281122)
+
+    resolver.Resolver.key_chain.SetCredential(
+        self._bde_path_spec, 'password', None)
 
   def testIsFunctions(self):
     """Test the Is? functions."""

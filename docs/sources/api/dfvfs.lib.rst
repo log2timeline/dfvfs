@@ -12,10 +12,10 @@ dfvfs.lib.apfs\_helper module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.bde module
---------------------
+dfvfs.lib.bde\_helper module
+----------------------------
 
-.. automodule:: dfvfs.lib.bde
+.. automodule:: dfvfs.lib.bde_helper
    :members:
    :undoc-members:
    :show-inheritance:
@@ -68,18 +68,18 @@ dfvfs.lib.errors module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.ewf module
---------------------
+dfvfs.lib.ewf\_helper module
+----------------------------
 
-.. automodule:: dfvfs.lib.ewf
+.. automodule:: dfvfs.lib.ewf_helper
    :members:
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.fvde module
----------------------
+dfvfs.lib.fvde\_helper module
+-----------------------------
 
-.. automodule:: dfvfs.lib.fvde
+.. automodule:: dfvfs.lib.fvde_helper
    :members:
    :undoc-members:
    :show-inheritance:
@@ -92,10 +92,10 @@ dfvfs.lib.glob2regex module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.gpt module
---------------------
+dfvfs.lib.gpt\_helper module
+----------------------------
 
-.. automodule:: dfvfs.lib.gpt
+.. automodule:: dfvfs.lib.gpt_helper
    :members:
    :undoc-members:
    :show-inheritance:
@@ -108,10 +108,10 @@ dfvfs.lib.gzipfile module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.luksde module
------------------------
+dfvfs.lib.luksde\_helper module
+-------------------------------
 
-.. automodule:: dfvfs.lib.luksde
+.. automodule:: dfvfs.lib.luksde_helper
    :members:
    :undoc-members:
    :show-inheritance:
@@ -124,10 +124,10 @@ dfvfs.lib.lvm\_helper module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.raw module
---------------------
+dfvfs.lib.raw\_helper module
+----------------------------
 
-.. automodule:: dfvfs.lib.raw
+.. automodule:: dfvfs.lib.raw_helper
    :members:
    :undoc-members:
    :show-inheritance:
@@ -156,10 +156,10 @@ dfvfs.lib.tsk\_partition module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.vshadow module
-------------------------
+dfvfs.lib.vshadow\_helper module
+--------------------------------
 
-.. automodule:: dfvfs.lib.vshadow
+.. automodule:: dfvfs.lib.vshadow_helper
    :members:
    :undoc-members:
    :show-inheritance:

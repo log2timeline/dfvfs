@@ -5,7 +5,7 @@ from dfdatetime import filetime as dfdatetime_filetime
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import vshadow
+from dfvfs.lib import vshadow_helper
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import vshadow_directory
 
@@ -113,7 +113,7 @@ class VShadowFileEntry(file_entry.FileEntry):
     Returns:
       FileEntry: parent file entry or None if not available.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(self.path_spec)
+    store_index = vshadow_helper.VShadowPathSpecGetStoreIndex(self.path_spec)
     if store_index is None:
       return None
 

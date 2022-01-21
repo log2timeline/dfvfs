@@ -23,7 +23,7 @@ from dfvfs.analyzer import analyzer
 from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import raw
+from dfvfs.lib import raw_helper
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 
@@ -788,7 +788,7 @@ class SourceScanner(object):
       try:
         # The RAW glob function will raise a PathSpecError if the path
         # specification is unsuitable for globbing.
-        glob_results = raw.RawGlobPathSpec(file_system, raw_path_spec)
+        glob_results = raw_helper.RawGlobPathSpec(file_system, raw_path_spec)
       except errors.PathSpecError:
         glob_results = None
 

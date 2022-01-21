@@ -5,7 +5,7 @@ import pyvshadow
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import vshadow
+from dfvfs.lib import vshadow_helper
 from dfvfs.path import vshadow_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
@@ -73,7 +73,7 @@ class VShadowFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
+    store_index = vshadow_helper.VShadowPathSpecGetStoreIndex(path_spec)
 
     # The virtual root file has no corresponding store index but
     # should have a location.
@@ -92,7 +92,7 @@ class VShadowFileSystem(file_system.FileSystem):
     Returns:
       VShadowFileEntry: file entry or None if not available.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
+    store_index = vshadow_helper.VShadowPathSpecGetStoreIndex(path_spec)
 
     # The virtual root file has no corresponding store index but
     # should have a location.
@@ -130,7 +130,7 @@ class VShadowFileSystem(file_system.FileSystem):
     Returns:
       pyvshadow.store: a VSS store or None if not available.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(path_spec)
+    store_index = vshadow_helper.VShadowPathSpecGetStoreIndex(path_spec)
     if store_index is None:
       return None
 

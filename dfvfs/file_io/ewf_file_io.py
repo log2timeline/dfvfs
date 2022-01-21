@@ -5,7 +5,7 @@ import pyewf
 
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
-from dfvfs.lib import ewf
+from dfvfs.lib import ewf_helper
 from dfvfs.resolver import resolver
 
 
@@ -60,7 +60,8 @@ class EWFFile(file_object_io.FileObjectIO):
       file_system = resolver.Resolver.OpenFileSystem(
           parent_path_spec, resolver_context=self._resolver_context)
 
-      segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+      segment_file_path_specs = ewf_helper.EWFGlobPathSpec(
+          file_system, path_spec)
       if not segment_file_path_specs:
         return None
 
