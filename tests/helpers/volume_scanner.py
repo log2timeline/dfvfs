@@ -105,7 +105,7 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
       password = self._BDE_PASSWORD
 
-    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_FVDE:
+    elif locked_scan_node.type_indicator == definitions.TYPE_INDICATOR_CS:
       password = self._FVDE_PASSWORD
 
     return source_scanner_object.Unlock(

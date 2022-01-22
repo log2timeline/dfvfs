@@ -60,6 +60,14 @@ dfvfs.analyzer.cpio\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.analyzer.cs\_analyzer\_helper module
+------------------------------------------
+
+.. automodule:: dfvfs.analyzer.cs_analyzer_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.analyzer.ewf\_analyzer\_helper module
 -------------------------------------------
 
@@ -72,14 +80,6 @@ dfvfs.analyzer.ext\_analyzer\_helper module
 -------------------------------------------
 
 .. automodule:: dfvfs.analyzer.ext_analyzer_helper
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dfvfs.analyzer.fvde\_analyzer\_helper module
---------------------------------------------
-
-.. automodule:: dfvfs.analyzer.fvde_analyzer_helper
    :members:
    :undoc-members:
    :show-inheritance:

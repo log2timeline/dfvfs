@@ -3,6 +3,7 @@
 
 import pyfvde
 
+from dfvfs.lib import decorators
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import fvde_helper
@@ -67,6 +68,7 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     self._fvde_volume = fvde_volume
     self._file_object = file_object
 
+  @decorators.deprecated
   def GetFVDEVolume(self):
     """Retrieves the FVDE volume.
 
@@ -75,6 +77,7 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     """
     return self._fvde_volume
 
+  @decorators.deprecated
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
 
@@ -87,6 +90,7 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     return fvde_file_entry.FVDEFileEntry(
         self._resolver_context, self, path_spec, is_root=True, is_virtual=True)
 
+  @decorators.deprecated
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
 

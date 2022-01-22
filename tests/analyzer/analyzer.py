@@ -352,8 +352,8 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
-  def testGetVolumeSystemTypeIndicatorsFVDE(self):
-    """Tests the GetVolumeSystemTypeIndicators function on a FVDE volume."""
+  def testGetVolumeSystemTypeIndicatorsCS(self):
+    """Tests the GetVolumeSystemTypeIndicators function on Core Storage."""
     test_file = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_file)
 
@@ -362,7 +362,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
         location='/p1', parent=path_spec)
 
-    expected_type_indicators = [definitions.TYPE_INDICATOR_FVDE]
+    expected_type_indicators = [definitions.TYPE_INDICATOR_CS]
     type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
