@@ -5,7 +5,7 @@ import pysmraw
 
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
-from dfvfs.lib import raw
+from dfvfs.lib import raw_helper
 from dfvfs.resolver import resolver
 
 
@@ -60,7 +60,8 @@ class RawFile(file_object_io.FileObjectIO):
       file_system = resolver.Resolver.OpenFileSystem(
           parent_path_spec, resolver_context=self._resolver_context)
 
-      segment_file_path_specs = raw.RawGlobPathSpec(file_system, path_spec)
+      segment_file_path_specs = raw_helper.RawGlobPathSpec(
+          file_system, path_spec)
       if not segment_file_path_specs:
         return None
 

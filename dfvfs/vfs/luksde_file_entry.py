@@ -3,6 +3,8 @@
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import luksde_helper
+from dfvfs.resolver import resolver
 from dfvfs.vfs import root_only_file_entry
 
 
@@ -49,3 +51,12 @@ class LUKSDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
       bool: True if the file entry is locked.
     """
     return self._luksde_volume.is_locked()
+
+  def Unlock(self):
+    """Unlocks the file entry.
+
+    Returns:
+      bool: True if the file entry was unlocked.
+    """
+    return luksde_helper.LUKSDEUnlockVolume(
+        self._luksde_volume, self.path_spec, resolver.Resolver.key_chain)

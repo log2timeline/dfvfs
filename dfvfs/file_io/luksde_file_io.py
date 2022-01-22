@@ -4,7 +4,7 @@
 import pyluksde
 
 from dfvfs.file_io import file_object_io
-from dfvfs.lib import luksde
+from dfvfs.lib import luksde_helper
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
@@ -34,7 +34,7 @@ class LUKSDEFile(file_object_io.FileObjectIO):
         path_spec.parent, resolver_context=self._resolver_context)
     luksde_volume = pyluksde.volume()
 
-    luksde.LUKSDEVolumeOpen(
+    luksde_helper.LUKSDEOpenVolume(
         luksde_volume, path_spec, file_object, resolver.Resolver.key_chain)
     return luksde_volume
 

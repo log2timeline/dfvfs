@@ -3,7 +3,7 @@
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import gpt
+from dfvfs.lib import gpt_helper
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import gpt_directory
 
@@ -108,7 +108,7 @@ class GPTFileEntry(file_entry.FileEntry):
     Returns:
       GPTFileEntry: parent file entry or None if not available.
     """
-    entry_index = gpt.GPTPathSpecGetEntryIndex(self.path_spec)
+    entry_index = gpt_helper.GPTPathSpecGetEntryIndex(self.path_spec)
     if entry_index is None:
       return None
 

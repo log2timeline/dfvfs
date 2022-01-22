@@ -4,6 +4,7 @@
 from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.resolver import resolver
 from dfvfs.vfs import apfs_container_directory
 from dfvfs.vfs import file_entry
 
@@ -137,3 +138,15 @@ class APFSContainerFileEntry(file_entry.FileEntry):
       return False
 
     return self._fsapfs_volume.is_locked()
+
+  def Unlock(self):
+    """Unlocks the file entry.
+
+    Returns:
+      bool: True if the file entry was unlocked.
+    """
+    if not self._fsapfs_volume or not self._fsapfs_volume.is_locked():
+      return True
+
+    return apfs_helper.APFSUnlockVolume(
+        self._fsapfs_volume, self.path_spec, resolver.Resolver.key_chain)

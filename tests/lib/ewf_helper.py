@@ -4,7 +4,7 @@
 
 import unittest
 
-from dfvfs.lib import ewf
+from dfvfs.lib import ewf_helper
 from dfvfs.path import fake_path_spec
 from dfvfs.path import ewf_path_spec
 from dfvfs.resolver import context
@@ -84,7 +84,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -96,7 +96,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -110,7 +110,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -124,7 +124,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -138,7 +138,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -152,7 +152,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -166,7 +166,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/ext2.E01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -181,7 +181,8 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     with self.assertRaises(RuntimeError):
-      segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+      segment_file_path_specs = ewf_helper.EWFGlobPathSpec(
+          file_system, path_spec)
 
   def testGlobEx01(self):
     """Test the glob function."""
@@ -193,7 +194,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.Ex01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -205,7 +206,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus.Ex01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -219,7 +220,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.Ex01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -233,7 +234,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.Ex01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -247,7 +248,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.Ex01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -261,7 +262,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.Ex01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -275,7 +276,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.Ex01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -290,7 +291,8 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     with self.assertRaises(RuntimeError):
-      segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+      segment_file_path_specs = ewf_helper.EWFGlobPathSpec(
+          file_system, path_spec)
 
   def testGlobs01(self):
     """Test the glob function."""
@@ -302,7 +304,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.s01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -314,7 +316,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/bogus.s01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -328,7 +330,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.s01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -342,7 +344,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.s01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -356,7 +358,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.s01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -370,7 +372,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.s01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -384,7 +386,7 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = fake_path_spec.FakePathSpec(location='/image.s01')
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
-    segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+    segment_file_path_specs = ewf_helper.EWFGlobPathSpec(file_system, path_spec)
     self.assertEqual(
         len(segment_file_path_specs), len(expected_segment_file_path_specs))
     self.assertEqual(
@@ -399,7 +401,8 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
     path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
     with self.assertRaises(RuntimeError):
-      segment_file_path_specs = ewf.EWFGlobPathSpec(file_system, path_spec)
+      segment_file_path_specs = ewf_helper.EWFGlobPathSpec(
+          file_system, path_spec)
 
 
 if __name__ == '__main__':

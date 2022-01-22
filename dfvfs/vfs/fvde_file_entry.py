@@ -3,6 +3,8 @@
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import fvde_helper
+from dfvfs.resolver import resolver
 from dfvfs.vfs import root_only_file_entry
 
 
@@ -50,3 +52,12 @@ class FVDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
       bool: True if the file entry is locked.
     """
     return self._fvde_volume.is_locked()
+
+  def Unlock(self):
+    """Unlocks the file entry.
+
+    Returns:
+      bool: True if the file entry was unlocked.
+    """
+    return fvde_helper.FVDEUnlockVolume(
+        self._fvde_volume, self.path_spec, resolver.Resolver.key_chain)

@@ -3,9 +3,9 @@
 
 import pyluksde
 
-from dfvfs.lib import luksde
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import luksde_helper
 from dfvfs.path import luksde_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import luksde_file_entry
@@ -61,7 +61,7 @@ class LUKSDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         self._path_spec.parent, resolver_context=self._resolver_context)
 
-    luksde.LUKSDEVolumeOpen(
+    luksde_helper.LUKSDEOpenVolume(
         luksde_volume, self._path_spec, file_object,
         resolver.Resolver.key_chain)
 

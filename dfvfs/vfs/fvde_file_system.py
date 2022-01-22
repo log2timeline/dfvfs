@@ -3,9 +3,9 @@
 
 import pyfvde
 
-from dfvfs.lib import fvde
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.lib import fvde_helper
 from dfvfs.path import fvde_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import fvde_file_entry
@@ -61,7 +61,7 @@ class FVDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         self._path_spec.parent, resolver_context=self._resolver_context)
 
-    fvde.FVDEVolumeOpen(
+    fvde_helper.FVDEOpenVolume(
         fvde_volume, self._path_spec, file_object, resolver.Resolver.key_chain)
 
     self._fvde_volume = fvde_volume

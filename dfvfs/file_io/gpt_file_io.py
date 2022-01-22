@@ -5,7 +5,7 @@ import os
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
-from dfvfs.lib import gpt
+from dfvfs.lib import gpt_helper
 from dfvfs.resolver import resolver
 
 
@@ -41,7 +41,7 @@ class GPTFile(file_io.FileIO):
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    entry_index = gpt.GPTPathSpecGetEntryIndex(self._path_spec)
+    entry_index = gpt_helper.GPTPathSpecGetEntryIndex(self._path_spec)
     if entry_index is None:
       raise errors.PathSpecError(
           'Unable to retrieve entry index from path specification.')

@@ -4,6 +4,7 @@
 from dfvfs.lib import cs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
+from dfvfs.resolver import resolver
 from dfvfs.vfs import cs_directory
 from dfvfs.vfs import file_entry
 
@@ -128,3 +129,16 @@ class CSFileEntry(file_entry.FileEntry):
       return False
 
     return self._fvde_logical_volume.is_locked()
+
+  def Unlock(self):
+    """Unlocks the file entry.
+
+    Returns:
+      bool: True if the file entry was unlocked.
+    """
+    if (not self._fvde_logical_volume or
+        not self._fvde_logical_volume.is_locked()):
+      return True
+
+    return cs_helper.CSUnlockLogicalVolume(
+        self._fvde_logical_volume, self.path_spec, resolver.Resolver.key_chain)

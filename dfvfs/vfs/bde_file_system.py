@@ -3,7 +3,7 @@
 
 import pybde
 
-from dfvfs.lib import bde
+from dfvfs.lib import bde_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import bde_path_spec
@@ -61,7 +61,7 @@ class BDEFileSystem(root_only_file_system.RootOnlyFileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         self._path_spec.parent, resolver_context=self._resolver_context)
 
-    bde.BDEVolumeOpen(
+    bde_helper.BDEOpenVolume(
         bde_volume, self._path_spec, file_object, resolver.Resolver.key_chain)
 
     self._bde_volume = bde_volume

@@ -5,7 +5,7 @@ import os
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
-from dfvfs.lib import vshadow
+from dfvfs.lib import vshadow_helper
 from dfvfs.resolver import resolver
 
 
@@ -41,7 +41,7 @@ class VShadowFile(file_io.FileIO):
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    store_index = vshadow.VShadowPathSpecGetStoreIndex(self._path_spec)
+    store_index = vshadow_helper.VShadowPathSpecGetStoreIndex(self._path_spec)
     if store_index is None:
       raise errors.PathSpecError(
           'Unable to retrieve store index from path specification.')
