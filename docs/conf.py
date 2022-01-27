@@ -58,7 +58,7 @@ napoleon_include_special_with_doc = True
 # General information about the project.
 # pylint: disable=redefined-builtin
 project = 'dfVFS'
-copyright = 'The dfVFS Project Authors'
+copyright = 'The dfVFS authors'
 version = dfvfs.__version__
 release = dfvfs.__version__
 

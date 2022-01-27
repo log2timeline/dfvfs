@@ -1,5 +1,5 @@
 environment:
-  pypi_token:
+  PYPI_TOKEN:
     secure: /FwQrmudDyj+Mu3DaxLEowyvwBaY7x1GRt6gYJrVerEAo4PujrTDfMs9/K6PJSN7KkCL/6LQK2VfTD91bbnUwGMiTjfeItu2+aernJtwLLtoDJ22sHgMiajGMqficrHlOc7uNhFMjQsGa7WiiGGo12c/b7z55dNmU2N0EIc086/Z2G6O+n2+oBeT5SbFu5j5XXkwrd98vnW8hryuZPjLauV1mxc6MMNiv3dOgVL8gtWDjW5xZVJvfOTcYA+7MMLPUbMbqMcXkTSRshqUrX/6mw==
   matrix:
   - DESCRIPTION: "Windows with 32-bit Python 3.10"
