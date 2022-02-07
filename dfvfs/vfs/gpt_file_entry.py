@@ -95,10 +95,10 @@ class GPTFileEntry(file_entry.FileEntry):
     return self._vsgpt_partition.size
 
   def GetGPTPartition(self):
-    """Retrieves the GPT parition.
+    """Retrieves the GPT partition.
 
     Returns:
-      pyvsgpt.parition: a GPT parition.
+      pyvsgpt.partition: a GPT partition.
     """
     return self._vsgpt_partition
 
