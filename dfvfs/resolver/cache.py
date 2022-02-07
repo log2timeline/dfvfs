@@ -26,7 +26,7 @@ class ObjectsCache(object):
     self._maximum_number_of_cached_values = maximum_number_of_cached_values
     # The WeakValueDictionary will maintain a (weak) reference to a VFS object
     # as long as the object is (strong) referrened by other objects. If an
-    # object has no remaining (strong) referrences it is removed from the
+    # object has no remaining (strong) references it is removed from the
     # WeakValueDictionary.
     self._values = weakref.WeakValueDictionary()
 

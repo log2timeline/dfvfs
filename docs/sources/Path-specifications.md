@@ -4,7 +4,7 @@
 
 In dfVFS a path specification is defines the location of a file system entry
 or data stream. It is comparable with the path on an operating system with the
-diffence that the dfVFS path specification includes information about its
+difference that the dfVFS path specification includes information about its
 parents, such a the volume system of the file system.
 
 ### System-level path specification

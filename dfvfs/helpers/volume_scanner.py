@@ -745,7 +745,7 @@ class WindowsVolumeScanner(VolumeScanner):
     return result
 
   def OpenFile(self, windows_path):
-    """Opens the file specificed by the Windows path.
+    """Opens the file specified by the Windows path.
 
     Args:
       windows_path (str): Windows path to the file.
