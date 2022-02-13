@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """The ZIP extracted file-like object implementation."""
 
-# Note: that zipfile.ZipExtFile is not seekable, hence it is wrapped in
-# an instance of file_io.FileIO.
-
+import io
 import os
 import zipfile
 
@@ -15,7 +13,7 @@ class ZipFile(file_io.FileIO):
   """File input/output (IO) object using zipfile."""
 
   # The size of the uncompressed data buffer.
-  _UNCOMPRESSED_DATA_BUFFER_SIZE = 16 * 1024 * 1024
+  _UNCOMPRESSED_DATA_BUFFER_SIZE = 64 * 1024
 
   def __init__(self, resolver_context, path_spec):
     """Initializes a file input/output (IO) object.
@@ -28,6 +26,7 @@ class ZipFile(file_io.FileIO):
     self._compressed_data = b''
     self._current_offset = 0
     self._file_system = None
+    self._is_seekable = False
     self._realign_offset = True
     self._uncompressed_data = b''
     self._uncompressed_data_offset = 0
@@ -36,6 +35,44 @@ class ZipFile(file_io.FileIO):
     self._zip_ext_file = None
     self._zip_file = None
     self._zip_info = None
+
+  def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
+    """Aligns the compressed file with the uncompressed data offset.
+
+    Args:
+      uncompressed_data_offset (int): uncompressed data offset.
+
+    Raises:
+      IOError: if the ZIP file could not be opened.
+      OSError: if the ZIP file could not be opened.
+    """
+    if self._zip_ext_file:
+      self._zip_ext_file.close()
+      self._zip_ext_file = None
+
+    try:
+      # The open can fail if the file path in the local file header
+      # does not use the same path segment separator as the corresponding
+      # entry in the central directory.
+      self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
+    except zipfile.BadZipfile as exception:
+      raise IOError('Unable to open ZIP file with error: {0!s}'.format(
+          exception))
+
+    self._uncompressed_data = b''
+    self._uncompressed_data_size = 0
+    self._uncompressed_data_offset = 0
+
+    while uncompressed_data_offset > 0:
+      self._uncompressed_data = self._zip_ext_file.read(
+          self._UNCOMPRESSED_DATA_BUFFER_SIZE)
+      self._uncompressed_data_size = len(self._uncompressed_data)
+
+      if uncompressed_data_offset < self._uncompressed_data_size:
+        self._uncompressed_data_offset = uncompressed_data_offset
+        break
+
+      uncompressed_data_offset -= self._uncompressed_data_size
 
   def _Close(self):
     """Closes the file-like object."""
@@ -70,70 +107,40 @@ class ZipFile(file_io.FileIO):
     if not file_entry.IsFile():
       raise IOError('Not a regular file.')
 
-    self._file_system = file_system
-    self._zip_file = self._file_system.GetZipFile()
-    self._zip_info = file_entry.GetZipInfo()
-
-    self._current_offset = 0
-    self._uncompressed_stream_size = self._zip_info.file_size
-
-  def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
-    """Aligns the compressed file with the uncompressed data offset.
-
-    Args:
-      uncompressed_data_offset (int): uncompressed data offset.
-
-    Raises:
-      IOError: if the ZIP file could not be opened.
-      OSError: if the ZIP file could not be opened.
-    """
-    if self._zip_ext_file:
-      self._zip_ext_file.close()
-      self._zip_ext_file = None
+    zip_file = file_system.GetZipFile()
+    zip_info = file_entry.GetZipInfo()
 
     try:
       # The open can fail if the file path in the local file header
       # does not use the same path segment separator as the corresponding
       # entry in the central directory.
-      self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
+      zip_ext_file = zip_file.open(zip_info, 'r')
     except zipfile.BadZipfile as exception:
-      raise IOError(
-          'Unable to open ZIP file with error: {0!s}'.format(exception))
+      raise IOError('Unable to open ZIP file with error: {0!s}'.format(
+          exception))
 
-    self._uncompressed_data = b''
-    self._uncompressed_data_size = 0
-    self._uncompressed_data_offset = 0
+    self._file_system = file_system
+    self._zip_file = zip_file
+    self._zip_info = zip_info
+    self._zip_ext_file = zip_ext_file
 
-    while uncompressed_data_offset > 0:
-      self._ReadCompressedData(self._UNCOMPRESSED_DATA_BUFFER_SIZE)
+    self._uncompressed_stream_size = self._zip_info.file_size
 
-      if uncompressed_data_offset < self._uncompressed_data_size:
-        self._uncompressed_data_offset = uncompressed_data_offset
-        break
+    try:
+      # ZipExtFile in Python 3.6 does not support seek().
+      self._zip_ext_file.seek(0, os.SEEK_SET)
+      self._is_seekable = True
+    except io.UnsupportedOperation:
+      self._is_seekable = False
 
-      uncompressed_data_offset -= self._uncompressed_data_size
-
-  def _ReadCompressedData(self, read_size):
-    """Reads compressed data from the file-like object.
-
-    Args:
-      read_size (int): number of bytes of compressed data to read.
-    """
-    self._uncompressed_data = self._zip_ext_file.read(read_size)
-    self._uncompressed_data_size = len(self._uncompressed_data)
-
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-  # pylint: disable=invalid-name
-
-  def read(self, size=None):
-    """Reads a byte string from the file-like object at the current offset.
+  def _ReadNonSeekableZipExtFile(self, size):
+    """Reads a byte string from a non-seekable file-like object.
 
     The function will read a byte string of the specified size or
     all of the remaining data if no size was specified.
 
     Args:
-      size (Optional[int]): number of bytes to read, where None is all
+      size (int): number of bytes to read, where None is all
           remaining data.
 
     Returns:
@@ -143,12 +150,6 @@ class ZipFile(file_io.FileIO):
       IOError: if the read failed.
       OSError: if the read failed.
     """
-    if not self._is_open:
-      raise IOError('Not opened.')
-
-    if self._current_offset < 0:
-      raise IOError('Invalid current offset value less than zero.')
-
     if self._current_offset > self._uncompressed_stream_size:
       return b''
 
@@ -174,8 +175,9 @@ class ZipFile(file_io.FileIO):
       self._current_offset += remaining_uncompressed_data_size
       size -= remaining_uncompressed_data_size
 
-      self._ReadCompressedData(self._UNCOMPRESSED_DATA_BUFFER_SIZE)
-
+      self._uncompressed_data = self._zip_ext_file.read(
+          self._UNCOMPRESSED_DATA_BUFFER_SIZE)
+      self._uncompressed_data_size = len(self._uncompressed_data)
       self._uncompressed_data_offset = 0
 
     # Read in partial block of uncompressed data.
@@ -190,6 +192,39 @@ class ZipFile(file_io.FileIO):
 
       self._uncompressed_data_offset += size
       self._current_offset += size
+
+    return uncompressed_data
+
+  # Note: that the following functions do not follow the style guide
+  # because they are part of the file-like object interface.
+  # pylint: disable=invalid-name
+
+  def read(self, size=None):
+    """Reads a byte string from the file-like object at the current offset.
+
+    The function will read a byte string of the specified size or
+    all of the remaining data if no size was specified.
+
+    Args:
+      size (Optional[int]): number of bytes to read, where None is all
+          remaining data.
+
+    Returns:
+      bytes: data read.
+
+    Raises:
+      IOError: if the read failed.
+      OSError: if the read failed.
+    """
+    if not self._is_open:
+      raise IOError('Not opened.')
+
+    if self._is_seekable:
+      uncompressed_data = self._zip_ext_file.read(size)
+
+      self._current_offset += len(uncompressed_data)
+    else:
+      uncompressed_data = self._ReadNonSeekableZipExtFile(size)
 
     return uncompressed_data
 
@@ -218,9 +253,14 @@ class ZipFile(file_io.FileIO):
     if offset < 0:
       raise IOError('Invalid offset value less than zero.')
 
-    if offset != self._current_offset:
-      self._current_offset = offset
+    if self._is_seekable:
+      self._zip_ext_file.seek(offset, os.SEEK_SET)
+    elif offset != self._current_offset:
       self._realign_offset = True
+
+    # ZipExtFile tell() is not POSIX compliant hence the current offset
+    # is tracked seperately.
+    self._current_offset = offset
 
   def get_offset(self):
     """Retrieves the current offset into the file-like object.
