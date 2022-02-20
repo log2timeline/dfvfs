@@ -57,19 +57,15 @@ class CPIOArchiveFile(data_format.DataFormat):
 
   _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_binary_big_endian_file_entry')
-  _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_SIZE = 26
 
   _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_binary_little_endian_file_entry')
-  _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_SIZE = 26
 
   _CPIO_PORTABLE_ASCII_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_portable_ascii_file_entry')
-  _CPIO_PORTABLE_ASCII_FILE_ENTRY_SIZE = 76
 
   _CPIO_NEW_ASCII_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_new_ascii_file_entry')
-  _CPIO_NEW_ASCII_FILE_ENTRY_SIZE = 110
 
   _CPIO_SIGNATURE_BINARY_BIG_ENDIAN = b'\x71\xc7'
   _CPIO_SIGNATURE_BINARY_LITTLE_ENDIAN = b'\xc7\x71'
