@@ -109,16 +109,10 @@ class GzipMember(data_format.DataFormat):
   _MEMBER_HEADER = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'gzip_member_header')
 
-  _MEMBER_HEADER_SIZE = _MEMBER_HEADER.GetByteSize()
-
   _MEMBER_FOOTER = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'gzip_member_footer')
 
-  _MEMBER_FOOTER_SIZE = _MEMBER_FOOTER.GetByteSize()
-
   _UINT16LE = _DATA_TYPE_FABRIC.CreateDataTypeMap('uint16le')
-
-  _UINT16LE_SIZE = _UINT16LE.GetByteSize()
 
   _CSTRING = _DATA_TYPE_FABRIC.CreateDataTypeMap('cstring')
 
@@ -191,9 +185,8 @@ class GzipMember(data_format.DataFormat):
     # Do not read the the last member footer if it is missing, which is
     # a common corruption scenario.
     if file_offset < file_size:
-      self._ReadStructure(
-          file_object, file_offset, self._MEMBER_FOOTER_SIZE,
-          self._MEMBER_FOOTER, 'member footer')
+      self._ReadStructureFromFileObject(
+          file_object, file_offset, self._MEMBER_FOOTER)
 
     member_end_offset = file_object.get_offset()
 
@@ -317,9 +310,8 @@ class GzipMember(data_format.DataFormat):
       FileFormatError: if the member header cannot be read.
     """
     file_offset = file_object.get_offset()
-    member_header = self._ReadStructure(
-        file_object, file_offset, self._MEMBER_HEADER_SIZE,
-        self._MEMBER_HEADER, 'member header')
+    member_header, _ = self._ReadStructureFromFileObject(
+        file_object, file_offset, self._MEMBER_HEADER)
 
     if member_header.signature != self._GZIP_SIGNATURE:
       raise errors.FileFormatError(
@@ -335,25 +327,20 @@ class GzipMember(data_format.DataFormat):
 
     if member_header.flags & self._FLAG_FEXTRA:
       file_offset = file_object.get_offset()
-      extra_field_data_size = self._ReadStructure(
-          file_object, file_offset, self._UINT16LE_SIZE,
-          self._UINT16LE, 'extra field data size')
+      extra_field_data_size, _ = self._ReadStructureFromFileObject(
+          file_object, file_offset, self._UINT16LE)
 
       file_object.seek(extra_field_data_size, os.SEEK_CUR)
 
     if member_header.flags & self._FLAG_FNAME:
       file_offset = file_object.get_offset()
-      string_value = self._ReadString(
-          file_object, file_offset, self._CSTRING, 'original filename')
-
-      self.original_filename = string_value.rstrip('\x00')
+      self.original_filename, _ = self._ReadStructureFromFileObject(
+          file_object, file_offset, self._CSTRING)
 
     if member_header.flags & self._FLAG_FCOMMENT:
       file_offset = file_object.get_offset()
-      string_value = self._ReadString(
-          file_object, file_offset, self._CSTRING, 'comment')
-
-      self.comment = string_value.rstrip('\x00')
+      self.comment, _ = self._ReadStructureFromFileObject(
+          file_object, file_offset, self._CSTRING)
 
     if member_header.flags & self._FLAG_FHCRC:
       file_object.read(2)

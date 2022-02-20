@@ -4,6 +4,7 @@
 import os
 
 from dtfabric import errors as dtfabric_errors
+from dtfabric.runtime import data_maps as dtfabric_data_maps
 
 from dfvfs.lib import errors
 
@@ -11,25 +12,26 @@ from dfvfs.lib import errors
 class DataFormat(object):
   """Data format."""
 
-  def _ReadData(self, file_object, file_offset, data_size, description):
+  def _ReadData(self, file_object, file_offset, data_size):
     """Reads data.
 
     Args:
-      file_object (FileIO): file-like object.
-      file_offset (int): offset of the data relative from the start of
+      file_object (dfvfs.FileIO): a file-like object to read.
+      file_offset (int): offset of the data relative to the start of
           the file-like object.
-      data_size (int): size of the data.
-      description (str): description of the data.
+      data_size (int): size of the data. The resulting data size much match
+          the requested data size so that dtFabric can map the data type
+          definitions onto the byte stream.
 
     Returns:
       bytes: byte stream containing the data.
 
     Raises:
-      FileFormatError: if the structure cannot be read.
-      ValueError: if file-like object or date type map are invalid.
+      FileFormatError: if the data cannot be read.
+      ValueError: if the file-like object is missing.
     """
     if not file_object:
-      raise ValueError('Invalid file-like object.')
+      raise ValueError('Missing file-like object.')
 
     file_object.seek(file_offset, os.SEEK_SET)
 
@@ -45,101 +47,65 @@ class DataFormat(object):
       read_error = '{0!s}'.format(exception)
 
     if read_error:
-      raise errors.FileFormatError((
-          'Unable to read {0:s} data at offset: 0x{1:08x} with error: '
-          '{2:s}').format(description, file_offset, read_error))
+      raise errors.FileFormatError(
+          'Unable to read data at offset: 0x{0:08x} with error: {1:s}'.format(
+              file_offset, read_error))
 
     return data
 
-  def _ReadString(
-      self, file_object, file_offset, data_type_map, description):
-    """Reads a string.
+  def _ReadStructureFromFileObject(
+      self, file_object, file_offset, data_type_map):
+    """Reads a structure from a file-like object.
+
+    If the data type map has a fixed size this method will read the predefined
+    number of bytes from the file-like object. If the data type map has a
+    variable size, depending on values in the byte stream, this method will
+    continue to read from the file-like object until the data type map can be
+    successfully mapped onto the byte stream or until an error occurs.
 
     Args:
-      file_object (FileIO): file-like object.
-      file_offset (int): offset of the data relative from the start of
-          the file-like object.
-      data_type_map (dtfabric.DataTypeMap): data type map of the string.
-      description (str): description of the string.
-
-    Returns:
-      object: structure values object.
-
-    Raises:
-      FileFormatError: if the string cannot be read.
-      ValueError: if file-like object or date type map are invalid.
-    """
-    # pylint: disable=protected-access
-    element_data_size = (
-        data_type_map._element_data_type_definition.GetByteSize())
-    elements_terminator = (
-        data_type_map._data_type_definition.elements_terminator)
-
-    byte_stream = []
-
-    element_data = file_object.read(element_data_size)
-    byte_stream.append(element_data)
-    while element_data and element_data != elements_terminator:
-      element_data = file_object.read(element_data_size)
-      byte_stream.append(element_data)
-
-    byte_stream = b''.join(byte_stream)
-
-    return self._ReadStructureFromByteStream(
-        byte_stream, file_offset, data_type_map, description)
-
-  def _ReadStructure(
-      self, file_object, file_offset, data_size, data_type_map, description):
-    """Reads a structure.
-
-    Args:
-      file_object (FileIO): file-like object.
-      file_offset (int): offset of the data relative from the start of
-          the file-like object.
-      data_size (int): data size of the structure.
+      file_object (dfvfs.FileIO): a file-like object to parse.
+      file_offset (int): offset of the structure data relative to the start
+          of the file-like object.
       data_type_map (dtfabric.DataTypeMap): data type map of the structure.
-      description (str): description of the structure.
 
     Returns:
-      object: structure values object.
+      tuple[object, int]: structure values object and data size of
+          the structure.
 
     Raises:
       FileFormatError: if the structure cannot be read.
-      ValueError: if file-like object or date type map are invalid.
+      ValueError: if file-like object or data type map is missing.
     """
-    data = self._ReadData(file_object, file_offset, data_size, description)
+    context = None
+    data = b''
+    last_data_size = 0
 
-    return self._ReadStructureFromByteStream(
-        data, file_offset, data_type_map, description)
+    data_size = data_type_map.GetSizeHint()
+    while data_size != last_data_size:
+      read_offset = file_offset + last_data_size
+      read_size = data_size - last_data_size
+      data_segment = self._ReadData(file_object, read_offset, read_size)
 
-  def _ReadStructureFromByteStream(
-      self, byte_stream, file_offset, data_type_map, description, context=None):
-    """Reads a structure from a byte stream.
+      data = b''.join([data, data_segment])
 
-    Args:
-      byte_stream (bytes): byte stream.
-      file_offset (int): offset of the data relative from the start of
-          the file-like object.
-      data_type_map (dtfabric.DataTypeMap): data type map of the structure.
-      description (str): description of the structure.
-      context (Optional[dtfabric.DataTypeMapContext]): data type map context.
+      try:
+        context = dtfabric_data_maps.DataTypeMapContext()
+        structure_values_object = data_type_map.MapByteStream(
+            data, context=context)
+        return structure_values_object, data_size
 
-    Returns:
-      object: structure values object.
+      except dtfabric_errors.ByteStreamTooSmallError:
+        pass
 
-    Raises:
-      FileFormatError: if the structure cannot be read.
-      ValueError: if file-like object or date type map are invalid.
-    """
-    if not byte_stream:
-      raise ValueError('Invalid byte stream.')
+      except dtfabric_errors.MappingError as exception:
+        raise errors.FileFormatError((
+            'Unable to map {0:s} data at offset: 0x{1:08x} with error: '
+            '{2!s}').format(data_type_map.name, file_offset, exception))
 
-    if not data_type_map:
-      raise ValueError('Invalid data type map.')
+      last_data_size = data_size
+      data_size = data_type_map.GetSizeHint(context=context)
 
-    try:
-      return data_type_map.MapByteStream(byte_stream, context=context)
-    except dtfabric_errors.MappingError as exception:
-      raise errors.FileFormatError((
-          'Unable to map {0:s} data at offset: 0x{1:08x} with error: '
-          '{2!s}').format(description, file_offset, exception))
+    raise errors.FileFormatError(
+        'Unable to read {0:s} at offset: 0x{1:08x}'.format(
+            data_type_map.name, file_offset))
