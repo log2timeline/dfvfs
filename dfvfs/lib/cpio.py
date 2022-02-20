@@ -57,26 +57,19 @@ class CPIOArchiveFile(data_format.DataFormat):
 
   _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_binary_big_endian_file_entry')
-
-  _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_SIZE = (
-      _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY.GetByteSize())
+  _CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_SIZE = 26
 
   _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_binary_little_endian_file_entry')
-
-  _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_SIZE = (
-      _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY.GetByteSize())
+  _CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_SIZE = 26
 
   _CPIO_PORTABLE_ASCII_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_portable_ascii_file_entry')
-
-  _CPIO_PORTABLE_ASCII_FILE_ENTRY_SIZE = (
-      _CPIO_PORTABLE_ASCII_FILE_ENTRY.GetByteSize())
+  _CPIO_PORTABLE_ASCII_FILE_ENTRY_SIZE = 76
 
   _CPIO_NEW_ASCII_FILE_ENTRY = _DATA_TYPE_FABRIC.CreateDataTypeMap(
       'cpio_new_ascii_file_entry')
-
-  _CPIO_NEW_ASCII_FILE_ENTRY_SIZE = _CPIO_NEW_ASCII_FILE_ENTRY.GetByteSize()
+  _CPIO_NEW_ASCII_FILE_ENTRY_SIZE = 110
 
   _CPIO_SIGNATURE_BINARY_BIG_ENDIAN = b'\x71\xc7'
   _CPIO_SIGNATURE_BINARY_LITTLE_ENDIAN = b'\xc7\x71'
@@ -131,20 +124,15 @@ class CPIOArchiveFile(data_format.DataFormat):
     """
     if self.file_format == 'bin-big-endian':
       data_type_map = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY
-      file_entry_data_size = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY_SIZE
     elif self.file_format == 'bin-little-endian':
       data_type_map = self._CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY
-      file_entry_data_size = self._CPIO_BINARY_LITTLE_ENDIAN_FILE_ENTRY_SIZE
     elif self.file_format == 'odc':
       data_type_map = self._CPIO_PORTABLE_ASCII_FILE_ENTRY
-      file_entry_data_size = self._CPIO_PORTABLE_ASCII_FILE_ENTRY_SIZE
     elif self.file_format in ('crc', 'newc'):
       data_type_map = self._CPIO_NEW_ASCII_FILE_ENTRY
-      file_entry_data_size = self._CPIO_NEW_ASCII_FILE_ENTRY_SIZE
 
-    file_entry = self._ReadStructure(
-        file_object, file_offset, file_entry_data_size, data_type_map,
-        'file entry')
+    file_entry, file_entry_data_size = self._ReadStructureFromFileObject(
+        file_object, file_offset, data_type_map)
 
     file_offset += file_entry_data_size
 
