@@ -1,7 +1,9 @@
+# dtFabric format specification.
+---
 name: cpio
 type: format
 description: Copy in and out (CPIO) archive format
-urls: ["https://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt"]
+urls: ["https://github.com/libyal/dtformats/blob/main/documentation/Copy%20in%20and%20out%20(CPIO)%20archive%20format.asciidoc"]
 ---
 name: byte
 type: integer
