@@ -1,7 +1,9 @@
+# dtFabric format specification.
+---
 name: gzip
 type: format
 description: GZIP compressed stream format
-urls: ["http://www.gzip.org/format.txt"]
+urls: ["https://github.com/libyal/dtformats/blob/main/documentation/GZIP%20compressed%20stream%20format.asciidoc"]
 ---
 name: int8
 type: integer
