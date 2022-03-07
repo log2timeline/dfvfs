@@ -52,45 +52,50 @@ class PHDIFile(file_object_io.FileObjectIO):
 
     parent_location_path_segments = file_system.SplitPath(parent_location)
 
+    number_of_image_descriptors = 0
     extent_data_files = []
     for extent_descriptor in iter(phdi_handle.extent_descriptors):
-      extent_data_filename = extent_descriptor.filename
+      for image_descriptor in iter(extent_descriptor.image_descriptors):
+        number_of_image_descriptors += 1
 
-      _, path_separator, filename = extent_data_filename.rpartition('/')
-      if not path_separator:
-        _, path_separator, filename = extent_data_filename.rpartition('\\')
+        extent_data_filename = image_descriptor.filename
 
-      if not path_separator:
-        filename = extent_data_filename
+        _, path_separator, filename = extent_data_filename.rpartition('/')
+        if not path_separator:
+          _, path_separator, filename = extent_data_filename.rpartition('\\')
 
-      # The last parent location path segment contains the extent data filename.
-      # Since we want to check if the next extent data file exists we remove
-      # the previous one form the path segments list and add the new filename.
-      # After that the path segments list can be used to create the location
-      # string.
-      parent_location_path_segments.pop()
-      parent_location_path_segments.append(filename)
-      extent_data_file_location = file_system.JoinPath(
-          parent_location_path_segments)
+        if not path_separator:
+          filename = extent_data_filename
 
-      # Note that we don't want to set the keyword arguments when not used
-      # because the path specification base class will check for unused
-      # keyword arguments and raise.
-      kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
+        # The last parent location path segment contains the extent data
+        # filename. Since we want to check if the next extent data file exists
+        # we remove the previous one form the path segments list and add the new
+        # filename. After that the path segments list can be used to create
+        # the location string.
+        parent_location_path_segments.pop()
+        parent_location_path_segments.append(filename)
+        extent_data_file_location = file_system.JoinPath(
+            parent_location_path_segments)
 
-      kwargs['location'] = extent_data_file_location
-      if parent_path_spec.parent is not None:
-        kwargs['parent'] = parent_path_spec.parent
+        # Note that we don't want to set the keyword arguments when not used
+        # because the path specification base class will check for unused
+        # keyword arguments and raise.
+        kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-      extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
-          parent_path_spec.type_indicator, **kwargs)
+        kwargs['location'] = extent_data_file_location
+        if parent_path_spec.parent is not None:
+          kwargs['parent'] = parent_path_spec.parent
 
-      if not file_system.FileEntryExistsByPathSpec(extent_data_file_path_spec):
-        break
+        extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
+            parent_path_spec.type_indicator, **kwargs)
 
-      extent_data_files.append(extent_data_file_path_spec)
+        if not file_system.FileEntryExistsByPathSpec(
+            extent_data_file_path_spec):
+          break
 
-    if len(extent_data_files) != phdi_handle.number_of_extents:
+        extent_data_files.append(extent_data_file_path_spec)
+
+    if len(extent_data_files) != number_of_image_descriptors:
       raise IOError('Unable to locate all extent data files.')
 
     file_objects = []
