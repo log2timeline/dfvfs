@@ -1,30 +1,23 @@
 # -*- coding: utf-8 -*-
 """The resolver context object."""
 
-from dfvfs.lib import decorators
+import weakref
+
 from dfvfs.mount import manager as mount_manager
-from dfvfs.resolver import cache
 
 
 class Context(object):
   """Resolver context."""
 
-  def __init__(
-      self, maximum_number_of_file_objects=256,
-      maximum_number_of_file_systems=32):
-    """Initializes the resolver context object.
-
-    Args:
-      maximum_number_of_file_objects (Optional[int]): maximum number
-          of file-like objects cached in the context.
-      maximum_number_of_file_systems (Optional[int]): maximum number
-          of file system objects cached in the context.
-    """
+  def __init__(self):
+    """Initializes the resolver context."""
     super(Context, self).__init__()
-    self._file_object_cache = cache.ObjectsCache(
-        maximum_number_of_file_objects)
-    self._file_system_cache = cache.ObjectsCache(
-        maximum_number_of_file_systems)
+    # The WeakValueDictionary will maintain a (weak) reference to a VFS object
+    # as long as the object is (strong) referrened by other objects. If an
+    # object has no remaining (strong) references it is removed from the
+    # WeakValueDictionary.
+    self._file_object_cache = weakref.WeakValueDictionary()
+    self._file_system_cache = weakref.WeakValueDictionary()
     self._mount_points = {}
 
   def _GetFileSystemCacheIdentifier(self, path_spec):
@@ -63,8 +56,17 @@ class Context(object):
     Args:
       path_spec (PathSpec): path specification.
       file_object (FileIO): file-like object.
+
+    Raises:
+      KeyError: if the file object already is cached.
     """
-    self._file_object_cache.CacheObject(path_spec.comparable, file_object)
+    identifier = path_spec.comparable
+
+    if identifier in self._file_object_cache:
+      raise KeyError('File object already cached for identifier: {0:s}'.format(
+          identifier))
+
+    self._file_object_cache[identifier] = file_object
 
   def CacheFileSystem(self, path_spec, file_system):
     """Caches a file system object based on a path specification.
@@ -72,26 +74,22 @@ class Context(object):
     Args:
       path_spec (PathSpec): path specification.
       file_system (FileSystem): file system object.
+
+    Raises:
+      KeyError: if the file system already is cached.
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
-    self._file_system_cache.CacheObject(identifier, file_system)
+
+    if identifier in self._file_system_cache:
+      raise KeyError('File system already cached for identifier: {0:s}'.format(
+          identifier))
+
+    self._file_system_cache[identifier] = file_system
 
   def Empty(self):
     """Empties the caches."""
-    self._file_object_cache.Empty()
-    self._file_system_cache.Empty()
-
-  def ForceRemoveFileObject(self, path_spec):
-    """Forces the removal of a file-like object based on a path specification.
-
-    Args:
-      path_spec (PathSpec): path specification.
-
-    Returns:
-      bool: True if the file-like object was cached.
-    """
-    vfs_object = self._file_object_cache.GetObject(path_spec.comparable)
-    return bool(vfs_object)
+    self._file_object_cache.clear()
+    self._file_system_cache.clear()
 
   def GetFileObject(self, path_spec):
     """Retrieves a file-like object defined by path specification.
@@ -102,24 +100,7 @@ class Context(object):
     Returns:
       FileIO: a file-like object or None if not cached.
     """
-    return self._file_object_cache.GetObject(path_spec.comparable)
-
-  @decorators.deprecated
-  def GetFileObjectReferenceCount(self, path_spec):
-    """Retrieves the reference count of a cached file-like object.
-
-    Args:
-      path_spec (PathSpec): path specification.
-
-    Returns:
-      int: reference count or None if there is no file-like object for
-          the corresponding path specification cached.
-    """
-    vfs_object = self._file_object_cache.GetObject(path_spec.comparable)
-    if vfs_object:
-      return 1
-
-    return None
+    return self._file_object_cache.get(path_spec.comparable, None)
 
   def GetFileSystem(self, path_spec):
     """Retrieves a file system object defined by path specification.
@@ -131,7 +112,7 @@ class Context(object):
       FileSystem: a file system object or None if not cached.
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
-    return self._file_system_cache.GetObject(identifier)
+    return self._file_system_cache.get(identifier, None)
 
   def GetMountPoint(self, mount_point):
     """Retrieves the path specification of a mount point.
@@ -162,23 +143,3 @@ class Context(object):
       raise KeyError('Mount point: {0:s} already set.'.format(mount_point))
 
     self._mount_points[mount_point] = path_spec
-
-  def SetMaximumNumberOfFileObjects(self, maximum_number_of_file_objects):
-    """Sets the maximum number of cached file-like objects.
-
-    Args:
-      maximum_number_of_file_objects (int): maximum number of file-like
-          objects cached in the context.
-    """
-    self._file_object_cache.SetMaximumNumberOfCachedValues(
-        maximum_number_of_file_objects)
-
-  def SetMaximumNumberOfFileSystems(self, maximum_number_of_file_systems):
-    """Sets the maximum number of cached file system objects.
-
-    Args:
-      maximum_number_of_file_systems (int): maximum number of file system
-          objects cached in the context.
-    """
-    self._file_system_cache.SetMaximumNumberOfCachedValues(
-        maximum_number_of_file_systems)

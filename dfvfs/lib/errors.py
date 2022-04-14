@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) error classes."""
 
+from dfvfs.lib import decorators
+
 
 class Error(Exception):
   """Parent class for dfVFS specific errors."""
@@ -14,6 +16,7 @@ class BackEndError(Error):
   """Error indicating that a dependency has encountered a problem."""
 
 
+@decorators.deprecated
 class CacheFullError(Error):
   """Error indicating a cache is full."""
 

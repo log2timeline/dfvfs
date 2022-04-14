@@ -4,14 +4,6 @@ dfvfs.resolver package
 Submodules
 ----------
 
-dfvfs.resolver.cache module
----------------------------
-
-.. automodule:: dfvfs.resolver.cache
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dfvfs.resolver.context module
 -----------------------------
 
