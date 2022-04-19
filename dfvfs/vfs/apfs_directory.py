@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 """The APFS directory implementation."""
 
-from dfvfs.lib import errors
 from dfvfs.path import apfs_path_spec
 from dfvfs.vfs import directory
 
 
 class APFSDirectory(directory.Directory):
   """File system directory that uses pyfsapfs."""
+
+  def __init__(self, file_system, path_spec, fsapfs_file_entry):
+    """Initializes a directory.
+
+    Args:
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      fsapfs_file_entry (pyfsapfs.file_entry): APFS file entry.
+    """
+    super(APFSDirectory, self).__init__(file_system, path_spec)
+    self._fsapfs_file_entry = fsapfs_file_entry
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -18,15 +28,9 @@ class APFSDirectory(directory.Directory):
     Yields:
       APFSPathSpec: APFS path specification.
     """
-    try:
-      fsapfs_file_entry = self._file_system.GetAPFSFileEntryByPathSpec(
-          self.path_spec)
-    except errors.PathSpecError:
-      return
-
     location = getattr(self.path_spec, 'location', None)
 
-    for fsapfs_sub_file_entry in fsapfs_file_entry.sub_file_entries:
+    for fsapfs_sub_file_entry in self._fsapfs_file_entry.sub_file_entries:
       directory_entry = fsapfs_sub_file_entry.name
 
       if not location or location == self._file_system.PATH_SEPARATOR:

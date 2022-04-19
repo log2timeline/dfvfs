@@ -43,15 +43,21 @@ class APFSDirectoryTest(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Tests the __init__ function."""
+    fsapfs_file_entry = self._file_system.GetAPFSFileEntryByPathSpec(
+        self._apfs_path_spec)
+
     directory = apfs_directory.APFSDirectory(
-        self._file_system, self._apfs_path_spec)
+        self._file_system, self._apfs_path_spec, fsapfs_file_entry)
 
     self.assertIsNotNone(directory)
 
   def testEntriesGenerator(self):
     """Tests the _EntriesGenerator function."""
+    fsapfs_file_entry = self._file_system.GetAPFSFileEntryByPathSpec(
+        self._apfs_path_spec)
+
     directory = apfs_directory.APFSDirectory(
-        self._file_system, self._apfs_path_spec)
+        self._file_system, self._apfs_path_spec, fsapfs_file_entry)
 
     self.assertIsNotNone(directory)
 

@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 """The EXT directory implementation."""
 
-from dfvfs.lib import errors
 from dfvfs.path import ext_path_spec
 from dfvfs.vfs import directory
 
 
 class EXTDirectory(directory.Directory):
   """File system directory that uses pyfsext."""
+
+  def __init__(self, file_system, path_spec, fsext_file_entry):
+    """Initializes a directory.
+
+    Args:
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      fsext_file_entry (pyfsext.file_entry): EXT file entry.
+    """
+    super(EXTDirectory, self).__init__(file_system, path_spec)
+    self._fsext_file_entry = fsext_file_entry
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -18,15 +28,9 @@ class EXTDirectory(directory.Directory):
     Yields:
       EXTPathSpec: EXT path specification.
     """
-    try:
-      fsext_file_entry = self._file_system.GetEXTFileEntryByPathSpec(
-          self.path_spec)
-    except errors.PathSpecError:
-      return
-
     location = getattr(self.path_spec, 'location', None)
 
-    for fsext_sub_file_entry in fsext_file_entry.sub_file_entries:
+    for fsext_sub_file_entry in self._fsext_file_entry.sub_file_entries:
       directory_entry = fsext_sub_file_entry.name
 
       if not location or location == self._file_system.PATH_SEPARATOR:

@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 """The XFS directory implementation."""
 
-from dfvfs.lib import errors
 from dfvfs.path import xfs_path_spec
 from dfvfs.vfs import directory
 
 
 class XFSDirectory(directory.Directory):
   """File system directory that uses pyfsxfs."""
+
+  def __init__(self, file_system, path_spec, fsxfs_file_entry):
+    """Initializes a directory.
+
+    Args:
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
+      fsxfs_file_entry (pyfsxfs.file_entry): XFS file entry.
+    """
+    super(XFSDirectory, self).__init__(file_system, path_spec)
+    self._fsxfs_file_entry = fsxfs_file_entry
 
   def _EntriesGenerator(self):
     """Retrieves directory entries.
@@ -18,15 +28,9 @@ class XFSDirectory(directory.Directory):
     Yields:
       XFSPathSpec: XFS path specification.
     """
-    try:
-      fsxfs_file_entry = self._file_system.GetXFSFileEntryByPathSpec(
-          self.path_spec)
-    except errors.PathSpecError:
-      return
-
     location = getattr(self.path_spec, 'location', None)
 
-    for fsxfs_sub_file_entry in fsxfs_file_entry.sub_file_entries:
+    for fsxfs_sub_file_entry in self._fsxfs_file_entry.sub_file_entries:
       directory_entry = fsxfs_sub_file_entry.name
 
       if not location or location == self._file_system.PATH_SEPARATOR:

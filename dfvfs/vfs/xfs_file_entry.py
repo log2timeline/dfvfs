@@ -100,7 +100,8 @@ class XFSFileEntry(file_entry.FileEntry):
     if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return None
 
-    return xfs_directory.XFSDirectory(self._file_system, self.path_spec)
+    return xfs_directory.XFSDirectory(
+        self._file_system, self.path_spec, self._fsxfs_file_entry)
 
   def _GetLink(self):
     """Retrieves the link.

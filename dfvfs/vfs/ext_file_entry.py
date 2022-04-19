@@ -103,7 +103,8 @@ class EXTFileEntry(file_entry.FileEntry):
     if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return None
 
-    return ext_directory.EXTDirectory(self._file_system, self.path_spec)
+    return ext_directory.EXTDirectory(
+        self._file_system, self.path_spec, self._fsext_file_entry)
 
   def _GetLink(self):
     """Retrieves the link.

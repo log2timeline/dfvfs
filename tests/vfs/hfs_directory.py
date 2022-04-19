@@ -40,15 +40,21 @@ class HFSDirectoryTest(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Tests the __init__ function."""
+    fshfs_file_entry = self._file_system.GetHFSFileEntryByPathSpec(
+        self._hfs_path_spec)
+
     directory = hfs_directory.HFSDirectory(
-        self._file_system, self._hfs_path_spec)
+        self._file_system, self._hfs_path_spec, fshfs_file_entry)
 
     self.assertIsNotNone(directory)
 
   def testEntriesGenerator(self):
     """Tests the _EntriesGenerator function."""
+    fshfs_file_entry = self._file_system.GetHFSFileEntryByPathSpec(
+        self._hfs_path_spec)
+
     directory = hfs_directory.HFSDirectory(
-        self._file_system, self._hfs_path_spec)
+        self._file_system, self._hfs_path_spec, fshfs_file_entry)
 
     self.assertIsNotNone(directory)
 
