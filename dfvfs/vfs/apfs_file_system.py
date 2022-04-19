@@ -89,8 +89,8 @@ class APFSFileSystem(file_system.FileSystem):
     Raises:
       BackEndError: if the file entry cannot be opened.
     """
-    # Opening a file by identifier by location will ensure added time is
-    # provided when available.
+    # Opening a file by location will ensure added time is provided when
+    # available.
     fsapfs_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
@@ -119,8 +119,8 @@ class APFSFileSystem(file_system.FileSystem):
     Raises:
       BackEndError: if the file entry cannot be opened.
     """
-    # Opening a file by identifier by location will ensure added time is
-    # provided when available.
+    # Opening a file by location will ensure added time is provided when
+    # available.
     fsapfs_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
@@ -162,8 +162,8 @@ class APFSFileSystem(file_system.FileSystem):
       PathSpecError: if the path specification is missing location and
           identifier.
     """
-    # Opening a file by identifier by location will ensure added time is
-    # provided when available.
+    # Opening a file by location will ensure added time is provided when
+    # available.
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
 
