@@ -26,10 +26,6 @@ class SQLiteBlobDirectory(directory.Directory):
 
     Yields:
       SQLiteBlobPathSpec: a path specification.
-
-    Raises:
-      AccessError: if the access to list the directory was denied.
-      BackEndError: if the directory could not be listed.
     """
     table_name = getattr(self.path_spec, 'table_name', None)
     column_name = getattr(self.path_spec, 'column_name', None)

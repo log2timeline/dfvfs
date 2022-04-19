@@ -117,7 +117,8 @@ class HFSFileEntry(file_entry.FileEntry):
     if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
       return None
 
-    return hfs_directory.HFSDirectory(self._file_system, self.path_spec)
+    return hfs_directory.HFSDirectory(
+        self._file_system, self.path_spec, self._fshfs_file_entry)
 
   def _GetLink(self):
     """Retrieves the link.

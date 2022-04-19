@@ -40,15 +40,21 @@ class XFSDirectoryTest(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Tests the __init__ function."""
+    fsxfs_file_entry = self._file_system.GetXFSFileEntryByPathSpec(
+        self._xfs_path_spec)
+
     directory = xfs_directory.XFSDirectory(
-        self._file_system, self._xfs_path_spec)
+        self._file_system, self._xfs_path_spec, fsxfs_file_entry)
 
     self.assertIsNotNone(directory)
 
   def testEntriesGenerator(self):
     """Tests the _EntriesGenerator function."""
+    fsxfs_file_entry = self._file_system.GetXFSFileEntryByPathSpec(
+        self._xfs_path_spec)
+
     directory = xfs_directory.XFSDirectory(
-        self._file_system, self._xfs_path_spec)
+        self._file_system, self._xfs_path_spec, fsxfs_file_entry)
 
     self.assertIsNotNone(directory)
 

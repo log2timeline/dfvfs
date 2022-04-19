@@ -40,15 +40,21 @@ class NTFSDirectoryTest(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Tests the __init__ function."""
+    fsntfs_file_entry = self._file_system.GetNTFSFileEntryByPathSpec(
+        self._ntfs_path_spec)
+
     directory = ntfs_directory.NTFSDirectory(
-        self._file_system, self._ntfs_path_spec)
+        self._file_system, self._ntfs_path_spec, fsntfs_file_entry)
 
     self.assertIsNotNone(directory)
 
   def testEntriesGenerator(self):
     """Tests the _EntriesGenerator function."""
+    fsntfs_file_entry = self._file_system.GetNTFSFileEntryByPathSpec(
+        self._ntfs_path_spec)
+
     directory = ntfs_directory.NTFSDirectory(
-        self._file_system, self._ntfs_path_spec)
+        self._file_system, self._ntfs_path_spec, fsntfs_file_entry)
 
     self.assertIsNotNone(directory)
 

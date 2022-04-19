@@ -40,15 +40,21 @@ class EXTDirectoryTest(shared_test_lib.BaseTestCase):
 
   def testInitialize(self):
     """Tests the __init__ function."""
+    fsext_file_entry = self._file_system.GetEXTFileEntryByPathSpec(
+        self._ext_path_spec)
+
     directory = ext_directory.EXTDirectory(
-        self._file_system, self._ext_path_spec)
+        self._file_system, self._ext_path_spec, fsext_file_entry)
 
     self.assertIsNotNone(directory)
 
   def testEntriesGenerator(self):
     """Tests the _EntriesGenerator function."""
+    fsext_file_entry = self._file_system.GetEXTFileEntryByPathSpec(
+        self._ext_path_spec)
+
     directory = ext_directory.EXTDirectory(
-        self._file_system, self._ext_path_spec)
+        self._file_system, self._ext_path_spec, fsext_file_entry)
 
     self.assertIsNotNone(directory)
 
