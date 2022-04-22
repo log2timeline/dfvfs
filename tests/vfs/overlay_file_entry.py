@@ -121,15 +121,15 @@ class OverlayFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_object.uid, 0)
     self.assertEqual(stat_object.gid, 0)
 
-    self.assertEqual(stat_object.atime, 1650600471)
+    self.assertEqual(stat_object.atime, 1650614188)
     self.assertFalse(hasattr(stat_object, 'atime_nano'))
 
-    self.assertEqual(stat_object.ctime, 1650600471)
+    self.assertEqual(stat_object.ctime, 1650614188)
     self.assertFalse(hasattr(stat_object, 'ctime_nano'))
 
     self.assertFalse(hasattr(stat_object, 'crtime'))
 
-    self.assertEqual(stat_object.mtime, 1650600471)
+    self.assertEqual(stat_object.mtime, 1650614188)
     self.assertFalse(hasattr(stat_object, 'mtime_nano'))
 
   def testGetStatAttribute(self):
