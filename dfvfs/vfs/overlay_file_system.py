@@ -105,7 +105,8 @@ class OverlayFileSystem(file_system.FileSystem):
     overlay_dir = overlay_directory.OverlayDirectory(self, search_spec)
     for entry in overlay_dir.entries:
       if entry.location == location:
-        return overlay_file_entry.OverlayFileEntry(self._resolver_context, self, entry, is_root=False)
+        return overlay_file_entry.OverlayFileEntry(
+            self._resolver_context, self, entry, is_root=False)
 
     return None
 

@@ -66,7 +66,7 @@ class OverlayFileEntry(file_entry.FileEntry):
       list[Attribute]: attributes.
     """
     if not self._attributes and self._base_file_entry:
-      self._attributes = self._base_file_entry._GetAttributes()
+      self._attributes = self._base_file_entry._GetAttributes()  # pylint: disable=protected-access
     return self._attributes
 
   def _GetLink(self):
@@ -86,7 +86,7 @@ class OverlayFileEntry(file_entry.FileEntry):
       VFSStat: a stat object.
     """
     if self._base_file_entry:
-      return self._base_file_entry._GetStat()
+      return self._base_file_entry._GetStat()  # pylint: disable=protected-access
     return None
 
   def _GetStatAttribute(self):
@@ -96,7 +96,7 @@ class OverlayFileEntry(file_entry.FileEntry):
       StatAttribute: a stat attribute or None if not available.
     """
     if self._base_file_entry:
-      return self._base_file_entry._GetStatAttribute()
+      return self._base_file_entry._GetStatAttribute()  # pylint: disable=protected-access
     return None
 
   def _GetDataStreams(self):
@@ -106,7 +106,7 @@ class OverlayFileEntry(file_entry.FileEntry):
       list[DataStream]: data streams.
     """
     if self._base_file_entry:
-      return self._base_file_entry._GetDataStreams()
+      return self._base_file_entry._GetDataStreams()  # pylint: disable=protected-access
     return []
 
   def GetFileObject(self, data_stream_name=''):
@@ -177,11 +177,6 @@ class OverlayFileEntry(file_entry.FileEntry):
     if self._base_file_entry:
       return self._base_file_entry.deletion_time
     return None
-
-  @property
-  def name(self):
-    """str: name of the file entry, which does not include the full path."""
-    return self._name
 
   @property
   def modification_time(self):

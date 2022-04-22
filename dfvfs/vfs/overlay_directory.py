@@ -20,7 +20,7 @@ class OverlayDirectory(directory.Directory):
       file_system (OverlayFileSystem): file system.
       path_spec (OverlayPathSpec): path specification.
     """
-    super(OverlayDirectory, self).__init__(file_system, path_spec)
+    pass
 
   def _ReadDirectory(self, location):
     """Enumerates the upper and lower layers of the Overlay filesystem.

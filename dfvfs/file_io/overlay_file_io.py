@@ -35,6 +35,10 @@ class OverlayFile(file_io.FileIO):
 
     Args:
       mode (Optional[str]): file access mode.
+
+    Raises:
+      NotSupported: when path specification has a data stream
+      PathSpecError: when the parent attribute is None.
     """
     data_stream = getattr(self._path_spec, 'data_stream', None)
     if data_stream:

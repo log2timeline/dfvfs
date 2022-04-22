@@ -3,7 +3,6 @@
 
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
-from dfvfs.analyzer import specification
 from dfvfs.lib import definitions
 
 

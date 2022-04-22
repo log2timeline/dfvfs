@@ -119,5 +119,3 @@ class OverlayDirectoryTest(shared_test_lib.BaseTestCase):
 
 if __name__ == '__main__':
   unittest.main()
-
-
