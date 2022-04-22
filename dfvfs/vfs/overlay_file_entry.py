@@ -228,7 +228,6 @@ class OverlayFileEntry(file_entry.FileEntry):
 
     parent_path_spec = getattr(self.path_spec, 'parent', None)
 
-    print(parent_path_spec.location)
     path_spec = overlay_path_spec.OverlayPathSpec(
         location=parent_location, parent=parent_path_spec)
 
