@@ -78,7 +78,7 @@ class OverlayFile(file_io.FileIO):
       IOError: if the seek failed.
       OSError: if the seek failed.
     """
-    return self._file_io.seek(offset, whence)
+    self._file_io.seek(offset, whence)
 
   def get_offset(self):
     """Retrieves the current offset into the file input/output (IO) object.

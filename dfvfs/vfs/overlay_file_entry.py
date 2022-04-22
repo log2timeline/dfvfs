@@ -76,7 +76,7 @@ class OverlayFileEntry(file_entry.FileEntry):
       str: path of the linked file.
     """
     if self._base_file_entry:
-      return self._base_file_entry._GetLink()
+      return self._base_file_entry._GetLink()  # pylint: disable=protected-access
     return None
 
   def _GetStat(self):
