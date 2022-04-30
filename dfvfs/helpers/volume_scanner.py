@@ -509,6 +509,12 @@ class VolumeScanner(object):
     if not scan_node or not scan_node.path_spec:
       raise errors.ScannerError('Invalid or missing file system scan node.')
 
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_APFS:
+      # Note that APFS can have a volume without a root directory.
+      file_entry = resolver.Resolver.OpenFileEntry(scan_node.path_spec)
+      if not file_entry:
+        return
+
     base_path_specs.append(scan_node.path_spec)
 
   def _ScanSource(self, source_path):
