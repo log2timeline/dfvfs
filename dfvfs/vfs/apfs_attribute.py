@@ -3,8 +3,10 @@
 
 import os
 
+from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.vfs import attribute
+from dfvfs.vfs import extent
 
 
 class APFSExtendedAttribute(attribute.Attribute):
@@ -30,6 +32,29 @@ class APFSExtendedAttribute(attribute.Attribute):
   def name(self):
     """str: name."""
     return self._fsapfs_extended_attribute.name
+
+  def GetExtents(self):
+    """Retrieves the extents.
+
+    Returns:
+      list[Extent]: the extents of the attribute data.
+    """
+    extents = []
+    for extent_index in range(
+        self._fsapfs_extended_attribute.number_of_extents):
+      extent_offset, extent_size, extent_flags = (
+          self._fsapfs_extended_attribute.get_extent(extent_index))
+
+      if extent_flags & 0x1:
+        extent_type = definitions.EXTENT_TYPE_SPARSE
+      else:
+        extent_type = definitions.EXTENT_TYPE_DATA
+
+      data_stream_extent = extent.Extent(
+          extent_type=extent_type, offset=extent_offset, size=extent_size)
+      extents.append(data_stream_extent)
+
+    return extents
 
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
