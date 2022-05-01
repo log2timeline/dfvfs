@@ -35,21 +35,22 @@ class OverlayDirectory(directory.Directory):
     visited_paths = set([location])
     whiteouts = set()
 
-    resolver_context = context.Context()
+    resolver_context = self._file_system._resolver_context
 
     layer_specs = [self._file_system.upper_path_spec]
     layer_specs.extend(self._file_system.lower_path_specs)
 
-    for layer in layer_specs:
+    for index, layer in enumerate(layer_specs):
       if location in whiteouts:
         continue
 
-      layer_filesystem = ext_file_system.EXTFileSystem(resolver_context, layer)
-      layer_filesystem.Open()
-
+      layer_filesystem = self._file_system._filesystem_layers[index]
       layer_path_spec = factory.Factory.NewPathSpec(
-          definitions.TYPE_INDICATOR_EXT, location=layer.location + location,
+          layer.type_indicator, location=layer.location + location,
           parent=layer.parent)
+
+      if not layer_path_spec:
+        continue
 
       if not layer_filesystem.FileEntryExistsByPathSpec(layer_path_spec):
         continue
@@ -60,11 +61,10 @@ class OverlayDirectory(directory.Directory):
             attribute.read() == b'y'):
           whiteouts.add(location)
 
-      layer_directory = ext_directory.EXTDirectory(
-          layer_filesystem, layer_path_spec,
-          layer_file_entry.GetEXTFileEntry())
-      if not layer_directory:
+      if not layer_file_entry.IsDirectory():
         continue
+
+      layer_directory = layer_file_entry._GetDirectory()
 
       for subentry_spec in layer_directory.entries:
         overlay_path = subentry_spec.location[len(layer.location):]
