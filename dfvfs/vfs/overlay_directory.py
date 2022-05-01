@@ -4,11 +4,9 @@
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import factory
-from dfvfs.resolver import context
 from dfvfs.resolver import resolver
 from dfvfs.vfs import directory
-from dfvfs.vfs import ext_file_system
-from dfvfs.vfs import ext_directory
+
 
 class OverlayDirectory(directory.Directory):
   """Overlay directory."""
@@ -35,7 +33,7 @@ class OverlayDirectory(directory.Directory):
     visited_paths = set([location])
     whiteouts = set()
 
-    resolver_context = self._file_system._resolver_context
+    resolver_context = self._file_system._resolver_context  # pylint: disable=protected-access
 
     layer_specs = [self._file_system.upper_path_spec]
     layer_specs.extend(self._file_system.lower_path_specs)
@@ -44,7 +42,7 @@ class OverlayDirectory(directory.Directory):
       if location in whiteouts:
         continue
 
-      layer_filesystem = self._file_system._filesystem_layers[index]
+      layer_filesystem = self._file_system._filesystem_layers[index]  # pylint: disable=protected-access
       layer_path_spec = factory.Factory.NewPathSpec(
           layer.type_indicator, location=layer.location + location,
           parent=layer.parent)
@@ -55,7 +53,8 @@ class OverlayDirectory(directory.Directory):
       if not layer_filesystem.FileEntryExistsByPathSpec(layer_path_spec):
         continue
 
-      layer_file_entry = resolver.Resolver.OpenFileEntry(layer_path_spec)
+      layer_file_entry = resolver.Resolver.OpenFileEntry(
+          layer_path_spec, resolver_context=resolver_context)
       for attribute in layer_file_entry.attributes:
         if (attribute.name == 'trusted.overlay.opaque' and
             attribute.read() == b'y'):
@@ -64,7 +63,7 @@ class OverlayDirectory(directory.Directory):
       if not layer_file_entry.IsDirectory():
         continue
 
-      layer_directory = layer_file_entry._GetDirectory()
+      layer_directory = layer_file_entry._GetDirectory()  # pylint: disable=protected-access
 
       for subentry_spec in layer_directory.entries:
         overlay_path = subentry_spec.location[len(layer.location):]
