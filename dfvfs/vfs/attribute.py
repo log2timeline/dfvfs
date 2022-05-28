@@ -12,6 +12,14 @@ class Attribute(object):
     """str: type indicator or None if not known."""
     return getattr(self, 'TYPE_INDICATOR', None)
 
+  def GetExtents(self):
+    """Retrieves the extents.
+
+    Returns:
+      list[Extent]: the extents of the attribute data.
+    """
+    return []
+
 
 class StatAttribute(object):
   """Attribute that represents a POSIX stat.

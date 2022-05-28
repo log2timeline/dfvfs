@@ -585,8 +585,11 @@ class FileSystemSearcher(object):
     else:
       file_entry = self._file_system.GetRootFileEntry()
 
-    for matching_path_spec in self._FindInFileEntry(file_entry, find_specs, 0):
-      yield matching_path_spec
+    # Note that APFS can have a volume without a root directory.
+    if file_entry:
+      for matching_path_spec in self._FindInFileEntry(
+          file_entry, find_specs, 0):
+        yield matching_path_spec
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.

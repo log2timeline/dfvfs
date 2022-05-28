@@ -127,27 +127,29 @@ class APFSFileSystem(file_system.FileSystem):
 
     if (location == self.LOCATION_ROOT or
         identifier == self.ROOT_DIRECTORY_IDENTIFIER):
+      is_root = True
+      # Note that APFS can have a volume without a root directory.
       fsapfs_file_entry = self._fsapfs_volume.get_root_directory()
-      return apfs_file_entry.APFSFileEntry(
-          self._resolver_context, self, path_spec,
-          fsapfs_file_entry=fsapfs_file_entry, is_root=True)
 
-    try:
-      if location is not None:
-        fsapfs_file_entry = self._fsapfs_volume.get_file_entry_by_path(location)
-      elif identifier is not None:
-        fsapfs_file_entry = self._fsapfs_volume.get_file_entry_by_identifier(
-            identifier)
+    else:
+      is_root = False
+      try:
+        if location is not None:
+          fsapfs_file_entry = self._fsapfs_volume.get_file_entry_by_path(
+              location)
+        elif identifier is not None:
+          fsapfs_file_entry = self._fsapfs_volume.get_file_entry_by_identifier(
+              identifier)
 
-    except IOError as exception:
-      raise errors.BackEndError(exception)
+      except IOError as exception:
+        raise errors.BackEndError(exception)
 
     if fsapfs_file_entry is None:
       return None
 
     return apfs_file_entry.APFSFileEntry(
         self._resolver_context, self, path_spec,
-        fsapfs_file_entry=fsapfs_file_entry)
+        fsapfs_file_entry=fsapfs_file_entry, is_root=is_root)
 
   def GetAPFSFileEntryByPathSpec(self, path_spec):
     """Retrieves the APFS file entry for a path specification.
@@ -182,7 +184,7 @@ class APFSFileSystem(file_system.FileSystem):
     """Retrieves the root file entry.
 
     Returns:
-      APFSFileEntry: file entry.
+      APFSFileEntry: file entry or None if not available.
     """
     path_spec = apfs_path_spec.APFSPathSpec(
         location=self.LOCATION_ROOT, identifier=self.ROOT_DIRECTORY_IDENTIFIER,
