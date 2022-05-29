@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The OVerlay format analyzer helper implementation."""
+"""The Overlay format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer
 from dfvfs.analyzer import analyzer_helper
