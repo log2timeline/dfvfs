@@ -79,7 +79,11 @@ class OverlayFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    return self.GetFileEntryByPathSpec(path_spec)
+    try:
+      file_entry = self.GetFileEntryByPathSpec(path_spec)
+      return bool(file_entry)
+    except errors.BackEndError:
+      return False
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.

@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import overlay_file_system
@@ -18,7 +19,7 @@ class OverlayFileSystemTestWithEXT4(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['overlay.dd'])
+    test_path = self._GetTestFilePath(['overlay_ext4.dd'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -111,9 +112,9 @@ class OverlayFileSystemTestWithEXT4(shared_test_lib.BaseTestCase):
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OVERLAY, location='/bogus.txt',
         parent=ext_path_spec)
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+    no_file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertIsNone(file_entry)
+    self.assertIsNone(no_file_entry)
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""
@@ -174,20 +175,20 @@ class OverlayFileSystemTestWithXFS(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    ext_path_spec = path_spec_factory.Factory.NewPathSpec(
+    xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_XFS, parent=self._raw_path_spec,
-        location='/upper/c.txt', inode=25)
+        location='/upper/c.txt', inode=11088)
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OVERLAY, location='/c.txt',
-        parent=ext_path_spec)
+        parent=xfs_path_spec)
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
-    ext_path_spec = path_spec_factory.Factory.NewPathSpec(
+    xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_XFS, parent=self._raw_path_spec,
         location='/upper/bogus.txt', inode=100)
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OVERLAY, location='/bogus.txt',
-        parent=ext_path_spec)
+        parent=xfs_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
   def testGetFileEntryByPathSpec(self):
@@ -199,39 +200,39 @@ class OverlayFileSystemTestWithXFS(shared_test_lib.BaseTestCase):
 
     file_system.Open()
 
-    ext_path_spec = path_spec_factory.Factory.NewPathSpec(
+    xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_XFS, parent=self._raw_path_spec,
-        location='/upper/c.txt', inode=25)
+        location='/upper/c.txt', inode=11088)
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OVERLAY, location='/c.txt',
-        parent=ext_path_spec)
+        parent=xfs_path_spec)
 
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'c.txt')
 
-    ext_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_XFS, inode=27,
+    xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_XFS, inode=11090,
         location='/upper/testdir/d.txt', parent=self._raw_path_spec)
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OVERLAY, location='/testdir/d.txt',
-        parent=ext_path_spec)
+        parent=xfs_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, 'd.txt')
 
-    ext_path_spec = path_spec_factory.Factory.NewPathSpec(
+    xfs_path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_XFS, parent=self._raw_path_spec,
         location='/upper/bogus.txt', inode=100)
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OVERLAY, location='/bogus.txt',
-        parent=ext_path_spec)
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+        parent=xfs_path_spec)
+    no_file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
-    self.assertIsNone(file_entry)
+    self.assertIsNone(no_file_entry)
 
   def testGetRootFileEntry(self):
     """Test the get root file entry functionality."""

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The path Overlay specification implementation."""
+"""The Overlay path specification implementation."""
 
 from dfvfs.lib import definitions
 from dfvfs.path import factory

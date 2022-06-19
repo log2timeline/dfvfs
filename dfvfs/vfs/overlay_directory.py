@@ -52,9 +52,9 @@ class OverlayDirectory(directory.Directory):
 
       if not layer_filesystem.FileEntryExistsByPathSpec(layer_path_spec):
         continue
-
       layer_file_entry = resolver.Resolver.OpenFileEntry(
           layer_path_spec, resolver_context=resolver_context)
+
       for attribute in layer_file_entry.attributes:
         if (attribute.name == 'trusted.overlay.opaque' and
             attribute.read() == b'y'):
