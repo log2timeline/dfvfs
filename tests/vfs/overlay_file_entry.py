@@ -627,10 +627,9 @@ class OverlayFileEntryTestWithXFS(shared_test_lib.BaseTestCase):
         location='/upper/testdir/d.txt', parent=self._raw_path_spec)
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_OVERLAY, location='/testdir/d.txt',
-        parent=None)
+        parent=xfs_path_spec)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
-    print(file_entry.path_spec.parent.location)
     data_stream_name = ''
     data_stream = file_entry.GetDataStream(data_stream_name)
     self.assertIsNotNone(data_stream)
