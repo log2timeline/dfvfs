@@ -5,7 +5,6 @@
 import unittest
 
 from dfvfs.lib import definitions
-from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.vfs import overlay_file_system
