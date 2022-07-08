@@ -127,6 +127,7 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(stat_object)
     self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
     self.assertEqual(stat_object.size, 22)
+    self.assertEqual(stat_object.dev, None)
 
     self.assertEqual(stat_object.mode, 436)
     self.assertEqual(stat_object.uid, 1000)
