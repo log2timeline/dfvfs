@@ -138,6 +138,7 @@ class XFSFileEntry(file_entry.FileEntry):
 
     # Other stat information.
     stat_object.ino = self._fsxfs_file_entry.inode_number
+    stat_object.dev = self._fsxfs_file_entry.device_number
     stat_object.fs_type = 'XFS'
 
     stat_object.is_allocated = True

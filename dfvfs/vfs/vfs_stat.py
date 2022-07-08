@@ -41,8 +41,8 @@ class VFSStat(object):
     self.type = None
 
     # Other stat information.
-    # self.ino = None
-    # self.dev = None
+    self.ino = None
+    self.dev = None
     # self.nlink = None
     self.fs_type = None
     self.is_allocated = True
