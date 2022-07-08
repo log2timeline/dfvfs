@@ -25,7 +25,8 @@ class StatAttribute(object):
   """Attribute that represents a POSIX stat.
 
   Attributes:
-    device_identifier (Tuple[int, int]): device identifier, equivalent to st_dev.
+    device_identifier (Tuple[int, int]): device identifier, equivalent to
+        st_dev.
     group_identifier (int): group identifier (GID), equivalent to st_gid.
     inode_number (int): number of the corresponding inode, equivalent to st_ino.
     mode (int): access mode, equivalent to st_mode.
