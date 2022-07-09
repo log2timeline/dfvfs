@@ -184,8 +184,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(stat_attribute.group_identifier, 99)
     self.assertEqual(stat_attribute.inode_number, 19)
     self.assertEqual(stat_attribute.mode, 0o100644)
-    # TODO: implement number of hard links support in pyfshfs
-    # self.assertEqual(stat_attribute.number_of_links, 1)
+    self.assertEqual(stat_attribute.number_of_links, 1)
     self.assertEqual(stat_attribute.owner_identifier, 99)
     self.assertEqual(stat_attribute.size, 22)
     self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
