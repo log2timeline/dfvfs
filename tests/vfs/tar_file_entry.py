@@ -48,27 +48,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TAR, location='/syslog',
-        parent=self._os_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 1247)
-
-    self.assertEqual(stat_object.mode, 256)
-    self.assertEqual(stat_object.uid, 151107)
-    self.assertEqual(stat_object.gid, 5000)
-
-    self.assertEqual(stat_object.mtime, 1343166324)
-    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(

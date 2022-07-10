@@ -177,19 +177,6 @@ class APFSContainerFileEntryTest(shared_test_lib.BaseTestCase):
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNone(parent_file_entry)
 
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_APFS_CONTAINER, parent=self._raw_path_spec,
-        volume_index=0)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-
   def testIsFunctions(self):
     """Test the Is? functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -405,19 +392,6 @@ class APFSContainerFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
 
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNone(parent_file_entry)
-
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_APFS_CONTAINER, parent=self._gpt_path_spec,
-        volume_index=0)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
 
   def testIsFunctions(self):
     """Test the Is? functions."""

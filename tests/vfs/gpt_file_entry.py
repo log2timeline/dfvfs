@@ -112,24 +112,6 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNone(parent_file_entry)
 
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, entry_index=0,
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 65536)
-
-    # TODO: implement in pyvsgpt
-    # self.assertEqual(stat_object.crtime, 0)
-    # self.assertEqual(stat_object.crtime_nano, 0)
-
   def testIsFunctions(self):
     """Test the Is? functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(

@@ -121,23 +121,6 @@ class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNone(parent_file_entry)
 
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
-        store_index=1)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 82771968)
-
-    self.assertEqual(stat_object.crtime, 1619890888)
-    self.assertEqual(stat_object.crtime_nano, 2249863)
-
   # TODO: add tests for GetVShadowStore
   # TODO: add tests for HasExternalData
 

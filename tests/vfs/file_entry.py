@@ -86,14 +86,6 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
     symbolic_link = test_file_entry._GetLink()
     self.assertIsNotNone(symbolic_link)
 
-  def testGetStatProtected(self):
-    """Tests the _GetStat function."""
-    test_file_entry = TestFileEntry(
-        self._resolver_context, self._file_system, self._path_spec)
-
-    stat_object = test_file_entry._GetStat()
-    self.assertIsNotNone(stat_object)
-
   def testAccessTime(self):
     """Tests the access_time property."""
     test_file_entry = TestFileEntry(
@@ -267,14 +259,6 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
 
     sub_file_entry = test_file_entry.GetSubFileEntryByName('bogus')
     self.assertIsNone(sub_file_entry)
-
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    test_file_entry = TestFileEntry(
-        self._resolver_context, self._file_system, self._path_spec)
-
-    stat_object = test_file_entry.GetStat()
-    self.assertIsNotNone(stat_object)
 
   def testHasDataStream(self):
     """Tests the HasDataStream function."""

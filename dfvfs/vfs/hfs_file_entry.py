@@ -134,33 +134,6 @@ class HFSFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(HFSFileEntry, self)._GetStat()
-
-    # File data stat information.
-    stat_object.size = self._fshfs_file_entry.size
-
-    # Ownership and permissions stat information.
-    stat_object.mode = self._fshfs_file_entry.file_mode & 0x0fff
-    stat_object.uid = self._fshfs_file_entry.owner_identifier
-    stat_object.gid = self._fshfs_file_entry.group_identifier
-
-    # File entry type stat information.
-    stat_object.type = self.entry_type
-
-    # Other stat information.
-    stat_object.ino = self._fshfs_file_entry.identifier
-    stat_object.fs_type = 'HFS'
-
-    stat_object.is_allocated = True
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 
