@@ -79,21 +79,6 @@ class TARFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves the stat object.
-
-    Returns:
-      VFSStat: stat object.
-    """
-    stat_object = super(TARFileEntry, self)._GetStat()
-
-    # Ownership and permissions stat information.
-    stat_object.mode = getattr(self._tar_info, 'mode', None)
-    stat_object.uid = getattr(self._tar_info, 'uid', None)
-    stat_object.gid = getattr(self._tar_info, 'gid', None)
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 

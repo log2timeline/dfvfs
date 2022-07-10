@@ -62,27 +62,6 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
-    self._SkipIfPathNotExists(test_path)
-
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 6)
-
-    # The date and time values are in a seconds precision and
-    # cannot be predetermined.
-    self.assertNotEqual(stat_object.atime, 0)
-    self.assertNotEqual(stat_object.mtime, 0)
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])

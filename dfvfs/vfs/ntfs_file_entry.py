@@ -132,21 +132,6 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(NTFSFileEntry, self)._GetStat()
-
-    # Other stat information.
-    file_reference = self._fsntfs_file_entry.file_reference
-    stat_object.ino = file_reference & self._FILE_REFERENCE_MFT_ENTRY_BITMASK
-    stat_object.fs_type = 'NTFS'
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 

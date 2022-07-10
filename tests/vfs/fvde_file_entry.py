@@ -112,16 +112,6 @@ class FVDEFileEntryTest(shared_test_lib.BaseTestCase):
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNone(parent_file_entry)
 
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 167772160)
-
   def testIsFunctions(self):
     """Test the Is? functions."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._fvde_path_spec)

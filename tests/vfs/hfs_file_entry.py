@@ -96,38 +96,6 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     data_streams = file_entry._GetDataStreams()
     self.assertEqual(len(data_streams), 2)
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 0o644)
-    self.assertEqual(stat_object.uid, 501)
-    self.assertEqual(stat_object.gid, 20)
-
-    self.assertEqual(stat_object.atime, 1642144782)
-    self.assertFalse(hasattr(stat_object, 'atime_nano'))
-
-    self.assertEqual(stat_object.ctime, 1642144782)
-    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
-
-    self.assertEqual(stat_object.crtime, 1642144782)
-    self.assertFalse(hasattr(stat_object, 'crtime_nano'))
-
-    self.assertEqual(stat_object.mtime, 1642144782)
-    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(

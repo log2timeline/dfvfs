@@ -96,24 +96,6 @@ class CPIOFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(CPIOFileEntry, self)._GetStat()
-
-    # Ownership and permissions stat information.
-    mode = getattr(self._cpio_archive_file_entry, 'mode', 0)
-    stat_object.mode = stat.S_IMODE(mode)
-    stat_object.uid = getattr(
-        self._cpio_archive_file_entry, 'user_identifier', None)
-    stat_object.gid = getattr(
-        self._cpio_archive_file_entry, 'group_identifier', None)
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 

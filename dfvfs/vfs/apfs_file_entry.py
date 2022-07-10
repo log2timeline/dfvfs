@@ -103,25 +103,6 @@ class APFSFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(APFSFileEntry, self)._GetStat()
-
-    # Ownership and permissions stat information.
-    stat_object.mode = self._fsapfs_file_entry.file_mode & 0x0fff
-    stat_object.uid = self._fsapfs_file_entry.owner_identifier
-    stat_object.gid = self._fsapfs_file_entry.group_identifier
-
-    # Other stat information.
-    stat_object.ino = self._fsapfs_file_entry.identifier
-    stat_object.fs_type = 'APFS'
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 

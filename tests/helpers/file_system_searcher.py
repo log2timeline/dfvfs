@@ -301,26 +301,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
     result = find_spec.AtLastLocationSegment(9)
     self.assertTrue(result)
 
-  def testAtMaximumDepth(self):
-    """Test the AtMaximumDepth function."""
-    find_spec = file_system_searcher.FindSpec()
-
-    result = find_spec.AtMaximumDepth(6)
-    self.assertFalse(result)
-
-    find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
-        location_separator='/')
-
-    result = find_spec.AtMaximumDepth(0)
-    self.assertFalse(result)
-
-    result = find_spec.AtMaximumDepth(6)
-    self.assertTrue(result)
-
-    result = find_spec.AtMaximumDepth(9)
-    self.assertTrue(result)
-
   def testCompareLocation(self):
     """Test the CompareLocation function."""
     file_system = self._CreateTestFileSystem()
@@ -416,34 +396,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
 
     result = find_spec.IsLastLocationSegment(9)
     self.assertFalse(result)
-
-  def testMatches(self):
-    """Test the Matches function."""
-    file_system = self._CreateTestFileSystem()
-
-    path_spec = fake_path_spec.FakePathSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py')
-    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
-
-    find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/__init__.py',
-        location_separator='/')
-
-    result = find_spec.Matches(file_entry)
-    self.assertEqual(result, (True, True))
-
-    result = find_spec.Matches(file_entry, search_depth=6)
-    self.assertEqual(result, (True, True))
-
-    result = find_spec.Matches(file_entry, search_depth=0)
-    self.assertEqual(result, (False, True))
-
-    find_spec = file_system_searcher.FindSpec(
-        location='/usr/lib/python2.7/site-packages/dfvfs/bogus.py',
-        location_separator='/')
-
-    result = find_spec.Matches(file_entry, search_depth=6)
-    self.assertEqual(result, (False, False))
 
 
 class FileSystemSearcherTest(shared_test_lib.BaseTestCase):

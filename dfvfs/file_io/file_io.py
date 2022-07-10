@@ -4,9 +4,6 @@
 import abc
 import os
 
-from dfvfs.lib import decorators
-
-
 class FileIO(object):
   """VFS file input/output (IO) object interface."""
 
@@ -92,21 +89,6 @@ class FileIO(object):
   # Note: that the following functions do not follow the style guide
   # because they are part of the file-like object interface.
   # pylint: disable=invalid-name
-
-  @decorators.deprecated
-  def open(self, path_spec=None, mode='rb'):
-    """Opens the file input/output (IO) object defined by path specification.
-
-    Args:
-      path_spec (Optional[PathSpec]): path specification.
-      mode (Optional[str]): file access mode.
-    """
-    self.Open(path_spec=path_spec, mode=mode)
-
-  @decorators.deprecated
-  def close(self):
-    """Closes the file input/output (IO) object."""
-    return
 
   @abc.abstractmethod
   def read(self, size=None):
