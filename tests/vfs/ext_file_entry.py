@@ -125,7 +125,7 @@ class EXTFileEntryTestWithEXT2(shared_test_lib.BaseTestCase):
     stat_attribute = file_entry._GetStatAttribute()
 
     self.assertIsNotNone(stat_attribute)
-    self.assertEqual(stat_attribute.device_identifier, None)
+    self.assertEqual(stat_attribute.device_number, None)
     self.assertEqual(stat_attribute.group_identifier, 1000)
     self.assertEqual(stat_attribute.inode_number, 15)
     self.assertEqual(stat_attribute.mode, 0o100664)

@@ -124,7 +124,7 @@ class XFSFileEntry(file_entry.FileEntry):
       StatAttribute: a stat attribute or None if not available.
     """
     stat_attribute = attribute.StatAttribute()
-    stat_attribute.device_identifier = self._fsxfs_file_entry.device_number
+    stat_attribute.device_number = self._fsxfs_file_entry.device_number
     stat_attribute.group_identifier = self._fsxfs_file_entry.group_identifier
     stat_attribute.inode_number = self._fsxfs_file_entry.inode_number
     stat_attribute.mode = self._fsxfs_file_entry.file_mode
