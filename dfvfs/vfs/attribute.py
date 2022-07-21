@@ -25,8 +25,8 @@ class StatAttribute(object):
   """Attribute that represents a POSIX stat.
 
   Attributes:
-    device_number (Tuple[int, int]): major/minor device number (if block or
-        character device file), derivced from st_rdev.
+    device_number (Tuple[int, int]): major and minor device number (if block or
+        character device file), derived from st_rdev.
     group_identifier (int): group identifier (GID), equivalent to st_gid.
     inode_number (int): number of the corresponding inode, equivalent to st_ino.
     mode (int): access mode, equivalent to st_mode.
