@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Tests for the Extended File System (HFS) file-like object."""
+"""Tests for the Hierarchical File System (HFS) file-like object."""
 
 import unittest
 
