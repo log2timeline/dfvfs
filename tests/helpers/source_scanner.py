@@ -600,7 +600,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     scan_node = scan_node.GetSubNodeByLocation('/')
     self.assertIsNotNone(scan_node)
     self.assertIsNotNone(scan_node.path_spec)
-    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END)
 
   def testScanOnFVDE(self):
     """Test the Scan function on FVDE."""

@@ -718,7 +718,8 @@ class SourceScanner(object):
             'Unsupported source found more than one file system types.')
 
     # TODO: determine root location from file system or path specification.
-    if type_indicator == definitions.TYPE_INDICATOR_NTFS:
+    if type_indicator in (
+        definitions.TYPE_INDICATOR_FAT, definitions.TYPE_INDICATOR_NTFS):
       root_location = '\\'
     else:
       root_location = '/'

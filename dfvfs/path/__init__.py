@@ -13,6 +13,7 @@ from dfvfs.path import encrypted_stream_path_spec
 from dfvfs.path import ewf_path_spec
 from dfvfs.path import ext_path_spec
 from dfvfs.path import fake_path_spec
+from dfvfs.path import fat_path_spec
 from dfvfs.path import fvde_path_spec
 from dfvfs.path import gpt_path_spec
 from dfvfs.path import gzip_path_spec

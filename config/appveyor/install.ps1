@@ -1,6 +1,6 @@
 # Script to set up tests on AppVeyor Windows.
 
-$Dependencies = "PyYAML cffi cryptography dfdatetime dtfabric idna libbde libewf libfsapfs libfsext libfshfs libfsntfs libfsxfs libfvde libfwnt libluksde libmodi libphdi libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvsgpt libvshadow libvslvm mock pbr pytsk3 six xattr"
+$Dependencies = "PyYAML cffi cryptography dfdatetime dtfabric idna libbde libewf libfsapfs libfsext libfsfat libfshfs libfsntfs libfsxfs libfvde libfwnt libluksde libmodi libphdi libqcow libsigscan libsmdev libsmraw libvhdi libvmdk libvsgpt libvshadow libvslvm mock pbr pytsk3 six xattr"
 $Dependencies = ${Dependencies} -split " "
 
 $Output = Invoke-Expression -Command "git clone https://github.com/log2timeline/l2tdevtools.git ..\l2tdevtools 2>&1"

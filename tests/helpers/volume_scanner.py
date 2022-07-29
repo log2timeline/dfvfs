@@ -428,16 +428,16 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         bde_scan_node.type_indicator, definitions.TYPE_INDICATOR_BDE)
 
-    ntfs_scan_node = scan_node.sub_nodes[1]
+    fat_scan_node = scan_node.sub_nodes[1]
     self.assertEqual(
-        ntfs_scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+        fat_scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END)
 
     test_scanner._ScanEncryptedVolume(scan_context, bde_scan_node, test_options)
 
     self.assertEqual(len(bde_scan_node.sub_nodes), 1)
-    ntfs_scan_node = bde_scan_node.sub_nodes[0]
+    fat_scan_node = bde_scan_node.sub_nodes[0]
     self.assertEqual(
-        ntfs_scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+        fat_scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END)
 
     # Test without mediator.
     resolver.Resolver.key_chain.Empty()
@@ -458,9 +458,9 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         bde_scan_node.type_indicator, definitions.TYPE_INDICATOR_BDE)
 
-    ntfs_scan_node = scan_node.sub_nodes[1]
+    fat_scan_node = scan_node.sub_nodes[1]
     self.assertEqual(
-        ntfs_scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+        fat_scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END)
 
     with self.assertRaises(errors.ScannerError):
       test_scanner._ScanEncryptedVolume(
@@ -471,9 +471,9 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner._ScanEncryptedVolume(scan_context, bde_scan_node, test_options)
 
     self.assertEqual(len(bde_scan_node.sub_nodes), 1)
-    ntfs_scan_node = bde_scan_node.sub_nodes[0]
+    fat_scan_node = bde_scan_node.sub_nodes[0]
     self.assertEqual(
-        ntfs_scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK)
+        fat_scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END)
 
   def testScanEncryptedVolumeOnEncryptedAPFS(self):
     """Tests the _ScanEncryptedVolume function on an encrypted APFS image."""

@@ -190,6 +190,18 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
+  def testGetFileSystemTypeIndicatorsFAT12(self):
+    """Tests the GetFileSystemTypeIndicators function on a FAT12 file system."""
+    test_file = self._GetTestFilePath(['fat12.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+    expected_type_indicators = [definitions.PREFERRED_FAT_BACK_END]
+    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
   def testGetFileSystemTypeIndicatorsHFSPlus(self):
     """Tests the GetFileSystemTypeIndicators function on a HFS+ file system."""
     test_file = self._GetTestFilePath(['hfsplus.raw'])

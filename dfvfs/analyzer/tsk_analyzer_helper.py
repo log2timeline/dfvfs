@@ -25,17 +25,28 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     format_specification = specification.FormatSpecification(
         self.type_indicator)
 
-    # FAT volume header signature.
-    format_specification.AddNewSignature(b'\x55\xaa', offset=510)
+    if definitions.PREFERRED_FAT_BACK_END == self.TYPE_INDICATOR:
+      # Boot sector signature.
+      format_specification.AddNewSignature(b'\x55\xaa', offset=510)
+
+      # FAT-12 and FAT-16 file system hint.
+      format_specification.AddNewSignature(b'FAT12   ', offset=54)
+      format_specification.AddNewSignature(b'FAT16   ', offset=54)
+
+      # FAT-32 file system hint.
+      format_specification.AddNewSignature(b'FAT32   ', offset=82)
+
+      # exFAT file system signature.
+      format_specification.AddNewSignature(b'EXFAT   ', offset=3)
 
     if definitions.PREFERRED_NTFS_BACK_END == self.TYPE_INDICATOR:
       # NTFS file system signature.
       format_specification.AddNewSignature(b'NTFS    ', offset=3)
 
-    # HFS boot block signature.
-    format_specification.AddNewSignature(b'LK', offset=0)
-
     if definitions.PREFERRED_HFS_BACK_END == self.TYPE_INDICATOR:
+      # HFS boot block signature.
+      # format_specification.AddNewSignature(b'LK', offset=0)
+
       # HFS+ file system signature.
       format_specification.AddNewSignature(b'H+', offset=1024)
 
