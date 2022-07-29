@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The Extended File System (HFS) file-like object implementation."""
+"""The Hierarchical File System (HFS) file-like object implementation."""
 
 import os
 
