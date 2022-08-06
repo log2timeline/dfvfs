@@ -200,6 +200,7 @@ setup(
     version=dfvfs.__version__,
     description=dfvfs_description,
     long_description=dfvfs_long_description,
+    long_description_content_type='text/plain',
     license='Apache License, Version 2.0',
     url='https://github.com/log2timeline/dfvfs',
     maintainer='Log2Timeline maintainers',
