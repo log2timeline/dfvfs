@@ -109,7 +109,7 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
     stat_attribute = file_entry._GetStatAttribute()
 
     self.assertIsNotNone(stat_attribute)
-    self.assertEqual(stat_attribute.device_number, None)
+    self.assertIsNone(stat_attribute.device_number)
     self.assertEqual(stat_attribute.group_identifier, 20)
     self.assertEqual(stat_attribute.inode_number, 21)
     self.assertEqual(stat_attribute.mode, 0o100644)
