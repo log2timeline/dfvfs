@@ -124,7 +124,8 @@ class ZipFileEntry(file_entry.FileEntry):
       return None
 
     time_elements = getattr(self._zip_info, 'date_time', None)
-    return dfdatetime_time_elements.TimeElements(time_elements)
+    return dfdatetime_time_elements.TimeElements(
+        time_elements_tuple=time_elements)
 
   @property
   def name(self):

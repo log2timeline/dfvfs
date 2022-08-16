@@ -628,14 +628,6 @@ dfvfs.vfs.tsk\_partition\_file\_system module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.vfs.vfs\_stat module
---------------------------
-
-.. automodule:: dfvfs.vfs.vfs_stat
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dfvfs.vfs.vshadow\_directory module
 -----------------------------------
 
