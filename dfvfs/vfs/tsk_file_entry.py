@@ -53,9 +53,8 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     else:
       granularity = dfdatetime_definitions.PRECISION_100_NANOSECONDS
 
-    super(TSKTime, self).__init__()
+    super(TSKTime, self).__init__(precision=precision or granularity)
     self._granularity = granularity
-    self._precision = precision or granularity
     self._timestamp = timestamp
     self.fraction_of_second = fraction_of_second
 

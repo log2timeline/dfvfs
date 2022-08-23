@@ -37,6 +37,11 @@ except ImportError:
 from dfvfs.resolver_helpers import fake_resolver_helper
 
 try:
+  from dfvfs.resolver_helpers import fat_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver_helpers import fvde_resolver_helper
 except ImportError:
   pass
