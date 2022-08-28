@@ -50,8 +50,11 @@ class Version1DynamicVHDIFileTest(test_lib.Ext2ImageFileTestCase):
     self._TestRead(self._vhdi_path_spec)
 
 
-class Version1DifferentialVHDIFileTest(test_lib.ImageFileTestCase):
+class Version1DifferentialVHDIFileTest(test_lib.Ext2ImageFileTestCase):
   """Tests the VHDI file-like object on a differential VHD image file."""
+
+  _INODE_ANOTHER_FILE = 16
+  _INODE_PASSWORDS_TXT = 15
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
