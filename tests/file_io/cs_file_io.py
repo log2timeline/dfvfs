@@ -12,7 +12,53 @@ from dfvfs.resolver import resolver
 from tests.file_io import test_lib
 
 
-class CSFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
+class CSFileTest(test_lib.ImageFileTestCase):
+  """Tests the Core Storage (CS) file-like object."""
+
+  _INODE_PASSWORDS_TXT = 25
+  _INODE_ANOTHER_FILE = 26
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    super(CSFileTest, self).setUp()
+    test_path = self._GetTestFilePath(['cs_single_volume.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    self._cs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, parent=self._raw_path_spec,
+        volume_index=0)
+
+  def testOpenCloseInode(self):
+    """Test the open and close functionality using an inode."""
+    self._TestOpenCloseInode(self._cs_path_spec)
+
+  def testOpenCloseLocation(self):
+    """Test the open and close functionality using a location."""
+    self._TestOpenCloseLocation(self._cs_path_spec)
+
+    # Try open with a path specification that has no parent.
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_CS, location='/cs1',
+        parent=self._raw_path_spec)
+    path_spec.parent = None
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(path_spec)
+
+  def testSeek(self):
+    """Test the seek functionality."""
+    self._TestSeek(self._cs_path_spec)
+
+  def testRead(self):
+    """Test the read functionality."""
+    self._TestRead(self._cs_path_spec)
+
+
+class CSFileWithKeyChainTest(test_lib.ImageFileTestCase):
   """Tests the Core Storage (CS) file-like object.
 
   The credentials are passed via the key chain.
@@ -25,7 +71,7 @@ class CSFileTestWithKeyChainTest(test_lib.ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CSFileTestWithKeyChainTest, self).setUp()
+    super(CSFileWithKeyChainTest, self).setUp()
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 

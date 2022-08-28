@@ -153,3 +153,25 @@ create_test_file_entries_with_extended_attributes "/Volumes/hfsplus_test";
 
 hdiutil detach disk${VOLUME_DEVICE_NUMBER};
 
+# Create raw disk image with a CoreStore volume group with a single logical volume
+PHYSICAL_VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 1 ));
+LOGICAL_VOLUME_DEVICE_NUMBER=$(( ${DEVICE_NUMBER} + 2 ));
+
+IMAGE_NAME="cs_single_volume";
+IMAGE_SIZE="48M";
+
+hdiutil create -size ${IMAGE_SIZE} -type UDIF ${SPECIMENS_PATH}/${IMAGE_NAME};
+hdiutil attach -nomount ${SPECIMENS_PATH}/${IMAGE_NAME}.dmg;
+
+diskutil coreStorage create test_volume_group disk${PHYSICAL_VOLUME_DEVICE_NUMBER}s1;
+
+VOLUME_GROUP_IDENTIFIER=`diskutil coreStorage list | grep 'Logical Volume Group' | tail -n1 | sed 's/^.* //'`;
+
+# Note that older versions of diskutil do not support using the volume group name
+diskutil coreStorage createVolume ${VOLUME_GROUP_IDENTIFIER} 'Journaled HFS+' test_logical_volume 100%
+
+create_test_file_entries "/Volumes/test_logical_volume";
+
+hdiutil detach disk${LOGICAL_VOLUME_DEVICE_NUMBER};
+hdiutil detach disk${PHYSICAL_VOLUME_DEVICE_NUMBER};
+
