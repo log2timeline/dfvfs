@@ -107,32 +107,6 @@ class OverlayFileEntryTestWithEXT4(shared_test_lib.BaseTestCase):
     test_attribute_value_data = test_attribute.read()
     self.assertEqual(test_attribute_value_data, b'upper extended attribute')
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._test_path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 9)
-
-    self.assertEqual(stat_object.mode, 420)
-    self.assertEqual(stat_object.uid, 0)
-    self.assertEqual(stat_object.gid, 0)
-
-    self.assertEqual(stat_object.atime, 1650628823)
-    self.assertFalse(hasattr(stat_object, 'atime_nano'))
-
-    self.assertEqual(stat_object.ctime, 1650628823)
-    self.assertFalse(hasattr(stat_object, 'ctime_nano'))
-
-    self.assertFalse(hasattr(stat_object, 'crtime'))
-
-    self.assertEqual(stat_object.mtime, 1650628823)
-    self.assertFalse(hasattr(stat_object, 'mtime_nano'))
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._test_path_spec)
@@ -417,33 +391,6 @@ class OverlayFileEntryTestWithXFS(shared_test_lib.BaseTestCase):
 
     test_attribute_value_data = test_attribute.read()
     self.assertEqual(test_attribute_value_data, b'upper extended attribute')
-
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._test_path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 9)
-
-    self.assertEqual(stat_object.mode, 420)
-    self.assertEqual(stat_object.uid, 0)
-    self.assertEqual(stat_object.gid, 0)
-
-    self.assertEqual(stat_object.atime, 1650628826)
-    self.assertEqual(stat_object.atime_nano, 4851118)
-
-    self.assertEqual(stat_object.ctime, 1650628826)
-    self.assertEqual(stat_object.ctime_nano, 4891116)
-
-    self.assertEqual(stat_object.crtime, 1650628826)
-    self.assertEqual(stat_object.ctime_nano, 4891116)
-
-    self.assertEqual(stat_object.mtime, 1650628826)
-    self.assertEqual(stat_object.mtime_nano, 4851118)
 
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""

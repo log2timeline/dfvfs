@@ -76,7 +76,8 @@ class OverlayDirectory(directory.Directory):
         subentry = resolver.Resolver.OpenFileEntry(subentry_spec)
         stat = subentry.GetStatAttribute()
 
-        if stat.type == definitions.FILE_ENTRY_TYPE_CHARACTER: # and device == 0/0:  # pylint: disable=line-too-long
+        if (stat.type == definitions.FILE_ENTRY_TYPE_CHARACTER and
+            stat.device_number == (0, 0)):
           whiteouts.add(overlay_path)
           continue
 
