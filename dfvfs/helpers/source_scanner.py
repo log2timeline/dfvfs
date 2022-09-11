@@ -241,7 +241,7 @@ class SourceScannerContext(object):
     Returns:
       bool: True if a file system was detected during the scan.
     """
-    return self._file_system_scan_nodes != {}
+    return bool(self._file_system_scan_nodes)
 
   def HasLockedScanNodes(self):
     """Determines if a locked scan node was detected during the scan.
@@ -252,7 +252,7 @@ class SourceScannerContext(object):
     Returns:
       bool: True if a locked scan node was detected during the scan.
     """
-    return self._locked_scan_nodes != {}
+    return bool(self._locked_scan_nodes)
 
   def HasScanNode(self, path_spec):
     """Determines if there is a scan node for a certain path specification.
@@ -718,7 +718,8 @@ class SourceScanner(object):
             'Unsupported source found more than one file system types.')
 
     # TODO: determine root location from file system or path specification.
-    if type_indicator == definitions.TYPE_INDICATOR_NTFS:
+    if type_indicator in (
+        definitions.TYPE_INDICATOR_FAT, definitions.TYPE_INDICATOR_NTFS):
       root_location = '\\'
     else:
       root_location = '/'

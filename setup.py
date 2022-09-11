@@ -27,9 +27,9 @@ except ImportError:
   from distutils.command.sdist import sdist
 
 version_tuple = (sys.version_info[0], sys.version_info[1])
-if version_tuple < (3, 6):
+if version_tuple < (3, 7):
   print((
-      'Unsupported Python version: {0:s}, version 3.6 or higher '
+      'Unsupported Python version: {0:s}, version 3.7 or higher '
       'required.').format(sys.version))
   sys.exit(1)
 
@@ -195,19 +195,23 @@ dfvfs_long_description = (
     'provide the actual implementation of the various storage media types, '
     'volume systems and file systems.')
 
+command_classes = {'sdist_test_data': sdist}
+if BdistMSICommand:
+  command_classes['bdist_msi'] = BdistMSICommand
+if BdistRPMCommand:
+  command_classes['bdist_rpm'] = BdistRPMCommand
+
 setup(
     name='dfvfs',
     version=dfvfs.__version__,
     description=dfvfs_description,
     long_description=dfvfs_long_description,
+    long_description_content_type='text/plain',
     license='Apache License, Version 2.0',
     url='https://github.com/log2timeline/dfvfs',
     maintainer='Log2Timeline maintainers',
     maintainer_email='log2timeline-maintainers@googlegroups.com',
-    cmdclass={
-        'bdist_msi': BdistMSICommand,
-        'bdist_rpm': BdistRPMCommand,
-        'sdist_test_data': sdist},
+    cmdclass=command_classes,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

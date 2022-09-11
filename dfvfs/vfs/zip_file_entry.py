@@ -73,23 +73,6 @@ class ZipFileEntry(file_entry.FileEntry):
 
     return zip_directory.ZIPDirectory(self._file_system, self.path_spec)
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(ZipFileEntry, self)._GetStat()
-
-    if self._zip_info is not None:
-      # Ownership and permissions stat information.
-      if self._external_attributes != 0:
-        if self._creator_system == self._CREATOR_SYSTEM_UNIX:
-          st_mode = self._external_attributes >> 16
-          stat_object.mode = st_mode & 0x0fff
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 
@@ -141,7 +124,8 @@ class ZipFileEntry(file_entry.FileEntry):
       return None
 
     time_elements = getattr(self._zip_info, 'date_time', None)
-    return dfdatetime_time_elements.TimeElements(time_elements)
+    return dfdatetime_time_elements.TimeElements(
+        time_elements_tuple=time_elements)
 
   @property
   def name(self):

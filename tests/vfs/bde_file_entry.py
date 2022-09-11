@@ -120,7 +120,7 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(data_stream)
 
   def testGetFileEntryByPathSpec(self):
-    """Test the get a file entry by path specification functionality."""
+    """Tests the GetFileEntryByPathSpec function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
     self.assertIsNotNone(file_entry)
 
@@ -132,49 +132,40 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
     parent_file_entry = file_entry.GetParentFileEntry()
     self.assertIsNone(parent_file_entry)
 
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    # Currently the BDE volume needs to be unlocked before its size can
-    # be determined.
-    resolver.Resolver.key_chain.SetCredential(
-        self._bde_path_spec, 'password', self._BDE_PASSWORD)
-
-    unlocked_file_system = bde_file_system.BDEFileSystem(
-        self._resolver_context, self._bde_path_spec)
-
-    unlocked_file_system.Open()
-
-    file_entry = unlocked_file_system.GetFileEntryByPathSpec(
-        self._bde_path_spec)
-
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 67108864)
-
-    self.assertEqual(stat_object.crtime, 1401712849)
-    self.assertEqual(stat_object.crtime_nano, 7281122)
-
-    resolver.Resolver.key_chain.SetCredential(
-        self._bde_path_spec, 'password', None)
-
-  def testIsFunctions(self):
-    """Test the Is? functions."""
+  def testIsAllocated(self):
+    """Test the IsAllocated function."""
     file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
-    self.assertIsNotNone(file_entry)
 
-    self.assertTrue(file_entry.IsRoot())
-    self.assertTrue(file_entry.IsVirtual())
+    self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsAllocated())
 
+  def testIsDevice(self):
+    """Test the IsDevice functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDevice())
+
+  def testIsDirectory(self):
+    """Test the IsDirectory functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsDirectory())
+
+  def testIsFile(self):
+    """Test the IsFile functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsFile())
+
+  def testIsLink(self):
+    """Test the IsLink functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
     self.assertFalse(file_entry.IsLink())
-    self.assertFalse(file_entry.IsPipe())
-    self.assertFalse(file_entry.IsSocket())
 
   def testIsLocked(self):
     """Tests the IsLocked function."""
@@ -182,6 +173,34 @@ class BDEFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertIsNotNone(file_entry)
     self.assertTrue(file_entry.IsLocked())
+
+  def testIsPipe(self):
+    """Test the IsPipe functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsPipe())
+
+  def testIsRoot(self):
+    """Test the IsRoot functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsRoot())
+
+  def testIsSocket(self):
+    """Test the IsSocket functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertFalse(file_entry.IsSocket())
+
+  def testIsVirtual(self):
+    """Test the IsVirtual functions."""
+    file_entry = self._file_system.GetFileEntryByPathSpec(self._bde_path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertTrue(file_entry.IsVirtual())
 
 
 if __name__ == '__main__':

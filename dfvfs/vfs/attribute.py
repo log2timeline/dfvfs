@@ -25,6 +25,8 @@ class StatAttribute(object):
   """Attribute that represents a POSIX stat.
 
   Attributes:
+    device_number (Tuple[int, int]): major and minor device number (if block or
+        character device file), derived from st_rdev.
     group_identifier (int): group identifier (GID), equivalent to st_gid.
     inode_number (int): number of the corresponding inode, equivalent to st_ino.
     mode (int): access mode, equivalent to st_mode.
@@ -46,6 +48,7 @@ class StatAttribute(object):
   def __init__(self):
     """Initializes an attribute."""
     super(StatAttribute, self).__init__()
+    self.device_number = None
     self.group_identifier = None
     self.inode_number = None
     self.mode = None
@@ -54,4 +57,4 @@ class StatAttribute(object):
     self.size = None
     self.type = None
 
-    # TODO: consider adding st_dev, st_rdev, st_blksize or st_blocks.
+    # TODO: consider adding st_dev, st_blksize or st_blocks.

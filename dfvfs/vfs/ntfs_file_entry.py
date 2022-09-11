@@ -62,10 +62,13 @@ class NTFSFileEntry(file_entry.FileEntry):
         is_virtual=is_virtual)
     self._fsntfs_file_entry = fsntfs_file_entry
 
-    if self._IsLink(fsntfs_file_entry.file_attribute_flags):
+    file_attribute_flags = fsntfs_file_entry.file_attribute_flags
+    if self._IsLink(file_attribute_flags):
       self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
     elif fsntfs_file_entry.has_directory_entries_index():
       self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+    elif file_attribute_flags & pyfsntfs.file_attribute_flags.DEVICE:
+      self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
     else:
       self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
@@ -131,21 +134,6 @@ class NTFSFileEntry(file_entry.FileEntry):
         _, _, self._link = self._link.rpartition(':')
 
     return self._link
-
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(NTFSFileEntry, self)._GetStat()
-
-    # Other stat information.
-    file_reference = self._fsntfs_file_entry.file_reference
-    stat_object.ino = file_reference & self._FILE_REFERENCE_MFT_ENTRY_BITMASK
-    stat_object.fs_type = 'NTFS'
-
-    return stat_object
 
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.

@@ -103,25 +103,6 @@ class APFSFileEntry(file_entry.FileEntry):
 
     return self._link
 
-  def _GetStat(self):
-    """Retrieves information about the file entry.
-
-    Returns:
-      VFSStat: a stat object.
-    """
-    stat_object = super(APFSFileEntry, self)._GetStat()
-
-    # Ownership and permissions stat information.
-    stat_object.mode = self._fsapfs_file_entry.file_mode & 0x0fff
-    stat_object.uid = self._fsapfs_file_entry.owner_identifier
-    stat_object.gid = self._fsapfs_file_entry.group_identifier
-
-    # Other stat information.
-    stat_object.ino = self._fsapfs_file_entry.identifier
-    stat_object.fs_type = 'APFS'
-
-    return stat_object
-
   def _GetStatAttribute(self):
     """Retrieves a stat attribute.
 
@@ -129,11 +110,11 @@ class APFSFileEntry(file_entry.FileEntry):
       StatAttribute: a stat attribute or None if not available.
     """
     stat_attribute = attribute.StatAttribute()
+    stat_attribute.device_number = self._fsapfs_file_entry.device_number
     stat_attribute.group_identifier = self._fsapfs_file_entry.group_identifier
     stat_attribute.inode_number = self._fsapfs_file_entry.identifier
     stat_attribute.mode = self._fsapfs_file_entry.file_mode
-    # TODO: implement number of hard links support in pyfsapfs
-    # stat_attribute.number_of_links = self._fsapfs_file_entry.number_of_links
+    stat_attribute.number_of_links = self._fsapfs_file_entry.number_of_links
     stat_attribute.owner_identifier = self._fsapfs_file_entry.owner_identifier
     stat_attribute.size = self._fsapfs_file_entry.size
     stat_attribute.type = self.entry_type

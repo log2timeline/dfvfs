@@ -128,6 +128,72 @@ class TSKFileTestExt2(test_lib.Ext2ImageFileTestCase):
     # TODO: add boundary scenarios.
 
 
+class TSKFileTestFAT12(test_lib.FAT12ImageFileTestCase):
+  """Tests the SleuthKit (TSK) file-like object on FAT-12."""
+
+  _IDENTIFIER_ANOTHER_FILE = 584
+  _IDENTIFIER_PASSWORDS_TXT = 7
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    super(TSKFileTestFAT12, self).setUp()
+    self._resolver_context = context.Context()
+    test_path = self._GetTestFilePath(['fat12.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
+  def testOpenCloseIdentifier(self):
+    """Test the open and close functionality using an identifier."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, inode=self._IDENTIFIER_PASSWORDS_TXT,
+        parent=self._raw_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseIdentifier(file_object)
+
+  def testOpenCloseLocation(self):
+    """Test the open and close functionality using a location."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
+        parent=self._raw_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+
+    self._TestOpenCloseLocation(file_object)
+
+    # Try open with a path specification that has no parent.
+    path_spec.parent = None
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+
+    with self.assertRaises(errors.PathSpecError):
+      self._TestOpenCloseLocation(file_object)
+
+  def testSeek(self):
+    """Test the seek functionality."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/a_directory/another_file',
+        inode=self._IDENTIFIER_ANOTHER_FILE, parent=self._raw_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+
+    self._TestSeek(file_object)
+
+  def testRead(self):
+    """Test the read functionality."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
+        inode=self._IDENTIFIER_PASSWORDS_TXT, parent=self._raw_path_spec)
+    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+
+    self._TestRead(file_object)
+
+
 class TSKFileTestHFS(test_lib.HFSImageFileTestCase):
   """Tests the SleuthKit (TSK) file-like object on HFS."""
 

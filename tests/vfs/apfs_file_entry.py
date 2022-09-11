@@ -168,38 +168,6 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     test_attribute_value_data = test_attribute.read()
     self.assertEqual(test_attribute_value_data, b'My extended attribute')
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_APFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._apfs_container_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 420)
-    self.assertEqual(stat_object.uid, 99)
-    self.assertEqual(stat_object.gid, 99)
-
-    self.assertEqual(stat_object.atime, 1642144781)
-    self.assertEqual(stat_object.atime_nano, 2174301)
-
-    self.assertEqual(stat_object.ctime, 1642144781)
-    self.assertEqual(stat_object.ctime_nano, 2206372)
-
-    self.assertEqual(stat_object.crtime, 1642144781)
-    self.assertEqual(stat_object.crtime_nano, 2206372)
-
-    self.assertEqual(stat_object.mtime, 1642144781)
-    self.assertEqual(stat_object.mtime_nano, 2174301)
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -213,11 +181,11 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     stat_attribute = file_entry._GetStatAttribute()
 
     self.assertIsNotNone(stat_attribute)
+    self.assertIsNone(stat_attribute.device_number)
     self.assertEqual(stat_attribute.group_identifier, 99)
     self.assertEqual(stat_attribute.inode_number, 19)
     self.assertEqual(stat_attribute.mode, 0o100644)
-    # TODO: implement number of hard links support in pyfshfs
-    # self.assertEqual(stat_attribute.number_of_links, 1)
+    self.assertEqual(stat_attribute.number_of_links, 1)
     self.assertEqual(stat_attribute.owner_identifier, 99)
     self.assertEqual(stat_attribute.size, 22)
     self.assertEqual(stat_attribute.type, stat_attribute.TYPE_FILE)
@@ -645,38 +613,6 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(parent_file_entry)
 
     self.assertEqual(parent_file_entry.name, 'a_directory')
-
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_APFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file',
-        parent=self._apfs_container_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 420)
-    self.assertEqual(stat_object.uid, 99)
-    self.assertEqual(stat_object.gid, 99)
-
-    self.assertEqual(stat_object.atime, 1539321508)
-    self.assertEqual(stat_object.atime_nano, 9478457)
-
-    self.assertEqual(stat_object.ctime, 1539321508)
-    self.assertEqual(stat_object.ctime_nano, 9495127)
-
-    self.assertEqual(stat_object.crtime, 1539321508)
-    self.assertEqual(stat_object.crtime_nano, 9495127)
-
-    self.assertEqual(stat_object.mtime, 1539321508)
-    self.assertEqual(stat_object.mtime_nano, 9478457)
 
   def testIsFunctions(self):
     """Tests the Is? functions."""

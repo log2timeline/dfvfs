@@ -276,6 +276,30 @@ dfvfs.vfs.fake\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.fat\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.fat_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.fat\_file\_entry module
+---------------------------------
+
+.. automodule:: dfvfs.vfs.fat_file_entry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.fat\_file\_system module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.fat_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.file\_entry module
 ----------------------------
 
@@ -624,14 +648,6 @@ dfvfs.vfs.tsk\_partition\_file\_system module
 ---------------------------------------------
 
 .. automodule:: dfvfs.vfs.tsk_partition_file_system
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dfvfs.vfs.vfs\_stat module
---------------------------
-
-.. automodule:: dfvfs.vfs.vfs_stat
    :members:
    :undoc-members:
    :show-inheritance:

@@ -100,6 +100,14 @@ dfvfs.resolver\_helpers.fake\_resolver\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.resolver\_helpers.fat\_resolver\_helper module
+----------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.fat_resolver_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.resolver\_helpers.fvde\_resolver\_helper module
 -----------------------------------------------------
 

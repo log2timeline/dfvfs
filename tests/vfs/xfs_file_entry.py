@@ -124,36 +124,6 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
     test_attribute_value_data = test_attribute.read()
     self.assertEqual(test_attribute_value_data, b'My extended attribute')
 
-  def testGetStat(self):
-    """Tests the _GetStat function."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_XFS, inode=self._INODE_ANOTHER_FILE,
-        location='/a_directory/another_file', parent=self._raw_path_spec)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry._GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 22)
-
-    self.assertEqual(stat_object.mode, 0o664)
-    self.assertEqual(stat_object.uid, 1000)
-    self.assertEqual(stat_object.gid, 1000)
-
-    self.assertEqual(stat_object.atime, 1626962854)
-    self.assertEqual(stat_object.atime_nano, 8136161)
-
-    self.assertEqual(stat_object.ctime, 1626962854)
-    self.assertEqual(stat_object.ctime_nano, 8146161)
-
-    self.assertEqual(stat_object.crtime, 1626962854)
-    self.assertEqual(stat_object.crtime_nano, 8136161)
-
-    self.assertEqual(stat_object.mtime, 1626962854)
-    self.assertEqual(stat_object.mtime_nano, 8146161)
-
   def testGetStatAttribute(self):
     """Tests the _GetStatAttribute function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -165,6 +135,7 @@ class XFSFileEntryTest(shared_test_lib.BaseTestCase):
     stat_attribute = file_entry._GetStatAttribute()
 
     self.assertIsNotNone(stat_attribute)
+    self.assertIsNone(stat_attribute.device_number)
     self.assertEqual(stat_attribute.group_identifier, 1000)
     self.assertEqual(stat_attribute.inode_number, 11078)
     self.assertEqual(stat_attribute.mode, 0o100664)

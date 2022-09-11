@@ -92,6 +92,14 @@ dfvfs.file\_io.fake\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.fat\_file\_io module
+-----------------------------------
+
+.. automodule:: dfvfs.file_io.fat_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.file\_io module
 ------------------------------
 

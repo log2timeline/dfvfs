@@ -124,6 +124,98 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     # TODO: add boundary scenarios.
 
 
+class FAT12ImageFileTestCase(shared_test_lib.BaseTestCase):
+  """Shared functionality for storage media image with a FAT-12 file system."""
+
+  _IDENTIFIER_ANOTHER_FILE = 584
+  _IDENTIFIER_PASSWORDS_TXT = 7
+
+  def setUp(self):
+    """Sets up the needed objects used throughout the test."""
+    self._resolver_context = context.Context()
+
+  def tearDown(self):
+    """Cleans up the needed objects used throughout the test."""
+    self._resolver_context.Empty()
+
+  def _TestOpenCloseIdentifier(self, file_object):
+    """Test the open and close functionality using an identifier.
+
+    Args:
+      file_object (FileIO): file-like object.
+    """
+    file_object.Open()
+    self.assertEqual(file_object.get_size(), 116)
+
+    # TODO: add a failing scenario.
+
+  def _TestOpenCloseLocation(self, file_object):
+    """Test the open and close functionality using a location.
+
+    Args:
+      file_object (FileIO): file-like object.
+    """
+    file_object.Open()
+    self.assertEqual(file_object.get_size(), 116)
+
+  def _TestSeek(self, file_object):
+    """Test the seek functionality.
+
+    Args:
+      file_object (FileIO): file-like object.
+    """
+    file_object.Open()
+    self.assertEqual(file_object.get_size(), 22)
+
+    file_object.seek(10)
+    self.assertEqual(file_object.read(5), b'other')
+    self.assertEqual(file_object.get_offset(), 15)
+
+    file_object.seek(-10, os.SEEK_END)
+    self.assertEqual(file_object.read(5), b'her f')
+
+    file_object.seek(2, os.SEEK_CUR)
+    self.assertEqual(file_object.read(2), b'e.')
+
+    # Conforming to the POSIX seek the offset can exceed the file size
+    # but reading will result in no data being returned.
+    file_object.seek(300, os.SEEK_SET)
+    self.assertEqual(file_object.get_offset(), 300)
+    self.assertEqual(file_object.read(2), b'')
+
+    with self.assertRaises(IOError):
+      file_object.seek(-10, os.SEEK_SET)
+
+    # On error the offset should not change.
+    self.assertEqual(file_object.get_offset(), 300)
+
+    with self.assertRaises(IOError):
+      file_object.seek(10, 5)
+
+    # On error the offset should not change.
+    self.assertEqual(file_object.get_offset(), 300)
+
+  def _TestRead(self, file_object):
+    """Test the read functionality.
+
+    Args:
+      file_object (FileIO): file-like object.
+    """
+    file_object.Open()
+    read_buffer = file_object.read()
+
+    expected_buffer = (
+        b'place,user,password\n'
+        b'bank,joesmith,superrich\n'
+        b'alarm system,-,1234\n'
+        b'treasure chest,-,1111\n'
+        b'uber secret laire,admin,admin\n')
+
+    self.assertEqual(read_buffer, expected_buffer)
+
+    # TODO: add boundary scenarios.
+
+
 class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
   """Shared functionality for storage media image with a HFS file system."""
 

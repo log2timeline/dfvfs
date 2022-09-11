@@ -73,7 +73,6 @@ class HFSPathSpecTest(test_lib.PathSpecTestCase):
 
     self.assertEqual(path_spec.comparable, expected_comparable)
 
-
     path_spec = hfs_path_spec.HFSPathSpec(
         identifier=1, parent=self._path_spec)
 

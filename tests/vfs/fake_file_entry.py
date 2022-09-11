@@ -152,25 +152,6 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(parent_file_entry.name, 'testdir_fake')
 
-  def testGetStat(self):
-    """Tests the GetStat function."""
-    test_file = '/test_data/testdir_fake/file1.txt'
-    path_spec = fake_path_spec.FakePathSpec(location=test_file)
-    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-    self.assertIsNotNone(file_entry)
-
-    stat_object = file_entry.GetStat()
-
-    self.assertIsNotNone(stat_object)
-    self.assertEqual(stat_object.type, stat_object.TYPE_FILE)
-    self.assertEqual(stat_object.size, 5)
-
-    # The date and time values are in a seconds precision and
-    # cannot be predetermined.
-    self.assertNotEqual(stat_object.atime, 0)
-    self.assertNotEqual(stat_object.ctime, 0)
-    self.assertNotEqual(stat_object.mtime, 0)
-
   def testIsFunctions(self):
     """Test the Is? functions."""
     test_file = '/test_data/testdir_fake/file1.txt'

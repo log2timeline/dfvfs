@@ -7,7 +7,6 @@ import sre_constants
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import glob2regex
-from dfvfs.lib import decorators
 from dfvfs.path import factory as path_spec_factory
 
 
@@ -341,20 +340,6 @@ class FindSpec(object):
     return bool(self._location_segments is not None and
                 segment_index >= self._number_of_location_segments)
 
-  @decorators.deprecated
-  def AtMaximumDepth(self, segment_index):
-    """Determines if the find specification is at maximum depth.
-
-    This method is deprecated use AtLastLocationSegment instead.
-
-    Args:
-      segment_index (int): index of the location path segment.
-
-    Returns:
-      bool: True if at maximum depth, False if not.
-    """
-    return self.AtLastLocationSegment(segment_index)
-
   def CompareLocation(self, file_entry, mount_point=None):
     """Compares a file entry location against the find specification.
 
@@ -456,42 +441,6 @@ class FindSpec(object):
     """
     return bool(self._location_segments is not None and
                 segment_index == self._number_of_location_segments)
-
-  @decorators.deprecated
-  def Matches(self, file_entry, search_depth=None):
-    """Compares a file entry against the find specification.
-
-    This method is deprecated use CompareNameWithLocationSegment, CompareTraits
-    or CompareLocation instead.
-
-    Args:
-      file_entry (FileEntry): file entry.
-      search_depth (Optional[int]): number of location path segments to compare,
-          where None represents the maximum search depth for the find
-          specification.
-
-    Returns:
-      tuple: containing:
-
-        bool: True if the traits of the file entry, such as type, matches the
-            find specification, False otherwise.
-        bool: True if the location matches, False if not or None if no location
-            specified.
-    """
-    if self._location_segments is None:
-      location_match = None
-    else:
-      if search_depth is None:
-        search_depth = self._number_of_location_segments
-
-      location_match = self._CompareWithLocationSegment(
-          file_entry.name, search_depth)
-      is_last_location_segment = self.IsLastLocationSegment(search_depth)
-      if not location_match or not is_last_location_segment:
-        return False, location_match
-
-    match = self.CompareTraits(file_entry)
-    return match, location_match
 
 
 class FileSystemSearcher(object):
