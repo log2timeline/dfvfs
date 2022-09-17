@@ -1327,9 +1327,6 @@ class TSKFileEntryTestISO9660(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry._attributes)
     self.assertEqual(len(file_entry._attributes), 0)
 
-    # No extended attributes are returned.
-    # Also see: https://github.com/py4n6/pytsk/issues/79.
-
   def testGetDataStreams(self):
     """Tests the _GetDataStreams function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -1595,8 +1592,6 @@ class TSKFileEntryTestISO9660(shared_test_lib.BaseTestCase):
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 4)
 
-    # Note that passwords.txt~ is currently ignored by dfVFS, since
-    # its directory entry has no pytsk3.TSK_FS_META object.
     expected_sub_file_entry_names = [
         'A_DIRECTORY',
         'LOST_FOUND',
