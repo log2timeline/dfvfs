@@ -540,8 +540,27 @@ class VolumeScanner(object):
       raise errors.ScannerError(
           'No such device, file or directory: {0:s}.'.format(source_path))
 
+    source_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=source_path)
+
+    return self._ScanSourcePathSpec(source_path_spec)
+
+  def _ScanSourcePathSpec(self, source_path_spec):
+    """Scans the source path specification for supported formats.
+
+    Args:
+      source_path_spec (dfvfs.PathSpec): source path specification.
+
+    Returns:
+      SourceScannerContext: source scanner context.
+
+    Raises:
+      ScannerError: if the source path does not exists, or if the source path
+          is not a file or directory, or if the format of or within the source
+          file is not supported.
+    """
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(source_path)
+    scan_context.AddScanNode(source_path_spec, None)
 
     try:
       self._source_scanner.Scan(scan_context)
