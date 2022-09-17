@@ -1,13 +1,6 @@
 #!/bin/bash
 #
 # Script to generate dfVFS test files on Linux.
-#
-# Requires:
-# * Linux
-# * dd
-# * mke2fs
-# * mkntfs
-# * qemu-img
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -94,6 +87,7 @@ assert_availability_binary cryptsetup;
 assert_availability_binary dd;
 assert_availability_binary ewfacquire;
 assert_availability_binary fdisk;
+assert_availability_binary genisoimage;
 assert_availability_binary gdisk;
 assert_availability_binary hformat;
 assert_availability_binary losetup;
@@ -424,6 +418,13 @@ sudo mount -o loop,rw,gid=${CURRENT_GID},uid=${CURRENT_UID} ${IMAGE_FILE} ${MOUN
 sudo chown ${USERNAME} ${MOUNT_POINT};
 
 create_test_file_entries_without_link ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+# Create test image with ISO9660 level 3 file system
+sudo mount -o loop,rw test_data/ext2.raw ${MOUNT_POINT};
+
+genisoimage -input-charset utf8 -iso-level 3 -o test_data/iso9660.raw ${MOUNT_POINT};
 
 sudo umount ${MOUNT_POINT};
 

@@ -194,6 +194,10 @@ class TSKFileEntry(file_entry.FileEntry):
       pytsk3.TSK_FS_TYPE_HFS,
       pytsk3.TSK_FS_TYPE_HFS_DETECT]
 
+  _TSK_ISO9660_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_ISO9660,
+      pytsk3.TSK_FS_TYPE_ISO9660_DETECT]
+
   _TSK_NTFS_FS_TYPES = [
       pytsk3.TSK_FS_TYPE_NTFS,
       pytsk3.TSK_FS_TYPE_NTFS_DETECT]
@@ -222,6 +226,7 @@ class TSKFileEntry(file_entry.FileEntry):
   _TSK_CRTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_EXT4]
   _TSK_CRTIME_FS_TYPES.extend(_TSK_FAT_FS_TYPES)
   _TSK_CRTIME_FS_TYPES.extend(_TSK_HFS_FS_TYPES)
+  _TSK_CRTIME_FS_TYPES.extend(_TSK_ISO9660_FS_TYPES)
   _TSK_CRTIME_FS_TYPES.extend(_TSK_NTFS_FS_TYPES)
 
   _TSK_DTIME_FS_TYPES = _TSK_EXT_FS_TYPES
