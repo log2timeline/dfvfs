@@ -179,7 +179,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetFileSystemTypeIndicatorsEXT2(self):
-    """Tests the GetFileSystemTypeIndicators function on an ext2 file system."""
+    """Tests the GetFileSystemTypeIndicators function on ext2."""
     test_file = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_file)
 
@@ -191,7 +191,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetFileSystemTypeIndicatorsFAT12(self):
-    """Tests the GetFileSystemTypeIndicators function on a FAT12 file system."""
+    """Tests the GetFileSystemTypeIndicators function on FAT-12."""
     test_file = self._GetTestFilePath(['fat12.raw'])
     self._SkipIfPathNotExists(test_file)
 
@@ -202,8 +202,20 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 
+  def testGetFileSystemTypeIndicatorsISO9660(self):
+    """Tests the GetFileSystemTypeIndicators function on ISO-9660."""
+    test_file = self._GetTestFilePath(['iso9660.raw'])
+    self._SkipIfPathNotExists(test_file)
+
+    path_spec = os_path_spec.OSPathSpec(location=test_file)
+    path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+    expected_type_indicators = [definitions.TYPE_INDICATOR_TSK]
+    type_indicators = analyzer.Analyzer.GetFileSystemTypeIndicators(path_spec)
+    self.assertEqual(type_indicators, expected_type_indicators)
+
   def testGetFileSystemTypeIndicatorsHFSPlus(self):
-    """Tests the GetFileSystemTypeIndicators function on a HFS+ file system."""
+    """Tests the GetFileSystemTypeIndicators function on HFS+."""
     test_file = self._GetTestFilePath(['hfsplus.raw'])
     self._SkipIfPathNotExists(test_file)
 
@@ -215,7 +227,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetFileSystemTypeIndicatorsNTFS(self):
-    """Tests the GetFileSystemTypeIndicators function on a NTFS file system."""
+    """Tests the GetFileSystemTypeIndicators function on NTFS."""
     test_file = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_file)
 
@@ -227,7 +239,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(type_indicators, expected_type_indicators)
 
   def testGetFileSystemTypeIndicatorsXFS(self):
-    """Tests the GetFileSystemTypeIndicators function on an XFS file system."""
+    """Tests the GetFileSystemTypeIndicators function on XFS."""
     test_file = self._GetTestFilePath(['xfs.raw'])
     self._SkipIfPathNotExists(test_file)
 
