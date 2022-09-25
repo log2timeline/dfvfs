@@ -11,6 +11,7 @@ from dfvfs.lib import errors
 from dfvfs.path import fat_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import attribute
+from dfvfs.vfs import extent
 from dfvfs.vfs import fat_directory
 from dfvfs.vfs import file_entry
 
@@ -159,6 +160,31 @@ class FATFileEntry(file_entry.FileEntry):
   def size(self):
     """int: size of the file entry in bytes or None if not available."""
     return self._fsfat_file_entry.size
+
+  def GetExtents(self):
+    """Retrieves the extents.
+
+    Returns:
+      list[Extent]: the extents.
+    """
+    if self.entry_type != definitions.FILE_ENTRY_TYPE_FILE:
+      return []
+
+    extents = []
+    for extent_index in range(self._fsfat_file_entry.number_of_extents):
+      extent_offset, extent_size, extent_flags = (
+          self._fsfat_file_entry.get_extent(extent_index))
+
+      if extent_flags & 0x1:
+        extent_type = definitions.EXTENT_TYPE_SPARSE
+      else:
+        extent_type = definitions.EXTENT_TYPE_DATA
+
+      data_stream_extent = extent.Extent(
+          extent_type=extent_type, offset=extent_offset, size=extent_size)
+      extents.append(data_stream_extent)
+
+    return extents
 
   def GetFileObject(self, data_stream_name=''):
     """Retrieves a file-like object of a specific data stream.

@@ -210,6 +210,32 @@ class FATFileEntryTest(shared_test_lib.BaseTestCase):
     data_stream = file_entry.GetDataStream('')
     self.assertIsNotNone(data_stream)
 
+  def testGetExtents(self):
+    """Tests the GetExtents function."""
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FAT,
+        identifier=self._IDENTIFIER_ANOTHER_FILE,
+        location='\\a_directory\\another_file',
+        parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents()
+    self.assertEqual(len(extents), 1)
+
+    self.assertEqual(extents[0].extent_type, definitions.EXTENT_TYPE_DATA)
+    self.assertEqual(extents[0].offset, 31232)
+    self.assertEqual(extents[0].size, 2048)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_FAT, identifier=self._IDENTIFIER_A_DIRECTORY,
+        location='\\a_directory', parent=self._raw_path_spec)
+    file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+    self.assertIsNotNone(file_entry)
+
+    extents = file_entry.GetExtents()
+    self.assertEqual(len(extents), 0)
+
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
