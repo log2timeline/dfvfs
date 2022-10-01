@@ -696,8 +696,8 @@ class SourceScanner(object):
           source_path_spec, resolver_context=self._resolver_context)
     except RuntimeError as exception:
       raise errors.BackEndError((
-          'Unable to process source path specification with error: '
-          '{0!s}').format(exception))
+          f'Unable to process source path specification with error: '
+          f'{exception!s}'))
 
     if not type_indicators:
       return None
@@ -757,8 +757,8 @@ class SourceScanner(object):
           source_path_spec, resolver_context=self._resolver_context)
     except RuntimeError as exception:
       raise errors.BackEndError((
-          'Unable to process source path specification with error: '
-          '{0!s}').format(exception))
+          f'Unable to process source path specification with error: '
+          f'{exception!s}'))
 
     if not type_indicators:
       # The RAW storage media image type cannot be detected based on
@@ -820,8 +820,8 @@ class SourceScanner(object):
           source_path_spec, resolver_context=self._resolver_context)
     except (IOError, RuntimeError) as exception:
       raise errors.BackEndError((
-          'Unable to process source path specification with error: '
-          '{0!s}').format(exception))
+          f'Unable to process source path specification with error: '
+          f'{exception!s}'))
 
     if not type_indicators:
       return None
@@ -883,7 +883,7 @@ class SourceScanner(object):
             fsapfs_volume, path_spec, resolver.Resolver.key_chain)
       except IOError as exception:
         raise errors.BackEndError(
-            'Unable to unlock APFS volume with error: {0!s}'.format(exception))
+            f'Unable to unlock APFS volume with error: {exception!s}')
 
     else:
       file_object = resolver.Resolver.OpenFileObject(

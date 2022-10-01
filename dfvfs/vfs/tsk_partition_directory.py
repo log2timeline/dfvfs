@@ -38,7 +38,7 @@ class TSKPartitionDirectory(directory.Directory):
 
         if tsk_partition.TSKVsPartIsAllocated(tsk_vs_part):
           partition_index += 1
-          kwargs['location'] = '/p{0:d}'.format(partition_index)
+          kwargs['location'] = f'/p{partition_index:d}'
 
         kwargs['part_index'] = part_index
         part_index += 1

@@ -53,8 +53,8 @@ class LVMFile(file_io.FileIO):
     if (volume_index < 0 or
         volume_index >= vslvm_volume_group.number_of_logical_volumes):
       raise errors.PathSpecError((
-          'Unable to retrieve logical volume index: {0:d} from path '
-          'specification.').format(volume_index))
+          f'Unable to retrieve logical volume index: {volume_index:d} from '
+          f'path specification.'))
 
     self._vslvm_logical_volume = vslvm_volume_group.get_logical_volume(
         volume_index)

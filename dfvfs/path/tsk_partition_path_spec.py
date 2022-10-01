@@ -47,11 +47,11 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.location is not None:
-      string_parts.append('location: {0:s}'.format(self.location))
+      string_parts.append(f'location: {self.location:s}')
     if self.part_index is not None:
-      string_parts.append('part index: {0:d}'.format(self.part_index))
+      string_parts.append(f'part index: {self.part_index:d}')
     if self.start_offset is not None:
-      string_parts.append('start offset: 0x{0:08x}'.format(self.start_offset))
+      string_parts.append(f'start offset: 0x{self.start_offset:08x}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

@@ -25,9 +25,8 @@ class LVMDirectory(directory.Directory):
         location == self._file_system.LOCATION_ROOT):
       vslvm_volume_group = self._file_system.GetLVMVolumeGroup()
 
-      for volume_index in range(
-          0, vslvm_volume_group.number_of_logical_volumes):
-        location = '/lvm{0:d}'.format(volume_index + 1)
+      for volume_index in range(vslvm_volume_group.number_of_logical_volumes):
+        lvm_volume_index = volume_index + 1
         yield lvm_path_spec.LVMPathSpec(
-            location=location, parent=self.path_spec.parent,
+            location=f'/lvm{lvm_volume_index:d}', parent=self.path_spec.parent,
             volume_index=volume_index)

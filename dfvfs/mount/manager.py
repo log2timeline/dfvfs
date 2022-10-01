@@ -38,7 +38,7 @@ class MountPointManager(object):
       KeyError: if the corresponding mount point is not set.
     """
     if mount_point not in cls._mount_points:
-      raise KeyError('Mount point: {0:s} not set.'.format(mount_point))
+      raise KeyError(f'Mount point: {mount_point:s} not set.')
 
     del cls._mount_points[mount_point]
 
@@ -67,6 +67,6 @@ class MountPointManager(object):
       KeyError: if the corresponding mount point is already set.
     """
     if mount_point in cls._mount_points:
-      raise KeyError('Mount point: {0:s} already set.'.format(mount_point))
+      raise KeyError(f'Mount point: {mount_point:s} already set.')
 
     cls._mount_points[mount_point] = path_spec

@@ -146,9 +146,9 @@ class CPIOArchiveFile(data_format.DataFormat):
         try:
           value = int(value, 8)
         except ValueError:
-          raise errors.FileFormatError(
-              'Unable to convert attribute: {0:s} into an integer'.format(
-                  attribute_name))
+          raise errors.FileFormatError((
+              f'Unable to convert attribute: {attribute_name:s} into '
+              f'an integer'))
 
         value = setattr(file_entry, attribute_name, value)
 
@@ -158,9 +158,9 @@ class CPIOArchiveFile(data_format.DataFormat):
         try:
           value = int(value, 16)
         except ValueError:
-          raise errors.FileFormatError(
-              'Unable to convert attribute: {0:s} into an integer'.format(
-                  attribute_name))
+          raise errors.FileFormatError((
+              f'Unable to convert attribute: {attribute_name:s} into '
+              f'an integer'))
 
         value = setattr(file_entry, attribute_name, value)
 

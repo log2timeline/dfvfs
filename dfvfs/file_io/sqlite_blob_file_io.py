@@ -90,30 +90,33 @@ class SQLiteBlobFile(file_io.FileIO):
     # Sanity check the table and column names.
     error_string = ''
     if not database_object.HasTable(table_name):
-      error_string = 'Missing table: {0:s}'.format(table_name)
+      error_string = f'Missing table: {table_name:s}'
 
     elif not database_object.HasColumn(table_name, column_name):
-      error_string = 'Missing column: {0:s} in table: {1:s}'.format(
-          column_name, table_name)
+      error_string = (
+          f'Missing column: {column_name:s} in table: {table_name:s}')
 
     elif not row_condition:
-      query = 'SELECT {0:s} FROM {1:s} LIMIT 1 OFFSET {2:d}'.format(
-          column_name, table_name, row_index)
+      query = (f'SELECT {column_name:s} FROM {table_name:s} LIMIT 1 '
+               f'OFFSET {row_index:d}')
       rows = database_object.Query(query)
 
     elif not database_object.HasColumn(table_name, row_condition[0]):
+      condition_column_name = row_condition[0]
       error_string = (
-          'Missing row condition column: {0:s} in table: {1:s}'.format(
-              row_condition[0], table_name))
+          f'Missing row condition column: {condition_column_name:s} in table: '
+          f'{table_name:s}')
 
     elif row_condition[1] not in self._OPERATORS:
+      condition_operator = row_condition[1]
       error_string = (
-          'Unsupported row condition operator: {0:s}.'.format(
-              row_condition[1]))
+          f'Unsupported row condition operator: {condition_operator:s}.')
 
     else:
-      query = 'SELECT {0:s} FROM {1:s} WHERE {2:s} {3:s} ?'.format(
-          column_name, table_name, row_condition[0], row_condition[1])
+      condition_column_name = row_condition[0]
+      condition_operator = row_condition[1]
+      query = (f'SELECT {column_name:s} FROM {table_name:s} '
+               f'WHERE {condition_column_name:s} {condition_operator:s} ?')
       rows = database_object.Query(query, parameters=(row_condition[2], ))
 
     # Make sure the query returns a single row, using cursor.rowcount
@@ -121,16 +124,15 @@ class SQLiteBlobFile(file_io.FileIO):
     if not error_string and (len(rows) != 1 or len(rows[0]) != 1):
       if not row_condition:
         error_string = (
-            'Unable to open blob in table: {0:s} and column: {1:s} '
-            'for row: {2:d}.').format(table_name, column_name, row_index)
+            f'Unable to open blob in table: {table_name:s} and column: '
+            f'{column_name:s} for row: {row_index:d}.')
 
       else:
         row_condition_string = ' '.join([
-            '{0!s}'.format(value) for value in iter(row_condition)])
+            f'{value!s}' for value in iter(row_condition)])
         error_string = (
-            'Unable to open blob in table: {0:s} and column: {1:s} '
-            'where: {2:s}.').format(
-                table_name, column_name, row_condition_string)
+            f'Unable to open blob in table: {table_name:s} and column: '
+            f'{column_name:s} where: {row_condition_string:s}.')
 
     if error_string:
       database_object.Close()

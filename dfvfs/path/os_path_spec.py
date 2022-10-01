@@ -40,8 +40,8 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
       location = os.path.abspath(location)
 
     elif parent.type_indicator != definitions.TYPE_INDICATOR_MOUNT:
-      raise ValueError('Unsupported parent type indicator: {0:s}.'.format(
-          parent.type_indicator))
+      raise ValueError(
+          f'Unsupported parent type indicator: {parent.type_indicator:s}.')
 
     super(OSPathSpec, self).__init__(location=location, parent=parent, **kwargs)
 

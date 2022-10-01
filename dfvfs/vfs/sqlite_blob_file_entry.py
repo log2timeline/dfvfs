@@ -68,19 +68,20 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
     """str: name of the file entry, which does not include the full path."""
     row_index = getattr(self.path_spec, 'row_index', None)
     if row_index is not None:
-      return 'OFFSET {0:d}'.format(row_index)
+      return f'OFFSET {row_index:d}'
 
     row_condition = getattr(self.path_spec, 'row_condition', None)
-    if row_condition is not None:
-      if len(row_condition) > 2 and isinstance(row_condition[2], str):
-        return 'WHERE {0:s} {1:s} \'{2:s}\''.format(*row_condition)
-      return 'WHERE {0:s} {1:s} {2!s}'.format(*row_condition)
+    if row_condition is not None and len(row_condition) == 3:
+      column_name, operator, value = row_condition
+      if isinstance(value, str):
+        value = f'\'{value:s}\''
+      return f'WHERE {column_name:s} {operator:s} {value!s}'
 
     # Directory name is full name of column: <table>.<column>
     table_name = getattr(self.path_spec, 'table_name', None)
     column_name = getattr(self.path_spec, 'column_name', None)
     if table_name and column_name:
-      return '{0:s}.{1:s}'.format(table_name, column_name)
+      return f'{table_name:s}.{column_name:s}'
 
     return ''
 

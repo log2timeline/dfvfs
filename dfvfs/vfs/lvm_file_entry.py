@@ -87,7 +87,8 @@ class LVMFileEntry(file_entry.FileEntry):
       else:
         volume_index = getattr(self.path_spec, 'volume_index', None)
         if volume_index is not None:
-          self._name = 'lvm{0:d}'.format(volume_index + 1)
+          lvm_volume_index = volume_index + 1
+          self._name = f'lvm{lvm_volume_index:d}'
         else:
           self._name = ''
 

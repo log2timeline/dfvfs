@@ -32,7 +32,7 @@ class Context(object):
     string_parts = []
 
     string_parts.append(getattr(path_spec.parent, 'comparable', ''))
-    string_parts.append('type: {0:s}'.format(path_spec.type_indicator))
+    string_parts.append(f'type: {path_spec.type_indicator:s}')
 
     return ''.join(string_parts)
 
@@ -46,7 +46,7 @@ class Context(object):
       KeyError: if the corresponding mount point is not set.
     """
     if mount_point not in self._mount_points:
-      raise KeyError('Mount point: {0:s} not set.'.format(mount_point))
+      raise KeyError(f'Mount point: {mount_point:s} not set.')
 
     del self._mount_points[mount_point]
 
@@ -63,8 +63,8 @@ class Context(object):
     identifier = path_spec.comparable
 
     if identifier in self._file_object_cache:
-      raise KeyError('File object already cached for identifier: {0:s}'.format(
-          identifier))
+      raise KeyError(
+          f'File object already cached for identifier: {identifier:s}')
 
     self._file_object_cache[identifier] = file_object
 
@@ -81,8 +81,8 @@ class Context(object):
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
 
     if identifier in self._file_system_cache:
-      raise KeyError('File system already cached for identifier: {0:s}'.format(
-          identifier))
+      raise KeyError(
+          f'File system already cached for identifier: {identifier:s}')
 
     self._file_system_cache[identifier] = file_system
 
@@ -140,6 +140,6 @@ class Context(object):
       KeyError: if the corresponding mount point is already set.
     """
     if mount_point in self._mount_points:
-      raise KeyError('Mount point: {0:s} already set.'.format(mount_point))
+      raise KeyError(f'Mount point: {mount_point:s} already set.')
 
     self._mount_points[mount_point] = path_spec

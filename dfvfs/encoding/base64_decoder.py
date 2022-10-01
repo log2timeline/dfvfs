@@ -35,8 +35,7 @@ class Base64Decoder(decoder.Decoder):
       decoded_data = base64.b64decode(encoded_data)
     except (TypeError, binascii.Error) as exception:
       raise errors.BackEndError(
-          'Unable to decode base64 stream with error: {0!s}.'.format(
-              exception))
+          f'Unable to decode base64 stream with error: {exception!s}.')
 
     return decoded_data, b''
 

@@ -93,7 +93,8 @@ class VShadowFileEntry(file_entry.FileEntry):
       else:
         store_index = getattr(self.path_spec, 'store_index', None)
         if store_index is not None:
-          self._name = 'vss{0:d}'.format(store_index + 1)
+          vss_store_index = store_index + 1
+          self._name = f'vss{vss_store_index:d}'
         else:
           self._name = ''
 

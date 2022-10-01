@@ -53,14 +53,14 @@ class VShadowFile(file_io.FileIO):
     if (store_index < 0 or
         store_index >= vshadow_volume.number_of_stores):
       raise errors.PathSpecError((
-          'Unable to retrieve VSS store: {0:d} from path '
-          'specification.').format(store_index))
+          f'Unable to retrieve VSS store: {store_index:d} from path '
+          f'specification.'))
 
     vshadow_store = vshadow_volume.get_store(store_index)
     if not vshadow_store.has_in_volume_data():
       raise IOError((
-          'Unable to open VSS store: {0:d} without in-volume stored '
-          'data.').format(store_index))
+          f'Unable to open VSS store: {store_index:d} without in-volume '
+          f'stored data.'))
 
     self._vshadow_store = vshadow_store
 

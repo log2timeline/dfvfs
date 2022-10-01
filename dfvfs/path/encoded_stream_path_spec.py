@@ -36,9 +36,8 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    sub_comparable_string = 'encoding_method: {0:s}'.format(
-        self.encoding_method)
-    return self._GetComparable(sub_comparable_string=sub_comparable_string)
+    return self._GetComparable(sub_comparable_string=(
+        f'encoding_method: {self.encoding_method:s}'))
 
 
 factory.Factory.RegisterPathSpec(EncodedStreamPathSpec)

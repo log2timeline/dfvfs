@@ -19,9 +19,9 @@ class EncryptionManager(object):
     """
     encryption_method = decrypter.ENCRYPTION_METHOD.lower()
     if encryption_method not in cls._decrypters:
-      raise KeyError(
-          'Decrypter for encryption method: {0:s} not set.'.format(
-              decrypter.ENCRYPTION_METHOD))
+      raise KeyError((
+          f'Decrypter for encryption method: {decrypter.ENCRYPTION_METHOD:s} '
+          f'not set.'))
 
     del cls._decrypters[encryption_method]
 
@@ -58,9 +58,9 @@ class EncryptionManager(object):
     """
     encryption_method = decrypter.ENCRYPTION_METHOD.lower()
     if encryption_method in cls._decrypters:
-      raise KeyError(
-          'Decrypter for encryption method: {0:s} already set.'.format(
-              decrypter.ENCRYPTION_METHOD))
+      raise KeyError((
+          f'Decrypter for encryption method: {decrypter.ENCRYPTION_METHOD:s} '
+          f'already set.'))
 
     cls._decrypters[encryption_method] = decrypter
 

@@ -186,8 +186,8 @@ class EncryptedStream(file_io.FileIO):
 
     if decrypted_stream_size < 0:
       raise ValueError((
-          'Invalid decrypted stream size: {0:d} value out of '
-          'bounds.').format(decrypted_stream_size))
+          f'Invalid decrypted stream size: {decrypted_stream_size:d} value '
+          f'out of bounds.'))
 
     self._decrypted_stream_size = decrypted_stream_size
 
@@ -216,9 +216,9 @@ class EncryptedStream(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if self._decrypted_stream_size is None:
       self._decrypted_stream_size = self._GetDecryptedStreamSize()
@@ -292,9 +292,9 @@ class EncryptedStream(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset

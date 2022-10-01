@@ -636,7 +636,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     searcher = file_system_searcher.FileSystemSearcher(
         self._os_file_system, self._os_path_spec)
 
-    location = '{0:s}syslog.*'.format(os.path.sep)
+    location = f'{os.path.sep:s}syslog.*'
     find_spec = file_system_searcher.FindSpec(
         case_sensitive=False, location_glob=location,
         location_separator=os.path.sep)
@@ -676,8 +676,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self.assertEqual(sorted(locations), expected_locations)
 
     _, path_separator, relative_path = locations[0].rpartition(os.path.sep)
-    expected_relative_path = '{0:s}{1:s}'.format(
-        path_separator, relative_path)
+    expected_relative_path = ''.join([path_separator, relative_path])
     test_relative_path = searcher.GetRelativePath(first_path_spec)
     self.assertEqual(test_relative_path, expected_relative_path)
 
@@ -688,7 +687,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     if os.path.sep == '\\':
       location = '\\\\syslog[.].*'
     else:
-      location = '{0:s}syslog[.].*'.format(os.path.sep)
+      location = f'{os.path.sep:s}syslog[.].*'
 
     find_spec = file_system_searcher.FindSpec(
         case_sensitive=False, location_regex=location,
@@ -729,8 +728,7 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
     self.assertEqual(sorted(locations), expected_locations)
 
     _, path_separator, relative_path = locations[0].rpartition(os.path.sep)
-    expected_relative_path = '{0:s}{1:s}'.format(
-        path_separator, relative_path)
+    expected_relative_path = ''.join([path_separator, relative_path])
     test_relative_path = searcher.GetRelativePath(first_path_spec)
     self.assertEqual(test_relative_path, expected_relative_path)
 

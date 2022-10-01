@@ -270,13 +270,13 @@ def RawGlobPathSpec(file_system, path_spec):
       segment_number = int(segment_extension, 10)
     except ValueError:
       raise errors.PathSpecError((
-          'Unsupported path specification invalid segment file extension: '
-          '{0:s}').format(segment_extension))
+          f'Unsupported path specification invalid segment file extension: '
+          f'{segment_extension:s}'))
 
     if segment_number not in [0, 1]:
       raise errors.PathSpecError((
-          'Unsupported path specification invalid segment file extension: '
-          '{0:s}').format(segment_extension))
+          f'Unsupported path specification invalid segment file extension: '
+          f'{segment_extension:s}'))
 
     if segment_extension_length == 1:
       segment_format = '{0:s}.{1:d}'
@@ -288,8 +288,8 @@ def RawGlobPathSpec(file_system, path_spec):
       segment_format = '{0:s}.{1:04d}'
     else:
       raise errors.PathSpecError((
-          'Unsupported path specification invalid segment file extension: '
-          '{0:s}').format(segment_extension))
+          f'Unsupported path specification invalid segment file extension: '
+          f'{segment_extension:s}'))
 
     segment_files = _RawGlobPathSpecWithNumericSchema(
         file_system, parent_path_spec, segment_format, location, segment_number)
@@ -307,17 +307,17 @@ def RawGlobPathSpec(file_system, path_spec):
         number_of_segments = int(number_of_segments, 10)
       except ValueError:
         raise errors.PathSpecError((
-            'Unsupported path specification invalid segment file extension: '
-            '{0:s}').format(segment_extension))
+            f'Unsupported path specification invalid segment file extension: '
+            f'{segment_extension:s}'))
 
       if segment_number != 1:
         raise errors.PathSpecError((
-            'Unsupported path specification invalid segment file extension: '
-            '{0:s}').format(segment_extension))
+            f'Unsupported path specification invalid segment file extension: '
+            f'{segment_extension:s}'))
 
       for segment_number in range(1, number_of_segments + 1):
-        segment_location = '{0:s}.{1:d}of{2:d}'.format(
-            location, segment_number, number_of_segments)
+        segment_location = (
+            f'{location:s}.{segment_number:d}of{number_of_segments:d}')
 
         # Note that we don't want to set the keyword arguments when not used
         # because the path specification base class will check for unused
@@ -332,9 +332,9 @@ def RawGlobPathSpec(file_system, path_spec):
             parent_path_spec.type_indicator, **kwargs)
 
         if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
-          raise errors.PathSpecError(
-              'Missing segment file: {0:d}of{1:d} for extension: {2:s}'.format(
-                  segment_number, number_of_segments, segment_extension))
+          raise errors.PathSpecError((
+              f'Missing segment file: {segment_number:d}of'
+              f'{number_of_segments:d} for extension: {segment_extension:s}'))
 
       segment_files.append(segment_path_spec)
 

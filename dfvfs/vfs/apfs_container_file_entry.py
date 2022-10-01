@@ -87,7 +87,8 @@ class APFSContainerFileEntry(file_entry.FileEntry):
         volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(
             self.path_spec)
         if volume_index is not None:
-          self._name = 'apfs{0:d}'.format(volume_index + 1)
+          apfs_volume_index = volume_index + 1
+          self._name = f'apfs{apfs_volume_index:d}'
         else:
           self._name = ''
 

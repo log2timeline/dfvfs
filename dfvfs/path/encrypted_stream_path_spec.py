@@ -52,22 +52,20 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.cipher_mode:
-      string_parts.append('cipher_mode: {0:s}'.format(self.cipher_mode))
+      string_parts.append(f'cipher_mode: {self.cipher_mode:s}')
 
     if self.encryption_method:
-      string_parts.append('encryption_method: {0:s}'.format(
-          self.encryption_method))
+      string_parts.append(f'encryption_method: {self.encryption_method:s}')
 
     if self.initialization_vector:
       initialization_vector = codecs.encode(self.initialization_vector, 'hex')
       initialization_vector = initialization_vector.decode('ascii')
-      string_parts.append('initialization_vector: {0:s}'.format(
-          initialization_vector))
+      string_parts.append(f'initialization_vector: {initialization_vector:s}')
 
     if self.key:
       key = codecs.encode(self.key, 'hex')
       key = key.decode('ascii')
-      string_parts.append('key: {0:s}'.format(key))
+      string_parts.append(f'key: {key:s}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

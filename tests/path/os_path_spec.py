@@ -50,7 +50,7 @@ class OSPathSpecTest(test_lib.PathSpecTestCase):
     self.assertIsNotNone(path_spec)
 
     expected_comparable = '\n'.join([
-        'type: OS, location: {0:s}'.format(test_location),
+        f'type: OS, location: {test_location:s}',
         ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)

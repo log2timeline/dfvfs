@@ -69,7 +69,7 @@ class FakeFileSystem(file_system.FileSystem):
           or if the link data is set but the file entry type is not a link.
     """
     if path in self._paths:
-      raise KeyError('File entry already set for path: {0:s}.'.format(path))
+      raise KeyError(f'File entry already set for path: {path:s}.')
 
     if file_data and file_entry_type != definitions.FILE_ENTRY_TYPE_FILE:
       raise ValueError('File data set for non-file file entry type.')

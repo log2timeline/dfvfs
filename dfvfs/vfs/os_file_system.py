@@ -102,7 +102,7 @@ class OSFileSystem(file_system.FileSystem):
       # working directory is on.
       location = os.getcwd()
       location, _, _ = location.partition('\\')
-      location = '{0:s}\\'.format(location)
+      location = f'{location:s}\\'
     else:
       location = '/'
 
@@ -154,8 +154,8 @@ class OSFileSystem(file_system.FileSystem):
         prefix, _, remainder = first_path_segment[2:].partition(
             self.PATH_SEPARATOR)
 
-        first_path_segment_prefix = '\\\\{0:s}'.format(prefix)
-        first_path_segment = '\\{0:s}'.format(remainder)
+        first_path_segment_prefix = f'\\\\{prefix:s}'
+        first_path_segment = f'\\{remainder:s}'
 
       if first_path_segment_prefix:
         first_path_segment, _, remainder = first_path_segment.partition(
@@ -187,12 +187,12 @@ class OSFileSystem(file_system.FileSystem):
     path_segments = list(filter(None, path_segments))
 
     if first_path_segment is None:
-      path = '{0:s}{1:s}'.format(
-          self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
+      path = ''.join([
+          self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments)])
     else:
       path = first_path_segment
       if path_segments:
-        path = '{0:s}{1:s}{2:s}'.format(
-            path, self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
+        path = ''.join([
+            path, self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments)])
 
     return path

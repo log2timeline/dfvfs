@@ -81,8 +81,8 @@ class FindSpec(object):
         self._location_segments = location
 
       else:
-        raise TypeError('Unsupported location type: {0!s}.'.format(
-            type(location)))
+        location_type = type(location)
+        raise TypeError(f'Unsupported location type: {location_type!s}.')
 
     elif location_glob is not None:
       if isinstance(location_glob, str):
@@ -96,8 +96,9 @@ class FindSpec(object):
           self._location_segments.append(location_regex)
 
       else:
-        raise TypeError('Unsupported location_glob type: {0!s}.'.format(
-            type(location_glob)))
+        location_glob_type = type(location_glob)
+        raise TypeError(
+            f'Unsupported location_glob type: {location_glob_type!s}.')
 
       self._is_regex = True
 
@@ -109,8 +110,9 @@ class FindSpec(object):
         self._location_segments = location_regex
 
       else:
-        raise TypeError('Unsupported location_regex type: {0!s}.'.format(
-            type(location_regex)))
+        location_regex_type = type(location_regex)
+        raise TypeError(
+            f'Unsupported location_regex type: {location_regex_type!s}.')
 
       self._is_regex = True
 
@@ -279,8 +281,7 @@ class FindSpec(object):
           flags |= re.IGNORECASE
 
         try:
-          segment_name = r'^{0:s}$'.format(segment_name)
-          segment_name = re.compile(segment_name, flags=flags)
+          segment_name = re.compile(f'^{segment_name:s}$', flags=flags)
         except sre_constants.error:
           # TODO: set self._location_segments[segment_index - 1] to None ?
           return False
@@ -592,9 +593,9 @@ class FileSystemSearcher(object):
           self._mount_point.location)
       path_segments = path_segments[len(mount_point_path_segments):]
 
-    return '{0:s}{1:s}'.format(
+    return ''.join([
         self._file_system.PATH_SEPARATOR,
-        self._file_system.PATH_SEPARATOR.join(path_segments))
+        self._file_system.PATH_SEPARATOR.join(path_segments)])
 
   def SplitPath(self, path):
     """Splits the path into path segments.

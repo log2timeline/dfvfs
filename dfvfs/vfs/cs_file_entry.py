@@ -85,7 +85,8 @@ class CSFileEntry(file_entry.FileEntry):
       else:
         volume_index = getattr(self.path_spec, 'volume_index', None)
         if volume_index is not None:
-          self._name = 'cs{0:d}'.format(volume_index + 1)
+          cs_volume_index = volume_index + 1
+          self._name = f'cs{cs_volume_index:d}'
         else:
           self._name = ''
 

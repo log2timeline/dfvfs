@@ -19,9 +19,9 @@ class CompressionManager(object):
     """
     compression_method = decompressor.COMPRESSION_METHOD.lower()
     if compression_method not in cls._decompressors:
-      raise KeyError(
-          'Decompressor for compression method: {0:s} not set.'.format(
-              decompressor.COMPRESSION_METHOD))
+      raise KeyError((
+          f'Decompressor for compression method: '
+          f'{decompressor.COMPRESSION_METHOD:s} not set.'))
 
     del cls._decompressors[compression_method]
 
@@ -55,9 +55,9 @@ class CompressionManager(object):
     """
     compression_method = decompressor.COMPRESSION_METHOD.lower()
     if compression_method in cls._decompressors:
-      raise KeyError(
-          'Decompressor for compression method: {0:s} already set.'.format(
-              decompressor.COMPRESSION_METHOD))
+      raise KeyError((
+          f'Decompressor for compression method: '
+          f'{decompressor.COMPRESSION_METHOD:s} already set.'))
 
     cls._decompressors[compression_method] = decompressor
 

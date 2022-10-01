@@ -59,8 +59,7 @@ class NTFSFile(file_io.FileIO):
       fsntfs_data_stream = fsntfs_file_entry.get_alternate_data_stream_by_name(
           data_stream_name)
       if not fsntfs_data_stream:
-        raise IOError('Unable to open data stream: {0:s}.'.format(
-            data_stream_name))
+        raise IOError(f'Unable to open data stream: {data_stream_name:s}.')
 
     elif not fsntfs_file_entry.has_default_data_stream():
       raise IOError('Missing default data stream.')

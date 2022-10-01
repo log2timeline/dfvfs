@@ -39,7 +39,7 @@ class TSKDirectory(directory.Directory):
 
     except IOError as exception:
       raise errors.BackEndError(
-          'Unable to open directory with error: {0!s}'.format(exception))
+          f'Unable to open directory with error: {exception!s}')
 
     if tsk_directory:
       for tsk_directory_entry in tsk_directory:

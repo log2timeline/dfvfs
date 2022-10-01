@@ -90,5 +90,5 @@ file_entry = resolver.Resolver.OpenFileEntry(tsk_path_spec)
 
 for file_entry_attribute in file_entry.attributes:
   if isinstance(file_entry_attribute, attribute.StatAttribute):
-    print('Inode number: {0:d}'.format(file_entry_attribute.inode_number))
+    print(f'Inode number: {file_entry_attribute.inode_number:d}')
 ```

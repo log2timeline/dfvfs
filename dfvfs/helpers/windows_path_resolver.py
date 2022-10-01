@@ -222,8 +222,8 @@ class WindowsPathResolver(object):
           self._mount_point.location)
       path_segments = path_segments[len(mount_point_path_segments):]
 
-    return '{0:s}:\\{1:s}'.format(
-        self._drive_letter, self._PATH_SEPARATOR.join(path_segments))
+    path = self._PATH_SEPARATOR.join(path_segments)
+    return f'{self._drive_letter:s}:\\{path:s}'
 
   def ResolvePath(self, path, expand_variables=True):
     """Resolves a Windows path in file system specific format.

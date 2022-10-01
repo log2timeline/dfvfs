@@ -62,17 +62,16 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
     """str: comparable representation of the path specification."""
     string_parts = []
 
-    string_parts.append('table name: {0:s}'.format(self.table_name))
-    string_parts.append('column name: {0:s}'.format(self.column_name))
+    string_parts.append(f'table name: {self.table_name:s}')
+    string_parts.append(f'column name: {self.column_name:s}')
 
     if self.row_condition is not None:
       row_condition_string = ' '.join([
-          '{0!s}'.format(value) for value in self.row_condition])
-      string_parts.append('row condition: "{0:s}"'.format(
-          row_condition_string))
+          f'{value!s}' for value in self.row_condition])
+      string_parts.append(f'row condition: "{row_condition_string:s}"')
 
     if self.row_index is not None:
-      string_parts.append('row index: {0:d}'.format(self.row_index))
+      string_parts.append(f'row index: {self.row_index:d}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

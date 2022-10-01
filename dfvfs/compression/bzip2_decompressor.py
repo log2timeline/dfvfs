@@ -38,8 +38,8 @@ class BZIP2Decompressor(decompressor.Decompressor):
 
     except (EOFError, IOError) as exception:
       raise errors.BackEndError((
-          'Unable to decompress BZIP2 compressed stream with error: '
-          '{0!s}.').format(exception))
+          f'Unable to decompress BZIP2 compressed stream with error: '
+          f'{exception!s}.'))
 
     return uncompressed_data, remaining_compressed_data
 

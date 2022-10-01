@@ -57,8 +57,8 @@ class CSFile(file_io.FileIO):
     if (volume_index < 0 or
         volume_index >= fvde_volume_group.number_of_logical_volumes):
       raise errors.PathSpecError((
-          'Unable to retrieve logical volume index: {0:d} from path '
-          'specification.').format(volume_index))
+          f'Unable to retrieve logical volume index: {volume_index:d} from '
+          f'path specification.'))
 
     fvde_logical_volume = fvde_volume_group.get_logical_volume(volume_index)
 
@@ -66,8 +66,7 @@ class CSFile(file_io.FileIO):
       is_locked = not cs_helper.CSUnlockLogicalVolume(
           fvde_logical_volume, self._path_spec, resolver.Resolver.key_chain)
     except IOError as exception:
-      raise IOError('Unable to unlock volume with error: {0!s}'.format(
-          exception))
+      raise IOError(f'Unable to unlock volume with error: {exception!s}')
 
     if is_locked:
       raise IOError('Unable to unlock volume.')

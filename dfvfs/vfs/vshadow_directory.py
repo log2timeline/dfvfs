@@ -26,6 +26,7 @@ class VShadowDirectory(directory.Directory):
       vshadow_volume = self._file_system.GetVShadowVolume()
 
       for store_index in range(0, vshadow_volume.number_of_stores):
+        vss_store_index = store_index + 1
         yield vshadow_path_spec.VShadowPathSpec(
-            location='/vss{0:d}'.format(store_index + 1),
-            store_index=store_index, parent=self.path_spec.parent)
+            location=f'/vss{vss_store_index:d}', parent=self.path_spec.parent,
+            store_index=store_index)

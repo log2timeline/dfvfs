@@ -44,7 +44,7 @@ class APFSFile(file_io.FileIO):
     data_stream = getattr(self._path_spec, 'data_stream', None)
     if data_stream:
       raise errors.NotSupported(
-          'Open data stream: {0:s} not supported.'.format(data_stream))
+          f'Open data stream: {data_stream:s} not supported.')
 
     self._file_system = resolver.Resolver.OpenFileSystem(
         self._path_spec, resolver_context=self._resolver_context)

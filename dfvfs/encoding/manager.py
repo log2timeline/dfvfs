@@ -20,8 +20,7 @@ class EncodingManager(object):
     encoding_method = decoder.ENCODING_METHOD.lower()
     if encoding_method not in cls._decoders:
       raise KeyError(
-          'Decoder for encoding method: {0:s} not set.'.format(
-              decoder.ENCODING_METHOD))
+          f'Decoder for encoding method: {decoder.ENCODING_METHOD:s} not set.')
 
     del cls._decoders[encoding_method]
 
@@ -54,9 +53,9 @@ class EncodingManager(object):
     """
     encoding_method = decoder.ENCODING_METHOD.lower()
     if encoding_method in cls._decoders:
-      raise KeyError(
-          'Decoder for encoding method: {0:s} already set.'.format(
-              decoder.ENCODING_METHOD))
+      raise KeyError((
+          f'Decoder for encoding method: {decoder.ENCODING_METHOD:s} already '
+          f'set.'))
 
     cls._decoders[encoding_method] = decoder
 

@@ -38,11 +38,11 @@ class OSDirectory(directory.Directory):
 
       # Note that PermissionError needs to be defined before OSError.
       except PermissionError as exception:
-        raise errors.AccessError(
-            'Access to directory: {0:s} denied with error: {1!s}'.format(
-                location, exception))
+        raise errors.AccessError((
+            f'Access to directory: {location:s} denied with error: '
+            f'{exception!s}'))
 
       except OSError as exception:
-        raise errors.BackEndError(
-            'Unable to list directory: {0:s} with error: {1!s}'.format(
-                location, exception))
+        raise errors.BackEndError((
+            f'Unable to list directory: {location:s} with error: '
+            f'{exception!s}'))

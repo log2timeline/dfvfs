@@ -33,7 +33,7 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
     file_system = fake_file_system.FakeFileSystem(resolver_context, path_spec)
 
     for segment_filename in segment_filenames:
-      path = '/{0:s}'.format(segment_filename)
+      path = f'/{segment_filename:s}'
 
       file_system.AddFileEntry(path)
       segment_file_path_specs.append(fake_path_spec.FakePathSpec(location=path))
