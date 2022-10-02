@@ -36,7 +36,7 @@ class AESDecrypter(decrypter.CryptographyBlockCipherDecrypter):
       raise ValueError('Missing key.')
 
     if cipher_mode not in self._ENCRYPTION_MODES:
-      raise ValueError('Unsupported cipher mode: {0!s}'.format(cipher_mode))
+      raise ValueError(f'Unsupported cipher mode: {cipher_mode!s}')
 
     algorithm = algorithms.AES(key)
 

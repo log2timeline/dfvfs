@@ -48,13 +48,12 @@ class FVDEPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.encrypted_root_plist:
-      string_parts.append('encrypted_root_plist: {0:s}'.format(
-          self.encrypted_root_plist))
+      string_parts.append(
+          f'encrypted_root_plist: {self.encrypted_root_plist:s}')
     if self.password:
-      string_parts.append('password: {0:s}'.format(self.password))
+      string_parts.append(f'password: {self.password:s}')
     if self.recovery_password:
-      string_parts.append('recovery_password: {0:s}'.format(
-          self.recovery_password))
+      string_parts.append(f'recovery_password: {self.recovery_password:s}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

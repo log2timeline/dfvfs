@@ -61,7 +61,7 @@ class GPTFile(file_io.FileIO):
 
     if not vsgpt_volume.has_partition_with_identifier(entry_index):
       raise errors.PathSpecError(
-          'Missing GPT partition with entry index: {0:d}'.format(entry_index))
+          f'Missing GPT partition with entry index: {entry_index:d}')
 
     self._vsgpt_partition = vsgpt_volume.get_partition_by_identifier(
         entry_index)
@@ -103,9 +103,9 @@ class GPTFile(file_io.FileIO):
       raise IOError('Invalid partition data range.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if self._current_offset >= self._partition_size:
       return b''
@@ -140,9 +140,9 @@ class GPTFile(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset

@@ -25,9 +25,8 @@ class CSDirectory(directory.Directory):
         location == self._file_system.LOCATION_ROOT):
       fvde_volume_group = self._file_system.GetFVDEVolumeGroup()
 
-      for volume_index in range(
-          0, fvde_volume_group.number_of_logical_volumes):
-        location = '/cs{0:d}'.format(volume_index + 1)
+      for volume_index in range(fvde_volume_group.number_of_logical_volumes):
+        fvde_volume_index = volume_index + 1
         yield cs_path_spec.CSPathSpec(
-            location=location, parent=self.path_spec.parent,
+            location=f'/cs{fvde_volume_index:d}', parent=self.path_spec.parent,
             volume_index=volume_index)

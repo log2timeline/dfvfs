@@ -55,8 +55,8 @@ class OSFile(file_io.FileIO):
       mount_path_spec = self._resolver_context.GetMountPoint(
           parent_path_spec.identifier)
       if not mount_path_spec:
-        raise errors.MountPointError('No such mount point: {0:s}'.format(
-            parent_path_spec.identifier))
+        raise errors.MountPointError(
+            f'No such mount point: {parent_path_spec.identifier:s}')
 
       if (mount_path_spec.type_indicator != definitions.TYPE_INDICATOR_OS or
           mount_path_spec.parent):
@@ -85,8 +85,7 @@ class OSFile(file_io.FileIO):
       # AccessError instead.
       if ' access denied ' in str(exception):
         raise errors.AccessError(
-            'Access denied to file: {0:s} with error: {1!s}'.format(
-                location, exception))
+            f'Access denied to file: {location:s} with error: {exception!s}')
 
       is_device = False
 
@@ -94,8 +93,7 @@ class OSFile(file_io.FileIO):
       try:
         stat_info = os.stat(location)
       except OSError as exception:
-        raise IOError('Unable to open file with error: {0!s}.'.format(
-            exception))
+        raise IOError(f'Unable to open file with error: {exception!s}')
 
       # In case the libsmdev check is not able to detect the device also use
       # the stat information.

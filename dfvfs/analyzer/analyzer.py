@@ -210,9 +210,9 @@ class Analyzer(object):
           type indicator.
     """
     if analyzer_helper.type_indicator not in cls._analyzer_helpers:
-      raise KeyError(
-          'Analyzer helper object not set for type indicator: {0:s}.'.format(
-              analyzer_helper.type_indicator))
+      raise KeyError((
+          f'Analyzer helper object not set for type indicator: '
+          f'{analyzer_helper.type_indicator:s}.'))
 
     analyzer_helper = cls._analyzer_helpers[analyzer_helper.type_indicator]
 
@@ -380,8 +380,8 @@ class Analyzer(object):
     """
     if analyzer_helper.type_indicator in cls._analyzer_helpers:
       raise KeyError((
-          'Analyzer helper object already set for type indicator: '
-          '{0:s}.').format(analyzer_helper.type_indicator))
+          f'Analyzer helper object already set for type indicator: '
+          f'{analyzer_helper.type_indicator:s}.'))
 
     cls._FlushCache(analyzer_helper.format_categories)
 

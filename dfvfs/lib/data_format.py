@@ -44,12 +44,12 @@ class DataFormat(object):
         read_error = 'missing data'
 
     except IOError as exception:
-      read_error = '{0!s}'.format(exception)
+      read_error = f'{exception!s}'
 
     if read_error:
-      raise errors.FileFormatError(
-          'Unable to read data at offset: 0x{0:08x} with error: {1:s}'.format(
-              file_offset, read_error))
+      raise errors.FileFormatError((
+          f'Unable to read data at offset: 0x{file_offset:08x} with error: '
+          f'{read_error:s}'))
 
     return data
 
@@ -100,12 +100,12 @@ class DataFormat(object):
 
       except dtfabric_errors.MappingError as exception:
         raise errors.FileFormatError((
-            'Unable to map {0:s} data at offset: 0x{1:08x} with error: '
-            '{2!s}').format(data_type_map.name, file_offset, exception))
+            f'Unable to map {data_type_map.name:s} data at offset: '
+            f'0x{file_offset:08x} with error: {exception!s}'))
 
       last_data_size = data_size
       data_size = data_type_map.GetSizeHint(context=context)
 
-    raise errors.FileFormatError(
-        'Unable to read {0:s} at offset: 0x{1:08x}'.format(
-            data_type_map.name, file_offset))
+    raise errors.FileFormatError((
+        f'Unable to read {data_type_map.name:s} at offset: '
+        f'0x{file_offset:08x}'))

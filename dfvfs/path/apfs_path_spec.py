@@ -43,9 +43,9 @@ class APFSPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.identifier is not None:
-      string_parts.append('identifier: {0:d}'.format(self.identifier))
+      string_parts.append(f'identifier: {self.identifier:d}')
     if self.location is not None:
-      string_parts.append('location: {0:s}'.format(self.location))
+      string_parts.append(f'location: {self.location:s}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

@@ -60,8 +60,7 @@ class HFSFile(file_io.FileIO):
     if data_stream_name == 'rsrc':
       fshfs_data_stream = fshfs_file_entry.get_resource_fork()
     elif data_stream_name:
-      raise IOError('Unable to open data stream: {0:s}.'.format(
-          data_stream_name))
+      raise IOError(f'Unable to open data stream: {data_stream_name:s}.')
 
     self._fshfs_data_stream = fshfs_data_stream
     self._fshfs_file_entry = fshfs_file_entry

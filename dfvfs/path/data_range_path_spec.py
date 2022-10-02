@@ -39,10 +39,9 @@ class DataRangePathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    sub_comparable_string = (
-        'range_offset: 0x{0:08x}, range_size: 0x{1:08x}').format(
-            self.range_offset, self.range_size)
-    return self._GetComparable(sub_comparable_string=sub_comparable_string)
+    return self._GetComparable(sub_comparable_string=(
+        f'range_offset: 0x{self.range_offset:08x}, range_size: '
+        f'0x{self.range_size:08x}'))
 
 
 factory.Factory.RegisterPathSpec(DataRangePathSpec)

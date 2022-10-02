@@ -211,8 +211,8 @@ class FileSystem(object):
     # Remove empty path segments.
     path_segments = list(filter(None, path_segments))
 
-    return '{0:s}{1:s}'.format(
-        self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments))
+    return ''.join([
+        self.PATH_SEPARATOR, self.PATH_SEPARATOR.join(path_segments)])
 
   # Note that path_spec is kept as the second argument for backwards
   # compatibility.
@@ -235,7 +235,7 @@ class FileSystem(object):
       raise IOError('Already open.')
 
     if mode != 'rb':
-      raise ValueError('Unsupported mode: {0:s}.'.format(mode))
+      raise ValueError(f'Unsupported mode: {mode:s}.')
 
     if not self._path_spec:
       self._path_spec = path_spec

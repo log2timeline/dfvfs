@@ -69,8 +69,7 @@ class APFSFileSystem(file_system.FileSystem):
       is_locked = not apfs_helper.APFSUnlockVolume(
           fsapfs_volume, self._path_spec.parent, resolver.Resolver.key_chain)
     except IOError as exception:
-      raise IOError('Unable to unlock volume with error: {0!s}'.format(
-          exception))
+      raise IOError(f'Unable to unlock volume with error: {exception!s}')
 
     if is_locked:
       raise IOError('Unable to unlock volume.')

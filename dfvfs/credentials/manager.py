@@ -28,9 +28,9 @@ class CredentialsManager(object):
           type indicator.
     """
     if credentials.type_indicator not in cls._credentials:
-      raise KeyError(
-          'Credential object not set for type indicator: {0:s}.'.format(
-              credentials.type_indicator))
+      raise KeyError((
+          f'Credential object not set for type indicator: '
+          f'{credentials.type_indicator:s}.'))
 
     del cls._credentials[credentials.type_indicator]
 
@@ -62,8 +62,8 @@ class CredentialsManager(object):
           type indicator.
     """
     if credentials.type_indicator in cls._credentials:
-      raise KeyError(
-          'Credentials object already set for type indicator: {0:s}.'.format(
-              credentials.type_indicator))
+      raise KeyError((
+          f'Credentials object already set for type indicator: '
+          f'{credentials.type_indicator:s}.'))
 
     cls._credentials[credentials.type_indicator] = credentials

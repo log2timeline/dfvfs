@@ -52,10 +52,11 @@ class DataSlice(object):
       return self._file_object.read(1)
 
     if not isinstance(key, slice):
-      raise TypeError('Unsupported key type: {0!s}'.format(type(key)))
+      key_type = type(key)
+      raise TypeError(f'Unsupported key type: {key_type!s}')
 
     if key.step is not None:
-      raise ValueError('Unsupported slice step: {0!s}'.format(key.step))
+      raise ValueError(f'Unsupported slice step: {key.step!s}')
 
     start_offset = max(key.start or 0, 0)
     end_offset = key.stop or self._file_object_size

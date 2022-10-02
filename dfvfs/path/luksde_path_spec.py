@@ -39,7 +39,7 @@ class LUKSDEPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.password:
-      string_parts.append('password: {0:s}'.format(self.password))
+      string_parts.append(f'password: {self.password:s}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

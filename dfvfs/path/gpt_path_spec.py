@@ -41,10 +41,10 @@ class GPTPathSpec(path_spec.PathSpec):
     """str: comparable representation of the path specification."""
     string_parts = []
 
-    if self.location is not None:
-      string_parts.append('location: {0:s}'.format(self.location))
     if self.entry_index is not None:
-      string_parts.append('entry index: {0:d}'.format(self.entry_index))
+      string_parts.append(f'entry index: {self.entry_index:d}')
+    if self.location is not None:
+      string_parts.append(f'location: {self.location:s}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

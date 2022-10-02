@@ -32,8 +32,7 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
         path_spec, resolver_context=resolver_context)
     if not compressed_stream:
       raise errors.BackEndError(
-          'Unable to open compressed stream: {0:s}.'.format(
-              self.path_spec.comparable))
+          f'Unable to open compressed stream: {self.path_spec.comparable:s}.')
 
     super(CompressedStreamFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,

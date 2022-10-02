@@ -57,11 +57,8 @@ class FATFile(file_io.FileIO):
     if not fsfat_file_entry:
       raise IOError('Unable to open FAT file entry.')
 
-    if data_stream_name == 'rsrc':
-      fsfat_data_stream = fsfat_file_entry.get_resource_fork()
-    elif data_stream_name:
-      raise IOError('Unable to open data stream: {0:s}.'.format(
-          data_stream_name))
+    if data_stream_name:
+      raise IOError(f'Unable to open data stream: {data_stream_name:s}.')
 
     self._fsfat_data_stream = fsfat_data_stream
     self._fsfat_file_entry = fsfat_file_entry

@@ -55,13 +55,13 @@ class NTFSPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.data_stream:
-      string_parts.append('data stream: {0:s}'.format(self.data_stream))
+      string_parts.append(f'data stream: {self.data_stream:s}')
     if self.location is not None:
-      string_parts.append('location: {0:s}'.format(self.location))
+      string_parts.append(f'location: {self.location:s}')
     if self.mft_attribute is not None:
-      string_parts.append('MFT attribute: {0:d}'.format(self.mft_attribute))
+      string_parts.append(f'MFT attribute: {self.mft_attribute:d}')
     if self.mft_entry is not None:
-      string_parts.append('MFT entry: {0:d}'.format(self.mft_entry))
+      string_parts.append(f'MFT entry: {self.mft_entry:d}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

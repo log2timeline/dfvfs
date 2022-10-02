@@ -47,12 +47,11 @@ class BDEPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.password:
-      string_parts.append('password: {0:s}'.format(self.password))
+      string_parts.append(f'password: {self.password:s}')
     if self.recovery_password:
-      string_parts.append('recovery_password: {0:s}'.format(
-          self.recovery_password))
+      string_parts.append(f'recovery_password: {self.recovery_password:s}')
     if self.startup_key:
-      string_parts.append('startup_key: {0:s}'.format(self.startup_key))
+      string_parts.append(f'startup_key: {self.startup_key:s}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 
