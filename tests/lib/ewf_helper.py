@@ -38,12 +38,11 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
 
     for segment_number in range(1, number_of_segments):
       if segment_number < 100:
+        first_letter = extension[0]
         if extension[1] == 'x':
-          path = '/{0:s}.{1:s}x{2:02d}'.format(
-              filename, extension[0], segment_number)
+          path = f'/{filename:s}.{first_letter:s}x{segment_number:02d}'
         else:
-          path = '/{0:s}.{1:s}{2:02d}'.format(
-              filename, extension[0], segment_number)
+          path = f'/{filename:s}.{first_letter:s}{segment_number:02d}'
       else:
         segment_index = segment_number - 100
         segment_index, remainder = divmod(segment_index, 26)
@@ -62,11 +61,11 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
 
         first_letter = chr(ord(extension[0]) + segment_index)
         if extension[1] == 'x':
-          path = '/{0:s}.{1:s}x{2:s}{3:s}'.format(
-              filename, first_letter, second_letter, third_letter)
+          path = (f'/{filename:s}.{first_letter:s}x{second_letter:s}'
+                  f'{third_letter:s}')
         else:
-          path = '/{0:s}.{1:s}{2:s}{3:s}'.format(
-              filename, first_letter, second_letter, third_letter)
+          path = (f'/{filename:s}.{first_letter:s}{second_letter:s}'
+                  f'{third_letter:s}')
 
       file_system.AddFileEntry(path)
       path_spec = fake_path_spec.FakePathSpec(location=path)

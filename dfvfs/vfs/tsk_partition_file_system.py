@@ -109,7 +109,7 @@ class TSKPartitionFileSystem(file_system.FileSystem):
           is_virtual=True)
 
     if location is None and partition_index is not None:
-      path_spec.location = '/p{0:d}'.format(partition_index)
+      path_spec.location = f'/p{partition_index:d}'
 
     return tsk_partition_file_entry.TSKPartitionFileEntry(
         self._resolver_context, self, path_spec)

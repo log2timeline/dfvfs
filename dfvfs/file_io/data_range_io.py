@@ -83,13 +83,11 @@ class DataRange(file_io.FileIO):
     """
     if range_offset < 0:
       raise ValueError(
-          'Invalid range offset: {0:d} value out of bounds.'.format(
-              range_offset))
+          f'Invalid range offset: {range_offset:d} value out of bounds.')
 
     if range_size < 0:
       raise ValueError(
-          'Invalid range size: {0:d} value out of bounds.'.format(
-              range_size))
+          f'Invalid range size: {range_size:d} value out of bounds.')
 
     self._range_offset = range_offset
     self._range_size = range_size
@@ -123,9 +121,9 @@ class DataRange(file_io.FileIO):
       raise IOError('Invalid data range.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if self._current_offset >= self._range_size:
       return b''
@@ -160,9 +158,9 @@ class DataRange(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset

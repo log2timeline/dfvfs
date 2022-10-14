@@ -50,11 +50,11 @@ class TSKPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.data_stream:
-      string_parts.append('data stream: {0:s}'.format(self.data_stream))
+      string_parts.append(f'data stream: {self.data_stream:s}')
     if self.inode is not None:
-      string_parts.append('inode: {0:d}'.format(self.inode))
+      string_parts.append(f'inode: {self.inode:d}')
     if self.location is not None:
-      string_parts.append('location: {0:s}'.format(self.location))
+      string_parts.append(f'location: {self.location:s}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

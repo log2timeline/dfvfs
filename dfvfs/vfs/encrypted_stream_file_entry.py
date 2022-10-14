@@ -32,8 +32,7 @@ class EncryptedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
         path_spec, resolver_context=resolver_context)
     if not encrypted_stream:
       raise errors.BackEndError(
-          'Unable to open encrypted stream: {0:s}.'.format(
-              self.path_spec.comparable))
+          f'Unable to open encrypted stream: {self.path_spec.comparable:s}.')
 
     super(EncryptedStreamFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,

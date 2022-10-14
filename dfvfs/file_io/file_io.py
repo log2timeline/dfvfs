@@ -75,7 +75,7 @@ class FileIO(object):
       raise IOError('Already open.')
 
     if mode != 'rb':
-      raise ValueError('Unsupported mode: {0:s}.'.format(mode))
+      raise ValueError(f'Unsupported mode: {mode:s}.')
 
     if not self._path_spec:
       self._path_spec = path_spec

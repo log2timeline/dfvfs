@@ -56,8 +56,7 @@ class ZipFile(file_io.FileIO):
       # entry in the central directory.
       self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
     except zipfile.BadZipfile as exception:
-      raise IOError('Unable to open ZIP file with error: {0!s}'.format(
-          exception))
+      raise IOError(f'Unable to open ZIP file with error: {exception!s}')
 
     self._uncompressed_data = b''
     self._uncompressed_data_size = 0
@@ -116,8 +115,7 @@ class ZipFile(file_io.FileIO):
       # entry in the central directory.
       zip_ext_file = zip_file.open(zip_info, 'r')
     except zipfile.BadZipfile as exception:
-      raise IOError('Unable to open ZIP file with error: {0!s}'.format(
-          exception))
+      raise IOError(f'Unable to open ZIP file with error: {exception!s}')
 
     self._file_system = file_system
     self._zip_file = zip_file

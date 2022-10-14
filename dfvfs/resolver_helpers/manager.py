@@ -19,9 +19,9 @@ class ResolverHelperManager(object):
           type indicator.
     """
     if resolver_helper.type_indicator not in cls._resolver_helpers:
-      raise KeyError(
-          'Resolver helper object not set for type indicator: {0:s}.'.format(
-              resolver_helper.type_indicator))
+      raise KeyError((
+          f'Resolver helper object not set for type indicator: '
+          f'{resolver_helper.type_indicator:s}.'))
 
     del cls._resolver_helpers[resolver_helper.type_indicator]
 
@@ -41,8 +41,7 @@ class ResolverHelperManager(object):
     """
     if type_indicator not in cls._resolver_helpers:
       raise KeyError(
-          'Resolver helper not set for type indicator: {0:s}.'.format(
-              type_indicator))
+          f'Resolver helper not set for type indicator: {type_indicator:s}.')
 
     return cls._resolver_helpers[type_indicator]
 
@@ -59,7 +58,7 @@ class ResolverHelperManager(object):
     """
     if resolver_helper.type_indicator in cls._resolver_helpers:
       raise KeyError((
-          'Resolver helper object already set for type indicator: '
-          '{0!s}.').format(resolver_helper.type_indicator))
+          f'Resolver helper object already set for type indicator: '
+          f'{resolver_helper.type_indicator!s}.'))
 
     cls._resolver_helpers[resolver_helper.type_indicator] = resolver_helper

@@ -315,12 +315,12 @@ class GzipMember(data_format.DataFormat):
 
     if member_header.signature != self._GZIP_SIGNATURE:
       raise errors.FileFormatError(
-          'Unsupported signature: 0x{0:04x}.'.format(member_header.signature))
+          f'Unsupported signature: 0x{member_header.signature:04x}.')
 
     if member_header.compression_method != self._COMPRESSION_METHOD_DEFLATE:
-      raise errors.FileFormatError(
-          'Unsupported compression method: {0:d}.'.format(
-              member_header.compression_method))
+      raise errors.FileFormatError((
+          f'Unsupported compression method: '
+          f'{member_header.compression_method:d}.'))
 
     self.modification_time = member_header.modification_time
     self.operating_system = member_header.operating_system
@@ -378,10 +378,10 @@ class GzipMember(data_format.DataFormat):
       ValueError: if a negative read size or offset is specified.
     """
     if size is not None and size < 0:
-      raise ValueError('Invalid size value {0!s}'.format(size))
+      raise ValueError(f'Unsupported size value: {size!s}')
 
     if offset < 0:
-      raise ValueError('Invalid offset value {0!s}'.format(offset))
+      raise ValueError(f'Unsupported offset value: {offset!s}')
 
     if size == 0 or offset >= self.uncompressed_data_size:
       return b''
@@ -445,8 +445,9 @@ class GzipCompressedStream(object):
           uncompressed data.
     """
     if offset < 0 or offset >= self.uncompressed_data_size:
-      raise ValueError('Offset {0:d} is larger than file size {1:d}.'.format(
-          offset, self.uncompressed_data_size))
+      raise ValueError((
+          f'Offset: {offset:d} is larger than file size: '
+          f'{self.uncompressed_data_size:d}.'))
 
     for end_offset, member in self._members_by_end_offset.items():
       if offset < end_offset:

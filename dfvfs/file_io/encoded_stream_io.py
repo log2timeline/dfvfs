@@ -172,8 +172,8 @@ class EncodedStream(file_io.FileIO):
 
     if decoded_stream_size < 0:
       raise ValueError((
-          'Invalid decoded stream size: {0:d} value out of '
-          'bounds.').format(decoded_stream_size))
+          f'Invalid decoded stream size: {decoded_stream_size:d} value out of '
+          f'bounds.'))
 
     self._decoded_stream_size = decoded_stream_size
 
@@ -202,9 +202,9 @@ class EncodedStream(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if self._decoded_stream_size is None:
       self._decoded_stream_size = self._GetDecodedStreamSize()
@@ -214,7 +214,6 @@ class EncodedStream(file_io.FileIO):
 
     if self._current_offset >= self._decoded_stream_size:
       return b''
-
     if self._realign_offset:
       self._AlignDecodedDataOffset(self._current_offset)
       self._realign_offset = False
@@ -277,9 +276,9 @@ class EncodedStream(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset

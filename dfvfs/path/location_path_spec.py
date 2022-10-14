@@ -30,5 +30,5 @@ class LocationPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    sub_comparable_string = 'location: {0:s}'.format(self.location)
-    return self._GetComparable(sub_comparable_string=sub_comparable_string)
+    return self._GetComparable(sub_comparable_string=(
+        f'location: {self.location:s}'))

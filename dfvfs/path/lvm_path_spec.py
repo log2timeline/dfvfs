@@ -42,9 +42,9 @@ class LVMPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.location is not None:
-      string_parts.append('location: {0:s}'.format(self.location))
+      string_parts.append(f'location: {self.location:s}')
     if self.volume_index is not None:
-      string_parts.append('volume index: {0:d}'.format(self.volume_index))
+      string_parts.append(f'volume index: {self.volume_index:d}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

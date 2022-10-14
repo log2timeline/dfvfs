@@ -74,9 +74,9 @@ class FakeFile(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if self._file_data is None or self._current_offset >= self._size:
       return b''

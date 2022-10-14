@@ -218,8 +218,8 @@ class VolumeScanner(object):
       # Determine which partition needs to be processed.
       partition_identifiers = self._GetPartitionIdentifiers(scan_node, options)
       for partition_identifier in partition_identifiers:
-        location = '/{0:s}'.format(partition_identifier)
-        sub_scan_node = scan_node.GetSubNodeByLocation(location)
+        sub_scan_node = scan_node.GetSubNodeByLocation(
+            f'/{partition_identifier:s}')
         self._ScanVolume(scan_context, sub_scan_node, options, base_path_specs)
 
     return base_path_specs
@@ -270,7 +270,7 @@ class VolumeScanner(object):
           return selected_volumes
       except errors.ScannerError as exception:
         if self._mediator:
-          self._mediator.PrintWarning('{0!s}'.format(exception))
+          self._mediator.PrintWarning(f'{exception!s}')
 
     if len(volume_identifiers) > 1:
       if not self._mediator:
@@ -323,14 +323,14 @@ class VolumeScanner(object):
           return selected_volumes
       except errors.ScannerError as exception:
         if self._mediator:
-          self._mediator.PrintWarning('{0!s}'.format(exception))
+          self._mediator.PrintWarning(f'{exception!s}')
 
     if len(volume_identifiers) > 1:
       if not self._mediator:
         raise errors.ScannerError((
-            'Unable to proceed. More than one {0:s} volume found but no '
-            'mediator to determine how they should be used.').format(
-                volume_system.TYPE_INDICATOR))
+            f'Unable to proceed. More than one '
+            f'{volume_system.TYPE_INDICATOR:s} volume found but no mediator '
+            f'to determine how they should be used.'))
 
       try:
         volume_identifiers = self._mediator.GetVolumeIdentifiers(
@@ -378,13 +378,13 @@ class VolumeScanner(object):
           return selected_volumes
       except errors.ScannerError as exception:
         if self._mediator:
-          self._mediator.PrintWarning('{0!s}'.format(exception))
+          self._mediator.PrintWarning(f'{exception!s}')
 
     if not self._mediator:
       raise errors.ScannerError((
-          'Unable to proceed. {0:s} volume snapshots found but no mediator to '
-          'determine how they should be used.').format(
-              volume_system.TYPE_INDICATOR))
+          f'Unable to proceed. {volume_system.TYPE_INDICATOR:s} volume '
+          f'snapshots found but no mediator to determine how they should '
+          f'be used.'))
 
     try:
       volume_identifiers = self._mediator.GetVolumeSnapshotIdentifiers(
@@ -417,12 +417,12 @@ class VolumeScanner(object):
     normalized_volume_identifiers = []
     for volume_identifier in volume_identifiers:
       if isinstance(volume_identifier, int):
-        volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+        volume_identifier = f'{prefix:s}{volume_identifier:d}'
 
       elif not volume_identifier.startswith(prefix):
         try:
           volume_identifier = int(volume_identifier, 10)
-          volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+          volume_identifier = f'{prefix:s}{volume_identifier:d}'
         except (TypeError, ValueError):
           pass
 
@@ -433,7 +433,7 @@ class VolumeScanner(object):
 
       if not volume:
         raise errors.ScannerError(
-            'Volume missing for identifier: {0:s}.'.format(volume_identifier))
+            f'Volume missing for identifier: {volume_identifier:s}.')
 
       normalized_volume_identifiers.append(volume_identifier)
 
@@ -538,16 +538,35 @@ class VolumeScanner(object):
     if (not source_path.startswith('\\\\.\\') and
         not os.path.exists(source_path)):
       raise errors.ScannerError(
-          'No such device, file or directory: {0:s}.'.format(source_path))
+          f'No such device, file or directory: {source_path:s}.')
 
+    source_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=source_path)
+
+    return self._ScanSourcePathSpec(source_path_spec)
+
+  def _ScanSourcePathSpec(self, source_path_spec):
+    """Scans the source path specification for supported formats.
+
+    Args:
+      source_path_spec (dfvfs.PathSpec): source path specification.
+
+    Returns:
+      SourceScannerContext: source scanner context.
+
+    Raises:
+      ScannerError: if the source path does not exists, or if the source path
+          is not a file or directory, or if the format of or within the source
+          file is not supported.
+    """
     scan_context = source_scanner.SourceScannerContext()
-    scan_context.OpenSourcePath(source_path)
+    scan_context.AddScanNode(source_path_spec, None)
 
     try:
       self._source_scanner.Scan(scan_context)
     except (ValueError, errors.BackEndError) as exception:
       raise errors.ScannerError(
-          'Unable to scan source with error: {0!s}'.format(exception))
+          f'Unable to scan source with error: {exception!s}')
 
     return scan_context
 
@@ -645,16 +664,14 @@ class VolumeScanner(object):
       volume_identifiers.reverse()
 
     else:
-      raise errors.ScannerError('Unsupported volume system type: {0:s}.'.format(
-          scan_node.type_indicator))
+      raise errors.ScannerError(
+          f'Unsupported volume system type: {scan_node.type_indicator:s}.')
 
     for volume_identifier in volume_identifiers:
-      location = '/{0:s}'.format(volume_identifier)
-      sub_scan_node = scan_node.GetSubNodeByLocation(location)
+      sub_scan_node = scan_node.GetSubNodeByLocation(f'/{volume_identifier:s}')
       if not sub_scan_node:
         raise errors.ScannerError(
-            'Scan node missing for volume identifier: {0:s}.'.format(
-                volume_identifier))
+            f'Scan node missing for volume identifier: {volume_identifier:s}.')
 
       self._ScanVolume(scan_context, sub_scan_node, options, base_path_specs)
 

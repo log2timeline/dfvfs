@@ -116,7 +116,7 @@ class EXTFileEntry(file_entry.FileEntry):
       self._link = self._fsext_file_entry.symbolic_link_target
       if self._link and self._link[0] != self._file_system.PATH_SEPARATOR:
         # TODO: make link absolute.
-        self._link = '/{0:s}'.format(self._link)
+        self._link = f'/{self._link:s}'
 
     return self._link
 

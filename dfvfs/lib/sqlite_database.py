@@ -70,8 +70,7 @@ class SQLiteDatabaseFile(object):
     row = self._cursor.fetchone()
     if not row:
       raise IOError(
-          'Unable to retrieve number of rows of table: {0:s}'.format(
-              table_name))
+          f'Unable to retrieve number of rows of table: {table_name:s}')
 
     number_of_rows = row[0]
     if isinstance(number_of_rows, str):
@@ -79,8 +78,8 @@ class SQLiteDatabaseFile(object):
         number_of_rows = int(number_of_rows, 10)
       except ValueError as exception:
         raise IOError((
-            'Unable to determine number of rows of table: {0:s} '
-            'with error: {1!s}').format(table_name, exception))
+            f'Unable to determine number of rows of table: {table_name:s} with '
+            f'error: {exception!s}'))
 
     return number_of_rows
 

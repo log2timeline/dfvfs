@@ -26,7 +26,7 @@ class GPTDirectory(directory.Directory):
       vsgpt_volume = self._file_system.GetGPTVolume()
 
       for partition in vsgpt_volume.partitions:
-        location = '/p{0:d}'.format(partition.entry_index + 1)
+        gpt_entry_index = partition.entry_index + 1
         yield gpt_path_spec.GPTPathSpec(
-            entry_index=entry_index, location=location,
+            entry_index=entry_index, location=f'/p{gpt_entry_index:d}',
             parent=self.path_spec.parent)

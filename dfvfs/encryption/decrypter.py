@@ -23,8 +23,8 @@ class Decrypter(object):
       ValueError: when there are unused keyword arguments.
     """
     if kwargs:
-      raise ValueError('Unused keyword arguments: {0:s}.'.format(
-          ', '.join(kwargs)))
+      keyword_arguments = ', '.join(kwargs)
+      raise ValueError(f'Unused keyword arguments: {keyword_arguments:s}.')
 
     super(Decrypter, self).__init__()
 

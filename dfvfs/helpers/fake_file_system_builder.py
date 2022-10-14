@@ -37,8 +37,7 @@ class FakeFileSystemBuilder(object):
       file_entry = self.file_system.GetFileEntryByPath(parent_path)
       if file_entry and not file_entry.IsDirectory():
         raise ValueError(
-            'Non-directory parent file entry: {0:s} already exists.'.format(
-                parent_path))
+            f'Non-directory parent file entry: {parent_path:s} already exists.')
 
     for segment_index in range(len(path_segments)):
       parent_path = self.file_system.JoinPath(path_segments[:segment_index])
@@ -58,7 +57,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError('Path: {0:s} already set.'.format(path))
+      raise ValueError(f'Path: {path:s} already set.')
 
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(
@@ -77,7 +76,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError('Path: {0:s} already set.'.format(path))
+      raise ValueError(f'Path: {path:s} already set.')
 
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(path, file_data=file_data)
@@ -93,7 +92,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError('Path: {0:s} already set.'.format(path))
+      raise ValueError(f'Path: {path:s} already set.')
 
     with open(file_data_path, 'rb') as file_object:
       file_data = file_object.read()
@@ -112,7 +111,7 @@ class FakeFileSystemBuilder(object):
       ValueError: if the path is already set.
     """
     if self.file_system.FileEntryExistsByPath(path):
-      raise ValueError('Path: {0:s} already set.'.format(path))
+      raise ValueError(f'Path: {path:s} already set.')
 
     self._AddParentDirectories(path)
     self.file_system.AddFileEntry(

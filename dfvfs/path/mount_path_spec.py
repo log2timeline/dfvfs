@@ -35,8 +35,8 @@ class MountPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    sub_comparable_string = 'identifier: {0:s}'.format(self.identifier)
-    return self._GetComparable(sub_comparable_string=sub_comparable_string)
+    return self._GetComparable(sub_comparable_string=(
+        f'identifier: {self.identifier:s}'))
 
 
 factory.Factory.RegisterPathSpec(MountPathSpec)

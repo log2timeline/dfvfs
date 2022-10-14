@@ -84,7 +84,7 @@ class GPTPathSpecTest(test_lib.PathSpecTestCase):
 
     expected_comparable = '\n'.join([
         'type: TEST',
-        'type: GPT, location: /gpt2, entry index: 1',
+        'type: GPT, entry index: 1, location: /gpt2',
         ''])
 
     self.assertEqual(path_spec.comparable, expected_comparable)

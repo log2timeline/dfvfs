@@ -19,8 +19,7 @@ class Factory(object):
     """
     type_indicator = volume_system_type.TYPE_INDICATOR
     if type_indicator not in cls._volume_system_types:
-      raise KeyError('Volume system type: {0:s} not set.'.format(
-          type_indicator))
+      raise KeyError(f'Volume system type: {type_indicator:s} not set.')
 
     del cls._volume_system_types[type_indicator]
 
@@ -38,8 +37,7 @@ class Factory(object):
       KeyError: if path specification is not registered.
     """
     if type_indicator not in cls._volume_system_types:
-      raise KeyError('Volume system type: {0:s} not set.'.format(
-          type_indicator))
+      raise KeyError(f'Volume system type: {type_indicator:s} not set.')
 
     volume_system_type = cls._volume_system_types[type_indicator]
     return volume_system_type()
@@ -56,7 +54,6 @@ class Factory(object):
     """
     type_indicator = volume_system_type.TYPE_INDICATOR
     if type_indicator in cls._volume_system_types:
-      raise KeyError('Volume system type: {0:s} already set.'.format(
-          type_indicator))
+      raise KeyError(f'Volume system type: {type_indicator:s} already set.')
 
     cls._volume_system_types[type_indicator] = volume_system_type

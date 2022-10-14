@@ -31,6 +31,7 @@ class APFSContainerDirectory(directory.Directory):
     fsapfs_container = self._file_system.GetAPFSContainer()
 
     for volume_index in range(0, fsapfs_container.number_of_volumes):
+      apfs_volume_index = volume_index + 1
       yield apfs_container_path_spec.APFSContainerPathSpec(
-          location='/apfs{0:d}'.format(volume_index + 1),
-          volume_index=volume_index, parent=self.path_spec.parent)
+          location=f'/apfs{apfs_volume_index:d}', parent=self.path_spec.parent,
+          volume_index=volume_index)

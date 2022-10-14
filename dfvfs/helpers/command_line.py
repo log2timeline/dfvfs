@@ -231,9 +231,9 @@ class CLITabularTableView(object):
     if in_bold and not win32console:
       # TODO: for win32console get current color and set intensity,
       # write the header separately then reset intensity.
-      row_strings = '\x1b[1m{0:s}\x1b[0m'.format(row_strings)
-
-    output_writer.Write('{0:s}\n'.format(row_strings))
+      output_writer.Write(f'\x1b[1m{row_strings:s}\x1b[0m\n')
+    else:
+      output_writer.Write(f'{row_strings:s}\n')
 
   def AddRow(self, values):
     """Adds a row of values.
@@ -253,7 +253,7 @@ class CLITabularTableView(object):
     value_strings = []
     for value_index, value_string in enumerate(values):
       if not isinstance(value_string, str):
-        value_string = '{0!s}'.format(value_string)
+        value_string = f'{value_string!s}'
       value_strings.append(value_string)
 
       self._column_sizes[value_index] = max(
@@ -362,19 +362,18 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
 
     size_string_1000 = None
     if 0 < magnitude_1000 <= 7:
-      size_string_1000 = '{0:.1f}{1:s}'.format(
-          size_1000, self._UNITS_1000[magnitude_1000])
+      units_1000 = self._UNITS_1000[magnitude_1000]
+      size_string_1000 = f'{size_1000:.1f}{units_1000:s}'
 
     size_string_1024 = None
     if 0 < magnitude_1024 <= 7:
-      size_string_1024 = '{0:.1f}{1:s}'.format(
-          size_1024, self._UNITS_1024[magnitude_1024])
+      units_1024 = self._UNITS_1024[magnitude_1024]
+      size_string_1024 = f'{size_1024:.1f}{units_1024:s}'
 
     if not size_string_1000 or not size_string_1024:
-      return '{0:d} B'.format(size)
+      return f'{size:d} B'
 
-    return '{0:s} / {1:s} ({2:d} B)'.format(
-        size_string_1024, size_string_1000, size)
+    return f'{size_string_1024:s} / {size_string_1000:s} ({size:d} B)'
 
   def _ParseVolumeIdentifiersString(
       self, volume_identifiers_string, prefix='v'):
@@ -422,13 +421,13 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
           first_identifier = int(first_identifier, 10)
           last_identifier = int(last_identifier, 10)
         except ValueError:
-          raise ValueError('Invalid volume identifiers range: {0:s}.'.format(
-              identifiers_range))
+          raise ValueError(
+              f'Invalid volume identifiers range: {identifiers_range:s}.')
 
         for volume_identifier in range(first_identifier, last_identifier + 1):
           if volume_identifier not in volume_identifiers:
             if prefix:
-              volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+              volume_identifier = f'{prefix:s}{volume_identifier:d}'
             volume_identifiers.add(volume_identifier)
       else:
         identifier = identifiers_range
@@ -438,11 +437,11 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
         try:
           volume_identifier = int(identifier, 10)
         except ValueError:
-          raise ValueError('Invalid volume identifier range: {0:s}.'.format(
-              identifiers_range))
+          raise ValueError(
+              f'Invalid volume identifier range: {identifiers_range:s}.')
 
         if prefix:
-          volume_identifier = '{0:s}{1:d}'.format(prefix, volume_identifier)
+          volume_identifier = f'{prefix:s}{volume_identifier:d}'
         volume_identifiers.add(volume_identifier)
 
     # Note that sorted will return a list.
@@ -471,8 +470,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
-            'Volume missing for identifier: {0:s}.'.format(
-                volume_identifier))
+            f'Volume missing for identifier: {volume_identifier:s}.')
 
       volume_attribute = volume.GetAttribute('name')
       table_view.AddRow([volume.identifier, volume_attribute.value])
@@ -503,8 +501,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
-            'Volume missing for identifier: {0:s}.'.format(
-                volume_identifier))
+            f'Volume missing for identifier: {volume_identifier:s}.')
 
       table_view.AddRow([volume.identifier])
 
@@ -534,11 +531,10 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
-            'Partition missing for identifier: {0:s}.'.format(
-                volume_identifier))
+            f'Partition missing for identifier: {volume_identifier:s}.')
 
       volume_extent = volume.extents[0]
-      volume_offset = '{0:d} (0x{0:08x})'.format(volume_extent.offset)
+      volume_offset = f'{volume_extent.offset:d} (0x{volume_extent.offset:08x})'
       volume_size = self._FormatHumanReadableSize(volume_extent.size)
 
       table_view.AddRow([volume.identifier, volume_offset, volume_size])
@@ -569,16 +565,15 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
       volume = volume_system.GetVolumeByIdentifier(volume_identifier)
       if not volume:
         raise errors.ScannerError(
-            'Volume missing for identifier: {0:s}.'.format(
-                volume_identifier))
+            f'Volume missing for identifier: {volume_identifier:s}.')
 
       volume_attribute = volume.GetAttribute('creation_time')
       filetime = dfdatetime_filetime.Filetime(timestamp=volume_attribute.value)
       creation_time = filetime.CopyToDateTimeString()
 
       if volume.HasExternalData():
-        creation_time = '{0:s}\tWARNING: data stored outside volume'.format(
-            creation_time)
+        creation_time = ''.join([
+            creation_time, '\tWARNING: data stored outside volume'])
 
       table_view.AddRow([volume.identifier, creation_time])
 
@@ -609,9 +604,8 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
         volume_identifiers_string, prefix=prefix)
 
     if selected_volumes == ['all']:
-      return [
-          '{0:s}{1:d}'.format(prefix, volume_index)
-          for volume_index in range(1, volume_system.number_of_volumes + 1)]
+      return [f'{prefix:s}{volume_index:d}'
+              for volume_index in range(1, volume_system.number_of_volumes + 1)]
 
     return selected_volumes
 
@@ -802,7 +796,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Args:
       warning (str): warning text.
     """
-    self._output_writer.Write('[WARNING] {0:s}\n\n'.format(warning))
+    self._output_writer.Write(f'[WARNING] {warning:s}\n\n')
 
   def UnlockEncryptedVolume(
       self, source_scanner_object, scan_context, locked_scan_node, credentials):
@@ -841,8 +835,8 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     self._output_writer.Write('Supported credentials:\n\n')
 
     for index, name in enumerate(credentials_list):
-      available_credential = '  {0:d}. {1:s}\n'.format(index + 1, name)
-      self._output_writer.Write(available_credential)
+      credential_index = index + 1
+      self._output_writer.Write(f'  {credential_index:d}. {name:s}\n')
 
     self._output_writer.Write('\nNote that you can abort with Ctrl^C.\n\n')
 
@@ -861,8 +855,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
           credential_type = int(input_line, 10)
           credential_type = credentials_list[credential_type - 1]
         except (IndexError, ValueError):
-          self._output_writer.Write(
-              'Unsupported credential: {0:s}\n'.format(input_line))
+          self._output_writer.Write(f'Unsupported credential: {input_line:s}\n')
           continue
 
       if credential_type == 'skip':

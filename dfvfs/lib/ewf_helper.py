@@ -42,13 +42,13 @@ def EWFGlobPathSpec(file_system, path_spec):
               segment_extension_length == 4 and
               not segment_extension.startswith('Ex'))):
     raise errors.PathSpecError((
-        'Unsupported parent path specification invalid segment file '
-        'extension: {0:s}').format(segment_extension))
+        f'Unsupported parent path specification invalid segment file '
+        f'extension: {segment_extension:s}'))
 
   segment_number = 1
   segment_files = []
   while True:
-    segment_location = '{0:s}.{1:s}'.format(parent_location, segment_extension)
+    segment_location = f'{parent_location:s}.{segment_extension:s}'
 
     # Note that we don't want to set the keyword arguments when not used
     # because the path specification base class will check for unused
@@ -70,11 +70,9 @@ def EWFGlobPathSpec(file_system, path_spec):
     segment_number += 1
     if segment_number <= 99:
       if segment_extension_length == 3:
-        segment_extension = '{0:s}{1:02d}'.format(
-            segment_extension_start, segment_number)
+        segment_extension = f'{segment_extension_start:s}{segment_number:02d}'
       elif segment_extension_length == 4:
-        segment_extension = '{0:s}x{1:02d}'.format(
-            segment_extension_start, segment_number)
+        segment_extension = f'{segment_extension_start:s}x{segment_number:02d}'
 
     else:
       segment_index = segment_number - 100
@@ -95,10 +93,9 @@ def EWFGlobPathSpec(file_system, path_spec):
         raise RuntimeError('Unsupported number of segment files.')
 
       if segment_extension_length == 3:
-        segment_extension = '{0:s}{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
+        segment_extension = f'{first_letter:s}{second_letter:s}{third_letter:s}'
       elif segment_extension_length == 4:
-        segment_extension = '{0:s}x{1:s}{2:s}'.format(
-            first_letter, second_letter, third_letter)
+        segment_extension = (
+            f'{first_letter:s}x{second_letter:s}{third_letter:s}')
 
   return segment_files

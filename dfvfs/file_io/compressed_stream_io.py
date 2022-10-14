@@ -180,9 +180,9 @@ class CompressedStream(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if self._uncompressed_stream_size is None:
       self._uncompressed_stream_size = self._GetUncompressedStreamSize()
@@ -255,9 +255,9 @@ class CompressedStream(file_io.FileIO):
       raise IOError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError(
-          'Invalid current offset: {0:d} value less than zero.'.format(
-              self._current_offset))
+      raise IOError((
+          f'Invalid current offset: {self._current_offset:d} value less than '
+          f'zero.'))
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset

@@ -36,9 +36,8 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
   @property
   def comparable(self):
     """str: comparable representation of the path specification."""
-    sub_comparable_string = (
-        'compression_method: {0:s}').format(self.compression_method)
-    return self._GetComparable(sub_comparable_string=sub_comparable_string)
+    return self._GetComparable(sub_comparable_string=(
+        f'compression_method: {self.compression_method:s}'))
 
 
 factory.Factory.RegisterPathSpec(CompressedStreamPathSpec)

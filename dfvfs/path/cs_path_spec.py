@@ -54,17 +54,16 @@ class CSPathSpec(path_spec.PathSpec):
     string_parts = []
 
     if self.encrypted_root_plist:
-      string_parts.append('encrypted_root_plist: {0:s}'.format(
-          self.encrypted_root_plist))
+      string_parts.append(
+          f'encrypted_root_plist: {self.encrypted_root_plist:s}')
     if self.location is not None:
-      string_parts.append('location: {0:s}'.format(self.location))
+      string_parts.append(f'location: {self.location:s}')
     if self.password:
-      string_parts.append('password: {0:s}'.format(self.password))
+      string_parts.append(f'password: {self.password:s}')
     if self.recovery_password:
-      string_parts.append('recovery_password: {0:s}'.format(
-          self.recovery_password))
+      string_parts.append(f'recovery_password: {self.recovery_password:s}')
     if self.volume_index is not None:
-      string_parts.append('volume index: {0:d}'.format(self.volume_index))
+      string_parts.append(f'volume index: {self.volume_index:d}')
 
     return self._GetComparable(sub_comparable_string=', '.join(string_parts))
 

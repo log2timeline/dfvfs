@@ -57,4 +57,7 @@ class ResolverHelper(object):
     Raises:
       NotSupported: if there is no implementation to create a file system.
     """
-    raise errors.NotSupported('Missing implementation to create file system.')
+    # pylint: disable=no-member
+    raise errors.NotSupported((
+        f'Missing implementation to create file system: '
+        f'{self.TYPE_INDICATOR:s}.'))

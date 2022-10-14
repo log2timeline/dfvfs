@@ -69,8 +69,8 @@ class Volume(object):
     """
     if attribute.identifier in self._attributes:
       raise KeyError((
-          'Volume attribute object already set for volume attribute '
-          'identifier: {0:s}.').format(attribute.identifier))
+          f'Volume attribute object already set for volume attribute '
+          f'identifier: {attribute.identifier:s}.'))
 
     self._attributes[attribute.identifier] = attribute
 
@@ -168,9 +168,9 @@ class VolumeSystem(object):
           identifier.
     """
     if volume.identifier in self._volumes:
-      raise KeyError(
-          'Volume object already set for volume identifier: {0:s}'.format(
-              volume.identifier))
+      raise KeyError((
+          f'Volume object already set for volume identifier: '
+          f'{volume.identifier:s}'))
 
     self._volumes[volume.identifier] = volume
     self._volume_identifiers.append(volume.identifier)

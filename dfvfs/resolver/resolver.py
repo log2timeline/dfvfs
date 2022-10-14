@@ -94,8 +94,7 @@ class Resolver(object):
 
       path_spec_object = resolver_context.GetMountPoint(mount_point)
       if not path_spec_object:
-        raise errors.MountPointError(
-            'No such mount point: {0:s}'.format(mount_point))
+        raise errors.MountPointError(f'No such mount point: {mount_point:s}')
 
     file_object = resolver_context.GetFileObject(path_spec_object)
     if not file_object:
@@ -107,7 +106,7 @@ class Resolver(object):
         file_object.Open()
       except (IOError, ValueError) as exception:
         raise errors.BackEndError(
-            'Unable to open file object with error: {0!s}'.format(exception))
+            f'Unable to open file object with error: {exception!s}')
 
       resolver_context.CacheFileObject(path_spec_object, file_object)
 
@@ -152,8 +151,7 @@ class Resolver(object):
 
       path_spec_object = resolver_context.GetMountPoint(mount_point)
       if not path_spec_object:
-        raise errors.MountPointError(
-            'No such mount point: {0:s}'.format(mount_point))
+        raise errors.MountPointError(f'No such mount point: {mount_point:s}')
 
     file_system = resolver_context.GetFileSystem(path_spec_object)
     if not file_system:
@@ -165,7 +163,7 @@ class Resolver(object):
         file_system.Open()
       except (IOError, ValueError) as exception:
         raise errors.BackEndError(
-            'Unable to open file system with error: {0!s}'.format(exception))
+            f'Unable to open file system with error: {exception!s}')
 
       resolver_context.CacheFileSystem(path_spec_object, file_system)
 

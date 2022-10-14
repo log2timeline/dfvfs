@@ -140,17 +140,17 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     year, month, day_of_month = self._GetDateValues(number_of_days, 1970, 1, 1)
 
     if self.fraction_of_second is None:
-      return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}'.format(
-          year, month, day_of_month, hours, minutes, seconds)
+      return (f'{year:04d}-{month:02d}-{day_of_month:02d} '
+              f'{hours:02d}:{minutes:02d}:{seconds:02d}')
 
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
-      return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:09d}'.format(
-          year, month, day_of_month, hours, minutes, seconds,
-          self.fraction_of_second)
+      return (f'{year:04d}-{month:02d}-{day_of_month:02d} '
+              f'{hours:02d}:{minutes:02d}:{seconds:02d}'
+              f'.{self.fraction_of_second:09d}')
 
-    return '{0:04d}-{1:02d}-{2:02d} {3:02d}:{4:02d}:{5:02d}.{6:07d}'.format(
-        year, month, day_of_month, hours, minutes, seconds,
-        self.fraction_of_second)
+    return (f'{year:04d}-{month:02d}-{day_of_month:02d} '
+            f'{hours:02d}:{minutes:02d}:{seconds:02d}'
+            f'.{self.fraction_of_second:07d}')
 
   def GetDate(self):
     """Retrieves the date represented by the date and time values.
@@ -194,6 +194,10 @@ class TSKFileEntry(file_entry.FileEntry):
       pytsk3.TSK_FS_TYPE_HFS,
       pytsk3.TSK_FS_TYPE_HFS_DETECT]
 
+  _TSK_ISO9660_FS_TYPES = [
+      pytsk3.TSK_FS_TYPE_ISO9660,
+      pytsk3.TSK_FS_TYPE_ISO9660_DETECT]
+
   _TSK_NTFS_FS_TYPES = [
       pytsk3.TSK_FS_TYPE_NTFS,
       pytsk3.TSK_FS_TYPE_NTFS_DETECT]
@@ -222,6 +226,7 @@ class TSKFileEntry(file_entry.FileEntry):
   _TSK_CRTIME_FS_TYPES = [pytsk3.TSK_FS_TYPE_EXT4]
   _TSK_CRTIME_FS_TYPES.extend(_TSK_FAT_FS_TYPES)
   _TSK_CRTIME_FS_TYPES.extend(_TSK_HFS_FS_TYPES)
+  _TSK_CRTIME_FS_TYPES.extend(_TSK_ISO9660_FS_TYPES)
   _TSK_CRTIME_FS_TYPES.extend(_TSK_NTFS_FS_TYPES)
 
   _TSK_DTIME_FS_TYPES = _TSK_EXT_FS_TYPES
@@ -422,12 +427,11 @@ class TSKFileEntry(file_entry.FileEntry):
       try:
         # pytsk3 returns an UTF-8 encoded byte string without a leading
         # path segment separator.
-        link = '{0:s}{1:s}'.format(
-            self._file_system.PATH_SEPARATOR, link.decode('utf8'))
+        link = link.decode('utf8')
       except UnicodeError:
         raise errors.BackEndError('pytsk3 returned a non UTF-8 formatted link.')
 
-      self._link = link
+      self._link = ''.join([self._file_system.PATH_SEPARATOR, link])
 
     return self._link
 
@@ -486,9 +490,8 @@ class TSKFileEntry(file_entry.FileEntry):
       return None
 
     if self._file_system_type in self._TSK_HAS_NANO_FS_TYPES:
-      name_fragment = '{0:s}_nano'.format(name)
       fraction_of_second = getattr(
-          self._tsk_file.info.meta, name_fragment, None)
+          self._tsk_file.info.meta, f'{name:s}_nano', None)
     else:
       fraction_of_second = None
 

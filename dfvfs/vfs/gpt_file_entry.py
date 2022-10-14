@@ -81,7 +81,8 @@ class GPTFileEntry(file_entry.FileEntry):
       else:
         entry_index = getattr(self.path_spec, 'entry_index', None)
         if entry_index is not None:
-          self._name = 'p{0:d}'.format(entry_index + 1)
+          gpt_entry_index = entry_index + 1
+          self._name = f'p{gpt_entry_index:d}'
         else:
           self._name = ''
     return self._name

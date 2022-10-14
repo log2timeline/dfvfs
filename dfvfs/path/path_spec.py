@@ -28,8 +28,8 @@ class PathSpec(object):
           indicator or when there are unused keyword arguments.
     """
     if kwargs:
-      raise ValueError('Unused keyword arguments: {0:s}.'.format(
-          ', '.join(kwargs)))
+      keyword_arguments = ', '.join(kwargs)
+      raise ValueError(f'Unused keyword arguments: {keyword_arguments:s}.')
 
     super(PathSpec, self).__init__()
     self.parent = parent
@@ -59,10 +59,10 @@ class PathSpec(object):
     string_parts = []
 
     string_parts.append(getattr(self.parent, 'comparable', ''))
-    string_parts.append('type: {0:s}'.format(self.type_indicator))
+    string_parts.append(f'type: {self.type_indicator:s}')
 
     if sub_comparable_string:
-      string_parts.append(', {0:s}'.format(sub_comparable_string))
+      string_parts.append(f', {sub_comparable_string:s}')
     string_parts.append('\n')
 
     return ''.join(string_parts)

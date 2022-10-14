@@ -76,8 +76,8 @@ class KeyChain(object):
 
     if identifier not in supported_credentials.CREDENTIALS:
       raise KeyError((
-          'Unsuppored credential: {0:s} for path specification type: '
-          '{1:s}').format(identifier, path_spec.type_indicator))
+          f'Unsuppored credential: {identifier:s} for path specification '
+          f'type: {path_spec.type_indicator:s}'))
 
     credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
     credentials[identifier] = data
