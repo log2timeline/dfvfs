@@ -26,9 +26,9 @@ class HFSFileEntry(file_entry.FileEntry):
   # Mappings of HFS file types to dfVFS file entry types.
   _ENTRY_TYPES = {
       0x1000: definitions.FILE_ENTRY_TYPE_PIPE,
-      0x2000: definitions.FILE_ENTRY_TYPE_DEVICE,
+      0x2000: definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE,
       0x4000: definitions.FILE_ENTRY_TYPE_DIRECTORY,
-      0x6000: definitions.FILE_ENTRY_TYPE_DEVICE,
+      0x6000: definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE,
       0x8000: definitions.FILE_ENTRY_TYPE_FILE,
       0xa000: definitions.FILE_ENTRY_TYPE_LINK,
       0xc000: definitions.FILE_ENTRY_TYPE_SOCKET,

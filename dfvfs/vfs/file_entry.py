@@ -374,7 +374,10 @@ class FileEntry(object):
     Returns:
       bool: True if the file entry is a device.
     """
-    return self.entry_type == definitions.FILE_ENTRY_TYPE_DEVICE
+    return self.entry_type in (
+        definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE,
+        definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE,
+        definitions.FILE_ENTRY_TYPE_DEVICE)
 
   def IsDirectory(self):
     """Determines if the file entry is a directory.

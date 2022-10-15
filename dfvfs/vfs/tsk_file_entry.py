@@ -303,9 +303,10 @@ class TSKFileEntry(file_entry.FileEntry):
       self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_LNK:
       self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
-    elif tsk_fs_meta_type in (
-        pytsk3.TSK_FS_META_TYPE_CHR, pytsk3.TSK_FS_META_TYPE_BLK):
-      self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
+    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_CHR:
+      self.entry_type = definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE
+    elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_BLK:
+      self.entry_type = definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_FIFO:
       self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
     elif tsk_fs_meta_type == pytsk3.TSK_FS_META_TYPE_SOCK:

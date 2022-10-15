@@ -89,9 +89,10 @@ class OSFileEntry(file_entry.FileEntry):
         self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
       elif stat.S_ISDIR(stat_info.st_mode):
         self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
-      elif (stat.S_ISCHR(stat_info.st_mode) or
-            stat.S_ISBLK(stat_info.st_mode)):
-        self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
+      elif stat.S_ISCHR(stat_info.st_mode):
+        self.entry_type = definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE
+      elif stat.S_ISBLK(stat_info.st_mode):
+        self.entry_type = definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE
       elif stat.S_ISFIFO(stat_info.st_mode):
         self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
       elif stat.S_ISSOCK(stat_info.st_mode):

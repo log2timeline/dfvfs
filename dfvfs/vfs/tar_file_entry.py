@@ -50,8 +50,10 @@ class TARFileEntry(file_entry.FileEntry):
       self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
     elif self._tar_info.issym() or self._tar_info.islnk():
       self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
-    elif self._tar_info.ischr() or self._tar_info.isblk():
-      self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
+    elif self._tar_info.ischr():
+      self.entry_type = definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE
+    elif self._tar_info.isblk():
+      self.entry_type = definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE
     elif self._tar_info.isfifo():
       self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
 
