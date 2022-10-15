@@ -37,6 +37,8 @@ class StatAttribute(object):
     type (str): file type, value derived from st_mode >> 12.
   """
 
+  TYPE_BLOCK_DEVICE = definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE
+  TYPE_CHARACTER_DEVICE = definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE
   TYPE_DEVICE = definitions.FILE_ENTRY_TYPE_DEVICE
   TYPE_DIRECTORY = definitions.FILE_ENTRY_TYPE_DIRECTORY
   TYPE_FILE = definitions.FILE_ENTRY_TYPE_FILE

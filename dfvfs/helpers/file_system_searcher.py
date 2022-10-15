@@ -179,7 +179,11 @@ class FindSpec(object):
     Returns:
       bool: True if the file entry matches the find specification, False if not.
     """
-    if definitions.FILE_ENTRY_TYPE_DEVICE not in self._file_entry_types:
+    if (definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE not in (
+           self._file_entry_types) and
+       definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE not in (
+           self._file_entry_types) and
+       definitions.FILE_ENTRY_TYPE_DEVICE not in self._file_entry_types):
       return False
     return file_entry.IsDevice()
 
