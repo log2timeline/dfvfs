@@ -604,8 +604,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
         volume_identifiers_string, prefix=prefix)
 
     if selected_volumes == ['all']:
-      return [f'{prefix:s}{volume_index:d}'
-              for volume_index in range(1, volume_system.number_of_volumes + 1)]
+      return volume_system.volume_identifiers
 
     return selected_volumes
 
