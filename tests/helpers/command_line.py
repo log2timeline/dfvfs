@@ -15,6 +15,7 @@ from dfvfs.lib import definitions
 from dfvfs.helpers import command_line
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.volume import apfs_volume_system
+from dfvfs.volume import gpt_volume_system
 from dfvfs.volume import lvm_volume_system
 from dfvfs.volume import tsk_volume_system
 from dfvfs.volume import vshadow_volume_system
@@ -315,8 +316,92 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(output_data.split(b'\n'), expected_output_data)
 
-  def testPrintTSKPartitionIdentifiersOverview(self):
-    """Tests the _PrintTSKPartitionIdentifiersOverview function."""
+  def testPrintPartitionIdentifiersOverviewGPT(self):
+    """Tests the _PrintPartitionIdentifiersOverview function on GPT back-end."""
+    test_path = self._GetTestFilePath(['gpt.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_gpt_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/', parent=test_raw_path_spec)
+
+    volume_system = gpt_volume_system.GPTVolumeSystem()
+    volume_system.Open(test_gpt_container_path_spec)
+
+    file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        output_writer=test_output_writer)
+
+    test_mediator._PrintPartitionIdentifiersOverview(
+        volume_system, ['p1', 'p2'])
+
+    file_object.seek(0, os.SEEK_SET)
+    output_data = file_object.read()
+
+    expected_output_data = [
+        b'The following partitions were found:',
+        b'',
+        b'Identifier      Offset (in bytes)       Size (in bytes)',
+        b'p1              1048576 (0x00100000)    64.0KiB / 65.5kB (65536 B)',
+        b'p2              2097152 (0x00200000)    64.0KiB / 65.5kB (65536 B)',
+        b'']
+
+    if not win32console:
+      # Using join here since Python 3 does not support format of bytes.
+      expected_output_data[2] = b''.join([
+          b'\x1b[1m', expected_output_data[2], b'\x1b[0m'])
+
+    self.assertEqual(output_data.split(b'\n'), expected_output_data)
+
+  def testPrintPartitionIdentifiersOverviewGPTNonSequential(self):
+    """Tests the _PrintPartitionIdentifiersOverview function on GPT back-end."""
+    test_path = self._GetTestFilePath(['gpt_non_sequential.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_gpt_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/', parent=test_raw_path_spec)
+
+    volume_system = gpt_volume_system.GPTVolumeSystem()
+    volume_system.Open(test_gpt_container_path_spec)
+
+    file_object = io.BytesIO()
+    test_output_writer = command_line.FileObjectOutputWriter(file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        output_writer=test_output_writer)
+
+    test_mediator._PrintPartitionIdentifiersOverview(
+        volume_system, ['p1', 'p3'])
+
+    file_object.seek(0, os.SEEK_SET)
+    output_data = file_object.read()
+
+    expected_output_data = [
+        b'The following partitions were found:',
+        b'',
+        b'Identifier      Offset (in bytes)       Size (in bytes)',
+        b'p1              1048576 (0x00100000)    64.0KiB / 65.5kB (65536 B)',
+        b'p3              3145728 (0x00300000)    64.0KiB / 65.5kB (65536 B)',
+        b'']
+
+    if not win32console:
+      # Using join here since Python 3 does not support format of bytes.
+      expected_output_data[2] = b''.join([
+          b'\x1b[1m', expected_output_data[2], b'\x1b[0m'])
+
+    self.assertEqual(output_data.split(b'\n'), expected_output_data)
+
+  def testPrintPartitionIdentifiersOverviewTSK(self):
+    """Tests the _PrintPartitionIdentifiersOverview function on TSK back-end."""
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -399,7 +484,156 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(output_data.split(b'\n'), expected_output_data)
 
-  # TODO: add tests for _ReadSelectedVolumes
+  def testReadSelectedVolumesAPFS(self):
+    """Tests the _ReadSelectedVolumes function on APFS back-end."""
+    test_path = self._GetTestFilePath(['apfs.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_apfs_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/',
+        parent=test_raw_path_spec)
+
+    volume_system = apfs_volume_system.APFSVolumeSystem()
+    volume_system.Open(test_apfs_container_path_spec)
+
+    input_file_object = io.BytesIO(b'all\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader)
+
+    selected_volumes = test_mediator._ReadSelectedVolumes(
+        volume_system, prefix='apfs')
+    self.assertEqual(selected_volumes, ['apfs1'])
+
+  def testReadSelectedVolumesGPT(self):
+    """Tests the _ReadSelectedVolumes function on GPT back-end.."""
+    test_path = self._GetTestFilePath(['gpt.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_gpt_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/', parent=test_raw_path_spec)
+
+    volume_system = gpt_volume_system.GPTVolumeSystem()
+    volume_system.Open(test_gpt_container_path_spec)
+
+    input_file_object = io.BytesIO(b'all\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader)
+
+    selected_volumes = test_mediator._ReadSelectedVolumes(
+        volume_system, prefix='p')
+    self.assertEqual(selected_volumes, ['p1', 'p2'])
+
+  def testReadSelectedVolumesGPTNonSequential(self):
+    """Tests the _ReadSelectedVolumes function on GPT back-end.."""
+    test_path = self._GetTestFilePath(['gpt_non_sequential.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_gpt_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GPT, location='/', parent=test_raw_path_spec)
+
+    volume_system = gpt_volume_system.GPTVolumeSystem()
+    volume_system.Open(test_gpt_container_path_spec)
+
+    input_file_object = io.BytesIO(b'all\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader)
+
+    selected_volumes = test_mediator._ReadSelectedVolumes(
+        volume_system, prefix='p')
+    self.assertEqual(selected_volumes, ['p1', 'p3'])
+
+  def testReadSelectedVolumesLVM(self):
+    """Tests the _ReadSelectedVolumes function on LVM back-end."""
+    test_path = self._GetTestFilePath(['lvm.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_lvm_container_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_LVM, location='/', parent=test_raw_path_spec)
+
+    volume_system = lvm_volume_system.LVMVolumeSystem()
+    volume_system.Open(test_lvm_container_path_spec)
+
+    input_file_object = io.BytesIO(b'all\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader)
+
+    selected_volumes = test_mediator._ReadSelectedVolumes(
+        volume_system, prefix='lvm')
+    self.assertEqual(selected_volumes, ['lvm1', 'lvm2'])
+
+  def testReadSelectedVolumesTSK(self):
+    """Tests the _ReadSelectedVolumes function on TSK back-end.."""
+    test_path = self._GetTestFilePath(['mbr.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, parent=test_raw_path_spec)
+
+    volume_system = tsk_volume_system.TSKVolumeSystem()
+    volume_system.Open(test_tsk_partition_path_spec)
+
+    input_file_object = io.BytesIO(b'all\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader)
+
+    selected_volumes = test_mediator._ReadSelectedVolumes(
+        volume_system, prefix='p')
+    self.assertEqual(selected_volumes, ['p1', 'p2'])
+
+  def testReadSelectedVolumesVShadow(self):
+    """Tests the _ReadSelectedVolumes function on VShadow back-end."""
+    test_path = self._GetTestFilePath(['vss.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+    test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_VSHADOW, parent=test_raw_path_spec)
+
+    volume_system = vshadow_volume_system.VShadowVolumeSystem()
+    volume_system.Open(test_vss_path_spec)
+
+    input_file_object = io.BytesIO(b'all\n')
+    test_input_reader = command_line.FileObjectInputReader(input_file_object)
+
+    test_mediator = command_line.CLIVolumeScannerMediator(
+        input_reader=test_input_reader)
+
+    selected_volumes = test_mediator._ReadSelectedVolumes(
+        volume_system, prefix='vss')
+    self.assertEqual(selected_volumes, ['vss1', 'vss2'])
 
   def testGetAPFSVolumeIdentifiers(self):
     """Tests the GetAPFSVolumeIdentifiers function."""
