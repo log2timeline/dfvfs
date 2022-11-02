@@ -150,9 +150,9 @@ class WindowsVersion1DifferentialVHDIFileTestFAT(
         definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
         parent=self._vhdi_path_spec)
 
-  def testOpenCloseMFTEntry(self):
-    """Test the open and close functionality using a MFT entry."""
-    self._TestOpenCloseMFTEntry(self._partition_path_spec)
+  def testOpenCloseInode(self):
+    """Test the open and close functionality using an inode."""
+    self._TestOpenCloseInode(self._partition_path_spec)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
@@ -310,9 +310,9 @@ class WindowsVersion2DifferentialVHDIFileTestFAT(
         definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
         parent=self._vhdi_path_spec)
 
-  def testOpenCloseMFTEntry(self):
-    """Test the open and close functionality using a MFT entry."""
-    self._TestOpenCloseMFTEntry(self._partition_path_spec)
+  def testOpenCloseInode(self):
+    """Test the open and close functionality using an inode."""
+    self._TestOpenCloseInode(self._partition_path_spec)
 
   def testOpenCloseLocation(self):
     """Test the open and close functionality using a location."""
