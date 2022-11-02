@@ -76,14 +76,6 @@ dfvfs.lib.ewf\_helper module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.fvde\_helper module
------------------------------
-
-.. automodule:: dfvfs.lib.fvde_helper
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dfvfs.lib.glob2regex module
 ---------------------------
 

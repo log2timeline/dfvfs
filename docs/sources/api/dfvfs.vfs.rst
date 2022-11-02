@@ -316,22 +316,6 @@ dfvfs.vfs.file\_system module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.vfs.fvde\_file\_entry module
-----------------------------------
-
-.. automodule:: dfvfs.vfs.fvde_file_entry
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dfvfs.vfs.fvde\_file\_system module
------------------------------------
-
-.. automodule:: dfvfs.vfs.fvde_file_system
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dfvfs.vfs.gpt\_directory module
 -------------------------------
 

@@ -116,14 +116,6 @@ dfvfs.path.fat\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.path.fvde\_path\_spec module
-----------------------------------
-
-.. automodule:: dfvfs.path.fvde_path_spec
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dfvfs.path.gpt\_path\_spec module
 ---------------------------------
 
