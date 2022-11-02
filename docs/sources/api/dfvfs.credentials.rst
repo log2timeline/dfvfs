@@ -44,14 +44,6 @@ dfvfs.credentials.encrypted\_stream\_credentials module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.credentials.fvde\_credentials module
-------------------------------------------
-
-.. automodule:: dfvfs.credentials.fvde_credentials
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dfvfs.credentials.keychain module
 ---------------------------------
 

@@ -55,12 +55,6 @@ TYPE_INDICATOR_VMDK | The VMDK storage media image type
 TYPE_INDICATOR_VSHADOW | The VSS volume system type
 TYPE_INDICATOR_ZIP | The zip archive file type
 
-As of version 20220120 the following type indicators have been depracted.
-
-**Type indicator** | **Description**
---- | ---
-TYPE_INDICATOR_FVDE | The FileVault Drive Encryption (FVDE) volume system type
-
 ## Addressing attributes
 
 All types, with the exception of the operating system type, require a parent
@@ -209,21 +203,6 @@ testing purposes.
 --- | ---
 location | The location of the file entry
 parent | The parent path specification, must be None
-
-### The FVDE volume system type
-
-The FVDE type (TYPE_INDICATOR_FVDE) is a type that addresses volumes stored
-within a FileVault encrypted CoreStorage volume.
-
-**Attribute name** | **Description**
---- | ---
-encrypted_root_plist | The path of the EncryptedRoot.plist.wipekey file to unlock the FileVault volume
-password | The password to unlock the FileVault volume
-parent | The parent path specification
-recovery_password | The recovery password to unlock the FileVault volume
-
-**Note that it is recommended to use the credential manager instead of providing
-decryption keys (credentials) in a path specification.**
 
 ### The gzip file type
 

@@ -42,11 +42,6 @@ except ImportError:
   pass
 
 try:
-  from dfvfs.resolver_helpers import fvde_resolver_helper
-except ImportError:
-  pass
-
-try:
   from dfvfs.resolver_helpers import gpt_resolver_helper
 except ImportError:
   pass
