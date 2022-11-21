@@ -174,7 +174,7 @@ decryption keys (credentials) in a path specification.**
 ### The EWF storage media image type
 
 The EWF type (TYPE_INDICATOR_EWF) is a type that addresses storage media images
-stored within the [Expert Witness (Compression) Format](https://forensicswiki.xyz/wiki/index.php?title=Encase_image_file_format).
+stored within the [Expert Witness (Compression) Format](https://forensics.wiki/encase_image_file_format).
 
 **Attribute name** | **Description**
 --- | ---
@@ -207,7 +207,7 @@ parent | The parent path specification, must be None
 ### The gzip file type
 
 The GZIP type (TYPE_INDICATOR_GZIP) is a type that addresses data stored within
-the [gzip compressed stream file format](https://forensicswiki.xyz/wiki/index.php?title=Gzip).
+the [gzip compressed stream file format](https://forensics.wiki/gzip).
 
 **Attribute name** | **Description**
 --- | ---
@@ -270,7 +270,7 @@ parent | The parent path specification, must be None
 ### The QCOW storage media image type
 
 The QCOW type (TYPE_INDICATOR_QCOW) is a type that addresses storage media
-images stored within the [QCOW image format](https://forensicswiki.xyz/wiki/index.php?title=QCOW_Image_Format),
+images stored within the [QCOW image format](https://forensics.wiki/qcow_image_format),
 version 1, 2 and 3.
 
 **Attribute name** | **Description**
@@ -282,7 +282,7 @@ parent | The parent path specification
 ### The RAW storage media image type
 
 The RAW storage media image type (TYPE_INDICATOR_RAW) is a type that addresses
-storage media images stored within the [RAW image format](https://forensicswiki.xyz/wiki/index.php?title=Raw_Image_Format).
+storage media images stored within the [RAW image format](https://forensics.wiki/raw_image_format).
 
 **Attribute name** | **Description**
 --- | ---
@@ -306,7 +306,7 @@ table_name | The name of the table in which the blob is stored
 ### The tar archive file type
 
 The TAR type (TYPE_INDICATOR_TAR) is a type that addresses files stored within
-the [tar archive file format](https://forensicswiki.xyz/wiki/index.php?title=Tar).
+the [tar archive file format](https://forensics.wiki/tar).
 
 **Attribute name** | **Description**
 --- | ---
@@ -330,9 +330,9 @@ parent | The parent path specification
 
 The TSK_PARTITION type (TYPE_INDICATOR_TSK_PARTITION) is a type that addresses
 volumes stored within a SleuthKit supported volume system, which largely
-consists of support for the [APM](https://forensicswiki.xyz/wiki/index.php?title=APM),
-[GPT](https://forensicswiki.xyz/wiki/index.php?title=GPT) and
-[MBR](https://forensicswiki.xyz/wiki/index.php?title=Master_boot_record) partitioning
+consists of support for the [APM](https://forensics.wiki/apm),
+[GPT](https://forensics.wiki/gpt) and
+[MBR](https://forensics.wiki/master_boot_record) partitioning
 systems.
 
 **Attribute name** | **Description**
@@ -345,7 +345,7 @@ start_offset | The start offset, in bytes, of the volume within the volume syste
 ### The VHD storage media image type
 
 The VHDI type (TYPE_INDICATOR_VHDI) is a type that addresses storage media
-images stored within the [Virtual Hard Disk Image format](https://forensicswiki.xyz/wiki/index.php?title=Virtual_Hard_Disk_(VHD)).
+images stored within the [Virtual Hard Disk Image format](https://forensics.wiki/virtual_hard_disk_(vhd)).
 
 **Attribute name** | **Description**
 --- | ---
@@ -356,7 +356,7 @@ parent | The parent path specification
 ### The VMDK storage media image type
 
 The VMDK type (TYPE_INDICATOR_VMDK) is a type that addresses storage media
-images stored within the [VMWare Virtual Disk Format](https://forensicswiki.xyz/wiki/index.php?title=VMWare_Virtual_Disk_Format_(VMDK)).
+images stored within the [VMWare Virtual Disk Format](https://forensics.wiki/vmware_virtual_disk_format_(vmdk)).
 
 **Attribute name** | **Description**
 --- | ---
@@ -367,7 +367,7 @@ parent | The parent path specification
 ### The VSS volume system type
 
 The VSHADOW type (TYPE_INDICATOR_VSHADOW) is a type that addresses volumes
-stored within the [Volume Shadow Snapshots (VSS)](https://forensicswiki.xyz/wiki/index.php?title=Windows_Shadow_Volumes).
+stored within the [Volume Shadow Snapshots (VSS)](https://forensics.wiki/windows_shadow_volumes).
 
 **Attribute name** | **Description**
 --- | ---
@@ -378,7 +378,7 @@ store_index | The store index of the volume within the volume system
 ### The zip archive file type
 
 The ZIP type (TYPE_INDICATOR_ZIP) is a type that addresses files stored within
-the [zip archive file format](https://forensicswiki.xyz/wiki/index.php?title=Zip).
+the [zip archive file format](https://forensics.wiki/zip).
 
 **Attribute name** | **Description**
 --- | ---
