@@ -8,6 +8,7 @@ from cryptography.hazmat.primitives import ciphers
 from cryptography.hazmat.primitives.ciphers import modes
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 
 class Decrypter(object):
@@ -58,6 +59,7 @@ class CryptographyBlockCipherDecrypter(Decrypter):
       kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
+      BackEndError: when the cryptography backend cannot be initialized.
       ValueError: if the initialization_vector is required and not set.
     """
     if (cipher_mode != definitions.ENCRYPTION_MODE_ECB and
@@ -73,7 +75,11 @@ class CryptographyBlockCipherDecrypter(Decrypter):
     elif cipher_mode == definitions.ENCRYPTION_MODE_OFB:
       mode = modes.OFB(initialization_vector)
 
-    backend = backends.default_backend()
+    try:
+      backend = backends.default_backend()
+    except ImportError as exception:
+      raise errors.BackEndError(exception)
+
     cipher = ciphers.Cipher(algorithm, mode=mode, backend=backend)
 
     super(CryptographyBlockCipherDecrypter, self).__init__()

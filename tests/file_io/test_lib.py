@@ -2,6 +2,7 @@
 """Shared test cases."""
 
 import os
+import unittest
 
 from dfvfs.file_io import tsk_file_io
 from dfvfs.file_io import tsk_partition_file_io
@@ -711,8 +712,30 @@ class PaddedSyslogTestCase(SylogTestCase):
 
     Args:
       file_object (file): file-like object with the test data.
+
+    Raises:
+      SkipTest: if the path does not exist and the test should be skipped.
     """
-    self.assertEqual(file_object.get_size(), 1247 + self.padding_size)
+    try:
+      self.assertEqual(file_object.get_size(), 1247 + self.padding_size)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
+
+  def _TestReadFileObject(self, file_object, base_offset=167):
+    """Runs the read tests on the file-like object.
+
+    Args:
+      file_object (file): file-like object with the test data.
+      base_offset (Optional[int]): base offset use in the tests.
+
+    Raises:
+      SkipTest: if the path does not exist and the test should be skipped.
+    """
+    try:
+      super(PaddedSyslogTestCase, self)._TestReadFileObject(
+          file_object, base_offset=base_offset)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
 
   def _TestSeekFileObject(self, file_object, base_offset=167):
     """Runs the seek tests on the file-like object.
@@ -720,9 +743,15 @@ class PaddedSyslogTestCase(SylogTestCase):
     Args:
       file_object (file): file-like object with the test data.
       base_offset (Optional[int]): base offset use in the tests.
+
+    Raises:
+      SkipTest: if the path does not exist and the test should be skipped.
     """
     file_object.seek(base_offset + 10)
-    self.assertEqual(file_object.read(5), b'53:01')
+    try:
+      self.assertEqual(file_object.read(5), b'53:01')
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
 
     expected_offset = base_offset + 15
     self.assertEqual(file_object.get_offset(), expected_offset)
