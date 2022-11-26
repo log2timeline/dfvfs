@@ -6,6 +6,7 @@ import unittest
 
 from dfvfs.encryption import aes_decrypter
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 from tests.encryption import test_lib
 
@@ -55,10 +56,13 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
-    decrypter = aes_decrypter.AESDecrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=self._AES_INITIALIZATION_VECTOR,
-        key=self._AES_KEY)
+    try:
+      decrypter = aes_decrypter.AESDecrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=self._AES_INITIALIZATION_VECTOR,
+          key=self._AES_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy AES support')
 
     # Test full decryption.
     expected_decrypted_data = b'This is secret encrypted text!!!'
@@ -71,10 +75,13 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     self.assertEqual(remaining_encrypted_data, b'')
 
     # Reset decrypter.
-    decrypter = aes_decrypter.AESDecrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=self._AES_INITIALIZATION_VECTOR,
-        key=self._AES_KEY)
+    try:
+      decrypter = aes_decrypter.AESDecrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=self._AES_INITIALIZATION_VECTOR,
+          key=self._AES_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy AES support')
 
     # Test partial decryption.
     partial_encrypted_data = (

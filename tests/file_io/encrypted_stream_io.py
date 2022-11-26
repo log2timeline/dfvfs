@@ -15,7 +15,7 @@ from tests.file_io import test_lib
 
 
 class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
-  """Tests the RC4 encrypted stream file-like object.
+  """Tests the AES encrypted stream file-like object.
 
   The credentials are passed via the key chain.
   """

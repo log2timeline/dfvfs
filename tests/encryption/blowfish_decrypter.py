@@ -6,6 +6,7 @@ import unittest
 
 from dfvfs.encryption import blowfish_decrypter
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 from tests.encryption import test_lib
 
@@ -56,10 +57,13 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
-    decrypter = blowfish_decrypter.BlowfishDecrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=self._BLOWFISH_INITIALIZATION_VECTOR,
-        key=self._BLOWFISH_KEY)
+    try:
+      decrypter = blowfish_decrypter.BlowfishDecrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=self._BLOWFISH_INITIALIZATION_VECTOR,
+          key=self._BLOWFISH_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy Blowfish support')
 
     # Test full decryption.
     expected_decrypted_data = b'This is secret encrypted text!!!'
@@ -72,10 +76,13 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
     self.assertEqual(remaining_encrypted_data, b'')
 
     # Reset decrypter.
-    decrypter = blowfish_decrypter.BlowfishDecrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=self._BLOWFISH_INITIALIZATION_VECTOR,
-        key=self._BLOWFISH_KEY)
+    try:
+      decrypter = blowfish_decrypter.BlowfishDecrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=self._BLOWFISH_INITIALIZATION_VECTOR,
+          key=self._BLOWFISH_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy Blowfish support')
 
     # Test partial decryption.
     partial_encrypted_data = b'}\x00\x99\xd2\xab\x1c\xcd\x80y\xef'
