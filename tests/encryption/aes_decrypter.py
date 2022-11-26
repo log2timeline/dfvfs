@@ -19,6 +19,13 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
 
   def testInitialization(self):
     """Tests the initialization method."""
+    # Test missing initialization vector with valid block cipher mode.
+    try:
+      aes_decrypter.AESDecrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._AES_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy AES support')
+
     # Test missing arguments.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter()
@@ -32,10 +39,6 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC, key=self._AES_KEY)
-
-    # Test missing initialization vector with valid block cipher mode.
-    aes_decrypter.AESDecrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._AES_KEY)
 
     # Test incorrect key size.
     with self.assertRaises(ValueError):

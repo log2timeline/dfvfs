@@ -19,6 +19,13 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
 
   def testInitialization(self):
     """Tests the initialization method."""
+    # Test missing initialization vector with valid block cipher mode.
+    try:
+      blowfish_decrypter.BlowfishDecrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._BLOWFISH_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy Blowfish support')
+
     # Test missing arguments.
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter()
@@ -32,10 +39,6 @@ class BlowfishDecrypterTestCase(test_lib.DecrypterTestCase):
     with self.assertRaises(ValueError):
       blowfish_decrypter.BlowfishDecrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC, key=self._BLOWFISH_KEY)
-
-    # Test missing initialization vector with valid block cipher mode.
-    blowfish_decrypter.BlowfishDecrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._BLOWFISH_KEY)
 
     # Test incorrect key size.
     key = b'This is a key that is larger than the max key size of 448 bits.'

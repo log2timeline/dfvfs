@@ -5,6 +5,7 @@
 import unittest
 
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
@@ -56,7 +57,11 @@ class EncryptedStreamFileEntryTest(shared_test_lib.BaseTestCase):
         self._encrypted_stream_path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.size, 1247)
+
+    try:
+      self.assertEqual(file_entry.size, 1247)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
 
   def testGetFileEntryByPathSpec(self):
     """Test the get a file entry by path specification functionality."""
