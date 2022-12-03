@@ -650,7 +650,9 @@ class VolumeScanner(object):
 
       volume_identifiers = self._GetVolumeIdentifiers(volume_system, options)
 
-    elif scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT:
+    elif scan_node.type_indicator in (
+        definitions.TYPE_INDICATOR_GPT,
+        definitions.TYPE_INDICATOR_TSK_PARTITION):
       volume_identifiers = self._GetPartitionIdentifiers(scan_node, options)
 
     elif scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:

@@ -799,6 +799,26 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
           scan_context, apfs_container_scan_node.sub_nodes[0], test_options,
           base_path_specs)
 
+  def testScanVolumeSystemRootOnGPT(self):
+    """Tests the _ScanVolumeSystemRoot function on GPT."""
+    test_path = self._GetTestFilePath(['gpt.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+    test_options = volume_scanner.VolumeScannerOptions()
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    test_scanner._source_scanner.Scan(scan_context)
+    scan_node = self._GetTestScanNode(scan_context)
+
+    base_path_specs = []
+    test_scanner._ScanVolumeSystemRoot(
+        scan_context, scan_node, test_options, base_path_specs)
+    self.assertEqual(len(base_path_specs), 2)
+
   def testScanVolumeSystemRootOnMBR(self):
     """Tests the _ScanVolumeSystemRoot function on MBR."""
     test_path = self._GetTestFilePath(['mbr.raw'])
@@ -814,10 +834,10 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner._source_scanner.Scan(scan_context)
     scan_node = self._GetTestScanNode(scan_context)
 
-    # Test error conditions.
-    with self.assertRaises(errors.ScannerError):
-      test_scanner._ScanVolumeSystemRoot(
-          scan_context, scan_node, test_options, [])
+    base_path_specs = []
+    test_scanner._ScanVolumeSystemRoot(
+        scan_context, scan_node, test_options, base_path_specs)
+    self.assertEqual(len(base_path_specs), 2)
 
   def testScanVolumeSystemRootOnVSS(self):
     """Tests the _ScanVolumeSystemRoot function on VSS."""
