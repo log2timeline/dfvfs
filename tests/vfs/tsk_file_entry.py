@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Tests for the file entry implementation using the SleuthKit (TSK)."""
 
+import decimal
 import unittest
 
 import pytsk3
@@ -20,6 +21,43 @@ from tests import test_lib as shared_test_lib
 class TSKTimeTest(unittest.TestCase):
   """Tests for the SleuthKit timestamp."""
 
+  # pylint: disable=protected-access
+
+  def testGetNormalizedTimestamp(self):
+    """Tests the _GetNormalizedTimestamp function."""
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      fraction_of_second = 546875000
+    else:
+      fraction_of_second = 5468750
+
+    tsk_time_object = tsk_file_entry.TSKTime(
+        fraction_of_second=fraction_of_second, timestamp=1281643591)
+
+    normalized_timestamp = tsk_time_object._GetNormalizedTimestamp()
+    self.assertEqual(
+        normalized_timestamp, decimal.Decimal('1281643591.546875'))
+
+    tsk_time_object = tsk_file_entry.TSKTime(
+        fraction_of_second=fraction_of_second, time_zone_offset=60,
+        timestamp=1281643591)
+
+    normalized_timestamp = tsk_time_object._GetNormalizedTimestamp()
+    self.assertEqual(
+        normalized_timestamp, decimal.Decimal('1281639991.546875'))
+
+    tsk_time_object = tsk_file_entry.TSKTime(
+        fraction_of_second=fraction_of_second, timestamp=1281643591)
+    tsk_time_object.time_zone_offset = 60
+
+    normalized_timestamp = tsk_time_object._GetNormalizedTimestamp()
+    self.assertEqual(
+        normalized_timestamp, decimal.Decimal('1281639991.546875'))
+
+    tsk_time_object = tsk_file_entry.TSKTime()
+
+    normalized_timestamp = tsk_time_object._GetNormalizedTimestamp()
+    self.assertIsNone(normalized_timestamp)
+
   def testCopyFromDateTimeString(self):
     """Tests the CopyFromDateTimeString function."""
     tsk_time_object = tsk_file_entry.TSKTime()
@@ -34,12 +72,21 @@ class TSKTimeTest(unittest.TestCase):
     self.assertEqual(
         tsk_time_object.fraction_of_second, expected_fraction_of_second)
 
+    tsk_time_object.CopyFromDateTimeString('2010-08-12 21:06:31.546875-01:00')
+    self.assertEqual(tsk_time_object.timestamp, 1281647191)
+    self.assertEqual(tsk_time_object._time_zone_offset, -60)
+
+    tsk_time_object.CopyFromDateTimeString('2010-08-12 21:06:31.546875+01:00')
+    self.assertEqual(tsk_time_object._timestamp, 1281647191)
+    self.assertEqual(tsk_time_object._time_zone_offset, 60)
+
   def testCopyToDateTimeString(self):
     """Tests the CopyToDateTimeString function."""
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
       fraction_of_second = 546875000
     else:
       fraction_of_second = 5468750
+
     tsk_time_object = tsk_file_entry.TSKTime(
         fraction_of_second=fraction_of_second, timestamp=1281643591)
 
@@ -61,6 +108,7 @@ class TSKTimeTest(unittest.TestCase):
       fraction_of_second = 546875000
     else:
       fraction_of_second = 5468750
+
     tsk_time_object = tsk_file_entry.TSKTime(
         fraction_of_second=fraction_of_second, timestamp=1281643591)
 
@@ -74,8 +122,13 @@ class TSKTimeTest(unittest.TestCase):
 
   def testGetPlasoTimestamp(self):
     """Tests the GetPlasoTimestamp function."""
+    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+      fraction_of_second = 546875000
+    else:
+      fraction_of_second = 5468750
+
     tsk_time_object = tsk_file_entry.TSKTime(
-        fraction_of_second=546875000, timestamp=1281643591)
+        fraction_of_second=fraction_of_second, timestamp=1281643591)
 
     micro_posix_timestamp = tsk_time_object.GetPlasoTimestamp()
     self.assertEqual(micro_posix_timestamp, 1281643591546875)
