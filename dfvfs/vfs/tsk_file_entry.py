@@ -34,7 +34,9 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
   _100_NANOSECONDS_PER_SECOND = 10000000
   _NANOSECONDS_PER_SECOND = 1000000000
 
-  def __init__(self, fraction_of_second=None, precision=None, timestamp=None):
+  def __init__(
+      self, fraction_of_second=None, precision=None, time_zone_offset=None,
+      timestamp=None):
     """Initializes a SleuthKit timestamp.
 
     Args:
@@ -44,6 +46,8 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
           and later.
       precision (Optional[int]): precision of the date and time value, which
           should be one of the PRECISION_VALUES in dfDateTime definitions.
+      time_zone_offset (Optional[int]): time zone offset in number of minutes
+          from UTC or None if not set.
       timestamp (Optional[int]): POSIX timestamp.
     """
     # Sleuthkit 4.2.0 switched from 100 nano seconds granularity to
@@ -53,7 +57,8 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     else:
       granularity = dfdatetime_definitions.PRECISION_100_NANOSECONDS
 
-    super(TSKTime, self).__init__(precision=precision or granularity)
+    super(TSKTime, self).__init__(
+        precision=precision or granularity, time_zone_offset=time_zone_offset)
     self._granularity = granularity
     self._timestamp = timestamp
     self.fraction_of_second = fraction_of_second
@@ -86,6 +91,9 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
 
           self._normalized_timestamp += fraction_of_second
 
+        if self._time_zone_offset:
+          self._normalized_timestamp -= self._time_zone_offset * 60
+
     return self._normalized_timestamp
 
   def CopyFromDateTimeString(self, time_string):
@@ -109,10 +117,12 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     minutes = date_time_values.get('minutes', 0)
     seconds = date_time_values.get('seconds', 0)
     microseconds = date_time_values.get('microseconds', 0)
+    time_zone_offset = date_time_values.get('time_zone_offset', 0)
 
     self._timestamp = self._GetNumberOfSecondsFromElements(
         year, month, day_of_month, hours, minutes, seconds)
     self.fraction_of_second = microseconds
+    self._time_zone_offset = time_zone_offset
 
     if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
       self.fraction_of_second *= 1000
