@@ -67,7 +67,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
     elif fsntfs_file_entry.has_directory_entries_index():
       self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
-    elif file_attribute_flags & pyfsntfs.file_attribute_flags.DEVICE:
+    elif self._IsDevice(file_attribute_flags):
       self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
     else:
       self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
@@ -164,6 +164,19 @@ class NTFSFileEntry(file_entry.FileEntry):
       for path_spec in self._directory.entries:
         yield NTFSFileEntry(
             self._resolver_context, self._file_system, path_spec)
+
+  def _IsDevice(self, file_attribute_flags):
+    """Determines if a file entry is a device.
+
+    Args:
+      file_attribute_flags (int): file attribute flags.
+
+    Returns:
+      bool: True if a file entry is device link, false otherwise.
+    """
+    if file_attribute_flags is None:
+      return False
+    return bool(file_attribute_flags & pyfsntfs.file_attribute_flags.DEVICE)
 
   def _IsLink(self, file_attribute_flags):
     """Determines if a file entry is a link.
