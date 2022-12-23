@@ -52,6 +52,7 @@ class ZipFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
+      BackEndError: if there was an error opening the ZIP file.
       IOError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
@@ -63,7 +64,10 @@ class ZipFileSystem(file_system.FileSystem):
     file_object = resolver.Resolver.OpenFileObject(
         self._path_spec.parent, resolver_context=self._resolver_context)
 
-    zip_file = zipfile.ZipFile(file_object, 'r')  # pylint: disable=consider-using-with
+    try:
+      zip_file = zipfile.ZipFile(file_object, 'r')  # pylint: disable=consider-using-with
+    except zipfile.BadZipFile as exception:
+      raise errors.BackEndError(exception)
 
     self._file_object = file_object
     self._zip_file = zip_file
