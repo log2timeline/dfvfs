@@ -643,7 +643,7 @@ class VolumeScanner(object):
 
     if scan_node.type_indicator in (
         definitions.TYPE_INDICATOR_APFS_CONTAINER,
-        definitions.TYPE_INDICATOR_LVM):
+        definitions.TYPE_INDICATOR_CS, definitions.TYPE_INDICATOR_LVM):
       volume_system = volume_system_factory.Factory.NewVolumeSystem(
           scan_node.type_indicator)
       volume_system.Open(scan_node.path_spec)
