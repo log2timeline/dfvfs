@@ -6,4 +6,4 @@ that provides read-only access to file-system objects from various
 storage media types and file formats.
 """
 
-__version__ = '20221223'
+__version__ = '20221224'
