@@ -109,6 +109,9 @@ class OSFileEntry(file_entry.FileEntry):
 
       if xattr:
         for name in xattr.listxattr(self._location):
+          if isinstance(name, bytes):
+            name = os.fsdecode(name)
+
           extended_attribute = os_attribute.OSExtendedAttribute(
               self._location, name)
           self._attributes.append(extended_attribute)
