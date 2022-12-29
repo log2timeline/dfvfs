@@ -83,7 +83,7 @@ class GzipMember(data_format.DataFormat):
   provides caching of gzip member data during the initial read of each member.
 
   Attributes:
-    comment (str): comment stored in the member.
+    comments (str): comments stored in the member.
     member_end_offset (int): offset to the end of the member in the parent file
         object.
     member_start_offset (int): offset to the start of the member in the parent
@@ -147,7 +147,7 @@ class GzipMember(data_format.DataFormat):
     # Start offset of the cached uncompressed data of the member.
     self._cache_start_offset = None
 
-    self.comment = None
+    self.comments = None
     self.modification_time = None
     self.operating_system = None
     self.original_filename = None

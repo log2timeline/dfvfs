@@ -14,6 +14,7 @@ libfsntfs-python >= 20211229
 libfsxfs-python >= 20220829
 libfvde-python >= 20220121
 libfwnt-python >= 20210717
+libgzipf-python >= 20221229
 libluksde-python >= 20220121
 libmodi-python >= 20210405
 libphdi-python >= 20220228
