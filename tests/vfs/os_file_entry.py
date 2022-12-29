@@ -59,6 +59,11 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
     # Note that on some platforms this file can have extended attributes.
     self.assertGreaterEqual(len(file_entry._attributes), 0)
 
+    if len(file_entry._attributes) > 1:
+      attribute = file_entry._attributes[1]
+      self.assertIsNotNone(attribute)
+      self.assertIsInstance(attribute.name, str)
+
   # TODO: add tests for _GetDirectory
   # TODO: add tests for _GetLink
 
