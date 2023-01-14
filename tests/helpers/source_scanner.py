@@ -782,6 +782,48 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     self.assertEqual(len(scan_node.sub_nodes), 0)
 
+  def testScanOnGzipCompressedRAW(self):
+    """Test the Scan function on a gzip compressed RAW image."""
+    test_path = self._GetTestFilePath(['ext2.raw.gz'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
+
+    self.assertEqual(len(scan_node.sub_nodes), 0)
+
+    test_path = self._GetTestFilePath(['mbr.raw.gz'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+
+    self.assertEqual(len(scan_node.sub_nodes), 8)
+
+    scan_node = scan_node.sub_nodes[6].GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
+
   def testScanOnNonExisting(self):
     """Test the Scan function on non-existing image file."""
     test_path = self._GetTestFilePath(['nosuchfile.raw'])
