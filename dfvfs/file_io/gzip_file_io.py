@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """The gzip file-like object."""
 
+try:
+  import pygzipf
+except ModuleNotFoundError:
+  pygzipf = None
+
 from dfvfs.file_io import file_object_io
 from dfvfs.lib import errors
 from dfvfs.lib import gzipfile
@@ -13,16 +18,23 @@ class GzipFile(file_object_io.FileObjectIO):
   @property
   def comments(self):
     """list(str): comments in the gzip file."""
-    return [member.comment for member in self._file_object.members]
+    return [member.comments for member in self._file_object.members]
 
   @property
   def modification_times(self):
     """list(int): modification times stored in the gzip file."""
+    if pygzipf:
+      return [member.get_modification_time_as_integer()
+              for member in self._file_object.members]
+
     return [member.modification_time for member in self._file_object.members]
 
   @property
   def original_filenames(self):
     """list(str): original filenames stored in the gzip file."""
+    if pygzipf:
+      return [member.name for member in self._file_object.members]
+
     return [member.original_filename for member in self._file_object.members]
 
   @property
@@ -53,6 +65,12 @@ class GzipFile(file_object_io.FileObjectIO):
 
     file_object = resolver.Resolver.OpenFileObject(
         path_spec.parent, resolver_context=self._resolver_context)
+
+    if pygzipf:
+      gzipf_file = pygzipf.file()
+      gzipf_file.open_file_object(file_object)
+
+      return gzipf_file
 
     gzip_compressed_stream = gzipfile.GzipCompressedStream()
     gzip_compressed_stream.Open(file_object)
