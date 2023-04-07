@@ -530,8 +530,9 @@ class FileSystemSearcher(object):
 
       if location_match and is_last_location_segment:
         # Check if the full location matches.
-        location_match = find_spec.CompareLocation(
-            file_entry, mount_point=self._mount_point)
+        location_match = find_spec.ComparePathSpecLocation(
+            file_entry.path_spec, self._file_system,
+            mount_point=self._mount_point)
 
       if not has_location or (location_match and is_last_location_segment):
         if find_spec.CompareTraits(file_entry):
