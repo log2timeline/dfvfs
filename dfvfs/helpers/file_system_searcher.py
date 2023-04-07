@@ -368,33 +368,13 @@ class FindSpec(object):
           the path specification of the file entry falls outside the mount
           point.
     """
-    location = getattr(file_entry.path_spec, 'location', None)
-    if self._location_segments is None or location is None:
+    if not file_entry:
       return False
 
-    if (mount_point and
-        mount_point.type_indicator == definitions.TYPE_INDICATOR_OS and
-        file_entry.path_spec.type_indicator == definitions.TYPE_INDICATOR_OS):
-      if not location.startswith(mount_point.location):
-        raise ValueError(
-            'File entry path specification location not inside mount point.')
-
-      location = location[len(mount_point.location):]
-
     file_system = file_entry.GetFileSystem()
-    location_segments = file_system.SplitPath(location)
 
-    for segment_index in range(self._number_of_location_segments):
-      try:
-        location_segment = location_segments[segment_index]
-      except IndexError:
-        return False
-
-      if not self._CompareWithLocationSegment(
-          location_segment, segment_index + 1):
-        return False
-
-    return True
+    return self.ComparePathSpecLocation(
+        file_entry.path_spec, file_system, mount_point=mount_point)
 
   def CompareNameWithLocationSegment(self, file_entry, segment_index):
     """Compares a file entry name against a find specification location segment.
@@ -410,6 +390,54 @@ class FindSpec(object):
           location defined.
     """
     return self._CompareWithLocationSegment(file_entry.name, segment_index)
+
+  def ComparePathSpecLocation(
+      self, path_spec, file_system, mount_point=None):
+    """Compares a path specification location against the find specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
+      file_system (FileSystem): file system.
+      mount_point (Optional[PathSpec]): mount point path specification that
+          refers to the base location of the file system. The mount point
+          is ignored if it is not an OS path specification.
+
+    Returns:
+      bool: True if the location of the file entry matches that of the find
+          specification, False if not or if the find specification has no
+          location defined.
+
+    Raises:
+      ValueError: if mount point is set and is of type OS and the location of
+          the path specification of the file entry falls outside the mount
+          point.
+    """
+    location = getattr(path_spec, 'location', None)
+    if self._location_segments is None or location is None:
+      return False
+
+    if (mount_point and
+        mount_point.type_indicator == definitions.TYPE_INDICATOR_OS and
+        path_spec.type_indicator == definitions.TYPE_INDICATOR_OS):
+      if not location.startswith(mount_point.location):
+        raise ValueError(
+            'File entry path specification location not inside mount point.')
+
+      location = location[len(mount_point.location):]
+
+    location_segments = file_system.SplitPath(location)
+
+    for segment_index in range(self._number_of_location_segments):
+      try:
+        location_segment = location_segments[segment_index]
+      except IndexError:
+        return False
+
+      if not self._CompareWithLocationSegment(
+          location_segment, segment_index + 1):
+        return False
+
+    return True
 
   def CompareTraits(self, file_entry):
     """Compares a file entry traits against the find specification.
