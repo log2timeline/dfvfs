@@ -27,4 +27,4 @@ libvsgpt-python >= 20211115
 libvshadow-python >= 20160109
 libvslvm-python >= 20160109
 pytsk3 >= 20210419
-pyxattr >= 0.7.2
+pyxattr >= 0.7.2 ; platform_system != "Windows"
