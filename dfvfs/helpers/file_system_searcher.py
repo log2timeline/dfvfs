@@ -557,7 +557,7 @@ class FileSystemSearcher(object):
     """Searches for matching file entries within the file system.
 
     Args:
-      find_specs (list[FindSpec]): find specifications. where None
+      find_specs (Optional[list[FindSpec]]): find specifications, where None
           will return all allocated file entries.
 
     Yields:
