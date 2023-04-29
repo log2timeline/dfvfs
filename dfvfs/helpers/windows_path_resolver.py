@@ -40,7 +40,6 @@ class WindowsPathResolver(object):
             'Mount point path specification missing location.')
 
     super(WindowsPathResolver, self).__init__()
-
     self._drive_letter = drive_letter
     self._environment_variables = {}
     self._file_system = file_system
