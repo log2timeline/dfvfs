@@ -83,7 +83,7 @@ MOUNT_POINT="/mnt/dfvfs";
 IMAGE_SIZE=$(( 4 * 1024 * 1024 ));
 SECTOR_SIZE=512;
 
-sudo mkdir -p ${MOUNT_POINT};
+mkdir -p ${MOUNT_POINT};
 
 # Create test image with an UFS1 file system
 IMAGE_FILE="test_data/ufs1.raw";
