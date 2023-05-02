@@ -145,10 +145,16 @@ def TSKVsPartIsAllocated(tsk_vs_part):
   # The flags are an instance of TSK_VS_PART_FLAG_ENUM.
   tsk_vs_part_flags = getattr(tsk_vs_part, 'flags', None)
 
-  # For APM partition tables the description needs to be checked to determine
-  # the usage of the part.
-  tsk_vs_part_desc = getattr(tsk_vs_part, 'desc', None)
+  is_allocated = (tsk_vs_part_flags is not None and
+                  tsk_vs_part_flags == pytsk3.TSK_VS_PART_FLAG_ALLOC)
 
-  return (tsk_vs_part_flags is not None and
-          tsk_vs_part_flags == pytsk3.TSK_VS_PART_FLAG_ALLOC and
-          tsk_vs_part_desc not in (b'Apple_partition_map', b'Apple_Free'))
+  tsk_vs_vstype = getattr(tsk_vs_part.vs, 'vstype', pytsk3.TSK_VS_TYPE_UNSUPP)
+  if tsk_vs_vstype == pytsk3.TSK_VS_TYPE_MAC:
+    # For APM partition tables the description needs to be checked to determine
+    # the usage of the part.
+    tsk_vs_part_desc = getattr(tsk_vs_part, 'desc', None)
+
+    return is_allocated and tsk_vs_part_desc not in (
+        b'Apple_partition_map', b'Apple_Free')
+
+  return is_allocated
