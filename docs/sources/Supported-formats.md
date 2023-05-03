@@ -1,6 +1,6 @@
 ## Supported Formats
 
-The information below is based of version 20221207
+The information below is based of version 20230503
 
 ### Storage media types
 
@@ -23,6 +23,7 @@ The information below is based of version 20221207
 * Apple Partition Map (APM) (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * Apple File System (APFS) container version 2 (Requires: [libfsapfs/pyfsapfs](https://github.com/libyal/libfsapfs))
 * BitLocker Disk Encryption (BDE) (Requires: [libbde/pybde](https://github.com/libyal/libbde))
+* BSD disklabel (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * Core Storage (CS) including FileVault Disk Encryption (FVDE) (or FileVault 2) (Requires: [libfvde/pyfvde](https://github.com/libyal/libfvde))
 * GPT (Requires: [libvsgpt/pyvsgpt](https://github.com/libyal/libvsgpt) or [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
 * LVM (Requires: [libvslvm/pyvslvm](https://github.com/libyal/libvslvm))
