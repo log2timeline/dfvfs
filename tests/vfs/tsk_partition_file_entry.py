@@ -257,7 +257,7 @@ class TSKPartitionFileEntryTestBSDDisklabel(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'p2')
+    self.assertEqual(file_entry.name, 'p1')
 
   def testSize(self):
     """Test the size property."""
@@ -337,7 +337,7 @@ class TSKPartitionFileEntryTestBSDDisklabel(shared_test_lib.BaseTestCase):
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 3)
 
-    expected_sub_file_entry_names = ['p1', '', 'p2']
+    expected_sub_file_entry_names = ['', '', 'p1']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:
