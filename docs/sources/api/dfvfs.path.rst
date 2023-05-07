@@ -20,6 +20,14 @@ dfvfs.path.apfs\_path\_spec module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.path.apm\_path\_spec module
+---------------------------------
+
+.. automodule:: dfvfs.path.apm_path_spec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.path.bde\_path\_spec module
 ---------------------------------
 

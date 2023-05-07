@@ -12,6 +12,14 @@ dfvfs.file\_io.apfs\_file\_io module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.file\_io.apm\_file\_io module
+-----------------------------------
+
+.. automodule:: dfvfs.file_io.apm_file_io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.file\_io.bde\_file\_io module
 -----------------------------------
 
