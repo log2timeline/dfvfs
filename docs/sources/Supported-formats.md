@@ -20,7 +20,7 @@ The information below is based of version 20230503
 
 ### Volume systems
 
-* Apple Partition Map (APM) (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))
+* Apple Partition Map (APM) (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk) or [libvsapm/pyvsapm](https://github.com/libyal/libvsapm))
 * Apple File System (APFS) container version 2 (Requires: [libfsapfs/pyfsapfs](https://github.com/libyal/libfsapfs))
 * BitLocker Disk Encryption (BDE) (Requires: [libbde/pybde](https://github.com/libyal/libbde))
 * BSD disklabel (Requires: [libtsk](https://github.com/sleuthkit/sleuthkit/)/[pytsk](https://github.com/py4n6/pytsk))

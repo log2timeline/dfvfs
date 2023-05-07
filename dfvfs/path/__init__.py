@@ -3,6 +3,7 @@
 
 from dfvfs.path import apfs_container_path_spec
 from dfvfs.path import apfs_path_spec
+from dfvfs.path import apm_path_spec
 from dfvfs.path import bde_path_spec
 from dfvfs.path import compressed_stream_path_spec
 from dfvfs.path import cpio_path_spec

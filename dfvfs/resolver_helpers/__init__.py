@@ -8,6 +8,11 @@ except ImportError:
   pass
 
 try:
+  from dfvfs.resolver_helpers import apm_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver_helpers import bde_resolver_helper
 except ImportError:
   pass
