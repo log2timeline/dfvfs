@@ -36,6 +36,14 @@ dfvfs.analyzer.apfs\_container\_analyzer\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.analyzer.apm\_analyzer\_helper module
+-------------------------------------------
+
+.. automodule:: dfvfs.analyzer.apm_analyzer_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.analyzer.bde\_analyzer\_helper module
 -------------------------------------------
 

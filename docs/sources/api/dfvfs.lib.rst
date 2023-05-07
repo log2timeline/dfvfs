@@ -12,6 +12,14 @@ dfvfs.lib.apfs\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.lib.apm\_helper module
+----------------------------
+
+.. automodule:: dfvfs.lib.apm_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.lib.bde\_helper module
 ----------------------------
 
