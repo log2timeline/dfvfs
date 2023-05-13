@@ -360,14 +360,29 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
-    scan_node = self._GetTestScanNode(scan_context)
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+        scan_node.type_indicator, definitions.PREFERRED_APM_BACK_END)
 
-    self.assertEqual(len(scan_node.sub_nodes), 5)
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_TSK_PARTITION:
+      self.assertEqual(len(scan_node.sub_nodes), 5)
+      scan_node = scan_node.sub_nodes[3]
+    else:
+      self.assertEqual(len(scan_node.sub_nodes), 1)
+      scan_node = scan_node.sub_nodes[0]
 
-    scan_node = scan_node.sub_nodes[3].GetSubNodeByLocation('/')
+    scan_node = scan_node.GetSubNodeByLocation('/')
     self.assertIsNotNone(scan_node)
     self.assertEqual(
         scan_node.type_indicator, definitions.PREFERRED_HFS_BACK_END)

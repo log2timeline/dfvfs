@@ -361,7 +361,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
     path_spec = os_path_spec.OSPathSpec(location=test_file)
 
-    expected_type_indicators = [definitions.TYPE_INDICATOR_TSK_PARTITION]
+    expected_type_indicators = [definitions.PREFERRED_APM_BACK_END]
     type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
     self.assertEqual(type_indicators, expected_type_indicators)
 

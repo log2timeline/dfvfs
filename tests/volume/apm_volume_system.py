@@ -58,9 +58,9 @@ class APMVolumeSystemTest(shared_test_lib.BaseTestCase):
     volume_system.Open(self._apm_path_spec)
 
     self.assertEqual(volume_system.number_of_sections, 0)
-    self.assertEqual(volume_system.number_of_volumes, 2)
+    self.assertEqual(volume_system.number_of_volumes, 1)
 
-    self.assertEqual(volume_system.volume_identifiers, ['p1', 'p2'])
+    self.assertEqual(volume_system.volume_identifiers, ['p1'])
 
     volume = volume_system.GetVolumeByIndex(0)
     self.assertIsNotNone(volume)
