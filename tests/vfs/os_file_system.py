@@ -132,7 +132,7 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
 
     file_system = os_file_system.OSFileSystem(
         self._resolver_context, test_os_path_spec)
-    file_system.PATH_SEPARATOR = '\\'
+    setattr(file_system, 'PATH_SEPARATOR', '\\')
 
     expected_path = '\\\\.\\PhysicalDrive0'
 
