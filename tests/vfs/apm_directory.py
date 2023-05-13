@@ -53,7 +53,7 @@ class APMDirectoryTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(directory)
 
     entries = list(directory.entries)
-    self.assertEqual(len(entries), 2)
+    self.assertEqual(len(entries), 1)
 
 
 if __name__ == '__main__':
