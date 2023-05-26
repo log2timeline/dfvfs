@@ -16,7 +16,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
 
   def __init__(
       self, resolver_context, file_system, path_spec, is_root=False,
-      is_virtual=False):
+      is_virtual=False, volume_index=None):
     """Initializes a file entry.
 
     Args:
@@ -27,6 +27,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
           of the corresponding file system.
       is_virtual (Optional[bool]): True if the file entry is a virtual file
           entry emulated by the corresponding file system.
+      volume_index (Optional[int]): volume index or None.
 
     Raises:
       BackEndError: when the fsapfs volume is missing in a non-virtual
@@ -42,6 +43,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
         is_virtual=is_virtual)
     self._name = None
     self._fsapfs_volume = fsapfs_volume
+    self._volume_index = volume_index
 
     if self._is_virtual:
       self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
@@ -80,17 +82,17 @@ class APFSContainerFileEntry(file_entry.FileEntry):
   def name(self):
     """str: name of the file entry, which does not include the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, 'location', None)
-      if location is not None:
-        self._name = self._file_system.BasenamePath(location)
+      self._name = ''
+
+      # Prefer generating the name seeing that the APFS container back-end
+      # supports aliases, such as "/apfs1" and "/apfs{UUID}".
+      if self._volume_index is not None:
+        apfs_volume_index = self._volume_index + 1
+        self._name = f'apfs{apfs_volume_index:d}'
       else:
-        volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(
-            self.path_spec)
-        if volume_index is not None:
-          apfs_volume_index = volume_index + 1
-          self._name = f'apfs{apfs_volume_index:d}'
-        else:
-          self._name = ''
+        location = getattr(self.path_spec, 'location', None)
+        if location is not None:
+          self._name = self._file_system.BasenamePath(location)
 
     return self._name
 
@@ -122,9 +124,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
     Returns:
       APFSContainerFileEntry: parent file entry or None if not available.
     """
-    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(
-        self.path_spec)
-    if volume_index is None:
+    if self._volume_index is None:
       return None
 
     return self._file_system.GetRootFileEntry()

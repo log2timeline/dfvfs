@@ -2,38 +2,6 @@
 """Helper functions for Apple File System (APFS) support."""
 
 
-_APFS_LOCATION_PREFIX = '/apfs'
-_APFS_LOCATION_PREFIX_LENGTH = len(_APFS_LOCATION_PREFIX)
-
-
-def APFSContainerPathSpecGetVolumeIndex(path_spec):
-  """Retrieves the volume index from the path specification.
-
-  Args:
-    path_spec (PathSpec): path specification.
-
-  Returns:
-    int: volume index or None if the index cannot be determined.
-  """
-  volume_index = getattr(path_spec, 'volume_index', None)
-  if volume_index is not None:
-    return volume_index
-
-  location = getattr(path_spec, 'location', None)
-  if location is None or not location.startswith(_APFS_LOCATION_PREFIX):
-    return None
-
-  try:
-    volume_index = int(location[_APFS_LOCATION_PREFIX_LENGTH:], 10) - 1
-  except (TypeError, ValueError):
-    volume_index = None
-
-  if volume_index is None or volume_index < 0 or volume_index > 99:
-    volume_index = None
-
-  return volume_index
-
-
 def APFSUnlockVolume(fsapfs_volume, path_spec, key_chain):
   """Unlocks an APFS volume using the path specification.
 

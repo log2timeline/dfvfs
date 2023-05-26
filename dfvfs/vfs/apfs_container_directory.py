@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """The APFS container directory implementation."""
 
-from dfvfs.lib import apfs_helper
 from dfvfs.path import apfs_container_path_spec
 from dfvfs.vfs import directory
 
@@ -19,19 +18,15 @@ class APFSContainerDirectory(directory.Directory):
       APFSContainerPathSpec: a path specification.
     """
     # Only the virtual root file has directory entries.
-    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(
-        self.path_spec)
-    if volume_index is not None:
-      return
+    volume_index = self._file_system.GetVolumeIndexByPathSpec(self.path_spec)
+    if volume_index is None:
+      location = getattr(self.path_spec, 'location', None)
+      if location and location == self._file_system.LOCATION_ROOT:
+        fsapfs_container = self._file_system.GetAPFSContainer()
 
-    location = getattr(self.path_spec, 'location', None)
-    if location is None or location != self._file_system.LOCATION_ROOT:
-      return
-
-    fsapfs_container = self._file_system.GetAPFSContainer()
-
-    for volume_index in range(0, fsapfs_container.number_of_volumes):
-      apfs_volume_index = volume_index + 1
-      yield apfs_container_path_spec.APFSContainerPathSpec(
-          location=f'/apfs{apfs_volume_index:d}', parent=self.path_spec.parent,
-          volume_index=volume_index)
+        for volume_index in range(0, fsapfs_container.number_of_volumes):
+          apfs_volume_index = volume_index + 1
+          apfs_volume_location = f'/apfs{apfs_volume_index:d}'
+          yield apfs_container_path_spec.APFSContainerPathSpec(
+              location=apfs_volume_location, parent=self.path_spec.parent,
+              volume_index=volume_index)
