@@ -290,34 +290,26 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
   _UNITS_1000 = ['B', 'kB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB']
   _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 
-  _USER_PROMPT_APFS = (
-      'Please specify the identifier(s) of the APFS volume that should be '
-      'processed: Note that a range of volumes can be defined as: 3..5. '
-      'Multiple volumes can be defined as: 1,3,5 (a list of comma separated '
-      'values). Ranges and lists can also be combined as: 1,3..5. The first '
-      'volume is 1. All volumes can be defined as "all". If no volumes are '
-      'specified none will be processed. You can abort with Ctrl^C.')
-
-  _USER_PROMPT_LVM = (
-      'Please specify the identifier(s) of the LVM volume that should be '
-      'processed: Note that a range of volumes can be defined as: 3..5. '
-      'Multiple volumes can be defined as: 1,3,5 (a list of comma separated '
-      'values). Ranges and lists can also be combined as: 1,3..5. The first '
-      'volume is 1. All volumes can be defined as "all". If no volumes are '
-      'specified none will be processed. You can abort with Ctrl^C.')
-
   _USER_PROMPT_PARTITIONS = (
       'Please specify the identifier of the partition that should be '
       'processed. All partitions can be defined as: "all". Note that you can '
       'abort with Ctrl^C.')
 
-  _USER_PROMPT_VSS = (
-      'Please specify the identifier(s) of the VSS that should be processed: '
-      'Note that a range of stores can be defined as: 3..5. Multiple stores '
-      'can be defined as: 1,3,5 (a list of comma separated values). Ranges '
-      'and lists can also be combined as: 1,3..5. The first store is 1. All '
-      'stores can be defined as "all". If no stores are specified none will '
-      'be processed. You can abort with Ctrl^C.')
+  _USER_PROMPT_SNAPSHOTS = (
+      'Please specify the identifier(s) of the {0:s} snapshot that should be '
+      'processed. Note that a range of snapshots can be defined as: 3..5. '
+      'Multiple snapshots can be defined as: 1,3,5 (a list of comma separated '
+      'values). Ranges and lists can also be combined as: 1,3..5. The first '
+      'snapshot is 1. All snapshots can be defined as "all". If no snapshots '
+      'are specified none will be processed. You can abort with Ctrl^C.')
+
+  _USER_PROMPT_VOLUMES = (
+      'Please specify the identifier(s) of the {0:s} volume that should be '
+      'processed. Note that a range of volumes can be defined as: 3..5. '
+      'Multiple volumes can be defined as: 1,3,5 (a list of comma separated '
+      'values). Ranges and lists can also be combined as: 1,3..5. The first '
+      'volume is 1. All volumes can be defined as "all". If no volumes are '
+      'specified none will be processed. You can abort with Ctrl^C.')
 
   def __init__(self, input_reader=None, output_writer=None):
     """Initializes a volume scanner mediator.
@@ -626,7 +618,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     while True:
       self._output_writer.Write('\n')
 
-      lines = self._textwrapper.wrap(self._USER_PROMPT_APFS)
+      lines = self._textwrapper.wrap(self._USER_PROMPT_VOLUMES.format('APFS'))
       self._output_writer.Write('\n'.join(lines))
       self._output_writer.Write('\n\nVolume identifier(s): ')
 
@@ -667,7 +659,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     while True:
       self._output_writer.Write('\n')
 
-      lines = self._textwrapper.wrap(self._USER_PROMPT_LVM)
+      lines = self._textwrapper.wrap(self._USER_PROMPT_VOLUMES.format('LVM'))
       self._output_writer.Write('\n'.join(lines))
       self._output_writer.Write('\n\nVolume identifier(s): ')
 
@@ -746,7 +738,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     while True:
       self._output_writer.Write('\n')
 
-      lines = self._textwrapper.wrap(self._USER_PROMPT_VSS)
+      lines = self._textwrapper.wrap(self._USER_PROMPT_SNAPSHOTS.format('VSS'))
       self._output_writer.Write('\n'.join(lines))
       self._output_writer.Write('\n\nVSS identifier(s): ')
 
