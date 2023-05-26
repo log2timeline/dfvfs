@@ -3,7 +3,6 @@
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import gpt_helper
 from dfvfs.vfs import file_entry
 from dfvfs.vfs import gpt_directory
 
@@ -14,14 +13,15 @@ class GPTFileEntry(file_entry.FileEntry):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_GPT
 
   def __init__(
-      self, resolver_context, file_system, path_spec, is_root=False,
-      is_virtual=False, vsgpt_partition=None):
+      self, resolver_context, file_system, path_spec, entry_index=None,
+      is_root=False, is_virtual=False, vsgpt_partition=None):
     """Initializes a file entry.
 
     Args:
       resolver_context (Context): resolver context.
       file_system (FileSystem): file system.
       path_spec (PathSpec): path specification.
+      entry_index (Optional[int]): GPT partition entry index or None.
       is_root (Optional[bool]): True if the file entry is the root file entry
           of the corresponding file system.
       is_virtual (Optional[bool]): True if the file entry is a virtual file
@@ -39,6 +39,7 @@ class GPTFileEntry(file_entry.FileEntry):
     super(GPTFileEntry, self).__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
+    self._entry_index = entry_index
     self._name = None
     self._vsgpt_partition = vsgpt_partition
 
@@ -75,16 +76,18 @@ class GPTFileEntry(file_entry.FileEntry):
   def name(self):
     """str: name of the file entry, without the full path."""
     if self._name is None:
-      location = getattr(self.path_spec, 'location', None)
-      if location is not None:
-        self._name = self._file_system.BasenamePath(location)
+      self._name = ''
+
+      # Prefer generating the name seeing that the GPT back-end supports
+      # aliases, such as "/p1" and "/gpt{GUID}".
+      if self._entry_index is not None:
+        gpt_entry_index = self._entry_index + 1
+        self._name = f'p{gpt_entry_index:d}'
       else:
-        entry_index = getattr(self.path_spec, 'entry_index', None)
-        if entry_index is not None:
-          gpt_entry_index = entry_index + 1
-          self._name = f'p{gpt_entry_index:d}'
-        else:
-          self._name = ''
+        location = getattr(self.path_spec, 'location', None)
+        if location is not None:
+          self._name = self._file_system.BasenamePath(location)
+
     return self._name
 
   @property
@@ -109,8 +112,7 @@ class GPTFileEntry(file_entry.FileEntry):
     Returns:
       GPTFileEntry: parent file entry or None if not available.
     """
-    entry_index = gpt_helper.GPTPathSpecGetEntryIndex(self.path_spec)
-    if entry_index is None:
+    if self._entry_index is None:
       return None
 
     return self._file_system.GetRootFileEntry()

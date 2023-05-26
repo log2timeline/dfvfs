@@ -5,7 +5,6 @@ import pyvsgpt
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
-from dfvfs.lib import gpt_helper
 from dfvfs.path import gpt_path_spec
 from dfvfs.resolver import resolver
 from dfvfs.vfs import file_system
@@ -73,7 +72,7 @@ class GPTFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    entry_index = gpt_helper.GPTPathSpecGetEntryIndex(path_spec)
+    entry_index = self.GetEntryIndexByPathSpec(path_spec)
 
     # The virtual root file has no corresponding partition entry index but
     # should have a location.
@@ -82,6 +81,41 @@ class GPTFileSystem(file_system.FileSystem):
       return location is not None and location == self.LOCATION_ROOT
 
     return self._vsgpt_volume.has_partition_with_identifier(entry_index)
+
+  def GetEntryIndexByPathSpec(self, path_spec):
+    """Retrieves the entry index for a path specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
+
+    Returns:
+      int: entry index or None if not available.
+    """
+    entry_index = getattr(path_spec, 'entry_index', None)
+    if entry_index is not None:
+      return entry_index
+
+    location = getattr(path_spec, 'location', None)
+    if location is None:
+      return None
+
+    entry_index = None
+
+    if location[:5] == '/gpt{' and location[-1] == '}':
+      for vsgpt_partition in iter(self._vsgpt_volume.partitions):
+        if vsgpt_partition.identifier == location[5:-1]:
+          entry_index = vsgpt_partition.entry_index
+
+    elif location[:2] == '/p':
+      try:
+        entry_index = int(location[2:], 10) - 1
+      except ValueError:
+        pass
+
+    if entry_index is None or entry_index < 0:
+      return None
+
+    return entry_index
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.
@@ -92,7 +126,7 @@ class GPTFileSystem(file_system.FileSystem):
     Returns:
       GPTFileEntry: a file entry or None if not available.
     """
-    entry_index = gpt_helper.GPTPathSpecGetEntryIndex(path_spec)
+    entry_index = self.GetEntryIndexByPathSpec(path_spec)
 
     # The virtual root file has no corresponding partition entry index but
     # should have a location.
@@ -108,7 +142,8 @@ class GPTFileSystem(file_system.FileSystem):
     if not self._vsgpt_volume.has_partition_with_identifier(entry_index):
       return None
 
-    return gpt_file_entry.GPTFileEntry(self._resolver_context, self, path_spec)
+    return gpt_file_entry.GPTFileEntry(
+        self._resolver_context, self, path_spec, entry_index=entry_index)
 
   def GetGPTPartitionByPathSpec(self, path_spec):
     """Retrieves a GPT partition for a path specification.
@@ -119,9 +154,10 @@ class GPTFileSystem(file_system.FileSystem):
     Returns:
       pyvsgpt.partition: a GPT partition or None if not available.
     """
-    entry_index = gpt_helper.GPTPathSpecGetEntryIndex(path_spec)
+    entry_index = self.GetEntryIndexByPathSpec(path_spec)
     if entry_index is None:
       return None
+
     return self._vsgpt_volume.get_partition_by_identifier(entry_index)
 
   def GetGPTVolume(self):

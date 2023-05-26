@@ -30,23 +30,23 @@ class GPTVolumeSystemTest(shared_test_lib.BaseTestCase):
   # vsgptinfo gpt.raw
   #
   # GUID Partition Table (GPT) information:
-  #     Disk identifier         : e86e657a-d840-4c09-afe3-a1a5f665cf44
-  #     Bytes per sector        : 512
-  #     Number of partitions    : 2
+  #   Disk identifier      : e86e657a-d840-4c09-afe3-a1a5f665cf44
+  #   Bytes per sector     : 512
+  #   Number of partitions : 2
   #
   # Partition: 1
-  #     Identifier              : 1e25588c-27a9-4094-868c-2f257021f87b
-  #     Type identifier         : 0fc63daf-8483-4772-8e79-3d69d8477de4
-  #     Type                    : 0x00 (Empty)
-  #     Offset                  : 1048576 (0x00100000)
-  #     Size                    : 65536
+  #   Identifier           : 1e25588c-27a9-4094-868c-2f257021f87b
+  #   Type identifier      : 0fc63daf-8483-4772-8e79-3d69d8477de4
+  #   Type                 : 0x00 (Empty)
+  #   Offset               : 1048576 (0x00100000)
+  #   Size                 : 65536
   #
   # Partition: 2
-  #     Identifier              : 53d86ccf-3188-4b54-90d8-81866426b70a
-  #     Type identifier         : 0fc63daf-8483-4772-8e79-3d69d8477de4
-  #     Type                    : 0x00 (Empty)
-  #     Offset                  : 2097152 (0x00200000)
-  #     Size                    : 65536
+  #   Identifier           : 53d86ccf-3188-4b54-90d8-81866426b70a
+  #   Type identifier      : 0fc63daf-8483-4772-8e79-3d69d8477de4
+  #   Type                 : 0x00 (Empty)
+  #   Offset               : 2097152 (0x00200000)
+  #   Size                 : 65536
 
   def testIterateVolumes(self):
     """Test the iterate volumes functionality."""
