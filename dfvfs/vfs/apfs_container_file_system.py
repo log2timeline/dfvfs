@@ -3,7 +3,6 @@
 
 import pyfsapfs
 
-from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import apfs_container_path_spec
@@ -16,6 +15,8 @@ class APFSContainerFileSystem(file_system.FileSystem):
   """APFS container file system using pyfsapfs."""
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
+
+  _APFS_LOCATION_PREFIX = '/apfs'
 
   def __init__(self, resolver_context, path_spec):
     """Initializes an APFS container file system.
@@ -72,7 +73,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
     Returns:
       bool: True if the file entry exists.
     """
-    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(path_spec)
+    volume_index = self.GetVolumeIndexByPathSpec(path_spec)
 
     # The virtual root file has no corresponding volume index but
     # should have a location.
@@ -99,7 +100,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
     Returns:
       pyfsapfs.volume: an APFS volume or None if not available.
     """
-    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(path_spec)
+    volume_index = self.GetVolumeIndexByPathSpec(path_spec)
     if volume_index is None:
       return None
 
@@ -114,7 +115,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
     Returns:
       APFSContainerFileEntry: a file entry or None if not exists.
     """
-    volume_index = apfs_helper.APFSContainerPathSpecGetVolumeIndex(path_spec)
+    volume_index = self.GetVolumeIndexByPathSpec(path_spec)
 
     # The virtual root file has no corresponding volume index but
     # should have a location.
@@ -132,7 +133,7 @@ class APFSContainerFileSystem(file_system.FileSystem):
       return None
 
     return apfs_container_file_entry.APFSContainerFileEntry(
-        self._resolver_context, self, path_spec)
+        self._resolver_context, self, path_spec, volume_index=volume_index)
 
   def GetRootFileEntry(self):
     """Retrieves the root file entry.
@@ -143,3 +144,40 @@ class APFSContainerFileSystem(file_system.FileSystem):
     path_spec = apfs_container_path_spec.APFSContainerPathSpec(
         location=self.LOCATION_ROOT, parent=self._path_spec.parent)
     return self.GetFileEntryByPathSpec(path_spec)
+
+  def GetVolumeIndexByPathSpec(self, path_spec):
+    """Retrieves the volume index for a path specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
+
+    Returns:
+      int: volume index or None if the index cannot be determined.
+    """
+    volume_index = getattr(path_spec, 'volume_index', None)
+    if volume_index is not None:
+      return volume_index
+
+    location = getattr(path_spec, 'location', None)
+    if location is None or location[:5] != self._APFS_LOCATION_PREFIX:
+      return None
+
+    volume_index = None
+
+    if len(location) > 6 and location[5] == '{' and location[-1] == '}':
+      for index, fsapfs_volume in enumerate(
+          self._fsapfs_container.volumes):
+        if fsapfs_volume.identifier == location[6:-1]:
+          volume_index = index
+          break
+
+    else:
+      try:
+        volume_index = int(location[5:], 10) - 1
+      except (TypeError, ValueError):
+        pass
+
+    if volume_index is None or volume_index < 0 or volume_index > 99:
+      volume_index = None
+
+    return volume_index
