@@ -108,13 +108,21 @@ class OSFileEntry(file_entry.FileEntry):
       self._attributes = []
 
       if xattr:
-        for name in xattr.listxattr(self._location):
+        try:
+          attribute_names = list(xattr.listxattr(self._location))
+        except IOError:
+          attribute_names = []
+
+        for name in attribute_names:
           if isinstance(name, bytes):
             name = os.fsdecode(name)
 
-          extended_attribute = os_attribute.OSExtendedAttribute(
-              self._location, name)
-          self._attributes.append(extended_attribute)
+          try:
+            extended_attribute = os_attribute.OSExtendedAttribute(
+                self._location, name)
+            self._attributes.append(extended_attribute)
+          except IOError:
+            pass
 
     return self._attributes
 
