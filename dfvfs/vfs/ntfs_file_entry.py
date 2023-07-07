@@ -29,8 +29,7 @@ class NTFSFileEntry(file_entry.FileEntry):
       0x00000010: ntfs_attribute.StandardInformationNTFSAttribute,
       0x00000030: ntfs_attribute.FileNameNTFSAttribute,
       0x00000040: ntfs_attribute.ObjectIdentifierNTFSAttribute,
-      0x00000050: ntfs_attribute.SecurityDescriptorNTFSAttribute,
-  }
+      0x00000050: ntfs_attribute.SecurityDescriptorNTFSAttribute}
 
   _FILE_REFERENCE_MFT_ENTRY_BITMASK = 0xffffffffffff
 
@@ -225,9 +224,13 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     mft_attribute = getattr(self.path_spec, 'mft_attribute', None)
     if mft_attribute is not None:
-      return self._fsntfs_file_entry.get_name_by_attribute_index(mft_attribute)
+      name = self._fsntfs_file_entry.get_name_by_attribute_index(mft_attribute)
+    else:
+      name = self._fsntfs_file_entry.get_name()
 
-    return self._fsntfs_file_entry.get_name()
+    # Replace characters that are not considered valid Unicode with \u####
+    # respectively \U######## notation.
+    return name.translate(definitions.ESCAPED_INVALID_UNICODE_CHARACTERS)
 
   @property
   def size(self):

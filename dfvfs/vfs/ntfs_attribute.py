@@ -71,7 +71,11 @@ class FileNameNTFSAttribute(NTFSAttribute):
   @property
   def name(self):
     """str: name."""
-    return self._fsntfs_attribute.name
+    name = self._fsntfs_attribute.name
+
+    # Replace characters that are not considered valid Unicode with \u####
+    # respectively \U######## notation.
+    return name.translate(definitions.ESCAPED_INVALID_UNICODE_CHARACTERS)
 
   @property
   def name_space(self):

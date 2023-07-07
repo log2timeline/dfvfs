@@ -156,3 +156,11 @@ SOURCE_TYPE_DIRECTORY = 'directory'
 SOURCE_TYPE_FILE = 'file'
 SOURCE_TYPE_STORAGE_MEDIA_DEVICE = 'storage media device'
 SOURCE_TYPE_STORAGE_MEDIA_IMAGE = 'storage media image'
+
+# Certain file systems like NTFS and ReFS can contain characters that are not
+# considered valid Unicode.
+INVALID_UNICODE_CHARACTERS = {}
+INVALID_UNICODE_CHARACTERS.update({
+    value: f'\\u{value:04x}' for value in range(0xd800, 0xe000)})
+
+ESCAPED_INVALID_UNICODE_CHARACTERS = str.maketrans(INVALID_UNICODE_CHARACTERS)
