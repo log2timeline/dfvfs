@@ -13,7 +13,7 @@ dfVFS currently provides the following helper objects:
 
 The data slice interface for file-like objects provides a wrapper for dfVFS
 FileIO objects, so that they can be interacted with as data slices. The data
-slice interface is for example used in [Plaso's PE parser](https://github.com/log2timeline/plaso/blob/62d4fa7d25e793dba0557e12c5d61c6052a4a7a4/plaso/parsers/pe.py#L194).
+slice interface is for example used in [Plaso's PE parser](https://github.com/log2timeline/plaso/blob/62d4fa7d25e793dba0557e12c5d61c6052a4a7a4/plaso/parsers/pe.py).
 
 To create a data slice from a file-like object.
 
@@ -46,7 +46,7 @@ file_system_builder.AddFile('/testfile', b'data')
 
 ## Source scanner
 
-The source scanner was originally created for [Plaso](https://github.com/log2timeline/plaso/blob/993ab0111bbf594c9b6d679415c80f8409cad0b5/plaso/cli/storage_media_tool.py#L93)
+The source scanner was originally created for [Plaso](https://github.com/log2timeline/plaso/blob/993ab0111bbf594c9b6d679415c80f8409cad0b5/plaso/cli/storage_media_tool.py)
 tools that deal with storage media devices and images. However it is also
 used by the dfVFS volume scanner.
 
@@ -95,13 +95,13 @@ scripts.
 The Windows volume scanner is a variant of the volume scanner that looks for
 volumes that contain an installation of the Windows operating system.
 
-An example of how to use the source scanner can be found in the [WinReg-KB](https://github.com/libyal/winreg-kb/blob/2e285132b70ce036b7492921ad29f9caf663492e/winregrc/collector.py#L58).
+An example of how to use the source scanner can be found in the [WinReg-KB](https://github.com/libyal/winreg-kb/blob/2e285132b70ce036b7492921ad29f9caf663492e/winregrc/collector.py).
 
 ## File system searcher
 
 The file system searcher was originally created for event extraction with
 [collection filters](https://plaso.readthedocs.io/en/latest/sources/user/Collection-Filters.html)
-in [Plaso](https://github.com/log2timeline/plaso/blob/993ab0111bbf594c9b6d679415c80f8409cad0b5/plaso/cli/storage_media_tool.py#L93).
+in [Plaso](https://github.com/log2timeline/plaso/blob/993ab0111bbf594c9b6d679415c80f8409cad0b5/plaso/cli/storage_media_tool.py).
 
 **TODO: add more information about FindSpec**
 
