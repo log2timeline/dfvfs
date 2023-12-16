@@ -2,6 +2,6 @@
 
 set -e
 
-brew update
-brew install tox || true
+brew update -q
+brew install -q gettext gnu-sed python@3.11 tox || true
 

@@ -12,6 +12,14 @@ dfvfs.lib.apfs\_helper module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.lib.apm\_helper module
+----------------------------
+
+.. automodule:: dfvfs.lib.apm_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.lib.bde\_helper module
 ----------------------------
 
@@ -76,26 +84,10 @@ dfvfs.lib.ewf\_helper module
    :undoc-members:
    :show-inheritance:
 
-dfvfs.lib.fvde\_helper module
------------------------------
-
-.. automodule:: dfvfs.lib.fvde_helper
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dfvfs.lib.glob2regex module
 ---------------------------
 
 .. automodule:: dfvfs.lib.glob2regex
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dfvfs.lib.gpt\_helper module
-----------------------------
-
-.. automodule:: dfvfs.lib.gpt_helper
    :members:
    :undoc-members:
    :show-inheritance:

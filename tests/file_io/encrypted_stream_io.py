@@ -7,6 +7,7 @@ import unittest
 
 from dfvfs.file_io import encrypted_stream_io
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
 from dfvfs.resolver import resolver
@@ -15,7 +16,7 @@ from tests.file_io import test_lib
 
 
 class AESEncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
-  """Tests the RC4 encrypted stream file-like object.
+  """Tests the AES encrypted stream file-like object.
 
   The credentials are passed via the key chain.
   """
@@ -350,7 +351,10 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         self._resolver_context, self._encrypted_stream_path_spec)
     file_object.Open()
 
-    self._TestGetSizeFileObject(file_object)
+    try:
+      self._TestGetSizeFileObject(file_object)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
 
   def testOpenClosePathSpec(self):
     """Test the open and close functionality using a path specification."""
@@ -358,7 +362,10 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         self._resolver_context, self._encrypted_stream_path_spec)
     file_object.Open()
 
-    self._TestGetSizeFileObject(file_object)
+    try:
+      self._TestGetSizeFileObject(file_object)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
 
   def testSeek(self):
     """Test the seek functionality."""
@@ -366,7 +373,10 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         self._resolver_context, self._encrypted_stream_path_spec)
     file_object.Open()
 
-    self._TestSeekFileObject(file_object)
+    try:
+      self._TestSeekFileObject(file_object)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
 
     # TODO: Test SEEK_CUR after open.
 
@@ -384,7 +394,10 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         self._resolver_context, self._encrypted_stream_path_spec)
     file_object.Open()
 
-    self._TestReadFileObject(file_object)
+    try:
+      self._TestReadFileObject(file_object)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy support')
 
 
 if __name__ == '__main__':

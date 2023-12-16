@@ -8,6 +8,7 @@ from dfvfs.encryption import decrypter
 from dfvfs.encryption import manager
 from dfvfs.encryption import rc4_decrypter
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 from tests import test_lib as shared_test_lib
 
@@ -58,8 +59,12 @@ class EncryptionManagerTest(shared_test_lib.BaseTestCase):
 
   def testGetDecrypter(self):
     """Function to test the GetDecrypter function."""
-    decrypter_object = manager.EncryptionManager.GetDecrypter(
-        definitions.ENCRYPTION_METHOD_RC4, key=b'test1')
+    try:
+      decrypter_object = manager.EncryptionManager.GetDecrypter(
+          definitions.ENCRYPTION_METHOD_RC4, key=b'test1')
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy RC4 support')
+
     self.assertIsInstance(decrypter_object, rc4_decrypter.RC4Decrypter)
 
     decrypter_object = manager.EncryptionManager.GetDecrypter('bogus')

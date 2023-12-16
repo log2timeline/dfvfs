@@ -3,6 +3,7 @@
 
 from dfvfs.path import apfs_container_path_spec
 from dfvfs.path import apfs_path_spec
+from dfvfs.path import apm_path_spec
 from dfvfs.path import bde_path_spec
 from dfvfs.path import compressed_stream_path_spec
 from dfvfs.path import cpio_path_spec
@@ -14,7 +15,6 @@ from dfvfs.path import ewf_path_spec
 from dfvfs.path import ext_path_spec
 from dfvfs.path import fake_path_spec
 from dfvfs.path import fat_path_spec
-from dfvfs.path import fvde_path_spec
 from dfvfs.path import gpt_path_spec
 from dfvfs.path import gzip_path_spec
 from dfvfs.path import hfs_path_spec

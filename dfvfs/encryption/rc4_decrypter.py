@@ -8,6 +8,7 @@ from cryptography.hazmat.primitives import ciphers
 from dfvfs.encryption import decrypter
 from dfvfs.encryption import manager
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 
 class RC4Decrypter(decrypter.Decrypter):
@@ -23,6 +24,7 @@ class RC4Decrypter(decrypter.Decrypter):
       kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
+      BackEndError: when the cryptography backend cannot be initialized.
       ValueError: when key is not set.
     """
     if not key:
@@ -30,7 +32,11 @@ class RC4Decrypter(decrypter.Decrypter):
 
     algorithm = algorithms.ARC4(key)
 
-    backend = backends.default_backend()
+    try:
+      backend = backends.default_backend()
+    except ImportError as exception:
+      raise errors.BackEndError(exception)
+
     cipher = ciphers.Cipher(algorithm, mode=None, backend=backend)
 
     super(RC4Decrypter, self).__init__(**kwargs)

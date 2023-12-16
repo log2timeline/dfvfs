@@ -2,6 +2,8 @@
 """Imports for the volume system factory."""
 
 from dfvfs.volume import apfs_volume_system
+from dfvfs.volume import apm_volume_system
+from dfvfs.volume import cs_volume_system
 from dfvfs.volume import gpt_volume_system
 from dfvfs.volume import lvm_volume_system
 from dfvfs.volume import tsk_volume_system

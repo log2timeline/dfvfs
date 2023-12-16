@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script to generate dfVFS test files on Linux.
 
@@ -267,7 +267,7 @@ sudo umount ${MOUNT_POINT};
 
 sudo losetup -d /dev/loop99;
 
-# Create test image with a GPT partition table with 2 partitions with an ext2
+# Create test image with a GPT partition table with 2 partitions with an ext3
 # file system in the first partition and an ext4 file system in the second
 # partition.
 IMAGE_FILE="test_data/gpt.raw";
@@ -306,6 +306,103 @@ sudo losetup -d /dev/loop99;
 sudo losetup -o $(( 4096 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
 
 sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99;
+
+sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sudo losetup -d /dev/loop99;
+
+# Create test image with a GPT partition table with 2 partitions with an ext3
+# file system in the first partition and an ext4 file system in the third
+# partition.
+IMAGE_FILE="test_data/gpt_non_sequential.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+gdisk ${IMAGE_FILE} <<EOT
+n
+1
+
++64K
+8300
+n
+2
+
++64K
+8300
+n
+3
+
++64K
+8300
+d
+2
+w
+y
+EOT
+
+sudo losetup -o $(( 2048 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
+
+sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sudo losetup -d /dev/loop99;
+
+sudo losetup -o $(( 6144 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+
+sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99;
+
+sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+
+sudo chown ${USERNAME} ${MOUNT_POINT};
+
+create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+
+sudo umount ${MOUNT_POINT};
+
+sudo losetup -d /dev/loop99;
+
+# Create test image with an emtpy GPT partition table with 1 MBR partition with an ext3
+# file system.
+IMAGE_FILE="test_data/gpt_empty_with_mbr.raw";
+
+dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+
+gdisk ${IMAGE_FILE} <<EOT
+o
+y
+w
+y
+EOT
+
+# Note that fdisk will write into the GPT partition entries area if the partition start offset
+# is not set correctly.
+fdisk -u ${IMAGE_FILE} <<EOT
+M
+d
+n
+p
+1
+48
++128K
+w
+EOT
+
+sudo losetup -o $(( 48 * ${SECTOR_SIZE} )) --sizelimit $(( 256 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
 
 sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
 

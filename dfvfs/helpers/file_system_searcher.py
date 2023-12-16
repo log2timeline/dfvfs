@@ -2,7 +2,11 @@
 """A searcher to find file entries within a file system."""
 
 import re
-import sre_constants
+
+try:
+  import re._constants as sre_constants
+except ImportError:
+  import sre_constants  # pylint: disable=deprecated-module
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
@@ -179,7 +183,11 @@ class FindSpec(object):
     Returns:
       bool: True if the file entry matches the find specification, False if not.
     """
-    if definitions.FILE_ENTRY_TYPE_DEVICE not in self._file_entry_types:
+    if (definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE not in (
+           self._file_entry_types) and
+       definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE not in (
+           self._file_entry_types) and
+       definitions.FILE_ENTRY_TYPE_DEVICE not in self._file_entry_types):
       return False
     return file_entry.IsDevice()
 
@@ -360,33 +368,13 @@ class FindSpec(object):
           the path specification of the file entry falls outside the mount
           point.
     """
-    location = getattr(file_entry.path_spec, 'location', None)
-    if self._location_segments is None or location is None:
+    if not file_entry:
       return False
 
-    if (mount_point and
-        mount_point.type_indicator == definitions.TYPE_INDICATOR_OS and
-        file_entry.path_spec.type_indicator == definitions.TYPE_INDICATOR_OS):
-      if not location.startswith(mount_point.location):
-        raise ValueError(
-            'File entry path specification location not inside mount point.')
-
-      location = location[len(mount_point.location):]
-
     file_system = file_entry.GetFileSystem()
-    location_segments = file_system.SplitPath(location)
 
-    for segment_index in range(self._number_of_location_segments):
-      try:
-        location_segment = location_segments[segment_index]
-      except IndexError:
-        return False
-
-      if not self._CompareWithLocationSegment(
-          location_segment, segment_index + 1):
-        return False
-
-    return True
+    return self.ComparePathSpecLocation(
+        file_entry.path_spec, file_system, mount_point=mount_point)
 
   def CompareNameWithLocationSegment(self, file_entry, segment_index):
     """Compares a file entry name against a find specification location segment.
@@ -402,6 +390,54 @@ class FindSpec(object):
           location defined.
     """
     return self._CompareWithLocationSegment(file_entry.name, segment_index)
+
+  def ComparePathSpecLocation(
+      self, path_spec, file_system, mount_point=None):
+    """Compares a path specification location against the find specification.
+
+    Args:
+      path_spec (PathSpec): path specification.
+      file_system (FileSystem): file system.
+      mount_point (Optional[PathSpec]): mount point path specification that
+          refers to the base location of the file system. The mount point
+          is ignored if it is not an OS path specification.
+
+    Returns:
+      bool: True if the location of the file entry matches that of the find
+          specification, False if not or if the find specification has no
+          location defined.
+
+    Raises:
+      ValueError: if mount point is set and is of type OS and the location of
+          the path specification of the file entry falls outside the mount
+          point.
+    """
+    location = getattr(path_spec, 'location', None)
+    if self._location_segments is None or location is None:
+      return False
+
+    if (mount_point and
+        mount_point.type_indicator == definitions.TYPE_INDICATOR_OS and
+        path_spec.type_indicator == definitions.TYPE_INDICATOR_OS):
+      if not location.startswith(mount_point.location):
+        raise ValueError(
+            'File entry path specification location not inside mount point.')
+
+      location = location[len(mount_point.location):]
+
+    location_segments = file_system.SplitPath(location)
+
+    for segment_index in range(self._number_of_location_segments):
+      try:
+        location_segment = location_segments[segment_index]
+      except IndexError:
+        return False
+
+      if not self._CompareWithLocationSegment(
+          location_segment, segment_index + 1):
+        return False
+
+    return True
 
   def CompareTraits(self, file_entry):
     """Compares a file entry traits against the find specification.
@@ -494,8 +530,9 @@ class FileSystemSearcher(object):
 
       if location_match and is_last_location_segment:
         # Check if the full location matches.
-        location_match = find_spec.CompareLocation(
-            file_entry, mount_point=self._mount_point)
+        location_match = find_spec.ComparePathSpecLocation(
+            file_entry.path_spec, self._file_system,
+            mount_point=self._mount_point)
 
       if not has_location or (location_match and is_last_location_segment):
         if find_spec.CompareTraits(file_entry):
@@ -509,9 +546,8 @@ class FileSystemSearcher(object):
       segment_index += 1
       try:
         for sub_file_entry in file_entry.sub_file_entries:
-          for matching_path_spec in self._FindInFileEntry(
-              sub_file_entry, sub_find_specs, segment_index):
-            yield matching_path_spec
+          yield from self._FindInFileEntry(
+              sub_file_entry, sub_find_specs, segment_index)
 
       except errors.AccessError:
         pass
@@ -520,7 +556,7 @@ class FileSystemSearcher(object):
     """Searches for matching file entries within the file system.
 
     Args:
-      find_specs (list[FindSpec]): find specifications. where None
+      find_specs (Optional[list[FindSpec]]): find specifications, where None
           will return all allocated file entries.
 
     Yields:
@@ -537,9 +573,7 @@ class FileSystemSearcher(object):
 
     # Note that APFS can have a volume without a root directory.
     if file_entry:
-      for matching_path_spec in self._FindInFileEntry(
-          file_entry, find_specs, 0):
-        yield matching_path_spec
+      yield from self._FindInFileEntry(file_entry, find_specs, 0)
 
   def GetFileEntryByPathSpec(self, path_spec):
     """Retrieves a file entry for a path specification.

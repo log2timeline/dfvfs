@@ -145,10 +145,24 @@ def TSKVsPartIsAllocated(tsk_vs_part):
   # The flags are an instance of TSK_VS_PART_FLAG_ENUM.
   tsk_vs_part_flags = getattr(tsk_vs_part, 'flags', None)
 
+  is_allocated = (tsk_vs_part_flags is not None and
+                  tsk_vs_part_flags == pytsk3.TSK_VS_PART_FLAG_ALLOC)
+
+  tsk_vs_vstype = getattr(tsk_vs_part.vs, 'vstype', pytsk3.TSK_VS_TYPE_UNSUPP)
+
+  # For BSD disklabel consider c and d partitions (slot 2 and 3) as metadata
+  # part of the disklabel volume itself and not a partition of the volume.
+  if tsk_vs_vstype == pytsk3.TSK_VS_TYPE_BSD:
+    tsk_vs_part_slot_num = getattr(tsk_vs_part, 'slot_num', None)
+    if tsk_vs_part_slot_num in (None, 2, 3):
+      is_allocated = False
+
   # For APM partition tables the description needs to be checked to determine
   # the usage of the part.
-  tsk_vs_part_desc = getattr(tsk_vs_part, 'desc', None)
+  elif tsk_vs_vstype == pytsk3.TSK_VS_TYPE_MAC:
+    tsk_vs_part_desc = getattr(tsk_vs_part, 'desc', None)
 
-  return (tsk_vs_part_flags is not None and
-          tsk_vs_part_flags == pytsk3.TSK_VS_PART_FLAG_ALLOC and
-          tsk_vs_part_desc not in (b'Apple_partition_map', b'Apple_Free'))
+    return is_allocated and tsk_vs_part_desc not in (
+        b'Apple_partition_map', b'Apple_Free')
+
+  return is_allocated

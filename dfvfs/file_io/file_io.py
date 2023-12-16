@@ -90,6 +90,14 @@ class FileIO(object):
   # because they are part of the file-like object interface.
   # pylint: disable=invalid-name
 
+  def close(self):
+    """Closes the file input/output (IO) object.
+
+    Note that this function is a place holder for the file-like object
+    interface.
+    """
+    return
+
   @abc.abstractmethod
   def read(self, size=None):
     """Reads a byte string from the file input/output (IO) object.

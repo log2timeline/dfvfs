@@ -1,23 +1,24 @@
 # Run tests on Fedora and Ubuntu Docker images using GIFT CORP and GIFT PPA on commit
 name: test_docker
 on: [push]
+permissions: read-all
 jobs:
   test_fedora:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ['36']
+        version: ['38']
     container:
       image: registry.fedoraproject.org/fedora:${{ matrix.version }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up container
       run: |
         dnf install -y dnf-plugins-core langpacks-en
     - name: Install dependencies
       run: |
         dnf copr -y enable @gift/dev
-        dnf install -y @development-tools python3 python3-devel libbde-python3 libewf-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi python3-cryptography python3-dfdatetime python3-dtfabric python3-idna python3-mock python3-pbr python3-pytsk3 python3-pyxattr python3-pyyaml python3-setuptools python3-six
+        dnf install -y @development-tools python3 python3-devel libbde-python3 libewf-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi python3-cryptography python3-dfdatetime python3-dtfabric python3-idna python3-pytsk3 python3-pyxattr python3-pyyaml python3-setuptools
     - name: Run tests
       env:
         LANG: C.utf8
@@ -44,7 +45,7 @@ jobs:
     container:
       image: ubuntu:${{ matrix.version }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up container
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -57,7 +58,7 @@ jobs:
       run: |
         add-apt-repository -y ppa:gift/dev
         apt-get update -q
-        apt-get install -y build-essential python3 python3-dev libbde-python3 libewf-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-cryptography python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-mock python3-pbr python3-pytsk3 python3-pyxattr python3-setuptools python3-six python3-yaml
+        apt-get install -y build-essential python3 python3-dev libbde-python3 libewf-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-cryptography python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-pip python3-pytsk3 python3-pyxattr python3-setuptools python3-wheel python3-yaml
     - name: Run tests
       env:
         LANG: en_US.UTF-8
@@ -68,6 +69,9 @@ jobs:
         LANG: en_US.UTF-8
       run: |
         if test -f tests/end-to-end.py; then PYTHONPATH=. python3 ./tests/end-to-end.py --debug -c config/end-to-end.ini; fi
+    - name: Update setuptools
+      run: |
+        python3 -m pip install -U setuptools
     - name: Build source distribution
       run: |
         python3 ./setup.py sdist

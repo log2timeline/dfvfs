@@ -33,6 +33,27 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
     """Cleans up the needed objects used throughout the test."""
     self._resolver_context.Empty()
 
+  # fsapfsinfo apfs.raw
+  #
+  # Apple File System (APFS) information:
+  #
+  # Container information:
+  #   Identifier                    : d08a9fa0-d5a5-458b-813e-ebf9bf5d5338
+  #   Number of volumes             : 1
+  #
+  # Volume: 1 information:
+  #   Identifier                    : 458ed10d-8ac3-4af1-8dfd-3954d151a3f3
+  #   Name                          : apfs_test
+  #   Compatible features           : 0x00000002
+  #         (NX_FEATURE_LCFD)
+  #
+  #   Incompatible features         : 0x00000001
+  #         (NX_INCOMPAT_VERSION1)
+  #
+  #   Read-only compatible features : 0x00000000
+  #
+  #   Number of snapshots           : 0
+
   def testOpenAndClose(self):
     """Test the open and close functionality."""
     file_system = apfs_container_file_system.APFSContainerFileSystem(
@@ -65,6 +86,12 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        location='/apfs{458ed10d-8ac3-4af1-8dfd-3954d151a3f3}',
+        parent=self._raw_path_spec)
+    self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS_CONTAINER, parent=self._raw_path_spec,
         volume_index=9)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
@@ -78,6 +105,8 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
         definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs9',
         parent=self._raw_path_spec)
     self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
+
+  # TODO: add tests for GetAPFSVolumeByPathSpec function.
 
   def testGetFileEntryByPathSpec(self):
     """Tests the GetFileEntryByPathSpec function."""
@@ -105,6 +134,15 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
 
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS_CONTAINER, location='/apfs1',
+        parent=self._raw_path_spec)
+    file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+    self.assertIsNotNone(file_entry)
+    self.assertEqual(file_entry.name, 'apfs1')
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        location='/apfs{458ed10d-8ac3-4af1-8dfd-3954d151a3f3}',
         parent=self._raw_path_spec)
     file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
@@ -145,7 +183,73 @@ class APFSContainerFileSystemTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(file_entry)
     self.assertEqual(file_entry.name, '')
 
-  # TODO: add tests for GetAPFSVolumeByPathSpec function.
+  def testGetVolumeIndexByPathSpec(self):
+    """Tests the GetVolumeIndexByPathSpec function."""
+    file_system = apfs_container_file_system.APFSContainerFileSystem(
+        self._resolver_context, self._apfs_container_path_spec)
+    self.assertIsNotNone(file_system)
+
+    file_system.Open()
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        parent=self._raw_path_spec)
+
+    self.assertIsNotNone(path_spec)
+
+    volume_index = file_system.GetVolumeIndexByPathSpec(path_spec)
+    self.assertIsNone(volume_index)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        location='/apfs1', parent=self._raw_path_spec)
+
+    self.assertIsNotNone(path_spec)
+
+    volume_index = file_system.GetVolumeIndexByPathSpec(path_spec)
+    self.assertEqual(volume_index, 0)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        location='/apfs{458ed10d-8ac3-4af1-8dfd-3954d151a3f3}',
+        parent=self._raw_path_spec)
+
+    self.assertIsNotNone(path_spec)
+
+    volume_index = file_system.GetVolumeIndexByPathSpec(path_spec)
+    self.assertEqual(volume_index, 0)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        parent=self._raw_path_spec, volume_index=0)
+
+    self.assertIsNotNone(path_spec)
+
+    volume_index = file_system.GetVolumeIndexByPathSpec(path_spec)
+    self.assertEqual(volume_index, 0)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        location='/apfs1', parent=self._raw_path_spec, volume_index=0)
+
+    self.assertIsNotNone(path_spec)
+
+    volume_index = file_system.GetVolumeIndexByPathSpec(path_spec)
+    self.assertEqual(volume_index, 0)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        location='/apfs', parent=self._raw_path_spec)
+
+    volume_index = file_system.GetVolumeIndexByPathSpec(path_spec)
+    self.assertIsNone(volume_index)
+
+    path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_APFS_CONTAINER,
+        location='/apfs101', parent=self._raw_path_spec)
+
+    volume_index = file_system.GetVolumeIndexByPathSpec(path_spec)
+    self.assertIsNone(volume_index)
 
 
 if __name__ == '__main__':

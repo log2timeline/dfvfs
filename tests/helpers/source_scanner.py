@@ -360,14 +360,29 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertEqual(
         scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
 
-    scan_node = self._GetTestScanNode(scan_context)
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(
-        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+        scan_node.type_indicator, definitions.PREFERRED_APM_BACK_END)
 
-    self.assertEqual(len(scan_node.sub_nodes), 5)
+    if scan_node.type_indicator == definitions.TYPE_INDICATOR_TSK_PARTITION:
+      self.assertEqual(len(scan_node.sub_nodes), 5)
+      scan_node = scan_node.sub_nodes[3]
+    else:
+      self.assertEqual(len(scan_node.sub_nodes), 1)
+      scan_node = scan_node.sub_nodes[0]
 
-    scan_node = scan_node.sub_nodes[3].GetSubNodeByLocation('/')
+    scan_node = scan_node.GetSubNodeByLocation('/')
     self.assertIsNotNone(scan_node)
     self.assertEqual(
         scan_node.type_indicator, definitions.PREFERRED_HFS_BACK_END)
@@ -440,6 +455,63 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     scan_node = scan_node.sub_nodes[0]
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS)
+
+  def testScanOnGPT(self):
+    """Test the Scan function on GPT."""
+    test_path = self._GetTestFilePath(['gpt.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
+
+    self.assertEqual(len(scan_node.sub_nodes), 2)
+
+    scan_node = scan_node.sub_nodes[0].GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
+
+  def testScanOnEmtpyGPTWithMBR(self):
+    """Test the Scan function on an empty GPT with a MBR."""
+    test_path = self._GetTestFilePath(['gpt_empty_with_mbr.raw'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = self._GetTestScanNode(scan_context)
+    self.assertIsNotNone(scan_node)
+
+    self.assertEqual(len(scan_node.sub_nodes), 2)
+
+    self.assertIsNotNone(scan_node.sub_nodes[0])
+    self.assertEqual(
+        scan_node.sub_nodes[0].type_indicator,
+        definitions.PREFERRED_GPT_BACK_END)
+
+    scan_node = scan_node.sub_nodes[1]
+
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+
+    scan_node = scan_node.sub_nodes[2].GetSubNodeByLocation('/')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
 
   def testScanOnLVM(self):
     """Test the Scan function on LVM."""

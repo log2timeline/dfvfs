@@ -2,26 +2,24 @@ environment:
   PYPI_TOKEN:
     secure: /FwQrmudDyj+Mu3DaxLEowyvwBaY7x1GRt6gYJrVerEAo4PujrTDfMs9/K6PJSN7KkCL/6LQK2VfTD91bbnUwGMiTjfeItu2+aernJtwLLtoDJ22sHgMiajGMqficrHlOc7uNhFMjQsGa7WiiGGo12c/b7z55dNmU2N0EIc086/Z2G6O+n2+oBeT5SbFu5j5XXkwrd98vnW8hryuZPjLauV1mxc6MMNiv3dOgVL8gtWDjW5xZVJvfOTcYA+7MMLPUbMbqMcXkTSRshqUrX/6mw==
   matrix:
-  - DESCRIPTION: "Windows with 32-bit Python 3.10"
+  - DESCRIPTION: "Windows with 32-bit Python 3.11"
     MACHINE_TYPE: "x86"
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    PYTHON: "C:\\Python310"
-    PYTHON_VERSION: "3.10"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    PYTHON: "C:\\Python311"
+    PYTHON_VERSION: "3.11"
     L2TBINARIES_TRACK: "dev"
-  - DESCRIPTION: "Windows with 64-bit Python 3.10"
+  - DESCRIPTION: "Windows with 64-bit Python 3.11"
     MACHINE_TYPE: "amd64"
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    PYTHON: "C:\\Python310-x64"
-    PYTHON_VERSION: "3.10"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    PYTHON: "C:\\Python311-x64"
+    PYTHON_VERSION: "3.11"
     L2TBINARIES_TRACK: "dev"
-  - DESCRIPTION: "Mac OS with Python 3.10"
-    APPVEYOR_BUILD_WORKER_IMAGE: macos
+  - DESCRIPTION: "Mac OS with Python 3.11"
+    APPVEYOR_BUILD_WORKER_IMAGE: macos-monterey
     HOMEBREW_NO_INSTALL_CLEANUP: 1
 
 install:
 - cmd: "%PYTHON%\\python.exe -m pip install -U pip setuptools twine wheel"
-- cmd: "%PYTHON%\\python.exe -m pip install pywin32 WMI"
-- cmd: "%PYTHON%\\python.exe %PYTHON%\\Scripts\\pywin32_postinstall.py -install"
 - ps: If ($isWindows) { .\config\appveyor\install.ps1 }
 - sh: config/appveyor/install.sh
 

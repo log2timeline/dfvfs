@@ -62,8 +62,10 @@ class CPIOFileEntry(file_entry.FileEntry):
       self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
     elif stat.S_ISREG(mode):
       self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
-    elif stat.S_ISCHR(mode) or stat.S_ISBLK(mode):
-      self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
+    elif stat.S_ISCHR(mode):
+      self.entry_type = definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE
+    elif stat.S_ISBLK(mode):
+      self.entry_type = definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE
     elif stat.S_ISFIFO(mode):
       self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
     elif stat.S_ISSOCK(mode):

@@ -6,6 +6,7 @@ import unittest
 
 from dfvfs.encryption import des3_decrypter
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 from tests.encryption import test_lib
 
@@ -18,6 +19,13 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
 
   def testInitialization(self):
     """Tests the initialization method."""
+    # Test missing initialization vector with valid block cipher mode.
+    try:
+      des3_decrypter.DES3Decrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._DES3_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy triple DES support')
+
     # Test missing arguments.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter()
@@ -31,10 +39,6 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
           cipher_mode=definitions.ENCRYPTION_MODE_CBC, key=self._DES3_KEY)
-
-    # Test missing initialization vector with valid block cipher mode.
-    des3_decrypter.DES3Decrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._DES3_KEY)
 
     # Test incorrect key size.
     with self.assertRaises(ValueError):
@@ -55,10 +59,13 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
 
   def testDecrypt(self):
     """Tests the Decrypt method."""
-    decrypter = des3_decrypter.DES3Decrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=self._DES3_INITIALIZATION_VECTOR,
-        key=self._DES3_KEY)
+    try:
+      decrypter = des3_decrypter.DES3Decrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=self._DES3_INITIALIZATION_VECTOR,
+          key=self._DES3_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy triple DES support')
 
     # Test full decryption.
     expected_decrypted_data = b'This is secret encrypted text!!!'
@@ -71,10 +78,13 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     self.assertEqual(remaining_encrypted_data, b'')
 
     # Reset decrypter.
-    decrypter = des3_decrypter.DES3Decrypter(
-        cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=self._DES3_INITIALIZATION_VECTOR,
-        key=self._DES3_KEY)
+    try:
+      decrypter = des3_decrypter.DES3Decrypter(
+          cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=self._DES3_INITIALIZATION_VECTOR,
+          key=self._DES3_KEY)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy triple DES support')
 
     # Test partial decryption.
     partial_encrypted_data = b'e\x86k\t\x01W\xd7d\xe4\xa4\xb3~\x80'

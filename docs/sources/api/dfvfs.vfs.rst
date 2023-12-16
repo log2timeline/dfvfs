@@ -60,6 +60,30 @@ dfvfs.vfs.apfs\_file\_system module
    :undoc-members:
    :show-inheritance:
 
+dfvfs.vfs.apm\_directory module
+-------------------------------
+
+.. automodule:: dfvfs.vfs.apm_directory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.apm\_file\_entry module
+---------------------------------
+
+.. automodule:: dfvfs.vfs.apm_file_entry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dfvfs.vfs.apm\_file\_system module
+----------------------------------
+
+.. automodule:: dfvfs.vfs.apm_file_system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dfvfs.vfs.attribute module
 --------------------------
 
@@ -312,22 +336,6 @@ dfvfs.vfs.file\_system module
 -----------------------------
 
 .. automodule:: dfvfs.vfs.file_system
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dfvfs.vfs.fvde\_file\_entry module
-----------------------------------
-
-.. automodule:: dfvfs.vfs.fvde_file_entry
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dfvfs.vfs.fvde\_file\_system module
------------------------------------
-
-.. automodule:: dfvfs.vfs.fvde_file_system
    :members:
    :undoc-members:
    :show-inheritance:

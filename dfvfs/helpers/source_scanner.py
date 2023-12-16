@@ -498,6 +498,18 @@ class SourceScanner(object):
         self._ScanVolumeSystemRootNode(
             scan_context, scan_node, auto_recurse=auto_recurse)
 
+        # Check for an empty GPT with MBR partitions.
+        if (scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT and
+            not scan_node.sub_nodes):
+          source_path_spec = path_spec_factory.Factory.NewPathSpec(
+              definitions.PREFERRED_MBR_BACK_END, location='/',
+              parent=source_path_spec.parent)
+          if not scan_context.HasScanNode(source_path_spec):
+            scan_node = scan_context.AddScanNode(
+                source_path_spec, scan_node.parent_node)
+            self._ScanVolumeSystemRootNode(
+                scan_context, scan_node, auto_recurse=auto_recurse)
+
         # We already have already scanned for the file systems.
         return
 

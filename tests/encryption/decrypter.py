@@ -8,6 +8,7 @@ from cryptography.hazmat.primitives.ciphers import algorithms
 
 from dfvfs.encryption import decrypter
 from dfvfs.lib import definitions
+from dfvfs.lib import errors
 
 from tests.encryption import test_lib
 
@@ -34,9 +35,13 @@ class CryptographyBlockCipherDecrypterTest(test_lib.DecrypterTestCase):
     """Tests the __init__ method."""
     algorithm = algorithms.TripleDES(self._DES3_KEY)
 
-    test_decrypter = decrypter.CryptographyBlockCipherDecrypter(
-        algorithm=algorithm, cipher_mode=definitions.ENCRYPTION_MODE_CBC,
-        initialization_vector=self._DES3_INITIALIZATION_VECTOR)
+    try:
+      test_decrypter = decrypter.CryptographyBlockCipherDecrypter(
+          algorithm=algorithm, cipher_mode=definitions.ENCRYPTION_MODE_CBC,
+          initialization_vector=self._DES3_INITIALIZATION_VECTOR)
+    except errors.BackEndError:
+      raise unittest.SkipTest('missing cryptograpy triple DES support')
+
     self.assertIsNotNone(test_decrypter)
 
     test_decrypter = decrypter.CryptographyBlockCipherDecrypter(

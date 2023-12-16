@@ -5,7 +5,6 @@ import os
 
 from dfvfs.file_io import file_io
 from dfvfs.lib import errors
-from dfvfs.lib import gpt_helper
 from dfvfs.resolver import resolver
 
 
@@ -50,19 +49,21 @@ class GPTFile(file_io.FileIO):
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
-    entry_index = gpt_helper.GPTPathSpecGetEntryIndex(self._path_spec)
+    file_system = resolver.Resolver.OpenFileSystem(
+        self._path_spec, resolver_context=self._resolver_context)
+
+    entry_index = file_system.GetEntryIndexByPathSpec(self._path_spec)
     if entry_index is None:
       raise errors.PathSpecError(
           'Unable to retrieve entry index from path specification.')
 
-    self._file_system = resolver.Resolver.OpenFileSystem(
-        self._path_spec, resolver_context=self._resolver_context)
-    vsgpt_volume = self._file_system.GetGPTVolume()
+    vsgpt_volume = file_system.GetGPTVolume()
 
     if not vsgpt_volume.has_partition_with_identifier(entry_index):
       raise errors.PathSpecError(
           f'Missing GPT partition with entry index: {entry_index:d}')
 
+    self._file_system = file_system
     self._vsgpt_partition = vsgpt_volume.get_partition_by_identifier(
         entry_index)
 

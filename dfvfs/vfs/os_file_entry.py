@@ -89,9 +89,10 @@ class OSFileEntry(file_entry.FileEntry):
         self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
       elif stat.S_ISDIR(stat_info.st_mode):
         self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
-      elif (stat.S_ISCHR(stat_info.st_mode) or
-            stat.S_ISBLK(stat_info.st_mode)):
-        self.entry_type = definitions.FILE_ENTRY_TYPE_DEVICE
+      elif stat.S_ISCHR(stat_info.st_mode):
+        self.entry_type = definitions.FILE_ENTRY_TYPE_CHARACTER_DEVICE
+      elif stat.S_ISBLK(stat_info.st_mode):
+        self.entry_type = definitions.FILE_ENTRY_TYPE_BLOCK_DEVICE
       elif stat.S_ISFIFO(stat_info.st_mode):
         self.entry_type = definitions.FILE_ENTRY_TYPE_PIPE
       elif stat.S_ISSOCK(stat_info.st_mode):
@@ -107,10 +108,21 @@ class OSFileEntry(file_entry.FileEntry):
       self._attributes = []
 
       if xattr:
-        for name in xattr.listxattr(self._location):
-          extended_attribute = os_attribute.OSExtendedAttribute(
-              self._location, name)
-          self._attributes.append(extended_attribute)
+        try:
+          attribute_names = list(xattr.listxattr(self._location))
+        except IOError:
+          attribute_names = []
+
+        for name in attribute_names:
+          if isinstance(name, bytes):
+            name = os.fsdecode(name)
+
+          try:
+            extended_attribute = os_attribute.OSExtendedAttribute(
+                self._location, name)
+            self._attributes.append(extended_attribute)
+          except IOError:
+            pass
 
     return self._attributes
 
