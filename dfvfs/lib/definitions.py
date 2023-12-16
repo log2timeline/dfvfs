@@ -134,7 +134,6 @@ FILE_ENTRY_TYPE_LINK = 'link'
 FILE_ENTRY_TYPE_SOCKET = 'socket'
 FILE_ENTRY_TYPE_PIPE = 'pipe'
 FILE_ENTRY_TYPE_WHITEOUT = 'whiteout'
-FILE_ENTRY_TYPE_CHARACTER = 'character'
 
 # The format category definitions.
 FORMAT_CATEGORY_UNDEFINED = 0
