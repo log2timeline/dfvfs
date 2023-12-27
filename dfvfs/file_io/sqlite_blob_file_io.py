@@ -88,6 +88,7 @@ class SQLiteBlobFile(file_io.FileIO):
     database_object.Open(file_object)
 
     # Sanity check the table and column names.
+    rows = []
     error_string = ''
     if not database_object.HasTable(table_name):
       error_string = f'Missing table: {table_name:s}'
