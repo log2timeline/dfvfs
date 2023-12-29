@@ -104,7 +104,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
           YYYY-MM-DD hh:mm:ss.######[+-]##:##
 
           Where # are numeric digits ranging from 0 to 9 and the seconds
-          fraction can be either 3 or 6 digits. The time of day, seconds
+          fraction can be either 3, 6 or 9 digits. The time of day, seconds
           fraction and time zone offset are optional. The default time zone
           is UTC.
     """
@@ -116,18 +116,20 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     hours = date_time_values.get('hours', 0)
     minutes = date_time_values.get('minutes', 0)
     seconds = date_time_values.get('seconds', 0)
-    microseconds = date_time_values.get('microseconds', 0)
+    nanoseconds = date_time_values.get('nanoseconds', None)
     time_zone_offset = date_time_values.get('time_zone_offset', 0)
 
     self._timestamp = self._GetNumberOfSecondsFromElements(
         year, month, day_of_month, hours, minutes, seconds)
-    self.fraction_of_second = microseconds
-    self._time_zone_offset = time_zone_offset
 
-    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
-      self.fraction_of_second *= 1000
+    if nanoseconds is not None:
+      self.fraction_of_second = nanoseconds
     else:
-      self.fraction_of_second *= 10
+      # TODO: kept for backwards compatibility with older dfdatetime versions.
+      self.fraction_of_second = date_time_values.get('microseconds', 0) * 1000
+
+    self._precision = dfdatetime_definitions.PRECISION_1_NANOSECOND
+    self._time_zone_offset = time_zone_offset
 
     self._normalized_timestamp = None
     self.is_local_time = False
@@ -153,7 +155,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
       return (f'{year:04d}-{month:02d}-{day_of_month:02d} '
               f'{hours:02d}:{minutes:02d}:{seconds:02d}')
 
-    if pytsk3.TSK_VERSION_NUM >= 0x040200ff:
+    if self._precision == dfdatetime_definitions.PRECISION_1_NANOSECOND:
       return (f'{year:04d}-{month:02d}-{day_of_month:02d} '
               f'{hours:02d}:{minutes:02d}:{seconds:02d}'
               f'.{self.fraction_of_second:09d}')
