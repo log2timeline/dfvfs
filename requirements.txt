@@ -5,6 +5,7 @@ dfdatetime >= 20221112
 dtfabric >= 20230518
 libbde-python >= 20220121
 libewf-python >= 20131210
+libfcrypto-python >= 20240114
 libfsapfs-python >= 20220709
 libfsext-python >= 20220829
 libfsfat-python >= 20220925
