@@ -1,9 +1,9 @@
 PyYAML >= 3.10
 cffi >= 1.9.1
-cryptography >= 2.0.2
 dfdatetime >= 20221112
 dtfabric >= 20230518
 libbde-python >= 20220121
+libcaes-python >= 20240114
 libewf-python >= 20131210
 libfcrypto-python >= 20240114
 libfsapfs-python >= 20220709

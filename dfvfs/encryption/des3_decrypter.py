@@ -9,7 +9,7 @@ from dfvfs.lib import definitions
 
 
 class DES3Decrypter(decrypter.Decrypter):
-  """Triple DES decrypter using Cryptography."""
+  """Triple DES decrypter using pyfcrypto."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_DES3
 

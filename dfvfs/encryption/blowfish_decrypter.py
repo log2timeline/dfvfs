@@ -9,7 +9,7 @@ from dfvfs.lib import definitions
 
 
 class BlowfishDecrypter(decrypter.Decrypter):
-  """Blowfish decrypter using Cryptography."""
+  """Blowfish decrypter using pyfcrypto."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_BLOWFISH
 

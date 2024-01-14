@@ -9,7 +9,7 @@ from dfvfs.lib import definitions
 
 
 class RC4Decrypter(decrypter.Decrypter):
-  """RC4 decrypter using Cryptography."""
+  """RC4 decrypter using pyfcrypto."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_RC4
 
