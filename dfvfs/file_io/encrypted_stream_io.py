@@ -160,8 +160,11 @@ class EncryptedStream(file_io.FileIO):
 
     self._encrypted_data = b''.join([self._encrypted_data, encrypted_data])
 
-    self._decrypted_data, self._encrypted_data = self._decrypter.Decrypt(
-        self._encrypted_data, finalize=finalize)
+    if self._encrypted_data:
+      self._decrypted_data, self._encrypted_data = self._decrypter.Decrypt(
+          self._encrypted_data, finalize=finalize)
+    else:
+      self._decrypted_data = b''
 
     self._decrypted_data_size = len(self._decrypted_data)
 

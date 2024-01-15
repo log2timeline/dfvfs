@@ -59,10 +59,10 @@ The information below is based of version 20230503
 
 ### Encrypted stream file types
 
-* AES-CBC, AES-CFB, AES-ECB, AES-OFB (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
-* Blowfish (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
-* DES3 (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
-* RC4 (Requires: [Cryptography.io](https://cryptography.io/en/latest/))
+* AES-CBC, AES-CFB, AES-ECB, AES-OFB (Requires: [libcaes/pycaes](https://github.com/libyal/libcaes))
+* Blowfish (Requires: [libfcrypto/pyfcrypto](https://github.com/libyal/libfcrypto))
+* DES3 (Requires: [libfcrypto/pyfcrypto](https://github.com/libyal/libfcrypto))
+* RC4 (Requires: [libfcrypto/pyfcrypto](https://github.com/libyal/libfcrypto))
 
 ### Archive file types
 

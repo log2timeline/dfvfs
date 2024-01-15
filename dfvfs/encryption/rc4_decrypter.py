@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 """The RC4 decrypter implementation."""
 
-from cryptography.hazmat.primitives.ciphers import algorithms
-from cryptography.hazmat import backends
-from cryptography.hazmat.primitives import ciphers
+import pyfcrypto
 
 from dfvfs.encryption import decrypter
 from dfvfs.encryption import manager
 from dfvfs.lib import definitions
-from dfvfs.lib import errors
 
 
 class RC4Decrypter(decrypter.Decrypter):
-  """RC4 decrypter using Cryptography."""
+  """RC4 decrypter using pyfcrypto."""
 
   ENCRYPTION_METHOD = definitions.ENCRYPTION_METHOD_RC4
 
@@ -24,23 +21,15 @@ class RC4Decrypter(decrypter.Decrypter):
       kwargs (dict): keyword arguments depending on the decrypter.
 
     Raises:
-      BackEndError: when the cryptography backend cannot be initialized.
       ValueError: when key is not set.
     """
     if not key:
       raise ValueError('Missing key.')
 
-    algorithm = algorithms.ARC4(key)
-
-    try:
-      backend = backends.default_backend()
-    except ImportError as exception:
-      raise errors.BackEndError(exception)
-
-    cipher = ciphers.Cipher(algorithm, mode=None, backend=backend)
-
     super(RC4Decrypter, self).__init__(**kwargs)
-    self._cipher_context = cipher.decryptor()
+    self._rc4_context = pyfcrypto.rc4_context()
+
+    self._rc4_context.set_key(key)
 
   # pylint: disable=unused-argument
   def Decrypt(self, encrypted_data, finalize=False):
@@ -54,7 +43,7 @@ class RC4Decrypter(decrypter.Decrypter):
     Returns:
       tuple[bytes,bytes]: decrypted data and remaining encrypted data.
     """
-    decrypted_data = self._cipher_context.update(encrypted_data)
+    decrypted_data = pyfcrypto.crypt_rc4(self._rc4_context, encrypted_data)
     return decrypted_data, b''
 
 

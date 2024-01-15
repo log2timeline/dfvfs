@@ -43,7 +43,7 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       des3_decrypter.DES3Decrypter(
-          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=b'Wrong key size')
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=b'Wrong key size.')
 
     # Test incorrect initialization vector type.
     with self.assertRaises(TypeError):
@@ -91,8 +91,8 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
 
     decrypted_data, remaining_encrypted_data = decrypter.Decrypt(
         partial_encrypted_data)
-    self.assertEqual(decrypted_data, b'')
-    self.assertEqual(remaining_encrypted_data, partial_encrypted_data)
+    self.assertEqual(decrypted_data, b'This is ')
+    self.assertEqual(remaining_encrypted_data, b'\xe4\xa4\xb3~\x80')
 
 
 if __name__ == '__main__':

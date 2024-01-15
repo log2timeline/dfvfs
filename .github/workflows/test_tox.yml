@@ -46,7 +46,7 @@ jobs:
         add-apt-repository -y ppa:deadsnakes/ppa
         add-apt-repository -y ppa:gift/dev
         apt-get update -q
-        apt-get install -y build-essential git libffi-dev python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libewf-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-cryptography python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml
+        apt-get install -y build-essential git libffi-dev python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libcaes-python3 libewf-python3 libfcrypto-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml
     - name: Install tox
       run: |
         python3 -m pip install tox
@@ -82,7 +82,7 @@ jobs:
         add-apt-repository -y ppa:deadsnakes/ppa
         add-apt-repository -y ppa:gift/dev
         apt-get update -q
-        apt-get install -y build-essential git libffi-dev python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libewf-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-cryptography python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml
+        apt-get install -y build-essential git libffi-dev python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libcaes-python3 libewf-python3 libfcrypto-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml
     - name: Install tox
       run: |
         python3 -m pip install tox
@@ -98,7 +98,7 @@ jobs:
     strategy:
       matrix:
         include:
-        - python-version: '3.11'
+        - python-version: '3.12'
           toxenv: 'lint'
     container:
       image: ubuntu:22.04
@@ -120,7 +120,7 @@ jobs:
         add-apt-repository -y ppa:deadsnakes/ppa
         add-apt-repository -y ppa:gift/dev
         apt-get update -q
-        apt-get install -y build-essential git libffi-dev python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libewf-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-cryptography python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml
+        apt-get install -y build-essential git libffi-dev python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libcaes-python3 libewf-python3 libfcrypto-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-cffi-backend python3-dfdatetime python3-distutils python3-dtfabric python3-idna python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml
     - name: Install tox
       run: |
         python3 -m pip install tox

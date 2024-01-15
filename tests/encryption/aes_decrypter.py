@@ -43,7 +43,7 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
     # Test incorrect key size.
     with self.assertRaises(ValueError):
       aes_decrypter.AESDecrypter(
-          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=b'Wrong key size')
+          cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=b'Wrong key size.')
 
     # Test incorrect initialization vector type.
     with self.assertRaises(TypeError):
@@ -92,8 +92,8 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
 
     decrypted_data, remaining_encrypted_data = decrypter.Decrypt(
         partial_encrypted_data)
-    self.assertEqual(decrypted_data, b'')
-    self.assertEqual(remaining_encrypted_data, partial_encrypted_data)
+    self.assertEqual(decrypted_data, b'This is secret e')
+    self.assertEqual(remaining_encrypted_data, b'B\x01\xdb8E7\xfe')
 
 
 if __name__ == '__main__':
