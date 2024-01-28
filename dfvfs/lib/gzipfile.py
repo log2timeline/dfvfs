@@ -427,7 +427,7 @@ class GzipCompressedStream(object):
 
   @property
   def members(self):
-    """list(GzipMember): members in the gzip file."""
+    """List(GzipMember): members in the gzip file."""
     return list(self._members_by_end_offset.values())
 
   def _GetMemberForOffset(self, offset):

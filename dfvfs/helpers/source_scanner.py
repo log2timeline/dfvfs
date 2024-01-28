@@ -165,7 +165,7 @@ class SourceScannerContext(object):
 
   @property
   def locked_scan_nodes(self):
-    """list[SourceScanNode]: locked scan nodes."""
+    """List[SourceScanNode]: locked scan nodes."""
     return list(self._locked_scan_nodes.values())
 
   def AddScanNode(self, path_spec, parent_scan_node):

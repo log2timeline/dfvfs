@@ -11,10 +11,9 @@ from dfvfs.resolver import resolver
 class DataRange(file_io.FileIO):
   """File input/output (IO) object that maps an in-file data range.
 
-  The data range object allows to expose a single partition within
-  a full disk image as a separate file-like object by mapping
-  the data range (offset and size) of the volume on top of the full disk
-  image.
+  The data range object allows to expose a single partition within a full disk
+  image as a separate file-like object by mapping the data range (offset and
+  size) of the volume on top of the full disk image.
   """
 
   def __init__(self, resolver_context, path_spec):
@@ -33,9 +32,9 @@ class DataRange(file_io.FileIO):
   def _Close(self):
     """Closes the file-like object.
 
-    If the file-like object was passed in the init function
-    the data range file-like object does not control the file-like object
-    and should not actually close it.
+    If the file-like object was passed in the init function the data range file-
+    like object does not control the file-like object and should not actually
+    close it.
     """
     self._file_object = None
     self._range_offset = -1

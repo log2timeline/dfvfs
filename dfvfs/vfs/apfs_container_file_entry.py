@@ -107,7 +107,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """generator[APFSContainerFileEntry]: sub file entries."""
+    """Generator[APFSContainerFileEntry]: sub file entries."""
     return self._GetSubFileEntries()
 
   def GetAPFSVolume(self):

@@ -15,7 +15,7 @@ from tests import test_lib as shared_test_lib
 
 
 def TestPlatformSystem():
-  """Test function to emulate platform.system() == 'Windows'"""
+  """Test function to emulate platform.system() == 'Windows'."""
   return 'Windows'
 
 

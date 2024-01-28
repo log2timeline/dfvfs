@@ -9,7 +9,7 @@ from dfvfs.resolver import resolver
 
 
 class APFSFile(file_io.FileIO):
-  """File input/output (IO) object using pyfsapfs.file_entry"""
+  """File input/output (IO) object using pyfsapfs.file_entry."""
 
   def __init__(self, resolver_context, path_spec):
     """Initializes a file input/output (IO) object.

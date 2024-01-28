@@ -3,10 +3,7 @@
 
 import re
 
-try:
-  import re._constants as sre_constants
-except ImportError:
-  import sre_constants  # pylint: disable=deprecated-module
+import re._constants as sre_constants
 
 from dfvfs.lib import definitions
 from dfvfs.lib import errors

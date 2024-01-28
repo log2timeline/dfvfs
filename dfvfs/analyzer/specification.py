@@ -81,7 +81,11 @@ class FormatSpecificationStore(object):
 
   @property
   def specifications(self):
-    """generator[FormatSpecification]: format specifications."""
+    """Retrieves the format specifications.
+
+    Returns:
+      generator[FormatSpecification]: format specifications.
+    """
     return iter(self._format_specifications.values())
 
   def AddNewSpecification(self, identifier):

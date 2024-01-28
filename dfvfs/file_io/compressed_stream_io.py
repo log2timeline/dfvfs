@@ -37,9 +37,9 @@ class CompressedStream(file_io.FileIO):
   def _Close(self):
     """Closes the file-like object.
 
-    If the file-like object was passed in the init function
-    the compressed stream file-like object does not control
-    the file-like object and should not actually close it.
+    If the file-like object was passed in the init function the compressed
+    stream file-like object does not control the file-like object and should not
+    actually close it.
     """
     self._compressed_data = b''
     self._file_object = None

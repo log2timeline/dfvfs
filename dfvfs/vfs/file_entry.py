@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file entry interface.
 
-The file entry can be various file system elements like a regular file,
-a directory or file system metadata.
+The file entry can be various file system elements like a regular file, a
+directory or file system metadata.
 """
 
 import abc
@@ -132,7 +132,7 @@ class FileEntry(object):
 
   @property
   def attributes(self):
-    """generator[Attribute]: attributes."""
+    """Generator[Attribute]: attributes."""
     return self._GetAttributes()
 
   @property
@@ -157,7 +157,7 @@ class FileEntry(object):
 
   @property
   def data_streams(self):
-    """generator[DataStream]: data streams."""
+    """Generator[DataStream]: data streams."""
     return self._GetDataStreams()
 
   @property
@@ -208,7 +208,7 @@ class FileEntry(object):
 
   @property
   def sub_file_entries(self):
-    """generator[FileEntry]: sub file entries."""
+    """Generator[FileEntry]: sub file entries."""
     return self._GetSubFileEntries()
 
   @property

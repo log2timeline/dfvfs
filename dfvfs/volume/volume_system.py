@@ -80,7 +80,7 @@ class Volume(object):
 
   @property
   def attributes(self):
-    """generator[VolumeAttribute]: volume attributes generator."""
+    """Generator[VolumeAttribute]: volume attributes generator."""
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -89,7 +89,7 @@ class Volume(object):
 
   @property
   def extents(self):
-    """list[VolumeExtent]: volume extents."""
+    """List[VolumeExtent]: volume extents."""
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -199,7 +199,7 @@ class VolumeSystem(object):
 
   @property
   def sections(self):
-    """list[VolumeExtent]: sections."""
+    """List[VolumeExtent]: sections."""
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -208,7 +208,7 @@ class VolumeSystem(object):
 
   @property
   def volume_identifiers(self):
-    """list[str]: volume identifiers."""
+    """List[str]: volume identifiers."""
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -217,7 +217,7 @@ class VolumeSystem(object):
 
   @property
   def volumes(self):
-    """generator(Volume): volumes generator."""
+    """Generator(Volume): volumes generator."""
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True

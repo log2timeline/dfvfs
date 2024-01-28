@@ -153,7 +153,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(parent_file_entry.name, 'testdir_fake')
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     test_file = '/test_data/testdir_fake/file1.txt'
     path_spec = fake_path_spec.FakePathSpec(location=test_file)
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)

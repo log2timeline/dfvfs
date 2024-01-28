@@ -113,7 +113,7 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(parent_file_entry)
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_GPT, entry_index=0,
         parent=self._raw_path_spec)

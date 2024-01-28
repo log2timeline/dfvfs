@@ -106,7 +106,7 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for GetTARInfo
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TAR, location='/syslog',
         parent=self._os_path_spec)
