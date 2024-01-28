@@ -272,7 +272,7 @@ class APFSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(parent_file_entry.name, 'a_directory')
 
   def testIsFunctions(self):
-    """Tests the Is? functions."""
+    """Tests the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE,
@@ -615,7 +615,7 @@ class APFSFileEntryTestEncrypted(shared_test_lib.BaseTestCase):
     self.assertEqual(parent_file_entry.name, 'a_directory')
 
   def testIsFunctions(self):
-    """Tests the Is? functions."""
+    """Tests the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_APFS,
         identifier=self._IDENTIFIER_ANOTHER_FILE,

@@ -400,7 +400,7 @@ class TSKFileEntryTestExt2(shared_test_lib.BaseTestCase):
   # TODO: add tests for GetTSKFile
 
   def testIsFunctions(self):
-    """Tests the Is? functions."""
+    """Tests the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
         location='/a_directory/another_file', parent=self._raw_path_spec)
@@ -754,7 +754,7 @@ class TSKFileEntryTestFAT12(shared_test_lib.BaseTestCase):
   # TODO: add tests for GetTSKFile
 
   def testIsFunctions(self):
-    """Tests the Is? functions."""
+    """Tests the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
         location='/a_directory/another_file', parent=self._raw_path_spec)
@@ -1172,7 +1172,7 @@ class TSKFileEntryTestHFSPlus(shared_test_lib.BaseTestCase):
   # TODO: add tests for GetTSKFile
 
   def testIsFunctions(self):
-    """Tests the Is? functions."""
+    """Tests the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
         location='/a_directory/another_file', parent=self._raw_path_spec)
@@ -1583,7 +1583,7 @@ class TSKFileEntryTestISO9660(shared_test_lib.BaseTestCase):
   # TODO: add tests for GetTSKFile
 
   def testIsFunctions(self):
-    """Tests the Is? functions."""
+    """Tests the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
         location='/A_DIRECTORY/ANOTHER_FILE', parent=self.test_os_path_spec)
@@ -2295,7 +2295,7 @@ class TSKFileEntryTestUfs1(shared_test_lib.BaseTestCase):
   # TODO: add tests for GetTSKFile
 
   def testIsFunctions(self):
-    """Tests the Is? functions."""
+    """Tests the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK, inode=self._INODE_ANOTHER_FILE,
         location='/a_directory/another_file',

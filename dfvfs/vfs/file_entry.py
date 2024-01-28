@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file entry interface.
 
-The file entry can be various file system elements like a regular file,
-a directory or file system metadata.
+The file entry can be various file system elements like a regular file, a
+directory or file system metadata.
 """
 
 import abc
@@ -122,47 +122,83 @@ class FileEntry(object):
 
   @property
   def access_time(self):
-    """dfdatetime.DateTimeValues: access time or None if not available."""
+    """Retrieves the access time.
+
+    Returns:
+      dfdatetime.DateTimeValues: access time or None if not available.
+    """
     return None
 
   @property
   def added_time(self):
-    """dfdatetime.DateTimeValues: added time or None if not available."""
+    """Retrieves the added time.
+
+    Returns:
+      dfdatetime.DateTimeValues: added time or None if not available.
+    """
     return None
 
   @property
   def attributes(self):
-    """generator[Attribute]: attributes."""
+    """Retrieves attributes.
+
+    Returns:
+      generator[Attribute]: attributes.
+    """
     return self._GetAttributes()
 
   @property
   def backup_time(self):
-    """dfdatetime.DateTimeValues: backup time or None if not available."""
+    """Retrieves the backup time.
+
+    Returns:
+      dfdatetime.DateTimeValues: backup time or None if not available.
+    """
     return None
 
   @property
   def change_time(self):
-    """dfdatetime.DateTimeValues: change time or None if not available."""
+    """Retrieves the change time.
+
+    Returns:
+      dfdatetime.DateTimeValues: change time or None if not available.
+    """
     return None
 
   @property
   def creation_time(self):
-    """dfdatetime.DateTimeValues: creation time or None if not available."""
+    """Retrieves the creation time.
+
+    Returns:
+      dfdatetime.DateTimeValues: creation time or None if not available.
+    """
     return None
 
   @property
   def deletion_time(self):
-    """dfdatetime.DateTimeValues: deletion time or None if not available."""
+    """Retrieves the deletion time.
+
+    Returns:
+      dfdatetime.DateTimeValues: deletion time or None if not available.
+    """
     return None
 
   @property
   def data_streams(self):
-    """generator[DataStream]: data streams."""
+    """Retrieves data streams.
+
+    Returns:
+      generator[DataStream]: data streams.
+    """
     return self._GetDataStreams()
 
   @property
   def link(self):
-    """str: full path of the linked file entry or None if not available."""
+    """Retrieves the path of a linked file entry.
+
+    Returns:
+      str: full path of the linked file entry or None if not available.
+    """
     if not self.IsLink():
       return None
 
@@ -170,29 +206,49 @@ class FileEntry(object):
 
   @property
   def modification_time(self):
-    """dfdatetime.DateTimeValues: modification time or None if not available."""
+    """Retrieves the modification time.
+
+    Returns:
+      dfdatetime.DateTimeValues: modification time or None if not available.
+    """
     return None
 
   @property
   @abc.abstractmethod
   def name(self):
-    """str: name of the file entry, without the full path."""
+    """Retrieves the name.
+
+    Returns:
+      str: name of the file entry, without the full path.
+    """
 
   @property
   def number_of_attributes(self):
-    """int: number of attributes."""
+    """Retrieves the number of attributes.
+
+    Returns:
+      int: number of attributes.
+    """
     attributes = self._GetAttributes()
     return len(attributes)
 
   @property
   def number_of_data_streams(self):
-    """int: number of data streams."""
+    """Retrieves the number of data streams.
+
+    Returns:
+      int: number of data streams.
+    """
     data_streams = self._GetDataStreams()
     return len(data_streams)
 
   @property
   def number_of_sub_file_entries(self):
-    """int: number of sub file entries."""
+    """Retrieves the number of sub file entries.
+
+    Returns:
+      int: number of sub file entries.
+    """
     number_of_sub_file_entries = 0
     if self.entry_type == definitions.FILE_ENTRY_TYPE_DIRECTORY:
       directory = self._GetDirectory()
@@ -203,19 +259,30 @@ class FileEntry(object):
 
   @property
   def size(self):
-    """int: size of the file entry in bytes or None if not available."""
+    """Retrieves the size.
+
+    Returns:
+      int: size of the file entry in bytes or None if not available.
+    """
     return None
 
   @property
   def sub_file_entries(self):
-    """generator[FileEntry]: sub file entries."""
+    """Retrieves sub file entries.
+
+    Returns:
+      generator[FileEntry]: sub file entries.
+    """
     return self._GetSubFileEntries()
 
   @property
   def type_indicator(self):
-    """str: type indicator."""
-    # pylint: disable=no-member
-    return self.TYPE_INDICATOR
+    """Retrieves the type indicator.
+
+    Returns:
+      str: type indicator.
+    """
+    return getattr(self, 'TYPE_INDICATOR', None)
 
   def GetDataStream(self, name, case_sensitive=True):
     """Retrieves a data stream by name.

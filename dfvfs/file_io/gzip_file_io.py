@@ -12,27 +12,47 @@ class GzipFile(file_object_io.FileObjectIO):
 
   @property
   def comments(self):
-    """list(str): comments in the gzip file."""
+    """Retrieves the comments.
+
+    Returns:
+      list[str]: comments of the members.
+    """
     return [member.comment for member in self._file_object.members]
 
   @property
   def modification_times(self):
-    """list(int): modification times stored in the gzip file."""
+    """Retrieves the modification times.
+
+    Returns:
+      list[str]: modification times of the members.
+    """
     return [member.modification_time for member in self._file_object.members]
 
   @property
   def original_filenames(self):
-    """list(str): original filenames stored in the gzip file."""
+    """Retrieves the original filenames.
+
+    Returns:
+      list[str]: original filenames of the members.
+    """
     return [member.original_filename for member in self._file_object.members]
 
   @property
   def operating_systems(self):
-    """list(int): operating system values stored in the gzip file."""
+    """Retrieves the operating system values.
+
+    Returns:
+      list[str]: operating system values of the members.
+    """
     return [member.operating_system for member in self._file_object.members]
 
   @property
   def uncompressed_data_size(self):
-    """int: uncompressed data size."""
+    """Retrieves the uncompressed data size.
+
+    Returns:
+      int: uncompressed data size.
+    """
     return self._file_object.uncompressed_data_size
 
   def _OpenFileObject(self, path_spec):

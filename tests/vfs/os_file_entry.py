@@ -166,7 +166,7 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(parent_file_entry.name, 'testdir_os')
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     test_path = self._GetTestFilePath(['testdir_os', 'file1.txt'])
     self._SkipIfPathNotExists(test_path)
 

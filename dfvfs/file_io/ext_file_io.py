@@ -9,7 +9,7 @@ from dfvfs.resolver import resolver
 
 
 class EXTFile(file_io.FileIO):
-  """File input/output (IO) object using pyfsext.file_entry"""
+  """File input/output (IO) object using pyfsext.file_entry."""
 
   def __init__(self, resolver_context, path_spec):
     """Initializes a file input/output (IO) object.

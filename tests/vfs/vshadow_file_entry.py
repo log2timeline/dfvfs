@@ -125,7 +125,7 @@ class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
   # TODO: add tests for HasExternalData
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_VSHADOW, parent=self._raw_path_spec,
         store_index=1)

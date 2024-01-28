@@ -26,18 +26,24 @@ class AnalyzerHelper(object):
 
   @property
   def format_categories(self):
-    """set[str]: format categories, such as archive file or file system.
+    """Retrieves the format categories.
 
     The format categories are defined in definitions.FORMAT_CATEGORIES.
+
+    Returns:
+      set[str]: format categories, such as archive file or file system.
     """
     # pylint: disable=no-member
     return self.FORMAT_CATEGORIES
 
   @property
   def type_indicator(self):
-    """str: type indicator."""
-    # pylint: disable=no-member
-    return self.TYPE_INDICATOR
+    """Retrieves the type indicator.
+
+    Returns:
+      str: type indicator or None if not available.
+    """
+    return getattr(self, 'TYPE_INDICATOR', None)
 
   def AnalyzeFileObject(self, file_object):  # pylint: disable=useless-type-doc
     """Retrieves the format specification.

@@ -69,7 +69,7 @@ class EncodedStreamFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertIsNone(parent_file_entry)
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._encoded_stream_path_spec)
     self.assertIsNotNone(file_entry)

@@ -80,7 +80,11 @@ class Volume(object):
 
   @property
   def attributes(self):
-    """generator[VolumeAttribute]: volume attributes generator."""
+    """Retrieves attributes.
+
+    Returns:
+      generator[VolumeAttribute]: volume attributes generator.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -89,7 +93,11 @@ class Volume(object):
 
   @property
   def extents(self):
-    """list[VolumeExtent]: volume extents."""
+    """Retrieves extents.
+
+    Returns:
+      list[VolumeExtent]: volume extents.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -98,7 +106,11 @@ class Volume(object):
 
   @property
   def number_of_attributes(self):
-    """int: number of attributes."""
+    """Retrieves the number of attributes.
+
+    Returns:
+      int: number of attributes.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -107,7 +119,11 @@ class Volume(object):
 
   @property
   def number_of_extents(self):
-    """int: number of extents."""
+    """Retrieves the number of extents.
+
+    Returns:
+      int: number of extents.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -181,7 +197,11 @@ class VolumeSystem(object):
 
   @property
   def number_of_sections(self):
-    """int: number of sections."""
+    """Retrieves the number of sections.
+
+    Returns:
+      int: number of sections.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -190,7 +210,11 @@ class VolumeSystem(object):
 
   @property
   def number_of_volumes(self):
-    """int: number of volumes."""
+    """Retrieves the number of volumes.
+
+    Returns:
+      int: number of volumes.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -199,7 +223,11 @@ class VolumeSystem(object):
 
   @property
   def sections(self):
-    """list[VolumeExtent]: sections."""
+    """Retrieves sections.
+
+    Returns:
+      list[VolumeExtent]: sections.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -208,7 +236,11 @@ class VolumeSystem(object):
 
   @property
   def volume_identifiers(self):
-    """list[str]: volume identifiers."""
+    """Retrieves volume identifiers.
+
+    Returns:
+      list[str]: volume identifiers.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True
@@ -217,7 +249,11 @@ class VolumeSystem(object):
 
   @property
   def volumes(self):
-    """generator(Volume): volumes generator."""
+    """Retrieves volumes.
+
+    Returns:
+      generator(Volume): volumes generator.
+    """
     if not self._is_parsed:
       self._Parse()
       self._is_parsed = True

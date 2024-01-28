@@ -29,7 +29,7 @@ EOT
 # PYTHONPATH=. ./utils/export_supported_formats.py > docs/sources/Supported-formats.md
 
 # Regenerate the API documentation.
-tox -edocs
+tox -edocformatter,docs
 
 exit ${EXIT_SUCCESS};
 

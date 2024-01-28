@@ -55,7 +55,11 @@ class SourceScanNode(object):
 
   @property
   def type_indicator(self):
-    """str: path specification type indicator."""
+    """Retrieves the type indicator.
+
+    Returns:
+      str: path specification type indicator.
+    """
     return self.path_spec.type_indicator
 
   def GetSubNodeByLocation(self, location):
@@ -165,7 +169,11 @@ class SourceScannerContext(object):
 
   @property
   def locked_scan_nodes(self):
-    """list[SourceScanNode]: locked scan nodes."""
+    """Retrieves the locked scan nodes.
+
+    Returns:
+      list[SourceScanNode]: locked scan nodes.
+    """
     return list(self._locked_scan_nodes.values())
 
   def AddScanNode(self, path_spec, parent_scan_node):

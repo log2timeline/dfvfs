@@ -115,7 +115,7 @@ class SQLiteBlobFileEntryTest(shared_test_lib.BaseTestCase):
     self.assertEqual(parent_file_entry.name, 'myblobs.blobs')
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     file_entry = self._file_system.GetFileEntryByPathSpec(
         self._sqlite_blob_path_spec)
 

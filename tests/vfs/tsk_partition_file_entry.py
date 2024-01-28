@@ -102,7 +102,7 @@ class TSKPartitionFileEntryTestAPM(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(tsk_vs_part)
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, part_index=0,
         parent=self._os_path_spec)
@@ -292,7 +292,7 @@ class TSKPartitionFileEntryTestBSDDisklabel(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(tsk_vs_part)
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, part_index=2,
         parent=self._os_path_spec)
@@ -487,7 +487,7 @@ class TSKPartitionFileEntryTestMBR(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(tsk_vs_part)
 
   def testIsFunctions(self):
-    """Test the Is? functions."""
+    """Test the Is* functions."""
     path_spec = path_spec_factory.Factory.NewPathSpec(
         definitions.TYPE_INDICATOR_TSK_PARTITION, part_index=1,
         parent=self._os_path_spec)

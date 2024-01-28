@@ -80,7 +80,11 @@ class APFSContainerFileEntry(file_entry.FileEntry):
 
   @property
   def name(self):
-    """str: name of the file entry, which does not include the full path."""
+    """Retrieves the name.
+
+    Return:
+      str: name of the file entry, which does not include the full path.
+    """
     if self._name is None:
       self._name = ''
 
@@ -98,7 +102,11 @@ class APFSContainerFileEntry(file_entry.FileEntry):
 
   @property
   def size(self):
-    """int: size of the file entry in bytes or None if not available."""
+    """Retrieves the size.
+
+    Returns:
+      int: size of the file entry in bytes or None if not available.
+    """
     if self._fsapfs_volume is None:
       return None
 
@@ -107,7 +115,11 @@ class APFSContainerFileEntry(file_entry.FileEntry):
 
   @property
   def sub_file_entries(self):
-    """generator[APFSContainerFileEntry]: sub file entries."""
+    """Retrieves sub file entries.
+
+    Returns:
+      generator[APFSContainerFileEntry]: sub file entries.
+    """
     return self._GetSubFileEntries()
 
   def GetAPFSVolume(self):
