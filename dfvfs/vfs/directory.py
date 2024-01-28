@@ -34,5 +34,9 @@ class Directory(object):
 
   @property
   def entries(self):
-    """Generator[PathSpec]: path specifications of the directory entries."""
+    """Retrieves directory entries.
+
+    Returns:
+      generator[PathSpec]: path specifications of the directory entries.
+    """
     return self._EntriesGenerator()
