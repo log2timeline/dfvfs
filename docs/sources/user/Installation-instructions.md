@@ -27,7 +27,7 @@ To deactivate the virtualenv run:
 deactivate
 ```
 
-## Ubuntu 18.04 and 20.04 LTS
+## Ubuntu 22.04 LTS
 
 To install dfVFS from the [GIFT Personal Package Archive (PPA)](https://launchpad.net/~gift):
 
@@ -49,14 +49,14 @@ necessary packages for running dfVFS. l2tbinaries provides the following
 branches:
 
 * main; branch intended for the "packaged release" of dfVFS and dependencies;
+* staging; branch intended for testing pre-releases of ACStore;
 * dev; branch intended for the "development release" of dfVFS;
 * testing; branch intended for testing newly created packages.
 
 The l2tdevtools project provides [an update script](https://github.com/log2timeline/l2tdevtools/wiki/Update-script)
 to ease the process of keeping the dependencies up to date.
 
-The script requires [pywin32](https://github.com/mhammond/pywin32/releases) and
-[Python WMI](https://pypi.org/project/WMI).
+The script requires [pywin32](https://github.com/mhammond/pywin32/releases).
 
 To install the release versions of the dependencies run:
 
