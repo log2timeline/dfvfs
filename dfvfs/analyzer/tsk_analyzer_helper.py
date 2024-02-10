@@ -60,6 +60,8 @@ class TSKAnalyzerHelper(analyzer_helper.AnalyzerHelper):
     # ISO9660 file system signature.
     format_specification.AddNewSignature(b'CD001', offset=32769)
 
+    # UFS file system signature.
+
     # YAFFS file system signature.
 
     return format_specification
