@@ -49,7 +49,7 @@ necessary packages for running dfVFS. l2tbinaries provides the following
 branches:
 
 * main; branch intended for the "packaged release" of dfVFS and dependencies;
-* staging; branch intended for testing pre-releases of ACStore;
+* staging; branch intended for testing pre-releases of dfVFS;
 * dev; branch intended for the "development release" of dfVFS;
 * testing; branch intended for testing newly created packages.
 
