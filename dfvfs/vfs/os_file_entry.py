@@ -4,6 +4,7 @@
 import os
 import platform
 import stat
+import sys
 
 import pysmdev
 
@@ -28,6 +29,7 @@ class OSFileEntry(file_entry.FileEntry):
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_OS
 
   _OS_IS_WINDOWS = platform.system() == 'Windows'
+  _PY_3_11_AND_EARLIER = bool(tuple(sys.version_info[0:2]) <= (3, 11))
 
   def __init__(self, resolver_context, file_system, path_spec, is_root=False):
     """Initializes a file entry.
@@ -226,7 +228,7 @@ class OSFileEntry(file_entry.FileEntry):
 
     # Per Python os.stat() documentation the value of stat_results.st_ctime
     # contains the creation time on Windows.
-    if self._OS_IS_WINDOWS:
+    if self._OS_IS_WINDOWS and self._PY_3_11_AND_EARLIER:
       timestamp = getattr(self._stat_info, 'st_ctime_ns', None)
       if timestamp is not None:
         return dfdatetime_posix_time.PosixTimeInNanoseconds(timestamp=timestamp)
