@@ -1,5 +1,4 @@
 PyYAML >= 3.10
-cffi >= 1.9.1
 dfdatetime >= 20221112
 dtfabric >= 20230518
 libbde-python >= 20220121
