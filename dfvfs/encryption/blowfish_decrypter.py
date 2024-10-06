@@ -84,6 +84,7 @@ class BlowfishDecrypter(decrypter.Decrypter):
         remaining_encrypted_data = encrypted_data[-block_offset:]
         encrypted_data = encrypted_data[:-block_offset]
 
+    decrypted_data = b''
     if self._cipher_mode == definitions.ENCRYPTION_MODE_CBC:
       decrypted_data = pyfcrypto.crypt_blowfish_cbc(
           self._blowfish_context, pyfcrypto.crypt_modes.DECRYPT,

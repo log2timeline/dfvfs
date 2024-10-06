@@ -82,6 +82,7 @@ class AESDecrypter(decrypter.Decrypter):
         remaining_encrypted_data = encrypted_data[-block_offset:]
         encrypted_data = encrypted_data[:-block_offset]
 
+    decrypted_data = b''
     if self._cipher_mode == definitions.ENCRYPTION_MODE_CBC:
       decrypted_data = pycaes.crypt_cbc(
           self._aes_context, pycaes.crypt_modes.DECRYPT,
