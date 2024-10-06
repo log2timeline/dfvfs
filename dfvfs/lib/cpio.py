@@ -118,6 +118,7 @@ class CPIOArchiveFile(data_format.DataFormat):
     Raises:
       FileFormatError: if the file entry cannot be read.
     """
+    data_type_map = None
     if self.file_format == 'bin-big-endian':
       data_type_map = self._CPIO_BINARY_BIG_ENDIAN_FILE_ENTRY
     elif self.file_format == 'bin-little-endian':

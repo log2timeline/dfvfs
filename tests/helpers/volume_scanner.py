@@ -98,6 +98,8 @@ class TestVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     Returns:
       bool: True if the volume was unlocked.
     """
+    password = None
+
     if locked_scan_node.type_indicator == (
         definitions.TYPE_INDICATOR_APFS_CONTAINER):
       password = self._APFS_PASSWORD
