@@ -286,7 +286,6 @@ class CLITabularTableView(object):
 class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
   """Command line volume scanner mediator."""
 
-  # For context see: http://en.wikipedia.org/wiki/Byte
   _UNITS_1000 = ['B', 'kB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB']
   _UNITS_1024 = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'EiB', 'ZiB', 'YiB']
 

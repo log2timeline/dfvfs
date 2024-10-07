@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Glob to regular expression conversion.
-
-Also see: https://en.wikipedia.org/wiki/Glob_(programming)
-"""
+"""Glob to regular expression conversion."""
 
 import re
 import sys
