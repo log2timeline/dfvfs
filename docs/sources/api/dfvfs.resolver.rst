@@ -9,21 +9,21 @@ dfvfs.resolver.context module
 
 .. automodule:: dfvfs.resolver.context
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dfvfs.resolver.resolver module
 ------------------------------
 
 .. automodule:: dfvfs.resolver.resolver
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: dfvfs.resolver
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
