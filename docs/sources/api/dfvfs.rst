@@ -28,5 +28,5 @@ Module contents
 
 .. automodule:: dfvfs
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

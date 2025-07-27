@@ -9,21 +9,21 @@ dfvfs.serializer.json\_serializer module
 
 .. automodule:: dfvfs.serializer.json_serializer
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 dfvfs.serializer.serializer module
 ----------------------------------
 
 .. automodule:: dfvfs.serializer.serializer
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: dfvfs.serializer
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

@@ -128,7 +128,8 @@ class TSKVolumeSystemTestGPT(shared_test_lib.BaseTestCase):
 
     volume_attribute = volume.GetAttribute('description')
     self.assertIsNotNone(volume_attribute)
-    self.assertEqual(volume_attribute.value, 'Linux filesystem')
+    # Note that value can be "Linux filesystem" or "Linux filesystem data".
+    self.assertTrue(volume_attribute.value.startswith('Linux filesystem'))
 
     volume_extent = volume.extents[0]
     self.assertIsNotNone(volume_extent)
