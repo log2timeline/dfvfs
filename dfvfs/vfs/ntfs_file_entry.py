@@ -62,8 +62,14 @@ class NTFSFileEntry(file_entry.FileEntry):
         is_virtual=is_virtual)
     self._fsntfs_file_entry = fsntfs_file_entry
 
+    self._link = self._fsntfs_file_entry.symbolic_link_target
+    if self._link:
+      # Strip off the drive letter, we assume the link is within
+      # the same volume.
+      _, _, self._link = self._link.rpartition(':')
+
     file_attribute_flags = fsntfs_file_entry.file_attribute_flags
-    if self._IsLink(file_attribute_flags):
+    if self._link:
       self.entry_type = definitions.FILE_ENTRY_TYPE_LINK
     elif fsntfs_file_entry.has_directory_entries_index():
       self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
@@ -126,13 +132,6 @@ class NTFSFileEntry(file_entry.FileEntry):
     Returns:
       str: path of the linked file.
     """
-    if self._link is None:
-      self._link = self._fsntfs_file_entry.symbolic_link_target
-      if self._link:
-        # Strip off the drive letter, we assume the link is within
-        # the same volume.
-        _, _, self._link = self._link.rpartition(':')
-
     return self._link
 
   def _GetStatAttribute(self):
@@ -177,20 +176,6 @@ class NTFSFileEntry(file_entry.FileEntry):
     if file_attribute_flags is None:
       return False
     return bool(file_attribute_flags & pyfsntfs.file_attribute_flags.DEVICE)
-
-  def _IsLink(self, file_attribute_flags):
-    """Determines if a file entry is a link.
-
-    Args:
-      file_attribute_flags (int): file attribute flags.
-
-    Returns:
-      bool: True if a file entry is a link, false otherwise.
-    """
-    if file_attribute_flags is None:
-      return False
-    return bool(
-        file_attribute_flags & pyfsntfs.file_attribute_flags.REPARSE_POINT)
 
   @property
   def access_time(self):
@@ -285,8 +270,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     Returns:
       NTFSFileEntry: linked file entry or None.
     """
-    link = self._GetLink()
-    if not link:
+    if self._link:
       return None
 
     # TODO: is there a way to determine the MFT entry here?
@@ -294,10 +278,10 @@ class NTFSFileEntry(file_entry.FileEntry):
 
     parent_path_spec = getattr(self.path_spec, 'parent', None)
     path_spec = ntfs_path_spec.NTFSPathSpec(
-        location=link, parent=parent_path_spec)
+        location=self._link, parent=parent_path_spec)
 
     is_root = bool(
-        link == self._file_system.LOCATION_ROOT or
+        self._link == self._file_system.LOCATION_ROOT or
         link_mft_entry == self._file_system.MFT_ENTRY_ROOT_DIRECTORY)
 
     return NTFSFileEntry(
