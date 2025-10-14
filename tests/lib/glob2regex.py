@@ -39,7 +39,7 @@ class Glob2RegexTest(test_lib.BaseTestCase):
 
     fnmatch_regex = fnmatch.translate(glob_pattern)
 
-    for suffix in (r'\Z(?ms)', r')\Z'):
+    for suffix in (r'\Z(?ms)', r')\Z', r')\z'):
       if fnmatch_regex.endswith(suffix):
         fnmatch_regex = fnmatch_regex[:-len(suffix)]
       if fnmatch_regex.startswith('(?s:'):
