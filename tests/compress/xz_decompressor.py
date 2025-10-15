@@ -11,7 +11,7 @@ except ImportError:
 
 from dfvfs.lib import errors
 
-from tests.compression import test_lib
+from tests.compress import test_lib
 
 
 @unittest.skipIf(xz_decompressor is None, 'requires LZMA compression support')

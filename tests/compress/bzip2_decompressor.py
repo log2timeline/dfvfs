@@ -7,7 +7,7 @@ import unittest
 from dfvfs.compression import bzip2_decompressor
 from dfvfs.lib import errors
 
-from tests.compression import test_lib
+from tests.compress import test_lib
 
 
 class BZIP2DecompressorTestCase(test_lib.DecompressorTestCase):
