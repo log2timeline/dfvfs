@@ -21,6 +21,7 @@ class HFSDataStream(data_stream.DataStream):
 
     if fshfs_data_stream:
       self._name = 'rsrc'
+      self._size = fshfs_data_stream.get_size()
 
   def GetExtents(self):
     """Retrieves the extents.

@@ -14,11 +14,17 @@ class DataStream(object):
     super(DataStream, self).__init__()
     self._file_entry = file_entry
     self._name = ''
+    self._size = 0
 
   @property
   def name(self):
     """str: name."""
     return self._name
+
+  @property
+  def size(self):
+    """int: size."""
+    return self._size
 
   def GetExtents(self):
     """Retrieves the extents.
