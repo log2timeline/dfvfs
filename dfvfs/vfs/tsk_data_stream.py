@@ -37,6 +37,8 @@ class TSKDataStream(data_stream.DataStream):
         except UnicodeError:
           pass
 
+      self._size = getattr(pytsk_attribute.info, 'size', 0)
+
   def GetExtents(self):
     """Retrieves the extents.
 

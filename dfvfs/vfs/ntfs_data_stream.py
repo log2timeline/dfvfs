@@ -21,6 +21,7 @@ class NTFSDataStream(data_stream.DataStream):
 
     if fsntfs_data_stream:
       self._name = fsntfs_data_stream.name
+      self._size = fsntfs_data_stream.get_size()
 
   def GetExtents(self):
     """Retrieves the extents.
