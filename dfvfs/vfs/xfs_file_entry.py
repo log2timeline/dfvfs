@@ -111,9 +111,6 @@ class XFSFileEntry(file_entry.FileEntry):
     """
     if self._link is None:
       self._link = self._fsxfs_file_entry.symbolic_link_target
-      if self._link and self._link[0] != self._file_system.PATH_SEPARATOR:
-        # TODO: make link absolute.
-        self._link = f'/{self._link:s}'
 
     return self._link
 
