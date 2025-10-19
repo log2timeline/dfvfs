@@ -63,10 +63,9 @@ class NTFSFileEntry(file_entry.FileEntry):
     self._fsntfs_file_entry = fsntfs_file_entry
 
     self._link = self._fsntfs_file_entry.symbolic_link_target
-    if self._link:
-      # Strip off the drive letter, we assume the link is within
-      # the same volume.
-      _, _, self._link = self._link.rpartition(':')
+    if self._link and self._link.startswith('\\??\\'):
+      # Strip off the '\\??\\' prefix.
+      self._link = self._link[4:]
 
     file_attribute_flags = fsntfs_file_entry.file_attribute_flags
     if self._link:
@@ -181,24 +180,36 @@ class NTFSFileEntry(file_entry.FileEntry):
   def access_time(self):
     """dfdatetime.DateTimeValues: access time or None if not available."""
     timestamp = self._fsntfs_file_entry.get_access_time_as_integer()
+    if timestamp is None:
+      return None
+
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def change_time(self):
     """dfdatetime.DateTimeValues: change time or None if not available."""
     timestamp = self._fsntfs_file_entry.get_entry_modification_time_as_integer()
+    if timestamp is None:
+      return None
+
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def creation_time(self):
     """dfdatetime.DateTimeValues: creation time or None if not available."""
     timestamp = self._fsntfs_file_entry.get_creation_time_as_integer()
+    if timestamp is None:
+      return None
+
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
   def modification_time(self):
     """dfdatetime.DateTimeValues: modification time or None if not available."""
     timestamp = self._fsntfs_file_entry.get_modification_time_as_integer()
+    if timestamp is None:
+      return None
+
     return dfdatetime_filetime.Filetime(timestamp=timestamp)
 
   @property
