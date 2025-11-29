@@ -532,7 +532,7 @@ class TSKPartitionFileEntryTestMBR(shared_test_lib.BaseTestCase):
 
     self.assertEqual(file_entry.number_of_sub_file_entries, 8)
 
-    expected_sub_file_entry_names = ['', '', '', '', '', '', 'p1', 'p2']
+    expected_sub_file_entry_names = ['', '', '', '', '', '', 'p1', 'p5']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:

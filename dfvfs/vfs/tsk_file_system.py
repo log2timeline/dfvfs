@@ -224,6 +224,17 @@ class TSKFileSystem(file_system.FileSystem):
         pytsk3.TSK_FS_TYPE_EXT2, pytsk3.TSK_FS_TYPE_EXT3,
         pytsk3.TSK_FS_TYPE_EXT4, pytsk3.TSK_FS_TYPE_EXT_DETECT]
 
+  def IsFat(self):
+    """Determines if the file system is FAT-12, FAT-16 or FAT-32.
+
+    Returns:
+      bool: True if the file system is ext.
+    """
+    tsk_fs_type = self.GetFsType()
+    return tsk_fs_type in [
+        pytsk3.TSK_FS_TYPE_FAT12, pytsk3.TSK_FS_TYPE_FAT16,
+        pytsk3.TSK_FS_TYPE_FAT32, pytsk3.TSK_FS_TYPE_FAT_DETECT]
+
   def IsHFS(self):
     """Determines if the file system is HFS, HFS+ or HFSX.
 

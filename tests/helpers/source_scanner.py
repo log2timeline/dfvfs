@@ -315,7 +315,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
     volume_identifiers = self._source_scanner.GetVolumeIdentifiers(
         volume_system)
-    self.assertEqual(volume_identifiers, ['p1', 'p2'])
+    self.assertEqual(volume_identifiers, ['p1', 'p5'])
 
   def testScanOnAPFS(self):
     """Test the Scan function on an APFS image."""

@@ -27,16 +27,17 @@ class TSKVolume(volume_system.Volume):
 
     tsk_addr = getattr(tsk_vs_part, 'addr', None)
     if tsk_addr is not None:
-      address = volume_system.VolumeAttribute('address', tsk_addr)
-      self._AddAttribute(address)
+      volume_attribute = volume_system.VolumeAttribute('address', tsk_addr)
+      self._AddAttribute(volume_attribute)
 
     tsk_desc = getattr(tsk_vs_part, 'desc', None)
     if tsk_desc is not None:
       # pytsk3 returns an UTF-8 encoded byte string.
       try:
         tsk_desc = tsk_desc.decode('utf8')
-        self._AddAttribute(volume_system.VolumeAttribute(
-            'description', tsk_desc))
+        volume_attribute = volume_system.VolumeAttribute(
+            'description', tsk_desc)
+        self._AddAttribute(volume_attribute)
       except UnicodeError:
         pass
 

@@ -422,7 +422,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         output_writer=test_output_writer)
 
     test_mediator._PrintPartitionIdentifiersOverview(
-        volume_system, ['p1', 'p2'])
+        volume_system, ['p1', 'p5'])
 
     file_object.seek(0, os.SEEK_SET)
     output_data = file_object.read()
@@ -432,7 +432,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         b'',
         b'Identifier      Offset (in bytes)       Size (in bytes)',
         b'p1              512 (0x00000200)        64.5KiB / 66.0kB (66048 B)',
-        b'p2              67072 (0x00010600)      64.5KiB / 66.0kB (66048 B)',
+        b'p5              67072 (0x00010600)      64.5KiB / 66.0kB (66048 B)',
         b'']
 
     if not win32console:
@@ -608,7 +608,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
 
     selected_volumes = test_mediator._ReadSelectedVolumes(
         volume_system, prefix='p')
-    self.assertEqual(selected_volumes, ['p1', 'p2'])
+    self.assertEqual(selected_volumes, ['p1', 'p5'])
 
   def testReadSelectedVolumesVShadow(self):
     """Tests the _ReadSelectedVolumes function on VShadow back-end."""
@@ -838,7 +838,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         output_writer=test_output_writer)
 
     # Test selection of single partition.
-    input_file_object = io.BytesIO(b'2\n')
+    input_file_object = io.BytesIO(b'5\n')
     test_input_reader = command_line.FileObjectInputReader(input_file_object)
 
     output_file_object = io.BytesIO()
@@ -848,12 +848,12 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         input_reader=test_input_reader, output_writer=test_output_writer)
 
     volume_identifiers = test_mediator.GetPartitionIdentifiers(
-        volume_system, ['p1', 'p2'])
+        volume_system, ['p1', 'p5'])
 
-    self.assertEqual(volume_identifiers, ['p2'])
+    self.assertEqual(volume_identifiers, ['p5'])
 
     # Test selection of single partition.
-    input_file_object = io.BytesIO(b'p2\n')
+    input_file_object = io.BytesIO(b'p5\n')
     test_input_reader = command_line.FileObjectInputReader(input_file_object)
 
     output_file_object = io.BytesIO()
@@ -863,12 +863,12 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         input_reader=test_input_reader, output_writer=test_output_writer)
 
     volume_identifiers = test_mediator.GetPartitionIdentifiers(
-        volume_system, ['p1', 'p2'])
+        volume_system, ['p1', 'p5'])
 
-    self.assertEqual(volume_identifiers, ['p2'])
+    self.assertEqual(volume_identifiers, ['p5'])
 
     # Test selection of single partition with invalid input on first attempt.
-    input_file_object = io.BytesIO(b'bogus\np2\n')
+    input_file_object = io.BytesIO(b'bogus\np5\n')
     test_input_reader = command_line.FileObjectInputReader(input_file_object)
 
     output_file_object = io.BytesIO()
@@ -878,9 +878,9 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         input_reader=test_input_reader, output_writer=test_output_writer)
 
     volume_identifiers = test_mediator.GetPartitionIdentifiers(
-        volume_system, ['p1', 'p2'])
+        volume_system, ['p1', 'p5'])
 
-    self.assertEqual(volume_identifiers, ['p2'])
+    self.assertEqual(volume_identifiers, ['p5'])
 
     # Test selection of all partitions.
     input_file_object = io.BytesIO(b'all\n')
@@ -893,9 +893,9 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         input_reader=test_input_reader, output_writer=test_output_writer)
 
     volume_identifiers = test_mediator.GetPartitionIdentifiers(
-        volume_system, ['p1', 'p2'])
+        volume_system, ['p1', 'p5'])
 
-    self.assertEqual(volume_identifiers, ['p1', 'p2'])
+    self.assertEqual(volume_identifiers, ['p1', 'p5'])
 
     # Test selection of no partitions.
     input_file_object = io.BytesIO(b'\n')
@@ -908,7 +908,7 @@ class CLIVolumeScannerMediatorTest(shared_test_lib.BaseTestCase):
         input_reader=test_input_reader, output_writer=test_output_writer)
 
     volume_identifiers = test_mediator.GetPartitionIdentifiers(
-        volume_system, ['p1', 'p2'])
+        volume_system, ['p1', 'p5'])
 
     self.assertEqual(volume_identifiers, [])
 

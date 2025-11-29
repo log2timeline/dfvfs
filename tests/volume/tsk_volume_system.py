@@ -180,14 +180,14 @@ class TSKVolumeSystemTestMBR(shared_test_lib.BaseTestCase):
     self.assertEqual(volume_system.number_of_sections, 8)
     self.assertEqual(volume_system.number_of_volumes, 2)
 
-    self.assertEqual(volume_system.volume_identifiers, ['p1', 'p2'])
+    self.assertEqual(volume_system.volume_identifiers, ['p1', 'p5'])
 
     volume = volume_system.GetVolumeByIndex(1)
     self.assertIsNotNone(volume)
 
     self.assertEqual(volume.number_of_extents, 1)
     self.assertEqual(volume.number_of_attributes, 2)
-    self.assertEqual(volume.identifier, 'p2')
+    self.assertEqual(volume.identifier, 'p5')
 
     volume_attribute = volume.GetAttribute('address')
     self.assertIsNotNone(volume_attribute)
