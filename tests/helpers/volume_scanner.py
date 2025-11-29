@@ -212,7 +212,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     identifiers = test_scanner._GetPartitionIdentifiers(scan_node, test_options)
     self.assertEqual(len(identifiers), 2)
-    self.assertEqual(identifiers, ['p1', 'p2'])
+    self.assertEqual(identifiers, ['p1', 'p5'])
 
     # Test without mediator.
     test_scanner = volume_scanner.VolumeScanner()
@@ -231,7 +231,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
 
     identifiers = test_scanner._GetPartitionIdentifiers(scan_node, test_options)
     self.assertEqual(len(identifiers), 2)
-    self.assertEqual(identifiers, ['p1', 'p2'])
+    self.assertEqual(identifiers, ['p1', 'p5'])
 
   def testGetVolumeIdentifiers(self):
     """Tests the _GetVolumeIdentifiers function."""
@@ -342,16 +342,16 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
     volume_identifiers = test_scanner._NormalizedVolumeIdentifiers(
-        volume_system, ['p1', 'p2'], prefix='p')
-    self.assertEqual(volume_identifiers, ['p1', 'p2'])
+        volume_system, ['p1', 'p5'], prefix='p')
+    self.assertEqual(volume_identifiers, ['p1', 'p5'])
 
     volume_identifiers = test_scanner._NormalizedVolumeIdentifiers(
-        volume_system, ['1', '2'], prefix='p')
-    self.assertEqual(volume_identifiers, ['p1', 'p2'])
+        volume_system, ['1', '5'], prefix='p')
+    self.assertEqual(volume_identifiers, ['p1', 'p5'])
 
     volume_identifiers = test_scanner._NormalizedVolumeIdentifiers(
-        volume_system, [1, 2], prefix='p')
-    self.assertEqual(volume_identifiers, ['p1', 'p2'])
+        volume_system, [1, 5], prefix='p')
+    self.assertEqual(volume_identifiers, ['p1', 'p5'])
 
     # Test error conditions.
     with self.assertRaises(errors.ScannerError):
@@ -912,7 +912,7 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         parent=test_tsk_partition_path_spec)
 
     test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p2', part_index=6,
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p5', part_index=6,
         start_offset=0x00010600, parent=test_raw_path_spec)
     test_ext_path_spec2 = path_spec_factory.Factory.NewPathSpec(
         definitions.PREFERRED_EXT_BACK_END, location='/',

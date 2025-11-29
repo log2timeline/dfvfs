@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition directory implementation."""
 
+import pytsk3
+
 from dfvfs.lib import tsk_partition
 from dfvfs.path import tsk_partition_path_spec
 from dfvfs.vfs import directory
@@ -37,8 +39,21 @@ class TSKPartitionDirectory(directory.Directory):
         kwargs = {}
 
         if tsk_partition.TSKVsPartIsAllocated(tsk_vs_part):
+          partition_number = None
+
+          tsk_vs_info = getattr(tsk_vs_part, 'vs', None)
+          if getattr(tsk_vs_info, 'vstype', None) == pytsk3.TSK_VS_TYPE_DOS:
+            tsk_slot_num = getattr(tsk_vs_part, 'slot_num', -1)
+            tsk_table_num = getattr(tsk_vs_part, 'table_num', -1)
+
+            if tsk_slot_num >= 0 and tsk_table_num >= 0:
+              partition_number = (tsk_table_num * 4) + tsk_slot_num + 1
+
           partition_index += 1
-          kwargs['location'] = f'/p{partition_index:d}'
+          if partition_number is None:
+            partition_number = partition_index
+
+          kwargs['location'] = f'/p{partition_number:d}'
 
         kwargs['part_index'] = part_index
         part_index += 1
