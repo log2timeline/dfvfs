@@ -228,7 +228,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Determines if the file system is FAT-12, FAT-16 or FAT-32.
 
     Returns:
-      bool: True if the file system is ext.
+      bool: True if the file system is FAT.
     """
     tsk_fs_type = self.GetFsType()
     return tsk_fs_type in [
