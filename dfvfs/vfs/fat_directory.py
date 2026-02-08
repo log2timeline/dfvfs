@@ -31,13 +31,12 @@ class FATDirectory(directory.Directory):
     location = getattr(self.path_spec, 'location', None)
 
     for fsfat_sub_file_entry in self._fsfat_file_entry.sub_file_entries:
-      directory_entry = fsfat_sub_file_entry.name
-
       if not location or location == self._file_system.PATH_SEPARATOR:
-        directory_entry = self._file_system.JoinPath([directory_entry])
+        directory_entry = self._file_system.JoinPath([
+            fsfat_sub_file_entry.name])
       else:
         directory_entry = self._file_system.JoinPath([
-            location, directory_entry])
+            location, fsfat_sub_file_entry.name])
 
       yield fat_path_spec.FATPathSpec(
           identifier=fsfat_sub_file_entry.identifier, location=directory_entry,
