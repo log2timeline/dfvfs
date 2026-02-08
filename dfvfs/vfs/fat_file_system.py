@@ -79,17 +79,18 @@ class FATFileSystem(file_system.FileSystem):
     Raises:
       BackEndError: if the file entry cannot be opened.
     """
-    # Opening a file by identifier is faster than opening a file by location.
+    # Opening a file by identifier is faster than opening a file by location,
+    # but can fail in determining the VFAT long file name.
     fsfat_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
 
     try:
-      if identifier is not None:
+      if location is not None:
+        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
+      elif identifier is not None:
         fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
             identifier)
-      elif location is not None:
-        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
 
     except IOError as exception:
       raise errors.BackEndError(exception)
@@ -108,7 +109,8 @@ class FATFileSystem(file_system.FileSystem):
     Raises:
       BackEndError: if the file entry cannot be opened.
     """
-    # Opening a file by identifier is faster than opening a file by location.
+    # Opening a file by identifier is faster than opening a file by location,
+    # but can fail in determining the VFAT long file name.
     fsfat_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
@@ -121,11 +123,11 @@ class FATFileSystem(file_system.FileSystem):
           fsfat_file_entry=fsfat_file_entry, is_root=True)
 
     try:
-      if identifier is not None:
+      if location is not None:
+        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
+      elif identifier is not None:
         fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
             identifier)
-      elif location is not None:
-        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
 
     except IOError as exception:
       raise errors.BackEndError(exception)
@@ -150,15 +152,16 @@ class FATFileSystem(file_system.FileSystem):
       PathSpecError: if the path specification is missing location and
           identifier.
     """
-    # Opening a file by identifier is faster than opening a file by location.
+    # Opening a file by identifier is faster than opening a file by location,
+    # but can fail in determining the VFAT long file name.
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
 
-    if identifier is not None:
+    if location is not None:
+      fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
+    elif identifier is not None:
       fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
           identifier)
-    elif location is not None:
-      fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
     else:
       raise errors.PathSpecError(
           'Path specification missing location and identifier.')
