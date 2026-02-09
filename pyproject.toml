@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dfvfs"
-version = "20251125"
+version = "20260207"
 description = "Digital Forensics Virtual File System (dfVFS)"
 maintainers = [
     { name = "Log2Timeline maintainers", email = "log2timeline-maintainers@googlegroups.com" },
