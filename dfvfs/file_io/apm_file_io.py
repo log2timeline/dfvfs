@@ -59,10 +59,6 @@ class APMFile(file_io.FileIO):
         self._path_spec, resolver_context=self._resolver_context)
     vsapm_volume = self._file_system.GetAPMVolume()
 
-    if 0 < entry_index or entry_index >= vsapm_volume.number_of_partitions:
-      raise errors.PathSpecError(
-          f'Missing APM partition with entry index: {entry_index:d}')
-
     self._vsapm_partition = vsapm_volume.get_partition(entry_index)
 
     # Note that using pass-through IO in Python is faster than using
