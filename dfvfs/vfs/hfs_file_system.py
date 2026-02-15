@@ -76,16 +76,17 @@ class HFSFileSystem(file_system.FileSystem):
       BackEndError: if the file entry cannot be opened.
     """
     # Opening a file by identifier is faster than opening a file by location.
+    # but does not preserve the name of indirect nodes.
     fshfs_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
 
     try:
-      if identifier is not None:
+      if location is not None:
+        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
+      elif identifier is not None:
         fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
             identifier)
-      elif location is not None:
-        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
 
     except IOError as exception:
       raise errors.BackEndError(exception)
@@ -105,6 +106,7 @@ class HFSFileSystem(file_system.FileSystem):
       BackEndError: if the file entry cannot be opened.
     """
     # Opening a file by identifier is faster than opening a file by location.
+    # but does not preserve the name of indirect nodes.
     fshfs_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
@@ -117,11 +119,11 @@ class HFSFileSystem(file_system.FileSystem):
           fshfs_file_entry=fshfs_file_entry, is_root=True)
 
     try:
-      if identifier is not None:
+      if location is not None:
+        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
+      elif identifier is not None:
         fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
             identifier)
-      elif location is not None:
-        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
 
     except IOError as exception:
       raise errors.BackEndError(exception)
@@ -147,14 +149,15 @@ class HFSFileSystem(file_system.FileSystem):
           identifier.
     """
     # Opening a file by identifier is faster than opening a file by location.
+    # but does not preserve the name of indirect nodes.
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
 
-    if identifier is not None:
+    if location is not None:
+      fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
+    elif identifier is not None:
       fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
           identifier)
-    elif location is not None:
-      fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
     else:
       raise errors.PathSpecError(
           'Path specification missing location and identifier.')

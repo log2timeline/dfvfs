@@ -80,7 +80,7 @@ class FATFileSystem(file_system.FileSystem):
       BackEndError: if the file entry cannot be opened.
     """
     # Opening a file by identifier is faster than opening a file by location,
-    # but can fail in determining the VFAT long file name.
+    # but does not preserve the VFAT long file name.
     fsfat_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
@@ -110,7 +110,7 @@ class FATFileSystem(file_system.FileSystem):
       BackEndError: if the file entry cannot be opened.
     """
     # Opening a file by identifier is faster than opening a file by location,
-    # but can fail in determining the VFAT long file name.
+    # but does not preserve the VFAT long file name.
     fsfat_file_entry = None
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
@@ -153,7 +153,7 @@ class FATFileSystem(file_system.FileSystem):
           identifier.
     """
     # Opening a file by identifier is faster than opening a file by location,
-    # but can fail in determining the VFAT long file name.
+    # but does not preserve the VFAT long file name.
     location = getattr(path_spec, 'location', None)
     identifier = getattr(path_spec, 'identifier', None)
 
