@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Imports for path specification factory."""
 
+from dfvfs.path import aff4_path_spec
 from dfvfs.path import apfs_container_path_spec
 from dfvfs.path import apfs_path_spec
 from dfvfs.path import apm_path_spec
