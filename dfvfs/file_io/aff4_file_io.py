@@ -76,8 +76,18 @@ class _AFF4FileObjectAdapter(object):
     self._stream = self._GetDataStream(image_urns[0], format_version, lex)
     self._stream_size = self._stream.Size()
 
+  def _CloseCachedBackingFiles(self, resolver_object):
+    """Closes cached backing files without flushing the entire object graph."""
+    for cache_entry in list(resolver_object.ObjectCache.lru_list):
+      cached_object = cache_entry.aff4_obj
+      file_descriptor = getattr(cached_object, 'fd', None)
+      if hasattr(cached_object, 'CloseFile') and hasattr(file_descriptor, 'close'):
+        cached_object.CloseFile()
+
   def close(self):
     """Closes the file-like object."""
+    resolver_object = self._resolver
+
     if self._stream is not None and self._resolver is not None:
       self._stream.Close()
       self._resolver.Return(self._stream)
@@ -88,9 +98,10 @@ class _AFF4FileObjectAdapter(object):
       self._zip_file_context = None
       self._zip_file = None
 
-    if self._resolver is not None:
-      self._resolver.Flush()
-      self._resolver = None
+    if resolver_object is not None:
+      self._CloseCachedBackingFiles(resolver_object)
+
+    self._resolver = None
 
   def get_offset(self):
     """Retrieves the current offset."""

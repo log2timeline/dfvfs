@@ -348,6 +348,45 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(scan_node)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_APFS)
 
+  def testScanOnAFF4(self):
+    """Test the Scan function on a physical AFF4 image."""
+    test_path = self._GetTestFilePath(['aff4', 'Base-Linear.aff4'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(
+        scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE)
+
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_AFF4)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.sub_nodes[0]
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+    self.assertEqual(len(scan_node.sub_nodes), 4)
+
+    scan_node = scan_node.GetSubNodeByLocation('/p1')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION)
+    self.assertEqual(len(scan_node.sub_nodes), 1)
+
+    scan_node = scan_node.GetSubNodeByLocation('\\')
+    self.assertIsNotNone(scan_node)
+    self.assertEqual(
+        scan_node.type_indicator, definitions.PREFERRED_NTFS_BACK_END)
+
   def testScanOnAPM(self):
     """Test the Scan function on APM."""
     test_path = self._GetTestFilePath(['apm.dmg'])
@@ -776,6 +815,23 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
     self.assertIsNotNone(scan_node)
     self.assertIsNotNone(scan_node.path_spec)
     self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+
+  def testScanOnLogicalAFF4(self):
+    """Test the Scan function on a logical AFF4 container."""
+    test_path = self._GetTestFilePath(['aff4', 'dream.aff4'])
+    self._SkipIfPathNotExists(test_path)
+
+    scan_context = source_scanner.SourceScannerContext()
+    scan_context.OpenSourcePath(test_path)
+
+    self._source_scanner.Scan(scan_context)
+    self.assertEqual(scan_context.source_type, definitions.SOURCE_TYPE_FILE)
+
+    scan_node = scan_context.GetRootScanNode()
+    self.assertIsNotNone(scan_node)
+    self.assertIsNotNone(scan_node.path_spec)
+    self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
+    self.assertEqual(len(scan_node.sub_nodes), 0)
 
   def testScanOnRAW(self):
     """Test the Scan function on a RAW image."""

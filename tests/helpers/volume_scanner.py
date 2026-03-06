@@ -894,6 +894,33 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.ScannerError):
       test_scanner.GetBasePathSpecs('/bogus')
 
+  def testGetBasePathSpecsOnAFF4(self):
+    """Tests the GetBasePathSpecs function on a physical AFF4 image."""
+    test_path = self._GetTestFilePath(['aff4', 'Base-Linear.aff4'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+    test_aff4_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_AFF4, parent=test_os_path_spec)
+    test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_TSK_PARTITION, location='/p1',
+        part_index=2, start_offset=0x00010000, parent=test_aff4_path_spec)
+    test_ntfs_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.PREFERRED_NTFS_BACK_END, location='\\',
+        parent=test_tsk_partition_path_spec)
+
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+
+    expected_base_path_specs = [test_ntfs_path_spec.comparable]
+
+    base_path_specs = test_scanner.GetBasePathSpecs(test_path)
+    base_path_specs = [
+        base_path_spec.comparable for base_path_spec in base_path_specs]
+
+    self.assertEqual(base_path_specs, expected_base_path_specs)
+
   def testGetBasePathSpecsOnMBR(self):
     """Tests the GetBasePathSpecs function on MBR."""
     test_path = self._GetTestFilePath(['mbr.raw'])
@@ -933,6 +960,25 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
   def testGetBasePathSpecsOnDirectory(self):
     """Tests the GetBasePathSpecs function on a directory."""
     test_path = self._GetTestFilePath(['testdir_os'])
+    self._SkipIfPathNotExists(test_path)
+
+    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_OS, location=test_path)
+
+    test_mediator = TestVolumeScannerMediator()
+    test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+
+    expected_base_path_specs = [test_os_path_spec.comparable]
+
+    base_path_specs = test_scanner.GetBasePathSpecs(test_path)
+    base_path_specs = [
+        base_path_spec.comparable for base_path_spec in base_path_specs]
+
+    self.assertEqual(base_path_specs, expected_base_path_specs)
+
+  def testGetBasePathSpecsOnLogicalAFF4(self):
+    """Tests the GetBasePathSpecs function on a logical AFF4 container."""
+    test_path = self._GetTestFilePath(['aff4', 'dream.aff4'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(

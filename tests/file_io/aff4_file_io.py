@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 """Tests for the file-like object implementation using pyaff4."""
 
+import gc
 import os
 import unittest
+import warnings
 
+from dfvfs.file_io import aff4_file_io
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.path import factory as path_spec_factory
@@ -47,6 +50,25 @@ class AFF4FileTest(shared_test_lib.BaseTestCase):
     with self.assertRaises(errors.PathSpecError):
       resolver.Resolver.OpenFileObject(
           path_spec, resolver_context=self._resolver_context)
+
+  def testAdapterClose(self):
+    """Tests closing the AFF4 adapter."""
+    test_path = self._GetTestFilePath(['aff4', 'Base-Linear.aff4'])
+    self._SkipIfPathNotExists(test_path)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+      warnings.simplefilter('always', ResourceWarning)
+
+      file_object = aff4_file_io._AFF4FileObjectAdapter(test_path)
+      file_object.close()
+
+      del file_object
+      gc.collect()
+
+    resource_warnings = [
+        warning for warning in caught_warnings
+        if isinstance(warning.message, ResourceWarning)]
+    self.assertEqual(resource_warnings, [])
 
   def testSeek(self):
     """Tests seeking in the file-like object."""
