@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Imports for the format analyzer."""
 
+from dfvfs.analyzer import aff4_analyzer_helper
 from dfvfs.analyzer import apfs_analyzer_helper
 from dfvfs.analyzer import apfs_container_analyzer_helper
 from dfvfs.analyzer import apm_analyzer_helper
