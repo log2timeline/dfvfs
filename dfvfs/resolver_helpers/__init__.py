@@ -2,6 +2,11 @@
 """Imports for the path specification resolver."""
 
 try:
+  from dfvfs.resolver_helpers import aff4_resolver_helper
+except ImportError:
+  pass
+
+try:
   from dfvfs.resolver_helpers import apfs_container_resolver_helper
   from dfvfs.resolver_helpers import apfs_resolver_helper
 except ImportError:
