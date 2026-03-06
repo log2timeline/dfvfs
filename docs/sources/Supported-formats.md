@@ -4,6 +4,9 @@ The information below is based of version 20230503
 
 ### Storage media types
 
+* AFF4 physical disk images (Requires: [pyaff4](https://github.com/aff4/pyaff4))
+  * currently ZIP-backed physical images only
+  * logical AFF4-L containers are not treated as storage media images
 * EWF (EWF-E01, EWF-Ex01, EWF-S01) (Requires: [libewf/pyewf](https://github.com/libyal/libewf))
 * Mac OS disk image (Requires: [libmodi/pymodi](https://github.com/libyal/libmodi))
   * Sparse bundle disk image
