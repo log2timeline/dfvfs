@@ -1,0 +1,20 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index a487eb5..f77f72f 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -55,12 +55,10 @@ Documentation = "https://dfvfs.readthedocs.io/en/latest"
+ Homepage = "https://github.com/log2timeline/dfvfs"
+ Repository = "https://github.com/log2timeline/dfvfs"
+ 
++[tool.setuptools]
++package-dir = {"dfvfs" = "dfvfs"}
++
+ [tool.setuptools.package-data]
+ dfvfs = [
+     "lib/*.yaml",
+ ]
+-
+-[tool.setuptools.packages.find]
+-where = ["."]
+-include = ["dfvfs"]
+-exclude = ["docs", "tests", "tests.*", "utils"]
