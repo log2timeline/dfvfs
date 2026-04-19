@@ -408,7 +408,8 @@ class GzipMember(data_format.DataFormat):
 class GzipCompressedStream(object):
   """File-like object of a gzip compressed stream (file).
 
-  The gzip file format is defined in RFC1952: https://datatracker.ietf.org/doc/html/rfc1952
+  The gzip file format is defined in RFC1952:
+  https://datatracker.ietf.org/doc/html/rfc1952
 
   Attributes:
     uncompressed_data_size (int): total size of the decompressed data stored
