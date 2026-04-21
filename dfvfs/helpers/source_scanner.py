@@ -468,6 +468,13 @@ class SourceScanner(object):
         if not auto_recurse:
           return
 
+      else:
+        # Check for a compressed RAW storage media image.
+        source_path_spec = self._ScanForCompressedStream(scan_node.path_spec)
+        if source_path_spec:
+          scan_node.scanned = True
+          scan_node = scan_context.AddScanNode(source_path_spec, scan_node)
+
       # In case we did not find a storage media image type we keep looking
       # since not all RAW storage media image naming schemas are known and
       # its type can only detected by its content.
@@ -602,6 +609,43 @@ class SourceScanner(object):
         path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
         if path_spec:
           scan_context.AddScanNode(path_spec, scan_node.parent_node)
+
+  def _ScanForCompressedStream(self, source_path_spec):
+    """Scans the path specification for a supported compressed stream type.
+
+    Args:
+      source_path_spec (PathSpec): source path specification.
+
+    Returns:
+      PathSpec: file system path specification or None if no supported
+          compressed stream type was found.
+
+    Raises:
+      BackEndError: if the source cannot be scanned or more than one compressed
+          stream type is found.
+    """
+    try:
+      type_indicators = analyzer.Analyzer.GetCompressedStreamTypeIndicators(
+          source_path_spec, resolver_context=self._resolver_context)
+    except RuntimeError as exception:
+      raise errors.BackEndError((
+          f'Unable to process source path specification with error: '
+          f'{exception!s}'))
+
+    if not type_indicators:
+      return None
+
+    type_indicator = type_indicators[0]
+    if len(type_indicators) > 1:
+      raise errors.BackEndError(
+          'Unsupported source found more than one compressed stream types.')
+
+    if type_indicator != definitions.TYPE_INDICATOR_GZIP:
+      raise errors.BackEndError(
+          f'Unsupported compressed stream type indicator: {type_indicator:s}')
+
+    return path_spec_factory.Factory.NewPathSpec(
+        definitions.TYPE_INDICATOR_GZIP, parent=source_path_spec)
 
   def _ScanVolumeSystemRootNode(
       self, scan_context, scan_node, auto_recurse=True):
