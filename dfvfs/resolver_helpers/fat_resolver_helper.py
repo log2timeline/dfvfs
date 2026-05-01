@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The FAT path specification resolver helper implementation."""
 
 from dfvfs.file_io import fat_file_io

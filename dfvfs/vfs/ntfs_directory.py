@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The NTFS directory implementation."""
 
 from dfvfs.path import ntfs_path_spec

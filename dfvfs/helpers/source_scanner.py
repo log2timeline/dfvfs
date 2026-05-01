@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Scanner for source files, directories and devices.
 
 The source scanner tries to determine what input we are dealing with:

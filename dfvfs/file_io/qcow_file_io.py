@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The QCOW image file-like object."""
 
 import pyqcow

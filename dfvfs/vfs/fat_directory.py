@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The FAT directory implementation."""
 
 from dfvfs.path import fat_path_spec

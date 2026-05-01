@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Helper functions for Volume Shadow Snapshots (VSS) support."""
 
 

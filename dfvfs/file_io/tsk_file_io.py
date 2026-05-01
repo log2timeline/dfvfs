@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) file-like object implementation."""
 
 import os

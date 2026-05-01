@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS path specification resolver helper implementation."""
 
 from dfvfs.file_io import apfs_file_io

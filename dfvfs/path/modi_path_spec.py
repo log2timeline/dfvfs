@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Mac OS disk image path specification implementation."""
 
 from dfvfs.lib import definitions

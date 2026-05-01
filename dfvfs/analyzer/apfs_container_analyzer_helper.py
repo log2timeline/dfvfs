@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS container format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Tests for gzip compressed stream file."""
 
 # Note: do not rename file to gzip.py this can cause the exception:

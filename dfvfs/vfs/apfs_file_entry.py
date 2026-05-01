@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS file entry implementation."""
 
 from dfdatetime import apfs_time as dfdatetime_apfs_time

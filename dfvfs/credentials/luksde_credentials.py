@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The LUKS Drive Encryption credentials."""
 
 from dfvfs.credentials import credentials

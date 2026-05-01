@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The EWF image file-like object."""
 
 import pyewf

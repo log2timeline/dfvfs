@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A text file interface for file-like objects."""
 
 import os

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The operating system path specification resolver helper implementation."""
 
 from dfvfs.file_io import os_file_io

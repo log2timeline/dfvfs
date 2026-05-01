@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APM path specification resolver helper implementation."""
 
 from dfvfs.file_io import apm_file_io

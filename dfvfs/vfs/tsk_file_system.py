@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) file system implementation."""
 
 import pytsk3

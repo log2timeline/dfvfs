@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The gzip file-like object."""
 
 from dfvfs.file_io import file_object_io

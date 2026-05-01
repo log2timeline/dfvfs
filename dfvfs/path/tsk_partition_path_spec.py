@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition path specification implementation."""
 
 from dfvfs.lib import definitions

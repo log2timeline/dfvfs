@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Imports for the path specification resolver."""
 
 try:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The path specification resolver."""
 
 from dfvfs.credentials import keychain

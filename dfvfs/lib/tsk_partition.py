@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Helper functions for SleuthKit (TSK) partition support."""
 
 import pytsk3

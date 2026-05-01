@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The data range path specification resolver helper implementation."""
 
 from dfvfs.file_io import data_range_io

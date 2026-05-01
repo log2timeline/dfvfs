@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Gzip compressed stream file."""
 
 # Note: do not rename file to gzip.py this can cause the exception:

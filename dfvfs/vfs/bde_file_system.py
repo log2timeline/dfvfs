@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BDE file system implementation."""
 
 import pybde

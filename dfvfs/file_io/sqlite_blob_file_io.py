@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SQlite blob file-like object."""
 
 import os

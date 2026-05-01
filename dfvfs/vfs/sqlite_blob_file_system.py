@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SQLite blob file system implementation."""
 
 from dfvfs.lib import definitions

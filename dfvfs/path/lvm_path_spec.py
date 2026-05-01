@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) path specification implementation."""
 
 from dfvfs.lib import definitions

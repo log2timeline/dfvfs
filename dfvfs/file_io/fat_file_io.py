@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The File Allocation Table (FAT) file-like object implementation."""
 
 import os

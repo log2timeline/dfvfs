@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) volume system."""
 
 from dfvfs.lib import definitions

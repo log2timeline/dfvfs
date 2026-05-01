@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) data stream implementation."""
 
 import pytsk3

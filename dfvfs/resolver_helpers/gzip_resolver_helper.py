@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The gzip file path specification resolver helper implementation."""
 
 from dfvfs.file_io import gzip_file_io

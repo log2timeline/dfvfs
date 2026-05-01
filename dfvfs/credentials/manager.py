@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The path specification credentials manager.
 
 The credentials manager uses credential (instances of Credentials) to specify

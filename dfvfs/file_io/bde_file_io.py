@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BitLocker Drive Encryption (BDE) file-like object."""
 
 import pybde

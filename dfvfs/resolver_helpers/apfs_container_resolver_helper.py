@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS container path specification resolver helper implementation."""
 
 from dfvfs.lib import definitions

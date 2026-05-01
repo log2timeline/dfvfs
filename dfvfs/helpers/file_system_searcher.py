@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A searcher to find file entries within a file system."""
 
 import re

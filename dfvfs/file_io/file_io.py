@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file input/output (IO) object interface."""
 
 import abc

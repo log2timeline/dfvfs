@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The GUID Partition Table (GPT) directory implementation."""
 
 from dfvfs.path import gpt_path_spec

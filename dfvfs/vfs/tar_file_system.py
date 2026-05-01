@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The TAR file system implementation."""
 
 import os

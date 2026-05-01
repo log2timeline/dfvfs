@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The fake file entry implementation."""
 
 from dfdatetime import fake_time as dfdatetime_fake_time

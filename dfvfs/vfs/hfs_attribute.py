@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The HFS attribute implementation."""
 
 import os

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file system interface."""
 
 import abc

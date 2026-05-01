@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Imports for path specification factory."""
 
 from dfvfs.path import apfs_container_path_spec

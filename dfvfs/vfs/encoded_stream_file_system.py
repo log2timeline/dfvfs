@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The encoded stream file system implementation."""
 
 from dfvfs.lib import definitions

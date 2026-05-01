@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The X File System (XFS) file-like object implementation."""
 
 import os

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The QCOW image path specification resolver helper implementation."""
 
 from dfvfs.file_io import qcow_file_io

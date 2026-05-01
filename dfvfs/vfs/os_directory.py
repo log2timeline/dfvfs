@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The operating system directory implementation."""
 
 import os

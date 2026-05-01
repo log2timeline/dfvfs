@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) path specification resolver helper implementation."""
 
 from dfvfs.file_io import tsk_file_io

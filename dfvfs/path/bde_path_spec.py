@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BitLocker Drive Encryption (BDE) path specification implementation."""
 
 from dfvfs.lib import definitions

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The EXT attribute implementation."""
 
 import os

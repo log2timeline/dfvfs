@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Virtual Hard Disk image file-like object."""
 
 import pyvhdi

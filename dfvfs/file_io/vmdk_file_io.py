@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The VMDK image file-like object."""
 
 import pyvmdk

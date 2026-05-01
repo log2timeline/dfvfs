@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The compressed stream file-like object implementation."""
 
 import os

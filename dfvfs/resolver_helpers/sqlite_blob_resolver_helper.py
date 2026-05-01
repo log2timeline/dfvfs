@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SQLite blob file path specification resolver helper implementation."""
 
 from dfvfs.file_io import sqlite_blob_file_io

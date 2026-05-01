@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A resolver for Windows paths to file system specific formats."""
 
 import re

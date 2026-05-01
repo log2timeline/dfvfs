@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The ZIP file system implementation."""
 
 import zipfile

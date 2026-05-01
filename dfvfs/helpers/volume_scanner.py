@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Scanner for supported volume and file systems."""
 
 import abc

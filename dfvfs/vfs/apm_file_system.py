@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Apple Partition Map (APM) file system implementation."""
 
 import pyvsapm

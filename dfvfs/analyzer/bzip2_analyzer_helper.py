@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BZIP2 format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SQLite blob directory implementation."""
 
 from dfvfs.path import sqlite_blob_path_spec

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

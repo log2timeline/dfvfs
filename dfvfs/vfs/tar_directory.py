@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The TAR directory implementation."""
 
 from dfvfs.path import tar_path_spec

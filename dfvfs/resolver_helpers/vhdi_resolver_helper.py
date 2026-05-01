@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The VHD image path specification resolver helper implementation."""
 
 from dfvfs.file_io import vhdi_file_io

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CPIO directory implementation."""
 
 from dfvfs.path import cpio_path_spec

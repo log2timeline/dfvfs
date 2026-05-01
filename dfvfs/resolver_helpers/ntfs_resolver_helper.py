@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The NTFS path specification resolver helper implementation."""
 
 from dfvfs.file_io import ntfs_file_io

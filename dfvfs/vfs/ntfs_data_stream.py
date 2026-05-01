@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The NTFS data stream implementation."""
 
 from dfvfs.lib import definitions

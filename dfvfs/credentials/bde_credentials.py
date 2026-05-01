@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BitLocker Drive Encryption (BDE) credentials."""
 
 from dfvfs.credentials import credentials

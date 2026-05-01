@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Imports for the volume system factory."""
 
 from dfvfs.volume import apfs_volume_system

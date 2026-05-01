@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """dtFabric data format helpers."""
 
 import os

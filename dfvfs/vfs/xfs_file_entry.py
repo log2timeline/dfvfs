@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The XFS file entry implementation."""
 
 from dfdatetime import posix_time as dfdatetime_posix_time

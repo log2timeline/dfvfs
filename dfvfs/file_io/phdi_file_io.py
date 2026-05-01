@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The PHDI image file-like object."""
 
 import pyphdi

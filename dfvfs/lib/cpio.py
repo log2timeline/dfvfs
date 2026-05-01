@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Copy in and out (CPIO) archive file."""
 
 import os

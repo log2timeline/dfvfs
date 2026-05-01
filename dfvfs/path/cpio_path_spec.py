@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CPIO path specification implementation."""
 
 from dfvfs.lib import definitions

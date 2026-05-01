@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The root only file system file entry implementation."""
 
 from dfvfs.vfs import file_entry

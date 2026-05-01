@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CS path specification resolver helper implementation."""
 
 from dfvfs.file_io import cs_file_io

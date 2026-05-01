@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CPIO extracted file-like object implementation."""
 
 import os

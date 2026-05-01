@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The HFS path specification implementation."""
 
 from dfvfs.lib import definitions

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition file-like object implementation."""
 
 from dfvfs.file_io import data_range_io

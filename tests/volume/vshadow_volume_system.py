@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Tests for the Volume Shadow Snapshots (VSS) volume system."""
 
 import unittest

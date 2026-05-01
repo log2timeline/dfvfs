@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CPIO file entry implementation."""
 
 import stat

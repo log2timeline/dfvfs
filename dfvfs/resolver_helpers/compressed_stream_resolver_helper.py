@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The compressed stream path specification resolver helper implementation."""
 
 from dfvfs.file_io import compressed_stream_io

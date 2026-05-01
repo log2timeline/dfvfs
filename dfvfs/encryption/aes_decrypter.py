@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The AES decrypter implementation."""
 
 import pycaes

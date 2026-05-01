@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Core Storage (CS) credentials."""
 
 from dfvfs.credentials import credentials

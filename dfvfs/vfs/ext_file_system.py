@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The EXT file system implementation."""
 
 import pyfsext

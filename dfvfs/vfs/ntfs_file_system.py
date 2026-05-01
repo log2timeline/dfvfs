@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The NTFS file system implementation."""
 
 import pyfsntfs
