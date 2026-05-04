@@ -21,7 +21,7 @@ class TSKFileTestExt2(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(TSKFileTestExt2, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -135,7 +135,7 @@ class TSKFileTestFAT12(test_lib.FAT12ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(TSKFileTestFAT12, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['fat12.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -201,7 +201,7 @@ class TSKFileTestHFS(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(TSKFileTestHFS, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['hfsplus.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -273,7 +273,7 @@ class TSKFileTestNTFS(test_lib.NTFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(TSKFileTestNTFS, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 

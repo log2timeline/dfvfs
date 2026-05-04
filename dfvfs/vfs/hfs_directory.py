@@ -15,7 +15,7 @@ class HFSDirectory(directory.Directory):
       path_spec (PathSpec): path specification.
       fshfs_file_entry (pyfshfs.file_entry): HFS file entry.
     """
-    super(HFSDirectory, self).__init__(file_system, path_spec)
+    super().__init__(file_system, path_spec)
     self._fshfs_file_entry = fshfs_file_entry
 
   def _EntriesGenerator(self):

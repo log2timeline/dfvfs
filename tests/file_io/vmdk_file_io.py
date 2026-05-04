@@ -15,7 +15,7 @@ class VMDKFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(VMDKFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ext2.vmdk'])
     self._SkipIfPathNotExists(test_path)
 

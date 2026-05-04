@@ -1,7 +1,7 @@
 """The Virtual File System (VFS) directory interface."""
 
 
-class Directory(object):
+class Directory:
   """Directory interface.
 
   Attributes:
@@ -15,7 +15,7 @@ class Directory(object):
       file_system (FileSystem): file system.
       path_spec (PathSpec): path specification.
     """
-    super(Directory, self).__init__()
+    super().__init__()
     self._entries = None
     self._file_system = file_system
     self.path_spec = path_spec

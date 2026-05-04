@@ -19,7 +19,7 @@ class APMImageFileTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(APMImageFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['apm.dmg'])
     self._SkipIfPathNotExists(test_path)
 

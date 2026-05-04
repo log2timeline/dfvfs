@@ -38,7 +38,7 @@ class LVMFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           'Missing vslvm logical volume in non-virtual file entry.')
 
-    super(LVMFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._name = None

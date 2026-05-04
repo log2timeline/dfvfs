@@ -17,7 +17,7 @@ class FakeFile(file_io.FileIO):
       path_spec (PathSpec): a path specification.
       file_data (bytes): fake file data.
     """
-    super(FakeFile, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._current_offset = 0
     self._file_data = file_data
     self._size = 0

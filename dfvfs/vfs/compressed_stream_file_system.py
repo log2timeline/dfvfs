@@ -19,7 +19,7 @@ class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
       resolver_context (Context): a resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(CompressedStreamFileSystem, self).__init__(
+    super().__init__(
         resolver_context, path_spec)
     self._compression_method = None
 

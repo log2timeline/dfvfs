@@ -15,7 +15,7 @@ class EWFResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(EWFResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ext2.E01'])
     self._SkipIfPathNotExists(test_path)

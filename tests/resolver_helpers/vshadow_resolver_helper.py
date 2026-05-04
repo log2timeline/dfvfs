@@ -15,7 +15,7 @@ class VShadowResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(VShadowResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['vss.raw'])
     self._SkipIfPathNotExists(test_path)

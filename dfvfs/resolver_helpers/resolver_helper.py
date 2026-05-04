@@ -3,7 +3,7 @@
 from dfvfs.lib import errors
 
 
-class ResolverHelper(object):
+class ResolverHelper:
   """Resolver helper interface."""
 
   # pylint: disable=redundant-returns-doc,unused-argument
@@ -15,7 +15,7 @@ class ResolverHelper(object):
       ValueError: if a derived resolver helper class does not define a type
           indicator.
     """
-    super(ResolverHelper, self).__init__()
+    super().__init__()
 
     if not getattr(self, 'TYPE_INDICATOR', None):
       raise ValueError('Missing type indicator.')

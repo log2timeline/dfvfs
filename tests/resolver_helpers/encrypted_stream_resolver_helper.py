@@ -15,7 +15,7 @@ class EncryptedStreamResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(EncryptedStreamResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['syslog.rc4'])
     self._SkipIfPathNotExists(test_path)

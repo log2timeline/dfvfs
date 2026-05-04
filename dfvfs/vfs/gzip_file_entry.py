@@ -34,7 +34,7 @@ class GzipFileEntry(root_only_file_entry.RootOnlyFileEntry):
     if not gzip_file:
       raise errors.BackEndError('Missing gzip file.')
 
-    super(GzipFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._gzip_file = gzip_file

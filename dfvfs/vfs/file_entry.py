@@ -11,7 +11,7 @@ from dfvfs.resolver import resolver
 from dfvfs.vfs import data_stream
 
 
-class FileEntry(object):
+class FileEntry:
   """File entry interface.
 
   Attributes:
@@ -42,7 +42,7 @@ class FileEntry(object):
       ValueError: if a derived file entry class does not define a type
           indicator.
     """
-    super(FileEntry, self).__init__()
+    super().__init__()
     self._attributes = None
     self._data_streams = None
     self._directory = None

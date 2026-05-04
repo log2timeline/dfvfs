@@ -24,7 +24,7 @@ class NTFSAttribute(attribute.Attribute):
     if not fsntfs_attribute:
       raise errors.BackEndError('Missing pyfsntfs attribute.')
 
-    super(NTFSAttribute, self).__init__()
+    super().__init__()
     self._fsntfs_attribute = fsntfs_attribute
 
   @property

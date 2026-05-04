@@ -15,7 +15,7 @@ class RawFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(RawFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -54,7 +54,7 @@ class SplitRawFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(SplitRawFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ext2.splitraw.000'])
     self._SkipIfPathNotExists(test_path)
 

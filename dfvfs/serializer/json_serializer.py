@@ -15,7 +15,7 @@ class _PathSpecJsonDecoder(json.JSONDecoder):
 
   def __init__(self, *args, **kargs):
     """Initializes a path specification JSON decoder."""
-    super(_PathSpecJsonDecoder, self).__init__(
+    super().__init__(
         *args, object_hook=self._ConvertDictToObject, **kargs)
 
   def _ConvertDictToObject(self, json_dict):

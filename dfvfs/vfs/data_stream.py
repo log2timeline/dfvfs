@@ -1,7 +1,7 @@
 """The Virtual File System (VFS) data stream interface."""
 
 
-class DataStream(object):
+class DataStream:
   """Data stream interface."""
 
   def __init__(self, file_entry):
@@ -10,7 +10,7 @@ class DataStream(object):
     Args:
       file_entry (FileEntry): file entry.
     """
-    super(DataStream, self).__init__()
+    super().__init__()
     self._file_entry = file_entry
     self._name = ''
     self._size = 0

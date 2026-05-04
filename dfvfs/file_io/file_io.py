@@ -3,7 +3,7 @@
 import abc
 import os
 
-class FileIO(object):
+class FileIO:
   """VFS file input/output (IO) object interface."""
 
   # pylint: disable=redundant-returns-doc
@@ -15,7 +15,7 @@ class FileIO(object):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(FileIO, self).__init__()
+    super().__init__()
     self._is_open = False
     self._path_spec = path_spec
     self._resolver_context = resolver_context

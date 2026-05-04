@@ -14,7 +14,7 @@ class TSKPartitionFileTest(test_lib.MBRPartitionedImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(TSKPartitionFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['mbr.raw'])
     self._SkipIfPathNotExists(test_path)
 

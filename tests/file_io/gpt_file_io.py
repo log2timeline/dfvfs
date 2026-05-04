@@ -14,7 +14,7 @@ class GPTImageFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(GPTImageFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['gpt.raw'])
     self._SkipIfPathNotExists(test_path)
 

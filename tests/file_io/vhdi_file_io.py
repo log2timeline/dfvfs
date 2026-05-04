@@ -15,7 +15,7 @@ class Version1DynamicVHDIFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(Version1DynamicVHDIFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ext2.vhd'])
     self._SkipIfPathNotExists(test_path)
 
@@ -57,7 +57,7 @@ class Version1DifferentialVHDIFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(Version1DifferentialVHDIFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['image-differential.vhd'])
     self._SkipIfPathNotExists(test_path)
 
@@ -96,7 +96,7 @@ class Version2VHDIFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(Version2VHDIFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ext2.vhdx'])
     self._SkipIfPathNotExists(test_path)
 
@@ -136,7 +136,7 @@ class WindowsVersion1DifferentialVHDIFileTestFAT(
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion1DifferentialVHDIFileTestFAT, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['fat-differential.vhd'])
     self._SkipIfPathNotExists(test_path)
@@ -184,7 +184,7 @@ class WindowsVersion1DifferentialVHDIFileTestNTFS(
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion1DifferentialVHDIFileTestNTFS, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ntfs-differential.vhd'])
     self._SkipIfPathNotExists(test_path)
@@ -222,7 +222,7 @@ class WindowsVersion1DynamicVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion1DynamicVHDIFileTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ntfs-dynamic.vhd'])
     self._SkipIfPathNotExists(test_path)
@@ -260,7 +260,7 @@ class WindowsVersion1FixedVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion1FixedVHDIFileTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ntfs-fixed.vhd'])
     self._SkipIfPathNotExists(test_path)
@@ -296,7 +296,7 @@ class WindowsVersion2DifferentialVHDIFileTestFAT(
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion2DifferentialVHDIFileTestFAT, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['fat-differential.vhdx'])
     self._SkipIfPathNotExists(test_path)
@@ -344,7 +344,7 @@ class WindowsVersion2DifferentialVHDIFileTestNTFS(
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion2DifferentialVHDIFileTestNTFS, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ntfs-differential.vhdx'])
     self._SkipIfPathNotExists(test_path)
@@ -382,7 +382,7 @@ class WindowsVersion2DynamicVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion2DynamicVHDIFileTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ntfs-dynamic.vhdx'])
     self._SkipIfPathNotExists(test_path)
@@ -420,7 +420,7 @@ class WindowsVersion2FixedVHDIFileTest(test_lib.WindowsNTFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(WindowsVersion2FixedVHDIFileTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ntfs-fixed.vhdx'])
     self._SkipIfPathNotExists(test_path)

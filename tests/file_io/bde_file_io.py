@@ -26,7 +26,7 @@ class BDEFileWithKeyChainTest(test_lib.FAT12ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(BDEFileWithKeyChainTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['bdetogo.raw'])
     self._SkipIfPathNotExists(test_path)
@@ -99,7 +99,7 @@ class BDEFileWithPathSpecCredentialsTest(test_lib.FAT12ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(BDEFileWithPathSpecCredentialsTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['bdetogo.raw'])
     self._SkipIfPathNotExists(test_path)

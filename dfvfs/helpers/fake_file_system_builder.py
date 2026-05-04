@@ -6,7 +6,7 @@ from dfvfs.resolver import context
 from dfvfs.vfs import fake_file_system
 
 
-class FakeFileSystemBuilder(object):
+class FakeFileSystemBuilder:
   """Builder object for fake file systems.
 
   Attributes:
@@ -15,7 +15,7 @@ class FakeFileSystemBuilder(object):
 
   def __init__(self):
     """Initializes a fake file system builder."""
-    super(FakeFileSystemBuilder, self).__init__()
+    super().__init__()
     resolver_context = context.Context()
     path_spec = fake_path_spec.FakePathSpec(location='/')
     self.file_system = fake_file_system.FakeFileSystem(

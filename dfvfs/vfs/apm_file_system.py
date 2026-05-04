@@ -23,7 +23,7 @@ class APMFileSystem(file_system.FileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(APMFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._file_object = None
     self._vsapm_volume = None
 

@@ -32,7 +32,7 @@ class EXTPathSpec(path_spec.PathSpec):
     if (not inode and not location) or not parent:
       raise ValueError('Missing inode and location, or parent value.')
 
-    super(EXTPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.inode = inode
     self.location = location
 

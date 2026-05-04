@@ -19,7 +19,7 @@ class EncodedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
       resolver_context (Context): a resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(EncodedStreamFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._encoding_method = None
 
   def _Close(self):

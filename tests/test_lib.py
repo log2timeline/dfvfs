@@ -4,7 +4,7 @@ import os
 import unittest
 
 
-# The path to top of the dfWinReg source tree.
+# The path to top of the source tree.
 PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 # The paths below are all derived from the project path directory.

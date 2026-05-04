@@ -3,7 +3,7 @@
 from dfvfs.lib import definitions
 
 
-class PathSpec(object):
+class PathSpec:
   """Path specification interface.
 
   Attributes:
@@ -30,7 +30,7 @@ class PathSpec(object):
       keyword_arguments = ', '.join(kwargs)
       raise ValueError(f'Unused keyword arguments: {keyword_arguments:s}.')
 
-    super(PathSpec, self).__init__()
+    super().__init__()
     self.parent = parent
 
     if not getattr(self, 'TYPE_INDICATOR', None):

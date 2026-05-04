@@ -14,7 +14,7 @@ class APFSVolume(volume_system.Volume):
     Args:
       file_entry (APFSContainerFileEntry): an APFS container file entry.
     """
-    super(APFSVolume, self).__init__(file_entry.name)
+    super().__init__(file_entry.name)
     self._file_entry = file_entry
 
   def _Parse(self):

@@ -15,7 +15,7 @@ class XFSDirectory(directory.Directory):
       path_spec (PathSpec): path specification.
       fsxfs_file_entry (pyfsxfs.file_entry): XFS file entry.
     """
-    super(XFSDirectory, self).__init__(file_system, path_spec)
+    super().__init__(file_system, path_spec)
     self._fsxfs_file_entry = fsxfs_file_entry
 
   def _EntriesGenerator(self):

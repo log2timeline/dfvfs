@@ -24,7 +24,7 @@ class APFSExtendedAttribute(attribute.Attribute):
     if not fsapfs_extended_attribute:
       raise errors.BackEndError('Missing pyfsapfs extended attribute.')
 
-    super(APFSExtendedAttribute, self).__init__()
+    super().__init__()
     self._fsapfs_extended_attribute = fsapfs_extended_attribute
 
   @property

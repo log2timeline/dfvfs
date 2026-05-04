@@ -3,7 +3,7 @@
 import abc
 
 
-class Decrypter(object):
+class Decrypter:
   """Decrypter interface."""
 
   def __init__(self, **kwargs):
@@ -19,7 +19,7 @@ class Decrypter(object):
       keyword_arguments = ', '.join(kwargs)
       raise ValueError(f'Unused keyword arguments: {keyword_arguments:s}.')
 
-    super(Decrypter, self).__init__()
+    super().__init__()
 
   # pylint: disable=redundant-returns-doc
   @abc.abstractmethod

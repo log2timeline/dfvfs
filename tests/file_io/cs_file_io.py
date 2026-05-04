@@ -20,7 +20,7 @@ class CSFileTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CSFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['cs_single_volume.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -92,7 +92,7 @@ class CSFileWithKeyChainTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CSFileWithKeyChainTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 
@@ -169,7 +169,7 @@ class CSFileWithPathSpecCredentialsTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CSFileWithPathSpecCredentialsTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['fvdetest.qcow2'])
     self._SkipIfPathNotExists(test_path)
 

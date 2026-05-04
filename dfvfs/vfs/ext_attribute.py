@@ -24,7 +24,7 @@ class EXTExtendedAttribute(attribute.Attribute):
     if not fsext_extended_attribute:
       raise errors.BackEndError('Missing pyfsext extended attribute.')
 
-    super(EXTExtendedAttribute, self).__init__()
+    super().__init__()
     self._fsext_extended_attribute = fsext_extended_attribute
 
   @property

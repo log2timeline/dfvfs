@@ -20,7 +20,7 @@ class SQLiteBlobFile(file_io.FileIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(SQLiteBlobFile, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._blob = None
     self._current_offset = 0
     self._database_object = None

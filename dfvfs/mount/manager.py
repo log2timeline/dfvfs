@@ -21,7 +21,7 @@ type=TSK_PARTITION, location=/p1
 """
 
 
-class MountPointManager(object):
+class MountPointManager:
   """Path specification mount point manager."""
 
   _mount_points = {}

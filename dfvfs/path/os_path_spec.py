@@ -42,7 +42,7 @@ class OSPathSpec(location_path_spec.LocationPathSpec):
       raise ValueError(
           f'Unsupported parent type indicator: {parent.type_indicator:s}.')
 
-    super(OSPathSpec, self).__init__(location=location, parent=parent, **kwargs)
+    super().__init__(location=location, parent=parent, **kwargs)
 
 
 factory.Factory.RegisterPathSpec(OSPathSpec)

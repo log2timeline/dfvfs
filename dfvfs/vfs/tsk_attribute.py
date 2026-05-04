@@ -25,7 +25,7 @@ class TSKAttribute(attribute.Attribute):
     if not tsk_attribute:
       raise errors.BackEndError('Missing TSK attribute.')
 
-    super(TSKAttribute, self).__init__()
+    super().__init__()
     self._attribute_type = getattr(tsk_attribute.info, 'type', None)
     self._tsk_attribute = tsk_attribute
     self._tsk_file = tsk_file
@@ -46,7 +46,7 @@ class TSKExtendedAttribute(TSKAttribute):
       tsk_file (pytsk3.File): TSK file.
       tsk_attribute (pytsk3.Attribute): TSK attribute.
     """
-    super(TSKExtendedAttribute, self).__init__(tsk_file, tsk_attribute)
+    super().__init__(tsk_file, tsk_attribute)
     self._current_offset = 0
     self._identifier = getattr(tsk_attribute.info, 'id', None)
     self._size = getattr(tsk_attribute.info, 'size', None)

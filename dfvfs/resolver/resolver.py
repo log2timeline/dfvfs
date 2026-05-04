@@ -7,7 +7,7 @@ from dfvfs.path import path_spec
 from dfvfs.resolver import context
 
 
-class Resolver(object):
+class Resolver:
   """Path specification resolver."""
 
   _resolver_context = context.Context()

@@ -35,7 +35,7 @@ class BDEPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(BDEPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.password = password
     self.recovery_password = recovery_password
     self.startup_key = startup_key

@@ -1,7 +1,7 @@
 """The path specification factory."""
 
 
-class Factory(object):
+class Factory:
   """Path specification factory."""
 
   PROPERTY_NAMES = frozenset([

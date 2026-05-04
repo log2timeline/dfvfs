@@ -20,7 +20,7 @@ class FATFileTest(test_lib.FAT12ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(FATFileTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['fat12.raw'])
     self._SkipIfPathNotExists(test_path)

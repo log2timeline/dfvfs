@@ -25,7 +25,7 @@ class RC4Decrypter(decrypter.Decrypter):
     if not key:
       raise ValueError('Missing key.')
 
-    super(RC4Decrypter, self).__init__(**kwargs)
+    super().__init__(**kwargs)
     self._rc4_context = pyfcrypto.rc4_context()
 
     self._rc4_context.set_key(key)

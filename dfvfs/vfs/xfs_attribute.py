@@ -24,7 +24,7 @@ class XFSExtendedAttribute(attribute.Attribute):
     if not fsxfs_extended_attribute:
       raise errors.BackEndError('Missing pyfsxfs extended attribute.')
 
-    super(XFSExtendedAttribute, self).__init__()
+    super().__init__()
     self._fsxfs_extended_attribute = fsxfs_extended_attribute
 
   @property

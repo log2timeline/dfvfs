@@ -15,7 +15,7 @@ class MODIResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(MODIResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['hfsplus_zlib.dmg'])
     self._SkipIfPathNotExists(test_path)

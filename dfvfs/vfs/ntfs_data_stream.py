@@ -15,7 +15,7 @@ class NTFSDataStream(data_stream.DataStream):
       file_entry (FileEntry): file entry.
       fsntfs_data_stream (pyfsntfs.data_stream): NTFS data stream.
     """
-    super(NTFSDataStream, self).__init__(file_entry)
+    super().__init__(file_entry)
     self._fsntfs_data_stream = fsntfs_data_stream
 
     if fsntfs_data_stream:
@@ -29,7 +29,7 @@ class NTFSDataStream(data_stream.DataStream):
       list[Extent]: the extents of the data stream.
     """
     if not self._fsntfs_data_stream:
-      return super(NTFSDataStream, self).GetExtents()
+      return super().GetExtents()
 
     extents = []
     for extent_index in range(self._fsntfs_data_stream.number_of_extents):

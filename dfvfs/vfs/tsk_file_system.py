@@ -23,7 +23,7 @@ class TSKFileSystem(file_system.FileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(TSKFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._file_object = None
     self._tsk_file_system = None
     self._tsk_fs_type = None

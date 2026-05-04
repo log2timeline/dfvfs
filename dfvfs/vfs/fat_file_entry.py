@@ -52,7 +52,7 @@ class FATFileEntry(file_entry.FileEntry):
     else:
       file_entry_name = fsfat_file_entry.name
 
-    super(FATFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._file_system_format = fsfat_volume.get_file_system_format()

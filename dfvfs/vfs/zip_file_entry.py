@@ -48,7 +48,7 @@ class ZipFileEntry(file_entry.FileEntry):
     if not is_virtual and zip_info is None:
       raise errors.BackEndError('Missing zip info in non-virtual file entry.')
 
-    super(ZipFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._creator_system = getattr(zip_info, 'create_system', 0)

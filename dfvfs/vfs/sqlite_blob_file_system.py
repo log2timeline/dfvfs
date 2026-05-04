@@ -20,7 +20,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(SQLiteBlobFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._file_object = None
     self._number_of_rows = None
 

@@ -27,7 +27,7 @@ class ZipFileSystem(file_system.FileSystem):
       path_spec (PathSpec): a path specification.
       encoding (Optional[str]): encoding of the file entry name.
     """
-    super(ZipFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._file_object = None
     self._zip_file = None
     self.encoding = encoding

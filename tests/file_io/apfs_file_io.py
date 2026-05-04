@@ -21,7 +21,7 @@ class APFSFileTest(shared_test_lib.BaseTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(APFSFileTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['apfs.raw'])
     self._SkipIfPathNotExists(test_path)

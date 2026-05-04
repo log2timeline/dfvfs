@@ -3,7 +3,7 @@
 import abc
 
 
-class Decompressor(object):
+class Decompressor:
   """Decompressor interface."""
 
   # pylint: disable=redundant-returns-doc

@@ -29,7 +29,7 @@ class CompressedStreamPathSpec(path_spec.PathSpec):
     if not compression_method or not parent:
       raise ValueError('Missing compression method or parent value.')
 
-    super(CompressedStreamPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.compression_method = compression_method
 
   @property

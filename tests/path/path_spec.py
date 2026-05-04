@@ -19,7 +19,7 @@ class TestPathSpec(path_spec.PathSpec):
     Args:
       parent (Optional[PathSpec]): parent path specification.
     """
-    super(TestPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.attribute = 'MyAttribute'
 
 

@@ -15,7 +15,7 @@ class BDEResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(BDEResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['bdetogo.raw'])
     self._SkipIfPathNotExists(test_path)

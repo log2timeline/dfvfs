@@ -61,7 +61,7 @@ class HFSFileEntry(file_entry.FileEntry):
     else:
       file_entry_name = fshfs_file_entry.name
 
-    super(HFSFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._fshfs_file_entry = fshfs_file_entry

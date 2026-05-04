@@ -14,7 +14,7 @@ class GPTVolume(volume_system.Volume):
     Args:
       file_entry (GPTFileEntry): a GPT file entry.
     """
-    super(GPTVolume, self).__init__(file_entry.name)
+    super().__init__(file_entry.name)
     self._file_entry = file_entry
 
   def _Parse(self):

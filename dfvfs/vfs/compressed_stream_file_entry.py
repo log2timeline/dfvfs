@@ -33,7 +33,7 @@ class CompressedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
       raise errors.BackEndError(
           f'Unable to open compressed stream: {self.path_spec.comparable:s}.')
 
-    super(CompressedStreamFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._compressed_stream = compressed_stream

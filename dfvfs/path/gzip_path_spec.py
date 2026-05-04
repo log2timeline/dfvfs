@@ -24,7 +24,7 @@ class GzipPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(GzipPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
 
 
 factory.Factory.RegisterPathSpec(GzipPathSpec)

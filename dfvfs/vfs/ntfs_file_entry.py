@@ -56,7 +56,7 @@ class NTFSFileEntry(file_entry.FileEntry):
     if not fsntfs_file_entry:
       raise errors.BackEndError('Missing pyfsntfs file entry.')
 
-    super(NTFSFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._fsntfs_file_entry = fsntfs_file_entry

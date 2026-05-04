@@ -13,7 +13,7 @@ from dfvfs.lib import glob2regex
 from dfvfs.path import factory as path_spec_factory
 
 
-class FindSpec(object):
+class FindSpec:
   """Find specification."""
 
   def __init__(
@@ -66,7 +66,7 @@ class FindSpec(object):
         not location_separator):
       raise ValueError('Missing location separator.')
 
-    super(FindSpec, self).__init__()
+    super().__init__()
     self._file_entry_types = file_entry_types
     self._is_allocated = is_allocated
     self._is_case_sensitive = case_sensitive
@@ -479,7 +479,7 @@ class FindSpec(object):
                 segment_index == self._number_of_location_segments)
 
 
-class FileSystemSearcher(object):
+class FileSystemSearcher:
   """Searcher to find file entries within a file system."""
 
   def __init__(self, file_system, mount_point):
@@ -503,7 +503,7 @@ class FileSystemSearcher(object):
         raise errors.PathSpecError(
             'Mount point path specification missing location.')
 
-    super(FileSystemSearcher, self).__init__()
+    super().__init__()
     self._file_system = file_system
     self._mount_point = mount_point
 

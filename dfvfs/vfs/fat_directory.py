@@ -15,7 +15,7 @@ class FATDirectory(directory.Directory):
       path_spec (PathSpec): path specification.
       fsfat_file_entry (pyfsfat.file_entry): FAT file entry.
     """
-    super(FATDirectory, self).__init__(file_system, path_spec)
+    super().__init__(file_system, path_spec)
     self._fsfat_file_entry = fsfat_file_entry
 
   def _EntriesGenerator(self):

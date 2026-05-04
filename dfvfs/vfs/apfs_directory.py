@@ -15,7 +15,7 @@ class APFSDirectory(directory.Directory):
       path_spec (PathSpec): path specification.
       fsapfs_file_entry (pyfsapfs.file_entry): APFS file entry.
     """
-    super(APFSDirectory, self).__init__(file_system, path_spec)
+    super().__init__(file_system, path_spec)
     self._fsapfs_file_entry = fsapfs_file_entry
 
   def _EntriesGenerator(self):

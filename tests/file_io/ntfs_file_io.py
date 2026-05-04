@@ -16,7 +16,7 @@ class NTFSFileTest(test_lib.NTFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(NTFSFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ntfs.raw'])
     self._SkipIfPathNotExists(test_path)
 

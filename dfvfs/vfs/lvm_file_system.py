@@ -23,7 +23,7 @@ class LVMFileSystem(file_system.FileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(LVMFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._file_object = None
     self._vslvm_volume_group = None
     self._vslvm_handle = None

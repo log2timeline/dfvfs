@@ -26,7 +26,7 @@ class TARPathSpec(location_path_spec.LocationPathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(TARPathSpec, self).__init__(
+    super().__init__(
         location=location, parent=parent, **kwargs)
 
 

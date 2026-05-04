@@ -1,7 +1,7 @@
 """The path specification resolver helper manager."""
 
 
-class ResolverHelperManager(object):
+class ResolverHelperManager:
   """Path specification resolver helper manager."""
 
   _resolver_helpers = {}

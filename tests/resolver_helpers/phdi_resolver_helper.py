@@ -15,7 +15,7 @@ class PHDIResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(PHDIResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['hfsplus.hdd', 'DiskDescriptor.xml'])
     self._SkipIfPathNotExists(test_path)

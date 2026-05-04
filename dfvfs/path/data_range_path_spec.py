@@ -31,7 +31,7 @@ class DataRangePathSpec(path_spec.PathSpec):
     if not range_offset or not range_size or not parent:
       raise ValueError('Missing range offset, range size or parent value.')
 
-    super(DataRangePathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.range_offset = range_offset
     self.range_size = range_size
 

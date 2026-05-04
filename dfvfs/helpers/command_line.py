@@ -20,7 +20,7 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 
 
-class CLIInputReader(object):
+class CLIInputReader:
   """Command line interface input reader interface."""
 
   def __init__(self, encoding='utf-8'):
@@ -29,7 +29,7 @@ class CLIInputReader(object):
     Args:
       encoding (Optional[str]): input encoding.
     """
-    super(CLIInputReader, self).__init__()
+    super().__init__()
     self._encoding = encoding
 
   # pylint: disable=redundant-returns-doc
@@ -55,7 +55,7 @@ class FileObjectInputReader(CLIInputReader):
       file_object (file): file-like object to read from.
       encoding (Optional[str]): input encoding.
     """
-    super(FileObjectInputReader, self).__init__(encoding=encoding)
+    super().__init__(encoding=encoding)
     self._errors = 'strict'
     self._file_object = file_object
 
@@ -93,10 +93,10 @@ class StdinInputReader(FileObjectInputReader):
     Args:
       encoding (Optional[str]): input encoding.
     """
-    super(StdinInputReader, self).__init__(sys.stdin, encoding=encoding)
+    super().__init__(sys.stdin, encoding=encoding)
 
 
-class CLIOutputWriter(object):
+class CLIOutputWriter:
   """Command line interface output writer interface."""
 
   def __init__(self, encoding='utf-8'):
@@ -105,7 +105,7 @@ class CLIOutputWriter(object):
     Args:
       encoding (Optional[str]): output encoding.
     """
-    super(CLIOutputWriter, self).__init__()
+    super().__init__()
     self._encoding = encoding
 
   def Flush(self):
@@ -134,7 +134,7 @@ class FileObjectOutputWriter(CLIOutputWriter):
       file_object (file): file-like object to read from.
       encoding (Optional[str]): output encoding.
     """
-    super(FileObjectOutputWriter, self).__init__(encoding=encoding)
+    super().__init__(encoding=encoding)
     self._errors = 'strict'
     self._file_object = file_object
 
@@ -171,7 +171,7 @@ class StdoutOutputWriter(CLIOutputWriter):
     Args:
       encoding (Optional[str]): output encoding.
     """
-    super(StdoutOutputWriter, self).__init__(encoding=encoding)
+    super().__init__(encoding=encoding)
 
   def Flush(self):
     """Flushes buffered data to the output."""
@@ -186,7 +186,7 @@ class StdoutOutputWriter(CLIOutputWriter):
     sys.stdout.write(string)
 
 
-class CLITabularTableView(object):
+class CLITabularTableView:
   """Command line interface tabular table view."""
 
   _NUMBER_OF_SPACES_IN_TAB = 8
@@ -202,7 +202,7 @@ class CLITabularTableView(object):
           minimum columns size will be rounded up to the number of spaces
           of the next tab.
     """
-    super(CLITabularTableView, self).__init__()
+    super().__init__()
     self._columns = column_names or []
     self._column_sizes = column_sizes or []
     self._number_of_columns = len(self._columns)
@@ -324,7 +324,7 @@ class CLIVolumeScannerMediator(volume_scanner.VolumeScannerMediator):
     if not output_writer:
       output_writer = StdoutOutputWriter(encoding=preferred_encoding)
 
-    super(CLIVolumeScannerMediator, self).__init__()
+    super().__init__()
     self._input_reader = input_reader
     self._output_writer = output_writer
     self._textwrapper = textwrap.TextWrapper()

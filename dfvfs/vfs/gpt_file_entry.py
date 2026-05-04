@@ -35,7 +35,7 @@ class GPTFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           'Missing vsgpt partition in non-virtual file entry.')
 
-    super(GPTFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._entry_index = entry_index

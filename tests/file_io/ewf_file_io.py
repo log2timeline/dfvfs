@@ -15,7 +15,7 @@ class EWFFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(EWFFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ext2.E01'])
     self._SkipIfPathNotExists(test_path)
 
@@ -54,7 +54,7 @@ class SplitEWFFileTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(SplitEWFFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['ext2.split.E01'])
     self._SkipIfPathNotExists(test_path)
 

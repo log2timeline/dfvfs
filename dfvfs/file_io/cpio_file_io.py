@@ -16,7 +16,7 @@ class CPIOFile(file_io.FileIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(CPIOFile, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._cpio_archive_file = None
     self._cpio_archive_file_entry = None
     self._current_offset = 0

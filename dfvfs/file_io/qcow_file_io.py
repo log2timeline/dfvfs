@@ -18,13 +18,13 @@ class QCOWFile(file_object_io.FileObjectIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(QCOWFile, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._parent_qcow_files = []
     self._sub_file_objects = []
 
   def _Close(self):
     """Closes the file-like object."""
-    super(QCOWFile, self)._Close()
+    super()._Close()
 
     for qcow_file in self._parent_qcow_files:
       qcow_file.close()

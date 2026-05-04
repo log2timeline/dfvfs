@@ -38,7 +38,7 @@ class TSKPathSpec(path_spec.PathSpec):
     if (inode is None and not location) or not parent:
       raise ValueError('Missing inode and location, or parent value.')
 
-    super(TSKPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.data_stream = data_stream
     self.inode = inode
     self.location = location

@@ -1,7 +1,7 @@
 """The compression manager."""
 
 
-class CompressionManager(object):
+class CompressionManager:
   """Compression manager."""
 
   _decompressors = {}

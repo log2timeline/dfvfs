@@ -731,7 +731,7 @@ class PaddedSyslogTestCase(SylogTestCase):
       SkipTest: if the path does not exist and the test should be skipped.
     """
     try:
-      super(PaddedSyslogTestCase, self)._TestReadFileObject(
+      super()._TestReadFileObject(
           file_object, base_offset=base_offset)
     except errors.BackEndError:
       raise unittest.SkipTest('missing cryptograpy support')
