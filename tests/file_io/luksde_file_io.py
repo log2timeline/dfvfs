@@ -21,7 +21,7 @@ class LUKSDEFileWithKeyChainTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(LUKSDEFileWithKeyChainTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['luks1.raw'])
     self._SkipIfPathNotExists(test_path)
 
@@ -67,7 +67,7 @@ class LUKSDEFileWithPathSpecCredentialsTest(test_lib.Ext2ImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(LUKSDEFileWithPathSpecCredentialsTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['luks1.raw'])
     self._SkipIfPathNotExists(test_path)
 

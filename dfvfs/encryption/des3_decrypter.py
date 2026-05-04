@@ -51,7 +51,7 @@ class DES3Decrypter(decrypter.Decrypter):
     if initialization_vector and len(initialization_vector) != self._BLOCK_SIZE:
       raise ValueError('Unsupported initialization vector size.')
 
-    super(DES3Decrypter, self).__init__()
+    super().__init__()
     self._des3_context = pyfcrypto.des3_context()
     self._cipher_mode = cipher_mode
     self._initialization_vector = initialization_vector

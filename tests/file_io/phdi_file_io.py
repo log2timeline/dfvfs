@@ -19,7 +19,7 @@ class PHDIFileTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(PHDIFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['hfsplus.hdd', 'DiskDescriptor.xml'])
     self._SkipIfPathNotExists(test_path)
 

@@ -23,7 +23,7 @@ class LocationPathSpec(path_spec.PathSpec):
     if not location:
       raise ValueError('Missing location value.')
 
-    super(LocationPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.location = location
 
   @property

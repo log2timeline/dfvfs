@@ -3,7 +3,7 @@
 import os
 
 
-class DataSlice(object):
+class DataSlice:
   """Data slice interface for file-like objects."""
 
   def __init__(self, file_object):
@@ -12,7 +12,7 @@ class DataSlice(object):
     Args:
       file_object (FileIO): a file-like object to read from.
     """
-    super(DataSlice, self).__init__()
+    super().__init__()
     self._buffer = b''
     self._file_object = file_object
     self._file_object_size = file_object.get_size()

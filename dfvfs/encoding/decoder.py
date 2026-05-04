@@ -3,7 +3,7 @@
 import abc
 
 
-class Decoder(object):
+class Decoder:
   """Decoder interface."""
 
   # pylint: disable=redundant-returns-doc

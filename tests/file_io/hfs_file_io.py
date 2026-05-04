@@ -20,7 +20,7 @@ class HFSFileTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(HFSFileTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['hfsplus.raw'])
     self._SkipIfPathNotExists(test_path)

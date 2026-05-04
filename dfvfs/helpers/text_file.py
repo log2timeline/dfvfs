@@ -7,7 +7,7 @@ import os
 # to the normal naming convention.
 
 
-class TextFile(object):
+class TextFile:
   """Text file interface for file-like objects."""
 
   # The maximum allowed size of the read buffer.
@@ -24,7 +24,7 @@ class TextFile(object):
       encoding_errors (Optional[str]): text encoding errors handler.
       end_of_line (Optional[str]): end of line indicator.
     """
-    super(TextFile, self).__init__()
+    super().__init__()
     self._file_object = file_object
     self._file_object_size = file_object.get_size()
     self._encoding = encoding

@@ -23,7 +23,7 @@ class APFSFileSystem(file_system.FileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(APFSFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._fsapfs_volume = None
 
   def _Close(self):

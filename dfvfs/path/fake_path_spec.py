@@ -30,7 +30,7 @@ class FakePathSpec(location_path_spec.LocationPathSpec):
     if parent:
       raise ValueError('Parent value set.')
 
-    super(FakePathSpec, self).__init__(
+    super().__init__(
         location=location, parent=parent, **kwargs)
 
 

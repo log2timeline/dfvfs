@@ -5,12 +5,12 @@ import weakref
 from dfvfs.mount import manager as mount_manager
 
 
-class Context(object):
+class Context:
   """Resolver context."""
 
   def __init__(self):
     """Initializes the resolver context."""
-    super(Context, self).__init__()
+    super().__init__()
     # The WeakValueDictionary will maintain a (weak) reference to a VFS object
     # as long as the object is (strong) referrened by other objects. If an
     # object has no remaining (strong) references it is removed from the

@@ -8,7 +8,7 @@ from dfvfs.lib import data_format
 from dfvfs.lib import errors
 
 
-class CPIOArchiveFileEntry(object):
+class CPIOArchiveFileEntry:
   """CPIO archive file entry.
 
   Attributes:
@@ -26,7 +26,7 @@ class CPIOArchiveFileEntry(object):
 
   def __init__(self):
     """Initializes a CPIO archive file entry."""
-    super(CPIOArchiveFileEntry, self).__init__()
+    super().__init__()
     self.data_offset = None
     self.data_size = None
     self.group_identifier = None
@@ -90,7 +90,7 @@ class CPIOArchiveFile(data_format.DataFormat):
     Args:
       encoding (str): encoding of paths within the archive file.
     """
-    super(CPIOArchiveFile, self).__init__()
+    super().__init__()
     self._encoding = encoding
     self._file_entries = None
     self._file_object = None

@@ -13,7 +13,7 @@ class TestPathSpec(path_spec.PathSpec):
 
   def __init__(self, **kwargs):
     """Initializes a test path specification."""
-    super(TestPathSpec, self).__init__(parent=None, **kwargs)
+    super().__init__(parent=None, **kwargs)
 
   @property
   def comparable(self):

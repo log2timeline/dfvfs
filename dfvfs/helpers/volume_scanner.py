@@ -13,7 +13,7 @@ from dfvfs.resolver import resolver
 from dfvfs.volume import factory as volume_system_factory
 
 
-class VolumeScannerOptions(object):
+class VolumeScannerOptions:
   """Volume scanner options.
 
   Attributes:
@@ -39,7 +39,7 @@ class VolumeScannerOptions(object):
 
   def __init__(self):
     """Initializes volume scanner options."""
-    super(VolumeScannerOptions, self).__init__()
+    super().__init__()
     self.credentials = []
     self.partitions = []
     self.scan_mode = self.SCAN_MODE_ALL
@@ -47,7 +47,7 @@ class VolumeScannerOptions(object):
     self.volumes = []
 
 
-class VolumeScannerMediator(object):
+class VolumeScannerMediator:
   """Volume scanner mediator."""
 
   # pylint: disable=redundant-returns-doc
@@ -168,7 +168,7 @@ class VolumeScannerMediator(object):
     """
 
 
-class VolumeScanner(object):
+class VolumeScanner:
   """Volume scanner."""
 
   def __init__(self, mediator=None):
@@ -177,7 +177,7 @@ class VolumeScanner(object):
     Args:
       mediator (Optional[VolumeScannerMediator]): a volume scanner mediator.
     """
-    super(VolumeScanner, self).__init__()
+    super().__init__()
     self._mediator = mediator
     self._source_path = None
     self._source_scanner = source_scanner.SourceScanner()
@@ -720,7 +720,7 @@ class WindowsVolumeScanner(VolumeScanner):
     Args:
       mediator (VolumeScannerMediator): a volume scanner mediator.
     """
-    super(WindowsVolumeScanner, self).__init__(mediator=mediator)
+    super().__init__(mediator=mediator)
     self._file_system = None
     self._path_resolver = None
     self._windows_directory = None

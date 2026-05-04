@@ -23,7 +23,7 @@ class CSFileSystem(file_system.FileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(CSFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._fvde_volume = None
     self._fvde_volume_group = None
     self._file_object = None

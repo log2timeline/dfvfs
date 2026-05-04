@@ -56,7 +56,7 @@ class TSKTime(dfdatetime_interface.DateTimeValues):
     else:
       granularity = dfdatetime_definitions.PRECISION_100_NANOSECONDS
 
-    super(TSKTime, self).__init__(
+    super().__init__(
         precision=precision or granularity, time_zone_offset=time_zone_offset)
     self._granularity = granularity
     self._timestamp = timestamp
@@ -296,7 +296,7 @@ class TSKFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           'Missing TSK File .info, .info.meta or .info.fs_info')
 
-    super(TSKFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._file_system_type = tsk_file.info.fs_info.ftype

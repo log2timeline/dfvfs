@@ -40,7 +40,7 @@ class CSPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(CSPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.encrypted_root_plist = encrypted_root_plist
     self.location = location
     self.password = password

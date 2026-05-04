@@ -18,13 +18,13 @@ class VHDIFile(file_object_io.FileObjectIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(VHDIFile, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._parent_vhdi_files = []
     self._sub_file_objects = []
 
   def _Close(self):
     """Closes the file-like object."""
-    super(VHDIFile, self)._Close()
+    super()._Close()
 
     for vhdi_file in self._parent_vhdi_files:
       vhdi_file.close()

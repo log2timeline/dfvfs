@@ -10,7 +10,7 @@ of BitLocker Drive Encryption (BDE):
 """
 
 
-class CredentialsManager(object):
+class CredentialsManager:
   """Credentials manager."""
 
   _credentials = {}

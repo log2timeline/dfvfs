@@ -27,7 +27,7 @@ from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 
 
-class SourceScanNode(object):
+class SourceScanNode:
   """Source scan node.
 
   Attributes:
@@ -45,7 +45,7 @@ class SourceScanNode(object):
     Args:
       path_spec (PathSpec): path specification.
     """
-    super(SourceScanNode, self).__init__()
+    super().__init__()
     self.credential = None
     self.path_spec = path_spec
     self.parent_node = None
@@ -139,7 +139,7 @@ class SourceScanNode(object):
         definitions.TYPE_INDICATORS_WITH_ENCRYPTION_SUPPORT)
 
 
-class SourceScannerContext(object):
+class SourceScannerContext:
   """Contextual information for the source scanner.
 
   Attributes:
@@ -157,7 +157,7 @@ class SourceScannerContext(object):
 
   def __init__(self):
     """Initializes a source scanner context."""
-    super(SourceScannerContext, self).__init__()
+    super().__init__()
     self._file_system_scan_nodes = {}
     self._locked_scan_nodes = {}
     self._root_path_spec = None
@@ -402,7 +402,7 @@ class SourceScannerContext(object):
     scan_node.scanned = False
 
 
-class SourceScanner(object):
+class SourceScanner:
   """Searcher to find volumes within a volume system."""
 
   def __init__(self, resolver_context=None):
@@ -413,7 +413,7 @@ class SourceScanner(object):
           indicates to use the built-in context which is not multi process
           safe.
     """
-    super(SourceScanner, self).__init__()
+    super().__init__()
     self._resolver_context = resolver_context
 
   # TODO: add functions to check if path spec type is a storage media image

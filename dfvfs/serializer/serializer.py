@@ -3,7 +3,7 @@
 import abc
 
 
-class PathSpecSerializer(object):
+class PathSpecSerializer:
   """Path specification serializer interface."""
 
   # Since abc does not seem to have an @abc.abstractclassmethod we're using

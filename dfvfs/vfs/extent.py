@@ -1,7 +1,7 @@
 """The Virtual File System (VFS) extent."""
 
 
-class Extent(object):
+class Extent:
   """Extent.
 
   Attributes:
@@ -21,7 +21,7 @@ class Extent(object):
           the file system in bytes.
       size (Optional{int]): size of the extent in bytes.
     """
-    super(Extent, self).__init__()
+    super().__init__()
     self.extent_type = extent_type
     self.offset = offset
     self.size = size

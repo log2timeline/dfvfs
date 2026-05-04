@@ -3,7 +3,7 @@
 from dfvfs.lib import definitions
 
 
-class Attribute(object):
+class Attribute:
   """Attribute interface."""
 
   @property
@@ -20,7 +20,7 @@ class Attribute(object):
     return []
 
 
-class StatAttribute(object):
+class StatAttribute:
   """Attribute that represents a POSIX stat.
 
   Attributes:
@@ -48,7 +48,7 @@ class StatAttribute(object):
 
   def __init__(self):
     """Initializes an attribute."""
-    super(StatAttribute, self).__init__()
+    super().__init__()
     self.device_number = None
     self.group_identifier = None
     self.inode_number = None

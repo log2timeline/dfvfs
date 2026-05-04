@@ -62,7 +62,7 @@ class OSFileEntry(file_entry.FileEntry):
       except (IOError, OSError):
         stat_info = None
 
-    super(OSFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=False)
     self._is_windows_device = is_windows_device

@@ -28,7 +28,7 @@ class MountPathSpec(path_spec.PathSpec):
     if not identifier:
       raise ValueError('Missing identifier value.')
 
-    super(MountPathSpec, self).__init__(parent=None, **kwargs)
+    super().__init__(parent=None, **kwargs)
     self.identifier = identifier
 
   @property

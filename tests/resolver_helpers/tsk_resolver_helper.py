@@ -15,7 +15,7 @@ class TSKResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(TSKResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ext2.raw'])
     self._SkipIfPathNotExists(test_path)

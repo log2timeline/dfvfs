@@ -16,7 +16,7 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CPIOBinaryFileTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['syslog.bin.cpio'])
     self._SkipIfPathNotExists(test_path)
@@ -61,7 +61,7 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CPIOPortableASCIIFileTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['syslog.odc.cpio'])
     self._SkipIfPathNotExists(test_path)
@@ -106,7 +106,7 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CPIONewASCIIFileTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['syslog.newc.cpio'])
     self._SkipIfPathNotExists(test_path)
@@ -151,7 +151,7 @@ class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(CPIONewASCIIFileWithChecksumTest, self).setUp()
+    super().setUp()
     self._resolver_context = context.Context()
     test_path = self._GetTestFilePath(['syslog.crc.cpio'])
     self._SkipIfPathNotExists(test_path)

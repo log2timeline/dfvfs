@@ -1,7 +1,7 @@
 """The volume system factory."""
 
 
-class Factory(object):
+class Factory:
   """Volume system factory."""
 
   _volume_system_types = {}

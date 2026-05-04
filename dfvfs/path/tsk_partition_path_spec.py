@@ -35,7 +35,7 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(TSKPartitionPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.location = location
     self.part_index = part_index
     self.start_offset = start_offset

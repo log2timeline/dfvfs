@@ -15,7 +15,7 @@ class VMDKResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(VMDKResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['ext2.vmdk'])
     self._SkipIfPathNotExists(test_path)

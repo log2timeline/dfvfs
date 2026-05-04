@@ -8,12 +8,12 @@ BitLocker Drive Encryption (BDE) encrypted volumes can require a credential
 from dfvfs.credentials import manager
 
 
-class KeyChain(object):
+class KeyChain:
   """Key chain."""
 
   def __init__(self):
     """Initializes a key chain."""
-    super(KeyChain, self).__init__()
+    super().__init__()
     self._credentials_per_path_spec = {}
 
   def Empty(self):

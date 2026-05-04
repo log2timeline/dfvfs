@@ -3,7 +3,7 @@
 import abc
 
 
-class FileSystem(object):
+class FileSystem:
   """File system interface."""
 
   # Note that redundant-returns-doc is broken for pylint 1.7.x for abstract
@@ -25,7 +25,7 @@ class FileSystem(object):
       ValueError: if a derived file system class does not define a type
           indicator.
     """
-    super(FileSystem, self).__init__()
+    super().__init__()
     self._is_open = False
     self._path_spec = path_spec
     self._resolver_context = resolver_context

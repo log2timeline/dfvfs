@@ -1,7 +1,7 @@
 """The format specification classes."""
 
 
-class Signature(object):
+class Signature:
   """Signature of a format specification.
 
   The signature consists of a byte string pattern, an optional
@@ -27,7 +27,7 @@ class Signature(object):
           from the start of the data a negative offset is relative to
           the end of the data.
     """
-    super(Signature, self).__init__()
+    super().__init__()
     self.identifier = None
     self.offset = offset
     self.pattern = pattern
@@ -41,7 +41,7 @@ class Signature(object):
     self.identifier = identifier
 
 
-class FormatSpecification(object):
+class FormatSpecification:
   """Format specification."""
 
   def __init__(self, identifier):
@@ -50,7 +50,7 @@ class FormatSpecification(object):
     Args:
       identifier (str): unique name for the format.
     """
-    super(FormatSpecification, self).__init__()
+    super().__init__()
     self.identifier = identifier
     self.signatures = []
 
@@ -68,12 +68,12 @@ class FormatSpecification(object):
     self.signatures.append(Signature(pattern, offset=offset))
 
 
-class FormatSpecificationStore(object):
+class FormatSpecificationStore:
   """Store for format specifications."""
 
   def __init__(self):
     """Initializes a format specification store."""
-    super(FormatSpecificationStore, self).__init__()
+    super().__init__()
     self._format_specifications = {}
     # Maps signature identifiers to format specifications.
     self._signature_map = {}

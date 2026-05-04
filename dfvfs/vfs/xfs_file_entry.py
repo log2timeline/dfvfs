@@ -64,7 +64,7 @@ class XFSFileEntry(file_entry.FileEntry):
         if location_segments:
           file_entry_name = location_segments[-1]
 
-    super(XFSFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._fsxfs_file_entry = fsxfs_file_entry

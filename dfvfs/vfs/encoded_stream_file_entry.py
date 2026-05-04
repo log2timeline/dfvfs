@@ -33,7 +33,7 @@ class EncodedStreamFileEntry(root_only_file_entry.RootOnlyFileEntry):
       raise errors.BackEndError(
           f'Unable to open encoded stream: {self.path_spec.comparable:s}.')
 
-    super(EncodedStreamFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._encoded_stream = encoded_stream

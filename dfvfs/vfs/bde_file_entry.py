@@ -34,7 +34,7 @@ class BDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     if bde_volume is None:
       raise errors.BackEndError('Missing BDE volume.')
 
-    super(BDEFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._bde_volume = bde_volume

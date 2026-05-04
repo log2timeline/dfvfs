@@ -37,7 +37,7 @@ class VShadowFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           'Missing vshadow store in non-virtual file entry.')
 
-    super(VShadowFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._name = None

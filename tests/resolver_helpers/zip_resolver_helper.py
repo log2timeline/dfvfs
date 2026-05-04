@@ -15,7 +15,7 @@ class ZipResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(ZipResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['syslog.zip'])
     self._SkipIfPathNotExists(test_path)

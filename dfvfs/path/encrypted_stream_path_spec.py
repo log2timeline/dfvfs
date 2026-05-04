@@ -39,7 +39,7 @@ class EncryptedStreamPathSpec(path_spec.PathSpec):
     if not encryption_method or not parent:
       raise ValueError('Missing encryption method or parent value.')
 
-    super(EncryptedStreamPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.cipher_mode = cipher_mode
     self.encryption_method = encryption_method
     self.initialization_vector = initialization_vector

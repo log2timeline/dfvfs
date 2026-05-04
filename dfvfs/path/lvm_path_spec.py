@@ -31,7 +31,7 @@ class LVMPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(LVMPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.location = location
     self.volume_index = volume_index
 

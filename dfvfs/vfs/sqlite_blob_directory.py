@@ -14,7 +14,7 @@ class SQLiteBlobDirectory(directory.Directory):
       file_system (SQLiteBlobFileSystem): file system.
       path_spec (SQLiteBlobPathSpec): path specification.
     """
-    super(SQLiteBlobDirectory, self).__init__(file_system, path_spec)
+    super().__init__(file_system, path_spec)
     self._number_of_entries = None
 
   def _EntriesGenerator(self):

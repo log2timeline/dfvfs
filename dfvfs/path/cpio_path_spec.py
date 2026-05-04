@@ -26,7 +26,7 @@ class CPIOPathSpec(location_path_spec.LocationPathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(CPIOPathSpec, self).__init__(
+    super().__init__(
         location=location, parent=parent, **kwargs)
 
 

@@ -18,13 +18,13 @@ class RawFile(file_object_io.FileObjectIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(RawFile, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._file_objects = []
 
   def _Close(self):
     """Closes the file-like object."""
     # pylint: disable=protected-access
-    super(RawFile, self)._Close()
+    super()._Close()
     self._file_objects = []
 
   def _OpenFileObject(self, path_spec):

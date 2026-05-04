@@ -15,7 +15,7 @@ class HFSDataStream(data_stream.DataStream):
       file_entry (FileEntry): file entry.
       fshfs_data_stream (pyfshfs.data_stream): HFS data stream.
     """
-    super(HFSDataStream, self).__init__(file_entry)
+    super().__init__(file_entry)
     self._fshfs_data_stream = fshfs_data_stream
 
     if fshfs_data_stream:
@@ -29,7 +29,7 @@ class HFSDataStream(data_stream.DataStream):
       list[Extent]: the extents of the data stream.
     """
     if not self._fshfs_data_stream:
-      return super(HFSDataStream, self).GetExtents()
+      return super().GetExtents()
 
     extents = []
     for extent_index in range(self._fshfs_data_stream.number_of_extents):

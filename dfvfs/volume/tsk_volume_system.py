@@ -16,7 +16,7 @@ class TSKVolume(volume_system.Volume):
       file_entry (TSKPartitionFileEntry): a TSK partition file entry.
       bytes_per_sector (int): number of bytes per sector.
     """
-    super(TSKVolume, self).__init__(file_entry.name)
+    super().__init__(file_entry.name)
     self._file_entry = file_entry
     self._bytes_per_sector = bytes_per_sector
 
@@ -61,7 +61,7 @@ class TSKVolumeSystem(volume_system.VolumeSystem):
     Raises:
       VolumeSystemError: if the volume system could not be accessed.
     """
-    super(TSKVolumeSystem, self).__init__()
+    super().__init__()
     self.bytes_per_sector = 512
 
   def _Parse(self):

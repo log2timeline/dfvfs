@@ -50,7 +50,7 @@ class SQLiteBlobPathSpec(path_spec.PathSpec):
           'Unsupported row_condition not a tuple in the form: '
           '(column_name, operator, value).'))
 
-    super(SQLiteBlobPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.column_name = column_name
     self.row_condition = row_condition
     self.row_index = row_index

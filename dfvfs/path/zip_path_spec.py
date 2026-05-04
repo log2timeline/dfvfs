@@ -26,7 +26,7 @@ class ZipPathSpec(location_path_spec.LocationPathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(ZipPathSpec, self).__init__(
+    super().__init__(
         location=location, parent=parent, **kwargs)
 
 

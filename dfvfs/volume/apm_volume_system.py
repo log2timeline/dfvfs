@@ -14,7 +14,7 @@ class APMVolume(volume_system.Volume):
     Args:
       file_entry (APMFileEntry): a APM file entry.
     """
-    super(APMVolume, self).__init__(file_entry.name)
+    super().__init__(file_entry.name)
     self._file_entry = file_entry
 
   def _Parse(self):

@@ -20,7 +20,7 @@ class OSExtendedAttribute(attribute.Attribute):
       location (str): path of the file.
       name (str): name of the extended attribute.
     """
-    super(OSExtendedAttribute, self).__init__()
+    super().__init__()
     self._current_offset = 0
     self._data = xattr.getxattr(location, name)
     self._location = location

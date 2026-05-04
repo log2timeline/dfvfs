@@ -29,7 +29,7 @@ class EncodedStreamPathSpec(path_spec.PathSpec):
     if not encoding_method or not parent:
       raise ValueError('Missing encoding method or parent value.')
 
-    super(EncodedStreamPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.encoding_method = encoding_method
 
   @property

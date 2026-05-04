@@ -5,7 +5,7 @@ import sqlite3
 import tempfile
 
 
-class SQLiteDatabaseFile(object):
+class SQLiteDatabaseFile:
   """SQLite database file using a file-like object."""
 
   _COPY_BUFFER_SIZE = 65536
@@ -21,7 +21,7 @@ class SQLiteDatabaseFile(object):
 
   def __init__(self):
     """Initializes the database file object."""
-    super(SQLiteDatabaseFile, self).__init__()
+    super().__init__()
     self._column_names_per_table = {}
     self._connection = None
     self._cursor = None

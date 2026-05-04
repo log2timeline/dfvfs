@@ -27,7 +27,7 @@ class FakeFileEntry(file_entry.FileEntry):
       is_root (Optional[bool]): True if the file entry is the root file entry
           of the corresponding file system.
     """
-    super(FakeFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=True)
     self._date_time = dfdatetime_fake_time.FakeTime()

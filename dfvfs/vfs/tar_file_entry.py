@@ -38,7 +38,7 @@ class TARFileEntry(file_entry.FileEntry):
     if not is_virtual and tar_info is None:
       raise errors.BackEndError('Missing TAR info in non-virtual file entry.')
 
-    super(TARFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._tar_info = tar_info

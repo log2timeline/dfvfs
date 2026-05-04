@@ -15,7 +15,7 @@ class SQLiteBlobResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(SQLiteBlobResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['blob.db'])
     self._SkipIfPathNotExists(test_path)

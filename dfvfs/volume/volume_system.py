@@ -6,7 +6,7 @@ from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
 
-class VolumeAttribute(object):
+class VolumeAttribute:
   """The VFS volume attribute."""
 
   def __init__(self, identifier, value):
@@ -14,14 +14,14 @@ class VolumeAttribute(object):
 
     Args:
       identifier (str): identifier of the attribute within the volume.
-      value (object): value of the attribute.
+      value : value of the attribute.
     """
-    super(VolumeAttribute, self).__init__()
+    super().__init__()
     self.identifier = identifier
     self.value = value
 
 
-class VolumeExtent(object):
+class VolumeExtent:
   """The VFS volume extent."""
 
   EXTENT_TYPE_DATA = 0
@@ -35,13 +35,13 @@ class VolumeExtent(object):
       size (int): size of the extent, in bytes.
       extent_type (Optional[str]): type of extent.
     """
-    super(VolumeExtent, self).__init__()
+    super().__init__()
     self.offset = offset
     self.size = size
     self.extent_type = extent_type
 
 
-class Volume(object):
+class Volume:
   """The VFS volume interface."""
 
   def __init__(self, identifier):
@@ -50,7 +50,7 @@ class Volume(object):
     Args:
       identifier (str): identifier of the attribute within the volume.
     """
-    super(Volume, self).__init__()
+    super().__init__()
     self.identifier = identifier
     self._attributes = {}
     self._extents = []
@@ -156,7 +156,7 @@ class Volume(object):
     return False
 
 
-class VolumeSystem(object):
+class VolumeSystem:
   """The VFS volume system interface."""
 
   TYPE_INDICATOR = None
@@ -165,7 +165,7 @@ class VolumeSystem(object):
 
   def __init__(self):
     """Initializes a volume system."""
-    super(VolumeSystem, self).__init__()
+    super().__init__()
     self._file_system = None
     self._is_parsed = False
     self._sections = []

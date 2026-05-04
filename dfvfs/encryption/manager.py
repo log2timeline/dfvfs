@@ -1,7 +1,7 @@
 """The encryption manager."""
 
 
-class EncryptionManager(object):
+class EncryptionManager:
   """Encryption manager."""
 
   _decrypters = {}

@@ -15,7 +15,7 @@ class EXTDirectory(directory.Directory):
       path_spec (PathSpec): path specification.
       fsext_file_entry (pyfsext.file_entry): EXT file entry.
     """
-    super(EXTDirectory, self).__init__(file_system, path_spec)
+    super().__init__(file_system, path_spec)
     self._fsext_file_entry = fsext_file_entry
 
   def _EntriesGenerator(self):

@@ -18,7 +18,7 @@ class TSKDataStream(data_stream.DataStream):
       file_entry (FileEntry): file entry.
       pytsk_attribute (pytsk3.Attribute): TSK attribute.
     """
-    super(TSKDataStream, self).__init__(file_entry)
+    super().__init__(file_entry)
     self._tsk_attribute = pytsk_attribute
 
     if pytsk_attribute:
@@ -49,7 +49,7 @@ class TSKDataStream(data_stream.DataStream):
           size.
     """
     if not self._tsk_attribute:
-      return super(TSKDataStream, self).GetExtents()
+      return super().GetExtents()
 
     extents = []
     file_system = self._file_entry.GetFileSystem()

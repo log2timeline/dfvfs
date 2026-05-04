@@ -17,7 +17,7 @@ class EXTFile(file_io.FileIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(EXTFile, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._file_system = None
     self._fsext_file_entry = None
 

@@ -17,7 +17,7 @@ class XZDecompressor(decompressor.Decompressor):
 
   def __init__(self):
     """Initializes a decompressor."""
-    super(XZDecompressor, self).__init__()
+    super().__init__()
     # Note that lzma.FORMAT_XZ does not work for every implementation of lzma.
     self._lzma_decompressor = lzma.LZMADecompressor(1)
 
@@ -60,7 +60,7 @@ class LZMADecompressor(XZDecompressor):
 
   def __init__(self):
     """Initializes a decompressor."""
-    super(LZMADecompressor, self).__init__()
+    super().__init__()
     # Note that lzma.FORMAT_ALONE does not work for every implementation
     # of lzma.
     self._lzma_decompressor = lzma.LZMADecompressor(2)

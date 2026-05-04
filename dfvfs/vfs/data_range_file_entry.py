@@ -27,7 +27,7 @@ class DataRangeFileEntry(root_only_file_entry.RootOnlyFileEntry):
       ValueError: if a derived file entry class does not define a type
           indicator.
     """
-    super(DataRangeFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self.entry_type = definitions.FILE_ENTRY_TYPE_FILE

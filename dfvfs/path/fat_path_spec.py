@@ -32,7 +32,7 @@ class FATPathSpec(path_spec.PathSpec):
     if (not identifier and not location) or not parent:
       raise ValueError('Missing identifier and location, or parent value.')
 
-    super(FATPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.identifier = identifier
     self.location = location
 

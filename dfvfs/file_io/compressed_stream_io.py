@@ -21,7 +21,7 @@ class CompressedStream(file_io.FileIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(CompressedStream, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._compression_method = None
     self._file_object = None
     self._compressed_data = b''

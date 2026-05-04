@@ -14,7 +14,7 @@ from dfvfs.lib import data_format
 from dfvfs.lib import errors
 
 
-class _GzipDecompressorState(object):
+class _GzipDecompressorState:
   """Deflate decompressor wrapper for reading a gzip member.
 
   This class encapsulates the state of a deflate decompression object, as well
@@ -404,7 +404,7 @@ class GzipMember(data_format.DataFormat):
     return self._cache[cache_offset:data_end_offset]
 
 
-class GzipCompressedStream(object):
+class GzipCompressedStream:
   """File-like object of a gzip compressed stream (file).
 
   The gzip file format is defined in RFC1952:
@@ -417,7 +417,7 @@ class GzipCompressedStream(object):
 
   def __init__(self):
     """Initializes a file-like object."""
-    super(GzipCompressedStream, self).__init__()
+    super().__init__()
     self._compressed_data_size = -1
     self._current_offset = 0
     self._file_object = None

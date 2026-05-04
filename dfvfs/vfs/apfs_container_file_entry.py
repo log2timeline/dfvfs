@@ -37,7 +37,7 @@ class APFSContainerFileEntry(file_entry.FileEntry):
       raise errors.BackEndError(
           'Missing fsapfs volume in non-virtual file entry.')
 
-    super(APFSContainerFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._name = None

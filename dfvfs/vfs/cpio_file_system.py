@@ -22,7 +22,7 @@ class CPIOFileSystem(file_system.FileSystem):
       path_spec (PathSpec): a path specification.
       encoding (Optional[str]): file entry name encoding.
     """
-    super(CPIOFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._cpio_archive_file = None
     self._file_object = None
     self.encoding = encoding

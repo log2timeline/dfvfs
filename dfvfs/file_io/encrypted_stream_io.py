@@ -21,7 +21,7 @@ class EncryptedStream(file_io.FileIO):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(EncryptedStream, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._current_offset = 0
     self._decrypted_data = b''
     self._decrypted_data_offset = 0

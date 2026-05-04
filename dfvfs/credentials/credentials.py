@@ -1,7 +1,7 @@
 """The credentials interface."""
 
 
-class Credentials(object):
+class Credentials:
   """Credentials interface."""
 
   def __init__(self):
@@ -11,7 +11,7 @@ class Credentials(object):
       ValueError: if a derived credentials class does not define a type
           indicator.
     """
-    super(Credentials, self).__init__()
+    super().__init__()
 
     if not getattr(self, 'TYPE_INDICATOR', None):
       raise ValueError('Missing type indicator.')

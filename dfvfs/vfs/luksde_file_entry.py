@@ -32,7 +32,7 @@ class LUKSDEFileEntry(root_only_file_entry.RootOnlyFileEntry):
     if luksde_volume is None:
       raise errors.BackEndError('Missing LUKSDE volume.')
 
-    super(LUKSDEFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._luksde_volume = luksde_volume

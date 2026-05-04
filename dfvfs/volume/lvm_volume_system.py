@@ -14,7 +14,7 @@ class LVMVolume(volume_system.Volume):
     Args:
       file_entry (LVMFileEntry): a LVM file entry.
     """
-    super(LVMVolume, self).__init__(file_entry.name)
+    super().__init__(file_entry.name)
     self._file_entry = file_entry
 
   def _Parse(self):

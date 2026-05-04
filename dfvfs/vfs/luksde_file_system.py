@@ -23,7 +23,7 @@ class LUKSDEFileSystem(root_only_file_system.RootOnlyFileSystem):
       resolver_context (Context): resolver context.
       path_spec (PathSpec): a path specification.
     """
-    super(LUKSDEFileSystem, self).__init__(resolver_context, path_spec)
+    super().__init__(resolver_context, path_spec)
     self._luksde_volume = None
     self._file_object = None
 

@@ -8,7 +8,7 @@ from dtfabric.runtime import data_maps as dtfabric_data_maps
 from dfvfs.lib import errors
 
 
-class DataFormat(object):
+class DataFormat:
   """Data format."""
 
   def _ReadData(self, file_object, file_offset, data_size):

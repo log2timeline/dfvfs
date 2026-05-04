@@ -16,7 +16,7 @@ class SparseImageMODIFileTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(SparseImageMODIFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['hfsplus.sparseimage'])
     self._SkipIfPathNotExists(test_path)
 
@@ -83,7 +83,7 @@ class ZlibCompressedUDIFMODIFileTest(test_lib.HFSImageFileTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(ZlibCompressedUDIFMODIFileTest, self).setUp()
+    super().setUp()
     test_path = self._GetTestFilePath(['hfsplus_zlib.dmg'])
     self._SkipIfPathNotExists(test_path)
 

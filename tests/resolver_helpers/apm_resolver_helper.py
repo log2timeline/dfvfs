@@ -15,7 +15,7 @@ class APMResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(APMResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['apm.dmg'])
     self._SkipIfPathNotExists(test_path)

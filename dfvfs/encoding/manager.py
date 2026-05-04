@@ -1,7 +1,7 @@
 """The encoding manager."""
 
 
-class EncodingManager(object):
+class EncodingManager:
   """Encoding manager."""
 
   _decoders = {}

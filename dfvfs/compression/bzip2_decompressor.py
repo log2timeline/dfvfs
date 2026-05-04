@@ -15,7 +15,7 @@ class BZIP2Decompressor(decompressor.Decompressor):
 
   def __init__(self):
     """Initializes a decompressor."""
-    super(BZIP2Decompressor, self).__init__()
+    super().__init__()
     self._bz2_decompressor = bz2.BZ2Decompressor()
 
   def Decompress(self, compressed_data):

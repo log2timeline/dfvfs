@@ -66,7 +66,7 @@ class EXTFileEntry(file_entry.FileEntry):
         if location_segments:
           file_entry_name = location_segments[-1]
 
-    super(EXTFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._creation_time = fsext_file_entry.get_creation_time_as_integer()

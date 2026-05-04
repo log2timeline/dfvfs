@@ -24,7 +24,7 @@ class EWFPathSpec(path_spec.PathSpec):
     if not parent:
       raise ValueError('Missing parent value.')
 
-    super(EWFPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
 
 
 factory.Factory.RegisterPathSpec(EWFPathSpec)

@@ -17,7 +17,7 @@ class NTFSDirectory(directory.Directory):
       path_spec (PathSpec): path specification.
       fsntfs_file_entry (pyfsntfs.file_entry): NTFS file entry.
     """
-    super(NTFSDirectory, self).__init__(file_system, path_spec)
+    super().__init__(file_system, path_spec)
     self._fsntfs_file_entry = fsntfs_file_entry
 
   def _EntriesGenerator(self):

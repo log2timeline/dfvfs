@@ -26,7 +26,7 @@ class SQLiteBlobFileEntry(file_entry.FileEntry):
       is_virtual (Optional[bool]): True if the file entry is a virtual file
           entry emulated by the corresponding file system.
     """
-    super(SQLiteBlobFileEntry, self).__init__(
+    super().__init__(
         resolver_context, file_system, path_spec, is_root=is_root,
         is_virtual=is_virtual)
     self._number_of_entries = None

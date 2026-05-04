@@ -3,7 +3,7 @@
 from dfvfs.lib import errors
 
 
-class AnalyzerHelper(object):
+class AnalyzerHelper:
   """Analyzer helper interface."""
 
   # pylint: disable=redundant-returns-doc
@@ -15,7 +15,7 @@ class AnalyzerHelper(object):
       ValueError: if a derived analyzer helper class does not define format
           categories or a type indicator.
     """
-    super(AnalyzerHelper, self).__init__()
+    super().__init__()
 
     if not getattr(self, 'TYPE_INDICATOR', None):
       raise ValueError('Missing type indicator.')

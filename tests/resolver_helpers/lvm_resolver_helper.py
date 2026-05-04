@@ -15,7 +15,7 @@ class LVMResolverHelperTest(test_lib.ResolverHelperTestCase):
 
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
-    super(LVMResolverHelperTest, self).setUp()
+    super().setUp()
 
     test_path = self._GetTestFilePath(['lvm.raw'])
     self._SkipIfPathNotExists(test_path)

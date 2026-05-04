@@ -42,7 +42,7 @@ class NTFSPathSpec(path_spec.PathSpec):
     if (not location and mft_entry is None) or not parent:
       raise ValueError('Missing location and MFT entry, or parent value.')
 
-    super(NTFSPathSpec, self).__init__(parent=parent, **kwargs)
+    super().__init__(parent=parent, **kwargs)
     self.data_stream = data_stream
     self.location = location
     self.mft_attribute = mft_attribute

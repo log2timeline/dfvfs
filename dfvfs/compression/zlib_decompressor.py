@@ -21,7 +21,7 @@ class ZlibDecompressor(decompressor.Decompressor):
           the compression history buffer (aka window size). When the value
           is negative, the standard zlib data header is suppressed.
     """
-    super(ZlibDecompressor, self).__init__()
+    super().__init__()
     self._zlib_decompressor = zlib.decompressobj(window_size)
 
   @property
@@ -61,7 +61,7 @@ class DeflateDecompressor(ZlibDecompressor):
 
   def __init__(self):
     """Initializes a decompressor."""
-    super(DeflateDecompressor, self).__init__(window_size=-zlib.MAX_WBITS)
+    super().__init__(window_size=-zlib.MAX_WBITS)
 
 
 manager.CompressionManager.RegisterDecompressors([

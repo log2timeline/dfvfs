@@ -24,7 +24,7 @@ class HFSExtendedAttribute(attribute.Attribute):
     if not fshfs_extended_attribute:
       raise errors.BackEndError('Missing pyfshfs extended attribute.')
 
-    super(HFSExtendedAttribute, self).__init__()
+    super().__init__()
     self._fshfs_extended_attribute = fshfs_extended_attribute
 
   @property
