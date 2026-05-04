@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS container file system implementation."""
 
 import pyfsapfs

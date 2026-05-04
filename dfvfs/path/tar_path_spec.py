@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The TAR path specification implementation."""
 
 from dfvfs.lib import definitions

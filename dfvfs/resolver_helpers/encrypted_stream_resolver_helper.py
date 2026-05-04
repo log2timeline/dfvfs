@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The encrypted stream path specification resolver helper implementation."""
 
 from dfvfs.file_io import encrypted_stream_io

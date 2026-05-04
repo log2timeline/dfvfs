@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The decoder interface."""
 
 import abc

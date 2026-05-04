@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

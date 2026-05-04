@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The NTFS attribute implementations."""
 
 import pyfwnt

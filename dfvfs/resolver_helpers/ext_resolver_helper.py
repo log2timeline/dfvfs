@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The EXT path specification resolver helper implementation."""
 
 from dfvfs.file_io import ext_file_io

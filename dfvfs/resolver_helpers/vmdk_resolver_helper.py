@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The VMDK image path specification resolver helper implementation."""
 
 from dfvfs.file_io import vmdk_file_io

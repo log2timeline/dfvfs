@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The path specification key chain.
 
 The key chain is used to manage credentials for path specifications. E.g.

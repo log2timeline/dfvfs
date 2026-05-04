@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The mount path specification implementation."""
 
 from dfvfs.lib import definitions

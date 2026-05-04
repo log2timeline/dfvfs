@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The data range file-like object."""
 
 import os

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Tests for the Virtual Hard Disk image resolver helper implementation."""
 
 import unittest

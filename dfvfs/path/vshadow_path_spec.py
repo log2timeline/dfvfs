@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) path specification implementation."""
 
 from dfvfs.lib import definitions

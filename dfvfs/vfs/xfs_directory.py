@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The XFS directory implementation."""
 
 from dfvfs.path import xfs_path_spec

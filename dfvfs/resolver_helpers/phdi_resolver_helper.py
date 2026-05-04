@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The PHDI image path specification resolver helper implementation."""
 
 from dfvfs.file_io import phdi_file_io

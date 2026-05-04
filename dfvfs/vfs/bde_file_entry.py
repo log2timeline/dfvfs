@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BDE file entry implementation."""
 
 from dfdatetime import filetime as dfdatetime_filetime

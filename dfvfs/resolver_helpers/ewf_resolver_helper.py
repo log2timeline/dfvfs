@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The EWF image path specification resolver helper implementation."""
 
 from dfvfs.file_io import ewf_file_io

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The path specification mount point manager.
 
 The mount point manager allows to "mount" one path specification onto another.

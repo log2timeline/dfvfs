@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Extended File System (EXT) file-like object implementation."""
 
 import os

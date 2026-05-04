@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The RAW storage media image file-like object implementation."""
 
 import pysmraw

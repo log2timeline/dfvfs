@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Tests for the Apple Partition Map (APM) volume system."""
 
 import unittest

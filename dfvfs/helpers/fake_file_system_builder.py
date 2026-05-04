@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A builder for fake file systems."""
 
 from dfvfs.lib import definitions

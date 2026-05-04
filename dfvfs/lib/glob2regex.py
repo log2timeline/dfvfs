@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Glob to regular expression conversion."""
 
 import re

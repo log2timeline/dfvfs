@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Imports for the credential manager."""
 
 from dfvfs.credentials import apfs_credentials

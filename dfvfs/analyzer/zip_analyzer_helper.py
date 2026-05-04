@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The ZIP format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

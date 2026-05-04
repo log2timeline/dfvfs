@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The fake directory implementation."""
 
 from dfvfs.path import fake_path_spec

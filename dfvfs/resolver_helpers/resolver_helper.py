@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Virtual File System (VFS) resolver helper interface."""
 
 from dfvfs.lib import errors

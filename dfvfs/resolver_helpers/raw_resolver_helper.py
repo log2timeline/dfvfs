@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The RAW image path specification resolver helper implementation."""
 
 from dfvfs.file_io import raw_file_io

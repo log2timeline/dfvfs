@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The file object file input/output (IO) object implementation."""
 
 import abc

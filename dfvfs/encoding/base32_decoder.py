@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The base32 decoder implementation."""
 
 import base64

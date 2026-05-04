@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Helper function for LUKS Drive Encryption support."""
 
 

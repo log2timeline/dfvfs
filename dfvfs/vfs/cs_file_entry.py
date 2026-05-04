@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Core Storage (CS) file entry implementation."""
 
 from dfvfs.lib import cs_helper

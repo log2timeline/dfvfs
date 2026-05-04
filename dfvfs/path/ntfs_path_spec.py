@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The path NTFS specification implementation."""
 
 from dfvfs.lib import definitions

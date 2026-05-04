@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Helper functions for Apple Partition Map (APM) support."""
 
 

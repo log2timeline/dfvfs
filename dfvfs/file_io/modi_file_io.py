@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Mac OS disk image file-like object."""
 
 import pymodi

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Shared test cases."""
 
 from dfvfs.lib import errors

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The fake path specification resolver helper implementation."""
 
 from dfvfs.lib import definitions

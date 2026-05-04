@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) directory implementation."""
 
 from dfvfs.path import lvm_path_spec

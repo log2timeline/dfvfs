@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The SleuthKit (TSK) partition format analyzer helper implementation."""
 
 import pytsk3

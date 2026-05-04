@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS container directory implementation."""
 
 from dfvfs.path import apfs_container_path_spec

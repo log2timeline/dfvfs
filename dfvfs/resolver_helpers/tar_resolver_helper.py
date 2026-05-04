@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The TAR path specification resolver helper implementation."""
 
 from dfvfs.file_io import tar_file_io

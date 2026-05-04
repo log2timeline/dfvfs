@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS file system implementation."""
 
 from dfvfs.lib import apfs_helper

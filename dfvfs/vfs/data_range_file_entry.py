@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The data range file entry implementation."""
 
 from dfvfs.lib import definitions

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The LUKSDE file system implementation."""
 
 import pyluksde

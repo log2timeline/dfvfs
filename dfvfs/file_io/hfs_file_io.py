@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Hierarchical File System (HFS) file-like object implementation."""
 
 import os

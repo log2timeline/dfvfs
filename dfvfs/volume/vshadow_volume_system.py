@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) volume system."""
 
 from dfvfs.lib import definitions

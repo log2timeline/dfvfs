@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The GUID Partition Table (GPT) volume system."""
 
 from dfvfs.lib import definitions

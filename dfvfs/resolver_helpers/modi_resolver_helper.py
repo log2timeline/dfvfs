@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Mac OS disk image path specification resolver helper implementation."""
 
 from dfvfs.file_io import modi_file_io

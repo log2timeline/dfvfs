@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CPIO path specification resolver helper implementation."""
 
 from dfvfs.file_io import cpio_file_io

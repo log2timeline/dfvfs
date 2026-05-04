@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The format analyzer."""
 
 import pysigscan

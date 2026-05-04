@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The HFS directory implementation."""
 
 from dfvfs.path import hfs_path_spec

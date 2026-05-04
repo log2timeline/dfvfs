@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) directory implementation."""
 
 from dfvfs.path import vshadow_path_spec

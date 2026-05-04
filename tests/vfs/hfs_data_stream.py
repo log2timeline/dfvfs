@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Tests for the data stream implementation using pyfshfs."""
 
 import unittest

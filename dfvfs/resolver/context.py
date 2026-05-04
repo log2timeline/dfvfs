@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The resolver context object."""
 
 import weakref

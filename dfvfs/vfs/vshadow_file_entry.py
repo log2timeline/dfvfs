@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Volume Shadow Snapshots (VSS) file entry implementation."""
 
 from dfdatetime import filetime as dfdatetime_filetime

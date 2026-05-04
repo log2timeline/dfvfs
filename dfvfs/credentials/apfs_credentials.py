@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Apple File System (APFS) credentials."""
 
 from dfvfs.credentials import credentials

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The GUID Partition Table (GPT) file entry implementation."""
 
 from dfvfs.lib import definitions

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Blowfish decrypter implementation."""
 
 import pyfcrypto

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BDE volume path specification resolver helper implementation."""
 
 from dfvfs.file_io import bde_file_io

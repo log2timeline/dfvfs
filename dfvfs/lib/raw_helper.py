@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Helper functions for RAW storage media image support."""
 
 from dfvfs.lib import errors

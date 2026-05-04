@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS container file entry implementation."""
 
 from dfvfs.lib import apfs_helper

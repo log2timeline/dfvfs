@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Core Storage (CS) directory implementation."""
 
 from dfvfs.path import cs_path_spec

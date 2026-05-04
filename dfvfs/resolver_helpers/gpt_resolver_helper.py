@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The GPT path specification resolver helper implementation."""
 
 from dfvfs.file_io import gpt_file_io

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The encrypted stream path specification implementation."""
 
 import codecs

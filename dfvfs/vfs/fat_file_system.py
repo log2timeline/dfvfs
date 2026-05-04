@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The FAT file system implementation."""
 
 import pyfsfat

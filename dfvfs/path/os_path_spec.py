@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The operating system path specification implementation."""
 
 import os

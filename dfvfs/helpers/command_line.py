@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Helpers for command line tools."""
 
 import abc

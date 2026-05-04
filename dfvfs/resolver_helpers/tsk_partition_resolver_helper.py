@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The TSK partition path specification resolver helper implementation."""
 
 from dfvfs.file_io import tsk_partition_file_io

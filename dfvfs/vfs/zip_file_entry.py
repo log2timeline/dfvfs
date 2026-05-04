@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The ZIP file entry implementation."""
 
 from dfdatetime import time_elements as dfdatetime_time_elements

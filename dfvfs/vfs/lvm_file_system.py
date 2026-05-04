@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) file system implementation."""
 
 import pyvslvm

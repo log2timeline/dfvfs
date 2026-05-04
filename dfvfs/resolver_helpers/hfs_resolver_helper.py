@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The HFS path specification resolver helper implementation."""
 
 from dfvfs.file_io import hfs_file_io

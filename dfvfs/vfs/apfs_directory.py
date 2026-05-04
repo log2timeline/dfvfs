@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The APFS directory implementation."""
 
 from dfvfs.path import apfs_path_spec

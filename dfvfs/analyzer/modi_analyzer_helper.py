@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Mac OS disk image (MODI) format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

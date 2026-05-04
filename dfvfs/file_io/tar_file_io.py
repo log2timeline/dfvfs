@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The TAR extracted file-like object implementation."""
 
 # Note: that tarfile.ExFileObject is not POSIX compliant for seeking

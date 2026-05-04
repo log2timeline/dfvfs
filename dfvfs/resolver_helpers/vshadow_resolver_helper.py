@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The VSS path specification resolver helper implementation."""
 
 from dfvfs.file_io import vshadow_file_io

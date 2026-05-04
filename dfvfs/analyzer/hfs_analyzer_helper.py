@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The HFS format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

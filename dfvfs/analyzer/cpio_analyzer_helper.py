@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CPIO format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

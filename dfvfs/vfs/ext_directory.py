@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The EXT directory implementation."""
 
 from dfvfs.path import ext_path_spec

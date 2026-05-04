@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The triple DES decrypter implementation."""
 
 import pyfcrypto

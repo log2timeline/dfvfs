@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The analyzer helper interface."""
 
 from dfvfs.lib import errors

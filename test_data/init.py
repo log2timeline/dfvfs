@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Digital Forensics Virtual File System (dfVFS).
 
 dfVFS, or Digital Forensics Virtual File System, is a Python module

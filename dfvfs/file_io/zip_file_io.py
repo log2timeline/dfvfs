@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The ZIP extracted file-like object implementation."""
 
 import io

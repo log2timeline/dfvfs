@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Apple File System (APFS) volume system."""
 
 from dfvfs.lib import definitions

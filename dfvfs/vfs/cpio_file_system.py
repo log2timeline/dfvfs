@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The CPIO archive file system implementation."""
 
 from dfvfs.lib import cpio

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The XFS attribute implementation."""
 
 import os

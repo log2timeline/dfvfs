@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The gzip file system implementation."""
 
 from dfvfs.lib import definitions

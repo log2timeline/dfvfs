@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Core Storage (CS) file-like object."""
 
 import os

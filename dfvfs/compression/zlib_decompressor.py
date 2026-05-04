@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The zlib and DEFLATE decompressor implementations."""
 
 import zlib

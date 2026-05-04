@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BZIP2 decompressor implementation."""
 
 import bz2

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Apple Partition Map (APM) directory implementation."""
 
 from dfvfs.path import apm_path_spec

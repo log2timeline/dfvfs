@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Tests for the file system searcher."""
 
 import os
@@ -34,7 +33,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
 
     test_path = '/usr/lib/python2.7/site-packages/dfvfs/__init__.py'
     test_file_data = b'\n'.join([
-        b'# -*- coding: utf-8 -*-',
         b'"""Digital Forensics Virtual File System (dfVFS).',
         b'',
         b'dfVFS, or Digital Forensics Virtual File System, is a Python module',

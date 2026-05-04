@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Virtual File System (VFS) file entry interface.
 
 The file entry can be various file system elements like a regular file, a

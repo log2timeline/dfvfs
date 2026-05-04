@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The XFS file system implementation."""
 
 import pyfsxfs

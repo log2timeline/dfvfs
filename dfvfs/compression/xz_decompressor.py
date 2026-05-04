@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The LZMA and XZ decompressor implementations."""
 
 import lzma

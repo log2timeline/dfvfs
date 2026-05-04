@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Core Storage (CS) volume system."""
 
 from dfvfs.lib import definitions

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The BDE format analyzer helper implementation."""
 
 from dfvfs.analyzer import analyzer

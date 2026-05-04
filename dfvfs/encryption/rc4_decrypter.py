@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The RC4 decrypter implementation."""
 
 import pyfcrypto

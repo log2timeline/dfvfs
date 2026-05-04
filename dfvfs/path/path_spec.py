@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Virtual File System (VFS) path specification interface."""
 
 from dfvfs.lib import definitions

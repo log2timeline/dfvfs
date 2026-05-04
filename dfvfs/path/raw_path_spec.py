@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The RAW storage media image path specification implementation."""
 
 from dfvfs.lib import definitions

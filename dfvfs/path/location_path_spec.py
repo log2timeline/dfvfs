@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The location-based path specification implementation."""
 
 from dfvfs.path import path_spec

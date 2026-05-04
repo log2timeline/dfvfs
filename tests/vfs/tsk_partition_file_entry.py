@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Tests for the partition file entry implementation using pytsk3."""
 
 import unittest

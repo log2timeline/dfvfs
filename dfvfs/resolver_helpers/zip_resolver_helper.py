@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The ZIP path specification resolver helper implementation."""
 
 from dfvfs.file_io import zip_file_io

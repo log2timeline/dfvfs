@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Logical Volume Manager (LVM) file entry implementation."""
 
 from dfvfs.lib import definitions

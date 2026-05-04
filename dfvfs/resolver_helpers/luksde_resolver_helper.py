@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The LUKSDE volume path specification resolver helper implementation."""
 
 from dfvfs.file_io import luksde_file_io

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The HFS file entry implementation."""
 
 import copy

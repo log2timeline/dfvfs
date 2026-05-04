@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The Virtual Hard Disk image path specification implementation."""
 
 from dfvfs.lib import definitions
