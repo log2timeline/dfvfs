@@ -281,7 +281,7 @@ class CPIOArchiveFile(data_format.DataFormat):
     """
     if not self._file_entries:
       return None
-    return self._file_entries.get(path, None)
+    return self._file_entries.get(path)
 
   def Open(self, file_object):
     """Opens the CPIO archive file.
@@ -290,7 +290,6 @@ class CPIOArchiveFile(data_format.DataFormat):
       file_object (FileIO): a file-like object.
 
     Raises:
-      IOError: if the file format signature is not supported.
       OSError: if the file format signature is not supported.
     """
     file_object.seek(0, os.SEEK_SET)
@@ -310,7 +309,7 @@ class CPIOArchiveFile(data_format.DataFormat):
         self.file_format = 'crc'
 
     if self.file_format is None:
-      raise IOError('Unsupported CPIO format.')
+      raise OSError('Unsupported CPIO format.')
 
     self._file_object = file_object
     self._file_size = file_object.get_size()
@@ -328,7 +327,6 @@ class CPIOArchiveFile(data_format.DataFormat):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     self._file_object.seek(file_offset, os.SEEK_SET)

@@ -86,13 +86,13 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -183,13 +183,13 @@ class FAT12ImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -275,13 +275,13 @@ class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -387,13 +387,13 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -587,13 +587,13 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), expected_offset)
     self.assertEqual(file_object.read(20), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), expected_offset)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -682,14 +682,14 @@ class SylogTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.read(2), b'')
 
     # Test with an invalid offset.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 2000)
 
     # Test with an invalid whence.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -768,14 +768,14 @@ class PaddedSyslogTestCase(SylogTestCase):
     self.assertEqual(file_object.read(2), b'')
 
     # Test with an invalid offset.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 2000)
 
     # Test with an invalid whence.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -856,13 +856,13 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -986,13 +986,13 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.

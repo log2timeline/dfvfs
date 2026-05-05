@@ -189,7 +189,7 @@ class SourceScannerContext:
       KeyError: if the scan node already exists.
       RuntimeError: if the parent scan node is not present.
     """
-    scan_node = self._scan_nodes.get(path_spec, None)
+    scan_node = self._scan_nodes.get(path_spec)
     if scan_node:
       raise KeyError('Scan node already exists.')
 
@@ -217,7 +217,7 @@ class SourceScannerContext:
     Returns:
       SourceScanNode: scan node or None if not available.
     """
-    return self._scan_nodes.get(self._root_path_spec, None)
+    return self._scan_nodes.get(self._root_path_spec)
 
   def GetScanNode(self, path_spec):
     """Retrieves a scan node for a certain path specification.
@@ -228,7 +228,7 @@ class SourceScannerContext:
     Returns:
       SourceScanNode: scan node or None if not available.
     """
-    return self._scan_nodes.get(path_spec, None)
+    return self._scan_nodes.get(path_spec)
 
   def GetUnscannedScanNode(self):
     """Retrieves the first unscanned scan node.
@@ -236,7 +236,7 @@ class SourceScannerContext:
     Returns:
       SourceScanNode: scan node or None if not available.
     """
-    root_scan_node = self._scan_nodes.get(self._root_path_spec, None)
+    root_scan_node = self._scan_nodes.get(self._root_path_spec)
     if not root_scan_node or not root_scan_node.scanned:
       return root_scan_node
 
@@ -270,7 +270,7 @@ class SourceScannerContext:
     Returns:
       bool: True if there is a scan node for the path specification.
     """
-    return self._scan_nodes.get(path_spec, None) is not None
+    return self._scan_nodes.get(path_spec) is not None
 
   def IsLockedScanNode(self, path_spec):
     """Determines if a scan node is locked.
@@ -318,7 +318,7 @@ class SourceScannerContext:
     Raises:
       KeyError: if the scan node does not exists.
     """
-    scan_node = self._scan_nodes.get(path_spec, None)
+    scan_node = self._scan_nodes.get(path_spec)
     if not scan_node:
       raise KeyError('Scan node does not exist.')
 
@@ -347,7 +347,7 @@ class SourceScannerContext:
     Raises:
       RuntimeError: if the scan node has sub nodes.
     """
-    scan_node = self._scan_nodes.get(path_spec, None)
+    scan_node = self._scan_nodes.get(path_spec)
     if not scan_node:
       return None
 
@@ -837,7 +837,7 @@ class SourceScanner:
     try:
       type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(
           source_path_spec, resolver_context=self._resolver_context)
-    except (IOError, RuntimeError) as exception:
+    except (OSError, RuntimeError) as exception:
       raise errors.BackEndError((
           f'Unable to process source path specification with error: '
           f'{exception!s}'))
@@ -900,7 +900,7 @@ class SourceScanner:
       try:
         is_locked = not apfs_helper.APFSUnlockVolume(
             fsapfs_volume, path_spec, resolver.Resolver.key_chain)
-      except IOError as exception:
+      except OSError as exception:
         raise errors.BackEndError(
             f'Unable to unlock APFS volume with error: {exception!s}')
 

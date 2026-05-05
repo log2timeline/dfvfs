@@ -35,7 +35,7 @@ class BZIP2Decompressor(decompressor.Decompressor):
       remaining_compressed_data = getattr(
           self._bz2_decompressor, 'unused_data', b'')
 
-    except (EOFError, IOError) as exception:
+    except (EOFError, OSError) as exception:
       raise errors.BackEndError((
           f'Unable to decompress BZIP2 compressed stream with error: '
           f'{exception!s}.'))

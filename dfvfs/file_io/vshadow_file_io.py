@@ -36,7 +36,6 @@ class VShadowFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -57,7 +56,7 @@ class VShadowFile(file_io.FileIO):
 
     vshadow_store = vshadow_volume.get_store(store_index)
     if not vshadow_store.has_in_volume_data():
-      raise IOError((
+      raise OSError((
           f'Unable to open VSS store: {store_index:d} without in-volume '
           f'stored data.'))
 
@@ -81,11 +80,10 @@ class VShadowFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._vshadow_store.read(size)
 
@@ -98,11 +96,10 @@ class VShadowFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     self._vshadow_store.seek(offset, whence)
 
@@ -113,11 +110,10 @@ class VShadowFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._vshadow_store.get_offset()
 
@@ -128,10 +124,9 @@ class VShadowFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._vshadow_store.volume_size

@@ -73,7 +73,6 @@ class XFSExtendedAttribute(attribute.Attribute):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     return self._fsxfs_extended_attribute.read_buffer(size)
@@ -87,7 +86,6 @@ class XFSExtendedAttribute(attribute.Attribute):
           absolute or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     self._fsxfs_extended_attribute.seek_offset(offset, whence)

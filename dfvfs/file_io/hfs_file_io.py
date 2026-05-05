@@ -36,7 +36,6 @@ class HFSFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       NotSupported: if a data stream, like the resource or named fork, is
           requested to be opened.
       OSError: if the file-like object could not be opened.
@@ -49,17 +48,17 @@ class HFSFile(file_io.FileIO):
 
     file_entry = self._file_system.GetFileEntryByPathSpec(self._path_spec)
     if not file_entry:
-      raise IOError('Unable to open file entry.')
+      raise OSError('Unable to open file entry.')
 
     fshfs_data_stream = None
     fshfs_file_entry = file_entry.GetHFSFileEntry()
     if not fshfs_file_entry:
-      raise IOError('Unable to open HFS file entry.')
+      raise OSError('Unable to open HFS file entry.')
 
     if data_stream_name == 'rsrc':
       fshfs_data_stream = fshfs_file_entry.get_resource_fork()
     elif data_stream_name:
-      raise IOError(f'Unable to open data stream: {data_stream_name:s}.')
+      raise OSError(f'Unable to open data stream: {data_stream_name:s}.')
 
     self._fshfs_data_stream = fshfs_data_stream
     self._fshfs_file_entry = fshfs_file_entry
@@ -82,11 +81,10 @@ class HFSFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._fshfs_data_stream:
       return self._fshfs_data_stream.read(size=size)
@@ -101,11 +99,10 @@ class HFSFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._fshfs_data_stream:
       self._fshfs_data_stream.seek(offset, whence)
@@ -119,11 +116,10 @@ class HFSFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._fshfs_data_stream:
       return self._fshfs_data_stream.get_offset()
@@ -136,11 +132,10 @@ class HFSFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._fshfs_data_stream:
       return self._fshfs_data_stream.get_size()

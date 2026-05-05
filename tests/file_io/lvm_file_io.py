@@ -106,13 +106,13 @@ class LVMFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), expected_offset)
     self.assertEqual(file_object.read(20), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), expected_offset)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.

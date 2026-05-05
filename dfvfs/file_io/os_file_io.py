@@ -37,7 +37,6 @@ class OSFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       MountPointError: if the mount point specified in the path specification
           does not exist.
       OSError: if the file-like object could not be opened.
@@ -77,7 +76,7 @@ class OSFile(file_io.FileIO):
     # libsmdev to do an initial check.
     try:
       is_device = pysmdev.check_device(location)
-    except IOError as exception:
+    except OSError as exception:
       # Since os.stat() will not recognize Windows device file names and
       # will return '[Error 87] The parameter is incorrect' we check here
       # if pysmdev exception message contains ' access denied ' and raise
@@ -92,7 +91,7 @@ class OSFile(file_io.FileIO):
       try:
         stat_info = os.stat(location)
       except OSError as exception:
-        raise IOError(f'Unable to open file with error: {exception!s}')
+        raise OSError(f'Unable to open file with error: {exception!s}')
 
       # In case the libsmdev check is not able to detect the device also use
       # the stat information.
@@ -128,11 +127,10 @@ class OSFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if size is None:
       size = self._size - self._file_object.tell()
@@ -148,17 +146,16 @@ class OSFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     # For a yet unknown reason a Python file-like object on Windows allows for
     # invalid whence values to be passed to the seek function. This check
     # makes sure the behavior of the function is the same on all platforms.
     if whence not in (os.SEEK_CUR, os.SEEK_END, os.SEEK_SET):
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     self._file_object.seek(offset, whence)
 
@@ -169,11 +166,10 @@ class OSFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._file_object.tell()
 
@@ -184,10 +180,9 @@ class OSFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._size

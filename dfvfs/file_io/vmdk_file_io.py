@@ -21,7 +21,6 @@ class VMDKFile(file_object_io.FileObjectIO):
       pyvmdk.handle: a file-like object.
 
     Raises:
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -90,7 +89,7 @@ class VMDKFile(file_object_io.FileObjectIO):
       extent_data_files.append(extent_data_file_path_spec)
 
     if len(extent_data_files) != vmdk_handle.number_of_extents:
-      raise IOError('Unable to locate all extent data files.')
+      raise OSError('Unable to locate all extent data files.')
 
     file_objects = []
     for extent_data_file_path_spec in extent_data_files:
@@ -110,10 +109,9 @@ class VMDKFile(file_object_io.FileObjectIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._file_object.get_media_size()

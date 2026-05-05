@@ -49,7 +49,7 @@ class FileSystem:
     """Closes the file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
 
   @abc.abstractmethod
@@ -62,7 +62,7 @@ class FileSystem:
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      OSError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -225,13 +225,12 @@ class FileSystem:
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object was already opened or the open failed.
       OSError: if the file system object was already opened or the open failed.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
     if self._is_open:
-      raise IOError('Already open.')
+      raise OSError('Already open.')
 
     if mode != 'rb':
       raise ValueError(f'Unsupported mode: {mode:s}.')

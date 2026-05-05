@@ -31,7 +31,6 @@ class TSKPartitionFile(data_range_io.DataRange):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """

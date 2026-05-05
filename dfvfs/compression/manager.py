@@ -36,7 +36,7 @@ class CompressionManager:
           not exists.
     """
     compression_method = compression_method.lower()
-    decompressor = cls._decompressors.get(compression_method, None)
+    decompressor = cls._decompressors.get(compression_method)
     if not decompressor:
       return None
 

@@ -46,7 +46,6 @@ class SQLiteBlobFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -78,7 +77,7 @@ class SQLiteBlobFile(file_io.FileIO):
           'Path specification requires either a row_condition or row_index.')
 
     if self._database_object:
-      raise IOError('Database file already set.')
+      raise OSError('Database file already set.')
 
     file_object = resolver.Resolver.OpenFileObject(
         self._path_spec.parent, resolver_context=self._resolver_context)
@@ -136,7 +135,7 @@ class SQLiteBlobFile(file_io.FileIO):
 
     if error_string:
       database_object.Close()
-      raise IOError(error_string)
+      raise OSError(error_string)
 
     self._blob = rows[0][0]
     self._current_offset = 0
@@ -153,11 +152,10 @@ class SQLiteBlobFile(file_io.FileIO):
       int: number of rows.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._database_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._number_of_rows is None:
       self._number_of_rows = self._database_object.GetNumberOfRows(
@@ -183,14 +181,13 @@ class SQLiteBlobFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._database_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError('Invalid offset value out of bounds.')
+      raise OSError('Invalid offset value out of bounds.')
 
     if size == 0 or self._current_offset >= self._size:
       return b''
@@ -213,21 +210,20 @@ class SQLiteBlobFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._database_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value out of bounds.')
+      raise OSError('Invalid offset value out of bounds.')
 
     self._current_offset = offset
 
@@ -238,11 +234,10 @@ class SQLiteBlobFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._database_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._current_offset
 
@@ -253,10 +248,9 @@ class SQLiteBlobFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._database_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._size

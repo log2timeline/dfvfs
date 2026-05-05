@@ -42,7 +42,6 @@ class TSKFile(file_io.FileIO):
     Raises:
       AccessError: if the access to open the file was denied.
       BackEndError: if pytsk3 returns a non UTF-8 formatted name.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -53,7 +52,7 @@ class TSKFile(file_io.FileIO):
 
     file_entry = file_system.GetFileEntryByPathSpec(self._path_spec)
     if not file_entry:
-      raise IOError('Unable to retrieve file entry.')
+      raise OSError('Unable to retrieve file entry.')
 
     tsk_file = file_entry.GetTSKFile()
     tsk_attribute = None
@@ -62,25 +61,25 @@ class TSKFile(file_io.FileIO):
     # we need to check if the attribute exists and has a value other
     # than None.
     if getattr(tsk_file, 'info', None) is None:
-      raise IOError('Missing attribute info in file (pytsk3.File).')
+      raise OSError('Missing attribute info in file (pytsk3.File).')
 
     # Note that because pytsk3.TSK_FS_FILE does not explicitly defines meta
     # we need to check if the attribute exists and has a value other
     # than None.
     if getattr(tsk_file.info, 'meta', None) is None:
-      raise IOError(
+      raise OSError(
           'Missing attribute meta in file.info pytsk3.TSK_FS_FILE).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines size
     # we need to check if the attribute exists.
     if not hasattr(tsk_file.info.meta, 'size'):
-      raise IOError(
+      raise OSError(
           'Missing attribute size in file.info.meta (pytsk3.TSK_FS_META).')
 
     # Note that because pytsk3.TSK_FS_META does not explicitly defines type
     # we need to check if the attribute exists.
     if not hasattr(tsk_file.info.meta, 'type'):
-      raise IOError(
+      raise OSError(
           'Missing attribute type in file.info.meta (pytsk3.TSK_FS_META).')
 
     if data_stream_name:
@@ -122,11 +121,11 @@ class TSKFile(file_io.FileIO):
           break
 
       if tsk_attribute is None:
-        raise IOError(f'Unable to open data stream: {data_stream_name:s}.')
+        raise OSError(f'Unable to open data stream: {data_stream_name:s}.')
 
     if (not tsk_attribute and
         tsk_file.info.meta.type != pytsk3.TSK_FS_META_TYPE_REG):
-      raise IOError('Not a regular file.')
+      raise OSError('Not a regular file.')
 
     self._current_offset = 0
     self._file_system = file_system
@@ -156,17 +155,16 @@ class TSKFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError('Invalid current offset value less than zero.')
+      raise OSError('Invalid current offset value less than zero.')
 
     # The SleuthKit is not POSIX compliant in its read behavior. Therefore
-    # pytsk3 will raise an IOError if the read offset is beyond the data size.
+    # pytsk3 will raise an OSError if the read offset is beyond the data size.
     if self._current_offset >= self._size:
       return b''
 
@@ -196,21 +194,20 @@ class TSKFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise OSError('Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -221,11 +218,10 @@ class TSKFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._current_offset
 
@@ -236,10 +232,9 @@ class TSKFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._size

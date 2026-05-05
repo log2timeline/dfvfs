@@ -35,13 +35,12 @@ class FileObjectIO(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
     self._file_object = self._OpenFileObject(self._path_spec)
     if not self._file_object:
-      raise IOError('Unable to open missing file-like object.')
+      raise OSError('Unable to open missing file-like object.')
 
   # pylint: disable=redundant-returns-doc
   @abc.abstractmethod
@@ -76,11 +75,10 @@ class FileObjectIO(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     # Do not pass the size argument as a keyword argument since it breaks
     # some file-like object implementations.
@@ -95,11 +93,10 @@ class FileObjectIO(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     self._file_object.seek(offset, whence)
 
@@ -110,11 +107,10 @@ class FileObjectIO(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if not hasattr(self._file_object, 'get_offset'):
       return self._file_object.tell()
@@ -127,11 +123,10 @@ class FileObjectIO(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if not hasattr(self._file_object, 'get_size'):
       if not self._size:

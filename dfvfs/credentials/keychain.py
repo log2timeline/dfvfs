@@ -46,7 +46,7 @@ class KeyChain:
           is not set.
     """
     credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
-    return credentials.get(identifier, None)
+    return credentials.get(identifier)
 
   def GetCredentials(self, path_spec):
     """Retrieves all credentials for the path specification.

@@ -50,7 +50,6 @@ class OSExtendedAttribute(attribute.Attribute):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if size is None:
@@ -69,7 +68,6 @@ class OSExtendedAttribute(attribute.Attribute):
           absolute or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if whence == os.SEEK_CUR:
@@ -77,10 +75,10 @@ class OSExtendedAttribute(attribute.Attribute):
     elif whence == os.SEEK_END:
       offset = self._size - offset
     elif whence != os.SEEK_SET:
-      raise IOError('Invalid whence')
+      raise OSError('Invalid whence')
 
     if offset < 0:
-      raise IOError('Invalid offset')
+      raise OSError('Invalid offset')
 
     self._current_offset = offset
 

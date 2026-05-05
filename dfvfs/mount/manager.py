@@ -52,7 +52,7 @@ class MountPointManager:
       PathSpec: path specification of the mount point or None if the mount
           point does not exists.
     """
-    return cls._mount_points.get(mount_point, None)
+    return cls._mount_points.get(mount_point)
 
   @classmethod
   def RegisterMountPoint(cls, mount_point, path_spec):

@@ -52,7 +52,6 @@ class EncryptedStream(file_io.FileIO):
       Decrypter: decrypter.
 
     Raises:
-      IOError: if the decrypter cannot be initialized.
       OSError: if the decrypter cannot be initialized.
     """
     resolver.Resolver.key_chain.ExtractCredentialsFromPathSpec(self._path_spec)
@@ -62,7 +61,7 @@ class EncryptedStream(file_io.FileIO):
       return encryption_manager.EncryptionManager.GetDecrypter(
           self._encryption_method, **credentials)
     except ValueError as exception:
-      raise IOError(exception)
+      raise OSError(exception)
 
   def _GetDecryptedStreamSize(self):
     """Retrieves the decrypted stream size.
@@ -98,7 +97,6 @@ class EncryptedStream(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -179,12 +177,11 @@ class EncryptedStream(file_io.FileIO):
       decrypted_stream_size (int): size of the decrypted stream in bytes.
 
     Raises:
-      IOError: if the file-like object is already open.
       OSError: if the file-like object is already open.
       ValueError: if the decrypted stream size is invalid.
     """
     if self._is_open:
-      raise IOError('Already open.')
+      raise OSError('Already open.')
 
     if decrypted_stream_size < 0:
       raise ValueError((
@@ -211,14 +208,13 @@ class EncryptedStream(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError((
+      raise OSError((
           f'Invalid current offset: {self._current_offset:d} value less than '
           f'zero.'))
 
@@ -226,7 +222,7 @@ class EncryptedStream(file_io.FileIO):
       self._decrypted_stream_size = self._GetDecryptedStreamSize()
 
     if self._decrypted_stream_size < 0:
-      raise IOError('Invalid decrypted stream size.')
+      raise OSError('Invalid decrypted stream size.')
 
     if self._current_offset >= self._decrypted_stream_size:
       return b''
@@ -287,14 +283,13 @@ class EncryptedStream(file_io.FileIO):
           absolute or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError((
+      raise OSError((
           f'Invalid current offset: {self._current_offset:d} value less than '
           f'zero.'))
 
@@ -305,15 +300,15 @@ class EncryptedStream(file_io.FileIO):
       if self._decrypted_stream_size is None:
         self._decrypted_stream_size = self._GetDecryptedStreamSize()
         if self._decrypted_stream_size is None:
-          raise IOError('Invalid decrypted stream size.')
+          raise OSError('Invalid decrypted stream size.')
 
       offset += self._decrypted_stream_size
 
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise OSError('Invalid offset value less than zero.')
 
     if offset != self._current_offset:
       self._current_offset = offset
@@ -326,11 +321,10 @@ class EncryptedStream(file_io.FileIO):
       int: current offset into the decrypted stream.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._current_offset
 
@@ -341,11 +335,10 @@ class EncryptedStream(file_io.FileIO):
       int: size of the decrypted stream.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._decrypted_stream_size is None:
       self._decrypted_stream_size = self._GetDecryptedStreamSize()

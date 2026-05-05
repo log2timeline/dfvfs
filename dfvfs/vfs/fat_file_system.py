@@ -34,7 +34,7 @@ class FATFileSystem(file_system.FileSystem):
     """Closes the file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._fsfat_volume = None
     self._file_object = None
@@ -47,7 +47,7 @@ class FATFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      OSError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -91,7 +91,7 @@ class FATFileSystem(file_system.FileSystem):
         fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
             identifier)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(exception)
 
     return fsfat_file_entry is not None
@@ -128,7 +128,7 @@ class FATFileSystem(file_system.FileSystem):
         fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
             identifier)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(exception)
 
     if fsfat_file_entry is None:

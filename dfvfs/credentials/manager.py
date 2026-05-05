@@ -47,7 +47,7 @@ class CredentialsManager:
     if not path_spec:
       return None
 
-    return cls._credentials.get(path_spec.type_indicator, None)
+    return cls._credentials.get(path_spec.type_indicator)
 
   @classmethod
   def RegisterCredentials(cls, credentials):

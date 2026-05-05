@@ -35,7 +35,6 @@ class XFSFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       NotSupported: if a data stream, like the resource or named fork, is
           requested to be opened.
       OSError: if the file-like object could not be opened.
@@ -51,11 +50,11 @@ class XFSFile(file_io.FileIO):
 
     file_entry = self._file_system.GetFileEntryByPathSpec(self._path_spec)
     if not file_entry:
-      raise IOError('Unable to open file entry.')
+      raise OSError('Unable to open file entry.')
 
     fsxfs_file_entry = file_entry.GetXFSFileEntry()
     if not fsxfs_file_entry:
-      raise IOError('Unable to open XFS file entry.')
+      raise OSError('Unable to open XFS file entry.')
 
     self._fsxfs_file_entry = fsxfs_file_entry
 
@@ -77,11 +76,10 @@ class XFSFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._fsxfs_file_entry.read(size=size)
 
@@ -94,11 +92,10 @@ class XFSFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     self._fsxfs_file_entry.seek(offset, whence)
 
@@ -109,11 +106,10 @@ class XFSFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._fsxfs_file_entry.get_offset()
 
@@ -124,10 +120,9 @@ class XFSFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._fsxfs_file_entry.get_size()

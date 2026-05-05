@@ -36,7 +36,7 @@ class TSKDirectory(directory.Directory):
       elif location is not None:
         tsk_directory = fs_info.open_dir(path=location)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(
           f'Unable to open directory with error: {exception!s}')
 

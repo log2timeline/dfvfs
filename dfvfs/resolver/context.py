@@ -99,7 +99,7 @@ class Context:
     Returns:
       FileIO: a file-like object or None if not cached.
     """
-    return self._file_object_cache.get(path_spec.comparable, None)
+    return self._file_object_cache.get(path_spec.comparable)
 
   def GetFileSystem(self, path_spec):
     """Retrieves a file system object defined by path specification.
@@ -111,7 +111,7 @@ class Context:
       FileSystem: a file system object or None if not cached.
     """
     identifier = self._GetFileSystemCacheIdentifier(path_spec)
-    return self._file_system_cache.get(identifier, None)
+    return self._file_system_cache.get(identifier)
 
   def GetMountPoint(self, mount_point):
     """Retrieves the path specification of a mount point.
@@ -123,7 +123,7 @@ class Context:
       PathSpec: path specification of the mount point or None if the mount
           point does not exists.
     """
-    path_spec = self._mount_points.get(mount_point, None)
+    path_spec = self._mount_points.get(mount_point)
     if not path_spec:
       path_spec = mount_manager.MountPointManager.GetMountPoint(mount_point)
     return path_spec

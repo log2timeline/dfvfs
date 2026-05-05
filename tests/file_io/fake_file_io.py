@@ -78,13 +78,13 @@ class FakeFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
