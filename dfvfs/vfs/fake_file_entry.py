@@ -123,11 +123,10 @@ class FakeFileEntry(file_entry.FileEntry):
       FakeFileIO: a file-like object or None if not available.
 
     Raises:
-      IOError: if the file entry is not a file.
       OSError: if the file entry is not a file.
     """
     if not self.IsFile():
-      raise IOError('Cannot open non-file.')
+      raise OSError('Cannot open non-file.')
 
     if data_stream_name:
       return None

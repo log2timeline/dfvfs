@@ -40,7 +40,6 @@ class TARFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -49,10 +48,10 @@ class TARFile(file_io.FileIO):
 
     file_entry = file_system.GetFileEntryByPathSpec(self._path_spec)
     if not file_entry:
-      raise IOError('Unable to retrieve file entry.')
+      raise OSError('Unable to retrieve file entry.')
 
     if not file_entry.IsFile():
-      raise IOError('Not a regular file.')
+      raise OSError('Not a regular file.')
 
     self._file_system = file_system
     tar_file = self._file_system.GetTARFile()
@@ -81,14 +80,13 @@ class TARFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError('Invalid current offset value less than zero.')
+      raise OSError('Invalid current offset value less than zero.')
 
     if self._current_offset > self._size:
       return b''
@@ -116,21 +114,20 @@ class TARFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise OSError('Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -141,11 +138,10 @@ class TARFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._current_offset
 
@@ -156,10 +152,9 @@ class TARFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._size

@@ -31,7 +31,7 @@ class XFSFileSystem(file_system.FileSystem):
     """Closes the file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._fsxfs_volume = None
     self._file_object = None
@@ -44,7 +44,7 @@ class XFSFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      OSError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -87,7 +87,7 @@ class XFSFileSystem(file_system.FileSystem):
       elif location is not None:
         fsxfs_file_entry = self._fsxfs_volume.get_file_entry_by_path(location)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(exception)
 
     return fsxfs_file_entry is not None
@@ -123,7 +123,7 @@ class XFSFileSystem(file_system.FileSystem):
       elif location is not None:
         fsxfs_file_entry = self._fsxfs_volume.get_file_entry_by_path(location)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(exception)
 
     if fsxfs_file_entry is None:

@@ -30,7 +30,7 @@ class APFSFileSystem(file_system.FileSystem):
     """Closes the file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._fsapfs_volume = None
 
@@ -42,7 +42,6 @@ class APFSFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the APFS volume could not be retrieved or unlocked.
       OSError: if the APFS volume could not be retrieved or unlocked.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
@@ -62,16 +61,16 @@ class APFSFileSystem(file_system.FileSystem):
     fsapfs_volume = apfs_container_file_system.GetAPFSVolumeByPathSpec(
         self._path_spec.parent)
     if not fsapfs_volume:
-      raise IOError('Unable to retrieve APFS volume')
+      raise OSError('Unable to retrieve APFS volume')
 
     try:
       is_locked = not apfs_helper.APFSUnlockVolume(
           fsapfs_volume, self._path_spec.parent, resolver.Resolver.key_chain)
-    except IOError as exception:
-      raise IOError(f'Unable to unlock volume with error: {exception!s}')
+    except OSError as exception:
+      raise OSError(f'Unable to unlock volume with error: {exception!s}')
 
     if is_locked:
-      raise IOError('Unable to unlock volume.')
+      raise OSError('Unable to unlock volume.')
 
     self._fsapfs_volume = fsapfs_volume
 
@@ -100,7 +99,7 @@ class APFSFileSystem(file_system.FileSystem):
         fsapfs_file_entry = self._fsapfs_volume.get_file_entry_by_identifier(
             identifier)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(exception)
 
     return fsapfs_file_entry is not None
@@ -139,7 +138,7 @@ class APFSFileSystem(file_system.FileSystem):
           fsapfs_file_entry = self._fsapfs_volume.get_file_entry_by_identifier(
               identifier)
 
-      except IOError as exception:
+      except OSError as exception:
         raise errors.BackEndError(exception)
 
     if fsapfs_file_entry is None:

@@ -45,7 +45,7 @@ class XZDecompressor(decompressor.Decompressor):
       remaining_compressed_data = getattr(
           self._lzma_decompressor, 'unused_data', b'')
 
-    except (EOFError, IOError, LZMAError) as exception:
+    except (EOFError, OSError, LZMAError) as exception:
       raise errors.BackEndError((
           f'Unable to decompress XZ compressed stream with error: '
           f'{exception!s}.'))

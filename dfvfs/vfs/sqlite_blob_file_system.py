@@ -28,7 +28,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
     """Closes a file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._file_object = None
     self._number_of_rows = None
@@ -42,7 +42,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      OSError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -70,7 +70,7 @@ class SQLiteBlobFileSystem(file_system.FileSystem):
     try:
       file_object = resolver.Resolver.OpenFileObject(
           path_spec, resolver_context=self._resolver_context)
-    except (IOError, ValueError, errors.AccessError, errors.PathSpecError):
+    except (OSError, ValueError, errors.AccessError, errors.PathSpecError):
       file_object = None
 
     return bool(file_object)

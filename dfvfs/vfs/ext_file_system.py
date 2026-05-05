@@ -32,7 +32,7 @@ class EXTFileSystem(file_system.FileSystem):
     """Closes the file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._fsext_volume = None
     self._file_object = None
@@ -45,7 +45,7 @@ class EXTFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      OSError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -85,7 +85,7 @@ class EXTFileSystem(file_system.FileSystem):
       elif location is not None:
         fsext_file_entry = self._fsext_volume.get_file_entry_by_path(location)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(exception)
 
     return fsext_file_entry is not None
@@ -121,7 +121,7 @@ class EXTFileSystem(file_system.FileSystem):
       elif location is not None:
         fsext_file_entry = self._fsext_volume.get_file_entry_by_path(location)
 
-    except IOError as exception:
+    except OSError as exception:
       raise errors.BackEndError(exception)
 
     if fsext_file_entry is None:

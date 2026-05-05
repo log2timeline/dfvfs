@@ -18,7 +18,7 @@ class APMFileEntryTest(shared_test_lib.BaseTestCase):
   def setUp(self):
     """Sets up the needed objects used throughout the test."""
     self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['apm.raw'])
+    test_path = self._GetTestFilePath(['apm.dmg'])
     self._SkipIfPathNotExists(test_path)
 
     test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -90,7 +90,7 @@ class APMFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
     self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.size, 65536)
+    self.assertEqual(file_entry.size, 4153344)
 
   # TODO: test GetAPMPartition
 
@@ -158,9 +158,9 @@ class APMFileEntryTest(shared_test_lib.BaseTestCase):
     file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
     self.assertIsNotNone(file_entry)
 
-    self.assertEqual(file_entry.number_of_sub_file_entries, 2)
+    self.assertEqual(file_entry.number_of_sub_file_entries, 1)
 
-    expected_sub_file_entry_names = ['p1', 'p2']
+    expected_sub_file_entry_names = ['p1']
 
     sub_file_entry_names = []
     for sub_file_entry in file_entry.sub_file_entries:

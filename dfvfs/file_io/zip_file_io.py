@@ -42,7 +42,6 @@ class ZipFile(file_io.FileIO):
       uncompressed_data_offset (int): uncompressed data offset.
 
     Raises:
-      IOError: if the ZIP file could not be opened.
       OSError: if the ZIP file could not be opened.
     """
     if self._zip_ext_file:
@@ -55,7 +54,7 @@ class ZipFile(file_io.FileIO):
       # entry in the central directory.
       self._zip_ext_file = self._zip_file.open(self._zip_info, 'r')
     except zipfile.BadZipfile as exception:
-      raise IOError(f'Unable to open ZIP file with error: {exception!s}')
+      raise OSError(f'Unable to open ZIP file with error: {exception!s}')
 
     self._uncompressed_data = b''
     self._uncompressed_data_size = 0
@@ -91,7 +90,6 @@ class ZipFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -100,10 +98,10 @@ class ZipFile(file_io.FileIO):
 
     file_entry = file_system.GetFileEntryByPathSpec(self._path_spec)
     if not file_entry:
-      raise IOError('Unable to retrieve file entry.')
+      raise OSError('Unable to retrieve file entry.')
 
     if not file_entry.IsFile():
-      raise IOError('Not a regular file.')
+      raise OSError('Not a regular file.')
 
     zip_file = file_system.GetZipFile()
     zip_info = file_entry.GetZipInfo()
@@ -114,7 +112,7 @@ class ZipFile(file_io.FileIO):
       # entry in the central directory.
       zip_ext_file = zip_file.open(zip_info, 'r')
     except zipfile.BadZipfile as exception:
-      raise IOError(f'Unable to open ZIP file with error: {exception!s}')
+      raise OSError(f'Unable to open ZIP file with error: {exception!s}')
 
     self._file_system = file_system
     self._zip_file = zip_file
@@ -144,7 +142,6 @@ class ZipFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if self._current_offset > self._uncompressed_stream_size:
@@ -210,11 +207,10 @@ class ZipFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._is_seekable:
       uncompressed_data = self._zip_ext_file.read(size)
@@ -234,21 +230,20 @@ class ZipFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._uncompressed_stream_size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise OSError('Invalid offset value less than zero.')
 
     if self._is_seekable:
       self._zip_ext_file.seek(offset, os.SEEK_SET)
@@ -266,11 +261,10 @@ class ZipFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._current_offset
 
@@ -281,10 +275,9 @@ class ZipFile(file_io.FileIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._uncompressed_stream_size

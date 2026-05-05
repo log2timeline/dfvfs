@@ -1009,7 +1009,7 @@ class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
       file_object = test_scanner.OpenFile(location)
       self.assertIsNone(file_object)
     else:
-      with self.assertRaises(IOError):
+      with self.assertRaises(OSError):
         test_scanner.OpenFile(location)
 
   def testScanForWindowsVolume(self):

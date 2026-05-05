@@ -46,7 +46,7 @@ class _PathSpecJsonDecoder(json.JSONDecoder):
           attribute that contains 'PathSpec'.
     """
     # Use __type__ to indicate the object class type.
-    class_type = json_dict.get('__type__', None)
+    class_type = json_dict.get('__type__')
 
     if class_type not in self._CLASS_TYPES:
       raise TypeError('Missing path specification object type.')
@@ -54,7 +54,7 @@ class _PathSpecJsonDecoder(json.JSONDecoder):
     # Remove the class type from the JSON dict since we cannot pass it.
     del json_dict['__type__']
 
-    type_indicator = json_dict.get('type_indicator', None)
+    type_indicator = json_dict.get('type_indicator')
     if type_indicator:
       del json_dict['type_indicator']
 
@@ -68,7 +68,7 @@ class _PathSpecJsonDecoder(json.JSONDecoder):
     if type_indicator == definitions.TYPE_INDICATOR_OS:
       # OSPathSpec() will change the location to an absolute path
       # here we want to preserve the original location.
-      path_spec_object.location = json_dict.get('location', None)
+      path_spec_object.location = json_dict.get('location')
 
     return path_spec_object
 

@@ -34,7 +34,6 @@ class FakeFile(file_io.FileIO):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
       PathSpecError: if the path specification is incorrect.
     """
@@ -66,14 +65,13 @@ class FakeFile(file_io.FileIO):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if self._current_offset < 0:
-      raise IOError((
+      raise OSError((
           f'Invalid current offset: {self._current_offset:d} value less than '
           f'zero.'))
 
@@ -98,21 +96,20 @@ class FakeFile(file_io.FileIO):
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self._size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise OSError('Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -123,11 +120,10 @@ class FakeFile(file_io.FileIO):
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._current_offset
 
@@ -138,10 +134,9 @@ class FakeFile(file_io.FileIO):
       int: size of the file data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._size

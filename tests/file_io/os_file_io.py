@@ -76,7 +76,7 @@ class OSFileTest(shared_test_lib.BaseTestCase):
     file_object = os_file_io.OSFile(self._resolver_context, self._path_spec2)
 
     # Try seek without the file object being open.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(0, os.SEEK_SET)
 
     file_object.Open()
@@ -99,13 +99,13 @@ class OSFileTest(shared_test_lib.BaseTestCase):
     self.assertEqual(file_object.get_offset(), 300)
     self.assertEqual(file_object.read(2), b'')
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(-10, os.SEEK_SET)
 
     # On error the offset should not change.
     self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.seek(10, 5)
 
     # On error the offset should not change.
@@ -116,7 +116,7 @@ class OSFileTest(shared_test_lib.BaseTestCase):
     file_object = os_file_io.OSFile(self._resolver_context, self._path_spec1)
 
     # Try read without the file object being open.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.read()
 
     file_object.Open()
@@ -139,7 +139,7 @@ class OSFileTest(shared_test_lib.BaseTestCase):
     file_object = os_file_io.OSFile(self._resolver_context, self._path_spec1)
 
     # Try get_offset without the file object being open.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.get_offset()
 
     file_object.Open()
@@ -152,7 +152,7 @@ class OSFileTest(shared_test_lib.BaseTestCase):
     file_object = os_file_io.OSFile(self._resolver_context, self._path_spec1)
 
     # Try get_size without the file object being open.
-    with self.assertRaises(IOError):
+    with self.assertRaises(OSError):
       file_object.get_size()
 
     file_object.Open()

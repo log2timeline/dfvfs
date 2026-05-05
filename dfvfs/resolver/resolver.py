@@ -103,7 +103,7 @@ class Resolver:
 
       try:
         file_object.Open()
-      except (IOError, ValueError) as exception:
+      except (OSError, ValueError) as exception:
         raise errors.BackEndError(
             f'Unable to open file object with error: {exception!s}')
 
@@ -160,7 +160,7 @@ class Resolver:
 
       try:
         file_system.Open()
-      except (IOError, ValueError) as exception:
+      except (OSError, ValueError) as exception:
         raise errors.BackEndError(
             f'Unable to open file system with error: {exception!s}')
 

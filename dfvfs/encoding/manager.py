@@ -34,7 +34,7 @@ class EncodingManager:
       Decoder: decoder or None if the encoding method does not exists.
     """
     encoding_method = encoding_method.lower()
-    decoder = cls._decoders.get(encoding_method, None)
+    decoder = cls._decoders.get(encoding_method)
     if not decoder:
       return None
 

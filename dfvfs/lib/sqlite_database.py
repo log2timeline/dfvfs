@@ -32,7 +32,6 @@ class SQLiteDatabaseFile:
     """Closes the database file object.
 
     Raises:
-      IOError: if the close failed.
       OSError: if the close failed.
     """
     if self._connection:
@@ -44,7 +43,7 @@ class SQLiteDatabaseFile:
     # https://github.com/log2timeline/dfvfs/issues/92
     try:
       os.remove(self._temp_file_path)
-    except (IOError, OSError):
+    except OSError:
       pass
 
     self._temp_file_path = ''
@@ -59,16 +58,15 @@ class SQLiteDatabaseFile:
       int: number of rows.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._connection:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     self._cursor.execute(self._NUMBER_OF_ROWS_QUERY.format(table_name))
     row = self._cursor.fetchone()
     if not row:
-      raise IOError(
+      raise OSError(
           f'Unable to retrieve number of rows of table: {table_name:s}')
 
     number_of_rows = row[0]
@@ -76,7 +74,7 @@ class SQLiteDatabaseFile:
       try:
         number_of_rows = int(number_of_rows, 10)
       except ValueError as exception:
-        raise IOError((
+        raise OSError((
             f'Unable to determine number of rows of table: {table_name:s} with '
             f'error: {exception!s}'))
 
@@ -93,17 +91,16 @@ class SQLiteDatabaseFile:
       bool: True if the column exists.
 
     Raises:
-      IOError: if the database file is not opened.
       OSError: if the database file is not opened.
     """
     if not self._connection:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if not column_name:
       return False
 
     table_name = table_name.lower()
-    column_names = self._column_names_per_table.get(table_name, None)
+    column_names = self._column_names_per_table.get(table_name)
     if column_names is None:
       column_names = []
 
@@ -133,11 +130,10 @@ class SQLiteDatabaseFile:
       bool: True if the column exists.
 
     Raises:
-      IOError: if the database file is not opened.
       OSError: if the database file is not opened.
     """
     if not self._connection:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if not table_name:
       return False
@@ -166,7 +162,6 @@ class SQLiteDatabaseFile:
       file_object (FileIO): file-like object.
 
     Raises:
-      IOError: if the SQLite database signature does not match.
       OSError: if the SQLite database signature does not match.
       ValueError: if the file-like object is invalid.
     """
@@ -181,7 +176,7 @@ class SQLiteDatabaseFile:
     data = file_object.read(len(self._HEADER_SIGNATURE))
 
     if data != self._HEADER_SIGNATURE:
-      raise IOError('Unsupported SQLite database signature.')
+      raise OSError('Unsupported SQLite database signature.')
 
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
       self._temp_file_path = temp_file.name

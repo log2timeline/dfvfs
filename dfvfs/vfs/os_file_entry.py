@@ -49,7 +49,7 @@ class OSFileEntry(file_entry.FileEntry):
       try:
         # pylint: disable=no-member
         is_windows_device = pysmdev.check_device(location)
-      except IOError:
+      except OSError:
         pass
 
     stat_info = None
@@ -59,7 +59,7 @@ class OSFileEntry(file_entry.FileEntry):
       # that error does not exist on non-Windows platforms.
       try:
         stat_info = os.lstat(location)
-      except (IOError, OSError):
+      except OSError:
         stat_info = None
 
     super().__init__(
@@ -111,7 +111,7 @@ class OSFileEntry(file_entry.FileEntry):
       if xattr:
         try:
           attribute_names = list(xattr.listxattr(self._location))
-        except IOError:
+        except OSError:
           attribute_names = []
 
         for name in attribute_names:
@@ -122,7 +122,7 @@ class OSFileEntry(file_entry.FileEntry):
             extended_attribute = os_attribute.OSExtendedAttribute(
                 self._location, name)
             self._attributes.append(extended_attribute)
-          except IOError:
+          except OSError:
             pass
 
     return self._attributes

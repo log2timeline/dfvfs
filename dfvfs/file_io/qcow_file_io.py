@@ -120,10 +120,9 @@ class QCOWFile(file_object_io.FileObjectIO):
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._is_open:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._file_object.get_media_size()

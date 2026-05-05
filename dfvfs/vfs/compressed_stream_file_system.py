@@ -27,7 +27,7 @@ class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
     """Closes the file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._compression_method = None
 
@@ -40,7 +40,7 @@ class CompressedStreamFileSystem(root_only_file_system.RootOnlyFileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system could not be opened.
+      OSError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """

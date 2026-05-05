@@ -33,7 +33,7 @@ class LZMADecompressorTestCase(test_lib.DecompressorTestCase):
     with self.assertRaises(errors.BackEndError):
       decompressor.Decompress(b'This is a test.')
 
-    # Test to trigger lzma raising IOError.
+    # Test to trigger lzma raising OSError.
     decompressor = xz_decompressor.LZMADecompressor()
 
     with self.assertRaises(errors.BackEndError):
@@ -61,7 +61,7 @@ class XZDecompressorTestCase(test_lib.DecompressorTestCase):
     with self.assertRaises(errors.BackEndError):
       decompressor.Decompress(b'This is a test.')
 
-    # Test to trigger xz raising IOError.
+    # Test to trigger xz raising OSError.
     decompressor = xz_decompressor.XZDecompressor()
 
     with self.assertRaises(errors.BackEndError):

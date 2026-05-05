@@ -28,7 +28,7 @@ class BZIP2DecompressorTestCase(test_lib.DecompressorTestCase):
     with self.assertRaises(errors.BackEndError):
       decompressor.Decompress(b'This is a test.')
 
-    # Test to trigger bz2 raising IOError.
+    # Test to trigger bz2 raising OSError.
     decompressor = bzip2_decompressor.BZIP2Decompressor()
 
     with self.assertRaises(errors.BackEndError):

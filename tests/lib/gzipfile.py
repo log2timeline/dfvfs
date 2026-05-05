@@ -74,14 +74,14 @@ class GzipCompressedStreamTest(shared_test_lib.BaseTestCase):
       self.assertEqual(test_file.read(2), b'')
 
       # Test with an invalid offset.
-      with self.assertRaises(IOError):
+      with self.assertRaises(OSError):
         test_file.seek(-10, os.SEEK_SET)
 
       # On error the offset should not change.
       self.assertEqual(test_file.get_offset(), 2000)
 
       # Test with an invalid whence.
-      with self.assertRaises(IOError):
+      with self.assertRaises(OSError):
         test_file.seek(10, 5)
 
       # On error the offset should not change.

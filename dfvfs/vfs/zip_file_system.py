@@ -36,7 +36,7 @@ class ZipFileSystem(file_system.FileSystem):
     """Closes the file system object.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._zip_file.close()
     self._zip_file = None
@@ -52,7 +52,7 @@ class ZipFileSystem(file_system.FileSystem):
     Raises:
       AccessError: if the access to open the file was denied.
       BackEndError: if there was an error opening the ZIP file.
-      IOError: if the file system object could not be opened.
+      OSError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """

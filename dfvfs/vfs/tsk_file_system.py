@@ -32,7 +32,7 @@ class TSKFileSystem(file_system.FileSystem):
     """Closes a file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     self._tsk_file_system = None
     self._file_object = None
@@ -45,7 +45,7 @@ class TSKFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system object could not be opened.
+      OSError: if the file system object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -82,7 +82,7 @@ class TSKFileSystem(file_system.FileSystem):
       elif location is not None:
         tsk_file = self._tsk_file_system.open(location)
 
-    except IOError:
+    except OSError:
       pass
 
     return tsk_file is not None
@@ -115,7 +115,7 @@ class TSKFileSystem(file_system.FileSystem):
       elif location is not None:
         tsk_file = self._tsk_file_system.open(location)
 
-    except IOError:
+    except OSError:
       pass
 
     if tsk_file is None:

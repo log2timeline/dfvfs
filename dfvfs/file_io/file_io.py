@@ -33,7 +33,6 @@ class FileIO:
     """Closes the file input/output (IO) object.
 
     Raises:
-      IOError: if the close failed.
       OSError: if the close failed.
     """
 
@@ -46,7 +45,6 @@ class FileIO:
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file input/output (IO) object could not be opened.
       OSError: if the file input/output (IO) object could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
@@ -63,15 +61,13 @@ class FileIO:
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file input/output (IO) object was already opened or the
-          open failed.
       OSError: if the file input/output (IO) object was already opened or the
           open failed.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification or mode is invalid.
     """
     if self._is_open:
-      raise IOError('Already open.')
+      raise OSError('Already open.')
 
     if mode != 'rb':
       raise ValueError(f'Unsupported mode: {mode:s}.')
@@ -112,7 +108,6 @@ class FileIO:
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
 
@@ -126,7 +121,6 @@ class FileIO:
           absolute or relative position within the file.
 
     Raises:
-      IOError: if the seek failed.
       OSError: if the seek failed.
     """
 
@@ -139,7 +133,6 @@ class FileIO:
       int: current offset into the file input/output (IO) object.
 
     Raises:
-      IOError: if the file input/output (IO)-like object has not been opened.
       OSError: if the file input/output (IO)-like object has not been opened.
     """
 
@@ -156,7 +149,6 @@ class FileIO:
       int: size of the file input/output (IO) object.
 
     Raises:
-      IOError: if the file input/output (IO) object has not been opened.
       OSError: if the file input/output (IO) object has not been opened.
     """
 

@@ -42,7 +42,7 @@ class DataFormat:
       if len(data) != data_size:
         read_error = 'missing data'
 
-    except IOError as exception:
+    except OSError as exception:
       read_error = f'{exception!s}'
 
     if read_error:

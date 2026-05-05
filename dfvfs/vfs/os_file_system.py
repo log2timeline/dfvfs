@@ -26,7 +26,7 @@ class OSFileSystem(file_system.FileSystem):
     """Closes the file system.
 
     Raises:
-      IOError: if the close failed.
+      OSError: if the close failed.
     """
     return
 
@@ -39,7 +39,7 @@ class OSFileSystem(file_system.FileSystem):
 
     Raises:
       AccessError: if the access to open the file was denied.
-      IOError: if the file system could not be opened.
+      OSError: if the file system could not be opened.
       PathSpecError: if the path specification is incorrect.
       ValueError: if the path specification is invalid.
     """
@@ -67,8 +67,8 @@ class OSFileSystem(file_system.FileSystem):
       # instead use libsmdev to do the check.
       try:
         is_device = pysmdev.check_device(location)
-      except IOError as exception:
-        # Since pysmdev will raise IOError when it has no access to the device
+      except OSError as exception:
+        # Since pysmdev will raise OSError when it has no access to the device
         # we check if the exception message contains ' access denied ' and
         # set is_device to True.
         is_device = bool(' access denied ' in str(exception))

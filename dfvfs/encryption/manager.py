@@ -39,7 +39,7 @@ class EncryptionManager:
       CredentialError: if the necessary credentials are missing.
     """
     encryption_method = encryption_method.lower()
-    decrypter = cls._decrypters.get(encryption_method, None)
+    decrypter = cls._decrypters.get(encryption_method)
     if not decrypter:
       return None
 

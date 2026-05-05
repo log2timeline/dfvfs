@@ -373,7 +373,7 @@ class GzipMember(data_format.DataFormat):
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
+      OSError: if the read failed.
       ValueError: if a negative read size or offset is specified.
     """
     if size is not None and size < 0:
@@ -467,7 +467,6 @@ class GzipCompressedStream:
           stream.
 
     Raises:
-      IOError: if the file-like object could not be opened.
       OSError: if the file-like object could not be opened.
     """
     file_size = file_object.get_size()
@@ -512,7 +511,6 @@ class GzipCompressedStream:
       bytes: data read.
 
     Raises:
-      IOError: if the read failed.
       OSError: if the read failed.
     """
     data = b''
@@ -539,21 +537,20 @@ class GzipCompressedStream:
           or relative position within the file.
 
     Raises:
-      IOError: if the seek failed or the file has not been opened.
       OSError: if the seek failed or the file has not been opened.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     if whence == os.SEEK_CUR:
       offset += self._current_offset
     elif whence == os.SEEK_END:
       offset += self.uncompressed_data_size
     elif whence != os.SEEK_SET:
-      raise IOError('Unsupported whence.')
+      raise OSError('Unsupported whence.')
 
     if offset < 0:
-      raise IOError('Invalid offset value less than zero.')
+      raise OSError('Invalid offset value less than zero.')
 
     self._current_offset = offset
 
@@ -564,11 +561,10 @@ class GzipCompressedStream:
       int: current offset into the file-like object.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self._current_offset
 
@@ -579,10 +575,9 @@ class GzipCompressedStream:
       int: size of the file-like object data.
 
     Raises:
-      IOError: if the file-like object has not been opened.
       OSError: if the file-like object has not been opened.
     """
     if not self._file_object:
-      raise IOError('Not opened.')
+      raise OSError('Not opened.')
 
     return self.uncompressed_data_size
