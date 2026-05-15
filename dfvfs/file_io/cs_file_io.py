@@ -28,11 +28,8 @@ class CSFile(file_io.FileIO):
 
         self._file_system = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -58,10 +55,8 @@ class CSFile(file_io.FileIO):
             or volume_index >= fvde_volume_group.number_of_logical_volumes
         ):
             raise errors.PathSpecError(
-                (
-                    f"Unable to retrieve logical volume index: {volume_index:d} from "
-                    f"path specification."
-                )
+                f"Unable to retrieve logical volume index: {volume_index:d} from "
+                f"path specification."
             )
 
         fvde_logical_volume = fvde_volume_group.get_logical_volume(volume_index)

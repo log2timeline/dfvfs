@@ -28,11 +28,8 @@ class VShadowFile(file_io.FileIO):
 
         self._file_system = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -52,19 +49,15 @@ class VShadowFile(file_io.FileIO):
 
         if store_index < 0 or store_index >= vshadow_volume.number_of_stores:
             raise errors.PathSpecError(
-                (
-                    f"Unable to retrieve VSS store: {store_index:d} from path "
-                    f"specification."
-                )
+                f"Unable to retrieve VSS store: {store_index:d} from path "
+                f"specification."
             )
 
         vshadow_store = vshadow_volume.get_store(store_index)
         if not vshadow_store.has_in_volume_data():
             raise OSError(
-                (
-                    f"Unable to open VSS store: {store_index:d} without in-volume "
-                    f"stored data."
-                )
+                f"Unable to open VSS store: {store_index:d} without in-volume "
+                f"stored data."
             )
 
         self._vshadow_store = vshadow_store

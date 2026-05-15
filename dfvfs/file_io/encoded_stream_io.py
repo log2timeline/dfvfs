@@ -78,11 +78,8 @@ class EncodedStream(file_io.FileIO):
 
         return decoded_stream_size
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -146,7 +143,6 @@ class EncodedStream(file_io.FileIO):
         self._decoded_data, self._encoded_data = self._decoder.Decode(
             self._encoded_data
         )
-
         self._decoded_data_size = len(self._decoded_data)
 
         return read_count
@@ -169,10 +165,8 @@ class EncodedStream(file_io.FileIO):
 
         if decoded_stream_size < 0:
             raise ValueError(
-                (
-                    f"Invalid decoded stream size: {decoded_stream_size:d} value out "
-                    f"of bounds."
-                )
+                f"Invalid decoded stream size: {decoded_stream_size:d} value out "
+                f"of bounds."
             )
 
         self._decoded_stream_size = decoded_stream_size
@@ -202,10 +196,8 @@ class EncodedStream(file_io.FileIO):
 
         if self._current_offset < 0:
             raise OSError(
-                (
-                    f"Invalid current offset: {self._current_offset:d} value less than "
-                    f"zero."
-                )
+                f"Invalid current offset: {self._current_offset:d} value less than "
+                f"zero."
             )
 
         if self._decoded_stream_size is None:
@@ -234,11 +226,9 @@ class EncodedStream(file_io.FileIO):
             decoded_data = b"".join(
                 [decoded_data, self._decoded_data[self._decoded_data_offset :]]
             )
-
             remaining_decoded_data_size = (
                 self._decoded_data_size - self._decoded_data_offset
             )
-
             self._current_offset += remaining_decoded_data_size
             size -= remaining_decoded_data_size
 
@@ -257,7 +247,6 @@ class EncodedStream(file_io.FileIO):
             decoded_data = b"".join(
                 [decoded_data, self._decoded_data[slice_start_offset:slice_end_offset]]
             )
-
             self._decoded_data_offset += size
             self._current_offset += size
 
@@ -279,10 +268,8 @@ class EncodedStream(file_io.FileIO):
 
         if self._current_offset < 0:
             raise OSError(
-                (
-                    f"Invalid current offset: {self._current_offset:d} value less than "
-                    f"zero."
-                )
+                f"Invalid current offset: {self._current_offset:d} value less than "
+                f"zero."
             )
 
         if whence == os.SEEK_CUR:

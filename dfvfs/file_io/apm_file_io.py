@@ -37,11 +37,8 @@ class APMFile(file_io.FileIO):
         self._file_object = None
         self._file_system = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -66,7 +63,6 @@ class APMFile(file_io.FileIO):
         self._file_object = resolver.Resolver.OpenFileObject(
             self._path_spec.parent, resolver_context=self._resolver_context
         )
-
         self._current_offset = 0
         self._partition_offset = self._vsapm_partition.get_volume_offset()
         self._partition_size = self._vsapm_partition.get_size()
@@ -99,10 +95,8 @@ class APMFile(file_io.FileIO):
 
         if self._current_offset < 0:
             raise OSError(
-                (
-                    f"Invalid current offset: {self._current_offset:d} value less than "
-                    f"zero."
-                )
+                f"Invalid current offset: {self._current_offset:d} value less than "
+                f"zero."
             )
 
         if self._current_offset >= self._partition_size:
@@ -116,7 +110,6 @@ class APMFile(file_io.FileIO):
         self._file_object.seek(
             self._partition_offset + self._current_offset, os.SEEK_SET
         )
-
         data = self._file_object.read(size)
 
         self._current_offset += len(data)
@@ -139,10 +132,8 @@ class APMFile(file_io.FileIO):
 
         if self._current_offset < 0:
             raise OSError(
-                (
-                    f"Invalid current offset: {self._current_offset:d} value less than "
-                    f"zero."
-                )
+                f"Invalid current offset: {self._current_offset:d} value less than "
+                f"zero."
             )
 
         if whence == os.SEEK_CUR:

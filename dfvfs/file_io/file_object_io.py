@@ -27,11 +27,8 @@ class FileObjectIO(file_io.FileIO):
         self._file_object.close()
         self._file_object = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.

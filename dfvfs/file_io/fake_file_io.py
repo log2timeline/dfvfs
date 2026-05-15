@@ -26,11 +26,8 @@ class FakeFile(file_io.FileIO):
         """Closes the file-like object."""
         return
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -72,10 +69,8 @@ class FakeFile(file_io.FileIO):
 
         if self._current_offset < 0:
             raise OSError(
-                (
-                    f"Invalid current offset: {self._current_offset:d} value less than "
-                    f"zero."
-                )
+                f"Invalid current offset: {self._current_offset:d} value less than "
+                f"zero."
             )
 
         if self._file_data is None or self._current_offset >= self._size:

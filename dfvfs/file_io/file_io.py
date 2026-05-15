@@ -38,11 +38,8 @@ class FileIO:
         """
 
     @abc.abstractmethod
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file input/output (IO) object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -79,7 +76,7 @@ class FileIO:
         if not self._path_spec:
             raise ValueError("Missing path specification.")
 
-        self._Open(mode=mode)
+        self._Open()
         self._is_open = True
 
     # Note: that the following functions do not follow the style guide

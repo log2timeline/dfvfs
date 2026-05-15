@@ -38,11 +38,8 @@ class SQLiteBlobFile(file_io.FileIO):
         self._size = 0
         self._table_name = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -64,10 +61,8 @@ class SQLiteBlobFile(file_io.FileIO):
         if row_condition:
             if not isinstance(row_condition, tuple) or len(row_condition) != 3:
                 raise errors.PathSpecError(
-                    (
-                        "Unsupported row_condition not a tuple in the form: "
-                        "(column_name, operator, value)."
-                    )
+                    "Unsupported row_condition not a tuple in the form: "
+                    "(column_name, operator, value)."
                 )
 
         row_index = getattr(self._path_spec, "row_index", None)
@@ -85,7 +80,6 @@ class SQLiteBlobFile(file_io.FileIO):
         file_object = resolver.Resolver.OpenFileObject(
             self._path_spec.parent, resolver_context=self._resolver_context
         )
-
         database_object = sqlite_database.SQLiteDatabaseFile()
         database_object.Open(file_object)
 
