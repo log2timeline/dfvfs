@@ -107,15 +107,15 @@ class OSFile(file_io.FileIO):
 
         if is_device:
             smdev_handle = pysmdev.handle()
-            smdev_handle.open(location, mode=mode)
+            smdev_handle.open(location, mode="r")
 
             self._file_object = smdev_handle
             self._size = smdev_handle.media_size
 
         else:
-            # pylint: disable=consider-using-with,unspecified-encoding
+            # pylint: disable=consider-using-with
             self._file_object = open(
-                location, mode=mode
+                location, mode="rb",
             )
             self._size = stat_info.st_size
 
