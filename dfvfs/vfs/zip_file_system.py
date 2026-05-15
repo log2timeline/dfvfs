@@ -65,9 +65,7 @@ class ZipFileSystem(file_system.FileSystem):
 
         try:
             # pylint: disable=consider-using-with
-            zip_file = zipfile.ZipFile(
-                file_object, "r"
-            )
+            zip_file = zipfile.ZipFile(file_object, "r")
         except zipfile.BadZipFile as exception:
             raise errors.BackEndError(exception)
 

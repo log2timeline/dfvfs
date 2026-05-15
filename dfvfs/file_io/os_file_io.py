@@ -115,7 +115,8 @@ class OSFile(file_io.FileIO):
         else:
             # pylint: disable=consider-using-with
             self._file_object = open(
-                location, mode="rb",
+                location,
+                mode="rb",
             )
             self._size = stat_info.st_size
 

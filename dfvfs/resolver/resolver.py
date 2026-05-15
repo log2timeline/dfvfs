@@ -33,6 +33,7 @@ class Resolver:
             from dfvfs.resolver_helpers import (
                 manager,
             )
+
             cls._resolver_helpers_manager = manager.ResolverHelperManager
 
         return cls._resolver_helpers_manager.GetHelper(type_indicator)

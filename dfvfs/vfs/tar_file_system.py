@@ -70,9 +70,7 @@ class TARFileSystem(file_system.FileSystem):
         # handled by the file-like object.
         try:
             # pylint: disable=consider-using-with
-            tar_file = tarfile.open(
-                mode="r:", fileobj=file_object
-            )
+            tar_file = tarfile.open(mode="r:", fileobj=file_object)
         except tarfile.ReadError as exception:
             raise OSError(exception)
 
