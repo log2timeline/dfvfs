@@ -9,75 +9,78 @@ from dfvfs.credentials import manager
 
 
 class KeyChain:
-  """Key chain."""
+    """Key chain."""
 
-  def __init__(self):
-    """Initializes a key chain."""
-    super().__init__()
-    self._credentials_per_path_spec = {}
+    def __init__(self):
+        """Initializes a key chain."""
+        super().__init__()
+        self._credentials_per_path_spec = {}
 
-  def Empty(self):
-    """Empties the key chain."""
-    self._credentials_per_path_spec = {}
+    def Empty(self):
+        """Empties the key chain."""
+        self._credentials_per_path_spec = {}
 
-  def ExtractCredentialsFromPathSpec(self, path_spec):
-    """Extracts credentials from a path specification.
+    def ExtractCredentialsFromPathSpec(self, path_spec):
+        """Extracts credentials from a path specification.
 
-    Args:
-      path_spec (PathSpec): path specification to extract credentials from.
-    """
-    credentials = manager.CredentialsManager.GetCredentials(path_spec)
-    for identifier in credentials.CREDENTIALS:
-      value = getattr(path_spec, identifier, None)
-      if value is None:
-        continue
+        Args:
+          path_spec (PathSpec): path specification to extract credentials from.
+        """
+        credentials = manager.CredentialsManager.GetCredentials(path_spec)
+        for identifier in credentials.CREDENTIALS:
+            value = getattr(path_spec, identifier, None)
+            if value is None:
+                continue
 
-      self.SetCredential(path_spec, identifier, value)
+            self.SetCredential(path_spec, identifier, value)
 
-  def GetCredential(self, path_spec, identifier):
-    """Retrieves a specific credential from the key chain.
+    def GetCredential(self, path_spec, identifier):
+        """Retrieves a specific credential from the key chain.
 
-    Args:
-      path_spec (PathSpec): path specification.
-      identifier (str): credential identifier.
+        Args:
+          path_spec (PathSpec): path specification.
+          identifier (str): credential identifier.
 
-    Returns:
-      object: credential or None if the credential for the path specification
-          is not set.
-    """
-    credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
-    return credentials.get(identifier)
+        Returns:
+          object: credential or None if the credential for the path specification
+              is not set.
+        """
+        credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
+        return credentials.get(identifier)
 
-  def GetCredentials(self, path_spec):
-    """Retrieves all credentials for the path specification.
+    def GetCredentials(self, path_spec):
+        """Retrieves all credentials for the path specification.
 
-    Args:
-      path_spec (PathSpec): path specification.
+        Args:
+          path_spec (PathSpec): path specification.
 
-    Returns:
-      dict[str,object]: credentials for the path specification.
-    """
-    return self._credentials_per_path_spec.get(path_spec.comparable, {})
+        Returns:
+          dict[str,object]: credentials for the path specification.
+        """
+        return self._credentials_per_path_spec.get(path_spec.comparable, {})
 
-  def SetCredential(self, path_spec, identifier, data):
-    """Sets a specific credential for the path specification.
+    def SetCredential(self, path_spec, identifier, data):
+        """Sets a specific credential for the path specification.
 
-    Args:
-      path_spec (PathSpec): path specification.
-      identifier (str): credential identifier.
-      data (object): credential data.
+        Args:
+          path_spec (PathSpec): path specification.
+          identifier (str): credential identifier.
+          data (object): credential data.
 
-    Raises:
-      KeyError: if the credential is not supported by the path specification
-          type.
-    """
-    supported_credentials = manager.CredentialsManager.GetCredentials(path_spec)
+        Raises:
+          KeyError: if the credential is not supported by the path specification
+              type.
+        """
+        supported_credentials = manager.CredentialsManager.GetCredentials(path_spec)
 
-    if identifier not in supported_credentials.CREDENTIALS:
-      raise KeyError((
-          f'Unsuppored credential: {identifier:s} for path specification '
-          f'type: {path_spec.type_indicator:s}'))
+        if identifier not in supported_credentials.CREDENTIALS:
+            raise KeyError(
+                (
+                    f"Unsuppored credential: {identifier:s} for path specification "
+                    f"type: {path_spec.type_indicator:s}"
+                )
+            )
 
-    credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
-    credentials[identifier] = data
-    self._credentials_per_path_spec[path_spec.comparable] = credentials
+        credentials = self._credentials_per_path_spec.get(path_spec.comparable, {})
+        credentials[identifier] = data
+        self._credentials_per_path_spec[path_spec.comparable] = credentials

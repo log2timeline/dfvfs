@@ -7,30 +7,28 @@ from dfvfs.lib import definitions
 
 
 class VHDIAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """Virtual Hard Disk image (VHDI) analyzer helper."""
+    """Virtual Hard Disk image (VHDI) analyzer helper."""
 
-  FORMAT_CATEGORIES = frozenset([
-      definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE])
+    FORMAT_CATEGORIES = frozenset([definitions.FORMAT_CATEGORY_STORAGE_MEDIA_IMAGE])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_VHDI
 
-  def GetFormatSpecification(self):
-    """Retrieves the format specification.
+    def GetFormatSpecification(self):
+        """Retrieves the format specification.
 
-    Returns:
-      FormatSpecification: format specification or None if the format cannot
-          be defined by a specification object.
-    """
-    format_specification = specification.FormatSpecification(
-        self.type_indicator)
+        Returns:
+          FormatSpecification: format specification or None if the format cannot
+              be defined by a specification object.
+        """
+        format_specification = specification.FormatSpecification(self.type_indicator)
 
-    # Virtual Hard Disk version 1 (VHD) signature in footer.
-    format_specification.AddNewSignature(b'conectix', offset=-512)
+        # Virtual Hard Disk version 1 (VHD) signature in footer.
+        format_specification.AddNewSignature(b"conectix", offset=-512)
 
-    # Virtual Hard Disk version 2 (VHDX) signature in file information.
-    format_specification.AddNewSignature(b'vhdxfile', offset=0)
+        # Virtual Hard Disk version 2 (VHDX) signature in file information.
+        format_specification.AddNewSignature(b"vhdxfile", offset=0)
 
-    return format_specification
+        return format_specification
 
 
 analyzer.Analyzer.RegisterHelper(VHDIAnalyzerHelper())

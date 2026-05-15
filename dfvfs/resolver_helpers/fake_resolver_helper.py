@@ -6,12 +6,12 @@ from dfvfs.resolver_helpers import resolver_helper
 
 
 class FakeResolverHelper(resolver_helper.ResolverHelper):
-  """Fake resolver helper."""
+    """Fake resolver helper."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAKE
 
-  # The fake file system resolver has no implementation and
-  # should raise RuntimeError.
+    # The fake file system resolver has no implementation and
+    # should raise RuntimeError.
 
 
 manager.ResolverHelperManager.RegisterHelper(FakeResolverHelper())

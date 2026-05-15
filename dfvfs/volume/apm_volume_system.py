@@ -6,44 +6,46 @@ from dfvfs.volume import volume_system
 
 
 class APMVolume(volume_system.Volume):
-  """Volume that uses pyvsapm."""
+    """Volume that uses pyvsapm."""
 
-  def __init__(self, file_entry):
-    """Initializes a APM volume.
+    def __init__(self, file_entry):
+        """Initializes a APM volume.
 
-    Args:
-      file_entry (APMFileEntry): a APM file entry.
-    """
-    super().__init__(file_entry.name)
-    self._file_entry = file_entry
+        Args:
+          file_entry (APMFileEntry): a APM file entry.
+        """
+        super().__init__(file_entry.name)
+        self._file_entry = file_entry
 
-  def _Parse(self):
-    """Extracts attributes and extents from the volume."""
-    vsapm_partition = self._file_entry.GetAPMPartition()
+    def _Parse(self):
+        """Extracts attributes and extents from the volume."""
+        vsapm_partition = self._file_entry.GetAPMPartition()
 
-    volume_attribute = volume_system.VolumeAttribute(
-        'name', vsapm_partition.name_string)
-    self._AddAttribute(volume_attribute)
+        volume_attribute = volume_system.VolumeAttribute(
+            "name", vsapm_partition.name_string
+        )
+        self._AddAttribute(volume_attribute)
 
-    volume_extent = volume_system.VolumeExtent(
-        vsapm_partition.volume_offset, vsapm_partition.size)
-    self._extents.append(volume_extent)
+        volume_extent = volume_system.VolumeExtent(
+            vsapm_partition.volume_offset, vsapm_partition.size
+        )
+        self._extents.append(volume_extent)
 
 
 class APMVolumeSystem(volume_system.VolumeSystem):
-  """Volume system that uses pyvsapm."""
+    """Volume system that uses pyvsapm."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_APM
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_APM
 
-  VOLUME_IDENTIFIER_PREFIX = 'p'
+    VOLUME_IDENTIFIER_PREFIX = "p"
 
-  def _Parse(self):
-    """Extracts sections and volumes from the volume system."""
-    root_file_entry = self._file_system.GetRootFileEntry()
+    def _Parse(self):
+        """Extracts sections and volumes from the volume system."""
+        root_file_entry = self._file_system.GetRootFileEntry()
 
-    for sub_file_entry in root_file_entry.sub_file_entries:
-      volume = APMVolume(sub_file_entry)
-      self._AddVolume(volume)
+        for sub_file_entry in root_file_entry.sub_file_entries:
+            volume = APMVolume(sub_file_entry)
+            self._AddVolume(volume)
 
 
 factory.Factory.RegisterVolumeSystem(APMVolumeSystem)

@@ -10,28 +10,31 @@ from tests.resolver_helpers import test_lib
 
 
 class ResolverHelperManagerTest(shared_test_lib.BaseTestCase):
-  """Tests the path specification resolver helper manager."""
+    """Tests the path specification resolver helper manager."""
 
-  # pylint: disable=protected-access
+    # pylint: disable=protected-access
 
-  def testHelperRegistration(self):
-    """Tests the DeregisterHelper and DeregisterHelper functions."""
-    number_of_resolver_helpers = len(
-        manager.ResolverHelperManager._resolver_helpers)
+    def testHelperRegistration(self):
+        """Tests the DeregisterHelper and DeregisterHelper functions."""
+        number_of_resolver_helpers = len(
+            manager.ResolverHelperManager._resolver_helpers
+        )
 
-    manager.ResolverHelperManager.RegisterHelper(test_lib.TestResolverHelper)
-    self.assertEqual(
-        len(manager.ResolverHelperManager._resolver_helpers),
-        number_of_resolver_helpers + 1)
+        manager.ResolverHelperManager.RegisterHelper(test_lib.TestResolverHelper)
+        self.assertEqual(
+            len(manager.ResolverHelperManager._resolver_helpers),
+            number_of_resolver_helpers + 1,
+        )
 
-    with self.assertRaises(KeyError):
-      manager.ResolverHelperManager.RegisterHelper(test_lib.TestResolverHelper)
+        with self.assertRaises(KeyError):
+            manager.ResolverHelperManager.RegisterHelper(test_lib.TestResolverHelper)
 
-    manager.ResolverHelperManager.DeregisterHelper(test_lib.TestResolverHelper)
-    self.assertEqual(
-        len(manager.ResolverHelperManager._resolver_helpers),
-        number_of_resolver_helpers)
+        manager.ResolverHelperManager.DeregisterHelper(test_lib.TestResolverHelper)
+        self.assertEqual(
+            len(manager.ResolverHelperManager._resolver_helpers),
+            number_of_resolver_helpers,
+        )
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

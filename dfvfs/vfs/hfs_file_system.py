@@ -11,166 +11,177 @@ from dfvfs.vfs import hfs_file_entry
 
 
 class HFSFileSystem(file_system.FileSystem):
-  """File system that uses pyfshfs."""
+    """File system that uses pyfshfs."""
 
-  ROOT_DIRECTORY_IDENTIFIER_NUMBER = 2
+    ROOT_DIRECTORY_IDENTIFIER_NUMBER = 2
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_HFS
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_HFS
 
-  def __init__(self, resolver_context, path_spec):
-    """Initializes an HFS file system.
+    def __init__(self, resolver_context, path_spec):
+        """Initializes an HFS file system.
 
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
-    """
-    super().__init__(resolver_context, path_spec)
-    self._file_object = None
-    self._fshfs_volume = None
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
+        """
+        super().__init__(resolver_context, path_spec)
+        self._file_object = None
+        self._fshfs_volume = None
 
-  def _Close(self):
-    """Closes the file system.
+    def _Close(self):
+        """Closes the file system.
 
-    Raises:
-      OSError: if the close failed.
-    """
-    self._fshfs_volume = None
-    self._file_object = None
+        Raises:
+          OSError: if the close failed.
+        """
+        self._fshfs_volume = None
+        self._file_object = None
 
-  def _Open(self, mode='rb'):
-    """Opens the file system defined by path specification.
+    def _Open(self, mode="rb"):
+        """Opens the file system defined by path specification.
 
-    Args:
-      mode (Optional[str]): file access mode.
+        Args:
+          mode (Optional[str]): file access mode.
 
-    Raises:
-      AccessError: if the access to open the file was denied.
-      OSError: if the file system object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
-    """
-    if not self._path_spec.HasParent():
-      raise errors.PathSpecError(
-          'Unsupported path specification without parent.')
+        Raises:
+          AccessError: if the access to open the file was denied.
+          OSError: if the file system object could not be opened.
+          PathSpecError: if the path specification is incorrect.
+          ValueError: if the path specification is invalid.
+        """
+        if not self._path_spec.HasParent():
+            raise errors.PathSpecError("Unsupported path specification without parent.")
 
-    file_object = resolver.Resolver.OpenFileObject(
-        self._path_spec.parent, resolver_context=self._resolver_context)
+        file_object = resolver.Resolver.OpenFileObject(
+            self._path_spec.parent, resolver_context=self._resolver_context
+        )
 
-    fshfs_volume = pyfshfs.volume()
-    fshfs_volume.open_file_object(file_object)
+        fshfs_volume = pyfshfs.volume()
+        fshfs_volume.open_file_object(file_object)
 
-    self._file_object = file_object
-    self._fshfs_volume = fshfs_volume
+        self._file_object = file_object
+        self._fshfs_volume = fshfs_volume
 
-  def FileEntryExistsByPathSpec(self, path_spec):
-    """Determines if a file entry for a path specification exists.
+    def FileEntryExistsByPathSpec(self, path_spec):
+        """Determines if a file entry for a path specification exists.
 
-    Args:
-      path_spec (PathSpec): path specification.
+        Args:
+          path_spec (PathSpec): path specification.
 
-    Returns:
-      bool: True if the file entry exists.
+        Returns:
+          bool: True if the file entry exists.
 
-    Raises:
-      BackEndError: if the file entry cannot be opened.
-    """
-    # Opening a file by identifier is faster than opening a file by location.
-    # but does not preserve the name of indirect nodes.
-    fshfs_file_entry = None
-    location = getattr(path_spec, 'location', None)
-    identifier = getattr(path_spec, 'identifier', None)
+        Raises:
+          BackEndError: if the file entry cannot be opened.
+        """
+        # Opening a file by identifier is faster than opening a file by location.
+        # but does not preserve the name of indirect nodes.
+        fshfs_file_entry = None
+        location = getattr(path_spec, "location", None)
+        identifier = getattr(path_spec, "identifier", None)
 
-    try:
-      if location is not None:
-        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
-      elif identifier is not None:
-        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
-            identifier)
+        try:
+            if location is not None:
+                fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
+            elif identifier is not None:
+                fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
+                    identifier
+                )
 
-    except OSError as exception:
-      raise errors.BackEndError(exception)
+        except OSError as exception:
+            raise errors.BackEndError(exception)
 
-    return fshfs_file_entry is not None
+        return fshfs_file_entry is not None
 
-  def GetFileEntryByPathSpec(self, path_spec):
-    """Retrieves a file entry for a path specification.
+    def GetFileEntryByPathSpec(self, path_spec):
+        """Retrieves a file entry for a path specification.
 
-    Args:
-      path_spec (PathSpec): path specification.
+        Args:
+          path_spec (PathSpec): path specification.
 
-    Returns:
-      HFSFileEntry: file entry or None if not available.
+        Returns:
+          HFSFileEntry: file entry or None if not available.
 
-    Raises:
-      BackEndError: if the file entry cannot be opened.
-    """
-    # Opening a file by identifier is faster than opening a file by location.
-    # but does not preserve the name of indirect nodes.
-    fshfs_file_entry = None
-    location = getattr(path_spec, 'location', None)
-    identifier = getattr(path_spec, 'identifier', None)
+        Raises:
+          BackEndError: if the file entry cannot be opened.
+        """
+        # Opening a file by identifier is faster than opening a file by location.
+        # but does not preserve the name of indirect nodes.
+        fshfs_file_entry = None
+        location = getattr(path_spec, "location", None)
+        identifier = getattr(path_spec, "identifier", None)
 
-    if (location == self.LOCATION_ROOT or
-        identifier == self.ROOT_DIRECTORY_IDENTIFIER_NUMBER):
-      fshfs_file_entry = self._fshfs_volume.get_root_directory()
-      return hfs_file_entry.HFSFileEntry(
-          self._resolver_context, self, path_spec,
-          fshfs_file_entry=fshfs_file_entry, is_root=True)
+        if (
+            location == self.LOCATION_ROOT
+            or identifier == self.ROOT_DIRECTORY_IDENTIFIER_NUMBER
+        ):
+            fshfs_file_entry = self._fshfs_volume.get_root_directory()
+            return hfs_file_entry.HFSFileEntry(
+                self._resolver_context,
+                self,
+                path_spec,
+                fshfs_file_entry=fshfs_file_entry,
+                is_root=True,
+            )
 
-    try:
-      if location is not None:
-        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
-      elif identifier is not None:
-        fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
-            identifier)
+        try:
+            if location is not None:
+                fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
+            elif identifier is not None:
+                fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
+                    identifier
+                )
 
-    except OSError as exception:
-      raise errors.BackEndError(exception)
+        except OSError as exception:
+            raise errors.BackEndError(exception)
 
-    if fshfs_file_entry is None:
-      return None
+        if fshfs_file_entry is None:
+            return None
 
-    return hfs_file_entry.HFSFileEntry(
-        self._resolver_context, self, path_spec,
-        fshfs_file_entry=fshfs_file_entry)
+        return hfs_file_entry.HFSFileEntry(
+            self._resolver_context, self, path_spec, fshfs_file_entry=fshfs_file_entry
+        )
 
-  def GetHFSFileEntryByPathSpec(self, path_spec):
-    """Retrieves the HFS file entry for a path specification.
+    def GetHFSFileEntryByPathSpec(self, path_spec):
+        """Retrieves the HFS file entry for a path specification.
 
-    Args:
-      path_spec (PathSpec): a path specification.
+        Args:
+          path_spec (PathSpec): a path specification.
 
-    Returns:
-      pyfshfs.file_entry: file entry.
+        Returns:
+          pyfshfs.file_entry: file entry.
 
-    Raises:
-      PathSpecError: if the path specification is missing location and
-          identifier.
-    """
-    # Opening a file by identifier is faster than opening a file by location.
-    # but does not preserve the name of indirect nodes.
-    location = getattr(path_spec, 'location', None)
-    identifier = getattr(path_spec, 'identifier', None)
+        Raises:
+          PathSpecError: if the path specification is missing location and
+              identifier.
+        """
+        # Opening a file by identifier is faster than opening a file by location.
+        # but does not preserve the name of indirect nodes.
+        location = getattr(path_spec, "location", None)
+        identifier = getattr(path_spec, "identifier", None)
 
-    if location is not None:
-      fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
-    elif identifier is not None:
-      fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
-          identifier)
-    else:
-      raise errors.PathSpecError(
-          'Path specification missing location and identifier.')
+        if location is not None:
+            fshfs_file_entry = self._fshfs_volume.get_file_entry_by_path(location)
+        elif identifier is not None:
+            fshfs_file_entry = self._fshfs_volume.get_file_entry_by_identifier(
+                identifier
+            )
+        else:
+            raise errors.PathSpecError(
+                "Path specification missing location and identifier."
+            )
 
-    return fshfs_file_entry
+        return fshfs_file_entry
 
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
+    def GetRootFileEntry(self):
+        """Retrieves the root file entry.
 
-    Returns:
-      HFSFileEntry: file entry.
-    """
-    path_spec = hfs_path_spec.HFSPathSpec(
-        location=self.LOCATION_ROOT,
-        identifier=self.ROOT_DIRECTORY_IDENTIFIER_NUMBER,
-        parent=self._path_spec.parent)
-    return self.GetFileEntryByPathSpec(path_spec)
+        Returns:
+          HFSFileEntry: file entry.
+        """
+        path_spec = hfs_path_spec.HFSPathSpec(
+            location=self.LOCATION_ROOT,
+            identifier=self.ROOT_DIRECTORY_IDENTIFIER_NUMBER,
+            parent=self._path_spec.parent,
+        )
+        return self.GetFileEntryByPathSpec(path_spec)

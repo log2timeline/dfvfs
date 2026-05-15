@@ -14,149 +14,175 @@ from tests.file_io import test_lib
 
 
 class BDEFileWithKeyChainTest(test_lib.FAT12ImageFileTestCase):
-  """Tests the BitLocker Drive Encryption (BDE) file-like object.
+    """Tests the BitLocker Drive Encryption (BDE) file-like object.
 
-  The credentials are passed via the key chain.
-  """
+    The credentials are passed via the key chain.
+    """
 
-  _BDE_PASSWORD = 'bde-TEST'
+    _BDE_PASSWORD = "bde-TEST"
 
-  _IDENTIFIER_ANOTHER_FILE = 582
-  _IDENTIFIER_PASSWORDS_TXT = 8
+    _IDENTIFIER_ANOTHER_FILE = 582
+    _IDENTIFIER_PASSWORDS_TXT = 8
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
-    self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['bdetogo.raw'])
-    self._SkipIfPathNotExists(test_path)
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
+        self._resolver_context = context.Context()
+        test_path = self._GetTestFilePath(["bdetogo.raw"])
+        self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._bde_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_BDE, parent=self._os_path_spec)
-    resolver.Resolver.key_chain.SetCredential(
-        self._bde_path_spec, 'password', self._BDE_PASSWORD)
+        self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._bde_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_BDE, parent=self._os_path_spec
+        )
+        resolver.Resolver.key_chain.SetCredential(
+            self._bde_path_spec, "password", self._BDE_PASSWORD
+        )
 
-  def tearDown(self):
-    """Cleans up the needed objects used throughout the test."""
-    self._resolver_context.Empty()
+    def tearDown(self):
+        """Cleans up the needed objects used throughout the test."""
+        self._resolver_context.Empty()
 
-  def testOpenCloseIdentifier(self):
-    """Test the open and close functionality using an identifier."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._IDENTIFIER_PASSWORDS_TXT,
-        parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testOpenCloseIdentifier(self):
+        """Test the open and close functionality using an identifier."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            inode=self._IDENTIFIER_PASSWORDS_TXT,
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseIdentifier(file_object)
+        self._TestOpenCloseIdentifier(file_object)
 
-  def testOpenCloseLocation(self):
-    """Test the open and close functionality using a location."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
-        parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testOpenCloseLocation(self):
+        """Test the open and close functionality using a location."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            location="/passwords.txt",
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseLocation(file_object)
+        self._TestOpenCloseLocation(file_object)
 
-    # Try open with a path specification that has no parent.
-    path_spec.parent = None
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+        # Try open with a path specification that has no parent.
+        path_spec.parent = None
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(file_object)
+        with self.assertRaises(errors.PathSpecError):
+            self._TestOpenCloseLocation(file_object)
 
-  def testSeek(self):
-    """Test the seek functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, location='/a_directory/another_file',
-        inode=self._IDENTIFIER_ANOTHER_FILE, parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testSeek(self):
+        """Test the seek functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            location="/a_directory/another_file",
+            inode=self._IDENTIFIER_ANOTHER_FILE,
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestSeek(file_object)
+        self._TestSeek(file_object)
 
-  def testRead(self):
-    """Test the read functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
-        inode=self._IDENTIFIER_PASSWORDS_TXT, parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testRead(self):
+        """Test the read functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            location="/passwords.txt",
+            inode=self._IDENTIFIER_PASSWORDS_TXT,
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestRead(file_object)
+        self._TestRead(file_object)
 
 
 class BDEFileWithPathSpecCredentialsTest(test_lib.FAT12ImageFileTestCase):
-  """Tests the BitLocker Drive Encryption (BDE) file-like object.
+    """Tests the BitLocker Drive Encryption (BDE) file-like object.
 
-  The credentials are passed via the path specification.
-  """
+    The credentials are passed via the path specification.
+    """
 
-  _BDE_PASSWORD = 'bde-TEST'
+    _BDE_PASSWORD = "bde-TEST"
 
-  _IDENTIFIER_ANOTHER_FILE = 582
-  _IDENTIFIER_PASSWORDS_TXT = 8
+    _IDENTIFIER_ANOTHER_FILE = 582
+    _IDENTIFIER_PASSWORDS_TXT = 8
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
-    self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['bdetogo.raw'])
-    self._SkipIfPathNotExists(test_path)
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
+        self._resolver_context = context.Context()
+        test_path = self._GetTestFilePath(["bdetogo.raw"])
+        self._SkipIfPathNotExists(test_path)
 
-    self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._bde_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_BDE, parent=self._os_path_spec,
-        password=self._BDE_PASSWORD)
+        self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._bde_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_BDE,
+            parent=self._os_path_spec,
+            password=self._BDE_PASSWORD,
+        )
 
-  def tearDown(self):
-    """Cleans up the needed objects used throughout the test."""
-    self._resolver_context.Empty()
+    def tearDown(self):
+        """Cleans up the needed objects used throughout the test."""
+        self._resolver_context.Empty()
 
-  def testOpenCloseIdentifier(self):
-    """Test the open and close functionality using an identifier."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, inode=self._IDENTIFIER_PASSWORDS_TXT,
-        parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testOpenCloseIdentifier(self):
+        """Test the open and close functionality using an identifier."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            inode=self._IDENTIFIER_PASSWORDS_TXT,
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseIdentifier(file_object)
+        self._TestOpenCloseIdentifier(file_object)
 
-  def testOpenCloseLocation(self):
-    """Test the open and close functionality using a location."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
-        parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testOpenCloseLocation(self):
+        """Test the open and close functionality using a location."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            location="/passwords.txt",
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseLocation(file_object)
+        self._TestOpenCloseLocation(file_object)
 
-    # Try open with a path specification that has no parent.
-    path_spec.parent = None
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+        # Try open with a path specification that has no parent.
+        path_spec.parent = None
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(file_object)
+        with self.assertRaises(errors.PathSpecError):
+            self._TestOpenCloseLocation(file_object)
 
-  def testSeek(self):
-    """Test the seek functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, location='/a_directory/another_file',
-        inode=self._IDENTIFIER_ANOTHER_FILE, parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testSeek(self):
+        """Test the seek functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            location="/a_directory/another_file",
+            inode=self._IDENTIFIER_ANOTHER_FILE,
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestSeek(file_object)
+        self._TestSeek(file_object)
 
-  def testRead(self):
-    """Test the read functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_TSK, location='/passwords.txt',
-        inode=self._IDENTIFIER_PASSWORDS_TXT, parent=self._bde_path_spec)
-    file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
+    def testRead(self):
+        """Test the read functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK,
+            location="/passwords.txt",
+            inode=self._IDENTIFIER_PASSWORDS_TXT,
+            parent=self._bde_path_spec,
+        )
+        file_object = tsk_file_io.TSKFile(self._resolver_context, path_spec)
 
-    self._TestRead(file_object)
+        self._TestRead(file_object)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

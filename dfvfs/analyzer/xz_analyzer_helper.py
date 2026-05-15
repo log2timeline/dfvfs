@@ -7,27 +7,25 @@ from dfvfs.lib import definitions
 
 
 class XZAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """XZ analyzer helper."""
+    """XZ analyzer helper."""
 
-  FORMAT_CATEGORIES = frozenset([
-      definitions.FORMAT_CATEGORY_COMPRESSED_STREAM])
+    FORMAT_CATEGORIES = frozenset([definitions.FORMAT_CATEGORY_COMPRESSED_STREAM])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_XZ
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_XZ
 
-  def GetFormatSpecification(self):
-    """Retrieves the format specification.
+    def GetFormatSpecification(self):
+        """Retrieves the format specification.
 
-    Returns:
-      FormatSpecification: format specification or None if the format cannot
-          be defined by a specification object.
-    """
-    format_specification = specification.FormatSpecification(
-        self.type_indicator)
+        Returns:
+          FormatSpecification: format specification or None if the format cannot
+              be defined by a specification object.
+        """
+        format_specification = specification.FormatSpecification(self.type_indicator)
 
-    # XZ compressed steam signature.
-    format_specification.AddNewSignature(b'\xfd7zXZ\x00', offset=0)
+        # XZ compressed steam signature.
+        format_specification.AddNewSignature(b"\xfd7zXZ\x00", offset=0)
 
-    return format_specification
+        return format_specification
 
 
 analyzer.Analyzer.RegisterHelper(XZAnalyzerHelper())

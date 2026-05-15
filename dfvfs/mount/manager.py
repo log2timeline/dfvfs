@@ -22,50 +22,50 @@ type=TSK_PARTITION, location=/p1
 
 
 class MountPointManager:
-  """Path specification mount point manager."""
+    """Path specification mount point manager."""
 
-  _mount_points = {}
+    _mount_points = {}
 
-  @classmethod
-  def DeregisterMountPoint(cls, mount_point):
-    """Deregisters a path specification mount point.
+    @classmethod
+    def DeregisterMountPoint(cls, mount_point):
+        """Deregisters a path specification mount point.
 
-    Args:
-      mount_point (str): mount point identifier.
+        Args:
+          mount_point (str): mount point identifier.
 
-    Raises:
-      KeyError: if the corresponding mount point is not set.
-    """
-    if mount_point not in cls._mount_points:
-      raise KeyError(f'Mount point: {mount_point:s} not set.')
+        Raises:
+          KeyError: if the corresponding mount point is not set.
+        """
+        if mount_point not in cls._mount_points:
+            raise KeyError(f"Mount point: {mount_point:s} not set.")
 
-    del cls._mount_points[mount_point]
+        del cls._mount_points[mount_point]
 
-  @classmethod
-  def GetMountPoint(cls, mount_point):
-    """Retrieves the path specification of a mount point.
+    @classmethod
+    def GetMountPoint(cls, mount_point):
+        """Retrieves the path specification of a mount point.
 
-    Args:
-      mount_point (str): mount point identifier.
+        Args:
+          mount_point (str): mount point identifier.
 
-    Returns:
-      PathSpec: path specification of the mount point or None if the mount
-          point does not exists.
-    """
-    return cls._mount_points.get(mount_point)
+        Returns:
+          PathSpec: path specification of the mount point or None if the mount
+              point does not exists.
+        """
+        return cls._mount_points.get(mount_point)
 
-  @classmethod
-  def RegisterMountPoint(cls, mount_point, path_spec):
-    """Registers a path specification mount point.
+    @classmethod
+    def RegisterMountPoint(cls, mount_point, path_spec):
+        """Registers a path specification mount point.
 
-    Args:
-      mount_point (str): mount point identifier.
-      path_spec (PathSpec): path specification of the mount point.
+        Args:
+          mount_point (str): mount point identifier.
+          path_spec (PathSpec): path specification of the mount point.
 
-    Raises:
-      KeyError: if the corresponding mount point is already set.
-    """
-    if mount_point in cls._mount_points:
-      raise KeyError(f'Mount point: {mount_point:s} already set.')
+        Raises:
+          KeyError: if the corresponding mount point is already set.
+        """
+        if mount_point in cls._mount_points:
+            raise KeyError(f"Mount point: {mount_point:s} already set.")
 
-    cls._mount_points[mount_point] = path_spec
+        cls._mount_points[mount_point] = path_spec

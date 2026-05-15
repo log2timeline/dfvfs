@@ -11,38 +11,40 @@ from tests.resolver_helpers import test_lib
 
 
 class APMResolverHelperTest(test_lib.ResolverHelperTestCase):
-  """Tests for the APM resolver helper implementation."""
+    """Tests for the APM resolver helper implementation."""
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
 
-    test_path = self._GetTestFilePath(['apm.dmg'])
-    self._SkipIfPathNotExists(test_path)
+        test_path = self._GetTestFilePath(["apm.dmg"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec
+        )
 
-  def testNewFileObject(self):
-    """Tests the NewFileObject function."""
-    test_apm_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_APM, location='/',
-        parent=self._modi_path_spec)
+    def testNewFileObject(self):
+        """Tests the NewFileObject function."""
+        test_apm_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_APM, location="/", parent=self._modi_path_spec
+        )
 
-    resolver_helper_object = apm_resolver_helper.APMResolverHelper()
-    self._TestNewFileObject(resolver_helper_object, test_apm_path_spec)
+        resolver_helper_object = apm_resolver_helper.APMResolverHelper()
+        self._TestNewFileObject(resolver_helper_object, test_apm_path_spec)
 
-  def testNewFileSystem(self):
-    """Tests the NewFileSystem function."""
-    test_apm_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_APM, location='/',
-        parent=self._modi_path_spec)
+    def testNewFileSystem(self):
+        """Tests the NewFileSystem function."""
+        test_apm_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_APM, location="/", parent=self._modi_path_spec
+        )
 
-    resolver_helper_object = apm_resolver_helper.APMResolverHelper()
-    self._TestNewFileSystem(resolver_helper_object, test_apm_path_spec)
+        resolver_helper_object = apm_resolver_helper.APMResolverHelper()
+        self._TestNewFileSystem(resolver_helper_object, test_apm_path_spec)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

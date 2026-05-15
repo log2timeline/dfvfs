@@ -14,118 +14,128 @@ from tests import test_lib as shared_test_lib
 
 
 class XFSFileTest(shared_test_lib.BaseTestCase):
-  """Tests the file-like object implementation using pyfsxfs.file_entry."""
+    """Tests the file-like object implementation using pyfsxfs.file_entry."""
 
-  _INODE_ANOTHER_FILE = 11078
-  _INODE_PASSWORDS_TXT = 11077
+    _INODE_ANOTHER_FILE = 11078
+    _INODE_PASSWORDS_TXT = 11077
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
-    self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['xfs.raw'])
-    self._SkipIfPathNotExists(test_path)
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
+        self._resolver_context = context.Context()
+        test_path = self._GetTestFilePath(["xfs.raw"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec
+        )
 
-  def tearDown(self):
-    """Cleans up the needed objects used throughout the test."""
-    self._resolver_context.Empty()
+    def tearDown(self):
+        """Cleans up the needed objects used throughout the test."""
+        self._resolver_context.Empty()
 
-  def testOpenCloseIdentifier(self):
-    """Test the open and close functionality using an inode."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_XFS,
-        inode=self._INODE_PASSWORDS_TXT,
-        parent=self._raw_path_spec)
-    file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
+    def testOpenCloseIdentifier(self):
+        """Test the open and close functionality using an inode."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_XFS,
+            inode=self._INODE_PASSWORDS_TXT,
+            parent=self._raw_path_spec,
+        )
+        file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
 
-    file_object.Open()
-    self.assertEqual(file_object.get_size(), 116)
+        file_object.Open()
+        self.assertEqual(file_object.get_size(), 116)
 
-    # TODO: add a failing scenario.
+        # TODO: add a failing scenario.
 
-  def testOpenCloseLocation(self):
-    """Test the open and close functionality using a location."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_XFS, location='/passwords.txt',
-        parent=self._raw_path_spec)
-    file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
+    def testOpenCloseLocation(self):
+        """Test the open and close functionality using a location."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_XFS,
+            location="/passwords.txt",
+            parent=self._raw_path_spec,
+        )
+        file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
 
-    file_object.Open()
-    self.assertEqual(file_object.get_size(), 116)
+        file_object.Open()
+        self.assertEqual(file_object.get_size(), 116)
 
-    # Try open with a path specification that has no parent.
-    path_spec.parent = None
-    file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
+        # Try open with a path specification that has no parent.
+        path_spec.parent = None
+        file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
 
-    with self.assertRaises(errors.PathSpecError):
-      file_object.Open()
+        with self.assertRaises(errors.PathSpecError):
+            file_object.Open()
 
-  def testSeek(self):
-    """Test the seek functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_XFS, location='/a_directory/another_file',
-        inode=self._INODE_ANOTHER_FILE,
-        parent=self._raw_path_spec)
-    file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
+    def testSeek(self):
+        """Test the seek functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_XFS,
+            location="/a_directory/another_file",
+            inode=self._INODE_ANOTHER_FILE,
+            parent=self._raw_path_spec,
+        )
+        file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
 
-    file_object.Open()
-    self.assertEqual(file_object.get_size(), 22)
+        file_object.Open()
+        self.assertEqual(file_object.get_size(), 22)
 
-    file_object.seek(10)
-    self.assertEqual(file_object.read(5), b'other')
-    self.assertEqual(file_object.get_offset(), 15)
+        file_object.seek(10)
+        self.assertEqual(file_object.read(5), b"other")
+        self.assertEqual(file_object.get_offset(), 15)
 
-    file_object.seek(-10, os.SEEK_END)
-    self.assertEqual(file_object.read(5), b'her f')
+        file_object.seek(-10, os.SEEK_END)
+        self.assertEqual(file_object.read(5), b"her f")
 
-    file_object.seek(2, os.SEEK_CUR)
-    self.assertEqual(file_object.read(2), b'e.')
+        file_object.seek(2, os.SEEK_CUR)
+        self.assertEqual(file_object.read(2), b"e.")
 
-    # Conforming to the POSIX seek the offset can exceed the file size
-    # but reading will result in no data being returned.
-    file_object.seek(300, os.SEEK_SET)
-    self.assertEqual(file_object.get_offset(), 300)
-    self.assertEqual(file_object.read(2), b'')
+        # Conforming to the POSIX seek the offset can exceed the file size
+        # but reading will result in no data being returned.
+        file_object.seek(300, os.SEEK_SET)
+        self.assertEqual(file_object.get_offset(), 300)
+        self.assertEqual(file_object.read(2), b"")
 
-    with self.assertRaises(OSError):
-      file_object.seek(-10, os.SEEK_SET)
+        with self.assertRaises(OSError):
+            file_object.seek(-10, os.SEEK_SET)
 
-    # On error the offset should not change.
-    self.assertEqual(file_object.get_offset(), 300)
+        # On error the offset should not change.
+        self.assertEqual(file_object.get_offset(), 300)
 
-    with self.assertRaises(OSError):
-      file_object.seek(10, 5)
+        with self.assertRaises(OSError):
+            file_object.seek(10, 5)
 
-    # On error the offset should not change.
-    self.assertEqual(file_object.get_offset(), 300)
+        # On error the offset should not change.
+        self.assertEqual(file_object.get_offset(), 300)
 
-  def testRead(self):
-    """Test the read functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_XFS, location='/passwords.txt',
-        inode=self._INODE_PASSWORDS_TXT,
-        parent=self._raw_path_spec)
-    file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
+    def testRead(self):
+        """Test the read functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_XFS,
+            location="/passwords.txt",
+            inode=self._INODE_PASSWORDS_TXT,
+            parent=self._raw_path_spec,
+        )
+        file_object = xfs_file_io.XFSFile(self._resolver_context, path_spec)
 
-    file_object.Open()
-    read_buffer = file_object.read()
+        file_object.Open()
+        read_buffer = file_object.read()
 
-    expected_buffer = (
-        b'place,user,password\n'
-        b'bank,joesmith,superrich\n'
-        b'alarm system,-,1234\n'
-        b'treasure chest,-,1111\n'
-        b'uber secret laire,admin,admin\n')
+        expected_buffer = (
+            b"place,user,password\n"
+            b"bank,joesmith,superrich\n"
+            b"alarm system,-,1234\n"
+            b"treasure chest,-,1111\n"
+            b"uber secret laire,admin,admin\n"
+        )
 
-    self.assertEqual(read_buffer, expected_buffer)
+        self.assertEqual(read_buffer, expected_buffer)
 
-    # TODO: add boundary scenarios.
+        # TODO: add boundary scenarios.
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

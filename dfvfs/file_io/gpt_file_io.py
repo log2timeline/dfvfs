@@ -8,173 +8,183 @@ from dfvfs.resolver import resolver
 
 
 class GPTFile(file_io.FileIO):
-  """File input/output (IO) object using pyvsgpt."""
+    """File input/output (IO) object using pyvsgpt."""
 
-  def __init__(self, resolver_context, path_spec):
-    """Initializes a file input/output (IO) object.
+    def __init__(self, resolver_context, path_spec):
+        """Initializes a file input/output (IO) object.
 
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
-    """
-    super().__init__(resolver_context, path_spec)
-    self._current_offset = None
-    self._file_object = None
-    self._file_system = None
-    self._partition_offset = None
-    self._partition_size = None
-    self._vsgpt_partition = None
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
+        """
+        super().__init__(resolver_context, path_spec)
+        self._current_offset = None
+        self._file_object = None
+        self._file_system = None
+        self._partition_offset = None
+        self._partition_size = None
+        self._vsgpt_partition = None
 
-  def _Close(self):
-    """Closes the file-like object."""
-    self._current_offset = None
-    self._partition_offset = None
-    self._partition_size = None
+    def _Close(self):
+        """Closes the file-like object."""
+        self._current_offset = None
+        self._partition_offset = None
+        self._partition_size = None
 
-    self._vsgpt_partition = None
+        self._vsgpt_partition = None
 
-    self._file_object = None
-    self._file_system = None
+        self._file_object = None
+        self._file_system = None
 
-  def _Open(self, mode='rb'):
-    """Opens the file-like object defined by path specification.
+    def _Open(self, mode="rb"):
+        """Opens the file-like object defined by path specification.
 
-    Args:
-      mode (Optional[str]): file access mode.
+        Args:
+          mode (Optional[str]): file access mode.
 
-    Raises:
-      AccessError: if the access to open the file was denied.
-      OSError: if the file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-    """
-    file_system = resolver.Resolver.OpenFileSystem(
-        self._path_spec, resolver_context=self._resolver_context)
+        Raises:
+          AccessError: if the access to open the file was denied.
+          OSError: if the file-like object could not be opened.
+          PathSpecError: if the path specification is incorrect.
+        """
+        file_system = resolver.Resolver.OpenFileSystem(
+            self._path_spec, resolver_context=self._resolver_context
+        )
 
-    entry_index = file_system.GetEntryIndexByPathSpec(self._path_spec)
-    if entry_index is None:
-      raise errors.PathSpecError(
-          'Unable to retrieve entry index from path specification.')
+        entry_index = file_system.GetEntryIndexByPathSpec(self._path_spec)
+        if entry_index is None:
+            raise errors.PathSpecError(
+                "Unable to retrieve entry index from path specification."
+            )
 
-    vsgpt_volume = file_system.GetGPTVolume()
+        vsgpt_volume = file_system.GetGPTVolume()
 
-    if not vsgpt_volume.has_partition_with_identifier(entry_index):
-      raise errors.PathSpecError(
-          f'Missing GPT partition with entry index: {entry_index:d}')
+        if not vsgpt_volume.has_partition_with_identifier(entry_index):
+            raise errors.PathSpecError(
+                f"Missing GPT partition with entry index: {entry_index:d}"
+            )
 
-    self._file_system = file_system
-    self._vsgpt_partition = vsgpt_volume.get_partition_by_identifier(
-        entry_index)
+        self._file_system = file_system
+        self._vsgpt_partition = vsgpt_volume.get_partition_by_identifier(entry_index)
 
-    # Note that using pass-through IO in Python is faster than using
-    # the vsgpt_partition read and seek methods.
-    self._file_object = resolver.Resolver.OpenFileObject(
-        self._path_spec.parent, resolver_context=self._resolver_context)
+        # Note that using pass-through IO in Python is faster than using
+        # the vsgpt_partition read and seek methods.
+        self._file_object = resolver.Resolver.OpenFileObject(
+            self._path_spec.parent, resolver_context=self._resolver_context
+        )
 
-    self._current_offset = 0
-    self._partition_offset = self._vsgpt_partition.get_volume_offset()
-    self._partition_size = self._vsgpt_partition.get_size()
+        self._current_offset = 0
+        self._partition_offset = self._vsgpt_partition.get_volume_offset()
+        self._partition_size = self._vsgpt_partition.get_size()
 
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-  # pylint: disable=invalid-name
+    # Note: that the following functions do not follow the style guide
+    # because they are part of the file-like object interface.
+    # pylint: disable=invalid-name
 
-  def read(self, size=None):
-    """Reads a byte string from the file-like object at the current offset.
+    def read(self, size=None):
+        """Reads a byte string from the file-like object at the current offset.
 
-    The function will read a byte string of the specified size or
-    all of the remaining data if no size was specified.
+        The function will read a byte string of the specified size or
+        all of the remaining data if no size was specified.
 
-    Args:
-      size (Optional[int]): number of bytes to read, where None is all
-          remaining data.
+        Args:
+          size (Optional[int]): number of bytes to read, where None is all
+              remaining data.
 
-    Returns:
-      bytes: data read.
+        Returns:
+          bytes: data read.
 
-    Raises:
-      OSError: if the read failed.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the read failed.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    if self._partition_offset < 0 or self._partition_size < 0:
-      raise OSError('Invalid partition data range.')
+        if self._partition_offset < 0 or self._partition_size < 0:
+            raise OSError("Invalid partition data range.")
 
-    if self._current_offset < 0:
-      raise OSError((
-          f'Invalid current offset: {self._current_offset:d} value less than '
-          f'zero.'))
+        if self._current_offset < 0:
+            raise OSError(
+                (
+                    f"Invalid current offset: {self._current_offset:d} value less than "
+                    f"zero."
+                )
+            )
 
-    if self._current_offset >= self._partition_size:
-      return b''
+        if self._current_offset >= self._partition_size:
+            return b""
 
-    if size is None:
-      size = self._partition_size
-    if self._current_offset + size > self._partition_size:
-      size = self._partition_size - self._current_offset
+        if size is None:
+            size = self._partition_size
+        if self._current_offset + size > self._partition_size:
+            size = self._partition_size - self._current_offset
 
-    self._file_object.seek(
-        self._partition_offset + self._current_offset, os.SEEK_SET)
+        self._file_object.seek(
+            self._partition_offset + self._current_offset, os.SEEK_SET
+        )
 
-    data = self._file_object.read(size)
+        data = self._file_object.read(size)
 
-    self._current_offset += len(data)
+        self._current_offset += len(data)
 
-    return data
+        return data
 
-  def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks to an offset within the file-like object.
+    def seek(self, offset, whence=os.SEEK_SET):
+        """Seeks to an offset within the file-like object.
 
-    Args:
-      offset (int): offset to seek to.
-      whence (Optional(int)): value that indicates whether offset is an absolute
-          or relative position within the file.
+        Args:
+          offset (int): offset to seek to.
+          whence (Optional(int)): value that indicates whether offset is an absolute
+              or relative position within the file.
 
-    Raises:
-      OSError: if the seek failed.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the seek failed.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    if self._current_offset < 0:
-      raise OSError((
-          f'Invalid current offset: {self._current_offset:d} value less than '
-          f'zero.'))
+        if self._current_offset < 0:
+            raise OSError(
+                (
+                    f"Invalid current offset: {self._current_offset:d} value less than "
+                    f"zero."
+                )
+            )
 
-    if whence == os.SEEK_CUR:
-      offset += self._current_offset
-    elif whence == os.SEEK_END:
-      offset += self._partition_size
-    elif whence != os.SEEK_SET:
-      raise OSError('Unsupported whence.')
-    if offset < 0:
-      raise OSError('Invalid offset value less than zero.')
-    self._current_offset = offset
+        if whence == os.SEEK_CUR:
+            offset += self._current_offset
+        elif whence == os.SEEK_END:
+            offset += self._partition_size
+        elif whence != os.SEEK_SET:
+            raise OSError("Unsupported whence.")
+        if offset < 0:
+            raise OSError("Invalid offset value less than zero.")
+        self._current_offset = offset
 
-  def get_offset(self):
-    """Retrieves the current offset into the file-like object.
+    def get_offset(self):
+        """Retrieves the current offset into the file-like object.
 
-    Returns:
-      int: current offset in the partition.
+        Returns:
+          int: current offset in the partition.
 
-    Raises:
-      OSError: if the file-like object has not been opened.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the file-like object has not been opened.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    return self._current_offset
+        return self._current_offset
 
-  def get_size(self):
-    """Retrieves the size of the file-like object.
+    def get_size(self):
+        """Retrieves the size of the file-like object.
 
-    Returns:
-      int: size of the partition.
+        Returns:
+          int: size of the partition.
 
-    Raises:
-      OSError: if the file-like object has not been opened.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the file-like object has not been opened.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    return self._partition_size
+        return self._partition_size

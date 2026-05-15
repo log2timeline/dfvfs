@@ -7,111 +7,123 @@ from dfvfs.vfs import gpt_directory
 
 
 class GPTFileEntry(file_entry.FileEntry):
-  """File system file entry that uses pyvsgpt."""
+    """File system file entry that uses pyvsgpt."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_GPT
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_GPT
 
-  def __init__(
-      self, resolver_context, file_system, path_spec, entry_index=None,
-      is_root=False, is_virtual=False, vsgpt_partition=None):
-    """Initializes a file entry.
+    def __init__(
+        self,
+        resolver_context,
+        file_system,
+        path_spec,
+        entry_index=None,
+        is_root=False,
+        is_virtual=False,
+        vsgpt_partition=None,
+    ):
+        """Initializes a file entry.
 
-    Args:
-      resolver_context (Context): resolver context.
-      file_system (FileSystem): file system.
-      path_spec (PathSpec): path specification.
-      entry_index (Optional[int]): GPT partition entry index or None.
-      is_root (Optional[bool]): True if the file entry is the root file entry
-          of the corresponding file system.
-      is_virtual (Optional[bool]): True if the file entry is a virtual file
-      vsgpt_partition (Optional[pyvsgpt.partition]): a GPT partition.
+        Args:
+          resolver_context (Context): resolver context.
+          file_system (FileSystem): file system.
+          path_spec (PathSpec): path specification.
+          entry_index (Optional[int]): GPT partition entry index or None.
+          is_root (Optional[bool]): True if the file entry is the root file entry
+              of the corresponding file system.
+          is_virtual (Optional[bool]): True if the file entry is a virtual file
+          vsgpt_partition (Optional[pyvsgpt.partition]): a GPT partition.
 
-    Raises:
-      BackEndError: when GPT partition is missing for a non-virtual file entry.
-    """
-    if not is_virtual and vsgpt_partition is None:
-      vsgpt_partition = file_system.GetGPTPartitionByPathSpec(path_spec)
-    if not is_virtual and vsgpt_partition is None:
-      raise errors.BackEndError(
-          'Missing vsgpt partition in non-virtual file entry.')
+        Raises:
+          BackEndError: when GPT partition is missing for a non-virtual file entry.
+        """
+        if not is_virtual and vsgpt_partition is None:
+            vsgpt_partition = file_system.GetGPTPartitionByPathSpec(path_spec)
+        if not is_virtual and vsgpt_partition is None:
+            raise errors.BackEndError(
+                "Missing vsgpt partition in non-virtual file entry."
+            )
 
-    super().__init__(
-        resolver_context, file_system, path_spec, is_root=is_root,
-        is_virtual=is_virtual)
-    self._entry_index = entry_index
-    self._name = None
-    self._vsgpt_partition = vsgpt_partition
+        super().__init__(
+            resolver_context,
+            file_system,
+            path_spec,
+            is_root=is_root,
+            is_virtual=is_virtual,
+        )
+        self._entry_index = entry_index
+        self._name = None
+        self._vsgpt_partition = vsgpt_partition
 
-    if self._is_virtual:
-      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
-    else:
-      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
+        if self._is_virtual:
+            self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+        else:
+            self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def _GetDirectory(self):
-    """Retrieves the directory.
+    def _GetDirectory(self):
+        """Retrieves the directory.
 
-    Returns:
-      GPTDirectory: a directory.
-    """
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return None
+        Returns:
+          GPTDirectory: a directory.
+        """
+        if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+            return None
 
-    return gpt_directory.GPTDirectory(self._file_system, self.path_spec)
+        return gpt_directory.GPTDirectory(self._file_system, self.path_spec)
 
-  def _GetSubFileEntries(self):
-    """Retrieves sub file entries.
+    def _GetSubFileEntries(self):
+        """Retrieves sub file entries.
 
-    Yields:
-      GPTFileEntry: a sub file entry.
-    """
-    if self._directory is None:
-      self._directory = self._GetDirectory()
+        Yields:
+          GPTFileEntry: a sub file entry.
+        """
+        if self._directory is None:
+            self._directory = self._GetDirectory()
 
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield GPTFileEntry(self._resolver_context, self._file_system, path_spec)
+        if self._directory:
+            for path_spec in self._directory.entries:
+                yield GPTFileEntry(self._resolver_context, self._file_system, path_spec)
 
-  @property
-  def name(self):
-    """str: name of the file entry, without the full path."""
-    if self._name is None:
-      self._name = ''
+    @property
+    def name(self):
+        """str: name of the file entry, without the full path."""
+        if self._name is None:
+            self._name = ""
 
-      # Prefer generating the name seeing that the GPT back-end supports
-      # aliases, such as "/p1" and "/gpt{GUID}".
-      if self._entry_index is not None:
-        gpt_entry_index = self._entry_index + 1
-        self._name = f'p{gpt_entry_index:d}'
-      else:
-        location = getattr(self.path_spec, 'location', None)
-        if location is not None:
-          self._name = self._file_system.BasenamePath(location)
+            # Prefer generating the name seeing that the GPT back-end supports
+            # aliases, such as "/p1" and "/gpt{GUID}".
+            if self._entry_index is not None:
+                gpt_entry_index = self._entry_index + 1
+                self._name = f"p{gpt_entry_index:d}"
+            else:
+                location = getattr(self.path_spec, "location", None)
+                if location is not None:
+                    self._name = self._file_system.BasenamePath(location)
 
-    return self._name
+        return self._name
 
-  @property
-  def size(self):
-    """int: size of the file entry in bytes or None if not available."""
-    if self._vsgpt_partition is None:
-      return None
+    @property
+    def size(self):
+        """int: size of the file entry in bytes or None if not available."""
+        if self._vsgpt_partition is None:
+            return None
 
-    return self._vsgpt_partition.size
+        return self._vsgpt_partition.size
 
-  def GetGPTPartition(self):
-    """Retrieves the GPT partition.
+    def GetGPTPartition(self):
+        """Retrieves the GPT partition.
 
-    Returns:
-      pyvsgpt.partition: a GPT partition.
-    """
-    return self._vsgpt_partition
+        Returns:
+          pyvsgpt.partition: a GPT partition.
+        """
+        return self._vsgpt_partition
 
-  def GetParentFileEntry(self):
-    """Retrieves the parent file entry.
+    def GetParentFileEntry(self):
+        """Retrieves the parent file entry.
 
-    Returns:
-      GPTFileEntry: parent file entry or None if not available.
-    """
-    if self._entry_index is None:
-      return None
+        Returns:
+          GPTFileEntry: parent file entry or None if not available.
+        """
+        if self._entry_index is None:
+            return None
 
-    return self._file_system.GetRootFileEntry()
+        return self._file_system.GetRootFileEntry()

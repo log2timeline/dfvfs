@@ -8,121 +8,123 @@ from dfvfs.resolver import resolver
 
 
 class XFSFile(file_io.FileIO):
-  """File input/output (IO) object using pyfsxfs.file_entry."""
+    """File input/output (IO) object using pyfsxfs.file_entry."""
 
-  def __init__(self, resolver_context, path_spec):
-    """Initializes a file input/output (IO) object.
+    def __init__(self, resolver_context, path_spec):
+        """Initializes a file input/output (IO) object.
 
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
-    """
-    super().__init__(resolver_context, path_spec)
-    self._file_system = None
-    self._fsxfs_file_entry = None
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
+        """
+        super().__init__(resolver_context, path_spec)
+        self._file_system = None
+        self._fsxfs_file_entry = None
 
-  def _Close(self):
-    """Closes the file-like object."""
-    self._fsxfs_file_entry = None
+    def _Close(self):
+        """Closes the file-like object."""
+        self._fsxfs_file_entry = None
 
-    self._file_system = None
+        self._file_system = None
 
-  def _Open(self, mode='rb'):
-    """Opens the file-like object defined by path specification.
+    def _Open(self, mode="rb"):
+        """Opens the file-like object defined by path specification.
 
-    Args:
-      mode (Optional[str]): file access mode.
+        Args:
+          mode (Optional[str]): file access mode.
 
-    Raises:
-      AccessError: if the access to open the file was denied.
-      NotSupported: if a data stream, like the resource or named fork, is
-          requested to be opened.
-      OSError: if the file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-    """
-    data_stream = getattr(self._path_spec, 'data_stream', None)
-    if data_stream:
-      raise errors.NotSupported(
-          f'Open data stream: {data_stream:s} not supported.')
+        Raises:
+          AccessError: if the access to open the file was denied.
+          NotSupported: if a data stream, like the resource or named fork, is
+              requested to be opened.
+          OSError: if the file-like object could not be opened.
+          PathSpecError: if the path specification is incorrect.
+        """
+        data_stream = getattr(self._path_spec, "data_stream", None)
+        if data_stream:
+            raise errors.NotSupported(
+                f"Open data stream: {data_stream:s} not supported."
+            )
 
-    self._file_system = resolver.Resolver.OpenFileSystem(
-        self._path_spec, resolver_context=self._resolver_context)
+        self._file_system = resolver.Resolver.OpenFileSystem(
+            self._path_spec, resolver_context=self._resolver_context
+        )
 
-    file_entry = self._file_system.GetFileEntryByPathSpec(self._path_spec)
-    if not file_entry:
-      raise OSError('Unable to open file entry.')
+        file_entry = self._file_system.GetFileEntryByPathSpec(self._path_spec)
+        if not file_entry:
+            raise OSError("Unable to open file entry.")
 
-    fsxfs_file_entry = file_entry.GetXFSFileEntry()
-    if not fsxfs_file_entry:
-      raise OSError('Unable to open XFS file entry.')
+        fsxfs_file_entry = file_entry.GetXFSFileEntry()
+        if not fsxfs_file_entry:
+            raise OSError("Unable to open XFS file entry.")
 
-    self._fsxfs_file_entry = fsxfs_file_entry
+        self._fsxfs_file_entry = fsxfs_file_entry
 
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-  # pylint: disable=invalid-name
+    # Note: that the following functions do not follow the style guide
+    # because they are part of the file-like object interface.
+    # pylint: disable=invalid-name
 
-  def read(self, size=None):
-    """Reads a byte string from the file-like object at the current offset.
+    def read(self, size=None):
+        """Reads a byte string from the file-like object at the current offset.
 
-    The function will read a byte string of the specified size or
-    all of the remaining data if no size was specified.
+        The function will read a byte string of the specified size or
+        all of the remaining data if no size was specified.
 
-    Args:
-      size (Optional[int]): number of bytes to read, where None is all
-          remaining data.
+        Args:
+          size (Optional[int]): number of bytes to read, where None is all
+              remaining data.
 
-    Returns:
-      bytes: data read.
+        Returns:
+          bytes: data read.
 
-    Raises:
-      OSError: if the read failed.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the read failed.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    return self._fsxfs_file_entry.read(size=size)
+        return self._fsxfs_file_entry.read(size=size)
 
-  def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks to an offset within the file-like object.
+    def seek(self, offset, whence=os.SEEK_SET):
+        """Seeks to an offset within the file-like object.
 
-    Args:
-      offset (int): offset to seek to.
-      whence (Optional(int)): value that indicates whether offset is an absolute
-          or relative position within the file.
+        Args:
+          offset (int): offset to seek to.
+          whence (Optional(int)): value that indicates whether offset is an absolute
+              or relative position within the file.
 
-    Raises:
-      OSError: if the seek failed.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the seek failed.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    self._fsxfs_file_entry.seek(offset, whence)
+        self._fsxfs_file_entry.seek(offset, whence)
 
-  def get_offset(self):
-    """Retrieves the current offset into the file-like object.
+    def get_offset(self):
+        """Retrieves the current offset into the file-like object.
 
-    Return:
-      int: current offset into the file-like object.
+        Return:
+          int: current offset into the file-like object.
 
-    Raises:
-      OSError: if the file-like object has not been opened.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the file-like object has not been opened.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    return self._fsxfs_file_entry.get_offset()
+        return self._fsxfs_file_entry.get_offset()
 
-  def get_size(self):
-    """Retrieves the size of the file-like object.
+    def get_size(self):
+        """Retrieves the size of the file-like object.
 
-    Returns:
-      int: size of the file-like object data.
+        Returns:
+          int: size of the file-like object data.
 
-    Raises:
-      OSError: if the file-like object has not been opened.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the file-like object has not been opened.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    return self._fsxfs_file_entry.get_size()
+        return self._fsxfs_file_entry.get_size()

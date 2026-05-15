@@ -12,90 +12,101 @@ from tests import test_lib as shared_test_lib
 
 
 class SQLiteBlobFileSystemTest(shared_test_lib.BaseTestCase):
-  """Tests for the sqlite blob file system."""
+    """Tests for the sqlite blob file system."""
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    self._resolver_context = context.Context()
-    test_path = self._GetTestFilePath(['blob.db'])
-    self._SkipIfPathNotExists(test_path)
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        self._resolver_context = context.Context()
+        test_path = self._GetTestFilePath(["blob.db"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._sqlite_blob_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_SQLITE_BLOB, table_name='myblobs',
-        column_name='blobs', row_condition=('name', '==', 'mmssms.db'),
-        parent=test_os_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._sqlite_blob_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_SQLITE_BLOB,
+            table_name="myblobs",
+            column_name="blobs",
+            row_condition=("name", "==", "mmssms.db"),
+            parent=test_os_path_spec,
+        )
 
-    self._sqlite_blob_path_spec_2 = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_SQLITE_BLOB, table_name='myblobs',
-        column_name='blobs', row_index=2, parent=test_os_path_spec)
+        self._sqlite_blob_path_spec_2 = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_SQLITE_BLOB,
+            table_name="myblobs",
+            column_name="blobs",
+            row_index=2,
+            parent=test_os_path_spec,
+        )
 
-  def tearDown(self):
-    """Cleans up the needed objects used throughout the test."""
-    self._resolver_context.Empty()
+    def tearDown(self):
+        """Cleans up the needed objects used throughout the test."""
+        self._resolver_context.Empty()
 
-  def testOpenAndClose(self):
-    """Test the open and close functionality."""
-    file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
-        self._resolver_context, self._sqlite_blob_path_spec)
-    self.assertIsNotNone(file_system)
+    def testOpenAndClose(self):
+        """Test the open and close functionality."""
+        file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
+            self._resolver_context, self._sqlite_blob_path_spec
+        )
+        self.assertIsNotNone(file_system)
 
-    file_system.Open()
+        file_system.Open()
 
-    file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
-        self._resolver_context, self._sqlite_blob_path_spec_2)
-    self.assertIsNotNone(file_system)
+        file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
+            self._resolver_context, self._sqlite_blob_path_spec_2
+        )
+        self.assertIsNotNone(file_system)
 
-    file_system.Open()
+        file_system.Open()
 
-  def testFileEntryExistsByPathSpec(self):
-    """Test the file entry exists by path specification functionality."""
-    file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
-        self._resolver_context, self._sqlite_blob_path_spec)
-    self.assertIsNotNone(file_system)
+    def testFileEntryExistsByPathSpec(self):
+        """Test the file entry exists by path specification functionality."""
+        file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
+            self._resolver_context, self._sqlite_blob_path_spec
+        )
+        self.assertIsNotNone(file_system)
 
-    file_system.Open()
+        file_system.Open()
 
-    result = file_system.FileEntryExistsByPathSpec(self._sqlite_blob_path_spec)
-    self.assertTrue(result)
+        result = file_system.FileEntryExistsByPathSpec(self._sqlite_blob_path_spec)
+        self.assertTrue(result)
 
-    result = file_system.FileEntryExistsByPathSpec(
-        self._sqlite_blob_path_spec_2)
-    self.assertTrue(result)
+        result = file_system.FileEntryExistsByPathSpec(self._sqlite_blob_path_spec_2)
+        self.assertTrue(result)
 
-  def testGetFileEntryByPathSpec(self):
-    """Tests the GetFileEntryByPathSpec function."""
-    file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
-        self._resolver_context, self._sqlite_blob_path_spec)
-    self.assertIsNotNone(file_system)
+    def testGetFileEntryByPathSpec(self):
+        """Tests the GetFileEntryByPathSpec function."""
+        file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
+            self._resolver_context, self._sqlite_blob_path_spec
+        )
+        self.assertIsNotNone(file_system)
 
-    file_system.Open()
+        file_system.Open()
 
-    file_entry = file_system.GetFileEntryByPathSpec(self._sqlite_blob_path_spec)
+        file_entry = file_system.GetFileEntryByPathSpec(self._sqlite_blob_path_spec)
 
-    self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'WHERE name == \'mmssms.db\'')
+        self.assertIsNotNone(file_entry)
+        self.assertEqual(file_entry.name, "WHERE name == 'mmssms.db'")
 
-    file_entry = file_system.GetFileEntryByPathSpec(
-        self._sqlite_blob_path_spec_2)
+        file_entry = file_system.GetFileEntryByPathSpec(self._sqlite_blob_path_spec_2)
 
-    self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'OFFSET 2')
+        self.assertIsNotNone(file_entry)
+        self.assertEqual(file_entry.name, "OFFSET 2")
 
-  def testGetRootFileEntry(self):
-    """Test the get root file entry functionality."""
-    file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
-        self._resolver_context, self._sqlite_blob_path_spec)
-    self.assertIsNotNone(file_system)
+    def testGetRootFileEntry(self):
+        """Test the get root file entry functionality."""
+        file_system = sqlite_blob_file_system.SQLiteBlobFileSystem(
+            self._resolver_context, self._sqlite_blob_path_spec
+        )
+        self.assertIsNotNone(file_system)
 
-    file_system.Open()
+        file_system.Open()
 
-    file_entry = file_system.GetRootFileEntry()
+        file_entry = file_system.GetRootFileEntry()
 
-    self.assertIsNotNone(file_entry)
-    self.assertEqual(file_entry.name, 'myblobs.blobs')
+        self.assertIsNotNone(file_entry)
+        self.assertEqual(file_entry.name, "myblobs.blobs")
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

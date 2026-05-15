@@ -11,30 +11,32 @@ from tests.resolver_helpers import test_lib
 
 
 class LUKSDEResolverHelperTest(test_lib.ResolverHelperTestCase):
-  """Tests for the LUKSDE resolver helper implementation."""
+    """Tests for the LUKSDE resolver helper implementation."""
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
 
-    test_path = self._GetTestFilePath(['luks1.raw'])
-    self._SkipIfPathNotExists(test_path)
+        test_path = self._GetTestFilePath(["luks1.raw"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._luksde_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_LUKSDE, parent=test_os_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._luksde_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_LUKSDE, parent=test_os_path_spec
+        )
 
-  def testNewFileObject(self):
-    """Tests the NewFileObject function."""
-    resolver_helper_object = luksde_resolver_helper.LUKSDEResolverHelper()
-    self._TestNewFileObject(resolver_helper_object, self._luksde_path_spec)
+    def testNewFileObject(self):
+        """Tests the NewFileObject function."""
+        resolver_helper_object = luksde_resolver_helper.LUKSDEResolverHelper()
+        self._TestNewFileObject(resolver_helper_object, self._luksde_path_spec)
 
-  def testNewFileSystem(self):
-    """Tests the NewFileSystem function."""
-    resolver_helper_object = luksde_resolver_helper.LUKSDEResolverHelper()
-    self._TestNewFileSystem(resolver_helper_object, self._luksde_path_spec)
+    def testNewFileSystem(self):
+        """Tests the NewFileSystem function."""
+        resolver_helper_object = luksde_resolver_helper.LUKSDEResolverHelper()
+        self._TestNewFileSystem(resolver_helper_object, self._luksde_path_spec)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

@@ -6,25 +6,25 @@ from dfvfs.path import path_spec
 
 
 class GzipPathSpec(path_spec.PathSpec):
-  """Gzip file path specification."""
+    """Gzip file path specification."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_GZIP
 
-  def __init__(self, parent=None, **kwargs):
-    """Initializes a path specification.
+    def __init__(self, parent=None, **kwargs):
+        """Initializes a path specification.
 
-    Note that the gzip file path specification must have a parent.
+        Note that the gzip file path specification must have a parent.
 
-    Args:
-      parent (Optional[PathSpec]): parent path specification.
+        Args:
+          parent (Optional[PathSpec]): parent path specification.
 
-    Raises:
-      ValueError: when parent is not set.
-    """
-    if not parent:
-      raise ValueError('Missing parent value.')
+        Raises:
+          ValueError: when parent is not set.
+        """
+        if not parent:
+            raise ValueError("Missing parent value.")
 
-    super().__init__(parent=parent, **kwargs)
+        super().__init__(parent=parent, **kwargs)
 
 
 factory.Factory.RegisterPathSpec(GzipPathSpec)

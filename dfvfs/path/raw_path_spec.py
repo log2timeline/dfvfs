@@ -6,25 +6,25 @@ from dfvfs.path import path_spec
 
 
 class RawPathSpec(path_spec.PathSpec):
-  """RAW storage media image path specification."""
+    """RAW storage media image path specification."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_RAW
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_RAW
 
-  def __init__(self, parent=None, **kwargs):
-    """Initializes a path specification.
+    def __init__(self, parent=None, **kwargs):
+        """Initializes a path specification.
 
-    Note that the RAW path specification must have a parent.
+        Note that the RAW path specification must have a parent.
 
-    Args:
-      parent (Optional[PathSpec]): parent path specification.
+        Args:
+          parent (Optional[PathSpec]): parent path specification.
 
-    Raises:
-      ValueError: when parent is not set.
-    """
-    if not parent:
-      raise ValueError('Missing parent value.')
+        Raises:
+          ValueError: when parent is not set.
+        """
+        if not parent:
+            raise ValueError("Missing parent value.")
 
-    super().__init__(parent=parent, **kwargs)
+        super().__init__(parent=parent, **kwargs)
 
 
 factory.Factory.RegisterPathSpec(RawPathSpec)

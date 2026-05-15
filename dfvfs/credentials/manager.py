@@ -11,58 +11,64 @@ of BitLocker Drive Encryption (BDE):
 
 
 class CredentialsManager:
-  """Credentials manager."""
+    """Credentials manager."""
 
-  _credentials = {}
+    _credentials = {}
 
-  @classmethod
-  def DeregisterCredentials(cls, credentials):
-    """Deregisters a path specification credentials.
+    @classmethod
+    def DeregisterCredentials(cls, credentials):
+        """Deregisters a path specification credentials.
 
-    Args:
-      credentials (Credentials): credentials.
+        Args:
+          credentials (Credentials): credentials.
 
-    Raises:
-      KeyError: if credential object is not set for the corresponding
-          type indicator.
-    """
-    if credentials.type_indicator not in cls._credentials:
-      raise KeyError((
-          f'Credential object not set for type indicator: '
-          f'{credentials.type_indicator:s}.'))
+        Raises:
+          KeyError: if credential object is not set for the corresponding
+              type indicator.
+        """
+        if credentials.type_indicator not in cls._credentials:
+            raise KeyError(
+                (
+                    f"Credential object not set for type indicator: "
+                    f"{credentials.type_indicator:s}."
+                )
+            )
 
-    del cls._credentials[credentials.type_indicator]
+        del cls._credentials[credentials.type_indicator]
 
-  @classmethod
-  def GetCredentials(cls, path_spec):
-    """Retrieves the credentials for a specific path specification.
+    @classmethod
+    def GetCredentials(cls, path_spec):
+        """Retrieves the credentials for a specific path specification.
 
-    Args:
-      path_spec (PathSpec): path specification.
+        Args:
+          path_spec (PathSpec): path specification.
 
-    Returns:
-      Credentials: credentials or None if the path specification has no
-          credentials support.
-    """
-    if not path_spec:
-      return None
+        Returns:
+          Credentials: credentials or None if the path specification has no
+              credentials support.
+        """
+        if not path_spec:
+            return None
 
-    return cls._credentials.get(path_spec.type_indicator)
+        return cls._credentials.get(path_spec.type_indicator)
 
-  @classmethod
-  def RegisterCredentials(cls, credentials):
-    """Registers a path specification credentials.
+    @classmethod
+    def RegisterCredentials(cls, credentials):
+        """Registers a path specification credentials.
 
-    Args:
-      credentials (Credentials): credentials.
+        Args:
+          credentials (Credentials): credentials.
 
-    Raises:
-      KeyError: if credentials object is already set for the corresponding
-          type indicator.
-    """
-    if credentials.type_indicator in cls._credentials:
-      raise KeyError((
-          f'Credentials object already set for type indicator: '
-          f'{credentials.type_indicator:s}.'))
+        Raises:
+          KeyError: if credentials object is already set for the corresponding
+              type indicator.
+        """
+        if credentials.type_indicator in cls._credentials:
+            raise KeyError(
+                (
+                    f"Credentials object already set for type indicator: "
+                    f"{credentials.type_indicator:s}."
+                )
+            )
 
-    cls._credentials[credentials.type_indicator] = credentials
+        cls._credentials[credentials.type_indicator] = credentials

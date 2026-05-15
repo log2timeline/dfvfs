@@ -22,14 +22,14 @@ from dfvfs.analyzer import qcow_analyzer_helper
 from dfvfs.analyzer import tar_analyzer_helper
 
 try:
-  from dfvfs.analyzer import tsk_analyzer_helper
+    from dfvfs.analyzer import tsk_analyzer_helper
 except ImportError:
-  pass
+    pass
 
 try:
-  from dfvfs.analyzer import tsk_partition_analyzer_helper
+    from dfvfs.analyzer import tsk_partition_analyzer_helper
 except ImportError:
-  pass
+    pass
 
 from dfvfs.analyzer import vhdi_analyzer_helper
 from dfvfs.analyzer import vmdk_analyzer_helper

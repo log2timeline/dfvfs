@@ -6,37 +6,38 @@ from dfvfs.path import path_spec
 
 
 class CompressedStreamPathSpec(path_spec.PathSpec):
-  """Compressed stream path specification.
+    """Compressed stream path specification.
 
-  Attributes:
-    compression_method (str): method used to the compress the data.
-  """
-
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
-
-  def __init__(self, compression_method=None, parent=None, **kwargs):
-    """Initializes a path specification.
-
-    Note that the compressed stream path specification must have a parent.
-
-    Args:
-      compression_method (Optional[str]): method used to the compress the data.
-      parent (Optional[PathSpec]): parent path specification.
-
-    Raises:
-      ValueError: when compression method or parent are not set.
+    Attributes:
+      compression_method (str): method used to the compress the data.
     """
-    if not compression_method or not parent:
-      raise ValueError('Missing compression method or parent value.')
 
-    super().__init__(parent=parent, **kwargs)
-    self.compression_method = compression_method
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMPRESSED_STREAM
 
-  @property
-  def comparable(self):
-    """str: comparable representation of the path specification."""
-    return self._GetComparable(sub_comparable_string=(
-        f'compression_method: {self.compression_method:s}'))
+    def __init__(self, compression_method=None, parent=None, **kwargs):
+        """Initializes a path specification.
+
+        Note that the compressed stream path specification must have a parent.
+
+        Args:
+          compression_method (Optional[str]): method used to the compress the data.
+          parent (Optional[PathSpec]): parent path specification.
+
+        Raises:
+          ValueError: when compression method or parent are not set.
+        """
+        if not compression_method or not parent:
+            raise ValueError("Missing compression method or parent value.")
+
+        super().__init__(parent=parent, **kwargs)
+        self.compression_method = compression_method
+
+    @property
+    def comparable(self):
+        """str: comparable representation of the path specification."""
+        return self._GetComparable(
+            sub_comparable_string=(f"compression_method: {self.compression_method:s}")
+        )
 
 
 factory.Factory.RegisterPathSpec(CompressedStreamPathSpec)

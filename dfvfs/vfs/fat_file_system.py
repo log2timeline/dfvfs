@@ -11,178 +11,189 @@ from dfvfs.vfs import file_system
 
 
 class FATFileSystem(file_system.FileSystem):
-  """File system that uses pyfsfat."""
+    """File system that uses pyfsfat."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAT
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_FAT
 
-  LOCATION_ROOT = '\\'
-  PATH_SEPARATOR = '\\'
+    LOCATION_ROOT = "\\"
+    PATH_SEPARATOR = "\\"
 
-  def __init__(self, resolver_context, path_spec):
-    """Initializes an FAT file system.
+    def __init__(self, resolver_context, path_spec):
+        """Initializes an FAT file system.
 
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
-    """
-    super().__init__(resolver_context, path_spec)
-    self._file_object = None
-    self._fsfat_volume = None
-    self._root_directory_identifier = None
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
+        """
+        super().__init__(resolver_context, path_spec)
+        self._file_object = None
+        self._fsfat_volume = None
+        self._root_directory_identifier = None
 
-  def _Close(self):
-    """Closes the file system.
+    def _Close(self):
+        """Closes the file system.
 
-    Raises:
-      OSError: if the close failed.
-    """
-    self._fsfat_volume = None
-    self._file_object = None
+        Raises:
+          OSError: if the close failed.
+        """
+        self._fsfat_volume = None
+        self._file_object = None
 
-  def _Open(self, mode='rb'):
-    """Opens the file system defined by path specification.
+    def _Open(self, mode="rb"):
+        """Opens the file system defined by path specification.
 
-    Args:
-      mode (Optional[str]): file access mode.
+        Args:
+          mode (Optional[str]): file access mode.
 
-    Raises:
-      AccessError: if the access to open the file was denied.
-      OSError: if the file system object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
-    """
-    if not self._path_spec.HasParent():
-      raise errors.PathSpecError(
-          'Unsupported path specification without parent.')
+        Raises:
+          AccessError: if the access to open the file was denied.
+          OSError: if the file system object could not be opened.
+          PathSpecError: if the path specification is incorrect.
+          ValueError: if the path specification is invalid.
+        """
+        if not self._path_spec.HasParent():
+            raise errors.PathSpecError("Unsupported path specification without parent.")
 
-    file_object = resolver.Resolver.OpenFileObject(
-        self._path_spec.parent, resolver_context=self._resolver_context)
+        file_object = resolver.Resolver.OpenFileObject(
+            self._path_spec.parent, resolver_context=self._resolver_context
+        )
 
-    fsfat_volume = pyfsfat.volume()
-    fsfat_volume.open_file_object(file_object)
-    fsfat_root_directory = fsfat_volume.get_root_directory()
+        fsfat_volume = pyfsfat.volume()
+        fsfat_volume.open_file_object(file_object)
+        fsfat_root_directory = fsfat_volume.get_root_directory()
 
-    self._file_object = file_object
-    self._fsfat_volume = fsfat_volume
-    self._root_directory_identifier = fsfat_root_directory.identifier
+        self._file_object = file_object
+        self._fsfat_volume = fsfat_volume
+        self._root_directory_identifier = fsfat_root_directory.identifier
 
-  def FileEntryExistsByPathSpec(self, path_spec):
-    """Determines if a file entry for a path specification exists.
+    def FileEntryExistsByPathSpec(self, path_spec):
+        """Determines if a file entry for a path specification exists.
 
-    Args:
-      path_spec (PathSpec): path specification.
+        Args:
+          path_spec (PathSpec): path specification.
 
-    Returns:
-      bool: True if the file entry exists.
+        Returns:
+          bool: True if the file entry exists.
 
-    Raises:
-      BackEndError: if the file entry cannot be opened.
-    """
-    # Opening a file by identifier is faster than opening a file by location,
-    # but does not preserve the VFAT long file name.
-    fsfat_file_entry = None
-    location = getattr(path_spec, 'location', None)
-    identifier = getattr(path_spec, 'identifier', None)
+        Raises:
+          BackEndError: if the file entry cannot be opened.
+        """
+        # Opening a file by identifier is faster than opening a file by location,
+        # but does not preserve the VFAT long file name.
+        fsfat_file_entry = None
+        location = getattr(path_spec, "location", None)
+        identifier = getattr(path_spec, "identifier", None)
 
-    try:
-      if location is not None:
-        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
-      elif identifier is not None:
-        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
-            identifier)
+        try:
+            if location is not None:
+                fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
+            elif identifier is not None:
+                fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
+                    identifier
+                )
 
-    except OSError as exception:
-      raise errors.BackEndError(exception)
+        except OSError as exception:
+            raise errors.BackEndError(exception)
 
-    return fsfat_file_entry is not None
+        return fsfat_file_entry is not None
 
-  def GetFileEntryByPathSpec(self, path_spec):
-    """Retrieves a file entry for a path specification.
+    def GetFileEntryByPathSpec(self, path_spec):
+        """Retrieves a file entry for a path specification.
 
-    Args:
-      path_spec (PathSpec): path specification.
+        Args:
+          path_spec (PathSpec): path specification.
 
-    Returns:
-      FATFileEntry: file entry or None if not available.
+        Returns:
+          FATFileEntry: file entry or None if not available.
 
-    Raises:
-      BackEndError: if the file entry cannot be opened.
-    """
-    # Opening a file by identifier is faster than opening a file by location,
-    # but does not preserve the VFAT long file name.
-    fsfat_file_entry = None
-    location = getattr(path_spec, 'location', None)
-    identifier = getattr(path_spec, 'identifier', None)
+        Raises:
+          BackEndError: if the file entry cannot be opened.
+        """
+        # Opening a file by identifier is faster than opening a file by location,
+        # but does not preserve the VFAT long file name.
+        fsfat_file_entry = None
+        location = getattr(path_spec, "location", None)
+        identifier = getattr(path_spec, "identifier", None)
 
-    if (location == self.LOCATION_ROOT or
-        identifier == self._root_directory_identifier):
-      fsfat_file_entry = self._fsfat_volume.get_root_directory()
-      return fat_file_entry.FATFileEntry(
-          self._resolver_context, self, path_spec,
-          fsfat_file_entry=fsfat_file_entry, is_root=True)
+        if (
+            location == self.LOCATION_ROOT
+            or identifier == self._root_directory_identifier
+        ):
+            fsfat_file_entry = self._fsfat_volume.get_root_directory()
+            return fat_file_entry.FATFileEntry(
+                self._resolver_context,
+                self,
+                path_spec,
+                fsfat_file_entry=fsfat_file_entry,
+                is_root=True,
+            )
 
-    try:
-      if location is not None:
-        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
-      elif identifier is not None:
-        fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
-            identifier)
+        try:
+            if location is not None:
+                fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
+            elif identifier is not None:
+                fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
+                    identifier
+                )
 
-    except OSError as exception:
-      raise errors.BackEndError(exception)
+        except OSError as exception:
+            raise errors.BackEndError(exception)
 
-    if fsfat_file_entry is None:
-      return None
+        if fsfat_file_entry is None:
+            return None
 
-    return fat_file_entry.FATFileEntry(
-        self._resolver_context, self, path_spec,
-        fsfat_file_entry=fsfat_file_entry)
+        return fat_file_entry.FATFileEntry(
+            self._resolver_context, self, path_spec, fsfat_file_entry=fsfat_file_entry
+        )
 
-  def GetFATFileEntryByPathSpec(self, path_spec):
-    """Retrieves the FAT file entry for a path specification.
+    def GetFATFileEntryByPathSpec(self, path_spec):
+        """Retrieves the FAT file entry for a path specification.
 
-    Args:
-      path_spec (PathSpec): a path specification.
+        Args:
+          path_spec (PathSpec): a path specification.
 
-    Returns:
-      pyfsfat.file_entry: file entry.
+        Returns:
+          pyfsfat.file_entry: file entry.
 
-    Raises:
-      PathSpecError: if the path specification is missing location and
-          identifier.
-    """
-    # Opening a file by identifier is faster than opening a file by location,
-    # but does not preserve the VFAT long file name.
-    location = getattr(path_spec, 'location', None)
-    identifier = getattr(path_spec, 'identifier', None)
+        Raises:
+          PathSpecError: if the path specification is missing location and
+              identifier.
+        """
+        # Opening a file by identifier is faster than opening a file by location,
+        # but does not preserve the VFAT long file name.
+        location = getattr(path_spec, "location", None)
+        identifier = getattr(path_spec, "identifier", None)
 
-    if location is not None:
-      fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
-    elif identifier is not None:
-      fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
-          identifier)
-    else:
-      raise errors.PathSpecError(
-          'Path specification missing location and identifier.')
+        if location is not None:
+            fsfat_file_entry = self._fsfat_volume.get_file_entry_by_path(location)
+        elif identifier is not None:
+            fsfat_file_entry = self._fsfat_volume.get_file_entry_by_identifier(
+                identifier
+            )
+        else:
+            raise errors.PathSpecError(
+                "Path specification missing location and identifier."
+            )
 
-    return fsfat_file_entry
+        return fsfat_file_entry
 
-  def GetFATVolume(self):
-    """Retrieves the FAT volume.
+    def GetFATVolume(self):
+        """Retrieves the FAT volume.
 
-    Returns:
-      pyfsfat.volume: a FAT volume.
-    """
-    return self._fsfat_volume
+        Returns:
+          pyfsfat.volume: a FAT volume.
+        """
+        return self._fsfat_volume
 
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
+    def GetRootFileEntry(self):
+        """Retrieves the root file entry.
 
-    Returns:
-      FATFileEntry: file entry.
-    """
-    path_spec = fat_path_spec.FATPathSpec(
-        location=self.LOCATION_ROOT,
-        identifier=self._root_directory_identifier,
-        parent=self._path_spec.parent)
-    return self.GetFileEntryByPathSpec(path_spec)
+        Returns:
+          FATFileEntry: file entry.
+        """
+        path_spec = fat_path_spec.FATPathSpec(
+            location=self.LOCATION_ROOT,
+            identifier=self._root_directory_identifier,
+            parent=self._path_spec.parent,
+        )
+        return self.GetFileEntryByPathSpec(path_spec)
