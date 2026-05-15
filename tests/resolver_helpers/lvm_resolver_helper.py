@@ -11,38 +11,40 @@ from tests.resolver_helpers import test_lib
 
 
 class LVMResolverHelperTest(test_lib.ResolverHelperTestCase):
-  """Tests for the LVM resolver helper implementation."""
+    """Tests for the LVM resolver helper implementation."""
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
 
-    test_path = self._GetTestFilePath(['lvm.raw'])
-    self._SkipIfPathNotExists(test_path)
+        test_path = self._GetTestFilePath(["lvm.raw"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec
+        )
 
-  def testNewFileObject(self):
-    """Tests the NewFileObject function."""
-    test_lvm_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_LVM, location='/',
-        parent=self._raw_path_spec)
+    def testNewFileObject(self):
+        """Tests the NewFileObject function."""
+        test_lvm_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_LVM, location="/", parent=self._raw_path_spec
+        )
 
-    resolver_helper_object = lvm_resolver_helper.LVMResolverHelper()
-    self._TestNewFileObject(resolver_helper_object, test_lvm_path_spec)
+        resolver_helper_object = lvm_resolver_helper.LVMResolverHelper()
+        self._TestNewFileObject(resolver_helper_object, test_lvm_path_spec)
 
-  def testNewFileSystem(self):
-    """Tests the NewFileSystem function."""
-    test_lvm_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_LVM, location='/',
-        parent=self._raw_path_spec)
+    def testNewFileSystem(self):
+        """Tests the NewFileSystem function."""
+        test_lvm_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_LVM, location="/", parent=self._raw_path_spec
+        )
 
-    resolver_helper_object = lvm_resolver_helper.LVMResolverHelper()
-    self._TestNewFileSystem(resolver_helper_object, test_lvm_path_spec)
+        resolver_helper_object = lvm_resolver_helper.LVMResolverHelper()
+        self._TestNewFileSystem(resolver_helper_object, test_lvm_path_spec)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

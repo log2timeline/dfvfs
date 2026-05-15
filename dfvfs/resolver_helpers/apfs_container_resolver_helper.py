@@ -7,22 +7,23 @@ from dfvfs.vfs import apfs_container_file_system
 
 
 class APFSContainerResolverHelper(resolver_helper.ResolverHelper):
-  """APFS container resolver helper."""
+    """APFS container resolver helper."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
 
-  def NewFileSystem(self, resolver_context, path_spec):
-    """Creates a new file system object.
+    def NewFileSystem(self, resolver_context, path_spec):
+        """Creates a new file system object.
 
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
 
-    Returns:
-      APFSContainerFileSystem: file system.
-    """
-    return apfs_container_file_system.APFSContainerFileSystem(
-        resolver_context, path_spec)
+        Returns:
+          APFSContainerFileSystem: file system.
+        """
+        return apfs_container_file_system.APFSContainerFileSystem(
+            resolver_context, path_spec
+        )
 
 
 manager.ResolverHelperManager.RegisterHelper(APFSContainerResolverHelper())

@@ -6,46 +6,47 @@ from dfvfs.volume import volume_system
 
 
 class LVMVolume(volume_system.Volume):
-  """Volume that uses pyvslvm."""
+    """Volume that uses pyvslvm."""
 
-  def __init__(self, file_entry):
-    """Initializes a LVM volume.
+    def __init__(self, file_entry):
+        """Initializes a LVM volume.
 
-    Args:
-      file_entry (LVMFileEntry): a LVM file entry.
-    """
-    super().__init__(file_entry.name)
-    self._file_entry = file_entry
+        Args:
+          file_entry (LVMFileEntry): a LVM file entry.
+        """
+        super().__init__(file_entry.name)
+        self._file_entry = file_entry
 
-  def _Parse(self):
-    """Extracts attributes and extents from the volume."""
-    vslvm_logical_volume = self._file_entry.GetLVMLogicalVolume()
+    def _Parse(self):
+        """Extracts attributes and extents from the volume."""
+        vslvm_logical_volume = self._file_entry.GetLVMLogicalVolume()
 
-    volume_attribute = volume_system.VolumeAttribute(
-        'identifier', vslvm_logical_volume.identifier)
-    self._AddAttribute(volume_attribute)
+        volume_attribute = volume_system.VolumeAttribute(
+            "identifier", vslvm_logical_volume.identifier
+        )
+        self._AddAttribute(volume_attribute)
 
-    # TODO: implement in pyvslvm
-    # TODO: add support for creation time
-    # TODO: add support for logical volume extents
-    volume_extent = volume_system.VolumeExtent(0, vslvm_logical_volume.size)
-    self._extents.append(volume_extent)
+        # TODO: implement in pyvslvm
+        # TODO: add support for creation time
+        # TODO: add support for logical volume extents
+        volume_extent = volume_system.VolumeExtent(0, vslvm_logical_volume.size)
+        self._extents.append(volume_extent)
 
 
 class LVMVolumeSystem(volume_system.VolumeSystem):
-  """Volume system that uses pyvslvm."""
+    """Volume system that uses pyvslvm."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_LVM
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_LVM
 
-  VOLUME_IDENTIFIER_PREFIX = 'lvm'
+    VOLUME_IDENTIFIER_PREFIX = "lvm"
 
-  def _Parse(self):
-    """Extracts sections and volumes from the volume system."""
-    root_file_entry = self._file_system.GetRootFileEntry()
+    def _Parse(self):
+        """Extracts sections and volumes from the volume system."""
+        root_file_entry = self._file_system.GetRootFileEntry()
 
-    for sub_file_entry in root_file_entry.sub_file_entries:
-      volume = LVMVolume(sub_file_entry)
-      self._AddVolume(volume)
+        for sub_file_entry in root_file_entry.sub_file_entries:
+            volume = LVMVolume(sub_file_entry)
+            self._AddVolume(volume)
 
 
 factory.Factory.RegisterVolumeSystem(LVMVolumeSystem)

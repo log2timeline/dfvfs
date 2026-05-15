@@ -4,136 +4,136 @@ from dfvfs.lib import definitions
 
 
 class PathSpec:
-  """Path specification interface.
+    """Path specification interface.
 
-  Attributes:
-    parent (PathSpec): parent path specification.
-  """
-
-  # pylint: disable=missing-raises-doc
-
-  _IS_SYSTEM_LEVEL = False
-
-  def __init__(self, parent=None, **kwargs):
-    """Initializes a path specification.
-
-    Args:
-      parent (Optional[PathSpec]): parent path specification.
-      kwargs (dict[str, object]): keyword arguments depending on the path
-          specification.
-
-    Raises:
-      ValueError: if a derived path specification class does not define a type
-          indicator or when there are unused keyword arguments.
+    Attributes:
+      parent (PathSpec): parent path specification.
     """
-    if kwargs:
-      keyword_arguments = ', '.join(kwargs)
-      raise ValueError(f'Unused keyword arguments: {keyword_arguments:s}.')
 
-    super().__init__()
-    self.parent = parent
+    # pylint: disable=missing-raises-doc
 
-    if not getattr(self, 'TYPE_INDICATOR', None):
-      raise ValueError('Missing type indicator.')
+    _IS_SYSTEM_LEVEL = False
 
-  def __eq__(self, other):
-    """Determines if the path specification is equal to the other."""
-    return isinstance(other, PathSpec) and self.comparable == other.comparable
+    def __init__(self, parent=None, **kwargs):
+        """Initializes a path specification.
 
-  def __hash__(self):
-    """Returns the hash of a path specification."""
-    return hash(self.comparable)
+        Args:
+          parent (Optional[PathSpec]): parent path specification.
+          kwargs (dict[str, object]): keyword arguments depending on the path
+              specification.
 
-  def _GetComparable(self, sub_comparable_string=''):
-    """Retrieves the comparable representation.
+        Raises:
+          ValueError: if a derived path specification class does not define a type
+              indicator or when there are unused keyword arguments.
+        """
+        if kwargs:
+            keyword_arguments = ", ".join(kwargs)
+            raise ValueError(f"Unused keyword arguments: {keyword_arguments:s}.")
 
-    This is a convenience function for constructing comparables.
+        super().__init__()
+        self.parent = parent
 
-    Args:
-      sub_comparable_string (str): sub comparable string.
+        if not getattr(self, "TYPE_INDICATOR", None):
+            raise ValueError("Missing type indicator.")
 
-    Returns:
-      str: comparable representation of the path specification.
-    """
-    string_parts = []
+    def __eq__(self, other):
+        """Determines if the path specification is equal to the other."""
+        return isinstance(other, PathSpec) and self.comparable == other.comparable
 
-    string_parts.append(getattr(self.parent, 'comparable', ''))
-    string_parts.append(f'type: {self.type_indicator:s}')
+    def __hash__(self):
+        """Returns the hash of a path specification."""
+        return hash(self.comparable)
 
-    if sub_comparable_string:
-      string_parts.append(f', {sub_comparable_string:s}')
-    string_parts.append('\n')
+    def _GetComparable(self, sub_comparable_string=""):
+        """Retrieves the comparable representation.
 
-    return ''.join(string_parts)
+        This is a convenience function for constructing comparables.
 
-  @property
-  def comparable(self):
-    """str: comparable representation of the path specification."""
-    return self._GetComparable()
+        Args:
+          sub_comparable_string (str): sub comparable string.
 
-  @property
-  def type_indicator(self):
-    """str: type indicator."""
-    # pylint: disable=no-member
-    return self.TYPE_INDICATOR
+        Returns:
+          str: comparable representation of the path specification.
+        """
+        string_parts = []
 
-  def CopyToDict(self):
-    """Copies the path specification to a dictionary.
+        string_parts.append(getattr(self.parent, "comparable", ""))
+        string_parts.append(f"type: {self.type_indicator:s}")
 
-    Returns:
-      dict[str, object]: path specification attributes.
-    """
-    path_spec_dict = {}
-    for attribute_name, attribute_value in self.__dict__.items():
-      if attribute_value is None:
-        continue
+        if sub_comparable_string:
+            string_parts.append(f", {sub_comparable_string:s}")
+        string_parts.append("\n")
 
-      if attribute_name == 'parent':
-        attribute_value = attribute_value.CopyToDict()
+        return "".join(string_parts)
 
-      path_spec_dict[attribute_name] = attribute_value
+    @property
+    def comparable(self):
+        """str: comparable representation of the path specification."""
+        return self._GetComparable()
 
-    return path_spec_dict
+    @property
+    def type_indicator(self):
+        """str: type indicator."""
+        # pylint: disable=no-member
+        return self.TYPE_INDICATOR
 
-  def HasParent(self):
-    """Determines if the path specification has a parent.
+    def CopyToDict(self):
+        """Copies the path specification to a dictionary.
 
-    Returns:
-      bool: True if the path specification has a parent.
-    """
-    return self.parent is not None
+        Returns:
+          dict[str, object]: path specification attributes.
+        """
+        path_spec_dict = {}
+        for attribute_name, attribute_value in self.__dict__.items():
+            if attribute_value is None:
+                continue
 
-  def IsFileSystem(self):
-    """Determines if the path specification is a file system.
+            if attribute_name == "parent":
+                attribute_value = attribute_value.CopyToDict()
 
-    Returns:
-      bool: True if the path specification is a file system.
-    """
-    return self.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS
+            path_spec_dict[attribute_name] = attribute_value
 
-  def IsSystemLevel(self):
-    """Determines if the path specification is at system-level.
+        return path_spec_dict
 
-    System-level is an indication used if the path specification is
-    handled by the operating system and should not have a parent.
+    def HasParent(self):
+        """Determines if the path specification has a parent.
 
-    Returns:
-      bool: True if the path specification is at system-level.
-    """
-    return getattr(self, '_IS_SYSTEM_LEVEL', False)
+        Returns:
+          bool: True if the path specification has a parent.
+        """
+        return self.parent is not None
 
-  def IsVolumeSystem(self):
-    """Determines if the path specification is a volume system.
+    def IsFileSystem(self):
+        """Determines if the path specification is a file system.
 
-    Returns:
-      bool: True if the path specification is a volume system.
-    """
-    return self.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS
+        Returns:
+          bool: True if the path specification is a file system.
+        """
+        return self.type_indicator in definitions.FILE_SYSTEM_TYPE_INDICATORS
 
-  def IsVolumeSystemRoot(self):
-    """Determines if the path specification is the root of a volume system.
+    def IsSystemLevel(self):
+        """Determines if the path specification is at system-level.
 
-    Returns:
-      bool: True if the path specification is the root of a volume system.
-    """
-    return self.IsVolumeSystem() and getattr(self, 'location', None) == '/'
+        System-level is an indication used if the path specification is
+        handled by the operating system and should not have a parent.
+
+        Returns:
+          bool: True if the path specification is at system-level.
+        """
+        return getattr(self, "_IS_SYSTEM_LEVEL", False)
+
+    def IsVolumeSystem(self):
+        """Determines if the path specification is a volume system.
+
+        Returns:
+          bool: True if the path specification is a volume system.
+        """
+        return self.type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS
+
+    def IsVolumeSystemRoot(self):
+        """Determines if the path specification is the root of a volume system.
+
+        Returns:
+          bool: True if the path specification is the root of a volume system.
+        """
+        return self.IsVolumeSystem() and getattr(self, "location", None) == "/"

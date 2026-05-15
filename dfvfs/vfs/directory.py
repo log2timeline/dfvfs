@@ -2,40 +2,40 @@
 
 
 class Directory:
-  """Directory interface.
+    """Directory interface.
 
-  Attributes:
-    path_spec (PathSpec): path specification of the directory.
-  """
-
-  def __init__(self, file_system, path_spec):
-    """Initializes a directory.
-
-    Args:
-      file_system (FileSystem): file system.
-      path_spec (PathSpec): path specification.
+    Attributes:
+      path_spec (PathSpec): path specification of the directory.
     """
-    super().__init__()
-    self._entries = None
-    self._file_system = file_system
-    self.path_spec = path_spec
 
-  def _EntriesGenerator(self):
-    """Retrieves directory entries.
+    def __init__(self, file_system, path_spec):
+        """Initializes a directory.
 
-    Since a directory can contain a vast number of entries using
-    a generator is more memory efficient.
+        Args:
+          file_system (FileSystem): file system.
+          path_spec (PathSpec): path specification.
+        """
+        super().__init__()
+        self._entries = None
+        self._file_system = file_system
+        self.path_spec = path_spec
 
-    Returns:
-      generator[PathSpec]: path specification generator.
-    """
-    return iter(())
+    def _EntriesGenerator(self):
+        """Retrieves directory entries.
 
-  @property
-  def entries(self):
-    """Retrieves directory entries.
+        Since a directory can contain a vast number of entries using
+        a generator is more memory efficient.
 
-    Returns:
-      generator[PathSpec]: path specifications of the directory entries.
-    """
-    return self._EntriesGenerator()
+        Returns:
+          generator[PathSpec]: path specification generator.
+        """
+        return iter(())
+
+    @property
+    def entries(self):
+        """Retrieves directory entries.
+
+        Returns:
+          generator[PathSpec]: path specifications of the directory entries.
+        """
+        return self._EntriesGenerator()

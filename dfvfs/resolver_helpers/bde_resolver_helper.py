@@ -8,33 +8,33 @@ from dfvfs.vfs import bde_file_system
 
 
 class BDEResolverHelper(resolver_helper.ResolverHelper):
-  """BDE volume resolver helper."""
+    """BDE volume resolver helper."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_BDE
 
-  def NewFileObject(self, resolver_context, path_spec):
-    """Creates a new file input/output (IO) object.
+    def NewFileObject(self, resolver_context, path_spec):
+        """Creates a new file input/output (IO) object.
 
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
 
-    Returns:
-      BDEFile: file input/output (IO) object.
-    """
-    return bde_file_io.BDEFile(resolver_context, path_spec)
+        Returns:
+          BDEFile: file input/output (IO) object.
+        """
+        return bde_file_io.BDEFile(resolver_context, path_spec)
 
-  def NewFileSystem(self, resolver_context, path_spec):
-    """Creates a new file system.
+    def NewFileSystem(self, resolver_context, path_spec):
+        """Creates a new file system.
 
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
 
-    Returns:
-      BDEFileSystem: file system.
-    """
-    return bde_file_system.BDEFileSystem(resolver_context, path_spec)
+        Returns:
+          BDEFileSystem: file system.
+        """
+        return bde_file_system.BDEFileSystem(resolver_context, path_spec)
 
 
 manager.ResolverHelperManager.RegisterHelper(BDEResolverHelper())

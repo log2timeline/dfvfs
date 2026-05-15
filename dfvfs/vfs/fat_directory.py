@@ -5,38 +5,42 @@ from dfvfs.vfs import directory
 
 
 class FATDirectory(directory.Directory):
-  """File system directory that uses pyfsfat."""
+    """File system directory that uses pyfsfat."""
 
-  def __init__(self, file_system, path_spec, fsfat_file_entry):
-    """Initializes a directory.
+    def __init__(self, file_system, path_spec, fsfat_file_entry):
+        """Initializes a directory.
 
-    Args:
-      file_system (FileSystem): file system.
-      path_spec (PathSpec): path specification.
-      fsfat_file_entry (pyfsfat.file_entry): FAT file entry.
-    """
-    super().__init__(file_system, path_spec)
-    self._fsfat_file_entry = fsfat_file_entry
+        Args:
+          file_system (FileSystem): file system.
+          path_spec (PathSpec): path specification.
+          fsfat_file_entry (pyfsfat.file_entry): FAT file entry.
+        """
+        super().__init__(file_system, path_spec)
+        self._fsfat_file_entry = fsfat_file_entry
 
-  def _EntriesGenerator(self):
-    """Retrieves directory entries.
+    def _EntriesGenerator(self):
+        """Retrieves directory entries.
 
-    Since a directory can contain a vast number of entries using
-    a generator is more memory efficient.
+        Since a directory can contain a vast number of entries using
+        a generator is more memory efficient.
 
-    Yields:
-      FATPathSpec: FAT path specification.
-    """
-    location = getattr(self.path_spec, 'location', None)
+        Yields:
+          FATPathSpec: FAT path specification.
+        """
+        location = getattr(self.path_spec, "location", None)
 
-    for fsfat_sub_file_entry in self._fsfat_file_entry.sub_file_entries:
-      if not location or location == self._file_system.PATH_SEPARATOR:
-        directory_entry = self._file_system.JoinPath([
-            fsfat_sub_file_entry.name])
-      else:
-        directory_entry = self._file_system.JoinPath([
-            location, fsfat_sub_file_entry.name])
+        for fsfat_sub_file_entry in self._fsfat_file_entry.sub_file_entries:
+            if not location or location == self._file_system.PATH_SEPARATOR:
+                directory_entry = self._file_system.JoinPath(
+                    [fsfat_sub_file_entry.name]
+                )
+            else:
+                directory_entry = self._file_system.JoinPath(
+                    [location, fsfat_sub_file_entry.name]
+                )
 
-      yield fat_path_spec.FATPathSpec(
-          identifier=fsfat_sub_file_entry.identifier, location=directory_entry,
-          parent=self.path_spec.parent)
+            yield fat_path_spec.FATPathSpec(
+                identifier=fsfat_sub_file_entry.identifier,
+                location=directory_entry,
+                parent=self.path_spec.parent,
+            )

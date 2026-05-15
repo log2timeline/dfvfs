@@ -6,53 +6,53 @@ from dfvfs.path import path_spec
 
 
 class TSKPartitionPathSpec(path_spec.PathSpec):
-  """SleuthKit (TSK) partition path specification.
+    """SleuthKit (TSK) partition path specification.
 
-  Attributes:
-    location (str): location.
-    part_index (int): part index.
-    start_offset (int): start offset.
-  """
-
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
-
-  def __init__(
-      self, location=None, parent=None, part_index=None, start_offset=None,
-      **kwargs):
-    """Initializes a path specification.
-
-    Note that the TSK partition path specification must have a parent.
-
-    Args:
-      location (Optional[str]): location.
-      parent (Optional[PathSpec]): parent path specification.
-      part_index (Optional[int]): part index.
-      start_offset (Optional[int]): start offset.
-
-    Raises:
-      ValueError: when parent is not set.
+    Attributes:
+      location (str): location.
+      part_index (int): part index.
+      start_offset (int): start offset.
     """
-    if not parent:
-      raise ValueError('Missing parent value.')
 
-    super().__init__(parent=parent, **kwargs)
-    self.location = location
-    self.part_index = part_index
-    self.start_offset = start_offset
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
-  @property
-  def comparable(self):
-    """str: comparable representation of the path specification."""
-    string_parts = []
+    def __init__(
+        self, location=None, parent=None, part_index=None, start_offset=None, **kwargs
+    ):
+        """Initializes a path specification.
 
-    if self.location is not None:
-      string_parts.append(f'location: {self.location:s}')
-    if self.part_index is not None:
-      string_parts.append(f'part index: {self.part_index:d}')
-    if self.start_offset is not None:
-      string_parts.append(f'start offset: 0x{self.start_offset:08x}')
+        Note that the TSK partition path specification must have a parent.
 
-    return self._GetComparable(sub_comparable_string=', '.join(string_parts))
+        Args:
+          location (Optional[str]): location.
+          parent (Optional[PathSpec]): parent path specification.
+          part_index (Optional[int]): part index.
+          start_offset (Optional[int]): start offset.
+
+        Raises:
+          ValueError: when parent is not set.
+        """
+        if not parent:
+            raise ValueError("Missing parent value.")
+
+        super().__init__(parent=parent, **kwargs)
+        self.location = location
+        self.part_index = part_index
+        self.start_offset = start_offset
+
+    @property
+    def comparable(self):
+        """str: comparable representation of the path specification."""
+        string_parts = []
+
+        if self.location is not None:
+            string_parts.append(f"location: {self.location:s}")
+        if self.part_index is not None:
+            string_parts.append(f"part index: {self.part_index:d}")
+        if self.start_offset is not None:
+            string_parts.append(f"start offset: 0x{self.start_offset:08x}")
+
+        return self._GetComparable(sub_comparable_string=", ".join(string_parts))
 
 
 factory.Factory.RegisterPathSpec(TSKPartitionPathSpec)

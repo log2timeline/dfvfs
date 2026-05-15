@@ -9,31 +9,30 @@ from dfvfs.lib import tsk_image
 
 
 class TSKPartitionAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """TSK partition analyzer helper."""
+    """TSK partition analyzer helper."""
 
-  FORMAT_CATEGORIES = frozenset([
-      definitions.FORMAT_CATEGORY_VOLUME_SYSTEM])
+    FORMAT_CATEGORIES = frozenset([definitions.FORMAT_CATEGORY_VOLUME_SYSTEM])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
-  def AnalyzeFileObject(self, file_object):
-    """Retrieves the format specification.
+    def AnalyzeFileObject(self, file_object):
+        """Retrieves the format specification.
 
-    Args:
-      file_object (FileIO): file-like object.
+        Args:
+          file_object (FileIO): file-like object.
 
-    Returns:
-      str: type indicator if the file-like object contains a supported format
-          or None otherwise.
-    """
-    tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
+        Returns:
+          str: type indicator if the file-like object contains a supported format
+              or None otherwise.
+        """
+        tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
 
-    try:
-      pytsk3.Volume_Info(tsk_image_object)
-    except OSError:
-      return None
+        try:
+            pytsk3.Volume_Info(tsk_image_object)
+        except OSError:
+            return None
 
-    return self.type_indicator
+        return self.type_indicator
 
 
 analyzer.Analyzer.RegisterHelper(TSKPartitionAnalyzerHelper())

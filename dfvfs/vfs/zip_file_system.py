@@ -11,165 +11,169 @@ from dfvfs.vfs import zip_file_entry
 
 
 class ZipFileSystem(file_system.FileSystem):
-  """File system that uses zipfile.
+    """File system that uses zipfile.
 
-  Attributes:
-    encoding (str): encoding of the file entry name.
-  """
-
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
-
-  def __init__(self, resolver_context, path_spec, encoding='utf-8'):
-    """Initializes a file system.
-
-    Args:
-      resolver_context (Context): a resolver context.
-      path_spec (PathSpec): a path specification.
-      encoding (Optional[str]): encoding of the file entry name.
+    Attributes:
+      encoding (str): encoding of the file entry name.
     """
-    super().__init__(resolver_context, path_spec)
-    self._file_object = None
-    self._zip_file = None
-    self.encoding = encoding
 
-  def _Close(self):
-    """Closes the file system object.
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-    Raises:
-      OSError: if the close failed.
-    """
-    self._zip_file.close()
-    self._zip_file = None
-    self._file_object = None
+    def __init__(self, resolver_context, path_spec, encoding="utf-8"):
+        """Initializes a file system.
 
-  def _Open(self, mode='rb'):
-    """Opens the file system object defined by path specification.
+        Args:
+          resolver_context (Context): a resolver context.
+          path_spec (PathSpec): a path specification.
+          encoding (Optional[str]): encoding of the file entry name.
+        """
+        super().__init__(resolver_context, path_spec)
+        self._file_object = None
+        self._zip_file = None
+        self.encoding = encoding
 
-    Args:
-      mode (Optional[str]): file access mode. The default is 'rb' which
-          represents read-only binary.
+    def _Close(self):
+        """Closes the file system object.
 
-    Raises:
-      AccessError: if the access to open the file was denied.
-      BackEndError: if there was an error opening the ZIP file.
-      OSError: if the file system object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-      ValueError: if the path specification is invalid.
-    """
-    if not self._path_spec.HasParent():
-      raise errors.PathSpecError(
-          'Unsupported path specification without parent.')
+        Raises:
+          OSError: if the close failed.
+        """
+        self._zip_file.close()
+        self._zip_file = None
+        self._file_object = None
 
-    file_object = resolver.Resolver.OpenFileObject(
-        self._path_spec.parent, resolver_context=self._resolver_context)
+    def _Open(self, mode="rb"):
+        """Opens the file system object defined by path specification.
 
-    try:
-      zip_file = zipfile.ZipFile(file_object, 'r')  # pylint: disable=consider-using-with
-    except zipfile.BadZipFile as exception:
-      raise errors.BackEndError(exception)
+        Args:
+          mode (Optional[str]): file access mode. The default is 'rb' which
+              represents read-only binary.
 
-    self._file_object = file_object
-    self._zip_file = zip_file
+        Raises:
+          AccessError: if the access to open the file was denied.
+          BackEndError: if there was an error opening the ZIP file.
+          OSError: if the file system object could not be opened.
+          PathSpecError: if the path specification is incorrect.
+          ValueError: if the path specification is invalid.
+        """
+        if not self._path_spec.HasParent():
+            raise errors.PathSpecError("Unsupported path specification without parent.")
 
-  def FileEntryExistsByPathSpec(self, path_spec):
-    """Determines if a file entry for a path specification exists.
+        file_object = resolver.Resolver.OpenFileObject(
+            self._path_spec.parent, resolver_context=self._resolver_context
+        )
 
-    Args:
-      path_spec (PathSpec): path specification of the file entry.
+        try:
+            # pylint: disable=consider-using-with
+            zip_file = zipfile.ZipFile(
+                file_object, "r"
+            )
+        except zipfile.BadZipFile as exception:
+            raise errors.BackEndError(exception)
 
-    Returns:
-      bool: True if the file entry exists.
-    """
-    location = getattr(path_spec, 'location', None)
+        self._file_object = file_object
+        self._zip_file = zip_file
 
-    if (location is None or
-        not location.startswith(self.LOCATION_ROOT)):
-      return False
+    def FileEntryExistsByPathSpec(self, path_spec):
+        """Determines if a file entry for a path specification exists.
 
-    if len(location) == 1:
-      return True
+        Args:
+          path_spec (PathSpec): path specification of the file entry.
 
-    try:
-      self._zip_file.getinfo(location[1:])
-      return True
-    except KeyError:
-      pass
+        Returns:
+          bool: True if the file entry exists.
+        """
+        location = getattr(path_spec, "location", None)
 
-    # Check if location could be a virtual directory.
-    for name in self._zip_file.namelist():
-      # The ZIP info name does not have the leading path separator as
-      # the location string does.
-      if name.startswith(location[1:]):
-        return True
+        if location is None or not location.startswith(self.LOCATION_ROOT):
+            return False
 
-    return False
+        if len(location) == 1:
+            return True
 
-  def GetFileEntryByPathSpec(self, path_spec):
-    """Retrieves a file entry for a path specification.
+        try:
+            self._zip_file.getinfo(location[1:])
+            return True
+        except KeyError:
+            pass
 
-    Args:
-      path_spec (PathSpec): path specification of the file entry.
+        # Check if location could be a virtual directory.
+        for name in self._zip_file.namelist():
+            # The ZIP info name does not have the leading path separator as
+            # the location string does.
+            if name.startswith(location[1:]):
+                return True
 
-    Returns:
-      ZipFileEntry: a file entry or None.
-    """
-    if not self.FileEntryExistsByPathSpec(path_spec):
-      return None
+        return False
 
-    location = getattr(path_spec, 'location', None)
+    def GetFileEntryByPathSpec(self, path_spec):
+        """Retrieves a file entry for a path specification.
 
-    if len(location) == 1:
-      return zip_file_entry.ZipFileEntry(
-          self._resolver_context, self, path_spec, is_root=True,
-          is_virtual=True)
+        Args:
+          path_spec (PathSpec): path specification of the file entry.
 
-    kwargs = {}
-    try:
-      kwargs['zip_info'] = self._zip_file.getinfo(location[1:])
-    except KeyError:
-      kwargs['is_virtual'] = True
+        Returns:
+          ZipFileEntry: a file entry or None.
+        """
+        if not self.FileEntryExistsByPathSpec(path_spec):
+            return None
 
-    return zip_file_entry.ZipFileEntry(
-        self._resolver_context, self, path_spec, **kwargs)
+        location = getattr(path_spec, "location", None)
 
-  def GetRootFileEntry(self):
-    """Retrieves the root file entry.
+        if len(location) == 1:
+            return zip_file_entry.ZipFileEntry(
+                self._resolver_context, self, path_spec, is_root=True, is_virtual=True
+            )
 
-    Returns:
-      ZipFileEntry: a file entry or None.
-    """
-    path_spec = zip_path_spec.ZipPathSpec(
-        location=self.LOCATION_ROOT, parent=self._path_spec.parent)
-    return self.GetFileEntryByPathSpec(path_spec)
+        kwargs = {}
+        try:
+            kwargs["zip_info"] = self._zip_file.getinfo(location[1:])
+        except KeyError:
+            kwargs["is_virtual"] = True
 
-  def GetZipFile(self):
-    """Retrieves the ZIP file object.
+        return zip_file_entry.ZipFileEntry(
+            self._resolver_context, self, path_spec, **kwargs
+        )
 
-    Returns:
-      zipfile.ZipFile: a ZIP file object or None.
-    """
-    return self._zip_file
+    def GetRootFileEntry(self):
+        """Retrieves the root file entry.
 
-  def GetZipInfoByPathSpec(self, path_spec):
-    """Retrieves the ZIP info for a path specification.
+        Returns:
+          ZipFileEntry: a file entry or None.
+        """
+        path_spec = zip_path_spec.ZipPathSpec(
+            location=self.LOCATION_ROOT, parent=self._path_spec.parent
+        )
+        return self.GetFileEntryByPathSpec(path_spec)
 
-    Args:
-      path_spec (PathSpec): a path specification.
+    def GetZipFile(self):
+        """Retrieves the ZIP file object.
 
-    Returns:
-      zipfile.ZipInfo: a ZIP info object or None if not available.
+        Returns:
+          zipfile.ZipFile: a ZIP file object or None.
+        """
+        return self._zip_file
 
-    Raises:
-      PathSpecError: if the path specification is incorrect.
-    """
-    location = getattr(path_spec, 'location', None)
-    if location is None:
-      raise errors.PathSpecError('Path specification missing location.')
+    def GetZipInfoByPathSpec(self, path_spec):
+        """Retrieves the ZIP info for a path specification.
 
-    if not location.startswith(self.LOCATION_ROOT):
-      raise errors.PathSpecError('Invalid location in path specification.')
+        Args:
+          path_spec (PathSpec): a path specification.
 
-    if len(location) > 1:
-      return self._zip_file.getinfo(location[1:])
+        Returns:
+          zipfile.ZipInfo: a ZIP info object or None if not available.
 
-    return None
+        Raises:
+          PathSpecError: if the path specification is incorrect.
+        """
+        location = getattr(path_spec, "location", None)
+        if location is None:
+            raise errors.PathSpecError("Path specification missing location.")
+
+        if not location.startswith(self.LOCATION_ROOT):
+            raise errors.PathSpecError("Invalid location in path specification.")
+
+        if len(location) > 1:
+            return self._zip_file.getinfo(location[1:])
+
+        return None

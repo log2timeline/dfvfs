@@ -11,76 +11,76 @@ from tests import test_lib as shared_test_lib
 
 
 class TestFileSystem(file_system.FileSystem):
-  """File system for testing."""
+    """File system for testing."""
 
-  # pylint: disable=abstract-method
+    # pylint: disable=abstract-method
 
-  TYPE_INDICATOR = 'test'
+    TYPE_INDICATOR = "test"
 
 
 class FileSystemTest(shared_test_lib.BaseTestCase):
-  """Tests the VFS file system object interface."""
+    """Tests the VFS file system object interface."""
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    self._resolver_context = context.Context()
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        self._resolver_context = context.Context()
 
-  def testIntialize(self):
-    """Test the __init__ function."""
-    path_spec = fake_path_spec.FakePathSpec(location='/')
+    def testIntialize(self):
+        """Test the __init__ function."""
+        path_spec = fake_path_spec.FakePathSpec(location="/")
 
-    with self.assertRaises(ValueError):
-      file_system.FileSystem(self._resolver_context, path_spec)
+        with self.assertRaises(ValueError):
+            file_system.FileSystem(self._resolver_context, path_spec)
 
-  # TODO: add tests for type_indicator property.
-  # TODO: add tests for _Close function.
-  # TODO: add tests for _Open function.
-  # TODO: add tests for BasenamePath function.
-  # TODO: add tests for Close function.
-  # TODO: add tests for DirnamePath function.
-  # TODO: add tests for GetDataStreamByPathSpec function.
-  # TODO: add tests for GetFileObjectByPathSpec function.
-  # TODO: add tests for GetPathSegmentAndSuffix function.
+    # TODO: add tests for type_indicator property.
+    # TODO: add tests for _Close function.
+    # TODO: add tests for _Open function.
+    # TODO: add tests for BasenamePath function.
+    # TODO: add tests for Close function.
+    # TODO: add tests for DirnamePath function.
+    # TODO: add tests for GetDataStreamByPathSpec function.
+    # TODO: add tests for GetFileObjectByPathSpec function.
+    # TODO: add tests for GetPathSegmentAndSuffix function.
 
-  def testJoinPath(self):
-    """Test the join path functionality."""
-    path_spec = fake_path_spec.FakePathSpec(location='/')
+    def testJoinPath(self):
+        """Test the join path functionality."""
+        path_spec = fake_path_spec.FakePathSpec(location="/")
 
-    test_file_system = TestFileSystem(self._resolver_context, path_spec)
+        test_file_system = TestFileSystem(self._resolver_context, path_spec)
 
-    expected_path = '/test1/test2/test3'
+        expected_path = "/test1/test2/test3"
 
-    path = test_file_system.JoinPath(['test1', 'test2', 'test3'])
-    self.assertEqual(path, expected_path)
+        path = test_file_system.JoinPath(["test1", "test2", "test3"])
+        self.assertEqual(path, expected_path)
 
-    path = test_file_system.JoinPath(['/test1', 'test2//', 'test3/'])
-    self.assertEqual(path, expected_path)
+        path = test_file_system.JoinPath(["/test1", "test2//", "test3/"])
+        self.assertEqual(path, expected_path)
 
-    path = test_file_system.JoinPath(['/test1/test2/', '/test3/'])
-    self.assertEqual(path, expected_path)
+        path = test_file_system.JoinPath(["/test1/test2/", "/test3/"])
+        self.assertEqual(path, expected_path)
 
-    path = test_file_system.JoinPath(['/test1///test2', 'test3'])
-    self.assertEqual(path, expected_path)
+        path = test_file_system.JoinPath(["/test1///test2", "test3"])
+        self.assertEqual(path, expected_path)
 
-  # TODO: add tests for Open function.
+    # TODO: add tests for Open function.
 
-  def testSplitPath(self):
-    """Test the split path functionality."""
-    path_spec = fake_path_spec.FakePathSpec(location='/')
+    def testSplitPath(self):
+        """Test the split path functionality."""
+        path_spec = fake_path_spec.FakePathSpec(location="/")
 
-    test_file_system = TestFileSystem(self._resolver_context, path_spec)
+        test_file_system = TestFileSystem(self._resolver_context, path_spec)
 
-    expected_path_segments = ['test1', 'test2', 'test3']
+        expected_path_segments = ["test1", "test2", "test3"]
 
-    path_segments = test_file_system.SplitPath('/test1/test2/test3')
-    self.assertEqual(path_segments, expected_path_segments)
+        path_segments = test_file_system.SplitPath("/test1/test2/test3")
+        self.assertEqual(path_segments, expected_path_segments)
 
-    path_segments = test_file_system.SplitPath('/test1/test2/test3/')
-    self.assertEqual(path_segments, expected_path_segments)
+        path_segments = test_file_system.SplitPath("/test1/test2/test3/")
+        self.assertEqual(path_segments, expected_path_segments)
 
-    path_segments = test_file_system.SplitPath('/test1///test2/test3')
-    self.assertEqual(path_segments, expected_path_segments)
+        path_segments = test_file_system.SplitPath("/test1///test2/test3")
+        self.assertEqual(path_segments, expected_path_segments)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

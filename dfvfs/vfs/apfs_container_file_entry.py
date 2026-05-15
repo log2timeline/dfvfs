@@ -9,156 +9,170 @@ from dfvfs.vfs import file_entry
 
 
 class APFSContainerFileEntry(file_entry.FileEntry):
-  """File system file entry that uses pyfsapfs."""
+    """File system file entry that uses pyfsapfs."""
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_APFS_CONTAINER
 
-  def __init__(
-      self, resolver_context, file_system, path_spec, is_root=False,
-      is_virtual=False, volume_index=None):
-    """Initializes a file entry.
+    def __init__(
+        self,
+        resolver_context,
+        file_system,
+        path_spec,
+        is_root=False,
+        is_virtual=False,
+        volume_index=None,
+    ):
+        """Initializes a file entry.
 
-    Args:
-      resolver_context (Context): resolver context.
-      file_system (FileSystem): file system.
-      path_spec (PathSpec): path specification.
-      is_root (Optional[bool]): True if the file entry is the root file entry
-          of the corresponding file system.
-      is_virtual (Optional[bool]): True if the file entry is a virtual file
-          entry emulated by the corresponding file system.
-      volume_index (Optional[int]): volume index or None.
+        Args:
+          resolver_context (Context): resolver context.
+          file_system (FileSystem): file system.
+          path_spec (PathSpec): path specification.
+          is_root (Optional[bool]): True if the file entry is the root file entry
+              of the corresponding file system.
+          is_virtual (Optional[bool]): True if the file entry is a virtual file
+              entry emulated by the corresponding file system.
+          volume_index (Optional[int]): volume index or None.
 
-    Raises:
-      BackEndError: when the fsapfs volume is missing in a non-virtual
-          file entry.
-    """
-    fsapfs_volume = file_system.GetAPFSVolumeByPathSpec(path_spec)
-    if not is_virtual and fsapfs_volume is None:
-      raise errors.BackEndError(
-          'Missing fsapfs volume in non-virtual file entry.')
+        Raises:
+          BackEndError: when the fsapfs volume is missing in a non-virtual
+              file entry.
+        """
+        fsapfs_volume = file_system.GetAPFSVolumeByPathSpec(path_spec)
+        if not is_virtual and fsapfs_volume is None:
+            raise errors.BackEndError(
+                "Missing fsapfs volume in non-virtual file entry."
+            )
 
-    super().__init__(
-        resolver_context, file_system, path_spec, is_root=is_root,
-        is_virtual=is_virtual)
-    self._name = None
-    self._fsapfs_volume = fsapfs_volume
-    self._volume_index = volume_index
+        super().__init__(
+            resolver_context,
+            file_system,
+            path_spec,
+            is_root=is_root,
+            is_virtual=is_virtual,
+        )
+        self._name = None
+        self._fsapfs_volume = fsapfs_volume
+        self._volume_index = volume_index
 
-    if self._is_virtual:
-      self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
-    else:
-      self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
+        if self._is_virtual:
+            self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
+        else:
+            self.entry_type = definitions.FILE_ENTRY_TYPE_FILE
 
-  def _GetDirectory(self):
-    """Retrieves a directory.
+    def _GetDirectory(self):
+        """Retrieves a directory.
 
-    Returns:
-      APFSContainerDirectory: a directory.
-    """
-    if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
-      return None
+        Returns:
+          APFSContainerDirectory: a directory.
+        """
+        if self.entry_type != definitions.FILE_ENTRY_TYPE_DIRECTORY:
+            return None
 
-    return apfs_container_directory.APFSContainerDirectory(
-        self._file_system, self.path_spec)
+        return apfs_container_directory.APFSContainerDirectory(
+            self._file_system, self.path_spec
+        )
 
-  def _GetSubFileEntries(self):
-    """Retrieves a sub file entries generator.
+    def _GetSubFileEntries(self):
+        """Retrieves a sub file entries generator.
 
-    Yields:
-      APFSContainerFileEntry: a sub file entry.
-    """
-    if self._directory is None:
-      self._directory = self._GetDirectory()
+        Yields:
+          APFSContainerFileEntry: a sub file entry.
+        """
+        if self._directory is None:
+            self._directory = self._GetDirectory()
 
-    if self._directory:
-      for path_spec in self._directory.entries:
-        yield APFSContainerFileEntry(
-            self._resolver_context, self._file_system, path_spec)
+        if self._directory:
+            for path_spec in self._directory.entries:
+                yield APFSContainerFileEntry(
+                    self._resolver_context, self._file_system, path_spec
+                )
 
-  # TODO: expose date and time values.
+    # TODO: expose date and time values.
 
-  @property
-  def name(self):
-    """Retrieves the name.
+    @property
+    def name(self):
+        """Retrieves the name.
 
-    Return:
-      str: name of the file entry, which does not include the full path.
-    """
-    if self._name is None:
-      self._name = ''
+        Return:
+          str: name of the file entry, which does not include the full path.
+        """
+        if self._name is None:
+            self._name = ""
 
-      # Prefer generating the name seeing that the APFS container back-end
-      # supports aliases, such as "/apfs1" and "/apfs{UUID}".
-      if self._volume_index is not None:
-        apfs_volume_index = self._volume_index + 1
-        self._name = f'apfs{apfs_volume_index:d}'
-      else:
-        location = getattr(self.path_spec, 'location', None)
-        if location is not None:
-          self._name = self._file_system.BasenamePath(location)
+            # Prefer generating the name seeing that the APFS container back-end
+            # supports aliases, such as "/apfs1" and "/apfs{UUID}".
+            if self._volume_index is not None:
+                apfs_volume_index = self._volume_index + 1
+                self._name = f"apfs{apfs_volume_index:d}"
+            else:
+                location = getattr(self.path_spec, "location", None)
+                if location is not None:
+                    self._name = self._file_system.BasenamePath(location)
 
-    return self._name
+        return self._name
 
-  @property
-  def size(self):
-    """Retrieves the size.
+    @property
+    def size(self):
+        """Retrieves the size.
 
-    Returns:
-      int: size of the file entry in bytes or None if not available.
-    """
-    if self._fsapfs_volume is None:
-      return None
+        Returns:
+          int: size of the file entry in bytes or None if not available.
+        """
+        if self._fsapfs_volume is None:
+            return None
 
-    # TODO: change libfsapfs so self._fsapfs_volume.size works
-    return 0
+        # TODO: change libfsapfs so self._fsapfs_volume.size works
+        return 0
 
-  @property
-  def sub_file_entries(self):
-    """Retrieves sub file entries.
+    @property
+    def sub_file_entries(self):
+        """Retrieves sub file entries.
 
-    Returns:
-      generator[APFSContainerFileEntry]: sub file entries.
-    """
-    return self._GetSubFileEntries()
+        Returns:
+          generator[APFSContainerFileEntry]: sub file entries.
+        """
+        return self._GetSubFileEntries()
 
-  def GetAPFSVolume(self):
-    """Retrieves an APFS volume.
+    def GetAPFSVolume(self):
+        """Retrieves an APFS volume.
 
-    Returns:
-      pyfsapfs.volume: an APFS volume or None if not available.
-    """
-    return self._fsapfs_volume
+        Returns:
+          pyfsapfs.volume: an APFS volume or None if not available.
+        """
+        return self._fsapfs_volume
 
-  def GetParentFileEntry(self):
-    """Retrieves the parent file entry.
+    def GetParentFileEntry(self):
+        """Retrieves the parent file entry.
 
-    Returns:
-      APFSContainerFileEntry: parent file entry or None if not available.
-    """
-    if self._volume_index is None:
-      return None
+        Returns:
+          APFSContainerFileEntry: parent file entry or None if not available.
+        """
+        if self._volume_index is None:
+            return None
 
-    return self._file_system.GetRootFileEntry()
+        return self._file_system.GetRootFileEntry()
 
-  def IsLocked(self):
-    """Determines if the file entry is locked.
+    def IsLocked(self):
+        """Determines if the file entry is locked.
 
-    Returns:
-      bool: True if the file entry is locked.
-    """
-    if self._fsapfs_volume is None:
-      return False
+        Returns:
+          bool: True if the file entry is locked.
+        """
+        if self._fsapfs_volume is None:
+            return False
 
-    return self._fsapfs_volume.is_locked()
+        return self._fsapfs_volume.is_locked()
 
-  def Unlock(self):
-    """Unlocks the file entry.
+    def Unlock(self):
+        """Unlocks the file entry.
 
-    Returns:
-      bool: True if the file entry was unlocked.
-    """
-    if not self._fsapfs_volume or not self._fsapfs_volume.is_locked():
-      return True
+        Returns:
+          bool: True if the file entry was unlocked.
+        """
+        if not self._fsapfs_volume or not self._fsapfs_volume.is_locked():
+            return True
 
-    return apfs_helper.APFSUnlockVolume(
-        self._fsapfs_volume, self.path_spec, resolver.Resolver.key_chain)
+        return apfs_helper.APFSUnlockVolume(
+            self._fsapfs_volume, self.path_spec, resolver.Resolver.key_chain
+        )

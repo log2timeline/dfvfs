@@ -6,13 +6,12 @@ from dfvfs.lib import definitions
 
 
 class LUKSDECredentials(credentials.Credentials):
-  """LUKS Drive Encryption credentials."""
+    """LUKS Drive Encryption credentials."""
 
-  # TODO: add support for key_data credential.
-  CREDENTIALS = frozenset([
-      'password'])
+    # TODO: add support for key_data credential.
+    CREDENTIALS = frozenset(["password"])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_LUKSDE
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_LUKSDE
 
 
 manager.CredentialsManager.RegisterCredentials(LUKSDECredentials())

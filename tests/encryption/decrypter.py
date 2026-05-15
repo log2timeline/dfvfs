@@ -9,16 +9,16 @@ from tests.encryption import test_lib
 
 
 class DecrypterTestCase(test_lib.DecrypterTestCase):
-  """Tests for the decrypter interface."""
+    """Tests for the decrypter interface."""
 
-  def testInitialize(self):
-    """Tests the __init__ method."""
-    test_decrypter = decrypter.Decrypter()
-    self.assertIsNotNone(test_decrypter)
+    def testInitialize(self):
+        """Tests the __init__ method."""
+        test_decrypter = decrypter.Decrypter()
+        self.assertIsNotNone(test_decrypter)
 
-    with self.assertRaises(ValueError):
-      decrypter.Decrypter(key=b'test1')
+        with self.assertRaises(ValueError):
+            decrypter.Decrypter(key=b"test1")
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

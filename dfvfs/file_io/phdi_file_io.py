@@ -9,113 +9,119 @@ from dfvfs.resolver import resolver
 
 
 class PHDIFile(file_object_io.FileObjectIO):
-  """File input/output (IO) object using pyphdi."""
+    """File input/output (IO) object using pyphdi."""
 
-  def _OpenFileObject(self, path_spec):
-    """Opens the file-like object defined by path specification.
+    def _OpenFileObject(self, path_spec):
+        """Opens the file-like object defined by path specification.
 
-    Args:
-      path_spec (PathSpec): path specification.
+        Args:
+          path_spec (PathSpec): path specification.
 
-    Returns:
-      pyphdi.handle: a file-like object.
+        Returns:
+          pyphdi.handle: a file-like object.
 
-    Raises:
-      OSError: if the file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-    """
-    if not path_spec.HasParent():
-      raise errors.PathSpecError(
-          'Unsupported path specification without parent.')
+        Raises:
+          OSError: if the file-like object could not be opened.
+          PathSpecError: if the path specification is incorrect.
+        """
+        if not path_spec.HasParent():
+            raise errors.PathSpecError("Unsupported path specification without parent.")
 
-    parent_path_spec = path_spec.parent
+        parent_path_spec = path_spec.parent
 
-    parent_location = getattr(parent_path_spec, 'location', None)
-    if not parent_location:
-      raise errors.PathSpecError(
-          'Unsupported parent path specification without location.')
+        parent_location = getattr(parent_path_spec, "location", None)
+        if not parent_location:
+            raise errors.PathSpecError(
+                "Unsupported parent path specification without location."
+            )
 
-    # Note that we cannot use pyphdi's open_extent_data_files_as_file_objects
-    # function since it does not handle the file system abstraction dfVFS
-    # provides.
+        # Note that we cannot use pyphdi's open_extent_data_files_as_file_objects
+        # function since it does not handle the file system abstraction dfVFS
+        # provides.
 
-    file_system = resolver.Resolver.OpenFileSystem(
-        parent_path_spec, resolver_context=self._resolver_context)
+        file_system = resolver.Resolver.OpenFileSystem(
+            parent_path_spec, resolver_context=self._resolver_context
+        )
 
-    file_object = resolver.Resolver.OpenFileObject(
-        parent_path_spec, resolver_context=self._resolver_context)
+        file_object = resolver.Resolver.OpenFileObject(
+            parent_path_spec, resolver_context=self._resolver_context
+        )
 
-    phdi_handle = pyphdi.handle()
-    phdi_handle.open_file_object(file_object)
+        phdi_handle = pyphdi.handle()
+        phdi_handle.open_file_object(file_object)
 
-    parent_location_path_segments = file_system.SplitPath(parent_location)
+        parent_location_path_segments = file_system.SplitPath(parent_location)
 
-    number_of_image_descriptors = 0
-    extent_data_files = []
-    for extent_descriptor in iter(phdi_handle.extent_descriptors):
-      for image_descriptor in iter(extent_descriptor.image_descriptors):
-        number_of_image_descriptors += 1
+        number_of_image_descriptors = 0
+        extent_data_files = []
+        for extent_descriptor in iter(phdi_handle.extent_descriptors):
+            for image_descriptor in iter(extent_descriptor.image_descriptors):
+                number_of_image_descriptors += 1
 
-        extent_data_filename = image_descriptor.filename
+                extent_data_filename = image_descriptor.filename
 
-        _, path_separator, filename = extent_data_filename.rpartition('/')
-        if not path_separator:
-          _, path_separator, filename = extent_data_filename.rpartition('\\')
+                _, path_separator, filename = extent_data_filename.rpartition("/")
+                if not path_separator:
+                    _, path_separator, filename = extent_data_filename.rpartition("\\")
 
-        if not path_separator:
-          filename = extent_data_filename
+                if not path_separator:
+                    filename = extent_data_filename
 
-        # The last parent location path segment contains the extent data
-        # filename. Since we want to check if the next extent data file exists
-        # we remove the previous one form the path segments list and add the new
-        # filename. After that the path segments list can be used to create
-        # the location string.
-        parent_location_path_segments.pop()
-        parent_location_path_segments.append(filename)
-        extent_data_file_location = file_system.JoinPath(
-            parent_location_path_segments)
+                # The last parent location path segment contains the extent data
+                # filename. Since we want to check if the next extent data file exists
+                # we remove the previous one form the path segments list and add the new
+                # filename. After that the path segments list can be used to create
+                # the location string.
+                parent_location_path_segments.pop()
+                parent_location_path_segments.append(filename)
+                extent_data_file_location = file_system.JoinPath(
+                    parent_location_path_segments
+                )
 
-        # Note that we don't want to set the keyword arguments when not used
-        # because the path specification base class will check for unused
-        # keyword arguments and raise.
-        kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
+                # Note that we don't want to set the keyword arguments when not used
+                # because the path specification base class will check for unused
+                # keyword arguments and raise.
+                kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-        kwargs['location'] = extent_data_file_location
-        if parent_path_spec.parent is not None:
-          kwargs['parent'] = parent_path_spec.parent
+                kwargs["location"] = extent_data_file_location
+                if parent_path_spec.parent is not None:
+                    kwargs["parent"] = parent_path_spec.parent
 
-        extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
-            parent_path_spec.type_indicator, **kwargs)
+                extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
+                    parent_path_spec.type_indicator, **kwargs
+                )
 
-        if not file_system.FileEntryExistsByPathSpec(
-            extent_data_file_path_spec):
-          break
+                if not file_system.FileEntryExistsByPathSpec(
+                    extent_data_file_path_spec
+                ):
+                    break
 
-        extent_data_files.append(extent_data_file_path_spec)
+                extent_data_files.append(extent_data_file_path_spec)
 
-    if len(extent_data_files) != number_of_image_descriptors:
-      raise OSError('Unable to locate all extent data files.')
+        if len(extent_data_files) != number_of_image_descriptors:
+            raise OSError("Unable to locate all extent data files.")
 
-    file_objects = []
-    for extent_data_file_path_spec in extent_data_files:
-      file_object = resolver.Resolver.OpenFileObject(
-          extent_data_file_path_spec, resolver_context=self._resolver_context)
-      file_objects.append(file_object)
+        file_objects = []
+        for extent_data_file_path_spec in extent_data_files:
+            file_object = resolver.Resolver.OpenFileObject(
+                extent_data_file_path_spec, resolver_context=self._resolver_context
+            )
+            file_objects.append(file_object)
 
-    phdi_handle.open_extent_data_files_as_file_objects(file_objects)
+        phdi_handle.open_extent_data_files_as_file_objects(file_objects)
 
-    return phdi_handle
+        return phdi_handle
 
-  def get_size(self):
-    """Retrieves the size of the file-like object.
+    def get_size(self):
+        """Retrieves the size of the file-like object.
 
-    Returns:
-      int: size of the file-like object data.
+        Returns:
+          int: size of the file-like object data.
 
-    Raises:
-      OSError: if the file-like object has not been opened.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Raises:
+          OSError: if the file-like object has not been opened.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    return self._file_object.get_media_size()
+        return self._file_object.get_media_size()

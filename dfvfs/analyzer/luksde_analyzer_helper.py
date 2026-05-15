@@ -7,27 +7,25 @@ from dfvfs.lib import definitions
 
 
 class LUKSDEAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """LUKSDE analyzer helper."""
+    """LUKSDE analyzer helper."""
 
-  FORMAT_CATEGORIES = frozenset([
-      definitions.FORMAT_CATEGORY_VOLUME_SYSTEM])
+    FORMAT_CATEGORIES = frozenset([definitions.FORMAT_CATEGORY_VOLUME_SYSTEM])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_LUKSDE
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_LUKSDE
 
-  def GetFormatSpecification(self):
-    """Retrieves the format specification.
+    def GetFormatSpecification(self):
+        """Retrieves the format specification.
 
-    Returns:
-      FormatSpecification: format specification or None if the format cannot
-          be defined by a specification object.
-    """
-    format_specification = specification.FormatSpecification(
-        self.type_indicator)
+        Returns:
+          FormatSpecification: format specification or None if the format cannot
+              be defined by a specification object.
+        """
+        format_specification = specification.FormatSpecification(self.type_indicator)
 
-    # LUKSDE signature.
-    format_specification.AddNewSignature(b'LUKS\xba\xbe', offset=0)
+        # LUKSDE signature.
+        format_specification.AddNewSignature(b"LUKS\xba\xbe", offset=0)
 
-    return format_specification
+        return format_specification
 
 
 analyzer.Analyzer.RegisterHelper(LUKSDEAnalyzerHelper())

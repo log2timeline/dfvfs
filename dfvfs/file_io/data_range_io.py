@@ -8,189 +8,195 @@ from dfvfs.resolver import resolver
 
 
 class DataRange(file_io.FileIO):
-  """File input/output (IO) object that maps an in-file data range.
+    """File input/output (IO) object that maps an in-file data range.
 
-  The data range object allows to expose a single partition within a full disk
-  image as a separate file-like object by mapping the data range (offset and
-  size) of the volume on top of the full disk image.
-  """
-
-  def __init__(self, resolver_context, path_spec):
-    """Initializes a file input/output (IO) object.
-
-    Args:
-      resolver_context (Context): resolver context.
-      path_spec (PathSpec): a path specification.
+    The data range object allows to expose a single partition within a full disk
+    image as a separate file-like object by mapping the data range (offset and
+    size) of the volume on top of the full disk image.
     """
-    super().__init__(resolver_context, path_spec)
-    self._current_offset = 0
-    self._file_object = None
-    self._range_offset = -1
-    self._range_size = -1
 
-  def _Close(self):
-    """Closes the file-like object.
+    def __init__(self, resolver_context, path_spec):
+        """Initializes a file input/output (IO) object.
 
-    If the file-like object was passed in the init function the data range file-
-    like object does not control the file-like object and should not actually
-    close it.
-    """
-    self._file_object = None
-    self._range_offset = -1
-    self._range_size = -1
+        Args:
+          resolver_context (Context): resolver context.
+          path_spec (PathSpec): a path specification.
+        """
+        super().__init__(resolver_context, path_spec)
+        self._current_offset = 0
+        self._file_object = None
+        self._range_offset = -1
+        self._range_size = -1
 
-  def _Open(self, mode='rb'):
-    """Opens the file-like object.
+    def _Close(self):
+        """Closes the file-like object.
 
-    Args:
-      mode (Optional[str]): file access mode.
+        If the file-like object was passed in the init function the data range file-
+        like object does not control the file-like object and should not actually
+        close it.
+        """
+        self._file_object = None
+        self._range_offset = -1
+        self._range_size = -1
 
-    Raises:
-      AccessError: if the access to open the file was denied.
-      OSError: if the file-like object could not be opened.
-      PathSpecError: if the path specification is incorrect.
-    """
-    if not self._path_spec.HasParent():
-      raise errors.PathSpecError(
-          'Unsupported path specification without parent.')
+    def _Open(self, mode="rb"):
+        """Opens the file-like object.
 
-    range_offset = getattr(self._path_spec, 'range_offset', None)
-    range_size = getattr(self._path_spec, 'range_size', None)
+        Args:
+          mode (Optional[str]): file access mode.
 
-    if range_offset is None or range_size is None:
-      raise errors.PathSpecError(
-          'Path specification missing range offset and range size.')
+        Raises:
+          AccessError: if the access to open the file was denied.
+          OSError: if the file-like object could not be opened.
+          PathSpecError: if the path specification is incorrect.
+        """
+        if not self._path_spec.HasParent():
+            raise errors.PathSpecError("Unsupported path specification without parent.")
 
-    self._SetRange(range_offset, range_size)
-    self._file_object = resolver.Resolver.OpenFileObject(
-        self._path_spec.parent, resolver_context=self._resolver_context)
+        range_offset = getattr(self._path_spec, "range_offset", None)
+        range_size = getattr(self._path_spec, "range_size", None)
 
-  def _SetRange(self, range_offset, range_size):
-    """Sets the data range (offset and size).
+        if range_offset is None or range_size is None:
+            raise errors.PathSpecError(
+                "Path specification missing range offset and range size."
+            )
 
-    The data range is used to map a range of data within one file
-    (e.g. a single partition within a full disk image) as a file-like object.
+        self._SetRange(range_offset, range_size)
+        self._file_object = resolver.Resolver.OpenFileObject(
+            self._path_spec.parent, resolver_context=self._resolver_context
+        )
 
-    Args:
-      range_offset (int): start offset of the data range.
-      range_size (int): size of the data range.
+    def _SetRange(self, range_offset, range_size):
+        """Sets the data range (offset and size).
 
-    Raises:
-      ValueError: if the range offset or range size is invalid.
-    """
-    if range_offset < 0:
-      raise ValueError(
-          f'Invalid range offset: {range_offset:d} value out of bounds.')
+        The data range is used to map a range of data within one file
+        (e.g. a single partition within a full disk image) as a file-like object.
 
-    if range_size < 0:
-      raise ValueError(
-          f'Invalid range size: {range_size:d} value out of bounds.')
+        Args:
+          range_offset (int): start offset of the data range.
+          range_size (int): size of the data range.
 
-    self._range_offset = range_offset
-    self._range_size = range_size
-    self._current_offset = 0
+        Raises:
+          ValueError: if the range offset or range size is invalid.
+        """
+        if range_offset < 0:
+            raise ValueError(
+                f"Invalid range offset: {range_offset:d} value out of bounds."
+            )
 
-  # Note: that the following functions do not follow the style guide
-  # because they are part of the file-like object interface.
-  # pylint: disable=invalid-name
+        if range_size < 0:
+            raise ValueError(f"Invalid range size: {range_size:d} value out of bounds.")
 
-  def read(self, size=None):
-    """Reads a byte string from the file-like object at the current offset.
+        self._range_offset = range_offset
+        self._range_size = range_size
+        self._current_offset = 0
 
-    The function will read a byte string of the specified size or
-    all of the remaining data if no size was specified.
+    # Note: that the following functions do not follow the style guide
+    # because they are part of the file-like object interface.
+    # pylint: disable=invalid-name
 
-    Args:
-      size (Optional[int]): number of bytes to read, where None is all
-          remaining data.
+    def read(self, size=None):
+        """Reads a byte string from the file-like object at the current offset.
 
-    Returns:
-      bytes: data read.
+        The function will read a byte string of the specified size or
+        all of the remaining data if no size was specified.
 
-    Raises:
-      OSError: if the read failed.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+        Args:
+          size (Optional[int]): number of bytes to read, where None is all
+              remaining data.
 
-    if self._range_offset < 0 or self._range_size < 0:
-      raise OSError('Invalid data range.')
+        Returns:
+          bytes: data read.
 
-    if self._current_offset < 0:
-      raise OSError((
-          f'Invalid current offset: {self._current_offset:d} value less than '
-          f'zero.'))
+        Raises:
+          OSError: if the read failed.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    if self._current_offset >= self._range_size:
-      return b''
+        if self._range_offset < 0 or self._range_size < 0:
+            raise OSError("Invalid data range.")
 
-    if size is None:
-      size = self._range_size
-    if self._current_offset + size > self._range_size:
-      size = self._range_size - self._current_offset
+        if self._current_offset < 0:
+            raise OSError(
+                (
+                    f"Invalid current offset: {self._current_offset:d} value less than "
+                    f"zero."
+                )
+            )
 
-    self._file_object.seek(
-        self._range_offset + self._current_offset, os.SEEK_SET)
+        if self._current_offset >= self._range_size:
+            return b""
 
-    data = self._file_object.read(size)
+        if size is None:
+            size = self._range_size
+        if self._current_offset + size > self._range_size:
+            size = self._range_size - self._current_offset
 
-    self._current_offset += len(data)
+        self._file_object.seek(self._range_offset + self._current_offset, os.SEEK_SET)
 
-    return data
+        data = self._file_object.read(size)
 
-  def seek(self, offset, whence=os.SEEK_SET):
-    """Seeks to an offset within the file-like object.
+        self._current_offset += len(data)
 
-    Args:
-      offset (int): offset to seek to.
-      whence (Optional(int)): value that indicates whether offset is an absolute
-          or relative position within the file.
+        return data
 
-    Raises:
-      OSError: if the seek failed.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+    def seek(self, offset, whence=os.SEEK_SET):
+        """Seeks to an offset within the file-like object.
 
-    if self._current_offset < 0:
-      raise OSError((
-          f'Invalid current offset: {self._current_offset:d} value less than '
-          f'zero.'))
+        Args:
+          offset (int): offset to seek to.
+          whence (Optional(int)): value that indicates whether offset is an absolute
+              or relative position within the file.
 
-    if whence == os.SEEK_CUR:
-      offset += self._current_offset
-    elif whence == os.SEEK_END:
-      offset += self._range_size
-    elif whence != os.SEEK_SET:
-      raise OSError('Unsupported whence.')
-    if offset < 0:
-      raise OSError('Invalid offset value less than zero.')
-    self._current_offset = offset
+        Raises:
+          OSError: if the seek failed.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-  def get_offset(self):
-    """Retrieves the current offset into the file-like object.
+        if self._current_offset < 0:
+            raise OSError(
+                (
+                    f"Invalid current offset: {self._current_offset:d} value less than "
+                    f"zero."
+                )
+            )
 
-    Returns:
-      int: current offset in the data range.
+        if whence == os.SEEK_CUR:
+            offset += self._current_offset
+        elif whence == os.SEEK_END:
+            offset += self._range_size
+        elif whence != os.SEEK_SET:
+            raise OSError("Unsupported whence.")
+        if offset < 0:
+            raise OSError("Invalid offset value less than zero.")
+        self._current_offset = offset
 
-    Raises:
-      OSError: if the file-like object has not been opened.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+    def get_offset(self):
+        """Retrieves the current offset into the file-like object.
 
-    return self._current_offset
+        Returns:
+          int: current offset in the data range.
 
-  def get_size(self):
-    """Retrieves the size of the file-like object.
+        Raises:
+          OSError: if the file-like object has not been opened.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
 
-    Returns:
-      int: size of the data range.
+        return self._current_offset
 
-    Raises:
-      OSError: if the file-like object has not been opened.
-    """
-    if not self._is_open:
-      raise OSError('Not opened.')
+    def get_size(self):
+        """Retrieves the size of the file-like object.
 
-    return self._range_size
+        Returns:
+          int: size of the data range.
+
+        Raises:
+          OSError: if the file-like object has not been opened.
+        """
+        if not self._is_open:
+            raise OSError("Not opened.")
+
+        return self._range_size

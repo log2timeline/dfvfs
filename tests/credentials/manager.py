@@ -13,52 +13,53 @@ from tests import test_lib as shared_test_lib
 
 
 class TestCredentials(credentials.Credentials):
-  """Credentials for testing."""
+    """Credentials for testing."""
 
-  CREDENTIALS = frozenset(['password'])
+    CREDENTIALS = frozenset(["password"])
 
-  TYPE_INDICATOR = 'test'
+    TYPE_INDICATOR = "test"
 
 
 class CredentialsManagerTest(shared_test_lib.BaseTestCase):
-  """Credentials manager tests."""
+    """Credentials manager tests."""
 
-  def testCredentialsRegistration(self):
-    """Tests the DeregisterCredentials and DeregisterCredentials functions."""
-    # pylint: disable=protected-access
-    test_credentials = TestCredentials()
+    def testCredentialsRegistration(self):
+        """Tests the DeregisterCredentials and DeregisterCredentials functions."""
+        # pylint: disable=protected-access
+        test_credentials = TestCredentials()
 
-    number_of_credentials = len(manager.CredentialsManager._credentials)
+        number_of_credentials = len(manager.CredentialsManager._credentials)
 
-    manager.CredentialsManager.RegisterCredentials(test_credentials)
-    self.assertEqual(
-        len(manager.CredentialsManager._credentials), number_of_credentials + 1)
+        manager.CredentialsManager.RegisterCredentials(test_credentials)
+        self.assertEqual(
+            len(manager.CredentialsManager._credentials), number_of_credentials + 1
+        )
 
-    with self.assertRaises(KeyError):
-      manager.CredentialsManager.RegisterCredentials(test_credentials)
+        with self.assertRaises(KeyError):
+            manager.CredentialsManager.RegisterCredentials(test_credentials)
 
-    manager.CredentialsManager.DeregisterCredentials(test_credentials)
-    self.assertEqual(
-        len(manager.CredentialsManager._credentials), number_of_credentials)
+        manager.CredentialsManager.DeregisterCredentials(test_credentials)
+        self.assertEqual(
+            len(manager.CredentialsManager._credentials), number_of_credentials
+        )
 
-    with self.assertRaises(KeyError):
-      manager.CredentialsManager.DeregisterCredentials(test_credentials)
+        with self.assertRaises(KeyError):
+            manager.CredentialsManager.DeregisterCredentials(test_credentials)
 
-  def testGetCredentials(self):
-    """Function to test the GetCredentials function."""
-    test_path_spec = fake_path_spec.FakePathSpec(location='/fake')
-    test_path_spec = apfs_container_path_spec.APFSContainerPathSpec(
-        location='/', parent=fake_path_spec)
+    def testGetCredentials(self):
+        """Function to test the GetCredentials function."""
+        test_path_spec = fake_path_spec.FakePathSpec(location="/fake")
+        test_path_spec = apfs_container_path_spec.APFSContainerPathSpec(
+            location="/", parent=fake_path_spec
+        )
 
-    credentials_object = manager.CredentialsManager.GetCredentials(
-        test_path_spec)
-    self.assertIsInstance(credentials_object, apfs_credentials.APFSCredentials)
+        credentials_object = manager.CredentialsManager.GetCredentials(test_path_spec)
+        self.assertIsInstance(credentials_object, apfs_credentials.APFSCredentials)
 
-    test_path_spec = fake_path_spec.FakePathSpec(location='/fake')
-    credentials_object = manager.CredentialsManager.GetCredentials(
-        test_path_spec)
-    self.assertIsNone(credentials_object)
+        test_path_spec = fake_path_spec.FakePathSpec(location="/fake")
+        credentials_object = manager.CredentialsManager.GetCredentials(test_path_spec)
+        self.assertIsNone(credentials_object)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

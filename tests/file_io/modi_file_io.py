@@ -12,135 +12,155 @@ from tests.file_io import test_lib
 
 
 class SparseImageMODIFileTest(test_lib.HFSImageFileTestCase):
-  """Tests the MODI file-like object on a spare image file."""
+    """Tests the MODI file-like object on a spare image file."""
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
-    test_path = self._GetTestFilePath(['hfsplus.sparseimage'])
-    self._SkipIfPathNotExists(test_path)
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
+        test_path = self._GetTestFilePath(["hfsplus.sparseimage"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec)
-    self._gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/p1',
-        parent=self._modi_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec
+        )
+        self._gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_GPT, location="/p1", parent=self._modi_path_spec
+        )
 
-  def testOpenCloseIdentifier(self):
-    """Test the open and close functionality using an identifier."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testOpenCloseIdentifier(self):
+        """Test the open and close functionality using an identifier."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_PASSWORDS_TXT,
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseIdentifier(file_object)
+        self._TestOpenCloseIdentifier(file_object)
 
-  def testOpenCloseLocation(self):
-    """Test the open and close functionality using a location."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
-        parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testOpenCloseLocation(self):
+        """Test the open and close functionality using a location."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_PASSWORDS_TXT,
+            location="/passwords.txt",
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseLocation(file_object)
+        self._TestOpenCloseLocation(file_object)
 
-    # Try open with a path specification that has no parent.
-    path_spec.parent = None
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+        # Try open with a path specification that has no parent.
+        path_spec.parent = None
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(file_object)
+        with self.assertRaises(errors.PathSpecError):
+            self._TestOpenCloseLocation(file_object)
 
-  def testSeek(self):
-    """Test the seek functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file', parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testSeek(self):
+        """Test the seek functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_ANOTHER_FILE,
+            location="/a_directory/another_file",
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestSeek(file_object)
+        self._TestSeek(file_object)
 
-  def testRead(self):
-    """Test the read functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
-        parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testRead(self):
+        """Test the read functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_PASSWORDS_TXT,
+            location="/passwords.txt",
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestRead(file_object)
+        self._TestRead(file_object)
 
 
 class ZlibCompressedUDIFMODIFileTest(test_lib.HFSImageFileTestCase):
-  """Tests the MODI file-like object on a zlib compressed UDIF image file."""
+    """Tests the MODI file-like object on a zlib compressed UDIF image file."""
 
-  _IDENTIFIER_ANOTHER_FILE = 21
-  _IDENTIFIER_PASSWORDS_TXT = 23
+    _IDENTIFIER_ANOTHER_FILE = 21
+    _IDENTIFIER_PASSWORDS_TXT = 23
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
-    test_path = self._GetTestFilePath(['hfsplus_zlib.dmg'])
-    self._SkipIfPathNotExists(test_path)
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
+        test_path = self._GetTestFilePath(["hfsplus_zlib.dmg"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec)
-    self._gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_GPT, location='/p1',
-        parent=self._modi_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._modi_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_MODI, parent=test_os_path_spec
+        )
+        self._gpt_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_GPT, location="/p1", parent=self._modi_path_spec
+        )
 
-  def testOpenCloseIdentifier(self):
-    """Test the open and close functionality using an identifier."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_PASSWORDS_TXT, parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testOpenCloseIdentifier(self):
+        """Test the open and close functionality using an identifier."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_PASSWORDS_TXT,
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseIdentifier(file_object)
+        self._TestOpenCloseIdentifier(file_object)
 
-  def testOpenCloseLocation(self):
-    """Test the open and close functionality using a location."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
-        parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testOpenCloseLocation(self):
+        """Test the open and close functionality using a location."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_PASSWORDS_TXT,
+            location="/passwords.txt",
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestOpenCloseLocation(file_object)
+        self._TestOpenCloseLocation(file_object)
 
-    # Try open with a path specification that has no parent.
-    path_spec.parent = None
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+        # Try open with a path specification that has no parent.
+        path_spec.parent = None
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    with self.assertRaises(errors.PathSpecError):
-      self._TestOpenCloseLocation(file_object)
+        with self.assertRaises(errors.PathSpecError):
+            self._TestOpenCloseLocation(file_object)
 
-  def testSeek(self):
-    """Test the seek functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_ANOTHER_FILE,
-        location='/a_directory/another_file', parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testSeek(self):
+        """Test the seek functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_ANOTHER_FILE,
+            location="/a_directory/another_file",
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestSeek(file_object)
+        self._TestSeek(file_object)
 
-  def testRead(self):
-    """Test the read functionality."""
-    path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_HFS,
-        identifier=self._IDENTIFIER_PASSWORDS_TXT, location='/passwords.txt',
-        parent=self._gpt_path_spec)
-    file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
+    def testRead(self):
+        """Test the read functionality."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_PASSWORDS_TXT,
+            location="/passwords.txt",
+            parent=self._gpt_path_spec,
+        )
+        file_object = hfs_file_io.HFSFile(self._resolver_context, path_spec)
 
-    self._TestRead(file_object)
+        self._TestRead(file_object)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

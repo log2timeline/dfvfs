@@ -7,27 +7,25 @@ from dfvfs.lib import definitions
 
 
 class ZipAnalyzerHelper(analyzer_helper.AnalyzerHelper):
-  """ZIP analyzer helper."""
+    """ZIP analyzer helper."""
 
-  FORMAT_CATEGORIES = frozenset([
-      definitions.FORMAT_CATEGORY_ARCHIVE])
+    FORMAT_CATEGORIES = frozenset([definitions.FORMAT_CATEGORY_ARCHIVE])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_ZIP
 
-  def GetFormatSpecification(self):
-    """Retrieves the format specification.
+    def GetFormatSpecification(self):
+        """Retrieves the format specification.
 
-    Returns:
-      FormatSpecification: format specification or None if the format cannot
-          be defined by a specification object.
-    """
-    format_specification = specification.FormatSpecification(
-        self.type_indicator)
+        Returns:
+          FormatSpecification: format specification or None if the format cannot
+              be defined by a specification object.
+        """
+        format_specification = specification.FormatSpecification(self.type_indicator)
 
-    # ZIP file signature.
-    format_specification.AddNewSignature(b'PK\x03\x04', offset=0)
+        # ZIP file signature.
+        format_specification.AddNewSignature(b"PK\x03\x04", offset=0)
 
-    return format_specification
+        return format_specification
 
 
 analyzer.Analyzer.RegisterHelper(ZipAnalyzerHelper())

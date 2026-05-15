@@ -6,13 +6,12 @@ from dfvfs.lib import definitions
 
 
 class CSCredentials(credentials.Credentials):
-  """Core Storage (CS) credentials."""
+    """Core Storage (CS) credentials."""
 
-  # TODO: add support for key_data credential, needs pyfvde update.
-  CREDENTIALS = frozenset([
-      'encrypted_root_plist', 'password', 'recovery_password'])
+    # TODO: add support for key_data credential, needs pyfvde update.
+    CREDENTIALS = frozenset(["encrypted_root_plist", "password", "recovery_password"])
 
-  TYPE_INDICATOR = definitions.TYPE_INDICATOR_CS
+    TYPE_INDICATOR = definitions.TYPE_INDICATOR_CS
 
 
 manager.CredentialsManager.RegisterCredentials(CSCredentials())

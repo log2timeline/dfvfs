@@ -2,22 +2,22 @@
 
 
 class Credentials:
-  """Credentials interface."""
+    """Credentials interface."""
 
-  def __init__(self):
-    """Initializes credentials.
+    def __init__(self):
+        """Initializes credentials.
 
-    Raises:
-      ValueError: if a derived credentials class does not define a type
-          indicator.
-    """
-    super().__init__()
+        Raises:
+          ValueError: if a derived credentials class does not define a type
+              indicator.
+        """
+        super().__init__()
 
-    if not getattr(self, 'TYPE_INDICATOR', None):
-      raise ValueError('Missing type indicator.')
+        if not getattr(self, "TYPE_INDICATOR", None):
+            raise ValueError("Missing type indicator.")
 
-  @property
-  def type_indicator(self):
-    """str: type indicator."""
-    # pylint: disable=no-member
-    return self.TYPE_INDICATOR
+    @property
+    def type_indicator(self):
+        """str: type indicator."""
+        # pylint: disable=no-member
+        return self.TYPE_INDICATOR

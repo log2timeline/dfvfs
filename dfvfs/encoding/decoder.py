@@ -4,17 +4,17 @@ import abc
 
 
 class Decoder:
-  """Decoder interface."""
+    """Decoder interface."""
 
-  # pylint: disable=redundant-returns-doc
+    # pylint: disable=redundant-returns-doc
 
-  @abc.abstractmethod
-  def Decode(self, encoded_data):
-    """Decodes the encoded data.
+    @abc.abstractmethod
+    def Decode(self, encoded_data):
+        """Decodes the encoded data.
 
-    Args:
-      encoded_data (byte): encoded data.
+        Args:
+          encoded_data (byte): encoded data.
 
-    Returns:
-      tuple(bytes, bytes): decoded data and remaining encoded data.
-    """
+        Returns:
+          tuple(bytes, bytes): decoded data and remaining encoded data.
+        """

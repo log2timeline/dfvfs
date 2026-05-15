@@ -11,36 +11,38 @@ from tests.resolver_helpers import test_lib
 
 
 class EncodedStreamResolverHelperTest(test_lib.ResolverHelperTestCase):
-  """Tests for the encoded stream resolver helper implementation."""
+    """Tests for the encoded stream resolver helper implementation."""
 
-  def setUp(self):
-    """Sets up the needed objects used throughout the test."""
-    super().setUp()
+    def setUp(self):
+        """Sets up the needed objects used throughout the test."""
+        super().setUp()
 
-    test_path = self._GetTestFilePath(['syslog.base64'])
-    self._SkipIfPathNotExists(test_path)
+        test_path = self._GetTestFilePath(["syslog.base64"])
+        self._SkipIfPathNotExists(test_path)
 
-    test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_OS, location=test_path)
-    self._encoded_stream_path_spec = path_spec_factory.Factory.NewPathSpec(
-        definitions.TYPE_INDICATOR_ENCODED_STREAM,
-        encoding_method=definitions.ENCODING_METHOD_BASE64,
-        parent=test_os_path_spec)
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        self._encoded_stream_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ENCODED_STREAM,
+            encoding_method=definitions.ENCODING_METHOD_BASE64,
+            parent=test_os_path_spec,
+        )
 
-  def testNewFileObject(self):
-    """Tests the NewFileObject function."""
-    resolver_helper_object = (
-        encoded_stream_resolver_helper.EncodedStreamResolverHelper())
-    self._TestNewFileObject(
-        resolver_helper_object, self._encoded_stream_path_spec)
+    def testNewFileObject(self):
+        """Tests the NewFileObject function."""
+        resolver_helper_object = (
+            encoded_stream_resolver_helper.EncodedStreamResolverHelper()
+        )
+        self._TestNewFileObject(resolver_helper_object, self._encoded_stream_path_spec)
 
-  def testNewFileSystem(self):
-    """Tests the NewFileSystem function."""
-    resolver_helper_object = (
-        encoded_stream_resolver_helper.EncodedStreamResolverHelper())
-    self._TestNewFileSystem(
-        resolver_helper_object, self._encoded_stream_path_spec)
+    def testNewFileSystem(self):
+        """Tests the NewFileSystem function."""
+        resolver_helper_object = (
+            encoded_stream_resolver_helper.EncodedStreamResolverHelper()
+        )
+        self._TestNewFileSystem(resolver_helper_object, self._encoded_stream_path_spec)
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()

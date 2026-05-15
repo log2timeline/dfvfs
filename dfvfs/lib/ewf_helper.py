@@ -5,96 +5,104 @@ from dfvfs.path import factory as path_spec_factory
 
 
 def EWFGlobPathSpec(file_system, path_spec):
-  """Globs for path specifications according to the EWF naming schema.
+    """Globs for path specifications according to the EWF naming schema.
 
-  Args:
-    file_system (FileSystem): file system.
-    path_spec (PathSpec): path specification.
+    Args:
+      file_system (FileSystem): file system.
+      path_spec (PathSpec): path specification.
 
-  Returns:
-    list[PathSpec]: path specifications that match the glob.
+    Returns:
+      list[PathSpec]: path specifications that match the glob.
 
-  Raises:
-    PathSpecError: if the path specification is invalid.
-    RuntimeError: if the maximum number of supported segment files is
-        reached.
-  """
-  if not path_spec.HasParent():
-    raise errors.PathSpecError(
-        'Unsupported path specification without parent.')
+    Raises:
+      PathSpecError: if the path specification is invalid.
+      RuntimeError: if the maximum number of supported segment files is
+          reached.
+    """
+    if not path_spec.HasParent():
+        raise errors.PathSpecError("Unsupported path specification without parent.")
 
-  parent_path_spec = path_spec.parent
+    parent_path_spec = path_spec.parent
 
-  parent_location = getattr(parent_path_spec, 'location', None)
-  if not parent_location:
-    raise errors.PathSpecError(
-        'Unsupported parent path specification without location.')
+    parent_location = getattr(parent_path_spec, "location", None)
+    if not parent_location:
+        raise errors.PathSpecError(
+            "Unsupported parent path specification without location."
+        )
 
-  parent_location, _, segment_extension = parent_location.rpartition('.')
-  segment_extension_start = segment_extension[0]
-  segment_extension_length = len(segment_extension)
+    parent_location, _, segment_extension = parent_location.rpartition(".")
+    segment_extension_start = segment_extension[0]
+    segment_extension_length = len(segment_extension)
 
-  if (segment_extension_length not in [3, 4] or
-      not segment_extension.endswith('01') or (
-          segment_extension_length == 3 and
-          segment_extension_start not in ['E', 'e', 's']) or (
-              segment_extension_length == 4 and
-              not segment_extension.startswith('Ex'))):
-    raise errors.PathSpecError((
-        f'Unsupported parent path specification invalid segment file '
-        f'extension: {segment_extension:s}'))
+    if (
+        segment_extension_length not in [3, 4]
+        or not segment_extension.endswith("01")
+        or (
+            segment_extension_length == 3
+            and segment_extension_start not in ["E", "e", "s"]
+        )
+        or (segment_extension_length == 4 and not segment_extension.startswith("Ex"))
+    ):
+        raise errors.PathSpecError(
+            (
+                f"Unsupported parent path specification invalid segment file "
+                f"extension: {segment_extension:s}"
+            )
+        )
 
-  segment_number = 1
-  segment_files = []
-  while True:
-    segment_location = f'{parent_location:s}.{segment_extension:s}'
+    segment_number = 1
+    segment_files = []
+    while True:
+        segment_location = f"{parent_location:s}.{segment_extension:s}"
 
-    # Note that we don't want to set the keyword arguments when not used
-    # because the path specification base class will check for unused
-    # keyword arguments and raise.
-    kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
+        # Note that we don't want to set the keyword arguments when not used
+        # because the path specification base class will check for unused
+        # keyword arguments and raise.
+        kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
-    kwargs['location'] = segment_location
-    if parent_path_spec.parent is not None:
-      kwargs['parent'] = parent_path_spec.parent
+        kwargs["location"] = segment_location
+        if parent_path_spec.parent is not None:
+            kwargs["parent"] = parent_path_spec.parent
 
-    segment_path_spec = path_spec_factory.Factory.NewPathSpec(
-        parent_path_spec.type_indicator, **kwargs)
+        segment_path_spec = path_spec_factory.Factory.NewPathSpec(
+            parent_path_spec.type_indicator, **kwargs
+        )
 
-    if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
-      break
+        if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
+            break
 
-    segment_files.append(segment_path_spec)
+        segment_files.append(segment_path_spec)
 
-    segment_number += 1
-    if segment_number <= 99:
-      if segment_extension_length == 3:
-        segment_extension = f'{segment_extension_start:s}{segment_number:02d}'
-      elif segment_extension_length == 4:
-        segment_extension = f'{segment_extension_start:s}x{segment_number:02d}'
+        segment_number += 1
+        if segment_number <= 99:
+            if segment_extension_length == 3:
+                segment_extension = f"{segment_extension_start:s}{segment_number:02d}"
+            elif segment_extension_length == 4:
+                segment_extension = f"{segment_extension_start:s}x{segment_number:02d}"
 
-    else:
-      segment_index = segment_number - 100
+        else:
+            segment_index = segment_number - 100
 
-      if segment_extension_start in ['e', 's']:
-        letter_offset = ord('a')
-      else:
-        letter_offset = ord('A')
+            if segment_extension_start in ["e", "s"]:
+                letter_offset = ord("a")
+            else:
+                letter_offset = ord("A")
 
-      segment_index, remainder = divmod(segment_index, 26)
-      third_letter = chr(letter_offset + remainder)
+            segment_index, remainder = divmod(segment_index, 26)
+            third_letter = chr(letter_offset + remainder)
 
-      segment_index, remainder = divmod(segment_index, 26)
-      second_letter = chr(letter_offset + remainder)
+            segment_index, remainder = divmod(segment_index, 26)
+            second_letter = chr(letter_offset + remainder)
 
-      first_letter = chr(ord(segment_extension_start) + segment_index)
-      if first_letter in ['[', '{']:
-        raise RuntimeError('Unsupported number of segment files.')
+            first_letter = chr(ord(segment_extension_start) + segment_index)
+            if first_letter in ["[", "{"]:
+                raise RuntimeError("Unsupported number of segment files.")
 
-      if segment_extension_length == 3:
-        segment_extension = f'{first_letter:s}{second_letter:s}{third_letter:s}'
-      elif segment_extension_length == 4:
-        segment_extension = (
-            f'{first_letter:s}x{second_letter:s}{third_letter:s}')
+            if segment_extension_length == 3:
+                segment_extension = f"{first_letter:s}{second_letter:s}{third_letter:s}"
+            elif segment_extension_length == 4:
+                segment_extension = (
+                    f"{first_letter:s}x{second_letter:s}{third_letter:s}"
+                )
 
-  return segment_files
+    return segment_files
