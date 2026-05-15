@@ -23,11 +23,8 @@ class TSKPartitionFile(data_range_io.DataRange):
         """Closes the file-like object."""
         self._file_system = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.

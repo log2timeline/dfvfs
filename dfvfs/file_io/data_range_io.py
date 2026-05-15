@@ -39,11 +39,8 @@ class DataRange(file_io.FileIO):
         self._range_offset = -1
         self._range_size = -1
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -119,10 +116,8 @@ class DataRange(file_io.FileIO):
 
         if self._current_offset < 0:
             raise OSError(
-                (
-                    f"Invalid current offset: {self._current_offset:d} value less than "
-                    f"zero."
-                )
+                f"Invalid current offset: {self._current_offset:d} value less than "
+                f"zero."
             )
 
         if self._current_offset >= self._range_size:
@@ -157,10 +152,8 @@ class DataRange(file_io.FileIO):
 
         if self._current_offset < 0:
             raise OSError(
-                (
-                    f"Invalid current offset: {self._current_offset:d} value less than "
-                    f"zero."
-                )
+                f"Invalid current offset: {self._current_offset:d} value less than "
+                f"zero."
             )
 
         if whence == os.SEEK_CUR:

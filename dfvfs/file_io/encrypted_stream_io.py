@@ -90,11 +90,8 @@ class EncryptedStream(file_io.FileIO):
 
         return decrypted_stream_size
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -278,7 +275,6 @@ class EncryptedStream(file_io.FileIO):
                     self._decrypted_data[slice_start_offset:slice_end_offset],
                 ]
             )
-
             self._decrypted_data_offset += size
             self._current_offset += size
 

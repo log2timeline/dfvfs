@@ -83,11 +83,8 @@ class ZipFile(file_io.FileIO):
 
         self._file_system = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -97,7 +94,6 @@ class ZipFile(file_io.FileIO):
         file_system = resolver.Resolver.OpenFileSystem(
             self._path_spec, resolver_context=self._resolver_context
         )
-
         file_entry = file_system.GetFileEntryByPathSpec(self._path_spec)
         if not file_entry:
             raise OSError("Unable to retrieve file entry.")
@@ -166,11 +162,9 @@ class ZipFile(file_io.FileIO):
                     self._uncompressed_data[self._uncompressed_data_offset :],
                 ]
             )
-
             remaining_uncompressed_data_size = (
                 self._uncompressed_data_size - self._uncompressed_data_offset
             )
-
             self._current_offset += remaining_uncompressed_data_size
             size -= remaining_uncompressed_data_size
 
@@ -194,7 +188,6 @@ class ZipFile(file_io.FileIO):
                     self._uncompressed_data[slice_start_offset:slice_end_offset],
                 ]
             )
-
             self._uncompressed_data_offset += size
             self._current_offset += size
 

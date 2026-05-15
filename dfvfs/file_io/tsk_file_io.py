@@ -33,11 +33,8 @@ class TSKFile(file_io.FileIO):
 
         self._file_system = None
 
-    def _Open(self, mode="rb"):
+    def _Open(self):
         """Opens the file-like object defined by path specification.
-
-        Args:
-          mode (Optional[str]): file access mode.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -50,7 +47,6 @@ class TSKFile(file_io.FileIO):
         file_system = resolver.Resolver.OpenFileSystem(
             self._path_spec, resolver_context=self._resolver_context
         )
-
         file_entry = file_system.GetFileEntryByPathSpec(self._path_spec)
         if not file_entry:
             raise OSError("Unable to retrieve file entry.")
