@@ -445,6 +445,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
 
     def testGetLinkedFileEntry(self):
         """Tests the GetLinkedFileEntry function."""
+
         # TODO: need a test image with a link to test.
 
     # TODO: add tests for GetNTFSFileEntry

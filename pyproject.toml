@@ -62,7 +62,7 @@ include = "\\.pyi?$"
 
 [tool.docformatter]
 black = true
-non-cap = []
+non-cap = ["bool:", "bytes:", "dfVFS", "dtFabric", "int:", "object:", "str:"]
 non-strict = true
 
 [tool.setuptools]

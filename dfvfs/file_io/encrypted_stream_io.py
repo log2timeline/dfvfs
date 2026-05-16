@@ -37,8 +37,8 @@ class EncryptedStream(file_io.FileIO):
         """Closes the file-like object.
 
         If the file-like object was passed in the init function the encrypted stream
-        file-like object does not control the file-like object and should not
-        actually close it.
+        file-like object does not control the file-like object and should not actually
+        close it.
         """
         self._decrypter = None
         self._decrypted_data = b""
