@@ -1,7 +1,7 @@
 """The Virtual File System (VFS) file entry interface.
 
-The file entry can be various file system elements like a regular file, a
-directory or file system metadata.
+The file entry can be various file system elements like a regular file, a directory or
+file system metadata.
 """
 
 import abc

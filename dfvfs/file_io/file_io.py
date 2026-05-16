@@ -86,8 +86,7 @@ class FileIO:
     def close(self):
         """Closes the file input/output (IO) object.
 
-        Note that this function is a place holder for the file-like object
-        interface.
+        Note that this function is a place holder for the file-like object interface.
         """
         return
 

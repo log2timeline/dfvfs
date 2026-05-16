@@ -1,8 +1,8 @@
 """The path specification key chain.
 
-The key chain is used to manage credentials for path specifications. E.g.
-BitLocker Drive Encryption (BDE) encrypted volumes can require a credential
-(e.g. password) to access the unencrypted data (unlock).
+The key chain is used to manage credentials for path specifications. E.g. BitLocker
+Drive Encryption (BDE) encrypted volumes can require a credential (e.g. password) to
+access the unencrypted data (unlock).
 """
 
 from dfvfs.credentials import manager
