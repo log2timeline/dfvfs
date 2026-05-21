@@ -38,8 +38,8 @@ sudo add-apt-repository ppa:gift/stable
 Update and install dfVFS:
 
 ```bash
-sudo apt-get update
-sudo apt-get install python3-dfvfs
+sudo apt update
+sudo apt install python3-dfvfs
 ```
 
 ## Windows
