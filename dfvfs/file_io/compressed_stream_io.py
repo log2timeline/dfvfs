@@ -7,7 +7,6 @@ from dfvfs.file_io import file_io
 from dfvfs.lib import errors
 from dfvfs.resolver import resolver
 
-
 class CompressedStream(file_io.FileIO):
     """File input/output (IO) object of a compressed stream."""
 
@@ -62,9 +61,12 @@ class CompressedStream(file_io.FileIO):
           int: uncompressed stream size.
         """
         self._file_object.seek(0, os.SEEK_SET)
-
         self._decompressor = self._GetDecompressor()
+        self._compressed_data = b""
         self._uncompressed_data = b""
+        self._uncompressed_data_size = 0
+        self._uncompressed_data_offset = 0
+        self._uncompressed_stream_position = 0
 
         compressed_data_offset = 0
         compressed_data_size = self._file_object.get_size()
@@ -74,12 +76,11 @@ class CompressedStream(file_io.FileIO):
             read_count = self._ReadCompressedData(self._COMPRESSED_DATA_BUFFER_SIZE)
             if read_count == 0:
                 break
-
             compressed_data_offset += read_count
             uncompressed_stream_size += self._uncompressed_data_size
 
         return uncompressed_stream_size
-
+    
     def _Open(self):
         """Opens the file-like object.
 
@@ -103,30 +104,39 @@ class CompressedStream(file_io.FileIO):
     def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
         """Aligns the compressed file with the uncompressed data offset.
 
+        For forward seeks within an already initialized decompressor, this
+        continues decompressing from the current position rather than rewinding
+        and decompressing the entire stream.
+        
         Args:
           uncompressed_data_offset (int): uncompressed data offset.
         """
-        self._file_object.seek(0, os.SEEK_SET)
 
-        self._decompressor = self._GetDecompressor()
-        self._uncompressed_data = b""
+        buffer_start_offset = self._uncompressed_stream_position - self._uncompressed_data_size
+        
+        # if we don't have a decompressor we need one, or if we need to seek backwards
+        # we need a new decompressor
+        if self._decompressor is None or uncompressed_data_offset < buffer_start_offset:
+            self._file_object.seek(0, os.SEEK_SET)
+            self._decompressor = self._GetDecompressor()
+            self._compressed_data = b""
+            self._uncompressed_data = b""
+            self._uncompressed_data_size = 0
+            self._uncompressed_data_offset = 0
+            self._uncompressed_stream_position = 0
+            buffer_start_offset = 0
 
-        compressed_data_offset = 0
-        compressed_data_size = self._file_object.get_size()
-
-        while compressed_data_offset < compressed_data_size:
+        # decompress forward
+        while uncompressed_data_offset >= self._uncompressed_stream_position:
             read_count = self._ReadCompressedData(self._COMPRESSED_DATA_BUFFER_SIZE)
             if read_count == 0:
-                break
+                # End of the compressed stream before the target offset.
+                self._uncompressed_data_offset = self._uncompressed_data_size
+                return
+            buffer_start_offset = self._uncompressed_stream_position - self._uncompressed_data_size
 
-            compressed_data_offset += read_count
-
-            if uncompressed_data_offset < self._uncompressed_data_size:
-                self._uncompressed_data_offset = uncompressed_data_offset
-                break
-
-            uncompressed_data_offset -= self._uncompressed_data_size
-
+        self._uncompressed_data_offset = uncompressed_data_offset - buffer_start_offset
+        
     def _ReadCompressedData(self, read_size):
         """Reads compressed data from the file-like object.
 
@@ -147,6 +157,8 @@ class CompressedStream(file_io.FileIO):
         )
 
         self._uncompressed_data_size = len(self._uncompressed_data)
+
+        self._uncompressed_stream_position += self._uncompressed_data_size
 
         return read_count
 
