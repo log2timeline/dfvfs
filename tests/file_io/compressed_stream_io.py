@@ -295,12 +295,13 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
         self._TestReadFileObject(file_object)
 
+
 class CompressedStreamForwardSeekTest(shared_test_lib.BaseTestCase):
     """Regression test for forward seeks rewinding the decompressor."""
 
-    _STREAM_SIZE = 16 * 1024 * 1024     # 16 MiB
-    _NUM_SEEKS = 5000                   # forward seeks issued
-    _MAX_ELAPSED = 5.0                  # seconds before declaring failure
+    _STREAM_SIZE = 16 * 1024 * 1024  # 16 MiB
+    _NUM_SEEKS = 5000  # forward seeks issued
+    _MAX_ELAPSED = 5.0  # seconds before declaring failure
 
     def setUp(self):
         self._resolver_context = context.Context()
@@ -324,24 +325,28 @@ class CompressedStreamForwardSeekTest(shared_test_lib.BaseTestCase):
         """
 
         import random
+
         rng = random.Random(0)
         data = rng.randbytes(self._STREAM_SIZE)
         compressed = lzma.compress(data, format=lzma.FORMAT_XZ, preset=0)
 
-        temp = tempfile.NamedTemporaryFile(suffix='.xz', delete=False)
+        temp = tempfile.NamedTemporaryFile(suffix=".xz", delete=False)
         temp.write(compressed)
         temp.close()
         self.addCleanup(os.unlink, temp.name)
 
         os_path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_OS, location=temp.name)
+            definitions.TYPE_INDICATOR_OS, location=temp.name
+        )
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_COMPRESSED_STREAM,
             compression_method=definitions.COMPRESSION_METHOD_XZ,
-            parent=os_path_spec)
+            parent=os_path_spec,
+        )
 
         file_object = compressed_stream_io.CompressedStream(
-            self._resolver_context, path_spec)
+            self._resolver_context, path_spec
+        )
         file_object.Open()
         try:
             step = (self._STREAM_SIZE - 32) // self._NUM_SEEKS
@@ -350,20 +355,20 @@ class CompressedStreamForwardSeekTest(shared_test_lib.BaseTestCase):
                 offset = i * step
                 file_object.seek(offset, os.SEEK_SET)
 
-                self.assertEqual(
-                    file_object.read(16), data[offset:offset + 16])
+                self.assertEqual(file_object.read(16), data[offset : offset + 16])
                 elapsed = time.monotonic() - start
                 if elapsed > self._MAX_ELAPSED:
                     self.fail(
-                        f'After {i + 1} forward seeks of a '
-                        f'{self._STREAM_SIZE >> 20} MiB stream the loop '
-                        f'has run for {elapsed:.2f}s '
-                        f'(>{self._MAX_ELAPSED:.0f}s); forward seeks are '
-                        f'scaling with stream size rather than completing '
-                        f'in constant time.')                    
+                        f"After {i + 1} forward seeks of a "
+                        f"{self._STREAM_SIZE >> 20} MiB stream the loop "
+                        f"has run for {elapsed:.2f}s "
+                        f"(>{self._MAX_ELAPSED:.0f}s); forward seeks are "
+                        f"scaling with stream size rather than completing "
+                        f"in constant time."
+                    )
         finally:
             file_object.close()
-            
-            
+
+
 if __name__ == "__main__":
     unittest.main()
