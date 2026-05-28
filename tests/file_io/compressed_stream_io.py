@@ -6,6 +6,7 @@ import unittest
 import lzma
 import tempfile
 import time
+import random
 
 from dfvfs.file_io import compressed_stream_io
 from dfvfs.lib import definitions
@@ -323,8 +324,6 @@ class CompressedStreamForwardSeekTest(shared_test_lib.BaseTestCase):
         speed of repeating patterns or an empty file. Without this,
         quadratic/polynomial behavior can hide on fast hardware.
         """
-
-        import random
 
         rng = random.Random(0)
         data = rng.randbytes(self._STREAM_SIZE)

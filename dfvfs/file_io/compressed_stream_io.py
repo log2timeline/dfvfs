@@ -32,6 +32,7 @@ class CompressedStream(file_io.FileIO):
         self._uncompressed_data_offset = 0
         self._uncompressed_data_size = 0
         self._uncompressed_stream_size = None
+        self._uncompressed_stream_position = 0
 
     def _Close(self):
         """Closes the file-like object.
