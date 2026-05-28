@@ -329,24 +329,24 @@ class CompressedStreamForwardSeekTest(shared_test_lib.BaseTestCase):
         data = rng.randbytes(self._STREAM_SIZE)
         compressed = lzma.compress(data, format=lzma.FORMAT_XZ, preset=0)
 
-        temp = tempfile.NamedTemporaryFile(suffix=".xz", delete=False)
-        temp.write(compressed)
-        temp.close()
-        self.addCleanup(os.unlink, temp.name)
+        with tempfile.NamedTemporaryFile(suffix=".xz", delete=False) as temp:
+            temp.write(compressed)
+            temp.close()
+            self.addCleanup(os.unlink, temp.name)
 
-        os_path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_OS, location=temp.name
-        )
-        path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_COMPRESSED_STREAM,
-            compression_method=definitions.COMPRESSION_METHOD_XZ,
-            parent=os_path_spec,
-        )
+            os_path_spec = path_spec_factory.Factory.NewPathSpec(
+                definitions.TYPE_INDICATOR_OS, location=temp.name
+            )
+            path_spec = path_spec_factory.Factory.NewPathSpec(
+                definitions.TYPE_INDICATOR_COMPRESSED_STREAM,
+                compression_method=definitions.COMPRESSION_METHOD_XZ,
+                parent=os_path_spec,
+            )
 
-        file_object = compressed_stream_io.CompressedStream(
-            self._resolver_context, path_spec
-        )
-        file_object.Open()
+            file_object = compressed_stream_io.CompressedStream(
+                self._resolver_context, path_spec
+            )
+            file_object.Open()
         try:
             step = (self._STREAM_SIZE - 32) // self._NUM_SEEKS
             start = time.monotonic()
