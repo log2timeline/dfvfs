@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dfvfs"
-version = "20260527"
+version = "20260701"
 description = "Digital Forensics Virtual File System (dfVFS)"
 maintainers = [
     { name = "Log2Timeline maintainers", email = "log2timeline-maintainers@googlegroups.com" },
@@ -30,7 +30,7 @@ dependencies = [
     "libfsfat-python >= 20220925",
     "libfshfs-python >= 20220831",
     "libfsntfs-python >= 20211229",
-    "libfsxfs-python >= 20220829",
+    "libfsxfs-python >= 20260702",
     "libfvde-python >= 20220121",
     "libfwnt-python >= 20210717",
     "libluksde-python >= 20220121",
