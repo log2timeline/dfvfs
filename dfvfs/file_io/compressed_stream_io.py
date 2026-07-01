@@ -117,9 +117,8 @@ class CompressedStream(file_io.FileIO):
         buffer_start_offset = (
             self._uncompressed_stream_position - self._uncompressed_data_size
         )
-
-        # if we don't have a decompressor we need one, or if we need to seek backwards
-        # we need a new decompressor
+        # If there is no decompressor or there was a backwards a new decompressor is
+        # needed.
         if self._decompressor is None or uncompressed_data_offset < buffer_start_offset:
             self._file_object.seek(0, os.SEEK_SET)
             self._decompressor = self._GetDecompressor()
@@ -130,13 +129,13 @@ class CompressedStream(file_io.FileIO):
             self._uncompressed_stream_position = 0
             buffer_start_offset = 0
 
-        # decompress forward
         while uncompressed_data_offset >= self._uncompressed_stream_position:
             read_count = self._ReadCompressedData(self._COMPRESSED_DATA_BUFFER_SIZE)
             if read_count == 0:
                 # End of the compressed stream before the target offset.
                 self._uncompressed_data_offset = self._uncompressed_data_size
                 return
+
             buffer_start_offset = (
                 self._uncompressed_stream_position - self._uncompressed_data_size
             )
@@ -161,7 +160,6 @@ class CompressedStream(file_io.FileIO):
         self._uncompressed_data, self._compressed_data = self._decompressor.Decompress(
             self._compressed_data
         )
-
         self._uncompressed_data_size = len(self._uncompressed_data)
 
         self._uncompressed_stream_position += self._uncompressed_data_size
