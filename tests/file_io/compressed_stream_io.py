@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Tests for the compressed stream file-like object."""
 
-import os
-import unittest
 import lzma
+import os
+import random
 import tempfile
 import time
-import random
+import unittest
 
 from dfvfs.file_io import compressed_stream_io
 from dfvfs.lib import definitions
