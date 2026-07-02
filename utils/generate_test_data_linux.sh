@@ -177,7 +177,16 @@ IMAGE_FILE="test_data/xfs.raw";
 
 dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
 
+# Note that these environment variables are necessary to allow for a XFS v5 file system < 300 MiB.
+export TEST_DEV=1
+export TEST_DIR=1
+export QA_CHECK_FS=1
+
 mkfs.xfs -q -L "xfs_test" ${IMAGE_FILE};
+
+export TEST_DEV=
+export TEST_DIR=
+export QA_CHECK_FS=
 
 sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
 
