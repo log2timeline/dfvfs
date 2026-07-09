@@ -14,7 +14,7 @@ cd dfvfs_venv
 source ./bin/activate
 ```
 
-Upgrade pip and install dfVFS dependencies:
+Upgrade pip and install dfVFS:
 
 ```bash
 pip install --upgrade pip
