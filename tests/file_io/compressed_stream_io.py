@@ -61,7 +61,14 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
 
         self._TestSeekFileObject(file_object)
 
-        # TODO: Test SEEK_CUR after open.
+        # Test SEEK_CUR after open.
+        file_object = compressed_stream_io.CompressedStream(
+            self._resolver_context, self._compressed_stream_path_spec
+        )
+        file_object.Open()
+
+        file_object.seek(177, os.SEEK_CUR)
+        self.assertEqual(file_object.read(5), b"53:01")
 
         # Test SEEK_END after open.
         file_object = compressed_stream_io.CompressedStream(
@@ -131,7 +138,14 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
 
         self._TestSeekFileObject(file_object)
 
-        # TODO: Test SEEK_CUR after open.
+        # Test SEEK_CUR after open.
+        file_object = compressed_stream_io.CompressedStream(
+            self._resolver_context, self._compressed_stream_path_spec
+        )
+        file_object.Open()
+
+        file_object.seek(177, os.SEEK_CUR)
+        self.assertEqual(file_object.read(5), b"53:01")
 
         # Test SEEK_END after open.
         file_object = compressed_stream_io.CompressedStream(
@@ -201,7 +215,14 @@ class XZCompressedStreamTest(test_lib.SylogTestCase):
 
         self._TestSeekFileObject(file_object)
 
-        # TODO: Test SEEK_CUR after open.
+        # Test SEEK_CUR after open.
+        file_object = compressed_stream_io.CompressedStream(
+            self._resolver_context, self._compressed_stream_path_spec
+        )
+        file_object.Open()
+
+        file_object.seek(177, os.SEEK_CUR)
+        self.assertEqual(file_object.read(5), b"53:01")
 
         # Test SEEK_END after open.
         file_object = compressed_stream_io.CompressedStream(
@@ -271,7 +292,14 @@ class ZlibCompressedStreamTest(test_lib.SylogTestCase):
 
         self._TestSeekFileObject(file_object)
 
-        # TODO: Test SEEK_CUR after open.
+        # Test SEEK_CUR after open.
+        file_object = compressed_stream_io.CompressedStream(
+            self._resolver_context, self._compressed_stream_path_spec
+        )
+        file_object.Open()
+
+        file_object.seek(177, os.SEEK_CUR)
+        self.assertEqual(file_object.read(5), b"53:01")
 
         # Test SEEK_END after open.
         file_object = compressed_stream_io.CompressedStream(
