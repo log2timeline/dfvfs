@@ -29,8 +29,12 @@ class CompressedStream(file_io.FileIO):
         self._decompressor = None
         self._realign_offset = True
         self._uncompressed_data = b""
+        # Offset of relative to the start of uncompressed_data.
         self._uncompressed_data_offset = 0
         self._uncompressed_data_size = 0
+        # Offset of uncompressed_data relative to the start of the (uncompressed)
+        # stream.
+        self._uncompressed_stream_offset = 0
         self._uncompressed_stream_size = None
 
     def _Close(self):
@@ -44,6 +48,8 @@ class CompressedStream(file_io.FileIO):
         self._file_object = None
         self._decompressor = None
         self._uncompressed_data = b""
+        self._uncompressed_data_size = 0
+        self._uncompressed_stream_size = None
 
     def _GetDecompressor(self):
         """Retrieves the decompressor.
@@ -62,6 +68,7 @@ class CompressedStream(file_io.FileIO):
           int: uncompressed stream size.
         """
         self._file_object.seek(0, os.SEEK_SET)
+        self._uncompressed_stream_offset = 0
 
         self._decompressor = self._GetDecompressor()
         self._uncompressed_data = b""
@@ -100,16 +107,31 @@ class CompressedStream(file_io.FileIO):
             self._path_spec.parent, resolver_context=self._resolver_context
         )
 
-    def _AlignUncompressedDataOffset(self, uncompressed_data_offset):
-        """Aligns the compressed file with the uncompressed data offset.
+    def _AlignUncompressedData(self, uncompressed_stream_offset):
+        """Aligns the compressed stream with the uncompressed stream offset.
 
         Args:
-          uncompressed_data_offset (int): uncompressed data offset.
+          uncompressed_stream_offset (int): offset relative to the start of the
+              uncompressed stream.
         """
-        self._file_object.seek(0, os.SEEK_SET)
+        if (
+            not self._decompressor
+            or uncompressed_stream_offset < self._uncompressed_stream_offset
+        ):
+            self._file_object.seek(0, os.SEEK_SET)
+            self._uncompressed_stream_offset = 0
 
-        self._decompressor = self._GetDecompressor()
-        self._uncompressed_data = b""
+            self._decompressor = self._GetDecompressor()
+            self._uncompressed_data = b""
+
+        uncompressed_data_offset = (
+            uncompressed_stream_offset - self._uncompressed_stream_offset
+        )
+        # Check if the uncompressed stream offset is within the uncompressed data
+        # buffer.
+        if uncompressed_data_offset < self._uncompressed_data_size:
+            self._uncompressed_data_offset = uncompressed_data_offset
+            return
 
         compressed_data_offset = 0
         compressed_data_size = self._file_object.get_size()
@@ -145,7 +167,7 @@ class CompressedStream(file_io.FileIO):
         self._uncompressed_data, self._compressed_data = self._decompressor.Decompress(
             self._compressed_data
         )
-
+        self._uncompressed_stream_offset += self._uncompressed_data_size
         self._uncompressed_data_size = len(self._uncompressed_data)
 
         return read_count
@@ -155,14 +177,14 @@ class CompressedStream(file_io.FileIO):
     # pylint: disable=invalid-name
 
     def read(self, size=None):
-        """Reads a byte string from the file-like object at the current offset.
+        """Reads bytes from the file-like object at the current offset.
 
-        The function will read a byte string of the specified size or
-        all of the remaining data if no size was specified.
+        The function will read a specified number of bytes or all of the remaining data
+        if no size was specified.
 
         Args:
-          size (Optional[int]): number of bytes to read, where None is all
-              remaining data.
+          size (Optional[int]): number of bytes to read, where None is all remaining
+              data.
 
         Returns:
           bytes: data read.
@@ -189,7 +211,7 @@ class CompressedStream(file_io.FileIO):
             return b""
 
         if self._realign_offset:
-            self._AlignUncompressedDataOffset(self._current_offset)
+            self._AlignUncompressedData(self._current_offset)
             self._realign_offset = False
 
         if size is None:
@@ -243,8 +265,8 @@ class CompressedStream(file_io.FileIO):
 
         Args:
           offset (int): offset to seek to.
-          whence (Optional(int)): value that indicates whether offset is an absolute
-              or relative position within the file.
+          whence (Optional(int)): value that indicates whether offset is an absolute or
+              relative position within the file.
 
         Raises:
           OSError: if the seek failed.
