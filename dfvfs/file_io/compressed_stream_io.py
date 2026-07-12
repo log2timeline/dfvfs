@@ -48,6 +48,8 @@ class CompressedStream(file_io.FileIO):
         self._file_object = None
         self._decompressor = None
         self._uncompressed_data = b""
+        self._uncompressed_data_size = 0
+        self._uncompressed_stream_size = None
 
     def _GetDecompressor(self):
         """Retrieves the decompressor.
