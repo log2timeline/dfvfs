@@ -700,7 +700,7 @@ class VolumeScanner:
                 volume_identifiers.reverse()
 
             except errors.BackEndError:
-                volume_identifiers = None
+                volume_identifiers = []
 
         else:
             raise errors.ScannerError(
