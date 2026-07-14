@@ -17,21 +17,19 @@ class APMAnalyzerHelper(analyzer_helper.AnalyzerHelper):
         """Retrieves the format specification.
 
         Returns:
-          FormatSpecification: format specification or None if the format cannot
-              be defined by a specification object.
+          FormatSpecification: format specification or None if the format cannot be
+              defined by a specification object.
         """
         format_specification = specification.FormatSpecification(self.type_indicator)
 
         # APM signature.
-        # Note that technically "PM" at offset 512 is the Apple Partion Map
+        # Note that technically "PM" at offset 512 or 2048 is the Apple Partion Map
         # signature but using the partition type is less error prone.
-        format_specification.AddNewSignature(
-            (
-                b"Apple_partition_map\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-                b"\x00"
-            ),
-            offset=560,
+        signature = (
+            b"Apple_partition_map\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         )
+        format_specification.AddNewSignature(signature, offset=560)
+        format_specification.AddNewSignature(signature, offset=2096)
 
         return format_specification
 
