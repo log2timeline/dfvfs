@@ -36,17 +36,14 @@ class VMDKFile(file_object_io.FileObjectIO):
             )
 
         # Note that we cannot use pyvmdk's open_extent_data_files_as_file_objects
-        # function since it does not handle the file system abstraction dfVFS
-        # provides.
+        # function since it does not handle the file system abstraction dfVFS provides.
 
         file_system = resolver.Resolver.OpenFileSystem(
             parent_path_spec, resolver_context=self._resolver_context
         )
-
         file_object = resolver.Resolver.OpenFileObject(
             parent_path_spec, resolver_context=self._resolver_context
         )
-
         vmdk_handle = pyvmdk.handle()
         vmdk_handle.open_file_object(file_object)
 
@@ -64,19 +61,19 @@ class VMDKFile(file_object_io.FileObjectIO):
                 filename = extent_data_filename
 
             # The last parent location path segment contains the extent data filename.
-            # Since we want to check if the next extent data file exists we remove
-            # the previous one form the path segments list and add the new filename.
-            # After that the path segments list can be used to create the location
-            # string.
+            # Since we want to check if the next extent data file exists we remove the
+            # previous one form the path segments list and add the new filename. After
+            # that the path segments list can be used to create the location string.
+
             parent_location_path_segments.pop()
             parent_location_path_segments.append(filename)
             extent_data_file_location = file_system.JoinPath(
                 parent_location_path_segments
             )
+            # Note that we do not want to set the keyword arguments when not used
+            # because the path specification base class will check for unused keyword
+            # arguments and raise.
 
-            # Note that we don't want to set the keyword arguments when not used
-            # because the path specification base class will check for unused
-            # keyword arguments and raise.
             kwargs = path_spec_factory.Factory.GetProperties(parent_path_spec)
 
             kwargs["location"] = extent_data_file_location
@@ -86,9 +83,21 @@ class VMDKFile(file_object_io.FileObjectIO):
             extent_data_file_path_spec = path_spec_factory.Factory.NewPathSpec(
                 parent_path_spec.type_indicator, **kwargs
             )
-
             if not file_system.FileEntryExistsByPathSpec(extent_data_file_path_spec):
-                break
+                if vmdk_handle.number_of_extents > 1:
+                    break
+
+                if vmdk_handle.disk_type not in (
+                    pyvmdk.disk_types.MONOLITHIC_SPARSE,
+                    pyvmdk.disk_types.STREAM_OPTIMIZED,
+                ):
+                    break
+
+                if extent_descriptor.type != pyvmdk.extent_types.SPARSE:
+                    break
+
+                # VMDK file was likely renamed.
+                extent_data_file_path_spec = parent_path_spec
 
             extent_data_files.append(extent_data_file_path_spec)
 
