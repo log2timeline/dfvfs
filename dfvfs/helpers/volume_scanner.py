@@ -269,9 +269,9 @@ class VolumeScanner:
                     partitions,
                     prefix=volume_system.VOLUME_IDENTIFIER_PREFIX,
                 )
-
                 if not set(selected_volumes).difference(volume_identifiers):
                     return selected_volumes
+
             except errors.ScannerError as exception:
                 if self._mediator:
                     self._mediator.PrintWarning(f"{exception!s}")
@@ -287,7 +287,6 @@ class VolumeScanner:
                 volume_identifiers = self._mediator.GetPartitionIdentifiers(
                     volume_system, volume_identifiers
                 )
-
             except KeyboardInterrupt:
                 raise errors.UserAbort("Volume scan aborted.")
 
@@ -327,9 +326,9 @@ class VolumeScanner:
                     volumes,
                     prefix=volume_system.VOLUME_IDENTIFIER_PREFIX,
                 )
-
                 if not set(selected_volumes).difference(volume_identifiers):
                     return selected_volumes
+
             except errors.ScannerError as exception:
                 if self._mediator:
                     self._mediator.PrintWarning(f"{exception!s}")
@@ -337,11 +336,9 @@ class VolumeScanner:
         if len(volume_identifiers) > 1:
             if not self._mediator:
                 raise errors.ScannerError(
-                    (
-                        f"Unable to proceed. More than one "
-                        f"{volume_system.TYPE_INDICATOR:s} volume found but no "
-                        f"mediator to determine how they should be used."
-                    )
+                    f"Unable to proceed. More than one "
+                    f"{volume_system.TYPE_INDICATOR:s} volume found but no "
+                    f"mediator to determine how they should be used."
                 )
 
             try:
@@ -389,27 +386,24 @@ class VolumeScanner:
                     snapshots,
                     prefix=volume_system.VOLUME_IDENTIFIER_PREFIX,
                 )
-
                 if not set(selected_volumes).difference(volume_identifiers):
                     return selected_volumes
+
             except errors.ScannerError as exception:
                 if self._mediator:
                     self._mediator.PrintWarning(f"{exception!s}")
 
         if not self._mediator:
             raise errors.ScannerError(
-                (
-                    f"Unable to proceed. {volume_system.TYPE_INDICATOR:s} volume "
-                    f"snapshots found but no mediator to determine how they should "
-                    f"be used."
-                )
+                f"Unable to proceed. {volume_system.TYPE_INDICATOR:s} volume "
+                f"snapshots found but no mediator to determine how they should "
+                f"be used."
             )
 
         try:
             volume_identifiers = self._mediator.GetVolumeSnapshotIdentifiers(
                 volume_system, volume_identifiers
             )
-
         except KeyboardInterrupt:
             raise errors.UserAbort("Volume scan aborted.")
 
@@ -572,7 +566,6 @@ class VolumeScanner:
         source_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=source_path
         )
-
         return self._ScanSourcePathSpec(source_path_spec)
 
     def _ScanSourcePathSpec(self, source_path_spec):
@@ -653,7 +646,6 @@ class VolumeScanner:
                 location=location,
                 parent=scan_node.path_spec,
             )
-
             base_path_specs.append(path_spec)
 
         else:
@@ -698,13 +690,17 @@ class VolumeScanner:
             volume_system = volume_system_factory.Factory.NewVolumeSystem(
                 scan_node.type_indicator
             )
-            volume_system.Open(scan_node.path_spec)
+            try:
+                volume_system.Open(scan_node.path_spec)
 
-            volume_identifiers = self._GetVolumeSnapshotIdentifiers(
-                volume_system, options
-            )
-            # Process VSS stores (snapshots) starting with the most recent one.
-            volume_identifiers.reverse()
+                volume_identifiers = self._GetVolumeSnapshotIdentifiers(
+                    volume_system, options
+                )
+                # Process VSS stores (snapshots) starting with the most recent one.
+                volume_identifiers.reverse()
+
+            except errors.BackEndError:
+                volume_identifiers = []
 
         else:
             raise errors.ScannerError(
@@ -791,7 +787,6 @@ class WindowsVolumeScanner(VolumeScanner):
             path_resolver = windows_path_resolver.WindowsPathResolver(
                 file_system, scan_node.path_spec.parent
             )
-
             if self._ScanFileSystemForWindowsDirectory(path_resolver):
                 base_path_specs.append(scan_node.path_spec)
 
@@ -874,7 +869,6 @@ class WindowsVolumeScanner(VolumeScanner):
         self._path_resolver = windows_path_resolver.WindowsPathResolver(
             self._file_system, mount_point
         )
-
         # The source is a directory or single volume storage media image.
         if not self._windows_directory:
             self._ScanFileSystemForWindowsDirectory(self._path_resolver)
