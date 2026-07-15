@@ -28,6 +28,7 @@ class ZipFileSystem(file_system.FileSystem):
           encoding (Optional[str]): encoding of the file entry name.
         """
         super().__init__(resolver_context, path_spec)
+        self._directory_names = None
         self._file_object = None
         self._zip_file = None
         self.encoding = encoding
@@ -40,14 +41,15 @@ class ZipFileSystem(file_system.FileSystem):
         """
         self._zip_file.close()
         self._zip_file = None
+        self._directory_names = None
         self._file_object = None
 
     def _Open(self, mode="rb"):
         """Opens the file system object defined by path specification.
 
         Args:
-          mode (Optional[str]): file access mode. The default is 'rb' which
-              represents read-only binary.
+          mode (Optional[str]): file access mode. The default is 'rb' which represents
+              read-only binary.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -62,7 +64,6 @@ class ZipFileSystem(file_system.FileSystem):
         file_object = resolver.Resolver.OpenFileObject(
             self._path_spec.parent, resolver_context=self._resolver_context
         )
-
         try:
             # pylint: disable=consider-using-with
             zip_file = zipfile.ZipFile(file_object, "r")
@@ -71,6 +72,29 @@ class ZipFileSystem(file_system.FileSystem):
 
         self._file_object = file_object
         self._zip_file = zip_file
+
+        self._directory_names = set()
+        for name in self._zip_file.namelist():
+            if not name:
+                continue
+
+            if name[0] == "/":
+                name = name[1:]
+
+            if name[-1] == "/":
+                directory_name = name[:-1]
+            else:
+                directory_name, _, _ = name.rpartition("/")
+
+            if directory_name:
+                path = ""
+                for segment in directory_name.split("/"):
+                    if path:
+                        path = f"{path:s}/{segment:s}"
+                    else:
+                        path = f"/{segment:s}"
+
+                    self._directory_names.add(path)
 
     def FileEntryExistsByPathSpec(self, path_spec):
         """Determines if a file entry for a path specification exists.
@@ -89,20 +113,41 @@ class ZipFileSystem(file_system.FileSystem):
         if len(location) == 1:
             return True
 
+        # A ZIP archive file can contain paths with and without leading separator.
+
+        zip_info = None
+        is_virtual = False
+
         try:
-            self._zip_file.getinfo(location[1:])
-            return True
+            zip_info = self._zip_file.getinfo(location[1:])
         except KeyError:
             pass
 
-        # Check if location could be a virtual directory.
-        for name in self._zip_file.namelist():
-            # The ZIP info name does not have the leading path separator as
-            # the location string does.
-            if name.startswith(location[1:]):
-                return True
+        if not zip_info:
+            try:
+                # Directories are stored with a trailing separator.
+                zip_info = self._zip_file.getinfo(f"{location[1:]:s}/")
+            except KeyError:
+                pass
 
-        return False
+        if not zip_info:
+            try:
+                zip_info = self._zip_file.getinfo(location)
+            except KeyError:
+                pass
+
+        if not zip_info:
+            try:
+                # Directories are stored with a trailing separator.
+                zip_info = self._zip_file.getinfo(f"{location:s}/")
+            except KeyError:
+                pass
+
+        if not zip_info:
+            # Check if location could be a virtual directory.
+            is_virtual = location in self._directory_names
+
+        return bool(zip_info or is_virtual)
 
     def GetFileEntryByPathSpec(self, path_spec):
         """Retrieves a file entry for a path specification.
@@ -123,15 +168,53 @@ class ZipFileSystem(file_system.FileSystem):
                 self._resolver_context, self, path_spec, is_root=True, is_virtual=True
             )
 
-        kwargs = {}
-        try:
-            kwargs["zip_info"] = self._zip_file.getinfo(location[1:])
-        except KeyError:
-            kwargs["is_virtual"] = True
+        # A ZIP archive file can contain paths with and without leading separator.
 
-        return zip_file_entry.ZipFileEntry(
-            self._resolver_context, self, path_spec, **kwargs
-        )
+        zip_info = None
+        is_virtual = False
+
+        try:
+            zip_info = self._zip_file.getinfo(location[1:])
+        except KeyError:
+            pass
+
+        if not zip_info:
+            try:
+                # Directories are stored with a trailing separator.
+                zip_info = self._zip_file.getinfo(f"{location[1:]:s}/")
+            except KeyError:
+                pass
+
+        if not zip_info:
+            try:
+                zip_info = self._zip_file.getinfo(location)
+            except KeyError:
+                pass
+
+        if not zip_info:
+            try:
+                # Directories are stored with a trailing separator.
+                zip_info = self._zip_file.getinfo(f"{location:s}/")
+            except KeyError:
+                pass
+
+        if not zip_info:
+            # Check if location could be a virtual directory.
+            is_virtual = location in self._directory_names
+
+        if zip_info or is_virtual:
+            kwargs = {}
+
+            if zip_info:
+                kwargs["zip_info"] = zip_info
+            else:
+                kwargs["is_virtual"] = True
+
+            return zip_file_entry.ZipFileEntry(
+                self._resolver_context, self, path_spec, **kwargs
+            )
+
+        return None
 
     def GetRootFileEntry(self):
         """Retrieves the root file entry.

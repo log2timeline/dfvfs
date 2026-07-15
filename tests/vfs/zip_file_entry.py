@@ -20,7 +20,7 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
     def setUp(self):
         """Sets up the needed objects used throughout the test."""
         self._resolver_context = context.Context()
-        test_path = self._GetTestFilePath(["syslog.zip"])
+        test_path = self._GetTestFilePath(["zip", "syslog.zip"])
         self._SkipIfPathNotExists(test_path)
 
         self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -29,7 +29,6 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
         self._zip_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_ZIP, location="/", parent=self._os_path_spec
         )
-
         self._file_system = zip_file_system.ZipFileSystem(
             self._resolver_context, self._zip_path_spec
         )
@@ -47,7 +46,6 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
             self._zip_path_spec,
             is_virtual=True,
         )
-
         self.assertIsNotNone(file_entry)
 
     # TODO: add tests for _GetDirectory function.
@@ -168,8 +166,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
         self._assertSubFileEntries(file_entry, ["syslog", "wtmp.1"])
 
-        # Test on a zip file that has missing directory entries.
-        test_path = self._GetTestFilePath(["missing_directory_entries.zip"])
+        # Test on a ZIP archive file without directories.
+        test_path = self._GetTestFilePath(["zip", "without_directory.zip"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -178,7 +176,6 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_ZIP, location="/", parent=test_os_path_spec
         )
-
         file_system = zip_file_system.ZipFileSystem(self._resolver_context, path_spec)
         self.assertIsNotNone(file_system)
 
@@ -189,8 +186,8 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
         self._assertSubFileEntries(file_entry, ["folder"])
 
-        # The "folder" folder is a missing directory entry but should still
-        # be found due to the files found inside the directory.
+        # The "folder" folder is a missing directory entry but should still be found
+        # due to the files found inside the directory.
         sub_file_entry = next(file_entry.sub_file_entries)
         self.assertTrue(sub_file_entry.IsVirtual())
         self._assertSubFileEntries(sub_file_entry, ["syslog", "wtmp.1"])
@@ -273,23 +270,53 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
 
     def testIsDirectory(self):
         """Test the IsDirectory function."""
-        path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_ZIP,
-            location="/syslog",
-            parent=self._os_path_spec,
-        )
-        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+        # Test with an in-file directory.
+        test_path = self._GetTestFilePath(["zip", "with_directory.zip"])
+        self._SkipIfPathNotExists(test_path)
 
-        self.assertIsNotNone(file_entry)
-        self.assertFalse(file_entry.IsDirectory())
+        os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        zip_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/", parent=os_path_spec
+        )
+        file_system = zip_file_system.ZipFileSystem(
+            self._resolver_context, zip_path_spec
+        )
+        file_system.Open()
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_ZIP, location="/", parent=self._os_path_spec
+            definitions.TYPE_INDICATOR_ZIP, location="/folder", parent=os_path_spec
         )
-        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
 
         self.assertIsNotNone(file_entry)
         self.assertTrue(file_entry.IsDirectory())
+        self.assertFalse(file_entry.IsVirtual())
+
+        # Test with a virtual directory.
+        test_path = self._GetTestFilePath(["zip", "without_directory.zip"])
+        self._SkipIfPathNotExists(test_path)
+
+        os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        zip_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/", parent=os_path_spec
+        )
+        file_system = zip_file_system.ZipFileSystem(
+            self._resolver_context, zip_path_spec
+        )
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/folder", parent=os_path_spec
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsDirectory())
+        self.assertTrue(file_entry.IsVirtual())
 
     def testIsFile(self):
         """Test the IsFile function."""
