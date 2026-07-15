@@ -17,7 +17,7 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
     def setUp(self):
         """Sets up the needed objects used throughout the test."""
         self._resolver_context = context.Context()
-        test_path = self._GetTestFilePath(["syslog.tar"])
+        test_path = self._GetTestFilePath(["tar", "syslog.tar"])
         self._SkipIfPathNotExists(test_path)
 
         self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -63,8 +63,8 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
         )
         self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
-        # Test on a tar file that has missing directory entries.
-        test_path = self._GetTestFilePath(["missing_directory_entries.tar"])
+        # Test on a tar file without directories.
+        test_path = self._GetTestFilePath(["tar", "without_directory.tar"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -73,25 +73,82 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TAR, location="/", parent=test_os_path_spec
         )
-
         file_system = tar_file_system.TARFileSystem(self._resolver_context, path_spec)
         self.assertIsNotNone(file_system)
 
         file_system.Open()
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_TAR,
-            location="/File System",
-            parent=test_os_path_spec,
+            definitions.TYPE_INDICATOR_TAR, location="/folder", parent=test_os_path_spec
         )
-        self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TAR,
-            location="/File System/Recordings",
+            location="/folder/syslog",
             parent=test_os_path_spec,
         )
-        self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        # Test on a tar file that has absolute paths.
+        test_path = self._GetTestFilePath(["tar", "absolute_paths.tar"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=test_os_path_spec
+        )
+        file_system = tar_file_system.TARFileSystem(self._resolver_context, path_spec)
+        self.assertIsNotNone(file_system)
+
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/folder", parent=test_os_path_spec
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/folder/syslog",
+            parent=test_os_path_spec,
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        # Test on a tar file that has mixed absolute and relative paths.
+        test_path = self._GetTestFilePath(["tar", "mixed_paths.tar"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=test_os_path_spec
+        )
+        file_system = tar_file_system.TARFileSystem(self._resolver_context, path_spec)
+        self.assertIsNotNone(file_system)
+
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/folder", parent=test_os_path_spec
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/folder/syslog",
+            parent=test_os_path_spec,
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
 
     def testGetFileEntryByPathSpec(self):
         """Tests the GetFileEntryByPathSpec function."""
@@ -119,8 +176,8 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
 
         self.assertIsNone(file_entry)
 
-        # Test on a tar file that has missing directory entries.
-        test_path = self._GetTestFilePath(["missing_directory_entries.tar"])
+        # Test on a tar file without directories.
+        test_path = self._GetTestFilePath(["tar", "without_directory.tar"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -129,29 +186,59 @@ class TARFileSystemTest(shared_test_lib.BaseTestCase):
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TAR, location="/", parent=test_os_path_spec
         )
-
         file_system = tar_file_system.TARFileSystem(self._resolver_context, path_spec)
         self.assertIsNotNone(file_system)
 
         file_system.Open()
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
-            definitions.TYPE_INDICATOR_TAR,
-            location="/File System",
-            parent=test_os_path_spec,
+            definitions.TYPE_INDICATOR_TAR, location="/folder", parent=test_os_path_spec
         )
         file_entry = file_system.GetFileEntryByPathSpec(path_spec)
         self.assertIsNotNone(file_entry)
-        self.assertEqual(file_entry.name, "File System")
+        self.assertTrue(file_entry.IsVirtual())
+        self.assertEqual(file_entry.name, "folder")
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TAR,
-            location="/File System/Recordings",
+            location="/folder/syslog",
             parent=test_os_path_spec,
         )
         file_entry = file_system.GetFileEntryByPathSpec(path_spec)
         self.assertIsNotNone(file_entry)
-        self.assertEqual(file_entry.name, "Recordings")
+        self.assertEqual(file_entry.name, "syslog")
+
+        # Test on a tar file that has absolute paths.
+        test_path = self._GetTestFilePath(["tar", "absolute_paths.tar"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=test_os_path_spec
+        )
+        file_system = tar_file_system.TARFileSystem(self._resolver_context, path_spec)
+        self.assertIsNotNone(file_system)
+
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/folder", parent=test_os_path_spec
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsVirtual())
+        self.assertEqual(file_entry.name, "folder")
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/folder/syslog",
+            parent=test_os_path_spec,
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+        self.assertIsNotNone(file_entry)
+        self.assertEqual(file_entry.name, "syslog")
 
     def testGetRootFileEntry(self):
         """Test the get root file entry functionality."""

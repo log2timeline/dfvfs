@@ -18,7 +18,7 @@ class TARDirectoryTest(shared_test_lib.BaseTestCase):
     def setUp(self):
         """Sets up the needed objects used throughout the test."""
         self._resolver_context = context.Context()
-        test_path = self._GetTestFilePath(["syslog.tar"])
+        test_path = self._GetTestFilePath(["tar", "syslog.tar"])
         self._SkipIfPathNotExists(test_path)
 
         self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
