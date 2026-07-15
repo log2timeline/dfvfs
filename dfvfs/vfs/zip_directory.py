@@ -19,10 +19,6 @@ class ZIPDirectory(directory.Directory):
         location = getattr(self.path_spec, "location", None)
 
         if location and location.startswith(self._file_system.PATH_SEPARATOR):
-            # The zip_info filename does not have the leading path separator
-            # as the location string does.
-            zip_path = location[1:]
-
             # Set of top level sub directories that have been yielded.
             processed_directories = set()
 
@@ -35,7 +31,17 @@ class ZIPDirectory(directory.Directory):
                     except UnicodeDecodeError:
                         path = None
 
-                if not path or not path.startswith(zip_path):
+                if not path:
+                    continue
+
+                # A ZIP archive file can contain paths with and without leading
+                # separator.
+
+                if path.startswith(location[1:]):
+                    zip_path = location[1:]
+                elif path.startswith(location):
+                    zip_path = location
+                else:
                     continue
 
                 # Ignore the directory itself.
@@ -48,8 +54,8 @@ class ZIPDirectory(directory.Directory):
                 if not path_segment:
                     continue
 
-                # Some times the ZIP file lacks directories, therefore we will
-                # provide virtual ones.
+                # Sometimes the ZIP file lacks directories, therefore we will provide
+                # virtual ones.
                 if suffix:
                     path_spec_location = self._file_system.JoinPath(
                         [location, path_segment]

@@ -95,7 +95,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
     def testGetArchiveTypeIndicatorsZIP(self):
         """Tests the GetArchiveTypeIndicators function on a .zip file."""
-        test_file = self._GetTestFilePath(["syslog.zip"])
+        test_file = self._GetTestFilePath(["zip", "syslog.zip"])
         self._SkipIfPathNotExists(test_file)
 
         path_spec = os_path_spec.OSPathSpec(location=test_file)

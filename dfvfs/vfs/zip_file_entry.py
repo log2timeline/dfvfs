@@ -65,10 +65,7 @@ class ZipFileEntry(file_entry.FileEntry):
         self._external_attributes = getattr(zip_info, "external_attr", 0)
         self._zip_info = zip_info
 
-        if (
-            is_virtual
-            or self._external_attributes & self._MSDOS_FILE_ATTRIBUTES_IS_DIRECTORY
-        ):
+        if is_virtual or zip_info.is_dir():
             self.entry_type = definitions.FILE_ENTRY_TYPE_DIRECTORY
         else:
             self.entry_type = definitions.FILE_ENTRY_TYPE_FILE

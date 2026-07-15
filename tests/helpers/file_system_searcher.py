@@ -42,7 +42,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
                 b'"""',
             ]
         )
-
         file_system_builder.AddFile(test_path, test_file_data)
 
         return file_system_builder.file_system
@@ -167,7 +166,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
         )
-
         path_spec = fake_path_spec.FakePathSpec(
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
         )
@@ -183,7 +181,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
         )
-
         path_spec = fake_path_spec.FakePathSpec(
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
         )
@@ -199,7 +196,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
         )
-
         path_spec = fake_path_spec.FakePathSpec(
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
         )
@@ -215,7 +211,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
         )
-
         path_spec = fake_path_spec.FakePathSpec(
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
         )
@@ -231,7 +226,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
         )
-
         path_spec = fake_path_spec.FakePathSpec(
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
         )
@@ -247,7 +241,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
         )
-
         path_spec = fake_path_spec.FakePathSpec(
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
         )
@@ -263,7 +256,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
         )
-
         path_spec = fake_path_spec.FakePathSpec(
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
         )
@@ -278,7 +270,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py",
             location_separator="/",
         )
-
         result = find_spec._CompareWithLocationSegment("__init__.py", 6)
         self.assertTrue(result)
 
@@ -292,7 +283,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/bogus.py",
             location_separator="/",
         )
-
         result = find_spec._CompareWithLocationSegment("__init__.py", 6)
         self.assertFalse(result)
 
@@ -321,7 +311,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py",
             location_separator="/",
         )
-
         result = find_spec.AtLastLocationSegment(0)
         self.assertFalse(result)
 
@@ -344,7 +333,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py",
             location_separator="/",
         )
-
         result = find_spec.CompareLocation(file_entry)
         self.assertTrue(result)
 
@@ -352,7 +340,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/bogus.py",
             location_separator="/",
         )
-
         result = find_spec.CompareLocation(file_entry)
         self.assertFalse(result)
 
@@ -369,7 +356,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py",
             location_separator="/",
         )
-
         result = find_spec.CompareNameWithLocationSegment(file_entry, 6)
         self.assertTrue(result)
 
@@ -385,7 +371,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/bogus.py",
             location_separator="/",
         )
-
         result = find_spec.CompareNameWithLocationSegment(file_entry, 6)
         self.assertFalse(result)
 
@@ -402,7 +387,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py",
             location_separator="/",
         )
-
         result = find_spec.CompareTraits(file_entry)
         self.assertTrue(result)
 
@@ -417,7 +401,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py",
             location_separator="/",
         )
-
         result = find_spec.HasLocation()
         self.assertTrue(result)
 
@@ -427,7 +410,6 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
             location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py",
             location_separator="/",
         )
-
         result = find_spec.IsLastLocationSegment(0)
         self.assertFalse(result)
 
@@ -451,7 +433,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         self._os_file_system = os_file_system.OSFileSystem(
             self._resolver_context, self._os_path_spec
         )
-
         # TODO: add RAW volume only test image.
 
         test_file = self._GetTestFilePath(["vss.raw"])
@@ -462,7 +443,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         self._tsk_path_spec = tsk_path_spec.TSKPathSpec(
             location="/", parent=self._raw_path_spec
         )
-
         self._tsk_file_system = tsk_file_system.TSKFileSystem(
             self._resolver_context, self._tsk_path_spec
         )
@@ -473,7 +453,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         searcher = file_system_searcher.FileSystemSearcher(
             self._tsk_file_system, self._raw_path_spec
         )
-
         # Find all the file entries of type: FILE_ENTRY_TYPE_FILE.
         find_spec = file_system_searcher.FindSpec(
             file_entry_types=[definitions.FILE_ENTRY_TYPE_FILE]
@@ -517,7 +496,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
             "/vss1",
             "/vss2",
         ]
-
         locations = []
         for path_spec in path_spec_generator:
             locations.append(getattr(path_spec, "location", ""))
@@ -541,7 +519,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
             "/a_directory",
             "/System Volume Information",
         ]
-
         locations = []
         for path_spec in path_spec_generator:
             # Some versions of Sleuthkit include "/$OrphanFiles" some don't.
@@ -585,7 +562,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
             "/$Extend/$RmMetadata",
             "/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf",
         ]
-
         locations = []
         for path_spec in path_spec_generator:
             locations.append(getattr(path_spec, "location", ""))
@@ -632,7 +608,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
             "/$Extend/$RmMetadata",
             "/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf",
         ]
-
         locations = []
         for path_spec in path_spec_generator:
             locations.append(getattr(path_spec, "location", ""))
@@ -658,7 +633,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
             "/$Extend/$RmMetadata",
             "/$Extend/$RmMetadata/$TxfLog/$TxfLog.blf",
         ]
-
         locations = []
         for path_spec in path_spec_generator:
             locations.append(getattr(path_spec, "location", ""))
@@ -702,7 +676,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         searcher = file_system_searcher.FileSystemSearcher(
             self._os_file_system, self._os_path_spec
         )
-
         location = f"{os.path.sep:s}syslog.*"
         find_spec = file_system_searcher.FindSpec(
             case_sensitive=False, location_glob=location, location_separator=os.path.sep
@@ -731,11 +704,9 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
                 self._GetTestFilePath(["syslog.tgz"]),
                 self._GetTestFilePath(["syslog.xz"]),
                 self._GetTestFilePath(["syslog.Z"]),
-                self._GetTestFilePath(["syslog.zip"]),
                 self._GetTestFilePath(["syslog.zlib"]),
             ]
         )
-
         locations = []
         first_path_spec = None
         for path_spec in path_spec_generator:
@@ -754,7 +725,6 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
         searcher = file_system_searcher.FileSystemSearcher(
             self._os_file_system, self._os_path_spec
         )
-
         if os.path.sep == "\\":
             location = "\\\\syslog[.].*"
         else:
@@ -789,11 +759,9 @@ class FileSystemSearcherTest(shared_test_lib.BaseTestCase):
                 self._GetTestFilePath(["syslog.tgz"]),
                 self._GetTestFilePath(["syslog.xz"]),
                 self._GetTestFilePath(["syslog.Z"]),
-                self._GetTestFilePath(["syslog.zip"]),
                 self._GetTestFilePath(["syslog.zlib"]),
             ]
         )
-
         locations = []
         first_path_spec = None
         for path_spec in path_spec_generator:

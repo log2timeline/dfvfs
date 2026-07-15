@@ -18,7 +18,7 @@ class ZIPDirectoryTest(shared_test_lib.BaseTestCase):
     def setUp(self):
         """Sets up the needed objects used throughout the test."""
         self._resolver_context = context.Context()
-        test_path = self._GetTestFilePath(["syslog.zip"])
+        test_path = self._GetTestFilePath(["zip", "syslog.zip"])
         self._SkipIfPathNotExists(test_path)
 
         self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -27,7 +27,6 @@ class ZIPDirectoryTest(shared_test_lib.BaseTestCase):
         self._zip_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_ZIP, location="/", parent=self._os_path_spec
         )
-
         self._file_system = zip_file_system.ZipFileSystem(
             self._resolver_context, self._zip_path_spec
         )

@@ -12,12 +12,12 @@ from tests import test_lib as shared_test_lib
 
 
 class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
-    """Tests the ZIP file system."""
+    """Tests the ZIP archive file system."""
 
     def setUp(self):
         """Sets up the needed objects used throughout the test."""
         self._resolver_context = context.Context()
-        test_path = self._GetTestFilePath(["syslog.zip"])
+        test_path = self._GetTestFilePath(["zip", "syslog.zip"])
         self._SkipIfPathNotExists(test_path)
 
         self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -61,8 +61,8 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
         )
         self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
 
-        # Test on a zip file that has missing directory entries.
-        test_path = self._GetTestFilePath(["missing_directory_entries.zip"])
+        # Test on a ZIP archive file without directories.
+        test_path = self._GetTestFilePath(["zip", "without_directory.zip"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -71,7 +71,64 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_ZIP, location="/", parent=test_os_path_spec
         )
+        file_system = zip_file_system.ZipFileSystem(self._resolver_context, path_spec)
+        self.assertIsNotNone(file_system)
 
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/folder", parent=test_os_path_spec
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP,
+            location="/folder/syslog",
+            parent=test_os_path_spec,
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        # Test on a ZIP archive file that has absolute paths.
+        test_path = self._GetTestFilePath(["zip", "absolute_paths.zip"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/", parent=test_os_path_spec
+        )
+        file_system = zip_file_system.ZipFileSystem(self._resolver_context, path_spec)
+        self.assertIsNotNone(file_system)
+
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/folder", parent=test_os_path_spec
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP,
+            location="/folder/syslog",
+            parent=test_os_path_spec,
+        )
+        result = file_system.FileEntryExistsByPathSpec(path_spec)
+        self.assertTrue(result)
+
+        # Test on a ZIP archive file that has mixed absolute and relative paths.
+        test_path = self._GetTestFilePath(["zip", "mixed_paths.zip"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/", parent=test_os_path_spec
+        )
         file_system = zip_file_system.ZipFileSystem(self._resolver_context, path_spec)
         self.assertIsNotNone(file_system)
 
@@ -117,8 +174,8 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
 
         self.assertIsNone(file_entry)
 
-        # Test on a tar file that has missing directory entries.
-        test_path = self._GetTestFilePath(["missing_directory_entries.zip"])
+        # Test on a ZIP archive file without directories.
+        test_path = self._GetTestFilePath(["zip", "without_directory.zip"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -127,7 +184,38 @@ class ZIPFileSystemTest(shared_test_lib.BaseTestCase):
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_ZIP, location="/", parent=test_os_path_spec
         )
+        file_system = zip_file_system.ZipFileSystem(self._resolver_context, path_spec)
+        self.assertIsNotNone(file_system)
 
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/folder", parent=test_os_path_spec
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsVirtual())
+        self.assertEqual(file_entry.name, "folder")
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP,
+            location="/folder/syslog",
+            parent=test_os_path_spec,
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+        self.assertIsNotNone(file_entry)
+        self.assertEqual(file_entry.name, "syslog")
+
+        # Test on a ZIP archive file that has absolute paths.
+        test_path = self._GetTestFilePath(["zip", "absolute_paths.zip"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/", parent=test_os_path_spec
+        )
         file_system = zip_file_system.ZipFileSystem(self._resolver_context, path_spec)
         self.assertIsNotNone(file_system)
 
