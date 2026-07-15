@@ -7,11 +7,12 @@ import pytsk3
 class TSKFileSystemImage(pytsk3.Img_Info):
     """Pytsk3 image object using a file-like object."""
 
-    def __init__(self, file_object):
+    def __init__(self, file_object, sector_size=None):
         """Initializes an image object.
 
         Args:
           file_object (FileIO): file-like object.
+          sector_size (Optional[int]): number of bytes per sector.
 
         Raises:
           ValueError: if the file-like object is invalid.
@@ -21,16 +22,20 @@ class TSKFileSystemImage(pytsk3.Img_Info):
 
         # pytsk3.Img_Info does not let you set attributes after initialization.
         self._file_object = file_object
-        # Using the old parent class invocation style otherwise some versions
-        # of pylint complain also setting type to RAW or EXTERNAL to make sure
-        # Img_Info does not do detection.
-        tsk_img_type = getattr(pytsk3, "TSK_IMG_TYPE_EXTERNAL", pytsk3.TSK_IMG_TYPE_RAW)
-        # Note that we want url to be a binary string in Python 2 and a Unicode
-        # string in Python 3. Hence the string is not prefixed.
-        pytsk3.Img_Info.__init__(self, url="", type=tsk_img_type)
 
-    # Note: that the following functions do not follow the style guide
-    # because they are part of the pytsk3.Img_Info object interface.
+        # Using the old parent class invocation style otherwise some versions of pylint
+        # complain also setting type to RAW or EXTERNAL to make sure Img_Info does not
+        # do detection.
+        tsk_img_type = getattr(pytsk3, "TSK_IMG_TYPE_EXTERNAL", pytsk3.TSK_IMG_TYPE_RAW)
+
+        # Note that we want url to be a binary string in Python 2 and a Unicode string
+        # in Python 3. Hence the string is not prefixed.
+        pytsk3.Img_Info.__init__(
+            self, url="", type=tsk_img_type, sector_size=sector_size or 512
+        )
+
+    # Note: that the following functions do not follow the style guide because they are
+    # part of the pytsk3.Img_Info object interface.
     # pylint: disable=invalid-name
 
     def close(self):

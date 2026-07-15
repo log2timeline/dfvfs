@@ -13,14 +13,15 @@ class TSKPartitionDirectory(directory.Directory):
     def _EntriesGenerator(self):
         """Retrieves directory entries.
 
-        Since a directory can contain a vast number of entries using
-        a generator is more memory efficient.
+        Since a directory can contain a vast number of entries using a generator is more
+        memory efficient.
 
         Yields:
           TSKPartitionPathSpec: a path specification.
         """
         location = getattr(self.path_spec, "location", None)
         part_index = getattr(self.path_spec, "part_index", None)
+        sector_size = getattr(self.path_spec, "sector_size", None)
         start_offset = getattr(self.path_spec, "start_offset", None)
 
         # Only the virtual root file has directory entries.
@@ -31,7 +32,9 @@ class TSKPartitionDirectory(directory.Directory):
             and location == self._file_system.LOCATION_ROOT
         ):
             tsk_volume = self._file_system.GetTSKVolume()
-            bytes_per_sector = tsk_partition.TSKVolumeGetBytesPerSector(tsk_volume)
+            bytes_per_sector = sector_size or tsk_partition.TSKVolumeGetBytesPerSector(
+                tsk_volume
+            )
             part_index = 0
             partition_index = 0
 
@@ -63,6 +66,8 @@ class TSKPartitionDirectory(directory.Directory):
 
                 start_sector = tsk_partition.TSKVsPartGetStartSector(tsk_vs_part)
 
+                if sector_size is not None:
+                    kwargs["sector_size"] = sector_size
                 if start_sector is not None:
                     kwargs["start_offset"] = start_sector * bytes_per_sector
 

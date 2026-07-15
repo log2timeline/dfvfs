@@ -138,9 +138,9 @@ class Analyzer:
           format_category (str): format category.
 
         Returns:
-          tuple[FormatSpecificationStore, list[AnalyzerHelper]]: a format
-              specification store and remaining analyzer helpers that do not have
-              a format specification.
+          tuple[FormatSpecificationStore, list[AnalyzerHelper]]: a format specification
+              store and remaining analyzer helpers that do not have a format
+              specification.
         """
         specification_store = specification.FormatSpecificationStore()
         remainder_list = []
@@ -173,11 +173,11 @@ class Analyzer:
         Args:
           signature_scanner (pysigscan.scanner): signature scanner.
           specification_store (FormatSpecificationStore): specification store.
-          remainder_list (list[AnalyzerHelper]): remaining analyzer helpers that
-              do not have a format specification.
+          remainder_list (list[AnalyzerHelper]): remaining analyzer helpers that do not
+              have a format specification.
           path_spec (PathSpec): path specification.
-          resolver_context (Optional[Context]): resolver context, where None
-              represents the built-in context which is not multi process safe.
+          resolver_context (Optional[Context]): resolver context, where None represents
+              the built-in context which is not multi process safe.
 
         Returns:
           list[str]: supported format type indicators.
@@ -195,7 +195,6 @@ class Analyzer:
             format_specification = specification_store.GetSpecificationBySignature(
                 scan_result.identifier
             )
-
             if format_specification.identifier not in type_indicator_list:
                 type_indicator_list.append(format_specification.identifier)
 
@@ -220,10 +219,8 @@ class Analyzer:
         """
         if analyzer_helper.type_indicator not in cls._analyzer_helpers:
             raise KeyError(
-                (
-                    f"Analyzer helper object not set for type indicator: "
-                    f"{analyzer_helper.type_indicator:s}."
-                )
+                f"Analyzer helper object not set for type indicator: "
+                f"{analyzer_helper.type_indicator:s}."
             )
 
         analyzer_helper = cls._analyzer_helpers[analyzer_helper.type_indicator]
@@ -238,8 +235,8 @@ class Analyzer:
 
         Args:
           path_spec (PathSpec): path specification.
-          resolver_context (Optional[Context]): resolver context, where None
-              represents the built-in context which is not multi process safe.
+          resolver_context (Optional[Context]): resolver context, where None represents
+              the built-in context which is not multi process safe.
 
         Returns:
           list[str]: supported format type indicators.
@@ -396,7 +393,6 @@ class Analyzer:
             path_spec,
             resolver_context=resolver_context,
         )
-
         if (
             len(type_indicators) > 1
             and definitions.TYPE_INDICATOR_TSK_PARTITION in type_indicators
@@ -420,10 +416,8 @@ class Analyzer:
         """
         if analyzer_helper.type_indicator in cls._analyzer_helpers:
             raise KeyError(
-                (
-                    f"Analyzer helper object already set for type indicator: "
-                    f"{analyzer_helper.type_indicator:s}."
-                )
+                f"Analyzer helper object already set for type indicator: "
+                f"{analyzer_helper.type_indicator:s}."
             )
 
         cls._FlushCache(analyzer_helper.format_categories)

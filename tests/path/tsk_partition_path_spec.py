@@ -20,25 +20,21 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             location="/p2", parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             part_index=1, parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             start_offset=0x2000, parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             location="/p2", part_index=1, parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         with self.assertRaises(ValueError):
@@ -62,49 +58,51 @@ class TSKPartitionPathSpecTest(test_lib.PathSpecTestCase):
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             location="/p2", parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         expected_comparable = "\n".join(
             ["type: TEST", "type: TSK_PARTITION, location: /p2", ""]
         )
-
         self.assertEqual(path_spec.comparable, expected_comparable)
 
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             part_index=1, parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         expected_comparable = "\n".join(
             ["type: TEST", "type: TSK_PARTITION, part index: 1", ""]
         )
+        self.assertEqual(path_spec.comparable, expected_comparable)
 
+        path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
+            sector_size=2048, parent=self._path_spec
+        )
+        self.assertIsNotNone(path_spec)
+
+        expected_comparable = "\n".join(
+            ["type: TEST", "type: TSK_PARTITION, sector size: 2048", ""]
+        )
         self.assertEqual(path_spec.comparable, expected_comparable)
 
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             start_offset=0x2000, parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         expected_comparable = "\n".join(
             ["type: TEST", "type: TSK_PARTITION, start offset: 0x00002000", ""]
         )
-
         self.assertEqual(path_spec.comparable, expected_comparable)
 
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             location="/p2", part_index=1, parent=self._path_spec
         )
-
         self.assertIsNotNone(path_spec)
 
         expected_comparable = "\n".join(
             ["type: TEST", "type: TSK_PARTITION, location: /p2, part index: 1", ""]
         )
-
         self.assertEqual(path_spec.comparable, expected_comparable)
 
 
