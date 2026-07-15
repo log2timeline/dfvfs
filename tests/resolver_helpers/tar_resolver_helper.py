@@ -17,7 +17,7 @@ class TARResolverHelperTest(test_lib.ResolverHelperTestCase):
         """Sets up the needed objects used throughout the test."""
         super().setUp()
 
-        test_path = self._GetTestFilePath(["syslog.tar"])
+        test_path = self._GetTestFilePath(["tar", "syslog.tar"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(

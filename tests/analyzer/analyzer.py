@@ -84,7 +84,7 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
 
     def testGetArchiveTypeIndicatorsTAR(self):
         """Tests the GetArchiveTypeIndicators function on a .tar file."""
-        test_file = self._GetTestFilePath(["syslog.tar"])
+        test_file = self._GetTestFilePath(["tar", "syslog.tar"])
         self._SkipIfPathNotExists(test_file)
 
         path_spec = os_path_spec.OSPathSpec(location=test_file)

@@ -19,10 +19,6 @@ class TARDirectory(directory.Directory):
         location = getattr(self.path_spec, "location", None)
 
         if location and location.startswith(self._file_system.PATH_SEPARATOR):
-            # The TAR info name does not have the leading path separator as
-            # the location string does.
-            tar_path = location[1:]
-
             # Set of top level sub directories that have been yielded.
             processed_directories = set()
 
@@ -33,7 +29,16 @@ class TARDirectory(directory.Directory):
                 # Determine if the start of the TAR info name is similar to
                 # the location string. If not the file TAR info refers to is not in
                 # the same directory.
-                if not path or not path.startswith(tar_path):
+                if not path:
+                    continue
+
+                # A tar file can contain paths with and without leading separator.
+
+                if path.startswith(location[1:]):
+                    tar_path = location[1:]
+                elif path.startswith(location):
+                    tar_path = location
+                else:
                     continue
 
                 # Ignore the directory itself.

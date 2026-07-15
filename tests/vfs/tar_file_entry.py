@@ -20,7 +20,7 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
     def setUp(self):
         """Sets up the needed objects used throughout the test."""
         self._resolver_context = context.Context()
-        test_path = self._GetTestFilePath(["syslog.tar"])
+        test_path = self._GetTestFilePath(["tar", "syslog.tar"])
         self._SkipIfPathNotExists(test_path)
 
         self._os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -31,7 +31,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
             location="/syslog",
             parent=self._os_path_spec,
         )
-
         self._file_system = tar_file_system.TARFileSystem(
             self._resolver_context, self._tar_path_spec
         )
@@ -46,7 +45,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
         file_entry = tar_file_entry.TARFileEntry(
             self._resolver_context, self._file_system, self._tar_path_spec
         )
-
         self.assertIsNotNone(file_entry)
 
     # TODO: add tests for _GetDirectory
@@ -78,7 +76,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
         file_entry = tar_file_entry.TARFileEntry(
             self._resolver_context, self._file_system, self._tar_path_spec
         )
-
         self.assertIsNotNone(file_entry)
         self.assertIsNotNone(file_entry.modification_time)
 
@@ -87,7 +84,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
         file_entry = tar_file_entry.TARFileEntry(
             self._resolver_context, self._file_system, self._tar_path_spec
         )
-
         self.assertIsNotNone(file_entry)
         self.assertEqual(file_entry.name, "syslog")
 
@@ -96,7 +92,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
         file_entry = tar_file_entry.TARFileEntry(
             self._resolver_context, self._file_system, self._tar_path_spec
         )
-
         self.assertIsNotNone(file_entry)
         self.assertEqual(file_entry.size, 1247)
 
@@ -116,43 +111,215 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
 
     # TODO: add tests for GetTARInfo
 
-    def testIsFunctions(self):
-        """Test the Is* functions."""
+    def testIsAllocated(self):
+        """Test the IsAllocated function."""
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TAR,
             location="/syslog",
             parent=self._os_path_spec,
         )
         file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
-        self.assertIsNotNone(file_entry)
 
-        self.assertFalse(file_entry.IsRoot())
-        self.assertFalse(file_entry.IsVirtual())
+        self.assertIsNotNone(file_entry)
         self.assertTrue(file_entry.IsAllocated())
 
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsAllocated())
+
+    def testIsDevice(self):
+        """Test the IsDevice function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/syslog",
+            parent=self._os_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
         self.assertFalse(file_entry.IsDevice())
-        self.assertFalse(file_entry.IsDirectory())
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertFalse(file_entry.IsDevice())
+
+    def testIsDirectory(self):
+        """Test the IsDirectory function."""
+        # Test with an in-file directory.
+        test_path = self._GetTestFilePath(["tar", "with_directory.tar"])
+        self._SkipIfPathNotExists(test_path)
+
+        os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        tar_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=os_path_spec
+        )
+        file_system = tar_file_system.TARFileSystem(
+            self._resolver_context, tar_path_spec
+        )
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/folder", parent=os_path_spec
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsDirectory())
+        self.assertFalse(file_entry.IsVirtual())
+
+        # Test with a virtual directory.
+        test_path = self._GetTestFilePath(["tar", "without_directory.tar"])
+        self._SkipIfPathNotExists(test_path)
+
+        os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        tar_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=os_path_spec
+        )
+        file_system = tar_file_system.TARFileSystem(
+            self._resolver_context, tar_path_spec
+        )
+        file_system.Open()
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/folder", parent=os_path_spec
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsDirectory())
+        self.assertTrue(file_entry.IsVirtual())
+
+    def testIsFile(self):
+        """Test the IsFile function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/syslog",
+            parent=self._os_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
         self.assertTrue(file_entry.IsFile())
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertFalse(file_entry.IsFile())
+
+    def testIsLink(self):
+        """Test the IsLink function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/syslog",
+            parent=self._os_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
         self.assertFalse(file_entry.IsLink())
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertFalse(file_entry.IsLink())
+
+    def testIsPipe(self):
+        """Test the IsPipe function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/syslog",
+            parent=self._os_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
         self.assertFalse(file_entry.IsPipe())
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertFalse(file_entry.IsPipe())
+
+    def testIsRoot(self):
+        """Test the IsRoot function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/syslog",
+            parent=self._os_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertFalse(file_entry.IsRoot())
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsRoot())
+
+    def testIsSocket(self):
+        """Test the IsSocket function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/syslog",
+            parent=self._os_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
         self.assertFalse(file_entry.IsSocket())
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
         )
         file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
         self.assertIsNotNone(file_entry)
-
-        self.assertTrue(file_entry.IsRoot())
-        self.assertTrue(file_entry.IsVirtual())
-        self.assertTrue(file_entry.IsAllocated())
-
-        self.assertFalse(file_entry.IsDevice())
-        self.assertTrue(file_entry.IsDirectory())
-        self.assertFalse(file_entry.IsFile())
-        self.assertFalse(file_entry.IsLink())
-        self.assertFalse(file_entry.IsPipe())
         self.assertFalse(file_entry.IsSocket())
+
+    def testIsVirtual(self):
+        """Test the IsVirtual function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR,
+            location="/syslog",
+            parent=self._os_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertFalse(file_entry.IsVirtual())
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TAR, location="/", parent=self._os_path_spec
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertTrue(file_entry.IsVirtual())
 
     def testSubFileEntries(self):
         """Test the sub file entries iteration functionality."""
@@ -164,8 +331,8 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
 
         self._assertSubFileEntries(file_entry, ["syslog"])
 
-        # Test on a tar file that has missing directory entries.
-        test_path = self._GetTestFilePath(["missing_directory_entries.tar"])
+        # Test on a tar file without directories.
+        test_path = self._GetTestFilePath(["tar", "without_directory.tar"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
@@ -174,7 +341,6 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TAR, location="/", parent=test_os_path_spec
         )
-
         file_system = tar_file_system.TARFileSystem(self._resolver_context, path_spec)
         self.assertIsNotNone(file_system)
 
@@ -183,30 +349,13 @@ class TARFileEntryTest(shared_test_lib.BaseTestCase):
         file_entry = file_system.GetFileEntryByPathSpec(path_spec)
         self.assertIsNotNone(file_entry)
 
-        self._assertSubFileEntries(
-            file_entry, ["File System", "Non Missing Directory Entry"]
-        )
+        self._assertSubFileEntries(file_entry, ["folder"])
 
-        file_system_sub_file_entry = None
-        for sub_file_entry in file_entry.sub_file_entries:
-            # The "File System" and its sub-directories have missing entries within
-            # the tar file, but still should be found due to the AssetManifest.plist
-            # file found within the directories.
-            if sub_file_entry.name == "File System":
-                self.assertTrue(sub_file_entry.IsVirtual())
-
-                self._assertSubFileEntries(sub_file_entry, ["Recordings"])
-
-                file_system_sub_file_entry = sub_file_entry
-
-            else:
-                self._assertSubFileEntries(sub_file_entry, ["test_file.txt"])
-
-        if file_system_sub_file_entry:
-            for sub_file_entry in file_system_sub_file_entry.sub_file_entries:
-                self.assertTrue(sub_file_entry.IsVirtual())
-
-                self._assertSubFileEntries(sub_file_entry, ["AssetManifest.plist"])
+        # The "folder" folder is a missing directory entry but should still be found
+        # due to the files found inside the directory.
+        sub_file_entry = next(file_entry.sub_file_entries)
+        self.assertTrue(sub_file_entry.IsVirtual())
+        self._assertSubFileEntries(sub_file_entry, ["syslog", "wtmp.1"])
 
     def testDataStreams(self):
         """Test the data streams functionality."""

@@ -18,7 +18,7 @@ class TARFileTest(test_lib.SylogTestCase):
         """Sets up the needed objects used throughout the test."""
         super().setUp()
         self._resolver_context = context.Context()
-        test_path = self._GetTestFilePath(["syslog.tar"])
+        test_path = self._GetTestFilePath(["tar", "syslog.tar"])
         self._SkipIfPathNotExists(test_path)
 
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(

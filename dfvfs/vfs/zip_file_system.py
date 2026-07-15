@@ -28,7 +28,7 @@ class ZipFileSystem(file_system.FileSystem):
           encoding (Optional[str]): encoding of the file entry name.
         """
         super().__init__(resolver_context, path_spec)
-        self._directory_names = None
+        self._directory_paths = None
         self._file_object = None
         self._zip_file = None
         self.encoding = encoding
@@ -41,7 +41,7 @@ class ZipFileSystem(file_system.FileSystem):
         """
         self._zip_file.close()
         self._zip_file = None
-        self._directory_names = None
+        self._directory_paths = None
         self._file_object = None
 
     def _Open(self, mode="rb"):
@@ -73,7 +73,7 @@ class ZipFileSystem(file_system.FileSystem):
         self._file_object = file_object
         self._zip_file = zip_file
 
-        self._directory_names = set()
+        self._directory_paths = set()
         for name in self._zip_file.namelist():
             if not name:
                 continue
@@ -94,7 +94,7 @@ class ZipFileSystem(file_system.FileSystem):
                     else:
                         path = f"/{segment:s}"
 
-                    self._directory_names.add(path)
+                    self._directory_paths.add(path)
 
     def FileEntryExistsByPathSpec(self, path_spec):
         """Determines if a file entry for a path specification exists.
@@ -145,7 +145,7 @@ class ZipFileSystem(file_system.FileSystem):
 
         if not zip_info:
             # Check if location could be a virtual directory.
-            is_virtual = location in self._directory_names
+            is_virtual = location in self._directory_paths
 
         return bool(zip_info or is_virtual)
 
@@ -200,7 +200,7 @@ class ZipFileSystem(file_system.FileSystem):
 
         if not zip_info:
             # Check if location could be a virtual directory.
-            is_virtual = location in self._directory_names
+            is_virtual = location in self._directory_paths
 
         if zip_info or is_virtual:
             kwargs = {}
