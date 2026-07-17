@@ -196,14 +196,6 @@ dfvfs.analyzer.tsk\_analyzer\_helper module
    :show-inheritance:
    :undoc-members:
 
-dfvfs.analyzer.tsk\_partition\_analyzer\_helper module
-------------------------------------------------------
-
-.. automodule:: dfvfs.analyzer.tsk_partition_analyzer_helper
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 dfvfs.analyzer.vhdi\_analyzer\_helper module
 --------------------------------------------
 
