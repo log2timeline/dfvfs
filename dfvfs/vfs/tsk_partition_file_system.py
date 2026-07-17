@@ -41,8 +41,8 @@ class TSKPartitionFileSystem(file_system.FileSystem):
         """Opens the file system object defined by path specification.
 
         Args:
-          mode (Optional[str]): file access mode. The default is 'rb' which
-              represents read-only binary.
+          mode (Optional[str]): file access mode. The default is 'rb' which represents
+              read-only binary.
 
         Raises:
           AccessError: if the access to open the file was denied.
@@ -56,8 +56,9 @@ class TSKPartitionFileSystem(file_system.FileSystem):
         file_object = resolver.Resolver.OpenFileObject(
             self._path_spec.parent, resolver_context=self._resolver_context
         )
-
-        tsk_image_object = tsk_image.TSKFileSystemImage(file_object)
+        tsk_image_object = tsk_image.TSKFileSystemImage(
+            file_object, sector_size=self._path_spec.sector_size
+        )
         tsk_volume = pytsk3.Volume_Info(tsk_image_object)
 
         self._file_object = file_object
@@ -75,9 +76,8 @@ class TSKPartitionFileSystem(file_system.FileSystem):
         tsk_vs_part, _ = tsk_partition.GetTSKVsPartByPathSpec(
             self._tsk_volume, path_spec
         )
-
-        # The virtual root file has no corresponding TSK volume system part object
-        # but should have a location.
+        # The virtual root file has no corresponding TSK volume system part object but
+        # should have a location.
         if tsk_vs_part is None:
             location = getattr(path_spec, "location", None)
             return location is not None and location == self.LOCATION_ROOT
@@ -96,11 +96,10 @@ class TSKPartitionFileSystem(file_system.FileSystem):
         tsk_vs_part, partition_index = tsk_partition.GetTSKVsPartByPathSpec(
             self._tsk_volume, path_spec
         )
-
         location = getattr(path_spec, "location", None)
 
-        # The virtual root file has no corresponding TSK volume system part object
-        # but should have a location.
+        # The virtual root file has no corresponding TSK volume system part object but
+        # should have a location.
         if tsk_vs_part is None:
             if location is None or location != self.LOCATION_ROOT:
                 return None

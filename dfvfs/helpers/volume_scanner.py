@@ -17,14 +17,13 @@ class VolumeScannerOptions:
     """Volume scanner options.
 
     Attributes:
-      credentials (list[tuple[str, str]]): credentials, per type, to unlock
-          volumes.
+      credentials (list[tuple[str, str]]): credentials, per type, to unlock volumes.
       partitions (list[str]): partition identifiers.
-      scan_mode (str): mode that defines how the VolumeScanner should scan
-          for volumes and snapshots.
+      scan_mode (str): mode that defines how the VolumeScanner should scan for volumes
+          and snapshots.
       snapshots (list[str]): snapshot identifiers.
-      volumes (list[str]): volume identifiers, e.g. those of an APFS or LVM
-          volume system.
+      volumes (list[str]): volume identifiers, e.g. those of an APFS or LVM volume
+          system.
     """
 
     # Scan all volumes and snapshots for available file systems.
@@ -171,16 +170,17 @@ class VolumeScannerMediator:
 class VolumeScanner:
     """Volume scanner."""
 
-    def __init__(self, mediator=None):
+    def __init__(self, mediator=None, sector_size=None):
         """Initializes a volume scanner.
 
         Args:
           mediator (Optional[VolumeScannerMediator]): a volume scanner mediator.
+          sector_size (Optional[int]): number of bytes per sector.
         """
         super().__init__()
         self._mediator = mediator
         self._source_path = None
-        self._source_scanner = source_scanner.SourceScanner()
+        self._source_scanner = source_scanner.SourceScanner(sector_size=sector_size)
         self._source_type = None
 
     def _GetBasePathSpecs(self, scan_context, options):
@@ -229,9 +229,9 @@ class VolumeScanner:
     def _GetPartitionIdentifiers(self, scan_node, options):
         """Determines the partition identifiers.
 
-        This function determines which partition identifiers need to be scanned
-        based on the volume scanner options. If no options are provided and there
-        is more than a single partition the mediator is used to ask the user.
+        This function determines which partition identifiers need to be scanned based
+        on the volume scanner options. If no options are provided and there is more
+        than a single partition the mediator is used to ask the user.
 
         Args:
           scan_node (SourceScanNode): scan node.
@@ -420,16 +420,16 @@ class VolumeScanner:
 
         Args:
           volume_system (VolumeSystem): volume system.
-          volume_identifiers (list[int|str]): allowed volume identifiers, formatted
-              as an integer or string with prefix.
+          volume_identifiers (list[int|str]): allowed volume identifiers, formatted as
+              an integer or string with prefix.
           prefix (Optional[str]): volume identifier prefix.
 
         Returns:
           list[str]: volume identifiers with prefix.
 
         Raises:
-          ScannerError: if the volume identifier is not supported or no volume
-              could be found that corresponds with the identifier.
+          ScannerError: if the volume identifier is not supported or no volume could be
+              found that corresponds with the identifier.
         """
         normalized_volume_identifiers = []
         for volume_identifier in volume_identifiers:
@@ -466,10 +466,10 @@ class VolumeScanner:
           options (VolumeScannerOptions): volume scanner options.
 
         Raises:
-          ScannerError: if the format of or within the source is not supported,
-              the scan node is invalid, there are no credentials defined for
-              the format or no mediator is provided and a locked scan node was
-              found, e.g. an encrypted volume,
+          ScannerError: if the format of or within the source is not supported, the scan
+              node is invalid, there are no credentials defined for the format or no
+              mediator is provided and a locked scan node was found, e.g. an encrypted
+              volume.
         """
         if not scan_node or not scan_node.path_spec:
             raise errors.ScannerError("Invalid or missing scan node.")
@@ -550,9 +550,9 @@ class VolumeScanner:
           SourceScannerContext: source scanner context.
 
         Raises:
-          ScannerError: if the source path does not exists, or if the source path
-              is not a file or directory, or if the format of or within the source
-              file is not supported.
+          ScannerError: if the source path does not exists, or if the source path is not
+              a file or directory, or if the format of or within the source file is not
+              supported.
         """
         if not source_path:
             raise errors.ScannerError("Invalid source path.")
@@ -578,9 +578,9 @@ class VolumeScanner:
           SourceScannerContext: source scanner context.
 
         Raises:
-          ScannerError: if the source path does not exists, or if the source path
-              is not a file or directory, or if the format of or within the source
-              file is not supported.
+          ScannerError: if the source path does not exists, or if the source path is not
+              a file or directory, or if the format of or within the source file is not
+              supported.
         """
         scan_context = source_scanner.SourceScannerContext()
         scan_context.AddScanNode(source_path_spec, None)
@@ -604,8 +604,8 @@ class VolumeScanner:
           base_path_specs (list[PathSpec]): file system base path specifications.
 
         Raises:
-          ScannerError: if the format of or within the source
-              is not supported or the scan node is invalid.
+          ScannerError: if the format of or within the source is not supported or the
+              scan node is invalid.
         """
         if not scan_node or not scan_node.path_spec:
             raise errors.ScannerError("Invalid or missing scan node.")
@@ -662,8 +662,8 @@ class VolumeScanner:
           base_path_specs (list[PathSpec]): file system base path specifications.
 
         Raises:
-          ScannerError: if the scan node is invalid, the scan node type is not
-              supported or if a sub scan node cannot be retrieved.
+          ScannerError: if the scan node is invalid, the scan node type is not supported
+              or if a sub scan node cannot be retrieved.
         """
         if not scan_node or not scan_node.path_spec:
             raise errors.ScannerError("Invalid scan node.")
@@ -721,17 +721,17 @@ class VolumeScanner:
 
         Args:
           source_path (str): source path.
-          options (Optional[VolumeScannerOptions]): volume scanner options. If None
-              the default volume scanner options are used, which are defined in the
+          options (Optional[VolumeScannerOptions]): volume scanner options. If None the
+              default volume scanner options are used, which are defined in the
               VolumeScannerOptions class.
 
         Returns:
           list[PathSpec]: path specifications.
 
         Raises:
-          ScannerError: if the source path does not exists, or if the source path
-              is not a file or directory, or if the format of or within the source
-              file is not supported.
+          ScannerError: if the source path does not exists, or if the source path is not
+              a file or directory, or if the format of or within the source file is not
+              supported.
         """
         if not options:
             options = VolumeScannerOptions()
@@ -830,17 +830,17 @@ class WindowsVolumeScanner(VolumeScanner):
 
         Args:
           source_path (str): source path.
-          options (Optional[VolumeScannerOptions]): volume scanner options. If None
-              the default volume scanner options are used, which are defined in the
+          options (Optional[VolumeScannerOptions]): volume scanner options. If None the
+              default volume scanner options are used, which are defined in the
               VolumeScannerOptions class.
 
         Returns:
           bool: True if a Windows volume was found.
 
         Raises:
-          ScannerError: if the source path does not exists, or if the source path
-              is not a file or directory, or if the format of or within the source
-              file is not supported.
+          ScannerError: if the source path does not exists, or if the source path is not
+              a file or directory, or if the format of or within the source file is not
+              supported.
         """
         if not options:
             options = VolumeScannerOptions()

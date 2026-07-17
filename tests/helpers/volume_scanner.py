@@ -248,7 +248,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         test_lvm_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_LVM, parent=test_raw_path_spec
         )
-
         volume_system = lvm_volume_system.LVMVolumeSystem()
         volume_system.Open(test_lvm_path_spec)
 
@@ -294,7 +293,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_VSHADOW, parent=test_raw_path_spec
         )
-
         volume_system = vshadow_volume_system.VShadowVolumeSystem()
         volume_system.Open(test_vss_path_spec)
 
@@ -344,7 +342,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TSK_PARTITION, parent=test_raw_path_spec
         )
-
         volume_system = tsk_volume_system.TSKVolumeSystem()
         volume_system.Open(test_tsk_partition_path_spec)
 
@@ -384,7 +381,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_VSHADOW, parent=test_raw_path_spec
         )
-
         volume_system = vshadow_volume_system.VShadowVolumeSystem()
         volume_system.Open(test_vss_path_spec)
 
@@ -451,7 +447,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             fat_scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END
         )
-
         test_scanner._ScanEncryptedVolume(scan_context, bde_scan_node, test_options)
 
         self.assertEqual(len(bde_scan_node.sub_nodes), 1)
@@ -459,7 +454,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             fat_scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END
         )
-
         # Test without mediator.
         resolver.Resolver.key_chain.Empty()
 
@@ -482,7 +476,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             fat_scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END
         )
-
         with self.assertRaises(errors.ScannerError):
             test_scanner._ScanEncryptedVolume(scan_context, bde_scan_node, test_options)
 
@@ -913,7 +906,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         test_ext_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.PREFERRED_EXT_BACK_END, location="/", parent=test_raw_path_spec
         )
-
         test_mediator = TestVolumeScannerMediator()
         test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
@@ -923,7 +915,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         base_path_specs = [
             base_path_spec.comparable for base_path_spec in base_path_specs
         ]
-
         self.assertEqual(base_path_specs, expected_base_path_specs)
 
         # Test error conditions.
@@ -944,11 +935,11 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec
         )
-
         test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TSK_PARTITION,
             location="/p1",
             part_index=2,
+            sector_size=512,
             start_offset=0x00000200,
             parent=test_raw_path_spec,
         )
@@ -957,10 +948,10 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
             location="/",
             parent=test_tsk_partition_path_spec,
         )
-
         test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TSK_PARTITION,
             location="/p5",
+            sector_size=512,
             part_index=6,
             start_offset=0x00010600,
             parent=test_raw_path_spec,
@@ -970,7 +961,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
             location="/",
             parent=test_tsk_partition_path_spec,
         )
-
         test_mediator = TestVolumeScannerMediator()
         test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
@@ -978,12 +968,10 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
             test_ext_path_spec1.comparable,
             test_ext_path_spec2.comparable,
         ]
-
         base_path_specs = test_scanner.GetBasePathSpecs(test_path)
         base_path_specs = [
             base_path_spec.comparable for base_path_spec in base_path_specs
         ]
-
         self.assertEqual(base_path_specs, expected_base_path_specs)
 
     def testGetBasePathSpecsOnDirectory(self):
@@ -994,7 +982,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         test_mediator = TestVolumeScannerMediator()
         test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
 
@@ -1004,7 +991,6 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         base_path_specs = [
             base_path_spec.comparable for base_path_spec in base_path_specs
         ]
-
         self.assertEqual(base_path_specs, expected_base_path_specs)
 
 
@@ -1027,7 +1013,6 @@ class WindowsVolumeScannerTest(shared_test_lib.BaseTestCase):
         test_tsk_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TSK, location="/", parent=test_qcow_path_spec
         )
-
         test_mediator = TestVolumeScannerMediator()
         test_scanner = volume_scanner.WindowsVolumeScanner(mediator=test_mediator)
 

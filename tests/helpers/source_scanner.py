@@ -311,7 +311,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_tsk_partition_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_TSK_PARTITION, parent=test_raw_path_spec
         )
-
         volume_system = tsk_volume_system.TSKVolumeSystem()
         volume_system.Open(test_tsk_partition_path_spec)
 
@@ -330,7 +329,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = scan_context.GetRootScanNode()
         self.assertIsNotNone(scan_node)
 
@@ -364,7 +362,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = scan_context.GetRootScanNode()
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
@@ -404,7 +401,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = scan_context.GetRootScanNode()
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
@@ -451,7 +447,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self._source_scanner.Unlock(
             scan_context, scan_node.path_spec, "password", self._APFS_PASSWORD
         )
-
         self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
 
         self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
@@ -473,7 +468,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
@@ -506,14 +500,12 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_node.sub_nodes[0].type_indicator, definitions.PREFERRED_GPT_BACK_END
         )
-
         scan_node = scan_node.sub_nodes[1]
 
         self.assertIsNotNone(scan_node)
         self.assertEqual(
             scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION
         )
-
         scan_node = scan_node.sub_nodes[2].GetSubNodeByLocation("/")
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
@@ -530,7 +522,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_LVM)
@@ -553,7 +544,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_LUKSDE)
@@ -563,7 +553,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self._source_scanner.Unlock(
             scan_context, scan_node.path_spec, "password", self._LUKSDE_PASSWORD
         )
-
         self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
 
         self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
@@ -586,13 +575,11 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
         self.assertEqual(
             scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION
         )
-
         self.assertEqual(len(scan_node.sub_nodes), 8)
 
         scan_node = scan_node.sub_nodes[6].GetSubNodeByLocation("/")
@@ -611,7 +598,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
@@ -655,7 +641,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_RAW)
@@ -670,7 +655,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self._source_scanner.Unlock(
             scan_context, scan_node.path_spec, "password", self._BDE_PASSWORD
         )
-
         self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
 
         self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
@@ -695,7 +679,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = scan_context.GetRootScanNode()
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.TYPE_INDICATOR_OS)
@@ -738,7 +721,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self._source_scanner.Unlock(
             scan_context, scan_node.path_spec, "password", self._FVDE_PASSWORD
         )
-
         self.assertFalse(scan_context.IsLockedScanNode(scan_node.path_spec))
 
         self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
@@ -793,7 +775,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
         self.assertIsNotNone(scan_node.path_spec)
@@ -824,7 +805,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_vss_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_VSHADOW, store_index=1, parent=test_raw_path_spec
         )
-
         path_spec = self._source_scanner.ScanForFileSystem(test_vss_path_spec)
         self.assertIsNotNone(path_spec)
 
@@ -839,7 +819,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForFileSystem(test_os_path_spec)
         self.assertIsNone(path_spec)
 
@@ -851,7 +830,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
@@ -864,7 +842,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_RAW)
@@ -877,7 +854,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_EWF)
@@ -890,7 +866,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_QCOW)
@@ -903,7 +878,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
@@ -914,7 +888,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_VHDI)
@@ -927,7 +900,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_VMDK)
@@ -940,7 +912,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForStorageMediaImage(test_os_path_spec)
         self.assertIsNone(path_spec)
 
@@ -952,7 +923,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForVolumeSystem(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(
@@ -970,7 +940,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_raw_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec
         )
-
         path_spec = self._source_scanner.ScanForVolumeSystem(test_raw_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_VSHADOW)
@@ -985,7 +954,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForVolumeSystem(test_os_path_spec)
         self.assertIsNotNone(path_spec)
         self.assertEqual(path_spec.type_indicator, definitions.TYPE_INDICATOR_BDE)
@@ -998,7 +966,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=test_path
         )
-
         path_spec = self._source_scanner.ScanForVolumeSystem(test_os_path_spec)
         self.assertIsNone(path_spec)
 

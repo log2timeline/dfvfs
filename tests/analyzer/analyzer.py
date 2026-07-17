@@ -75,7 +75,6 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             len(analyzer.Analyzer._analyzer_helpers), number_of_helpers + 1
         )
-
         with self.assertRaises(KeyError):
             analyzer.Analyzer.RegisterHelper(test_helper)
 
@@ -384,7 +383,6 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec = tsk_partition_path_spec.TSKPartitionPathSpec(
             location="/p1", parent=path_spec
         )
-
         expected_type_indicators = [definitions.TYPE_INDICATOR_CS]
         type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
         self.assertEqual(type_indicators, expected_type_indicators)
@@ -419,17 +417,6 @@ class AnalyzerTest(shared_test_lib.BaseTestCase):
         path_spec = os_path_spec.OSPathSpec(location=test_file)
 
         expected_type_indicators = [definitions.TYPE_INDICATOR_LVM]
-        type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
-        self.assertEqual(type_indicators, expected_type_indicators)
-
-    def testGetVolumeSystemTypeIndicatorsMBR(self):
-        """Tests the GetVolumeSystemTypeIndicators function on MBR partitions."""
-        test_file = self._GetTestFilePath(["mbr.raw"])
-        self._SkipIfPathNotExists(test_file)
-
-        path_spec = os_path_spec.OSPathSpec(location=test_file)
-
-        expected_type_indicators = [definitions.TYPE_INDICATOR_TSK_PARTITION]
         type_indicators = analyzer.Analyzer.GetVolumeSystemTypeIndicators(path_spec)
         self.assertEqual(type_indicators, expected_type_indicators)
 

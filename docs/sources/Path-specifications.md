@@ -340,6 +340,7 @@ systems.
 location | The location of the volume within the volume system
 parent | The parent path specification
 part_index | The SleuthKit part index that indicates the volume within the volume system
+sector_size | The number of bytes per sector
 start_offset | The start offset, in bytes, of the volume within the volume system
 
 ### The VHD storage media image type

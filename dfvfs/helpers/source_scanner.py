@@ -18,11 +18,14 @@ the nodea and user provided context information, such as:
 * which VSS stores to default to.
 """
 
+import pytsk3
+
 from dfvfs.analyzer import analyzer
 from dfvfs.lib import apfs_helper
 from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import raw_helper
+from dfvfs.lib import tsk_image
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 
@@ -31,8 +34,7 @@ class SourceScanNode:
     """Source scan node.
 
     Attributes:
-      credential (tuple[str, str]): credential used to unlock the source scan
-          node.
+      credential (tuple[str, str]): credential used to unlock the source scan node.
       path_spec (PathSpec): path specification.
       parent_node (SourceScanNode): source scan parent node.
       scanned (bool): True if the source scan node has been fully scanned.
@@ -105,8 +107,8 @@ class SourceScanNode:
     def IsSystemLevel(self):
         """Determines if the scan node has a path specification at system-level.
 
-        System-level is an indication used if the path specification is
-        handled by the operating system and should not have a parent.
+        System-level is an indication used if the path specification is handled by the
+        operating system and should not have a parent.
 
         Returns:
           bool: True if the scan node has a path specification at system-level.
@@ -252,8 +254,8 @@ class SourceScannerContext:
     def HasLockedScanNodes(self):
         """Determines if a locked scan node was detected during the scan.
 
-        A locked scan node is e.g. an encrypted volume for which a credential,
-        e.g. password, to unlock the volume is not available.
+        A locked scan node is e.g. an encrypted volume for which a credential, e.g.
+        password, to unlock the volume is not available.
 
         Returns:
           bool: True if a locked scan node was detected during the scan.
@@ -274,8 +276,8 @@ class SourceScannerContext:
     def IsLockedScanNode(self, path_spec):
         """Determines if a scan node is locked.
 
-        A locked scan node is e.g. an encrypted volume for which a credential,
-        e.g. password, to unlock the volume is not available.
+        A locked scan node is e.g. an encrypted volume for which a credential, e.g.
+        password, to unlock the volume is not available.
 
         Args:
           path_spec (PathSpec): path specification.
@@ -289,8 +291,7 @@ class SourceScannerContext:
         """Determines if the source type is a directory.
 
         Returns:
-          bool: True if the source type is a directory, False if not or
-              None if not set.
+          bool: True if the source type is a directory, False if not or None if not set.
         """
         if not self.source_type:
             return None
@@ -332,7 +333,6 @@ class SourceScannerContext:
         source_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_OS, location=source_path
         )
-
         self.AddScanNode(source_path_spec, None)
 
     def RemoveScanNode(self, path_spec):
@@ -381,8 +381,8 @@ class SourceScannerContext:
 
         Args:
           path_spec (PathSpec): path specification.
-          credential_identifier (str): credential identifier used to unlock
-              the scan node.
+          credential_identifier (str): credential identifier used to unlock the scan
+              node.
           credential_data (bytes): credential data used to unlock the scan node.
 
         Raises:
@@ -405,19 +405,20 @@ class SourceScannerContext:
 class SourceScanner:
     """Searcher to find volumes within a volume system."""
 
-    def __init__(self, resolver_context=None):
+    def __init__(self, resolver_context=None, sector_size=None):
         """Initializes a source scanner.
 
         Args:
-          resolver_context (Optional[Context]): resolver context, where None
-              indicates to use the built-in context which is not multi process
-              safe.
+          resolver_context (Optional[Context]): resolver context, where None indicates
+              to use the built-in context which is not multi process safe.
+          sector_size (Optional[int]): number of bytes per sector.
         """
         super().__init__()
         self._resolver_context = resolver_context
+        self._sector_size = sector_size or 512
 
-    # TODO: add functions to check if path spec type is a storage media image
-    # type, file system type, etc.
+    # TODO: add functions to check if path spec type is a storage media image type, file
+    # system type, etc.
 
     def _ScanNode(self, scan_context, scan_node, auto_recurse=True):
         """Scans a node for supported formats.
@@ -425,8 +426,8 @@ class SourceScanner:
         Args:
           scan_context (SourceScannerContext): source scanner context.
           scan_node (SourceScanNode): source scan node.
-          auto_recurse (Optional[bool]): True if the scan should automatically
-              recurse as far as possible.
+          auto_recurse (Optional[bool]): True if the scan should automatically recurse
+              as far as possible.
 
         Raises:
           BackEndError: if the source cannot be scanned.
@@ -445,7 +446,6 @@ class SourceScanner:
             system_level_file_entry = resolver.Resolver.OpenFileEntry(
                 scan_node.path_spec, resolver_context=self._resolver_context
             )
-
             if system_level_file_entry is None:
                 raise errors.BackEndError("Unable to open file entry.")
 
@@ -468,9 +468,9 @@ class SourceScanner:
                 if not auto_recurse:
                     return
 
-            # In case we did not find a storage media image type we keep looking
-            # since not all RAW storage media image naming schemas are known and
-            # its type can only detected by its content.
+            # In case we did not find a storage media image type we keep looking since
+            # not all RAW storage media image naming schemas are known and its type can
+            # only detected by its content.
 
         source_path_spec = None
         while True:
@@ -482,8 +482,8 @@ class SourceScanner:
                 self._ScanEncryptedVolumeNode(scan_context, scan_node)
 
             if scan_context.IsLockedScanNode(scan_node.path_spec):
-                # Scan node is locked, such as an encrypted volume, and we cannot
-                # scan it for a volume system.
+                # Scan node is locked, such as an encrypted volume, and we cannot scan
+                # it for a volume system.
                 break
 
             source_path_spec = self.ScanForVolumeSystem(scan_node.path_spec)
@@ -506,7 +506,6 @@ class SourceScanner:
                 self._ScanVolumeSystemRootNode(
                     scan_context, scan_node, auto_recurse=auto_recurse
                 )
-
                 # Check for an empty GPT with MBR partitions.
                 if (
                     scan_node.type_indicator == definitions.TYPE_INDICATOR_GPT
@@ -535,17 +534,16 @@ class SourceScanner:
             if not scan_context.updated:
                 break
 
-        # In case we did not find a volume system type we keep looking
-        # since we could be dealing with a storage media image that contains
-        # a single volume.
+        # In case we did not find a volume system type we keep looking since we could be
+        # dealing with a storage media image that contains a single volume.
 
         # No need to scan the root of a volume system for a file system.
         if scan_node.IsVolumeSystemRoot():
             pass
 
         elif scan_context.IsLockedScanNode(scan_node.path_spec):
-            # Scan node is locked, such as an encrypted volume, and we cannot
-            # scan it for a file system.
+            # Scan node is locked, such as an encrypted volume, and we cannot scan it
+            # for a file system.
             pass
 
         elif (
@@ -553,8 +551,8 @@ class SourceScanner:
             and auto_recurse
             and scan_node.path_spec != scan_path_spec
         ):
-            # Since scanning for file systems in VSS snapshot volumes can
-            # be expensive we only do this when explicitly asked for.
+            # Since scanning for file systems in VSS snapshot volumes can be expensive
+            # we only do this when explicitly asked for.
             pass
 
         elif not scan_node.IsFileSystem():
@@ -582,8 +580,7 @@ class SourceScanner:
 
                 scan_context.SetSourceType(source_type)
 
-        # If all scans failed mark the scan node as scanned so we do not scan it
-        # again.
+        # If all scans failed mark the scan node as scanned so we do not scan it again.
         if not scan_node.scanned:
             scan_node.scanned = True
 
@@ -607,8 +604,8 @@ class SourceScanner:
         if not file_entry.Unlock():
             scan_context.LockScanNode(scan_node.path_spec)
 
-            # For BitLocker To Go add a scan node for the unencrypted part of
-            # the volume.
+            # For BitLocker To Go add a scan node for the unencrypted part of the
+            # volume.
             if scan_node.type_indicator == definitions.TYPE_INDICATOR_BDE:
                 path_spec = self.ScanForFileSystem(scan_node.path_spec.parent)
                 if path_spec:
@@ -620,8 +617,8 @@ class SourceScanner:
         Args:
           scan_context (SourceScannerContext): source scanner context.
           scan_node (SourceScanNode): source scan node.
-          auto_recurse (Optional[bool]): True if the scan should automatically
-              recurse as far as possible.
+          auto_recurse (Optional[bool]): True if the scan should automatically recurse
+              as far as possible.
 
         Raises:
           ValueError: if the scan context or scan node is invalid.
@@ -647,7 +644,6 @@ class SourceScanner:
             sub_scan_node = scan_context.AddScanNode(
                 sub_file_entry.path_spec, scan_node
             )
-
             if scan_node.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
                 # Since scanning for file systems in VSS snapshot volumes can
                 # be expensive we only do this when explicitly asked for.
@@ -678,11 +674,11 @@ class SourceScanner:
 
         Args:
           scan_context (SourceScannerContext): source scanner context.
-          auto_recurse (Optional[bool]): True if the scan should automatically
-              recurse as far as possible.
-          scan_path_spec (Optional[PathSpec]): path specification to indicate
-              where the source scanner should continue scanning, where None
-              indicates the scanner will start with the sources.
+          auto_recurse (Optional[bool]): True if the scan should automatically recurse
+              as far as possible.
+          scan_path_spec (Optional[PathSpec]): path specification to indicate where the
+              source scanner should continue scanning, where None indicates the scanner
+              will start with the sources.
 
         Raises:
           ValueError: if the scan context is invalid.
@@ -708,12 +704,12 @@ class SourceScanner:
           source_path_spec (PathSpec): source path specification.
 
         Returns:
-          PathSpec: file system path specification or None if no supported file
-              system type was found.
+          PathSpec: file system path specification or None if no supported file system
+              type was found.
 
         Raises:
-          BackEndError: if the source cannot be scanned or more than one file
-              system type is found.
+          BackEndError: if the source cannot be scanned or more than one file system
+              type is found.
         """
         if source_path_spec.type_indicator == (
             definitions.TYPE_INDICATOR_APFS_CONTAINER
@@ -730,10 +726,7 @@ class SourceScanner:
             )
         except RuntimeError as exception:
             raise errors.BackEndError(
-                (
-                    f"Unable to process source path specification with error: "
-                    f"{exception!s}"
-                )
+                f"Unable to process source path specification with error: {exception!s}"
             )
 
         if not type_indicators:
@@ -767,10 +760,9 @@ class SourceScanner:
         file_system_path_spec = path_spec_factory.Factory.NewPathSpec(
             type_indicator, location=root_location, parent=source_path_spec
         )
-
         if type_indicator == definitions.TYPE_INDICATOR_TSK:
-            # Check if the file system can be opened since the file system by
-            # signature detection results in false positives.
+            # Check if the file system can be opened since the file system by signature
+            # detection results in false positives.
             try:
                 resolver.Resolver.OpenFileSystem(
                     file_system_path_spec, resolver_context=self._resolver_context
@@ -800,22 +792,18 @@ class SourceScanner:
             )
         except RuntimeError as exception:
             raise errors.BackEndError(
-                (
-                    f"Unable to process source path specification with error: "
-                    f"{exception!s}"
-                )
+                f"Unable to process source path specification with error: {exception!s}"
             )
 
         if not type_indicators:
-            # The RAW storage media image type cannot be detected based on
-            # a signature so we try to detect it based on common file naming schemas.
+            # The RAW storage media image type cannot be detected based on a signature
+            # so we try to detect it based on common file naming schemas.
             file_system = resolver.Resolver.OpenFileSystem(
                 source_path_spec, resolver_context=self._resolver_context
             )
             raw_path_spec = path_spec_factory.Factory.NewPathSpec(
                 definitions.TYPE_INDICATOR_RAW, parent=source_path_spec
             )
-
             try:
                 # The RAW glob function will raise a PathSpecError if the path
                 # specification is unsuitable for globbing.
@@ -851,17 +839,17 @@ class SourceScanner:
           BackEndError: if the source cannot be scanned or more than one volume
               system type is found.
         """
-        if source_path_spec.type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
-            # It is technically possible to scan for VSS-in-VSS but makes no sense
-            # to do so.
+        source_type_indicator = source_path_spec.type_indicator
+
+        if source_type_indicator == definitions.TYPE_INDICATOR_VSHADOW:
+            # It is technically possible to scan for VSS-in-VSS but makes no sense to
+            # do so.
             return None
 
         if source_path_spec.IsVolumeSystemRoot():
             return source_path_spec
 
-        if source_path_spec.type_indicator == (
-            definitions.TYPE_INDICATOR_APFS_CONTAINER
-        ):
+        if source_type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
             # Currently pyfsapfs does not support reading from a volume as a device.
             # Also see: https://github.com/log2timeline/dfvfs/issues/332
             return None
@@ -872,29 +860,53 @@ class SourceScanner:
             )
         except (OSError, RuntimeError) as exception:
             raise errors.BackEndError(
-                (
-                    f"Unable to process source path specification with error: "
-                    f"{exception!s}"
-                )
+                f"Unable to process source path specification with error: {exception!s}"
             )
 
+        scan_for_sector_size = False
         if not type_indicators:
-            return None
+            scan_for_sector_size = True
+        else:
+            if len(type_indicators) > 1:
+                raise errors.BackEndError(
+                    "Unsupported source found more than one volume system types."
+                )
 
-        if len(type_indicators) > 1:
-            raise errors.BackEndError(
-                "Unsupported source found more than one volume system types."
+            type_indicator = type_indicators[0]
+
+            # pysigscan found a volume system sigature however for the TSK partition
+            # table type we also need the sector size.
+            scan_for_sector_size = (
+                type_indicator == definitions.TYPE_INDICATOR_TSK_PARTITION
             )
 
-        # Ignore the TSK partition table type when detected within other partition
-        # table types.
-        type_indicator = type_indicators[0]
-
-        if type_indicator == definitions.TYPE_INDICATOR_TSK_PARTITION:
-            if source_path_spec.type_indicator in (
-                definitions.PARTITION_TABLE_TYPE_INDICATORS
-            ):
+        if scan_for_sector_size:
+            # Ignore the TSK partition table type when detected within other partition
+            # table types.
+            if source_type_indicator in definitions.PARTITION_TABLE_TYPE_INDICATORS:
                 return None
+
+            file_object = resolver.Resolver.OpenFileObject(
+                source_path_spec, resolver_context=self._resolver_context
+            )
+            try:
+                tsk_image_object = tsk_image.TSKFileSystemImage(
+                    file_object,
+                    sector_size=self._sector_size,
+                )
+                volume_info = pytsk3.Volume_Info(tsk_image_object)
+            except OSError:
+                volume_info = None
+
+            if not volume_info:
+                return None
+
+            return path_spec_factory.Factory.NewPathSpec(
+                definitions.TYPE_INDICATOR_TSK_PARTITION,
+                location="/",
+                parent=source_path_spec,
+                sector_size=self._sector_size,
+            )
 
         if type_indicator in definitions.VOLUME_SYSTEM_TYPE_INDICATORS:
             return path_spec_factory.Factory.NewPathSpec(
@@ -911,8 +923,8 @@ class SourceScanner:
         Args:
           scan_context (SourceScannerContext): source scanner context.
           path_spec (PathSpec): path specification of the locked scan node.
-          credential_identifier (str): credential identifier used to unlock
-              the scan node.
+          credential_identifier (str): credential identifier used to unlock the scan
+              node.
           credential_data (bytes): credential data used to unlock the scan node.
 
         Returns:
@@ -931,7 +943,6 @@ class SourceScanner:
         resolver.Resolver.key_chain.SetCredential(
             path_spec, credential_identifier, credential_data
         )
-
         if path_spec.type_indicator == definitions.TYPE_INDICATOR_APFS_CONTAINER:
             # Currently pyfsapfs does not support reading from a volume as a device.
             # Also see: https://github.com/log2timeline/dfvfs/issues/332

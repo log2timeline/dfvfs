@@ -17,7 +17,13 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
     TYPE_INDICATOR = definitions.TYPE_INDICATOR_TSK_PARTITION
 
     def __init__(
-        self, location=None, parent=None, part_index=None, start_offset=None, **kwargs
+        self,
+        location=None,
+        parent=None,
+        part_index=None,
+        sector_size=None,
+        start_offset=None,
+        **kwargs,
     ):
         """Initializes a path specification.
 
@@ -27,6 +33,7 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
           location (Optional[str]): location.
           parent (Optional[PathSpec]): parent path specification.
           part_index (Optional[int]): part index.
+          sector_size (Optional[int]): number of bytes per sector.
           start_offset (Optional[int]): start offset.
 
         Raises:
@@ -38,6 +45,7 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
         super().__init__(parent=parent, **kwargs)
         self.location = location
         self.part_index = part_index
+        self.sector_size = sector_size
         self.start_offset = start_offset
 
     @property
@@ -49,6 +57,8 @@ class TSKPartitionPathSpec(path_spec.PathSpec):
             string_parts.append(f"location: {self.location:s}")
         if self.part_index is not None:
             string_parts.append(f"part index: {self.part_index:d}")
+        if self.sector_size is not None:
+            string_parts.append(f"sector size: {self.sector_size:d}")
         if self.start_offset is not None:
             string_parts.append(f"start offset: 0x{self.start_offset:08x}")
 
