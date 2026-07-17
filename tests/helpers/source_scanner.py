@@ -623,9 +623,8 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
 
         scan_node = scan_node.GetSubNodeByLocation(sub_node_location)
         self.assertIsNotNone(scan_node)
-
-        expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
-        self.assertEqual(scan_node.type_indicator, expected_type_indicator)
+        self.assertIsNotNone(scan_node.path_spec)
+        self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_NTFS_BACK_END)
 
     def testScanOnBDE(self):
         """Test the Scan function on BDE."""
@@ -660,7 +659,12 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self._source_scanner.Scan(scan_context, scan_path_spec=scan_node.path_spec)
         self.assertEqual(len(scan_node.sub_nodes), 1)
 
-        scan_node = scan_node.GetSubNodeByLocation("/")
+        if definitions.PREFERRED_FAT_BACK_END == definitions.TYPE_INDICATOR_FAT:
+            sub_node_location = "\\"
+        else:
+            sub_node_location = "/"
+
+        scan_node = scan_node.GetSubNodeByLocation(sub_node_location)
         self.assertIsNotNone(scan_node)
         self.assertIsNotNone(scan_node.path_spec)
         self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_FAT_BACK_END)
@@ -807,9 +811,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         )
         path_spec = self._source_scanner.ScanForFileSystem(test_vss_path_spec)
         self.assertIsNotNone(path_spec)
-
-        expected_type_indicator = definitions.PREFERRED_NTFS_BACK_END
-        self.assertEqual(path_spec.type_indicator, expected_type_indicator)
+        self.assertEqual(path_spec.type_indicator, definitions.PREFERRED_NTFS_BACK_END)
 
     def testScanForFileSystemOnBodyFile(self):
         """Test the ScanForFileSystem function on a body file."""

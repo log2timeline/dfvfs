@@ -760,15 +760,14 @@ class SourceScanner:
         file_system_path_spec = path_spec_factory.Factory.NewPathSpec(
             type_indicator, location=root_location, parent=source_path_spec
         )
-        if type_indicator == definitions.TYPE_INDICATOR_TSK:
-            # Check if the file system can be opened since the file system by signature
-            # detection results in false positives.
-            try:
-                resolver.Resolver.OpenFileSystem(
-                    file_system_path_spec, resolver_context=self._resolver_context
-                )
-            except (KeyError, errors.BackEndError):
-                file_system_path_spec = None
+        # Check if the file system can be opened since the file system signature
+        # detection can result in false positives.
+        try:
+            resolver.Resolver.OpenFileSystem(
+                file_system_path_spec, resolver_context=self._resolver_context
+            )
+        except (KeyError, errors.BackEndError):
+            file_system_path_spec = None
 
         return file_system_path_spec
 
