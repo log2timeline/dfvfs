@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dfvfs"
-version = "20260717"
+version = "20260731"
 description = "Digital Forensics Virtual File System (dfVFS)"
 maintainers = [
     { name = "Log2Timeline maintainers", email = "log2timeline-maintainers@googlegroups.com" },
@@ -19,7 +19,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "PyYAML >= 3.10",
-    "dfdatetime >= 20221112",
+    "dfdatetime >= 20260730",
     "dtfabric >= 20230518",
     "libbde-python >= 20220121",
     "libcaes-python >= 20240114",
