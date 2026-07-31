@@ -148,6 +148,14 @@ dfvfs.lib.tsk\_partition module
    :show-inheritance:
    :undoc-members:
 
+dfvfs.lib.tsk\_time module
+--------------------------
+
+.. automodule:: dfvfs.lib.tsk_time
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dfvfs.lib.vshadow\_helper module
 --------------------------------
 
