@@ -60,9 +60,11 @@ class ZIPDirectory(directory.Directory):
                     path_spec_location = self._file_system.JoinPath(
                         [location, path_segment]
                     )
+                    archive_path = None
                     is_directory = True
                 else:
                     path_spec_location = self._file_system.JoinPath([path])
+                    archive_path = path
                     is_directory = path.endswith("/")
 
                 if is_directory:
@@ -73,5 +75,7 @@ class ZIPDirectory(directory.Directory):
                     path_spec_location += self._file_system.PATH_SEPARATOR
 
                 yield zip_path_spec.ZipPathSpec(
-                    location=path_spec_location, parent=self.path_spec.parent
+                    archive_path=archive_path,
+                    location=path_spec_location,
+                    parent=self.path_spec.parent,
                 )

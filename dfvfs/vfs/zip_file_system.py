@@ -118,25 +118,33 @@ class ZipFileSystem(file_system.FileSystem):
         zip_info = None
         is_virtual = False
 
-        try:
-            zip_info = self._zip_file.getinfo(location[1:])
-        except KeyError:
-            pass
+        archive_path = getattr(path_spec, "archive_path", None)
+        if archive_path is not None:
+            try:
+                zip_info = self._zip_file.getinfo(archive_path)
+            except KeyError:
+                pass
 
-        if not zip_info:
+        if not zip_info and archive_path is None:
+            try:
+                zip_info = self._zip_file.getinfo(location[1:])
+            except KeyError:
+                pass
+
+        if not zip_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 zip_info = self._zip_file.getinfo(f"{location[1:]:s}/")
             except KeyError:
                 pass
 
-        if not zip_info:
+        if not zip_info and archive_path is None:
             try:
                 zip_info = self._zip_file.getinfo(location)
             except KeyError:
                 pass
 
-        if not zip_info:
+        if not zip_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 zip_info = self._zip_file.getinfo(f"{location:s}/")
@@ -173,25 +181,33 @@ class ZipFileSystem(file_system.FileSystem):
         zip_info = None
         is_virtual = False
 
-        try:
-            zip_info = self._zip_file.getinfo(location[1:])
-        except KeyError:
-            pass
+        archive_path = getattr(path_spec, "archive_path", None)
+        if archive_path is not None:
+            try:
+                zip_info = self._zip_file.getinfo(archive_path)
+            except KeyError:
+                pass
 
-        if not zip_info:
+        if not zip_info and archive_path is None:
+            try:
+                zip_info = self._zip_file.getinfo(location[1:])
+            except KeyError:
+                pass
+
+        if not zip_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 zip_info = self._zip_file.getinfo(f"{location[1:]:s}/")
             except KeyError:
                 pass
 
-        if not zip_info:
+        if not zip_info and archive_path is None:
             try:
                 zip_info = self._zip_file.getinfo(location)
             except KeyError:
                 pass
 
-        if not zip_info:
+        if not zip_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 zip_info = self._zip_file.getinfo(f"{location:s}/")
@@ -255,6 +271,10 @@ class ZipFileSystem(file_system.FileSystem):
             raise errors.PathSpecError("Invalid location in path specification.")
 
         if len(location) > 1:
-            return self._zip_file.getinfo(location[1:])
+            archive_path = getattr(path_spec, "archive_path", None)
+            if archive_path is None:
+                archive_path = location[1:]
+
+            return self._zip_file.getinfo(archive_path)
 
         return None
