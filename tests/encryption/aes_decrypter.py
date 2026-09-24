@@ -41,7 +41,7 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
             )
 
         # Test incorrect key size.
-        with self.assertRaises(ValueError):
+        with self.assertRaises(OSError):
             aes_decrypter.AESDecrypter(
                 cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=b"Wrong key size."
             )
