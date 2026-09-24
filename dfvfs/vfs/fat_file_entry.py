@@ -128,7 +128,7 @@ class FATFileEntry(file_entry.FileEntry):
             return None
 
         if self._file_system_format == self._FILE_SYSTEM_FORMAT_EXFAT:
-            precision = dfdatetime_definitions.PRECISION_10_MILLISECONDS
+            precision = dfdatetime_definitions.PRECISION_2_SECONDS
         else:
             precision = dfdatetime_definitions.PRECISION_1_DAY
 
@@ -190,7 +190,6 @@ class FATFileEntry(file_entry.FileEntry):
             extent_offset, extent_size, extent_flags = (
                 self._fsfat_file_entry.get_extent(extent_index)
             )
-
             if extent_flags & 0x1:
                 extent_type = definitions.EXTENT_TYPE_SPARSE
             else:
@@ -246,7 +245,6 @@ class FATFileEntry(file_entry.FileEntry):
         path_spec = fat_path_spec.FATPathSpec(
             location=parent_location, parent=parent_path_spec
         )
-
         is_root = bool(parent_location == self._file_system.LOCATION_ROOT)
 
         return FATFileEntry(

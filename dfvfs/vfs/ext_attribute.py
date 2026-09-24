@@ -43,7 +43,6 @@ class EXTExtendedAttribute(attribute.Attribute):
             extent_offset, extent_size, extent_flags = (
                 self._fsext_extended_attribute.get_extent(extent_index)
             )
-
             if extent_flags & 0x1:
                 extent_type = definitions.EXTENT_TYPE_SPARSE
             else:
