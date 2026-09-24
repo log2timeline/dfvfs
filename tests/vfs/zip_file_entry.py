@@ -192,6 +192,36 @@ class ZIPFileEntryTest(shared_test_lib.BaseTestCase):
         self.assertTrue(sub_file_entry.IsVirtual())
         self._assertSubFileEntries(sub_file_entry, ["syslog", "wtmp.1"])
 
+        # Test entries whose archive paths normalize to the same dfVFS path.
+        test_path = self._GetTestFilePath(["zip", "duplicate_paths.zip"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_ZIP, location="/", parent=test_os_path_spec
+        )
+        file_system = zip_file_system.ZipFileSystem(self._resolver_context, path_spec)
+        file_system.Open()
+
+        root_file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+        testdir_file_entry = next(root_file_entry.sub_file_entries)
+        file_entries = list(testdir_file_entry.sub_file_entries)
+
+        self.assertEqual(len(file_entries), 2)
+        self.assertEqual(
+            [file_entry.path_spec.archive_path for file_entry in file_entries],
+            ["/testdir/testfile", "testdir/testfile"],
+        )
+
+        file_contents = []
+        for duplicate_file_entry in file_entries:
+            file_object = duplicate_file_entry.GetFileObject()
+            file_contents.append(file_object.read())
+
+        self.assertEqual(file_contents, [b"absolute", b"relative"])
+
     def testGetDataStream(self):
         """Tests the GetDataStream function."""
         path_spec = path_spec_factory.Factory.NewPathSpec(
