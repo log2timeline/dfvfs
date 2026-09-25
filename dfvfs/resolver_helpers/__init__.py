@@ -58,6 +58,11 @@ except ImportError:
     pass
 
 try:
+    from dfvfs.resolver_helpers import keramics_resolver_helper
+except ImportError:
+    pass
+
+try:
     from dfvfs.resolver_helpers import luksde_resolver_helper
 except ImportError:
     pass
