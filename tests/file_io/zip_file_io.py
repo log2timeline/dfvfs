@@ -11,7 +11,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class ZipFileTest(test_lib.SylogTestCase):
+class ZipFileTest(test_lib.SyslogTestCase):
     """Tests a zip extracted file-like object."""
 
     def setUp(self):

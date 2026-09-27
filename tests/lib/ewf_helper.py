@@ -83,7 +83,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "ext2.E01", 1, expected_segment_file_path_specs
         )
-
         # Test single segment file: E01.
         path_spec = fake_path_spec.FakePathSpec(location="/ext2.E01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
@@ -111,7 +110,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "ext2.E01", 10, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/ext2.E01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -126,7 +124,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "ext2.E01", 100, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/ext2.E01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -141,7 +138,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "ext2.E01", 126, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/ext2.E01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -156,7 +152,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "ext2.E01", 775, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/ext2.E01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -171,7 +166,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "ext2.E01", 14970, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/ext2.E01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -186,7 +180,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "ext2.E01", 14971, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/ext2.E01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -199,7 +192,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.Ex01", 1, expected_segment_file_path_specs
         )
-
         # Test single segment file: Ex01.
         path_spec = fake_path_spec.FakePathSpec(location="/image.Ex01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
@@ -227,7 +219,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.Ex01", 10, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.Ex01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -242,7 +233,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.Ex01", 100, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.Ex01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -252,12 +242,12 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         )
         self.assertEqual(segment_file_path_specs, expected_segment_file_path_specs)
 
+        # typos:ignore
         # Test multiple segment files: Ex01-Ex99,ExAA-ExBA.
         expected_segment_file_path_specs = []
         file_system = self._BuildFileFakeFileSystem(
             "image.Ex01", 126, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.Ex01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -272,7 +262,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.Ex01", 775, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.Ex01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -287,7 +276,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.Ex01", 14970, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.Ex01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -302,7 +290,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.Ex01", 14971, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.Ex01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -315,7 +302,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.s01", 1, expected_segment_file_path_specs
         )
-
         # Test single segment file: s01.
         path_spec = fake_path_spec.FakePathSpec(location="/image.s01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
@@ -343,7 +329,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.s01", 10, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.s01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -358,7 +343,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.s01", 100, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.s01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -373,7 +357,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.s01", 126, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.s01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -388,7 +371,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.s01", 775, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.s01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -403,7 +385,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.s01", 5506, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.s01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 
@@ -418,7 +399,6 @@ class GlobEWFFileTest(shared_test_lib.BaseTestCase):
         file_system = self._BuildFileFakeFileSystem(
             "image.s01", 5507, expected_segment_file_path_specs
         )
-
         path_spec = fake_path_spec.FakePathSpec(location="/image.s01")
         path_spec = ewf_path_spec.EWFPathSpec(parent=path_spec)
 

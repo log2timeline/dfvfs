@@ -51,7 +51,7 @@ class TSKPartitionFileEntryTestAPM(shared_test_lib.BaseTestCase):
     # 003:  001       0000000064   0000008175   0000008112   Apple_HFS
     # 004:  002       0000008176   0000008191   0000000016   Apple_Free
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = tsk_partition_file_entry.TSKPartitionFileEntry(
             self._resolver_context,
@@ -268,7 +268,7 @@ class TSKPartitionFileEntryTestBSDDisklabel(shared_test_lib.BaseTestCase):
     # 001:  Meta      0000000001   0000000001   0000000001   Partition Table
     # 002:  000       0000000016   0000008191   0000008176   Unused (0x00)
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = tsk_partition_file_entry.TSKPartitionFileEntry(
             self._resolver_context,
@@ -490,7 +490,7 @@ class TSKPartitionFileEntryTestMBR(shared_test_lib.BaseTestCase):
     # 006:  001:000   0000000131   0000000259   0000000129   Linux (0x83)
     # 007:  -------   0000000260   0000008191   0000007932   Unallocated
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = tsk_partition_file_entry.TSKPartitionFileEntry(
             self._resolver_context,

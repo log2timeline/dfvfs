@@ -49,7 +49,7 @@ class APMFileSystemTest(shared_test_lib.BaseTestCase):
     # 		Is valid
     # 		Is allocated
     # 		Is readable
-    # 		Is writeable
+    # 		Is writable
     # 		Automatic mount at startup
     #
     # Partition: 2

@@ -11,7 +11,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
+class SQLiteBlobFileWithConditionTest(test_lib.SyslogTestCase):
     """The unit test for a SQLite blob file-like object using row condition."""
 
     def setUp(self):
@@ -63,7 +63,7 @@ class SQLiteBlobFileWithConditionTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class SQLiteBlobFileWithIndexTest(test_lib.SylogTestCase):
+class SQLiteBlobFileWithIndexTest(test_lib.SyslogTestCase):
     """The unit test for a SQLite blob file-like object using row index."""
 
     def setUp(self):

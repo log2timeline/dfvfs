@@ -152,5 +152,5 @@ dfvfs/helpers/windows_path_resolver.py
 | UNC path | `\\server\share\directory\file.txt` |
 | Path with environment variable | `%SystemRoot%\file.txt` |
 | Path with trailing number to indicate the corresponding TYPELIB resource inside the PE/COFF | `C:\WINDOWS\PCHealth\HelpCtr\Binaries\HelpCtr.exe\1` |
-| Path with volume creation time (FILETIME) and (volume) serial number (found in SuperFetch database and Prefetch files) | `\VOLUME{01d15f816d07ba5e-5e6d77ca}\Windows\System32`
+| Path with volume creation time (FILETIME) and (volume) serial number (found in SuperFetch database and Prefetch files) | `\VOLUME{01d15f816d07b85e-5e6d77ca}\Windows\System32`
 

@@ -48,6 +48,8 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
 
     def testInitialize(self):
         """Test the __init__ function."""
+        # typos:disable
+
         find_spec = file_system_searcher.FindSpec(
             location="location", location_separator="/"
         )
@@ -132,6 +134,8 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
 
         with self.assertRaises(TypeError):
             find_spec = file_system_searcher.FindSpec(location_regex={})
+
+        # typos:enable
 
     def testCheckFileEntryType(self):
         """Test the _CheckFileEntryType function."""

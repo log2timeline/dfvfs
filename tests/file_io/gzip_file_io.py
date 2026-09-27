@@ -11,7 +11,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class GzipFileTest(test_lib.SylogTestCase):
+class GzipFileTest(test_lib.SyslogTestCase):
     """Tests a gzip file-like object."""
 
     def setUp(self):

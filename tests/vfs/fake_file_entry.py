@@ -57,7 +57,7 @@ class FakeFileEntryTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         path_spec = fake_path_spec.FakePathSpec(location=self._test_file)
         file_entry = fake_file_entry.FakeFileEntry(

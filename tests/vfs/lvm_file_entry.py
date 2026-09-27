@@ -70,7 +70,7 @@ class LVMFileEntryTest(shared_test_lib.BaseTestCase):
     #       Physical volume:          pv0
     #       Data area offset:         0x00000000 (0)
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = lvm_file_entry.LVMFileEntry(
             self._resolver_context,

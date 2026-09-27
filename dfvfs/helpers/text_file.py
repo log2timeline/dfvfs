@@ -155,7 +155,7 @@ class TextFile:
 
         Args:
           sizehint (Optional[int]): maximum byte size to read. If present, instead
-              of reading up to EOF, whole lines totalling sizehint bytes are read.
+              of reading up to EOF, whole lines totaling sizehint bytes are read.
 
         Returns:
           list[str]: lines of text.

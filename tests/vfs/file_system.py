@@ -25,7 +25,7 @@ class FileSystemTest(shared_test_lib.BaseTestCase):
         """Sets up the needed objects used throughout the test."""
         self._resolver_context = context.Context()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         path_spec = fake_path_spec.FakePathSpec(location="/")
 

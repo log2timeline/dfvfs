@@ -35,7 +35,6 @@ class EXTExtendedAttributeTest(shared_test_lib.BaseTestCase):
         self._ext_path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_EXT, location="/", parent=self._raw_path_spec
         )
-
         self._file_system = ext_file_system.EXTFileSystem(
             self._resolver_context, self._ext_path_spec
         )
@@ -45,7 +44,7 @@ class EXTExtendedAttributeTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         test_location = "/a_directory/a_file"
         path_spec = path_spec_factory.Factory.NewPathSpec(

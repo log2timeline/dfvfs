@@ -47,7 +47,7 @@ class NTFSFileEntryTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         file_entry = ntfs_file_entry.NTFSFileEntry(
             self._resolver_context, self._file_system, self._ntfs_path_spec

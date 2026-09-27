@@ -55,7 +55,7 @@ class APMFileEntryTest(shared_test_lib.BaseTestCase):
     # 		Is valid
     # 		Is allocated
     # 		Is readable
-    # 		Is writeable
+    # 		Is writable
     # 		Automatic mount at startup
     #
     # Partition: 2
@@ -64,7 +64,7 @@ class APMFileEntryTest(shared_test_lib.BaseTestCase):
     # 	Size                    : 8192
     # 	Status flags            : 0x00000000
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = apm_file_entry.APMFileEntry(
             self._resolver_context,

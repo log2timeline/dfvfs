@@ -41,7 +41,7 @@ class CPIOFileEntryTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = cpio_file_entry.CPIOFileEntry(
             self._resolver_context, self._file_system, self._cpio_path_spec

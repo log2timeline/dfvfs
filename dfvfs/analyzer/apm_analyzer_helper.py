@@ -23,7 +23,7 @@ class APMAnalyzerHelper(analyzer_helper.AnalyzerHelper):
         format_specification = specification.FormatSpecification(self.type_indicator)
 
         # APM signature.
-        # Note that technically "PM" at offset 512 or 2048 is the Apple Partion Map
+        # Note that technically "PM" at offset 512 or 2048 is the Apple Partition Map
         # signature but using the partition type is less error prone.
         signature = (
             b"Apple_partition_map\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"

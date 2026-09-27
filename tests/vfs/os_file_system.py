@@ -29,7 +29,7 @@ class OSFileSystemTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         test_path = self._GetTestFilePath(["testdir_os"])
         self._SkipIfPathNotExists(test_path)

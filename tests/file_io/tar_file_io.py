@@ -11,7 +11,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class TARFileTest(test_lib.SylogTestCase):
+class TARFileTest(test_lib.SyslogTestCase):
     """The unit test for a TAR extracted file-like object."""
 
     def setUp(self):
