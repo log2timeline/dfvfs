@@ -19,7 +19,7 @@ from tests import test_lib as shared_test_lib
 
 
 @unittest.skipIf(pykeramics_vfs is None, "requires pykeramics")
-class KeramcisFileTest(shared_test_lib.BaseTestCase):
+class KeramicsFileTest(shared_test_lib.BaseTestCase):
     """Tests the file-like object implementation using pyfsext.file_entry."""
 
     def GetPathSpec(self, path):
