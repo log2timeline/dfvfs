@@ -12,7 +12,11 @@ except ImportError:
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
-from dfvfs.vfs import keramics_file_system
+
+try:
+    from dfvfs.vfs import keramics_file_system
+except ImportError:
+    pykeramics_vfs = None
 
 from tests import test_lib as shared_test_lib
 
