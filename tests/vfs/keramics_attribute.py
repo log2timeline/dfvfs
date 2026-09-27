@@ -65,7 +65,7 @@ class KeramicsExtendedAttributeTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         path_spec = self.GetPathSpec("/a_directory/a_file")
         file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
