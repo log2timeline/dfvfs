@@ -12,7 +12,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class Base16EncodedStreamTest(test_lib.SylogTestCase):
+class Base16EncodedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a base16 encoded stream file-like object."""
 
     def setUp(self):
@@ -82,7 +82,7 @@ class Base16EncodedStreamTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class Base32EncodedStreamTest(test_lib.SylogTestCase):
+class Base32EncodedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a base32 encoded stream file-like object."""
 
     def setUp(self):
@@ -152,7 +152,7 @@ class Base32EncodedStreamTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class Base64EncodedStreamTest(test_lib.SylogTestCase):
+class Base64EncodedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a base64 encoded stream file-like object."""
 
     def setUp(self):

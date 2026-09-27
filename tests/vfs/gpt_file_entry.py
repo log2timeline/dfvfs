@@ -61,7 +61,7 @@ class GPTFileEntryTest(shared_test_lib.BaseTestCase):
     #   Offset               : 2097152 (0x00200000)
     #   Size                 : 65536
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = gpt_file_entry.GPTFileEntry(
             self._resolver_context,

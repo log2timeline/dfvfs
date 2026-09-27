@@ -24,7 +24,7 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
                 cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._DES3_KEY
             )
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy triple DES support")
+            raise unittest.SkipTest("missing cryptography triple DES support")
 
         # Test missing arguments.
         with self.assertRaises(ValueError):
@@ -71,7 +71,7 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
                 key=self._DES3_KEY,
             )
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy triple DES support")
+            raise unittest.SkipTest("missing cryptography triple DES support")
 
         # Test full decryption.
         expected_decrypted_data = b"This is secret encrypted text!!!"
@@ -93,7 +93,7 @@ class DES3DecrypterTestCase(test_lib.DecrypterTestCase):
                 key=self._DES3_KEY,
             )
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy triple DES support")
+            raise unittest.SkipTest("missing cryptography triple DES support")
 
         # Test partial decryption.
         partial_encrypted_data = b"e\x86k\t\x01W\xd7d\xe4\xa4\xb3~\x80"

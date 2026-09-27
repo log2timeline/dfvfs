@@ -36,7 +36,6 @@ class EncryptedStreamFileEntryTest(shared_test_lib.BaseTestCase):
         resolver.Resolver.key_chain.SetCredential(
             self._encrypted_stream_path_spec, "key", self._RC4_KEY
         )
-
         self._file_system = encrypted_stream_file_system.EncryptedStreamFileSystem(
             self._resolver_context, self._encrypted_stream_path_spec
         )
@@ -58,13 +57,12 @@ class EncryptedStreamFileEntryTest(shared_test_lib.BaseTestCase):
         file_entry = encrypted_stream_file_entry.EncryptedStreamFileEntry(
             self._resolver_context, self._file_system, self._encrypted_stream_path_spec
         )
-
         self.assertIsNotNone(file_entry)
 
         try:
             self.assertEqual(file_entry.size, 1247)
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
     def testGetFileEntryByPathSpec(self):
         """Test the get a file entry by path specification functionality."""

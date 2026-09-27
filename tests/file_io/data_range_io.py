@@ -11,7 +11,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class DataRangeTest(test_lib.SylogTestCase):
+class DataRangeTest(test_lib.SyslogTestCase):
     """Tests for the data range file-like object."""
 
     # pylint: disable=protected-access

@@ -55,7 +55,6 @@ def _RawGlobPathSpecWithAlphabeticalSchema(
         segment_path_spec = path_spec_factory.Factory.NewPathSpec(
             parent_path_spec.type_indicator, **kwargs
         )
-
         if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
             break
 
@@ -98,7 +97,6 @@ def _RawGlobPathSpecWithNumericSchema(
         segment_path_spec = path_spec_factory.Factory.NewPathSpec(
             parent_path_spec.type_indicator, **kwargs
         )
-
         if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
             break
 
@@ -151,7 +149,7 @@ def RawGlobPathSpec(file_system, path_spec):
     if not segment_extension:
         filename_prefix_length = len(filename_prefix)
 
-        # Check if there are muliple segment files in the form: PREFIX[a-z]+
+        # Check if there are multiple segment files in the form: PREFIX[a-z]+
         # where [a-z]+ starts with a and consist of multiple letters,
         # e.g. PREFIXaa or PREFIXzz.
         if filename_prefix[-2:] == "aa":
@@ -172,7 +170,7 @@ def RawGlobPathSpec(file_system, path_spec):
                 upper_case=False,
             )
 
-        # Check if there are muliple segment files in the form: PREFIX[A-Z]+
+        # Check if there are multiple segment files in the form: PREFIX[A-Z]+
         # where [A-Z]+ starts with A and consist of multiple letters,
         # e.g. PREFIXAA or PREFIXZZ.
         elif filename_prefix[-2:] == "AA":
@@ -193,7 +191,7 @@ def RawGlobPathSpec(file_system, path_spec):
                 upper_case=True,
             )
 
-        # Check if there are muliple segment files in the form: PREFIX#
+        # Check if there are multiple segment files in the form: PREFIX#
         # where # starts with either 0 or 1 and consist of multiple digits,
         # e.g. PREFIX1 or PREFIX000.
         elif filename_prefix[-1].isdigit():
@@ -248,7 +246,7 @@ def RawGlobPathSpec(file_system, path_spec):
         else:
             segment_files = []
 
-    # Check if there are muliple segment files in the form: PREFIX.[a-z]+
+    # Check if there are multiple segment files in the form: PREFIX.[a-z]+
     # where [a-z]+ starts with a and consist of multiple letters,
     # e.g. PREFIX.aa or PREFIX.aaa.
     elif segment_extension == "a" * segment_extension_length:
@@ -261,7 +259,7 @@ def RawGlobPathSpec(file_system, path_spec):
             upper_case=False,
         )
 
-    # Check if there are muliple segment files in the form: PREFIX.[A-Z]+
+    # Check if there are multiple segment files in the form: PREFIX.[A-Z]+
     # where [A-Z]+ starts with A and consist of multiple letters,
     # e.g. PREFIX.AA or PREFIX.AAA.
     elif segment_extension == "A" * segment_extension_length:
@@ -274,7 +272,7 @@ def RawGlobPathSpec(file_system, path_spec):
             upper_case=True,
         )
 
-    # Check if there are muliple segment files in the form: PREFIX###.asb
+    # Check if there are multiple segment files in the form: PREFIX###.asb
     # where # starts with 1 and consist of multiple digits e.g. PREFIX001.asb.
     elif segment_extension == "asb":
         if location[-3:] == "001":
@@ -284,7 +282,7 @@ def RawGlobPathSpec(file_system, path_spec):
         else:
             segment_files = []
 
-    # Check if there are muliple segment files in the form: PREFIX-f###.vmdk
+    # Check if there are multiple segment files in the form: PREFIX-f###.vmdk
     # where # starts with 1 and consist of multiple digits,
     # e.g. PREFIX-f001.vmdk.
     elif segment_extension == "vmdk":
@@ -296,7 +294,7 @@ def RawGlobPathSpec(file_system, path_spec):
         else:
             segment_files = []
 
-    # Check if there are muliple segment files in the form: PREFIX.#
+    # Check if there are multiple segment files in the form: PREFIX.#
     # where # starts with either 0 or 1 and consist of multiple digits,
     # e.g. PREFIX.1 or PREFIX.000.
     elif segment_extension.isdigit():
@@ -304,18 +302,14 @@ def RawGlobPathSpec(file_system, path_spec):
             segment_number = int(segment_extension, 10)
         except ValueError:
             raise errors.PathSpecError(
-                (
-                    f"Unsupported path specification invalid segment file extension: "
-                    f"{segment_extension:s}"
-                )
+                f"Unsupported path specification invalid segment file extension: "
+                f"{segment_extension:s}"
             )
 
         if segment_number not in [0, 1]:
             raise errors.PathSpecError(
-                (
-                    f"Unsupported path specification invalid segment file extension: "
-                    f"{segment_extension:s}"
-                )
+                f"Unsupported path specification invalid segment file extension: "
+                f"{segment_extension:s}"
             )
 
         if segment_extension_length == 1:
@@ -328,10 +322,8 @@ def RawGlobPathSpec(file_system, path_spec):
             segment_format = "{0:s}.{1:04d}"
         else:
             raise errors.PathSpecError(
-                (
-                    f"Unsupported path specification invalid segment file extension: "
-                    f"{segment_extension:s}"
-                )
+                f"Unsupported path specification invalid segment file extension: "
+                f"{segment_extension:s}"
             )
 
         segment_files = _RawGlobPathSpecWithNumericSchema(
@@ -341,7 +333,7 @@ def RawGlobPathSpec(file_system, path_spec):
     else:
         segment_files = []
 
-        # Check if there are muliple segment files in the form: PREFIX.#of#
+        # Check if there are multiple segment files in the form: PREFIX.#of#
         # e.g. PREFIX.1of5 - PREFIX.5of5.
         segment_number, _, number_of_segments = segment_extension.partition("of")
 
@@ -351,25 +343,20 @@ def RawGlobPathSpec(file_system, path_spec):
                 number_of_segments = int(number_of_segments, 10)
             except ValueError:
                 raise errors.PathSpecError(
-                    (
-                        f"Unsupported path specification invalid segment file "
-                        f"extension: {segment_extension:s}"
-                    )
+                    f"Unsupported path specification invalid segment file "
+                    f"extension: {segment_extension:s}"
                 )
 
             if segment_number != 1:
                 raise errors.PathSpecError(
-                    (
-                        f"Unsupported path specification invalid segment file "
-                        f"extension: {segment_extension:s}"
-                    )
+                    f"Unsupported path specification invalid segment file "
+                    f"extension: {segment_extension:s}"
                 )
 
             for segment_number in range(1, number_of_segments + 1):
                 segment_location = (
                     f"{location:s}.{segment_number:d}of{number_of_segments:d}"
                 )
-
                 # Note that we don't want to set the keyword arguments when not used
                 # because the path specification base class will check for unused
                 # keyword arguments and raise.
@@ -382,14 +369,11 @@ def RawGlobPathSpec(file_system, path_spec):
                 segment_path_spec = path_spec_factory.Factory.NewPathSpec(
                     parent_path_spec.type_indicator, **kwargs
                 )
-
                 if not file_system.FileEntryExistsByPathSpec(segment_path_spec):
                     raise errors.PathSpecError(
-                        (
-                            f"Missing segment file: {segment_number:d}of"
-                            f"{number_of_segments:d} for extension: "
-                            f"{segment_extension:s}"
-                        )
+                        f"Missing segment file: {segment_number:d}of"
+                        f"{number_of_segments:d} for extension: "
+                        f"{segment_extension:s}"
                     )
 
             segment_files.append(segment_path_spec)

@@ -69,7 +69,7 @@ class CSFileEntryTest(shared_test_lib.BaseTestCase):
     #     Name                        : TestLV
     #     Size                        : 160 MiB (167772160 bytes)
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = cs_file_entry.CSFileEntry(
             self._resolver_context,

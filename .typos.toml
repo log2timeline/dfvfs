@@ -1,0 +1,27 @@
+[files]
+extend-exclude = [
+    "test_data/"
+]
+
+[default]
+binary = false
+check-filename = true
+check-file = true
+unicode = true
+locale = "en-us"
+extend-ignore-re = [
+    # Ignore a line that is preceded with `# typos:ignore`
+    "(#|//)\\s*typos:ignore\\n.*",
+
+    # Ignore code blocks between `# typos:disable` and `# typos:enable`
+    "(?s)(#|//)\\s*typos:disable.*?\\n\\s*(#|//)\\s*typos:enable",
+
+    # Ignore "mke2fs"
+    "\\bmke2fs\\b",
+
+    # Ignore "TSK_FS_META_TYPE_WHT"
+    "\\bTSK_FS_META_TYPE_WHT\\b",
+]
+extend-words = {
+    "conectix" = "conectix",
+}

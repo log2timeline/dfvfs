@@ -64,7 +64,7 @@ class EncryptionManagerTest(shared_test_lib.BaseTestCase):
                 definitions.ENCRYPTION_METHOD_RC4, key=b"test1"
             )
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy RC4 support")
+            raise unittest.SkipTest("missing cryptography RC4 support")
 
         self.assertIsInstance(decrypter_object, rc4_decrypter.RC4Decrypter)
 

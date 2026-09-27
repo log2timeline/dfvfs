@@ -2,8 +2,8 @@
 #
 # Script to generate dfVFS test files on Linux.
 
-EXIT_SUCCESS=0;
-EXIT_FAILURE=1;
+EXIT_SUCCESS=0
+EXIT_FAILURE=1
 
 # Checks the availability of a binary and exits if not available.
 #
@@ -12,15 +12,15 @@ EXIT_FAILURE=1;
 #
 assert_availability_binary()
 {
-	local BINARY=$1;
+	local BINARY=$1
 
-	which ${BINARY} > /dev/null 2>&1;
-	if test $? -ne ${EXIT_SUCCESS};
+	which "${BINARY}" > /dev/null 2>&1
+	if test $? -ne ${EXIT_SUCCESS}
 	then
-		echo "Missing binary: ${BINARY}";
-		echo "";
+		echo "Missing binary: ${BINARY}"
+		echo ""
 
-		exit ${EXIT_FAILURE};
+		exit ${EXIT_FAILURE}
 	fi
 }
 
@@ -31,18 +31,18 @@ assert_availability_binary()
 #
 create_test_file_entries_without_link()
 {
-	MOUNT_POINT=$1;
+	MOUNT_POINT=$1
 
 	# Create a directory
-	mkdir ${MOUNT_POINT}/a_directory;
+	mkdir "${MOUNT_POINT}/a_directory"
 
-	cat >${MOUNT_POINT}/a_directory/a_file <<EOT
+	cat >"${MOUNT_POINT}/a_directory/a_file" <<EOT
 This is a text file.
 
 We should be able to parse it.
 EOT
 
-	cat >${MOUNT_POINT}/passwords.txt <<EOT
+	cat >"${MOUNT_POINT}/passwords.txt" <<EOT
 place,user,password
 bank,joesmith,superrich
 alarm system,-,1234
@@ -50,7 +50,7 @@ treasure chest,-,1111
 uber secret laire,admin,admin
 EOT
 
-	cat >${MOUNT_POINT}/a_directory/another_file <<EOT
+	cat >"${MOUNT_POINT}/a_directory/another_file" <<EOT
 This is another file.
 EOT
 }
@@ -62,11 +62,11 @@ EOT
 #
 create_test_file_entries()
 {
-	MOUNT_POINT=$1;
+	MOUNT_POINT=$1
 
-	create_test_file_entries_without_link ${MOUNT_POINT}
+	create_test_file_entries_without_link "${MOUNT_POINT}"
 
-	(cd ${MOUNT_POINT} && ln -s a_directory/another_file a_link);
+	(cd "${MOUNT_POINT}" && ln -s a_directory/another_file a_link)
 }
 
 # Creates test file entries with an extended attributes.
@@ -76,132 +76,132 @@ create_test_file_entries()
 #
 create_test_file_entries_with_extended_attributes()
 {
-	MOUNT_POINT=$1;
+	MOUNT_POINT=$1
 
-	create_test_file_entries ${MOUNT_POINT}
+	create_test_file_entries "${MOUNT_POINT}"
 
-	setfattr -n "user.myxattr" -v "My extended attribute" ${MOUNT_POINT}/a_directory/a_file
+	setfattr -n "user.myxattr" -v "My extended attribute" "${MOUNT_POINT}/a_directory/a_file"
 }
 
-assert_availability_binary cryptsetup;
-assert_availability_binary dd;
-assert_availability_binary ewfacquire;
-assert_availability_binary fdisk;
-assert_availability_binary genisoimage;
-assert_availability_binary gdisk;
-assert_availability_binary hformat;
-assert_availability_binary losetup;
-assert_availability_binary lvcreate;
-assert_availability_binary mke2fs;
-assert_availability_binary mkfs.fat;
-assert_availability_binary mkfs.xfs;
-assert_availability_binary mkntfs;
-assert_availability_binary pvcreate;
-assert_availability_binary qemu-img;
-assert_availability_binary vgchange;
-assert_availability_binary vgcreate;
+assert_availability_binary cryptsetup
+assert_availability_binary dd
+assert_availability_binary ewfacquire
+assert_availability_binary fdisk
+assert_availability_binary genisoimage
+assert_availability_binary gdisk
+assert_availability_binary hformat
+assert_availability_binary losetup
+assert_availability_binary lvcreate
+assert_availability_binary mke2fs
+assert_availability_binary mkfs.fat
+assert_availability_binary mkfs.xfs
+assert_availability_binary mkntfs
+assert_availability_binary pvcreate
+assert_availability_binary qemu-img
+assert_availability_binary vgchange
+assert_availability_binary vgcreate
 
-CURRENT_GID=$( id -g );
-CURRENT_UID=$( id -u );
+CURRENT_GID=$( id -g )
+CURRENT_UID=$( id -u )
 
-set -e;
+set -e
 
-mkdir -p test_data;
+mkdir -p test_data
 
-MOUNT_POINT="/mnt/dfvfs";
+MOUNT_POINT="/mnt/dfvfs"
 
-IMAGE_SIZE=$(( 4 * 1024 * 1024 ));
-SECTOR_SIZE=512;
+IMAGE_SIZE=$(( 4 * 1024 * 1024 ))
+SECTOR_SIZE=512
 
-sudo mkdir -p ${MOUNT_POINT};
+sudo mkdir -p "${MOUNT_POINT}"
 
 # Create test image with an EXT2 file system
-IMAGE_FILE="test_data/ext2.raw";
+IMAGE_FILE="test_data/ext2.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-mke2fs -q -t ext2 -L "ext2_test" ${IMAGE_FILE};
+mke2fs -q -t ext2 -L "ext2_test" ${IMAGE_FILE}
 
-sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
+sudo mount -o loop,rw "${IMAGE_FILE}" "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
 # Create test image with an EXT4 file system with creation time and high-precision date and time values
-IMAGE_FILE="test_data/ext4.raw";
+IMAGE_FILE="test_data/ext4.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-mke2fs -q -t ext4 -I 256 -L "ext4_test" ${IMAGE_FILE};
+mke2fs -q -t ext4 -I 256 -L "ext4_test" ${IMAGE_FILE}
 
-sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
+sudo mount -o loop,rw "${IMAGE_FILE}" "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
 # Create test image with a FAT-12 file system
-IMAGE_FILE="test_data/fat12.raw";
+IMAGE_FILE="test_data/fat12.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-mkfs.fat -F 12 -n "FAT12_TEST" -S ${SECTOR_SIZE} ${IMAGE_FILE};
+mkfs.fat -F 12 -n "FAT12_TEST" -S ${SECTOR_SIZE} ${IMAGE_FILE}
 
-sudo mount -o loop,rw,gid=${CURRENT_GID},uid=${CURRENT_UID} ${IMAGE_FILE} ${MOUNT_POINT};
+sudo mount -o loop,rw,gid="${CURRENT_GID}"uid="${CURRENT_UID}" "${IMAGE_FILE}" "${MOUNT_POINT}"
 
-create_test_file_entries_without_link ${MOUNT_POINT};
+create_test_file_entries_without_link "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
 # Create test image with a NTFS file system
-IMAGE_FILE="test_data/ntfs.raw";
+IMAGE_FILE="test_data/ntfs.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-mkntfs -F -q -L "ntfs_test" -s ${SECTOR_SIZE} ${IMAGE_FILE};
+mkntfs -F -q -L "ntfs_test" -s ${SECTOR_SIZE} ${IMAGE_FILE}
 
-sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
+sudo mount -o loop,rw "${IMAGE_FILE}" "${MOUNT_POINT}"
 
-create_test_file_entries ${MOUNT_POINT};
+create_test_file_entries "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
 # Create test image with an XFS file system
-IMAGE_SIZE=$(( 16 * 1024 * 1024 ));
-IMAGE_FILE="test_data/xfs.raw";
+IMAGE_SIZE=$(( 16 * 1024 * 1024 ))
+IMAGE_FILE="test_data/xfs.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
 # Note that these environment variables are necessary to allow for a XFS v5 file system < 300 MiB.
 export TEST_DEV=1
 export TEST_DIR=1
 export QA_CHECK_FS=1
 
-mkfs.xfs -q -L "xfs_test" ${IMAGE_FILE};
+mkfs.xfs -q -L "xfs_test" ${IMAGE_FILE}
 
 export TEST_DEV=
 export TEST_DIR=
 export QA_CHECK_FS=
 
-sudo mount -o loop,rw ${IMAGE_FILE} ${MOUNT_POINT};
+sudo mount -o loop,rw "${IMAGE_FILE}" "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
 # Create test split RAW image with an ext2 file system
-IMAGE_SIZE=$(( 4 * 1024 * 1024 ));
-SPLIT_SIZE=$(( ${IMAGE_SIZE} / 2 ));
+IMAGE_SIZE=$(( 4 * 1024 * 1024 ))
+SPLIT_SIZE=$(( IMAGE_SIZE / 2 ))
 
-dd if="test_data/ext2.raw" of="test_data/ext2.splitraw.000" bs=${SECTOR_SIZE} count=$(( ${SPLIT_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
-dd if="test_data/ext2.raw" of="test_data/ext2.splitraw.001" bs=${SECTOR_SIZE} skip=$(( ${SPLIT_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if="test_data/ext2.raw" of="test_data/ext2.splitraw.000" bs=${SECTOR_SIZE} count=$(( SPLIT_SIZE / SECTOR_SIZE )) 2> /dev/null
+dd if="test_data/ext2.raw" of="test_data/ext2.splitraw.001" bs=${SECTOR_SIZE} skip=$(( SPLIT_SIZE / SECTOR_SIZE )) 2> /dev/null
 
 # Create test E01 image with an ext2 file system
 ewfacquire -u -c best -C case -D description -e examiner -E evidence -M logical -N notes -t test_data/ext2 test_data/ext2.raw
@@ -226,11 +226,11 @@ qemu-img convert -f raw -O vhdx test_data/ext2.raw test_data/ext2.vhdx
 qemu-img convert -f raw -O vmdk test_data/ext2.raw test_data/ext2.vmdk
 
 # Create test image with a MBR partition table with 2 partitions one with an ext2 file system and the other with ext4
-IMAGE_FILE="test_data/mbr.raw";
+IMAGE_FILE="test_data/mbr.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-fdisk -b ${SECTOR_SIZE} -u ${IMAGE_FILE} <<EOT
+fdisk -b ${SECTOR_SIZE} -u "${IMAGE_FILE}" <<EOT
 n
 p
 1
@@ -248,42 +248,42 @@ n
 w
 EOT
 
-sudo losetup -o $(( 1 * ${SECTOR_SIZE} )) --sizelimit $(( 129 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+sudo losetup -o $(( 1 * SECTOR_SIZE )) --sizelimit $(( 129 * SECTOR_SIZE )) /dev/loop99 ${IMAGE_FILE}
 
-sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99
 
-sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/loop99 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
-sudo losetup -o $(( 131 * ${SECTOR_SIZE} )) --sizelimit $(( 129 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+sudo losetup -o $(( 131 * SECTOR_SIZE )) --sizelimit $(( 129 * SECTOR_SIZE )) /dev/loop99 ${IMAGE_FILE}
 
-sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99;
+sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99
 
-sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/loop99 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
 # Create test image with a GPT partition table with 2 partitions with an ext3
 # file system in the first partition and an ext4 file system in the second
 # partition.
-IMAGE_FILE="test_data/gpt.raw";
+IMAGE_FILE="test_data/gpt.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-gdisk ${IMAGE_FILE} <<EOT
+gdisk "${IMAGE_FILE}" <<EOT
 n
 1
 
@@ -298,42 +298,42 @@ w
 y
 EOT
 
-sudo losetup -o $(( 2048 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+sudo losetup -o $(( 2048 * SECTOR_SIZE )) --sizelimit $(( 128 * SECTOR_SIZE )) /dev/loop99 ${IMAGE_FILE}
 
-sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99
 
-sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/loop99 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
-sudo losetup -o $(( 4096 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+sudo losetup -o $(( 4096 * SECTOR_SIZE )) --sizelimit $(( 128 * SECTOR_SIZE )) /dev/loop99 ${IMAGE_FILE}
 
-sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99;
+sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99
 
-sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/loop99 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
 # Create test image with a GPT partition table with 2 partitions with an ext3
 # file system in the first partition and an ext4 file system in the third
 # partition.
-IMAGE_FILE="test_data/gpt_non_sequential.raw";
+IMAGE_FILE="test_data/gpt_non_sequential.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-gdisk ${IMAGE_FILE} <<EOT
+gdisk "${IMAGE_FILE}" <<EOT
 n
 1
 
@@ -355,41 +355,41 @@ w
 y
 EOT
 
-sudo losetup -o $(( 2048 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+sudo losetup -o $(( 2048 * SECTOR_SIZE )) --sizelimit $(( 128 * SECTOR_SIZE )) /dev/loop99 ${IMAGE_FILE}
 
-sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99
 
-sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/loop99 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
-sudo losetup -o $(( 6144 * ${SECTOR_SIZE} )) --sizelimit $(( 128 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+sudo losetup -o $(( 6144 * SECTOR_SIZE )) --sizelimit $(( 128 * SECTOR_SIZE )) /dev/loop99 ${IMAGE_FILE}
 
-sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99;
+sudo mke2fs -q -t ext4 -L "ext4_test"  -O "^has_journal" /dev/loop99
 
-sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/loop99 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
-# Create test image with an emtpy GPT partition table with 1 MBR partition with an ext3
+# Create test image with an empty GPT partition table with 1 MBR partition with an ext3
 # file system.
-IMAGE_FILE="test_data/gpt_empty_with_mbr.raw";
+IMAGE_FILE="test_data/gpt_empty_with_mbr.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-gdisk ${IMAGE_FILE} <<EOT
+gdisk "${IMAGE_FILE}" <<EOT
 o
 y
 w
@@ -398,7 +398,7 @@ EOT
 
 # Note that fdisk will write into the GPT partition entries area if the partition start offset
 # is not set correctly.
-fdisk -u ${IMAGE_FILE} <<EOT
+fdisk -u "${IMAGE_FILE}" <<EOT
 M
 d
 n
@@ -409,128 +409,127 @@ p
 w
 EOT
 
-sudo losetup -o $(( 48 * ${SECTOR_SIZE} )) --sizelimit $(( 256 * ${SECTOR_SIZE} )) /dev/loop99 ${IMAGE_FILE};
+sudo losetup -o $(( 48 * SECTOR_SIZE )) --sizelimit $(( 256 * SECTOR_SIZE )) /dev/loop99 ${IMAGE_FILE}
 
-sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99;
+sudo mke2fs -q -t ext3 -L "ext3_test" -O "^has_journal" /dev/loop99
 
-sudo mount -o loop,rw /dev/loop99 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/loop99 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
 # Create test image with a LVM with 2 volumes with an EXT2 file system in the
 # first volume.
-IMAGE_SIZE=$(( 10 * 1024 * 1024 ));
+IMAGE_SIZE=$(( 10 * 1024 * 1024 ))
 
-IMAGE_FILE="test_data/lvm.raw";
+IMAGE_FILE="test_data/lvm.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-sudo losetup /dev/loop99 ${IMAGE_FILE};
+sudo losetup /dev/loop99 ${IMAGE_FILE}
 
-sudo pvcreate -q /dev/loop99 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo pvcreate -q /dev/loop99 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d'
 
-sudo vgcreate -q test_volume_group /dev/loop99 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo vgcreate -q test_volume_group /dev/loop99 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d'
 
-sudo lvcreate -q --name test_logical_volume1 --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo lvcreate -q --name test_logical_volume1 --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d'
 
-sudo mke2fs -q -t ext2 -L "ext2_test" /dev/test_volume_group/test_logical_volume1;
+sudo mke2fs -q -t ext2 -L "ext2_test" /dev/test_volume_group/test_logical_volume1
 
-sudo mount -o loop,rw /dev/test_volume_group/test_logical_volume1 ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/test_volume_group/test_logical_volume1 "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sudo lvcreate -q --name test_logical_volume2 --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo lvcreate -q --name test_logical_volume2 --size 4m --type linear test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d'
 
-sudo vgchange -q --activate n test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d';
+sudo vgchange -q --activate n test_volume_group 2>&1 | sed '/is using an old PV header, modify the VG to update/ d;/open failed: No medium found/ d'
 
-sudo losetup -d /dev/loop99;
+sudo losetup -d /dev/loop99
 
 # Create test image with a LUKS 1 and an EXT2 file system
-IMAGE_FILE="test_data/luks1.raw";
+IMAGE_FILE="test_data/luks1.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-cryptsetup --batch-mode --cipher aes-cbc-plain --hash sha1 --type luks1 luksFormat ${IMAGE_FILE} <<EOT
+cryptsetup --batch-mode --cipher aes-cbc-plain --hash sha1 --type luks1 luksFormat "${IMAGE_FILE}" <<EOT
 luksde-TEST
 EOT
 
-sudo cryptsetup luksOpen ${IMAGE_FILE} dfvfs_luks <<EOT
+sudo cryptsetup luksOpen "${IMAGE_FILE}" dfvfs_luks <<EOT
 luksde-TEST
 EOT
 
-sudo mke2fs -q -t ext2 -L "ext2_test" /dev/mapper/dfvfs_luks;
+sudo mke2fs -q -t ext2 -L "ext2_test" /dev/mapper/dfvfs_luks
 
-sudo mount -o loop,rw /dev/mapper/dfvfs_luks ${MOUNT_POINT};
+sudo mount -o loop,rw /dev/mapper/dfvfs_luks "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
-sleep 1;
+sleep 1
 
-sudo cryptsetup luksClose dfvfs_luks;
+sudo cryptsetup luksClose dfvfs_luks
 
 # Create test image with a LUKS 2 and an EXT2 file system
-IMAGE_SIZE=$(( 4096 * 1024 ));
+IMAGE_SIZE=$(( 4096 * 1024 ))
 
-IMAGE_FILE="test_data/luks2.raw";
+IMAGE_FILE="test_data/luks2.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-cryptsetup --batch-mode --cipher aes-cbc-plain --hash sha1 --type luks2 luksFormat ${IMAGE_FILE} <<EOT
+cryptsetup --batch-mode --cipher aes-cbc-plain --hash sha1 --type luks2 luksFormat "${IMAGE_FILE}" <<EOT
 luksde-TEST
 EOT
 
 # TODO: fix allow for "Requested offset is beyond real size of device"
-# sudo cryptsetup luksOpen ${IMAGE_FILE} dfvfs_luks <<EOT
+# sudo cryptsetup luksOpen "${IMAGE_FILE}" dfvfs_luks <<EOT
 # luksde-TEST
 # EOT
 
-# sudo mke2fs -q -t ext2 -L "ext2_test" /dev/mapper/dfvfs_luks;
+# sudo mke2fs -q -t ext2 -L "ext2_test" /dev/mapper/dfvfs_luks
 
-# sudo mount -o loop,rw /dev/mapper/dfvfs_luks ${MOUNT_POINT};
+# sudo mount -o loop,rw /dev/mapper/dfvfs_luks "${MOUNT_POINT}"
 
-# sudo chown ${USERNAME} ${MOUNT_POINT};
+# sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-# create_test_file_entries_with_extended_attributes ${MOUNT_POINT};
+# create_test_file_entries_with_extended_attributes "${MOUNT_POINT}"
 
-# sudo umount ${MOUNT_POINT};
+# sudo umount "${MOUNT_POINT}"
 
-# sleep 1;
+# sleep 1
 
-# sudo cryptsetup luksClose dfvfs_luks;
+# sudo cryptsetup luksClose dfvfs_luks
 
 # Create test image with a (traditional) HFS file system
-IMAGE_FILE="test_data/hfs.raw";
+IMAGE_FILE="test_data/hfs.raw"
 
-dd if=/dev/zero of=${IMAGE_FILE} bs=${SECTOR_SIZE} count=$(( ${IMAGE_SIZE} / ${SECTOR_SIZE} )) 2> /dev/null;
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
 
-hformat -f -l "hfs_test" ${IMAGE_FILE} 0;
+hformat -f -l "hfs_test" "${IMAGE_FILE}" 0
 
-sudo mount -o loop,rw,gid=${CURRENT_GID},uid=${CURRENT_UID} ${IMAGE_FILE} ${MOUNT_POINT};
+sudo mount -o loop,rw,gid="${CURRENT_GID}"uid="${CURRENT_UID}" "${IMAGE_FILE}" "${MOUNT_POINT}"
 
-sudo chown ${USERNAME} ${MOUNT_POINT};
+sudo chown "${USERNAME}" "${MOUNT_POINT}"
 
-create_test_file_entries_without_link ${MOUNT_POINT};
+create_test_file_entries_without_link "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
+sudo umount "${MOUNT_POINT}"
 
 # Create test image with ISO9660 level 3 file system
-sudo mount -o loop,rw test_data/ext2.raw ${MOUNT_POINT};
+sudo mount -o loop,rw test_data/ext2.raw "${MOUNT_POINT}"
 
-genisoimage -input-charset utf8 -iso-level 3 -o test_data/iso9660.raw ${MOUNT_POINT};
+genisoimage -input-charset utf8 -iso-level 3 -o test_data/iso9660.raw "${MOUNT_POINT}"
 
-sudo umount ${MOUNT_POINT};
-
+sudo umount "${MOUNT_POINT}"

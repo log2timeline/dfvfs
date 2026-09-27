@@ -36,7 +36,7 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = os_file_entry.OSFileEntry(
             self._resolver_context, self._file_system, self._os_path_spec

@@ -255,7 +255,7 @@ class ZipFile(file_io.FileIO):
             self._realign_offset = True
 
         # ZipExtFile tell() is not POSIX compliant hence the current offset
-        # is tracked seperately.
+        # is tracked separately.
         self._current_offset = offset
 
     def get_offset(self):

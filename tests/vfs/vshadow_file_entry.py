@@ -62,7 +62,7 @@ class VShadowFileEntryTest(shared_test_lib.BaseTestCase):
     #     Volume size         : 78 MiB (82771968 bytes)
     #     Attribute flags     : 0x00420009
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Test the __init__ function."""
         file_entry = vshadow_file_entry.VShadowFileEntry(
             self._resolver_context,

@@ -356,7 +356,7 @@ class DES3EncryptedStreamWithKeyChainTest(test_lib.PaddedSyslogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
+class RC4EncryptedStreamWithKeyChainTest(test_lib.SyslogTestCase):
     """Tests the RC4 encrypted stream file-like object.
 
     The credentials are passed via the key chain.
@@ -396,7 +396,7 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         try:
             self._TestGetSizeFileObject(file_object)
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
     def testOpenClosePathSpec(self):
         """Test the open and close functionality using a path specification."""
@@ -408,7 +408,7 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         try:
             self._TestGetSizeFileObject(file_object)
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
     def testSeek(self):
         """Test the seek functionality."""
@@ -420,7 +420,7 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         try:
             self._TestSeekFileObject(file_object)
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
         # TODO: Test SEEK_CUR after open.
 
@@ -443,7 +443,7 @@ class RC4EncryptedStreamWithKeyChainTest(test_lib.SylogTestCase):
         try:
             self._TestReadFileObject(file_object)
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
 
 if __name__ == "__main__":

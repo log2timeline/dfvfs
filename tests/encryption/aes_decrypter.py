@@ -24,7 +24,7 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
                 cipher_mode=definitions.ENCRYPTION_MODE_ECB, key=self._AES_KEY
             )
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy AES support")
+            raise unittest.SkipTest("missing cryptography AES support")
 
         # Test missing arguments.
         with self.assertRaises(ValueError):
@@ -71,7 +71,7 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
                 key=self._AES_KEY,
             )
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy AES support")
+            raise unittest.SkipTest("missing cryptography AES support")
 
         # Test full decryption.
         expected_decrypted_data = b"This is secret encrypted text!!!"
@@ -93,7 +93,7 @@ class AESDecrypterTestCase(test_lib.DecrypterTestCase):
                 key=self._AES_KEY,
             )
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy AES support")
+            raise unittest.SkipTest("missing cryptography AES support")
 
         # Test partial decryption.
         partial_encrypted_data = (

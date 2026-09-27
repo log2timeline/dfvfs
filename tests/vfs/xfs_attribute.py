@@ -45,7 +45,7 @@ class XFSExtendedAttributeTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         test_location = "/a_directory/a_file"
         path_spec = path_spec_factory.Factory.NewPathSpec(

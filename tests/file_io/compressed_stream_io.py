@@ -12,7 +12,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
+class BZIP2CompressedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a BZIP2 compressed stream file-like object."""
 
     def setUp(self):
@@ -89,7 +89,7 @@ class BZIP2CompressedStreamTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class LZMACompressedStreamTest(test_lib.SylogTestCase):
+class LZMACompressedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a LZMA compressed stream file-like object."""
 
     def setUp(self):
@@ -166,7 +166,7 @@ class LZMACompressedStreamTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class XZCompressedStreamTest(test_lib.SylogTestCase):
+class XZCompressedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a XZ compressed stream file-like object."""
 
     def setUp(self):
@@ -243,7 +243,7 @@ class XZCompressedStreamTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class ZlibCompressedStreamTest(test_lib.SylogTestCase):
+class ZlibCompressedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a zlib compressed stream file-like object."""
 
     def setUp(self):

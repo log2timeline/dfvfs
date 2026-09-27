@@ -53,7 +53,7 @@ class NTFSAttributeTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_NTFS,
@@ -118,7 +118,7 @@ class FileNameNTFSAttributeTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_NTFS,
@@ -212,7 +212,7 @@ class StandardInformationNTFSAttributeTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_NTFS,

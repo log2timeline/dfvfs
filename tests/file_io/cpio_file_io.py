@@ -11,7 +11,7 @@ from dfvfs.resolver import context
 from tests.file_io import test_lib
 
 
-class CPIOBinaryFileTest(test_lib.SylogTestCase):
+class CPIOBinaryFileTest(test_lib.SyslogTestCase):
     """The unit test for a CPIO extracted file-like object."""
 
     def setUp(self):
@@ -62,7 +62,7 @@ class CPIOBinaryFileTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
+class CPIOPortableASCIIFileTest(test_lib.SyslogTestCase):
     """The unit test for a CPIO extracted file-like object."""
 
     def setUp(self):
@@ -113,7 +113,7 @@ class CPIOPortableASCIIFileTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class CPIONewASCIIFileTest(test_lib.SylogTestCase):
+class CPIONewASCIIFileTest(test_lib.SyslogTestCase):
     """The unit test for a CPIO extracted file-like object."""
 
     def setUp(self):
@@ -164,7 +164,7 @@ class CPIONewASCIIFileTest(test_lib.SylogTestCase):
         self._TestReadFileObject(file_object)
 
 
-class CPIONewASCIIFileWithChecksumTest(test_lib.SylogTestCase):
+class CPIONewASCIIFileWithChecksumTest(test_lib.SyslogTestCase):
     """The unit test for a CPIO extracted file-like object."""
 
     def setUp(self):

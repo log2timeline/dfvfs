@@ -42,7 +42,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         self.assertEqual(file_object.get_size(), 116)
 
     def _TestOpenCloseLocation(self, parent_path_spec):
@@ -59,7 +58,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         self.assertEqual(file_object.get_size(), 116)
 
     def _TestSeek(self, parent_path_spec):
@@ -77,7 +75,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         self.assertEqual(file_object.get_size(), 22)
 
         file_object.seek(10)
@@ -123,7 +120,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         read_buffer = file_object.read()
 
         expected_buffer = (
@@ -133,7 +129,6 @@ class Ext2ImageFileTestCase(shared_test_lib.BaseTestCase):
             b"treasure chest,-,1111\n"
             b"uber secret laire,admin,admin\n"
         )
-
         self.assertEqual(read_buffer, expected_buffer)
 
         # TODO: add boundary scenarios.
@@ -226,7 +221,6 @@ class FAT12ImageFileTestCase(shared_test_lib.BaseTestCase):
             b"treasure chest,-,1111\n"
             b"uber secret laire,admin,admin\n"
         )
-
         self.assertEqual(read_buffer, expected_buffer)
 
         # TODO: add boundary scenarios.
@@ -319,7 +313,6 @@ class HFSImageFileTestCase(shared_test_lib.BaseTestCase):
             b"treasure chest,-,1111\n"
             b"uber secret laire,admin,admin\n"
         )
-
         self.assertEqual(read_buffer, expected_buffer)
 
         # TODO: add boundary scenarios.
@@ -432,7 +425,6 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
             b"treasure chest,-,1111\n"
             b"uber secret laire,admin,admin\n"
         )
-
         self.assertEqual(read_buffer, expected_buffer)
 
         # TODO: add boundary scenarios.
@@ -448,7 +440,6 @@ class NTFSImageFileTestCase(shared_test_lib.BaseTestCase):
         expected_buffer = (
             b"\xf0\x12\x03\xf8\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         )
-
         read_buffer = file_object.read(size=16)
         self.assertEqual(read_buffer, expected_buffer)
 
@@ -508,7 +499,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         file_object.Open()
         self.assertEqual(file_object.get_size(), self._SIZE_P1)
 
@@ -520,7 +510,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         with self.assertRaises(errors.PathSpecError):
             file_object.Open()
 
@@ -532,7 +521,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         file_object.Open()
         self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
@@ -544,7 +532,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         with self.assertRaises(errors.PathSpecError):
             file_object.Open()
 
@@ -556,7 +543,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         with self.assertRaises(errors.PathSpecError):
             file_object.Open()
 
@@ -568,7 +554,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         file_object.Open()
         self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
@@ -580,7 +565,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         with self.assertRaises(errors.PathSpecError):
             file_object.Open()
 
@@ -598,7 +582,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         file_object.Open()
         self.assertEqual(file_object.get_size(), self._SIZE_P2)
 
@@ -656,7 +639,6 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = tsk_partition_file_io.TSKPartitionFile(
             self._resolver_context, path_spec
         )
-
         file_object.Open()
 
         self.assertEqual(file_object.get_size(), self._SIZE_P2)
@@ -668,7 +650,7 @@ class MBRPartitionedImageFileTestCase(shared_test_lib.BaseTestCase):
         self.assertEqual(data, b"place,user,password\nbank,joesmit")
 
 
-class SylogTestCase(shared_test_lib.BaseTestCase):
+class SyslogTestCase(shared_test_lib.BaseTestCase):
     """The unit test case for the syslog test data."""
 
     def _TestGetSizeFileObject(self, file_object):
@@ -694,7 +676,6 @@ class SylogTestCase(shared_test_lib.BaseTestCase):
             b"Jan 22 07:53:01 myhostname.myhost.com CRON[31051]: (root) CMD "
             b"(touch /var/run/crond.somecheck)\n"
         )
-
         read_buffer = file_object.read(95)
 
         self.assertEqual(read_buffer, expected_buffer)
@@ -743,7 +724,7 @@ class SylogTestCase(shared_test_lib.BaseTestCase):
         self.assertEqual(file_object.get_offset(), 2000)
 
 
-class PaddedSyslogTestCase(SylogTestCase):
+class PaddedSyslogTestCase(SyslogTestCase):
     """The unit test case for padded syslog test data.
 
     The syslog test data is padded with '=' characters.
@@ -765,7 +746,7 @@ class PaddedSyslogTestCase(SylogTestCase):
         try:
             self.assertEqual(file_object.get_size(), 1247 + self.padding_size)
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
     def _TestReadFileObject(self, file_object, base_offset=167):
         """Runs the read tests on the file-like object.
@@ -780,7 +761,7 @@ class PaddedSyslogTestCase(SylogTestCase):
         try:
             super()._TestReadFileObject(file_object, base_offset=base_offset)
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
     def _TestSeekFileObject(self, file_object, base_offset=167):
         """Runs the seek tests on the file-like object.
@@ -796,7 +777,7 @@ class PaddedSyslogTestCase(SylogTestCase):
         try:
             self.assertEqual(file_object.read(5), b"53:01")
         except errors.BackEndError:
-            raise unittest.SkipTest("missing cryptograpy support")
+            raise unittest.SkipTest("missing cryptography support")
 
         expected_offset = base_offset + 15
         self.assertEqual(file_object.get_offset(), expected_offset)
@@ -945,7 +926,6 @@ class WindowsFATImageFileTestCase(shared_test_lib.BaseTestCase):
             b"treasure chest,-,1111 \r\n"
             b"uber secret laire,admin,admin \r\n"
         )
-
         self.assertEqual(read_buffer, expected_buffer)
 
         # TODO: add boundary scenarios.
@@ -980,7 +960,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         self.assertEqual(file_object.get_size(), 126)
 
         # TODO: add a failing scenario.
@@ -1004,7 +983,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         self.assertEqual(file_object.get_size(), 126)
 
         # Try open with a path specification that has no parent.
@@ -1036,7 +1014,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         self.assertEqual(file_object.get_size(), 24)
 
         file_object.seek(10)
@@ -1088,7 +1065,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
         file_object = resolver.Resolver.OpenFileObject(
             path_spec, resolver_context=self._resolver_context
         )
-
         read_buffer = file_object.read()
 
         expected_buffer = (
@@ -1098,7 +1074,6 @@ class WindowsNTFSImageFileTestCase(shared_test_lib.BaseTestCase):
             b"treasure chest,-,1111 \r\n"
             b"uber secret laire,admin,admin \r\n"
         )
-
         self.assertEqual(read_buffer, expected_buffer)
 
         # TODO: add boundary scenarios.

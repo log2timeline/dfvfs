@@ -478,7 +478,7 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
 
-    def testScanOnEmtpyGPTWithMBR(self):
+    def testScanOnEmptyGPTWithMBR(self):
         """Test the Scan function on an empty GPT with a MBR."""
         test_path = self._GetTestFilePath(["gpt_empty_with_mbr.raw"])
         self._SkipIfPathNotExists(test_path)
@@ -490,7 +490,6 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertEqual(
             scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
         )
-
         scan_node = self._GetTestScanNode(scan_context)
         self.assertIsNotNone(scan_node)
 

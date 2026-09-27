@@ -873,7 +873,7 @@ class SourceScanner:
 
             type_indicator = type_indicators[0]
 
-            # pysigscan found a volume system sigature however for the TSK partition
+            # pysigscan found a volume system signature however for the TSK partition
             # table type we also need the sector size.
             scan_for_sector_size = (
                 type_indicator == definitions.TYPE_INDICATOR_TSK_PARTITION

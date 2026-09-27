@@ -56,7 +56,7 @@ class FileEntryTest(shared_test_lib.BaseTestCase):
         """Cleans up the needed objects used throughout the test."""
         self._resolver_context.Empty()
 
-    def testIntialize(self):
+    def testInitialize(self):
         """Tests the __init__ function."""
         with self.assertRaises(ValueError):
             file_entry.FileEntry(
