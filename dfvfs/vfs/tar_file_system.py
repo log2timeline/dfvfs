@@ -124,25 +124,33 @@ class TARFileSystem(file_system.FileSystem):
         tar_info = None
         is_virtual = False
 
-        try:
-            tar_info = self._tar_file.getmember(location[1:])
-        except KeyError:
-            pass
+        archive_path = getattr(path_spec, "archive_path", None)
+        if archive_path is not None:
+            try:
+                tar_info = self._tar_file.getmember(archive_path)
+            except KeyError:
+                pass
 
-        if not tar_info:
+        if not tar_info and archive_path is None:
+            try:
+                tar_info = self._tar_file.getmember(location[1:])
+            except KeyError:
+                pass
+
+        if not tar_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 tar_info = self._tar_file.getmember(f"{location[1:]:s}/")
             except KeyError:
                 pass
 
-        if not tar_info:
+        if not tar_info and archive_path is None:
             try:
                 tar_info = self._tar_file.getmember(location)
             except KeyError:
                 pass
 
-        if not tar_info:
+        if not tar_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 tar_info = self._tar_file.getmember(f"{location:s}/")
@@ -179,25 +187,33 @@ class TARFileSystem(file_system.FileSystem):
         tar_info = None
         is_virtual = False
 
-        try:
-            tar_info = self._tar_file.getmember(location[1:])
-        except KeyError:
-            pass
+        archive_path = getattr(path_spec, "archive_path", None)
+        if archive_path is not None:
+            try:
+                tar_info = self._tar_file.getmember(archive_path)
+            except KeyError:
+                pass
 
-        if not tar_info:
+        if not tar_info and archive_path is None:
+            try:
+                tar_info = self._tar_file.getmember(location[1:])
+            except KeyError:
+                pass
+
+        if not tar_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 tar_info = self._tar_file.getmember(f"{location[1:]:s}/")
             except KeyError:
                 pass
 
-        if not tar_info:
+        if not tar_info and archive_path is None:
             try:
                 tar_info = self._tar_file.getmember(location)
             except KeyError:
                 pass
 
-        if not tar_info:
+        if not tar_info and archive_path is None:
             try:
                 # Directories are stored with a trailing separator.
                 tar_info = self._tar_file.getmember(f"{location:s}/")
@@ -262,8 +278,12 @@ class TARFileSystem(file_system.FileSystem):
 
         tar_file = None
         if len(location) > 1:
+            archive_path = getattr(path_spec, "archive_path", None)
+            if archive_path is None:
+                archive_path = location[1:]
+
             try:
-                tar_file = self._tar_file.getmember(location[1:])
+                tar_file = self._tar_file.getmember(archive_path)
             except KeyError:
                 pass
 
