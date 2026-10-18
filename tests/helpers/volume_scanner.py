@@ -924,6 +924,17 @@ class VolumeScannerTest(shared_test_lib.BaseTestCase):
         with self.assertRaises(errors.ScannerError):
             test_scanner.GetBasePathSpecs("/bogus")
 
+    def testGetBasePathSpecsOnEmptyGPT(self):
+        """Tests the GetBasePathSpecs function on an empty GPT image."""
+        test_path = self._GetTestFilePath(["gpt_empty.raw"])
+        self._SkipIfPathNotExists(test_path)
+
+        test_mediator = TestVolumeScannerMediator()
+        test_scanner = volume_scanner.VolumeScanner(mediator=test_mediator)
+
+        base_path_specs = test_scanner.GetBasePathSpecs(test_path)
+        self.assertEqual(len(base_path_specs), 0)
+
     def testGetBasePathSpecsOnMBR(self):
         """Tests the GetBasePathSpecs function on MBR."""
         test_path = self._GetTestFilePath(["mbr.raw"])

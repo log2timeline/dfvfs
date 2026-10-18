@@ -478,6 +478,37 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
 
+    def testScanOnEmptyGPT(self):
+        """Test the Scan function on an empty GPT without MBR partitions."""
+        test_path = self._GetTestFilePath(["gpt_empty.raw"])
+        self._SkipIfPathNotExists(test_path)
+
+        scan_context = source_scanner.SourceScannerContext()
+        scan_context.OpenSourcePath(test_path)
+
+        self._source_scanner.Scan(scan_context)
+        self.assertEqual(
+            scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
+        )
+        self.assertFalse(scan_context.HasFileSystemScanNodes())
+
+        scan_node = self._GetTestScanNode(scan_context)
+        self.assertIsNotNone(scan_node)
+
+        self.assertEqual(len(scan_node.sub_nodes), 2)
+
+        self.assertIsNotNone(scan_node.sub_nodes[0])
+        self.assertEqual(
+            scan_node.sub_nodes[0].type_indicator, definitions.PREFERRED_GPT_BACK_END
+        )
+        self.assertEqual(len(scan_node.sub_nodes[0].sub_nodes), 0)
+
+        self.assertIsNotNone(scan_node.sub_nodes[1])
+        self.assertEqual(
+            scan_node.sub_nodes[1].type_indicator,
+            definitions.TYPE_INDICATOR_TSK_PARTITION,
+        )
+
     def testScanOnEmptyGPTWithMBR(self):
         """Test the Scan function on an empty GPT with a MBR."""
         test_path = self._GetTestFilePath(["gpt_empty_with_mbr.raw"])
@@ -508,6 +539,66 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         scan_node = scan_node.sub_nodes[2].GetSubNodeByLocation("/")
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
+
+    def testScanOnEmptyGPTInMBR(self):
+        """Test the Scan function on an empty GPT stored in a MBR partition."""
+        test_path = self._GetTestFilePath(["gpt_empty_in_mbr.raw"])
+        self._SkipIfPathNotExists(test_path)
+
+        scan_context = source_scanner.SourceScannerContext()
+        scan_context.OpenSourcePath(test_path)
+
+        self._source_scanner.Scan(scan_context)
+        self.assertEqual(
+            scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
+        )
+        self.assertFalse(scan_context.HasFileSystemScanNodes())
+        scan_node = self._GetTestScanNode(scan_context)
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(
+            scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION
+        )
+
+        # The MBR partition contains an empty GPT which is scanned for volume
+        # systems, but does not result in a GPT volume system, since it does
+        # not contain any partitions.
+        scan_node = scan_node.sub_nodes[2]
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(len(scan_node.sub_nodes), 0)
+
+    def testScanOnGPTInMBR(self):
+        """Test the Scan function on a GPT stored in a MBR partition."""
+        test_path = self._GetTestFilePath(["gpt_in_mbr.raw"])
+        self._SkipIfPathNotExists(test_path)
+
+        scan_context = source_scanner.SourceScannerContext()
+        scan_context.OpenSourcePath(test_path)
+
+        self._source_scanner.Scan(scan_context)
+        self.assertEqual(
+            scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
+        )
+        self.assertFalse(scan_context.HasFileSystemScanNodes())
+        scan_node = self._GetTestScanNode(scan_context)
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(
+            scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION
+        )
+
+        # The MBR partition contains a GPT with one partition which is scanned
+        # as a nested GPT volume system.
+        scan_node = scan_node.sub_nodes[2]
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(len(scan_node.sub_nodes), 1)
+
+        scan_node = scan_node.GetSubNodeByLocation("/")
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_GPT_BACK_END)
+        self.assertEqual(len(scan_node.sub_nodes), 1)
+
+        scan_node = scan_node.sub_nodes[0]
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(len(scan_node.sub_nodes), 0)
 
     def testScanOnLVM(self):
         """Test the Scan function on LVM."""
@@ -584,6 +675,40 @@ class SourceScannerTest(shared_test_lib.BaseTestCase):
         scan_node = scan_node.sub_nodes[6].GetSubNodeByLocation("/")
         self.assertIsNotNone(scan_node)
         self.assertEqual(scan_node.type_indicator, definitions.PREFERRED_EXT_BACK_END)
+
+    def testScanOnUFS1InMBR(self):
+        """Test the Scan function on a UFS1 volume stored in a MBR partition."""
+        test_path = self._GetTestFilePath(["ufs1_in_mbr.raw"])
+        self._SkipIfPathNotExists(test_path)
+
+        scan_context = source_scanner.SourceScannerContext()
+        scan_context.OpenSourcePath(test_path)
+
+        self._source_scanner.Scan(scan_context)
+        self.assertEqual(
+            scan_context.source_type, definitions.SOURCE_TYPE_STORAGE_MEDIA_IMAGE
+        )
+        scan_node = self._GetTestScanNode(scan_context)
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(
+            scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION
+        )
+
+        # The MBR partition contains a UFS1 volume with a BSD disklabel which
+        # is scanned as a nested TSK partition table.
+        scan_node = scan_node.sub_nodes[2]
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(len(scan_node.sub_nodes), 1)
+
+        scan_node = scan_node.GetSubNodeByLocation("/")
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(
+            scan_node.type_indicator, definitions.TYPE_INDICATOR_TSK_PARTITION
+        )
+
+        scan_node = scan_node.GetSubNodeByLocation("/p1")
+        self.assertIsNotNone(scan_node)
+        self.assertEqual(len(scan_node.sub_nodes), 0)
 
     def testScanOnVSS(self):
         """Test the Scan function on VSS."""

@@ -105,6 +105,41 @@ def TSKVolumeGetBytesPerSector(tsk_volume):
     return block_size
 
 
+def TSKVolumeInfoHasScannablePartitions(tsk_volume):
+    """Determines if the TSK volume information has scannable partitions.
+
+    A TSK volume information is considered to have scannable partitions
+    when it contains at least one allocated part and no allocated part
+    starts at offset zero, i.e. at the location of the partition table
+    itself. Since scanning such a part detects the same partition table
+    again and results in an endless loop of scan nodes, for example the
+    whole disk partition of a BSD disklabel.
+
+    Args:
+      tsk_volume (pytsk3.Volume_Info): TSK volume information.
+
+    Returns:
+      bool: True if the volume information contains at least one allocated
+          partition that does not start at the location of the partition
+          table, False otherwise.
+    """
+    has_scannable_partitions = False
+
+    # Note that because pytsk3 does not handle the Volume_Info iterator correctly the
+    # explicit cast to list is needed to prevent the iterator terminating too soon or
+    # looping forever.
+    for tsk_vs_part in list(tsk_volume):
+        if not TSKVsPartIsAllocated(tsk_vs_part):
+            continue
+
+        if TSKVsPartGetStartSector(tsk_vs_part) == 0:
+            return False
+
+        has_scannable_partitions = True
+
+    return has_scannable_partitions
+
+
 def TSKVsPartGetNumberOfSectors(tsk_vs_part):
     """Retrieves the number of sectors of a TSK volume system part object.
 
