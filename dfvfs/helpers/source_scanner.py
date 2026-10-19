@@ -887,7 +887,7 @@ class SourceScanner:
             type_indicator = type_indicators[0]
 
             # A partition table can be stored within a partition of another partition 
-            # table, for example a bsdlabel stored within a MBR or GPT partition.
+            # table, for example a BSD disklabel stored within a MBR or GPT partition.
             # However such a nested partition table is only scanned when it is valid
             # and contains at least one partition, since scanning a nested partition
             # table that is invalid or does not contain any partitions can result in an
