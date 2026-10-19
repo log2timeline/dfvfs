@@ -26,6 +26,7 @@ from dfvfs.lib import definitions
 from dfvfs.lib import errors
 from dfvfs.lib import raw_helper
 from dfvfs.lib import tsk_image
+from dfvfs.lib import tsk_partition
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import resolver
 
@@ -649,6 +650,18 @@ class SourceScanner:
                 # be expensive we only do this when explicitly asked for.
                 continue
 
+            # Do not scan TSK partition table pseudo parts such as the
+            # partition table or the unallocated space part that covers the
+            # beginning of the volume, since they contain the partition table
+            # itself and scanning them would detect the same partition table
+            # again and again, which results in an endless loop of scan nodes.
+            if (
+                scan_node.type_indicator == definitions.TYPE_INDICATOR_TSK_PARTITION
+                and not sub_file_entry.IsAllocated()
+                and getattr(sub_file_entry.path_spec, "start_offset", None) in (None, 0)
+            ):
+                continue
+
             if auto_recurse or not scan_context.updated:
                 self._ScanNode(scan_context, sub_scan_node, auto_recurse=auto_recurse)
 
@@ -873,6 +886,24 @@ class SourceScanner:
 
             type_indicator = type_indicators[0]
 
+            # A partition table can be stored within a partition of another partition
+            # table, for example a BSD disklabel stored within a MBR or GPT partition.
+            # However such a nested partition table is only scanned when it is valid
+            # and contains at least one partition, since scanning a nested partition
+            # table that is invalid or does not contain any partitions can result in an
+            # endless loop of scan nodes, for example when the GPT header of an empty
+            # GPT image that is found within its unallocated space part is scanned
+            # again and again.
+            if (
+                type_indicator in definitions.PARTITION_TABLE_TYPE_INDICATORS
+                and type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION
+                and source_type_indicator in definitions.PARTITION_TABLE_TYPE_INDICATORS
+                and not self._PartitionTableHasPartitions(
+                    type_indicator, source_path_spec
+                )
+            ):
+                return None
+
             # pysigscan found a volume system signature however for the TSK partition
             # table type we also need the sector size.
             scan_for_sector_size = (
@@ -880,11 +911,6 @@ class SourceScanner:
             )
 
         if scan_for_sector_size:
-            # Ignore the TSK partition table type when detected within other partition
-            # table types.
-            if source_type_indicator in definitions.PARTITION_TABLE_TYPE_INDICATORS:
-                return None
-
             file_object = resolver.Resolver.OpenFileObject(
                 source_path_spec, resolver_context=self._resolver_context
             )
@@ -898,6 +924,20 @@ class SourceScanner:
                 volume_info = None
 
             if not volume_info:
+                return None
+
+            # A TSK partition table can be stored within a partition of
+            # another partition table, for example a BSD disklabel stored
+            # within a partition of an MBR or GPT image. However such a
+            # nested TSK partition table is only scanned when it is valid,
+            # contains at least one partition and does not have a partition
+            # at its own location, since scanning a nested TSK partition
+            # table that is invalid or does not contain any scannable
+            # partitions can result in an endless loop of scan nodes.
+            if (
+                source_type_indicator in definitions.PARTITION_TABLE_TYPE_INDICATORS
+                and not tsk_partition.TSKVolumeInfoHasScannablePartitions(volume_info)
+            ):
                 return None
 
             return path_spec_factory.Factory.NewPathSpec(
@@ -915,6 +955,39 @@ class SourceScanner:
         return path_spec_factory.Factory.NewPathSpec(
             type_indicator, parent=source_path_spec
         )
+
+    def _PartitionTableHasPartitions(self, type_indicator, source_path_spec):
+        """Determines if the partition table at the path specification has partitions.
+
+        Args:
+          type_indicator (str): type indicator of the partition table.
+          source_path_spec (PathSpec): path specification of the source.
+
+        Returns:
+          bool: True if the partition table at the path specification is valid
+              and contains at least one partition, False otherwise.
+        """
+        partition_table_path_spec = path_spec_factory.Factory.NewPathSpec(
+            type_indicator, location="/", parent=source_path_spec
+        )
+
+        try:
+            file_entry = resolver.Resolver.OpenFileEntry(
+                partition_table_path_spec, resolver_context=self._resolver_context
+            )
+        except (KeyError, OSError, errors.BackEndError):
+            # Note that the partition table can be invalid for example a
+            # corrupted or unsupported GPT table.
+            return False
+
+        if not file_entry or not file_entry.IsDirectory():
+            return False
+
+        for sub_file_entry in file_entry.sub_file_entries:
+            if sub_file_entry.IsAllocated():
+                return True
+
+        return False
 
     def Unlock(self, scan_context, path_spec, credential_identifier, credential_data):
         """Unlocks a locked scan node e.g. the scan node of an encrypted volume.

@@ -423,6 +423,76 @@ sudo umount "${MOUNT_POINT}"
 
 sudo losetup -d /dev/loop99
 
+# Create test image with an empty GPT partition table and no MBR partitions.
+IMAGE_FILE="test_data/gpt_empty.raw"
+
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=$(( IMAGE_SIZE / SECTOR_SIZE )) 2> /dev/null
+
+gdisk "${IMAGE_FILE}" <<EOT
+o
+y
+w
+y
+EOT
+
+# Note that only the MBR partition table entries are zeroed, the MBR signature
+# is kept. This has the image scanned as a GPT and not as an MBR with
+# partitions.
+dd if=/dev/zero of="${IMAGE_FILE}" bs=1 seek=446 count=64 conv=notrunc 2> /dev/null
+
+# Create test image with an MBR partition table with a partition that
+# contains a GPT with one partition.
+IMAGE_FILE="test_data/gpt_in_mbr.raw"
+
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=16384 2> /dev/null
+
+sfdisk "${IMAGE_FILE}" <<EOT
+label: dos
+start=128,size=8192,type=83
+EOT
+
+TMP_IMAGE_FILE=".tmp_gpt_in_mbr_part.raw"
+dd if=/dev/zero of="${TMP_IMAGE_FILE}" bs=${SECTOR_SIZE} count=8192 2> /dev/null
+
+gdisk "${TMP_IMAGE_FILE}" <<EOT
+n
+1
+
++64K
+8300
+w
+y
+EOT
+
+dd if="${TMP_IMAGE_FILE}" of="${IMAGE_FILE}" bs=${SECTOR_SIZE} seek=128 count=8192 conv=notrunc 2> /dev/null
+rm "${TMP_IMAGE_FILE}"
+
+# Create test image with an MBR partition table with a partition that
+# contains an empty GPT.
+IMAGE_FILE="test_data/gpt_empty_in_mbr.raw"
+
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=16384 2> /dev/null
+
+sfdisk "${IMAGE_FILE}" <<EOT
+label: dos
+start=128,size=8192,type=83
+EOT
+
+dd if="test_data/gpt_empty.raw" of="${IMAGE_FILE}" bs=${SECTOR_SIZE} seek=128 count=8192 conv=notrunc 2> /dev/null
+
+# Create test image with an MBR partition table with a partition that
+# contains a UFS1 volume with a BSD disklabel.
+IMAGE_FILE="test_data/ufs1_in_mbr.raw"
+
+dd if=/dev/zero of="${IMAGE_FILE}" bs=${SECTOR_SIZE} count=16384 2> /dev/null
+
+sfdisk "${IMAGE_FILE}" <<EOT
+label: dos
+start=128,size=8192,type=83
+EOT
+
+dd if="test_data/ufs1.raw" of="${IMAGE_FILE}" bs=${SECTOR_SIZE} seek=128 count=8192 conv=notrunc 2> /dev/null
+
 # Create test image with a LVM with 2 volumes with an EXT2 file system in the
 # first volume.
 IMAGE_SIZE=$(( 10 * 1024 * 1024 ))
