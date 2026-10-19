@@ -886,15 +886,14 @@ class SourceScanner:
 
             type_indicator = type_indicators[0]
 
-            # A partition table can be stored within a partition of another
-            # partition table, for example a GPT table stored within a
-            # partition of an MBR or GPT image. However such a nested GPT or
-            # APM partition table is only scanned when it is valid and
-            # contains at least one partition, since scanning a nested
-            # partition table that is invalid or does not contain any
-            # partitions can result in an endless loop of scan nodes, for
-            # example when the GPT header of an empty GPT image that is found
-            # within its unallocated space part is scanned again and again.
+            # A partition table can be stored within a partition of another partition 
+            # table, for example a bsdlabel stored within a MBR or GPT partition.
+            # However such a nested partition table is only scanned when it is valid
+            # and contains at least one partition, since scanning a nested partition
+            # table that is invalid or does not contain any partitions can result in an
+            # endless loop of scan nodes, for example when the GPT header of an empty
+            # GPT image that is found within its unallocated space part is scanned
+            # again and again.
             if (
                 type_indicator in definitions.PARTITION_TABLE_TYPE_INDICATORS
                 and type_indicator != definitions.TYPE_INDICATOR_TSK_PARTITION
