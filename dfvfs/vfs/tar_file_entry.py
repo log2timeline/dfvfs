@@ -124,7 +124,10 @@ class TARFileEntry(file_entry.FileEntry):
 
                     kwargs = {}
                     try:
-                        kwargs["tar_info"] = tar_file.getmember(location[1:])
+                        archive_path = getattr(path_spec, "archive_path", None)
+                        if archive_path is None:
+                            archive_path = location[1:]
+                        kwargs["tar_info"] = tar_file.getmember(archive_path)
                     except KeyError:
                         kwargs["is_virtual"] = True
 
@@ -212,8 +215,12 @@ class TARFileEntry(file_entry.FileEntry):
                 return None
 
             tar_file = self._file_system.GetTARFile()
+            archive_path = getattr(self.path_spec, "archive_path", None)
+            if archive_path is None:
+                archive_path = location[1:]
+
             try:
-                self._tar_info = tar_file.getmember(location[1:])
+                self._tar_info = tar_file.getmember(archive_path)
             except KeyError:
                 pass
 

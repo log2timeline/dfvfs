@@ -57,10 +57,12 @@ class TARDirectory(directory.Directory):
                     path_spec_location = self._file_system.JoinPath(
                         [location, path_segment]
                     )
+                    archive_path = None
                     is_directory = True
 
                 else:
                     path_spec_location = self._file_system.JoinPath([path])
+                    archive_path = path
                     is_directory = tar_info.isdir()
 
                 if is_directory:
@@ -69,5 +71,7 @@ class TARDirectory(directory.Directory):
                     processed_directories.add(path_spec_location)
 
                 yield tar_path_spec.TARPathSpec(
-                    location=path_spec_location, parent=self.path_spec.parent
+                    archive_path=archive_path,
+                    location=path_spec_location,
+                    parent=self.path_spec.parent,
                 )

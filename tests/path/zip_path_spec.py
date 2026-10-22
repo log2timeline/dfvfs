@@ -40,6 +40,18 @@ class ZipPathSpecTest(test_lib.PathSpecTestCase):
 
         self.assertEqual(path_spec.comparable, expected_comparable)
 
+        path_spec = zip_path_spec.ZipPathSpec(
+            archive_path="/test", location="/test", parent=self._path_spec
+        )
+        expected_comparable = "\n".join(
+            [
+                "type: TEST",
+                "type: ZIP, location: /test, archive path: /test",
+                "",
+            ]
+        )
+        self.assertEqual(path_spec.comparable, expected_comparable)
+
 
 if __name__ == "__main__":
     unittest.main()

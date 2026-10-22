@@ -118,7 +118,10 @@ class ZipFileEntry(file_entry.FileEntry):
 
                     kwargs = {}
                     try:
-                        kwargs["zip_info"] = zip_file.getinfo(location[1:])
+                        archive_path = getattr(path_spec, "archive_path", None)
+                        if archive_path is None:
+                            archive_path = location[1:]
+                        kwargs["zip_info"] = zip_file.getinfo(archive_path)
                     except KeyError:
                         kwargs["is_virtual"] = True
 
@@ -207,8 +210,12 @@ class ZipFileEntry(file_entry.FileEntry):
                 return None
 
             zip_file = self._file_system.GetZipFile()
+            archive_path = getattr(self.path_spec, "archive_path", None)
+            if archive_path is None:
+                archive_path = location[1:]
+
             try:
-                self._zip_info = zip_file.getinfo(location[1:])
+                self._zip_info = zip_file.getinfo(archive_path)
             except KeyError:
                 pass
 
