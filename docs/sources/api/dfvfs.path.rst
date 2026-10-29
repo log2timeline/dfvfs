@@ -148,6 +148,14 @@ dfvfs.path.hfs\_path\_spec module
    :show-inheritance:
    :undoc-members:
 
+dfvfs.path.keramics\_path\_spec module
+--------------------------------------
+
+.. automodule:: dfvfs.path.keramics_path_spec
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dfvfs.path.location\_path\_spec module
 --------------------------------------
 

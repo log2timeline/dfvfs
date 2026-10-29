@@ -140,6 +140,14 @@ dfvfs.resolver\_helpers.hfs\_resolver\_helper module
    :show-inheritance:
    :undoc-members:
 
+dfvfs.resolver\_helpers.keramics\_resolver\_helper module
+---------------------------------------------------------
+
+.. automodule:: dfvfs.resolver_helpers.keramics_resolver_helper
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dfvfs.resolver\_helpers.luksde\_resolver\_helper module
 -------------------------------------------------------
 
