@@ -1,10 +1,17 @@
 # Run tox tests on Ubuntu Docker images using the deadsnakes and GIFT PPAs
 name: test_tox
-on: [pull_request, push]
-permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+on:
+  pull_request:
+  push:
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     strategy:
       matrix:
         include:
@@ -24,6 +31,8 @@ jobs:
       image: ubuntu:26.04
     steps:
     - uses: actions/checkout@v6
+      with:
+        persist-credentials: false
     - name: Set up container
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -43,11 +52,13 @@ jobs:
         apt install -y build-essential git libffi-dev pkg-config python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libcaes-python3 libewf-python3 libfcrypto-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-dfdatetime python3-dtfabric python3-keramics python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml tox
     - name: Run tests
       env:
+        CPATH: /usr/include/python${{ matrix.python-version }}
         LANG: en_US.UTF-8
       run: |
         tox -e ${{ matrix.toxenv }},wheel
   coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     strategy:
       matrix:
         python-version: ['3.14']
@@ -55,6 +66,8 @@ jobs:
       image: ubuntu:26.04
     steps:
     - uses: actions/checkout@v6
+      with:
+        persist-credentials: false
     - name: Set up container
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -74,6 +87,7 @@ jobs:
         apt install -y build-essential curl git libffi-dev pkg-config python${{ matrix.python-version }} python${{ matrix.python-version }}-dev python${{ matrix.python-version }}-venv libbde-python3 libcaes-python3 libewf-python3 libfcrypto-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3-dfdatetime python3-dtfabric python3-keramics python3-pip python3-pytsk3 python3-setuptools python3-xattr python3-yaml tox
     - name: Run tests with coverage
       env:
+        CPATH: /usr/include/python${{ matrix.python-version }}
         LANG: en_US.UTF-8
       run: |
         tox -e coverage

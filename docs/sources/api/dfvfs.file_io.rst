@@ -148,6 +148,14 @@ dfvfs.file\_io.hfs\_file\_io module
    :show-inheritance:
    :undoc-members:
 
+dfvfs.file\_io.keramics\_file\_io module
+----------------------------------------
+
+.. automodule:: dfvfs.file_io.keramics_file_io
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dfvfs.file\_io.luksde\_file\_io module
 --------------------------------------
 

@@ -420,6 +420,38 @@ dfvfs.vfs.hfs\_file\_system module
    :show-inheritance:
    :undoc-members:
 
+dfvfs.vfs.keramics\_attribute module
+------------------------------------
+
+.. automodule:: dfvfs.vfs.keramics_attribute
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dfvfs.vfs.keramics\_directory module
+------------------------------------
+
+.. automodule:: dfvfs.vfs.keramics_directory
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dfvfs.vfs.keramics\_file\_entry module
+--------------------------------------
+
+.. automodule:: dfvfs.vfs.keramics_file_entry
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dfvfs.vfs.keramics\_file\_system module
+---------------------------------------
+
+.. automodule:: dfvfs.vfs.keramics_file_system
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 dfvfs.vfs.luksde\_file\_entry module
 ------------------------------------
 
