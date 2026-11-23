@@ -279,13 +279,17 @@ class FindSpec:
             return False
         return file_entry.IsSocket()
 
-    def _CompareWithLocationSegment(self, location_segment, segment_index):
+    def _CompareWithLocationSegment(
+        self, location_segment, segment_index, location_segment_lower=None
+    ):
         """Compares a location segment against a find specification.
 
         Args:
           location_segment (str): location segment.
           segment_index (int): index of the location segment to compare against,
               where 0 represents the root segment.
+          location_segment_lower (Optional[str]): lower case variant of the
+              location segment, which is determined if not provided.
 
         Returns:
           bool: True if the location segment of the file entry matches that of the
@@ -334,7 +338,10 @@ class FindSpec:
         if self._is_case_sensitive:
             return bool(segment_name == location_segment)
 
-        return bool(segment_name == location_segment.lower())
+        if location_segment_lower is None:
+            location_segment_lower = location_segment.lower()
+
+        return bool(segment_name == location_segment_lower)
 
     def _ConvertLocationGlob2Regex(self, location_glob):
         """Converts a location glob into a regular expression.
@@ -407,20 +414,31 @@ class FindSpec:
             file_entry.path_spec, file_system, mount_point=mount_point
         )
 
-    def CompareNameWithLocationSegment(self, file_entry, segment_index):
+    def CompareNameWithLocationSegment(
+        self, file_entry, segment_index, name=None, name_lower=None
+    ):
         """Compares a file entry name against a find specification location segment.
 
         Args:
           file_entry (FileEntry): file entry.
           segment_index (int): index of the location segment to compare against,
               where 0 represents the root segment.
+          name (Optional[str]): name of the file entry, which is determined
+              if not provided.
+          name_lower (Optional[str]): lower case variant of the name of the
+              file entry, which is determined if not provided.
 
         Returns:
           bool: True if the location segment of the file entry matches that of the
               find specification, False if not or if the find specification has no
               location defined.
         """
-        return self._CompareWithLocationSegment(file_entry.name, segment_index)
+        if name is None:
+            name = file_entry.name
+
+        return self._CompareWithLocationSegment(
+            name, segment_index, location_segment_lower=name_lower
+        )
 
     def ComparePathSpecLocation(self, path_spec, file_system, mount_point=None):
         """Compares a path specification location against the find specification.
@@ -557,12 +575,18 @@ class FileSystemSearcher:
         Yields:
           PathSpec: path specification of a matching file entry.
         """
+        # Determine the name and its lower case variant once per file entry
+        # instead of once per find specification.
+        name = file_entry.name
+        name_lower = name.lower()
+
         sub_find_specs = []
         for find_spec in find_specs:
             has_location = find_spec.HasLocation()
+
             # Do a quick check to see if the current location segment matches.
             location_match = find_spec.CompareNameWithLocationSegment(
-                file_entry, segment_index
+                file_entry, segment_index, name=name, name_lower=name_lower
             )
             is_last_location_segment = find_spec.IsLastLocationSegment(segment_index)
 

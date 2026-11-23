@@ -12,6 +12,7 @@ from dfvfs.path import os_path_spec
 from dfvfs.path import raw_path_spec
 from dfvfs.path import tsk_path_spec
 from dfvfs.resolver import context
+from dfvfs.vfs import fake_file_entry
 from dfvfs.vfs import os_file_system
 from dfvfs.vfs import tsk_file_system
 
@@ -377,6 +378,80 @@ class FindSpecTest(shared_test_lib.BaseTestCase):
         )
         result = find_spec.CompareNameWithLocationSegment(file_entry, 6)
         self.assertFalse(result)
+
+    def testCompareNameWithLocationSegmentPrecomputedName(self):
+        """Test CompareNameWithLocationSegment with a precomputed name."""
+        file_system = self._CreateTestFileSystem()
+
+        path_spec = fake_path_spec.FakePathSpec(
+            location="/usr/lib/python2.7/site-packages/dfvfs/__init__.py"
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+        for case_sensitive in (True, False):
+            find_spec = file_system_searcher.FindSpec(
+                location="/usr/lib/python2.7/site-packages/dfvfs/__INIT__.py",
+                location_separator="/",
+                case_sensitive=case_sensitive,
+            )
+            expected_result = find_spec.CompareNameWithLocationSegment(file_entry, 6)
+            self.assertEqual(expected_result, not case_sensitive)
+
+            result = find_spec.CompareNameWithLocationSegment(
+                file_entry, 6, name="__init__.py", name_lower="__init__.py"
+            )
+            self.assertEqual(result, expected_result)
+
+    def testFindLowersNameOncePerFileEntry(self):
+        """Test the file entry name is lowered once for multiple find specs."""
+        lower_calls = []
+
+        class CountingString(str):
+            """String that counts lower calls."""
+
+            def lower(self):
+                """Returns the lower case string."""
+                lower_calls.append(str(self))
+                return super().lower()
+
+        file_system = self._CreateTestFileSystem()
+        mount_point = fake_path_spec.FakePathSpec(location="/")
+
+        searcher = file_system_searcher.FileSystemSearcher(file_system, mount_point)
+
+        locations = [
+            ["usr", "lib", "python2.7", "site-packages", "dfvfs", "__INIT__.PY"],
+            ["USR", "LIB", "python2.7", "SITE-PACKAGES", "dfvfs", "__init__.PY"],
+            ["usr", "LIB", "python2.7", "site-packages", "DFVFS", "__init__.py"],
+        ]
+        find_specs = [
+            file_system_searcher.FindSpec(location=location, case_sensitive=False)
+            for location in locations
+        ]
+
+        original_property = fake_file_entry.FakeFileEntry.name
+        fake_file_entry.FakeFileEntry.name = property(
+            lambda self: CountingString(original_property.fget(self) or "")
+        )
+        try:
+            results = [
+                getattr(path_spec, "location", "")
+                for path_spec in searcher.Find(find_specs=find_specs)
+            ]
+        finally:
+            fake_file_entry.FakeFileEntry.name = original_property
+
+        self.assertEqual(
+            results, ["/usr/lib/python2.7/site-packages/dfvfs/__init__.py"] * 3
+        )
+
+        # Each file entry that is visited is lowered at most once, instead of
+        # once per find specification.
+        self.assertGreater(len(lower_calls), 0)
+        visited = {}
+        for name in lower_calls:
+            visited[name] = visited.get(name, 0) + 1
+        self.assertEqual(max(visited.values()), 1)
 
     def testCompareTraits(self):
         """Test the CompareTraits function."""
