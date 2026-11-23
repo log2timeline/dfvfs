@@ -28,6 +28,7 @@ class ZipFileSystem(file_system.FileSystem):
           encoding (Optional[str]): encoding of the file entry name.
         """
         super().__init__(resolver_context, path_spec)
+        self._directory_entries = None
         self._directory_paths = None
         self._file_object = None
         self._zip_file = None
@@ -41,8 +42,99 @@ class ZipFileSystem(file_system.FileSystem):
         """
         self._zip_file.close()
         self._zip_file = None
+        self._directory_entries = None
         self._directory_paths = None
         self._file_object = None
+
+    def _BuildDirectoryEntries(self):
+        """Builds the directory entry index.
+
+        The index is built once when the file system is opened so that listing
+        a directory does not need to scan all the members of the archive.
+        """
+        directory_entries = {}
+
+        for zip_info in self._zip_file.infolist():
+            path = getattr(zip_info, "filename", None)
+            if path is not None and not isinstance(path, str):
+                try:
+                    path = path.decode(self.encoding)
+                except UnicodeDecodeError:
+                    path = None
+
+            if not path:
+                continue
+
+            # A directory can contain the member directly or by one of its sub
+            # directories, hence the member is evaluated for every parent location.
+            segments = [
+                segment for segment in path.split(self.PATH_SEPARATOR) if segment
+            ]
+
+            locations = [self.LOCATION_ROOT]
+            location = ""
+            for segment in segments[:-1]:
+                location = f"{location:s}{self.PATH_SEPARATOR:s}{segment:s}"
+                locations.append(location)
+
+            for location in locations:
+                directory_entry = self._GetDirectoryEntry(location, path)
+                if directory_entry is None:
+                    continue
+
+                entries, processed_directories = directory_entries.setdefault(
+                    location, ([], set())
+                )
+
+                path_spec_location, is_directory = directory_entry
+                if is_directory:
+                    if path_spec_location in processed_directories:
+                        continue
+                    processed_directories.add(path_spec_location)
+                    # Restore / at end path to indicate a directory.
+                    path_spec_location += self.PATH_SEPARATOR
+
+                entries.append(path_spec_location)
+
+        self._directory_entries = {
+            location: entries for location, (entries, _) in directory_entries.items()
+        }
+
+    def _GetDirectoryEntry(self, location, path):
+        """Determines the directory entry of a path for a directory location.
+
+        Args:
+          location (str): location of the directory.
+          path (str): path of an archive member.
+
+        Returns:
+          tuple[str, bool]: location of the directory entry and True if the entry
+              is a directory, or None if the path is not part of the directory.
+        """
+        # A ZIP archive file can contain paths with and without leading
+        # separator.
+
+        if path.startswith(location[1:]):
+            zip_path = location[1:]
+        elif path.startswith(location):
+            zip_path = location
+        else:
+            return None
+
+        # Ignore the directory itself.
+        if path == zip_path:
+            return None
+
+        path_segment, suffix = self.GetPathSegmentAndSuffix(zip_path, path)
+        if not path_segment:
+            return None
+
+        # Sometimes the ZIP file lacks directories, therefore we will provide
+        # virtual ones.
+        if suffix:
+            return self.JoinPath([location, path_segment]), True
+
+        return self.JoinPath([path]), path.endswith("/")
 
     def _Open(self, mode="rb"):
         """Opens the file system object defined by path specification.
@@ -72,6 +164,8 @@ class ZipFileSystem(file_system.FileSystem):
 
         self._file_object = file_object
         self._zip_file = zip_file
+
+        self._BuildDirectoryEntries()
 
         self._directory_paths = set()
         for name in self._zip_file.namelist():
@@ -215,6 +309,19 @@ class ZipFileSystem(file_system.FileSystem):
             )
 
         return None
+
+    def GetDirectoryEntryLocations(self, location):
+        """Retrieves the locations of the entries of a directory.
+
+        Args:
+          location (str): location of the directory.
+
+        Returns:
+          list[str]: locations of the directory entries, in archive order.
+              The locations of directories have a trailing path separator.
+        """
+        location = self.JoinPath([location])
+        return self._directory_entries.get(location, [])
 
     def GetRootFileEntry(self):
         """Retrieves the root file entry.

@@ -20,6 +20,7 @@ class FakeFileSystem(file_system.FileSystem):
           path_spec (PathSpec): a path specification.
         """
         super().__init__(resolver_context, path_spec)
+        self._directory_entries = {}
         self._paths = {}
 
         self.AddFileEntry(
@@ -88,6 +89,18 @@ class FakeFileSystem(file_system.FileSystem):
 
         self._paths[path] = (file_entry_type, path_data)
 
+        # Index the path by its parent directory so that listing a directory does
+        # not need to scan all the paths.
+        if path.startswith(self.LOCATION_ROOT) and "//" not in path:
+            segments = [
+                segment for segment in path.split(self.PATH_SEPARATOR) if segment
+            ]
+            if segments:
+                parent_location = self.JoinPath(segments[:-1])
+                self._directory_entries.setdefault(parent_location, []).append(
+                    self.JoinPath([path])
+                )
+
     def FileEntryExistsByPath(self, path):
         """Determines if a file entry for a path exists.
 
@@ -148,6 +161,19 @@ class FakeFileSystem(file_system.FileSystem):
             file_entry_type=file_entry_type,
             is_root=is_root,
         )
+
+    def GetDirectoryEntryLocations(self, location):
+        """Retrieves the locations of the entries of a directory.
+
+        Args:
+          location (str): location of the directory.
+
+        Returns:
+          list[str]: locations of the directory entries, in the order in which
+              the file entries were added.
+        """
+        location = self.JoinPath([location])
+        return self._directory_entries.get(location, [])
 
     def GetFileEntryByPathSpec(self, path_spec):
         """Retrieves a file entry for a path specification.

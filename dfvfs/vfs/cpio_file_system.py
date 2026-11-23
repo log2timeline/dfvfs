@@ -24,6 +24,7 @@ class CPIOFileSystem(file_system.FileSystem):
         """
         super().__init__(resolver_context, path_spec)
         self._cpio_archive_file = None
+        self._directory_entries = None
         self._file_object = None
         self.encoding = encoding
 
@@ -35,7 +36,79 @@ class CPIOFileSystem(file_system.FileSystem):
         """
         self._cpio_archive_file.Close()
         self._cpio_archive_file = None
+        self._directory_entries = None
         self._file_object = None
+
+    def _BuildDirectoryEntries(self):
+        """Builds the directory entry index.
+
+        The index is built once when the file system is opened so that listing
+        a directory does not need to scan all the file entries of the archive.
+        """
+        directory_entries = {}
+
+        for cpio_archive_file_entry in self._cpio_archive_file.GetFileEntries():
+            path = cpio_archive_file_entry.path
+            if not path:
+                continue
+
+            # A directory can contain the file entry directly or by one of its sub
+            # directories, hence the file entry is evaluated for every parent
+            # location. The location of the file entry itself is included since
+            # listing it yields the file entry itself.
+            segments = [
+                segment for segment in path.split(self.PATH_SEPARATOR) if segment
+            ]
+
+            locations = [self.LOCATION_ROOT]
+            location = ""
+            for segment in segments:
+                location = f"{location:s}{self.PATH_SEPARATOR:s}{segment:s}"
+                locations.append(location)
+
+            for location in locations:
+                directory_entry = self._GetDirectoryEntry(location, path)
+                if directory_entry is None:
+                    continue
+
+                entries, sub_directories = directory_entries.setdefault(
+                    location, ([], set())
+                )
+
+                path_spec_location, is_sub_directory = directory_entry
+                if is_sub_directory:
+                    # Include prefixes as virtual sub directories.
+                    if path_spec_location in sub_directories:
+                        continue
+                    sub_directories.add(path_spec_location)
+
+                entries.append(path_spec_location)
+
+        self._directory_entries = {
+            location: entries for location, (entries, _) in directory_entries.items()
+        }
+
+    def _GetDirectoryEntry(self, location, path):
+        """Determines the directory entry of a path for a directory location.
+
+        Args:
+          location (str): location of the directory.
+          path (str): path of an archive file entry.
+
+        Returns:
+          tuple[str, bool]: location of the directory entry and True if the entry
+              is a sub directory implied by the path, or None if the path is not
+              part of the directory.
+        """
+        if not path.startswith(location[1:]) or path == location:
+            return None
+
+        prefix, suffix = self.GetPathSegmentAndSuffix(location[1:], path)
+
+        if not suffix:
+            return self.JoinPath([path]), False
+
+        return self.JoinPath([prefix]), True
 
     def _Open(self, mode="rb"):
         """Opens the file system defined by path specification.
@@ -62,6 +135,8 @@ class CPIOFileSystem(file_system.FileSystem):
 
         self._file_object = file_object
         self._cpio_archive_file = cpio_archive_file
+
+        self._BuildDirectoryEntries()
 
     def FileEntryExistsByPathSpec(self, path_spec):
         """Determines if a file entry for a path specification exists.
@@ -112,6 +187,18 @@ class CPIOFileSystem(file_system.FileSystem):
             return None
 
         return self._cpio_archive_file.GetFileEntryByPath(location[1:])
+
+    def GetDirectoryEntryLocations(self, location):
+        """Retrieves the locations of the entries of a directory.
+
+        Args:
+          location (str): location of the directory.
+
+        Returns:
+          list[str]: locations of the directory entries, in archive order.
+        """
+        location = self.JoinPath([location])
+        return self._directory_entries.get(location, [])
 
     def GetFileEntryByPathSpec(self, path_spec):
         """Retrieves a file entry for a path specification.
