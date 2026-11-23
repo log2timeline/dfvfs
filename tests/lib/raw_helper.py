@@ -276,6 +276,34 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
         )
         self.assertEqual(segment_file_path_specs, expected_segment_file_path_specs)
 
+    def testGlobRawAlphabeticalSuffixWithoutExtension(self):
+        """Test the glob function for a RAW alphabetical suffix without extension."""
+        for upper_case in (False, True):
+            letters = "ABC" if upper_case else "abc"
+            for prefix in ("split", "x"):
+                if upper_case:
+                    prefix = prefix.upper()
+                segment_filenames = [f"{prefix:s}{letters[0]:s}{letters[0]:s}"]
+                segment_filenames.append(f"{prefix:s}{letters[0]:s}{letters[1]:s}")
+                segment_filenames.append(f"{prefix:s}{letters[0]:s}{letters[2]:s}")
+
+                expected_segment_file_path_specs = []
+                file_system = self._BuildFileFakeFileSystem(
+                    segment_filenames, expected_segment_file_path_specs
+                )
+
+                path_spec = fake_path_spec.FakePathSpec(
+                    location=f"/{segment_filenames[0]:s}"
+                )
+                path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+                segment_file_path_specs = raw_helper.RawGlobPathSpec(
+                    file_system, path_spec
+                )
+                self.assertEqual(
+                    segment_file_path_specs, expected_segment_file_path_specs
+                )
+
     def testGlobRawNumericExtension(self):
         """Test the glob function for a RAW numeric extension scheme."""
         segment_filenames = ["image.000"]

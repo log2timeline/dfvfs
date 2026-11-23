@@ -153,12 +153,14 @@ def RawGlobPathSpec(file_system, path_spec):
         # where [a-z]+ starts with a and consist of multiple letters,
         # e.g. PREFIXaa or PREFIXzz.
         if filename_prefix[-2:] == "aa":
-            suffix_index = filename_prefix_length - 4
+            suffix_index = filename_prefix_length - 3
             while suffix_index >= 0:
                 if filename_prefix[suffix_index] != "a":
                     suffix_index += 1
                     break
                 suffix_index -= 1
+
+            suffix_index = max(suffix_index, 0)
 
             suffix_length = filename_prefix_length - suffix_index
             segment_files = _RawGlobPathSpecWithAlphabeticalSchema(
@@ -174,12 +176,14 @@ def RawGlobPathSpec(file_system, path_spec):
         # where [A-Z]+ starts with A and consist of multiple letters,
         # e.g. PREFIXAA or PREFIXZZ.
         elif filename_prefix[-2:] == "AA":
-            suffix_index = filename_prefix_length - 4
+            suffix_index = filename_prefix_length - 3
             while suffix_index >= 0:
                 if filename_prefix[suffix_index] != "A":
                     suffix_index += 1
                     break
                 suffix_index -= 1
+
+            suffix_index = max(suffix_index, 0)
 
             suffix_length = filename_prefix_length - suffix_index
             segment_files = _RawGlobPathSpecWithAlphabeticalSchema(
