@@ -19,55 +19,9 @@ class TARDirectory(directory.Directory):
         location = getattr(self.path_spec, "location", None)
 
         if location and location.startswith(self._file_system.PATH_SEPARATOR):
-            # Set of top level sub directories that have been yielded.
-            processed_directories = set()
-
-            tar_file = self._file_system.GetTARFile()
-            for tar_info in tar_file.getmembers():
-                path = tar_info.name
-
-                # Determine if the start of the TAR info name is similar to
-                # the location string. If not the file TAR info refers to is not in
-                # the same directory.
-                if not path:
-                    continue
-
-                # A tar file can contain paths with and without leading separator.
-
-                if path.startswith(location[1:]):
-                    tar_path = location[1:]
-                elif path.startswith(location):
-                    tar_path = location
-                else:
-                    continue
-
-                # Ignore the directory itself.
-                if path == tar_path:
-                    continue
-
-                path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
-                    tar_path, path
-                )
-                if not path_segment:
-                    continue
-
-                # Sometimes the TAR file lacks directories, therefore we will
-                # provide virtual ones.
-                if suffix:
-                    path_spec_location = self._file_system.JoinPath(
-                        [location, path_segment]
-                    )
-                    is_directory = True
-
-                else:
-                    path_spec_location = self._file_system.JoinPath([path])
-                    is_directory = tar_info.isdir()
-
-                if is_directory:
-                    if path_spec_location in processed_directories:
-                        continue
-                    processed_directories.add(path_spec_location)
-
+            for path_spec_location in self._file_system.GetDirectoryEntryLocations(
+                location
+            ):
                 yield tar_path_spec.TARPathSpec(
                     location=path_spec_location, parent=self.path_spec.parent
                 )
