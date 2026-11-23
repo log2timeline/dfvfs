@@ -319,6 +319,31 @@ class ZlibCompressedStreamTest(test_lib.SyslogTestCase):
 
         self._TestReadFileObject(file_object)
 
+    def testReadInParts(self):
+        """Test reading the stream in parts."""
+        file_object = compressed_stream_io.CompressedStream(
+            self._resolver_context, self._compressed_stream_path_spec
+        )
+        file_object.Open()
+
+        expected_data = file_object.read()
+        self.assertEqual(len(expected_data), file_object.get_size())
+
+        file_object.seek(0, os.SEEK_SET)
+        data_parts = []
+        data = file_object.read(100)
+        while data:
+            data_parts.append(data)
+            data = file_object.read(100)
+
+        self.assertEqual(b"".join(data_parts), expected_data)
+
+        file_object.seek(7, os.SEEK_SET)
+        self.assertEqual(file_object.read(700), expected_data[7:707])
+
+        file_object.seek(0, os.SEEK_SET)
+        self.assertEqual(file_object.read(0), b"")
+
 
 if __name__ == "__main__":
     unittest.main()
