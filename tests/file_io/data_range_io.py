@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for the data range file-like object."""
 
+import os
 import unittest
 
 from dfvfs.file_io import data_range_io
@@ -91,6 +92,30 @@ class DataRangeTest(test_lib.SyslogTestCase):
         file_object.Open()
 
         self._TestReadFileObject(file_object, base_offset=0)
+
+    def testReadNegativeSize(self):
+        """Test reading with a negative size stays within the data range."""
+        test_path = self._GetTestFilePath(["syslog"])
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_DATA_RANGE,
+            parent=test_os_path_spec,
+            range_offset=167,
+            range_size=4,
+        )
+        file_object = data_range_io.DataRange(self._resolver_context, path_spec)
+        file_object.Open()
+
+        data = file_object.read(-1)
+        self.assertEqual(len(data), 4)
+        self.assertEqual(file_object.get_offset(), 4)
+
+        file_object.seek(1, os.SEEK_SET)
+        data = file_object.read(-1)
+        self.assertEqual(len(data), 3)
+        self.assertEqual(file_object.get_offset(), 4)
 
 
 if __name__ == "__main__":
