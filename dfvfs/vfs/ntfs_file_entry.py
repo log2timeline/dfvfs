@@ -284,10 +284,11 @@ class NTFSFileEntry(file_entry.FileEntry):
         ):
             return None
 
-        # Make sure to make the changes on a copy of the path specification, so we
-        # do not alter self.path_spec.
-        path_spec = copy.deepcopy(self.path_spec)
+        path_spec = self.path_spec
         if data_stream_name:
+            # Make sure to make the changes on a shallow copy of the path
+            # specification, so we do not alter self.path_spec.
+            path_spec = copy.copy(path_spec)
             setattr(path_spec, "data_stream", data_stream_name)
 
         return resolver.Resolver.OpenFileObject(

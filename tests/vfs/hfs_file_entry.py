@@ -6,6 +6,7 @@ import unittest
 from dfvfs.lib import definitions
 from dfvfs.path import factory as path_spec_factory
 from dfvfs.resolver import context
+from dfvfs.resolver import resolver
 from dfvfs.vfs import hfs_attribute
 from dfvfs.vfs import hfs_file_entry
 from dfvfs.vfs import hfs_file_system
@@ -365,6 +366,50 @@ class HFSFileEntryTest(shared_test_lib.BaseTestCase):
         file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
 
         self.assertIsNotNone(file_entry)
+
+    def testGetFileObjectPathSpec(self):
+        """Tests the path specification used by the GetFileObject function."""
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_HFS,
+            identifier=self._IDENTIFIER_ANOTHER_FILE,
+            location="/a_directory/another_file",
+            parent=self._raw_path_spec,
+        )
+        file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+        self.assertIsNotNone(file_entry)
+        original_comparable = file_entry.path_spec.comparable
+
+        opened_path_specs = []
+        original_function = resolver.Resolver.__dict__["OpenFileObject"]
+
+        def OpenFileObject(cls, path_spec_object, resolver_context=None):
+            """Records the path specification and opens the file object."""
+            opened_path_specs.append(path_spec_object)
+            return original_function.__func__(
+                cls, path_spec_object, resolver_context=resolver_context
+            )
+
+        resolver.Resolver.OpenFileObject = classmethod(OpenFileObject)
+        try:
+            # The default data stream does not need a copy of the path specification.
+            file_object = file_entry.GetFileObject()
+            self.assertIsNotNone(file_object)
+            self.assertIs(opened_path_specs[0], file_entry.path_spec)
+            number_of_calls = len(opened_path_specs)
+
+            # A named data stream is opened using a shallow copy.
+            file_object = file_entry.GetFileObject(data_stream_name="rsrc")
+            self.assertIsNotNone(file_object)
+            self.assertIsNot(opened_path_specs[number_of_calls], file_entry.path_spec)
+            self.assertIs(
+                opened_path_specs[number_of_calls].parent, file_entry.path_spec.parent
+            )
+            self.assertEqual(opened_path_specs[number_of_calls].data_stream, "rsrc")
+        finally:
+            resolver.Resolver.OpenFileObject = original_function
+
+        self.assertEqual(file_entry.path_spec.comparable, original_comparable)
+        self.assertIsNone(getattr(file_entry.path_spec, "data_stream", None))
 
     def testGetFileObject(self):
         """Tests the GetFileObject function."""
