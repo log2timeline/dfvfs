@@ -22,6 +22,25 @@ class TSKDirectory(directory.Directory):
         Raises:
           BackEndError: if pytsk3 cannot open the directory.
         """
+        for path_spec, _ in self.GetEntriesWithTSKFile():
+            yield path_spec
+
+    def GetEntriesWithTSKFile(self):
+        """Retrieves directory entries together with their TSK file objects.
+
+        The pytsk3.File objects are already opened while enumerating the directory
+        and can be used to create file entries without opening the file again.
+
+        Since a directory can contain a vast number of entries using
+        a generator is more memory efficient.
+
+        Yields:
+          tuple[TSKPathSpec, pytsk3.File]: a path specification and the TSK file
+              of the directory entry.
+
+        Raises:
+          BackEndError: if pytsk3 cannot open the directory.
+        """
         # Opening a file by inode number is faster than opening a file
         # by location.
         inode = getattr(self.path_spec, "inode", None)
@@ -112,8 +131,9 @@ class TSKDirectory(directory.Directory):
                                 [location, directory_entry]
                             )
 
-                yield tsk_path_spec.TSKPathSpec(
+                path_spec = tsk_path_spec.TSKPathSpec(
                     inode=directory_entry_inode,
                     location=directory_entry,
                     parent=self.path_spec.parent,
                 )
+                yield path_spec, tsk_directory_entry

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Tests for the file entry implementation using the SleuthKit (TSK)."""
 
+import gc
+import os
 import unittest
 
 import pytsk3
@@ -2741,6 +2743,138 @@ class TSKFileEntryTestUfs1(shared_test_lib.BaseTestCase):
 
         data_stream = file_entry.GetDataStream("")
         self.assertIsNotNone(data_stream)
+
+
+class TSKFileEntrySubFileEntriesTest(shared_test_lib.BaseTestCase):
+    """Tests that sub file entries reuse the TSK file of the directory listing."""
+
+    # pylint: disable=protected-access
+
+    _TEST_FILES = ["ext2.raw", "fat12.raw", "hfsplus.raw", "ntfs.raw"]
+
+    def _OpenFileSystem(self, resolver_context, test_file):
+        """Opens a TSK file system.
+
+        Args:
+          resolver_context (Context): resolver context.
+          test_file (str): name of the test file.
+
+        Returns:
+          TSKFileSystem: file system or None if the test file does not exist.
+        """
+        test_path = self._GetTestFilePath([test_file])
+        if not os.path.exists(test_path):
+            return None
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec
+        )
+        tsk_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK, location="/", parent=raw_path_spec
+        )
+
+        file_system = tsk_file_system.TSKFileSystem(resolver_context, tsk_path_spec)
+        file_system.Open()
+        return file_system
+
+    def _WalkFileEntries(self, file_entry):
+        """Walks a file entry tree.
+
+        Args:
+          file_entry (TSKFileEntry): file entry.
+
+        Yields:
+          TSKFileEntry: file entries of the tree below the file entry.
+        """
+        for sub_file_entry in file_entry.sub_file_entries:
+            yield sub_file_entry
+            yield from self._WalkFileEntries(sub_file_entry)
+
+    def testSubFileEntriesDoNotReopenFiles(self):
+        """Tests sub file entries are created without opening the files again."""
+        for test_file in self._TEST_FILES:
+            resolver_context = context.Context()
+            file_system = self._OpenFileSystem(resolver_context, test_file)
+            if not file_system:
+                continue
+
+            try:
+                root_file_entry = file_system.GetRootFileEntry()
+
+                calls = []
+                original_function = file_system.GetTSKFileByPathSpec
+
+                def CountingFunction(path_spec, original=original_function):
+                    # pylint: disable=cell-var-from-loop
+                    calls.append(path_spec)
+                    return original(path_spec)
+
+                setattr(file_system, "GetTSKFileByPathSpec", CountingFunction)
+
+                sub_file_entries = list(root_file_entry.sub_file_entries)
+                self.assertNotEqual(len(sub_file_entries), 0, test_file)
+                self.assertEqual(len(calls), 0, test_file)
+
+            finally:
+                resolver_context.Empty()
+
+    def testSubFileEntriesMatchOpenedFileEntries(self):
+        """Tests sub file entries are identical to separately opened file entries."""
+        for test_file in self._TEST_FILES:
+            resolver_context = context.Context()
+            file_system = self._OpenFileSystem(resolver_context, test_file)
+            if not file_system:
+                continue
+
+            try:
+                root_file_entry = file_system.GetRootFileEntry()
+
+                # Keep all file entries alive after their directories have been
+                # fully enumerated to test the lifetime of the TSK files.
+                file_entries = list(self._WalkFileEntries(root_file_entry))
+                gc.collect()
+
+                self.assertNotEqual(len(file_entries), 0, test_file)
+
+                for file_entry in file_entries:
+                    expected = tsk_file_entry.TSKFileEntry(
+                        resolver_context,
+                        file_system,
+                        file_entry.path_spec,
+                        tsk_file=file_system.GetTSKFileByPathSpec(file_entry.path_spec),
+                    )
+                    name = f"{test_file:s}: {file_entry.path_spec.location:s}"
+
+                    self.assertEqual(file_entry.name, expected.name, name)
+                    self.assertEqual(file_entry.entry_type, expected.entry_type, name)
+                    self.assertEqual(file_entry.size, expected.size, name)
+                    self.assertEqual(
+                        file_entry._tsk_file.info.meta.addr,
+                        expected._tsk_file.info.meta.addr,
+                        name,
+                    )
+                    self.assertEqual(
+                        file_entry.modification_time, expected.modification_time, name
+                    )
+                    self.assertEqual(
+                        [data_stream.name for data_stream in file_entry.data_streams],
+                        [data_stream.name for data_stream in expected.data_streams],
+                        name,
+                    )
+                    self.assertEqual(
+                        [
+                            attribute.attribute_type
+                            for attribute in file_entry.attributes
+                        ],
+                        [attribute.attribute_type for attribute in expected.attributes],
+                        name,
+                    )
+
+            finally:
+                resolver_context.Empty()
 
 
 if __name__ == "__main__":
