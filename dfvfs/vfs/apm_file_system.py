@@ -104,7 +104,7 @@ class APMFileSystem(file_system.FileSystem):
                 self._resolver_context, self, path_spec, is_root=True, is_virtual=True
             )
 
-        if 0 < entry_index or entry_index >= self._vsapm_volume.number_of_partitions:
+        if entry_index < 0 or entry_index >= self._vsapm_volume.number_of_partitions:
             return None
 
         return apm_file_entry.APMFileEntry(self._resolver_context, self, path_spec)

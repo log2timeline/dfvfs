@@ -92,6 +92,11 @@ class APMFileSystemTest(shared_test_lib.BaseTestCase):
         self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_APM, location="/p2", parent=self._modi_path_spec
+        )
+        self.assertTrue(file_system.FileEntryExistsByPathSpec(path_spec))
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_APM, entry_index=9, parent=self._modi_path_spec
         )
         self.assertFalse(file_system.FileEntryExistsByPathSpec(path_spec))
@@ -138,6 +143,14 @@ class APMFileSystemTest(shared_test_lib.BaseTestCase):
 
         self.assertIsNotNone(file_entry)
         self.assertEqual(file_entry.name, "p1")
+
+        path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_APM, location="/p2", parent=self._modi_path_spec
+        )
+        file_entry = file_system.GetFileEntryByPathSpec(path_spec)
+
+        self.assertIsNotNone(file_entry)
+        self.assertEqual(file_entry.name, "p2")
 
         path_spec = path_spec_factory.Factory.NewPathSpec(
             definitions.TYPE_INDICATOR_APM, entry_index=9, parent=self._modi_path_spec
