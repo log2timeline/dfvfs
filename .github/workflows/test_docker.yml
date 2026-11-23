@@ -57,15 +57,35 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        apt update -q
-        apt install -y libterm-readline-gnu-perl locales software-properties-common
+        # Retry apt downloads, since the Launchpad PPAs are intermittently unavailable.
+        printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries
+        apt_ok=0
+        for attempt in 1 2 3; do
+          if apt update -q && apt install -y --fix-missing libterm-readline-gnu-perl locales software-properties-common; then
+            apt_ok=1
+            break
+          fi
+          echo "apt attempt ${attempt} failed"
+          sleep $((attempt * 30))
+        done
+        [ "${apt_ok}" = 1 ] || { echo 'apt failed after 3 attempts'; exit 1; }
         locale-gen en_US.UTF-8
         ln -f -s /usr/share/zoneinfo/UTC /etc/localtime
     - name: Install dependencies
       run: |
         add-apt-repository -y ppa:gift/dev
-        apt update -q
-        apt install -y build-essential libbde-python3 libcaes-python3 libewf-python3 libfcrypto-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3 python3-build python3-dev python3-dfdatetime python3-dtfabric python3-keramics python3-pip python3-pytsk3 python3-setuptools python3-venv python3-wheel python3-xattr python3-yaml
+        # Retry apt downloads, since the Launchpad PPAs are intermittently unavailable.
+        printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries
+        apt_ok=0
+        for attempt in 1 2 3; do
+          if apt update -q && apt install -y --fix-missing build-essential libbde-python3 libcaes-python3 libewf-python3 libfcrypto-python3 libfsapfs-python3 libfsext-python3 libfsfat-python3 libfshfs-python3 libfsntfs-python3 libfsxfs-python3 libfvde-python3 libfwnt-python3 libluksde-python3 libmodi-python3 libphdi-python3 libqcow-python3 libsigscan-python3 libsmdev-python3 libsmraw-python3 libvhdi-python3 libvmdk-python3 libvsapm-python3 libvsgpt-python3 libvshadow-python3 libvslvm-python3 python3 python3-build python3-dev python3-dfdatetime python3-dtfabric python3-keramics python3-pip python3-pytsk3 python3-setuptools python3-venv python3-wheel python3-xattr python3-yaml; then
+            apt_ok=1
+            break
+          fi
+          echo "apt attempt ${attempt} failed"
+          sleep $((attempt * 30))
+        done
+        [ "${apt_ok}" = 1 ] || { echo 'apt failed after 3 attempts'; exit 1; }
     - name: Run tests
       env:
         LANG: en_US.UTF-8
