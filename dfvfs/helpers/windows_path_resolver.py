@@ -1,5 +1,6 @@
 """A resolver for Windows paths to file system specific formats."""
 
+import collections
 import re
 
 from dfvfs.lib import errors
@@ -11,6 +12,9 @@ class WindowsPathResolver:
 
     _PATH_SEPARATOR = "\\"
     _PATH_EXPANSION_VARIABLE = re.compile(r"^[%][^%]+[%]$")
+
+    # Maximum number of directories to cache the sub file entries of.
+    _MAXIMUM_NUMBER_OF_CACHED_DIRECTORIES = 256
 
     def __init__(self, file_system, mount_point, drive_letter="C"):
         """Initializes a Windows path helper.
@@ -41,10 +45,16 @@ class WindowsPathResolver:
                 )
 
         super().__init__()
+        self._directory_cache = collections.OrderedDict()
         self._drive_letter = drive_letter
         self._environment_variables = {}
         self._file_system = file_system
         self._mount_point = mount_point
+        self._use_directory_cache = not (
+            path_spec_factory.Factory.IsSystemLevelTypeIndicator(
+                file_system.type_indicator
+            )
+        )
 
     # Windows paths:
     # Device path:                    \\.\PhysicalDrive0
@@ -63,6 +73,49 @@ class WindowsPathResolver:
     #
     # Note Windows also allows paths like:
     # C:\..\directory\file.txt
+
+    def _GetSubFileEntryByName(self, file_entry, name):
+        """Retrieves a sub file entry by name, ignoring case.
+
+        This function prefers the first case sensitive match above the first
+        case insensitive match, like the file entry GetSubFileEntryByName
+        function with case_sensitive set to False. The sub file entries of
+        a directory are only listed once and cached, unless the file system
+        is a system level file system, since the directory content could change.
+
+        Args:
+          file_entry (FileEntry): file entry of the directory.
+          name (str): name of the sub file entry.
+
+        Returns:
+          FileEntry: a file entry or None if not available.
+        """
+        if not self._use_directory_cache:
+            return file_entry.GetSubFileEntryByName(name, case_sensitive=False)
+
+        cache_key = file_entry.path_spec.comparable
+        names = self._directory_cache.get(cache_key, None)
+        if names is None:
+            exact_names = {}
+            lower_names = {}
+            for sub_file_entry in file_entry.sub_file_entries:
+                sub_file_entry_name = sub_file_entry.name
+                exact_names.setdefault(sub_file_entry_name, sub_file_entry)
+                lower_names.setdefault(sub_file_entry_name.lower(), sub_file_entry)
+
+            names = (exact_names, lower_names)
+            self._directory_cache[cache_key] = names
+
+            if len(self._directory_cache) > self._MAXIMUM_NUMBER_OF_CACHED_DIRECTORIES:
+                self._directory_cache.popitem(last=False)
+        else:
+            self._directory_cache.move_to_end(cache_key)
+
+        exact_names, lower_names = names
+        sub_file_entry = exact_names.get(name, None)
+        if sub_file_entry is None:
+            sub_file_entry = lower_names.get(name.lower(), None)
+        return sub_file_entry
 
     def _PathStripPrefix(self, path):
         """Strips the prefix from a path.
@@ -174,9 +227,7 @@ class WindowsPathResolver:
                     search_path_segments = path_segments
                     path_segment = search_path_segments.pop(0)
 
-            sub_file_entry = file_entry.GetSubFileEntryByName(
-                path_segment, case_sensitive=False
-            )
+            sub_file_entry = self._GetSubFileEntryByName(file_entry, path_segment)
             if sub_file_entry is None:
                 return None, None
 
