@@ -355,8 +355,18 @@ class TSKFileEntry(file_entry.FileEntry):
             self._directory = self._GetDirectory()
 
         if self._directory:
+            # Note that the inode of this directory is the parent inode of its
+            # sub file entries, which allows them to open their parent by inode
+            # instead of by location.
+            parent_inode = getattr(self._tsk_file.info.meta, "addr", None)
+
             for path_spec in self._directory.entries:
-                yield TSKFileEntry(self._resolver_context, self._file_system, path_spec)
+                yield TSKFileEntry(
+                    self._resolver_context,
+                    self._file_system,
+                    path_spec,
+                    parent_inode=parent_inode,
+                )
 
     def _GetTimeValue(self, name):
         """Retrieves a date and time value.
