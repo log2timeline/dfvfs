@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Tests for the operating system file entry implementation."""
 
+import os
+import tempfile
 import unittest
 
 from dfvfs.lib import definitions
@@ -157,7 +159,45 @@ class OSFileEntryTest(shared_test_lib.BaseTestCase):
 
         self.assertIsNotNone(file_entry)
 
-    # TODO: add tests for GetLinkedFileEntry
+    def testGetLinkedFileEntry(self):
+        """Tests the GetLinkedFileEntry function."""
+        with tempfile.TemporaryDirectory() as temp_path:
+            temp_path = os.path.realpath(temp_path)
+            link_directory = os.path.join(temp_path, "d")
+            other_directory = os.path.join(temp_path, "cwd")
+            os.mkdir(link_directory)
+            os.mkdir(other_directory)
+
+            target_path = os.path.join(link_directory, "target")
+            with open(target_path, "wb") as file_object:
+                file_object.write(b"real")
+
+            with open(os.path.join(other_directory, "target"), "wb") as file_object:
+                file_object.write(b"cwd-file")
+
+            link_path = os.path.join(link_directory, "l")
+            try:
+                os.symlink("target", link_path)
+            except (AttributeError, NotImplementedError, OSError):
+                self.skipTest("symbolic links not supported")
+
+            path_spec = path_spec_factory.Factory.NewPathSpec(
+                definitions.TYPE_INDICATOR_OS, location=link_path
+            )
+            file_entry = self._file_system.GetFileEntryByPathSpec(path_spec)
+            self.assertIsNotNone(file_entry)
+
+            original_cwd = os.getcwd()
+            os.chdir(other_directory)
+            try:
+                self.assertEqual(file_entry._GetLink(), target_path)
+
+                linked_file_entry = file_entry.GetLinkedFileEntry()
+            finally:
+                os.chdir(original_cwd)
+
+            self.assertIsNotNone(linked_file_entry)
+            self.assertEqual(linked_file_entry.path_spec.location, target_path)
 
     def testGetParentFileEntry(self):
         """Tests the GetParentFileEntry function."""
