@@ -3,6 +3,7 @@
 
 import unittest
 
+from dfvfs.lib import errors
 from dfvfs.lib import raw_helper
 from dfvfs.path import fake_path_spec
 from dfvfs.path import raw_path_spec
@@ -641,6 +642,38 @@ class GlobRawFileTest(shared_test_lib.BaseTestCase):
             len(segment_file_path_specs), len(expected_segment_file_path_specs)
         )
         self.assertEqual(segment_file_path_specs, expected_segment_file_path_specs)
+
+    def testGlobRawNofMSuffix(self):
+        """Test the glob function for a RAW #of# extension scheme."""
+        segment_filenames = ["image.1of3", "image.2of3", "image.3of3"]
+        expected_segment_file_path_specs = []
+        file_system = self._BuildFileFakeFileSystem(
+            segment_filenames, expected_segment_file_path_specs
+        )
+
+        # Test multiple segment files: 1of3-3of3.
+        path_spec = fake_path_spec.FakePathSpec(location="/image.1of3")
+        path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+        segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
+        self.assertEqual(
+            len(segment_file_path_specs), len(expected_segment_file_path_specs)
+        )
+        self.assertEqual(segment_file_path_specs, expected_segment_file_path_specs)
+
+        # Test missing segment file: 2of3.
+        segment_filenames = ["image.1of3", "image.3of3"]
+        file_system = self._BuildFileFakeFileSystem(segment_filenames, [])
+
+        with self.assertRaises(errors.PathSpecError):
+            raw_helper.RawGlobPathSpec(file_system, path_spec)
+
+        # Test no segment files: 1of0.
+        path_spec = fake_path_spec.FakePathSpec(location="/image.1of0")
+        path_spec = raw_path_spec.RawPathSpec(parent=path_spec)
+
+        segment_file_path_specs = raw_helper.RawGlobPathSpec(file_system, path_spec)
+        self.assertEqual(segment_file_path_specs, [])
 
 
 if __name__ == "__main__":

@@ -380,6 +380,6 @@ def RawGlobPathSpec(file_system, path_spec):
                         f"{segment_extension:s}"
                     )
 
-            segment_files.append(segment_path_spec)
+                segment_files.append(segment_path_spec)
 
     return segment_files
