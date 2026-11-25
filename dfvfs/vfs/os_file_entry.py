@@ -151,8 +151,9 @@ class OSFileEntry(file_entry.FileEntry):
             if self._location is None:
                 return self._link
 
-            self._link = os.readlink(self._location)
-            self._link = os.path.abspath(self._link)
+            link = os.readlink(self._location)
+            link = os.path.join(os.path.dirname(self._location), link)
+            self._link = os.path.abspath(link)
 
         return self._link
 
