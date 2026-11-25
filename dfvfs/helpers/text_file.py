@@ -1,5 +1,6 @@
 """A text file interface for file-like objects."""
 
+import collections
 import os
 
 # Since this class implements the readlines file-like object interface
@@ -31,7 +32,7 @@ class TextFile:
         self._encoding_errors = encoding_errors
         self._end_of_line = end_of_line.encode(self._encoding)
         self._end_of_line_length = len(self._end_of_line)
-        self._lines = []
+        self._lines = collections.deque()
         self._lines_buffer = b""
         self._lines_buffer_offset = 0
         self._current_offset = 0
@@ -105,17 +106,17 @@ class TextFile:
 
             self._lines_buffer_offset += len(read_buffer)
 
-            self._lines = read_buffer.split(self._end_of_line)
+            lines = read_buffer.split(self._end_of_line)
             if self._lines_buffer:
-                self._lines[0] = b"".join([self._lines_buffer, self._lines[0]])
+                lines[0] = b"".join([self._lines_buffer, lines[0]])
                 self._lines_buffer = b""
 
             # Move a partial line from the lines list to the lines buffer.
             if read_buffer[self._end_of_line_length :] != self._end_of_line:
-                self._lines_buffer = self._lines.pop()
+                self._lines_buffer = lines.pop()
 
-            for index, line in enumerate(self._lines):
-                self._lines[index] = b"".join([line, self._end_of_line])
+            end_of_line = self._end_of_line
+            self._lines = collections.deque(line + end_of_line for line in lines)
 
             if (
                 self._lines_buffer
@@ -129,7 +130,7 @@ class TextFile:
             self._lines_buffer = b""
 
         elif not size or size >= len(self._lines[0]):
-            line = self._lines.pop(0)
+            line = self._lines.popleft()
 
         else:
             line = self._lines[0]
