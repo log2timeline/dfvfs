@@ -29,9 +29,11 @@ class TARFileSystem(file_system.FileSystem):
           encoding (Optional[str]): file entry name encoding.
         """
         super().__init__(resolver_context, path_spec)
+        self._directory_entries = None
         self._directory_paths = None
         self._file_object = None
         self._tar_file = None
+        self._tar_info_by_name = None
         self.encoding = encoding
 
     def _Close(self):
@@ -42,8 +44,98 @@ class TARFileSystem(file_system.FileSystem):
         """
         self._tar_file.close()
         self._tar_file = None
+        self._directory_entries = None
         self._directory_paths = None
         self._file_object = None
+        self._tar_info_by_name = None
+
+    def _BuildIndexes(self):
+        """Builds the TAR info and directory entry indexes.
+
+        The indexes are built once when the file system is opened so that looking
+        up a member or listing a directory does not need to scan all the members.
+        """
+        # The last occurrence of a member is assumed to be the most up-to-date
+        # version, which is also what tarfile.TarFile.getmember does.
+        self._tar_info_by_name = {}
+        directory_entries = {}
+
+        for tar_info in self._tar_file.getmembers():
+            self._tar_info_by_name[tar_info.name] = tar_info
+
+            path = tar_info.name
+            if not path:
+                continue
+
+            # A directory can contain the member directly or by one of its sub
+            # directories, hence the member is evaluated for every parent location.
+            segments = [
+                segment for segment in path.split(self.PATH_SEPARATOR) if segment
+            ]
+
+            locations = [self.LOCATION_ROOT]
+            location = ""
+            for segment in segments[:-1]:
+                location = f"{location:s}{self.PATH_SEPARATOR:s}{segment:s}"
+                locations.append(location)
+
+            for location in locations:
+                directory_entry = self._GetDirectoryEntry(location, tar_info)
+                if directory_entry is None:
+                    continue
+
+                entries, processed_directories = directory_entries.setdefault(
+                    location, ([], set())
+                )
+
+                path_spec_location, is_directory = directory_entry
+                if is_directory:
+                    if path_spec_location in processed_directories:
+                        continue
+                    processed_directories.add(path_spec_location)
+
+                entries.append(path_spec_location)
+
+        self._directory_entries = {
+            location: entries for location, (entries, _) in directory_entries.items()
+        }
+
+    def _GetDirectoryEntry(self, location, tar_info):
+        """Determines the directory entry of a TAR info for a directory location.
+
+        Args:
+          location (str): location of the directory.
+          tar_info (tarfile.TarInfo): TAR info.
+
+        Returns:
+          tuple[str, bool]: location of the directory entry and True if the entry
+              is a directory, or None if the TAR info is not part of the directory.
+        """
+        path = tar_info.name
+
+        # A tar file can contain paths with and without leading separator.
+
+        if path.startswith(location[1:]):
+            tar_path = location[1:]
+        elif path.startswith(location):
+            tar_path = location
+        else:
+            return None
+
+        # Ignore the directory itself.
+        if path == tar_path:
+            return None
+
+        path_segment, suffix = self.GetPathSegmentAndSuffix(tar_path, path)
+        if not path_segment:
+            return None
+
+        # Sometimes the TAR file lacks directories, therefore we will
+        # provide virtual ones.
+        if suffix:
+            return self.JoinPath([location, path_segment]), True
+
+        return self.JoinPath([path]), tar_info.isdir()
 
     def _Open(self, mode="rb"):
         """Opens the file system defined by path specification.
@@ -79,6 +171,8 @@ class TARFileSystem(file_system.FileSystem):
         self._file_object = file_object
         self._tar_file = tar_file
 
+        self._BuildIndexes()
+
         self._directory_paths = set()
         for name in self._tar_file.getnames():
             if not name:
@@ -102,6 +196,23 @@ class TARFileSystem(file_system.FileSystem):
 
                     self._directory_paths.add(path)
 
+    def _GetTARInfoByLocation(self, location):
+        """Retrieves the TAR info for a location.
+
+        Args:
+          location (str): location, with a leading path separator.
+
+        Returns:
+          tarfile.TarInfo: TAR info or None if it does not exist.
+        """
+        # A tar file can contain paths with and without leading separator.
+        # Directories are stored with a trailing separator, which is ignored by
+        # the lookup.
+        tar_info = self._tar_info_by_name.get(location[1:].rstrip("/"))
+        if not tar_info:
+            tar_info = self._tar_info_by_name.get(location.rstrip("/"))
+        return tar_info
+
     def FileEntryExistsByPathSpec(self, path_spec):
         """Determines if a file entry for a path specification exists.
 
@@ -121,33 +232,8 @@ class TARFileSystem(file_system.FileSystem):
 
         # A tar file can contain paths with and without leading separator.
 
-        tar_info = None
+        tar_info = self._GetTARInfoByLocation(location)
         is_virtual = False
-
-        try:
-            tar_info = self._tar_file.getmember(location[1:])
-        except KeyError:
-            pass
-
-        if not tar_info:
-            try:
-                # Directories are stored with a trailing separator.
-                tar_info = self._tar_file.getmember(f"{location[1:]:s}/")
-            except KeyError:
-                pass
-
-        if not tar_info:
-            try:
-                tar_info = self._tar_file.getmember(location)
-            except KeyError:
-                pass
-
-        if not tar_info:
-            try:
-                # Directories are stored with a trailing separator.
-                tar_info = self._tar_file.getmember(f"{location:s}/")
-            except KeyError:
-                pass
 
         if not tar_info:
             # Check if location could be a virtual directory.
@@ -176,33 +262,8 @@ class TARFileSystem(file_system.FileSystem):
 
         # A tar file can contain paths with and without leading separator.
 
-        tar_info = None
+        tar_info = self._GetTARInfoByLocation(location)
         is_virtual = False
-
-        try:
-            tar_info = self._tar_file.getmember(location[1:])
-        except KeyError:
-            pass
-
-        if not tar_info:
-            try:
-                # Directories are stored with a trailing separator.
-                tar_info = self._tar_file.getmember(f"{location[1:]:s}/")
-            except KeyError:
-                pass
-
-        if not tar_info:
-            try:
-                tar_info = self._tar_file.getmember(location)
-            except KeyError:
-                pass
-
-        if not tar_info:
-            try:
-                # Directories are stored with a trailing separator.
-                tar_info = self._tar_file.getmember(f"{location:s}/")
-            except KeyError:
-                pass
 
         if not tar_info:
             # Check if location could be a virtual directory.
@@ -221,6 +282,18 @@ class TARFileSystem(file_system.FileSystem):
             )
 
         return None
+
+    def GetDirectoryEntryLocations(self, location):
+        """Retrieves the locations of the entries of a directory.
+
+        Args:
+          location (str): location of the directory.
+
+        Returns:
+          list[str]: locations of the directory entries, in archive order.
+        """
+        location = self.JoinPath([location])
+        return self._directory_entries.get(location, [])
 
     def GetRootFileEntry(self):
         """Retrieves the root file entry.
@@ -241,6 +314,18 @@ class TARFileSystem(file_system.FileSystem):
         """
         return self._tar_file
 
+    def GetTARInfoByName(self, name):
+        """Retrieves the TAR info for a name.
+
+        Args:
+          name (str): name of the archive member, a trailing path separator is
+              ignored.
+
+        Returns:
+          tarfile.TarInfo: TAR info or None if it does not exist.
+        """
+        return self._tar_info_by_name.get(name.rstrip("/"))
+
     def GetTARInfoByPathSpec(self, path_spec):
         """Retrieves the TAR info for a path specification.
 
@@ -260,11 +345,7 @@ class TARFileSystem(file_system.FileSystem):
         if not location.startswith(self.LOCATION_ROOT):
             raise errors.PathSpecError("Invalid location in path specification.")
 
-        tar_file = None
         if len(location) > 1:
-            try:
-                tar_file = self._tar_file.getmember(location[1:])
-            except KeyError:
-                pass
+            return self._tar_info_by_name.get(location[1:].rstrip("/"))
 
-        return tar_file
+        return None

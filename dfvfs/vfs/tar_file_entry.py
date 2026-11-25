@@ -115,17 +115,17 @@ class TARFileEntry(file_entry.FileEntry):
             self._directory = self._GetDirectory()
 
         if self._directory:
-            tar_file = self._file_system.GetTARFile()
-            if tar_file:
+            if self._file_system.GetTARFile():
                 for path_spec in self._directory.entries:
                     location = getattr(path_spec, "location", None)
                     if location is None:
                         continue
 
                     kwargs = {}
-                    try:
-                        kwargs["tar_info"] = tar_file.getmember(location[1:])
-                    except KeyError:
+                    tar_info = self._file_system.GetTARInfoByName(location[1:])
+                    if tar_info:
+                        kwargs["tar_info"] = tar_info
+                    else:
                         kwargs["is_virtual"] = True
 
                     yield TARFileEntry(
@@ -211,10 +211,6 @@ class TARFileEntry(file_entry.FileEntry):
             if len(location) == 1:
                 return None
 
-            tar_file = self._file_system.GetTARFile()
-            try:
-                self._tar_info = tar_file.getmember(location[1:])
-            except KeyError:
-                pass
+            self._tar_info = self._file_system.GetTARInfoByName(location[1:])
 
         return self._tar_info
