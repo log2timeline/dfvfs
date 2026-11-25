@@ -355,8 +355,13 @@ class TSKFileEntry(file_entry.FileEntry):
             self._directory = self._GetDirectory()
 
         if self._directory:
-            for path_spec in self._directory.entries:
-                yield TSKFileEntry(self._resolver_context, self._file_system, path_spec)
+            for path_spec, tsk_file in self._directory.GetEntriesWithTSKFile():
+                yield TSKFileEntry(
+                    self._resolver_context,
+                    self._file_system,
+                    path_spec,
+                    tsk_file=tsk_file,
+                )
 
     def _GetTimeValue(self, name):
         """Retrieves a date and time value.

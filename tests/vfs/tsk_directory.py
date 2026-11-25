@@ -55,6 +55,21 @@ class TSKDirectoryTest(shared_test_lib.BaseTestCase):
         entries = list(directory.entries)
         self.assertEqual(len(entries), 5)
 
+    def testGetEntriesWithTSKFile(self):
+        """Tests the GetEntriesWithTSKFile function."""
+        directory = tsk_directory.TSKDirectory(self._file_system, self._tsk_path_spec)
+
+        entries = list(directory.GetEntriesWithTSKFile())
+        self.assertEqual(len(entries), 5)
+
+        # Keep the TSK files after the directory has been enumerated.
+        for path_spec, tsk_file in entries:
+            self.assertEqual(path_spec.inode, tsk_file.info.meta.addr)
+
+        self.assertEqual(
+            [path_spec for path_spec, _ in entries], list(directory.entries)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
