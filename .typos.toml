@@ -23,5 +23,7 @@ extend-ignore-re = [
     "\\bTSK_FS_META_TYPE_WHT\\b",
 ]
 extend-words = {
+    "CNA" = "CNA",
     "conectix" = "conectix",
+    "Mitre" = "Mitre",
 }
