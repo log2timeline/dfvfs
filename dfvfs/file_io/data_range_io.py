@@ -99,8 +99,8 @@ class DataRange(file_io.FileIO):
         all of the remaining data if no size was specified.
 
         Args:
-          size (Optional[int]): number of bytes to read, where None is all
-              remaining data.
+          size (Optional[int]): number of bytes to read, where None or a negative
+              value is all remaining data.
 
         Returns:
           bytes: data read.
@@ -123,7 +123,7 @@ class DataRange(file_io.FileIO):
         if self._current_offset >= self._range_size:
             return b""
 
-        if size is None:
+        if size is None or size < 0:
             size = self._range_size
         if self._current_offset + size > self._range_size:
             size = self._range_size - self._current_offset
