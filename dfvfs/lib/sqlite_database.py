@@ -8,7 +8,7 @@ import tempfile
 class SQLiteDatabaseFile:
     """SQLite database file using a file-like object."""
 
-    _COPY_BUFFER_SIZE = 65536
+    _COPY_BUFFER_SIZE = 2 * 1024 * 1024
 
     _HAS_COLUMN_QUERY = "PRAGMA table_info('{0:s}')"
 
