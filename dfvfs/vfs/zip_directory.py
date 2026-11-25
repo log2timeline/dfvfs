@@ -19,59 +19,9 @@ class ZIPDirectory(directory.Directory):
         location = getattr(self.path_spec, "location", None)
 
         if location and location.startswith(self._file_system.PATH_SEPARATOR):
-            # Set of top level sub directories that have been yielded.
-            processed_directories = set()
-
-            zip_file = self._file_system.GetZipFile()
-            for zip_info in zip_file.infolist():
-                path = getattr(zip_info, "filename", None)
-                if path is not None and not isinstance(path, str):
-                    try:
-                        path = path.decode(self._file_system.encoding)
-                    except UnicodeDecodeError:
-                        path = None
-
-                if not path:
-                    continue
-
-                # A ZIP archive file can contain paths with and without leading
-                # separator.
-
-                if path.startswith(location[1:]):
-                    zip_path = location[1:]
-                elif path.startswith(location):
-                    zip_path = location
-                else:
-                    continue
-
-                # Ignore the directory itself.
-                if path == zip_path:
-                    continue
-
-                path_segment, suffix = self._file_system.GetPathSegmentAndSuffix(
-                    zip_path, path
-                )
-                if not path_segment:
-                    continue
-
-                # Sometimes the ZIP file lacks directories, therefore we will provide
-                # virtual ones.
-                if suffix:
-                    path_spec_location = self._file_system.JoinPath(
-                        [location, path_segment]
-                    )
-                    is_directory = True
-                else:
-                    path_spec_location = self._file_system.JoinPath([path])
-                    is_directory = path.endswith("/")
-
-                if is_directory:
-                    if path_spec_location in processed_directories:
-                        continue
-                    processed_directories.add(path_spec_location)
-                    # Restore / at end path to indicate a directory.
-                    path_spec_location += self._file_system.PATH_SEPARATOR
-
+            for path_spec_location in self._file_system.GetDirectoryEntryLocations(
+                location
+            ):
                 yield zip_path_spec.ZipPathSpec(
                     location=path_spec_location, parent=self.path_spec.parent
                 )
