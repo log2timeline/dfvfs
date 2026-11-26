@@ -83,6 +83,7 @@ create_test_file_entries_with_extended_attributes()
 	setfattr -n "user.myxattr" -v "My extended attribute" "${MOUNT_POINT}/a_directory/a_file"
 }
 
+assert_availability_binary 7z
 assert_availability_binary cryptsetup
 assert_availability_binary dd
 assert_availability_binary ewfacquire
@@ -100,6 +101,7 @@ assert_availability_binary pvcreate
 assert_availability_binary qemu-img
 assert_availability_binary vgchange
 assert_availability_binary vgcreate
+assert_availability_binary zip
 
 CURRENT_GID=$( id -g )
 CURRENT_UID=$( id -u )
@@ -603,3 +605,9 @@ sudo mount -o loop,rw test_data/ext2.raw "${MOUNT_POINT}"
 genisoimage -input-charset utf8 -iso-level 3 -o test_data/iso9660.raw "${MOUNT_POINT}"
 
 sudo umount "${MOUNT_POINT}"
+
+# Create test ZIP file with a Deflate64 compressed entry
+(cd test_data && 7z a -tzip -mm=Deflate64 zip/syslog_deflate64.zip syslog)
+
+# Create test ZIP file with a ZipCrypto encrypted entry
+(cd test_data && zip -P dfvfs zip/syslog_zipcrypto.zip syslog)

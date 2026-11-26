@@ -3,6 +3,7 @@
 import io
 import os
 import zipfile
+import zlib
 
 from dfvfs.file_io import file_io
 from dfvfs.resolver import resolver
@@ -13,6 +14,14 @@ class ZipFile(file_io.FileIO):
 
     # The size of the uncompressed data buffer.
     _UNCOMPRESSED_DATA_BUFFER_SIZE = 64 * 1024
+
+    # Exceptions raised by zipfile when decompressing corrupted data.
+    _READ_EXCEPTIONS = (EOFError, zipfile.BadZipFile, zlib.error)
+
+    # Exceptions raised by zipfile when opening an entry, where RuntimeError
+    # is raised for an encrypted entry and NotImplementedError for an
+    # unsupported compression method.
+    _OPEN_EXCEPTIONS = (NotImplementedError, RuntimeError, zipfile.BadZipFile)
 
     def __init__(self, resolver_context, path_spec):
         """Initializes a file input/output (IO) object.
@@ -51,9 +60,10 @@ class ZipFile(file_io.FileIO):
         try:
             # The open can fail if the file path in the local file header
             # does not use the same path segment separator as the corresponding
-            # entry in the central directory.
+            # entry in the central directory, if the entry is encrypted or if
+            # the compression method is not supported.
             self._zip_ext_file = self._zip_file.open(self._zip_info, "r")
-        except zipfile.BadZipfile as exception:
+        except self._OPEN_EXCEPTIONS as exception:
             raise OSError(f"Unable to open ZIP file with error: {exception!s}")
 
         self._uncompressed_data = b""
@@ -107,9 +117,10 @@ class ZipFile(file_io.FileIO):
         try:
             # The open can fail if the file path in the local file header
             # does not use the same path segment separator as the corresponding
-            # entry in the central directory.
+            # entry in the central directory, if the entry is encrypted or if
+            # the compression method is not supported.
             zip_ext_file = zip_file.open(zip_info, "r")
-        except zipfile.BadZipfile as exception:
+        except self._OPEN_EXCEPTIONS as exception:
             raise OSError(f"Unable to open ZIP file with error: {exception!s}")
 
         self._file_system = file_system
@@ -216,12 +227,15 @@ class ZipFile(file_io.FileIO):
         if not self._is_open:
             raise OSError("Not opened.")
 
-        if self._is_seekable:
-            uncompressed_data = self._zip_ext_file.read(size)
+        try:
+            if self._is_seekable:
+                uncompressed_data = self._zip_ext_file.read(size)
 
-            self._current_offset += len(uncompressed_data)
-        else:
-            uncompressed_data = self._ReadNonSeekableZipExtFile(size)
+                self._current_offset += len(uncompressed_data)
+            else:
+                uncompressed_data = self._ReadNonSeekableZipExtFile(size)
+        except self._READ_EXCEPTIONS as exception:
+            raise OSError(f"Unable to read ZIP file with error: {exception!s}")
 
         return uncompressed_data
 
@@ -250,7 +264,11 @@ class ZipFile(file_io.FileIO):
             raise OSError("Invalid offset value less than zero.")
 
         if self._is_seekable:
-            self._zip_ext_file.seek(offset, os.SEEK_SET)
+            try:
+                self._zip_ext_file.seek(offset, os.SEEK_SET)
+            except self._READ_EXCEPTIONS as exception:
+                raise OSError(f"Unable to seek ZIP file with error: {exception!s}")
+
         elif offset != self._current_offset:
             self._realign_offset = True
 
