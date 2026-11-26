@@ -40,6 +40,18 @@ class TARPathSpecTest(test_lib.PathSpecTestCase):
 
         self.assertEqual(path_spec.comparable, expected_comparable)
 
+        path_spec = tar_path_spec.TARPathSpec(
+            archive_path="/test", location="/test", parent=self._path_spec
+        )
+        expected_comparable = "\n".join(
+            [
+                "type: TEST",
+                "type: TAR, location: /test, archive path: /test",
+                "",
+            ]
+        )
+        self.assertEqual(path_spec.comparable, expected_comparable)
+
 
 if __name__ == "__main__":
     unittest.main()
