@@ -244,7 +244,7 @@ EOT
 	# Write the 64 KiB grains that differ from the parent image.
 	for GRAIN in $(cmp -l ext2.raw .tmp_ext2-differential.raw | awk '{ print int(($1 - 1) / 65536) }' | uniq)
 	do
-		dd if=.tmp_ext2-differential.raw of=.tmp_grain bs=64k skip=${GRAIN} count=1 2> /dev/null
+		dd if=.tmp_ext2-differential.raw of=.tmp_grain bs=64k skip="${GRAIN}" count=1 2> /dev/null
 		qemu-io -f vmdk -c "write -s .tmp_grain $(( GRAIN * 65536 )) 65536" ext2-differential.vmdk
 	done
 
