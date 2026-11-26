@@ -112,7 +112,11 @@ class TSKFileEntry(file_entry.FileEntry):
     )
 
     _ATTRIBUTE_TYPE_CLASS_MAPPINGS = {
-        pytsk3.TSK_FS_ATTR_TYPE_HFS_EXT_ATTR: tsk_attribute.TSKExtendedAttribute
+        pytsk3.TSK_FS_ATTR_TYPE_HFS_EXT_ATTR: tsk_attribute.TSKExtendedAttribute,
+        pytsk3.TSK_FS_ATTR_TYPE_NTFS_FNAME: tsk_attribute.TSKFileNameNTFSAttribute,
+        pytsk3.TSK_FS_ATTR_TYPE_NTFS_SI: (
+            tsk_attribute.TSKStandardInformationNTFSAttribute
+        ),
     }
 
     def __init__(

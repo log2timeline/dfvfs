@@ -1942,8 +1942,24 @@ class TSKFileEntryTestNTFS(shared_test_lib.BaseTestCase):
         self.assertEqual(len(file_entry._attributes), 4)
 
         test_attribute = file_entry._attributes[0]
-        self.assertIsInstance(test_attribute, tsk_attribute.TSKAttribute)
+        self.assertIsInstance(
+            test_attribute, tsk_attribute.TSKStandardInformationNTFSAttribute
+        )
         self.assertEqual(test_attribute.attribute_type, pytsk3.TSK_FS_ATTR_TYPE_NTFS_SI)
+        self.assertEqual(
+            test_attribute.type_indicator,
+            definitions.ATTRIBUTE_TYPE_NTFS_STANDARD_INFORMATION,
+        )
+
+        test_attribute = file_entry._attributes[1]
+        self.assertIsInstance(test_attribute, tsk_attribute.TSKFileNameNTFSAttribute)
+        self.assertEqual(
+            test_attribute.attribute_type, pytsk3.TSK_FS_ATTR_TYPE_NTFS_FNAME
+        )
+        self.assertEqual(
+            test_attribute.type_indicator, definitions.ATTRIBUTE_TYPE_NTFS_FILE_NAME
+        )
+        self.assertEqual(test_attribute.name, "a_file")
 
     def testGetDataStreams(self):
         """Tests the _GetDataStreams function."""
