@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for the file entry implementation using the SleuthKit (TSK)."""
 
+import os
 import unittest
 
 import pytsk3
@@ -2741,6 +2742,109 @@ class TSKFileEntryTestUfs1(shared_test_lib.BaseTestCase):
 
         data_stream = file_entry.GetDataStream("")
         self.assertIsNotNone(data_stream)
+
+
+class TSKFileEntryParentInodeTest(shared_test_lib.BaseTestCase):
+    """Tests that sub file entries open their parent by inode."""
+
+    # pylint: disable=protected-access
+
+    _TEST_FILES = ["ext2.raw", "fat12.raw", "hfsplus.raw", "ntfs.raw"]
+
+    def _OpenFileSystem(self, resolver_context, test_file):
+        """Opens a TSK file system.
+
+        Args:
+          resolver_context (Context): resolver context.
+          test_file (str): name of the test file.
+
+        Returns:
+          TSKFileSystem: file system or None if the test file does not exist.
+        """
+        test_path = self._GetTestFilePath([test_file])
+        if not os.path.exists(test_path):
+            return None
+
+        test_os_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_OS, location=test_path
+        )
+        raw_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_RAW, parent=test_os_path_spec
+        )
+        tsk_path_spec = path_spec_factory.Factory.NewPathSpec(
+            definitions.TYPE_INDICATOR_TSK, location="/", parent=raw_path_spec
+        )
+
+        file_system = tsk_file_system.TSKFileSystem(resolver_context, tsk_path_spec)
+        file_system.Open()
+        return file_system
+
+    def _WalkFileEntries(self, file_entry):
+        """Walks a file entry tree.
+
+        Args:
+          file_entry (TSKFileEntry): file entry.
+
+        Yields:
+          tuple[TSKFileEntry, TSKFileEntry]: file entry and its parent file entry
+              as enumerated.
+        """
+        for sub_file_entry in file_entry.sub_file_entries:
+            yield file_entry, sub_file_entry
+            yield from self._WalkFileEntries(sub_file_entry)
+
+    def testGetParentFileEntry(self):
+        """Tests GetParentFileEntry opens the parent by inode."""
+        for test_file in self._TEST_FILES:
+            resolver_context = context.Context()
+            file_system = self._OpenFileSystem(resolver_context, test_file)
+            if not file_system:
+                continue
+
+            try:
+                root_file_entry = file_system.GetRootFileEntry()
+
+                walked_entries = list(self._WalkFileEntries(root_file_entry))
+                self.assertNotEqual(len(walked_entries), 0, test_file)
+
+                calls = []
+                original_function = file_system.GetTSKFileByPathSpec
+
+                def RecordingFunction(path_spec, original=original_function):
+                    # pylint: disable=cell-var-from-loop
+                    calls.append(path_spec)
+                    return original(path_spec)
+
+                setattr(file_system, "GetTSKFileByPathSpec", RecordingFunction)
+
+                for expected_parent, file_entry in walked_entries:
+                    del calls[:]
+                    name = f"{test_file:s}: {file_entry.path_spec.location:s}"
+
+                    parent_file_entry = file_entry.GetParentFileEntry()
+                    self.assertIsNotNone(parent_file_entry, name)
+
+                    # The parent must have been opened by inode, not by location.
+                    self.assertEqual(len(calls), 1, name)
+                    self.assertIsNotNone(calls[0].inode, name)
+
+                    self.assertEqual(
+                        parent_file_entry._tsk_file.info.meta.addr,
+                        expected_parent._tsk_file.info.meta.addr,
+                        name,
+                    )
+                    self.assertEqual(
+                        parent_file_entry.path_spec.location,
+                        expected_parent.path_spec.location,
+                        name,
+                    )
+                    self.assertEqual(parent_file_entry.name, expected_parent.name, name)
+                    self.assertEqual(
+                        parent_file_entry.IsRoot(), expected_parent.IsRoot(), name
+                    )
+
+            finally:
+                resolver_context.Empty()
 
 
 if __name__ == "__main__":
