@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for the text file interface for file-like objects."""
 
+import collections
 import unittest
 
 from dfvfs.helpers import text_file
@@ -237,6 +238,53 @@ class TextFileTest(shared_test_lib.BaseTestCase):
         lines = text_file_object.readlines()
 
         self.assertEqual(len(lines), 25)
+
+    def testReadlineChunkedLargeBuffer(self):
+        """Test reading many lines across several read buffer chunks."""
+        # pylint: disable=protected-access
+
+        class TestFileObject:
+            """In-memory file-like object."""
+
+            # pylint: disable=invalid-name,unused-argument
+
+            def __init__(self, data):
+                """Initializes a file-like object.
+
+                Args:
+                  data (bytes): data.
+                """
+                self._data = data
+                self._offset = 0
+
+            def get_size(self):
+                """Retrieves the size of the data."""
+                return len(self._data)
+
+            def seek(self, offset, whence=0):
+                """Seeks to an offset."""
+                self._offset = offset
+
+            def read(self, size):
+                """Reads data at the current offset."""
+                data = self._data[self._offset : self._offset + size]
+                self._offset += len(data)
+                return data
+
+        expected_lines = [f"line {index:05d}\n" for index in range(5000)]
+        expected_lines.append("last line without end of line")
+        data = "".join(expected_lines).encode("utf-8")
+
+        text_file_object = text_file.TextFile(TestFileObject(data))
+        text_file_object._MAXIMUM_READ_BUFFER_SIZE = 4099
+
+        self.assertEqual(list(text_file_object), expected_lines)
+        self.assertEqual(text_file_object.get_offset(), len(data))
+
+        # The buffered lines must be consumed in constant time per line.
+        text_file_object = text_file.TextFile(TestFileObject(data))
+        self.assertEqual(text_file_object.readline(), expected_lines[0])
+        self.assertIsInstance(text_file_object._lines, collections.deque)
 
     def testIterator(self):
         """Test the iterator functionality."""
