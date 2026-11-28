@@ -85,6 +85,7 @@ create_test_file_entries_with_extended_attributes()
 
 assert_availability_binary cryptsetup
 assert_availability_binary dd
+assert_availability_binary debugfs
 assert_availability_binary ewfacquire
 assert_availability_binary fdisk
 assert_availability_binary genisoimage
@@ -98,6 +99,7 @@ assert_availability_binary mkfs.xfs
 assert_availability_binary mkntfs
 assert_availability_binary pvcreate
 assert_availability_binary qemu-img
+assert_availability_binary qemu-io
 assert_availability_binary vgchange
 assert_availability_binary vgcreate
 
@@ -224,6 +226,32 @@ qemu-img convert -f raw -O vhdx test_data/ext2.raw test_data/ext2.vhdx
 
 # Create test VMDK image with an ext2 file system
 qemu-img convert -f raw -O vmdk test_data/ext2.raw test_data/ext2.vmdk
+
+# Create test differential VMDK image with test_data/ext2.vmdk as parent image
+# and an additional file /a_directory/new_file.
+(
+	cd test_data || exit ${EXIT_FAILURE}
+
+	qemu-img create -f vmdk -o subformat=monolithicSparse -b ext2.vmdk -F vmdk ext2-differential.vmdk
+
+	cp ext2.raw .tmp_ext2-differential.raw
+	echo "This is a file in the differential image." > .tmp_new_file
+	debugfs -w -f - .tmp_ext2-differential.raw <<EOT
+cd a_directory
+write .tmp_new_file new_file
+EOT
+
+	# Write the 64 KiB grains that differ from the parent image.
+	for GRAIN in $(cmp -l ext2.raw .tmp_ext2-differential.raw | awk '{ print int(($1 - 1) / 65536) }' | uniq)
+	do
+		dd if=.tmp_ext2-differential.raw of=.tmp_grain bs=64k skip="${GRAIN}" count=1 2> /dev/null
+		qemu-io -f vmdk -c "write -s .tmp_grain $(( GRAIN * 65536 )) 65536" ext2-differential.vmdk
+	done
+
+	qemu-img compare ext2-differential.vmdk .tmp_ext2-differential.raw
+
+	rm -f .tmp_ext2-differential.raw .tmp_grain .tmp_new_file
+)
 
 # Create test image with a MBR partition table with 2 partitions one with an ext2 file system and the other with ext4
 IMAGE_FILE="test_data/mbr.raw"
