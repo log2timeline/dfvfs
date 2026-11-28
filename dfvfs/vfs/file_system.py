@@ -196,6 +196,22 @@ class FileSystem:
         Returns:
           str: joined path segments prefixed with the path separator.
         """
+        # Fast path for the common case of joining a normalized location and a
+        # single name, which does not require splitting and filtering.
+        if len(path_segments) == 2:
+            location, name = path_segments
+            path_separator = self.PATH_SEPARATOR
+            if name and path_separator not in name:
+                if location == path_separator or not location:
+                    return f"{path_separator:s}{name:s}"
+
+                if (
+                    location.startswith(path_separator)
+                    and not location.endswith(path_separator)
+                    and path_separator * 2 not in location
+                ):
+                    return f"{location:s}{path_separator:s}{name:s}"
+
         # This is an optimized way to combine the path segments into a single path
         # and combine multiple successive path separators to one.
 
