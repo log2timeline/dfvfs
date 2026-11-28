@@ -607,13 +607,16 @@ class TSKFileEntry(file_entry.FileEntry):
         if data_stream_name and data_stream_name not in data_stream_names:
             return None
 
-        path_spec = copy.deepcopy(self.path_spec)
+        path_spec = self.path_spec
         if data_stream_name:
             # For HFS DECOMP fork name is exposed however libtsk 4.6.0 seems to handle
             # these differently when opened and the correct behavior seems to be
             # treating this as the default (nameless) fork instead. For context libtsk
             # 4.5.0 is unable to read the data steam and yields an error.
             if not self._file_system.IsHFS() or data_stream_name != "DECOMP":
+                # Make sure to make the changes on a shallow copy of the path
+                # specification, so we do not alter self.path_spec.
+                path_spec = copy.copy(path_spec)
                 setattr(path_spec, "data_stream", data_stream_name)
 
         return resolver.Resolver.OpenFileObject(
