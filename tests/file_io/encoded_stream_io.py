@@ -81,6 +81,33 @@ class Base16EncodedStreamTest(test_lib.SyslogTestCase):
 
         self._TestReadFileObject(file_object)
 
+    def testReadWithSmallBuffer(self):
+        """Test reading across many encoded data buffer boundaries."""
+        file_object = encoded_stream_io.EncodedStream(
+            self._resolver_context, self._encoded_stream_path_spec
+        )
+        # Note that setattr is used since the attribute is a class constant.
+        setattr(file_object, "_ENCODED_DATA_BUFFER_SIZE", 16)
+        file_object.Open()
+
+        expected_data = file_object.read()
+        self.assertEqual(len(expected_data), file_object.get_size())
+
+        file_object.seek(0, os.SEEK_SET)
+        data_parts = []
+        data = file_object.read(100)
+        while data:
+            data_parts.append(data)
+            data = file_object.read(100)
+
+        self.assertEqual(b"".join(data_parts), expected_data)
+
+        file_object.seek(7, os.SEEK_SET)
+        self.assertEqual(file_object.read(700), expected_data[7:707])
+
+        file_object.seek(0, os.SEEK_SET)
+        self.assertEqual(file_object.read(0), b"")
+
 
 class Base32EncodedStreamTest(test_lib.SyslogTestCase):
     """The unit test for a base32 encoded stream file-like object."""

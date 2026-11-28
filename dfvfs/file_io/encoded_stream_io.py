@@ -217,15 +217,13 @@ class EncodedStream(file_io.FileIO):
         if self._current_offset + size > self._decoded_stream_size:
             size = self._decoded_stream_size - self._current_offset
 
-        decoded_data = b""
-
         if size == 0:
-            return decoded_data
+            return b""
+
+        decoded_data_parts = []
 
         while size > self._decoded_data_size:
-            decoded_data = b"".join(
-                [decoded_data, self._decoded_data[self._decoded_data_offset :]]
-            )
+            decoded_data_parts.append(self._decoded_data[self._decoded_data_offset :])
             remaining_decoded_data_size = (
                 self._decoded_data_size - self._decoded_data_offset
             )
@@ -244,13 +242,13 @@ class EncodedStream(file_io.FileIO):
             slice_start_offset = self._decoded_data_offset
             slice_end_offset = slice_start_offset + size
 
-            decoded_data = b"".join(
-                [decoded_data, self._decoded_data[slice_start_offset:slice_end_offset]]
+            decoded_data_parts.append(
+                self._decoded_data[slice_start_offset:slice_end_offset]
             )
             self._decoded_data_offset += size
             self._current_offset += size
 
-        return decoded_data
+        return b"".join(decoded_data_parts)
 
     def seek(self, offset, whence=os.SEEK_SET):
         """Seeks to an offset within the file-like object.

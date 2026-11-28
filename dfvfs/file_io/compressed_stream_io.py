@@ -219,17 +219,14 @@ class CompressedStream(file_io.FileIO):
         if self._current_offset + size > self._uncompressed_stream_size:
             size = self._uncompressed_stream_size - self._current_offset
 
-        uncompressed_data = b""
-
         if size == 0:
-            return uncompressed_data
+            return b""
+
+        uncompressed_data_parts = []
 
         while size > self._uncompressed_data_size:
-            uncompressed_data = b"".join(
-                [
-                    uncompressed_data,
-                    self._uncompressed_data[self._uncompressed_data_offset :],
-                ]
+            uncompressed_data_parts.append(
+                self._uncompressed_data[self._uncompressed_data_offset :]
             )
             remaining_uncompressed_data_size = (
                 self._uncompressed_data_size - self._uncompressed_data_offset
@@ -249,16 +246,13 @@ class CompressedStream(file_io.FileIO):
             slice_start_offset = self._uncompressed_data_offset
             slice_end_offset = slice_start_offset + size
 
-            uncompressed_data = b"".join(
-                [
-                    uncompressed_data,
-                    self._uncompressed_data[slice_start_offset:slice_end_offset],
-                ]
+            uncompressed_data_parts.append(
+                self._uncompressed_data[slice_start_offset:slice_end_offset]
             )
             self._uncompressed_data_offset += size
             self._current_offset += size
 
-        return uncompressed_data
+        return b"".join(uncompressed_data_parts)
 
     def seek(self, offset, whence=os.SEEK_SET):
         """Seeks to an offset within the file-like object.
